@@ -1,0 +1,387 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1GeographyType" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::GeographyType</compoundname>
+    <basecompoundref refid="classiceberg_1_1PrimitiveType" prot="public" virt="non-virtual">iceberg::PrimitiveType</basecompoundref>
+    <includes refid="type_8h" local="no">type.h</includes>
+    <sectiondef kind="public-static-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1GeographyType_1a18b56f14b5f61e97f676a13fe3989649" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr const <ref refid="type__fwd_8h_1afd7801064886b233ca23eadf5ba2c1b8" kindref="member">TypeId</ref></type>
+        <definition>constexpr const TypeId iceberg::GeographyType::kTypeId</definition>
+        <argsstring></argsstring>
+        <name>kTypeId</name>
+        <qualifiedname>iceberg::GeographyType::kTypeId</qualifiedname>
+        <initializer>= TypeId::kGeography</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/type.h" line="592" column="33" bodyfile="iceberg/type.h" bodystart="592" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1GeographyType_1ac5ffb3514b2eedc4651bf1cd4f9d929f" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr std::string_view</type>
+        <definition>constexpr std::string_view iceberg::GeographyType::kDefaultCrs</definition>
+        <argsstring></argsstring>
+        <name>kDefaultCrs</name>
+        <qualifiedname>iceberg::GeographyType::kDefaultCrs</qualifiedname>
+        <initializer>= &quot;OGC:CRS84&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/type.h" line="593" column="37" bodyfile="iceberg/type.h" bodystart="593" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1GeographyType_1a38998011c8b52eebc82eb46cae32d56a" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr <ref refid="type__fwd_8h_1a6f85ebd724bcb5a1a2470a0c2d52ab19" kindref="member">EdgeAlgorithm</ref></type>
+        <definition>constexpr EdgeAlgorithm iceberg::GeographyType::kDefaultAlgorithm</definition>
+        <argsstring></argsstring>
+        <name>kDefaultAlgorithm</name>
+        <qualifiedname>iceberg::GeographyType::kDefaultAlgorithm</qualifiedname>
+        <initializer>= EdgeAlgorithm::kSpherical</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/type.h" line="594" column="34" bodyfile="iceberg/type.h" bodystart="594" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1GeographyType_1a6d32b8ef57c735ede83dfcabe5b76250" prot="private" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::GeographyType::crs_</definition>
+        <argsstring></argsstring>
+        <name>crs_</name>
+        <qualifiedname>iceberg::GeographyType::crs_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/type.h" line="616" column="15" bodyfile="iceberg/type.h" bodystart="616" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1GeographyType_1ac8097b8fad4f830acd438c24f3c26111" prot="private" static="no" mutable="no">
+        <type>std::optional&lt; <ref refid="type__fwd_8h_1a6f85ebd724bcb5a1a2470a0c2d52ab19" kindref="member">EdgeAlgorithm</ref> &gt;</type>
+        <definition>std::optional&lt;EdgeAlgorithm&gt; iceberg::GeographyType::algorithm_</definition>
+        <argsstring></argsstring>
+        <name>algorithm_</name>
+        <qualifiedname>iceberg::GeographyType::algorithm_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/type.h" line="617" column="17" bodyfile="iceberg/type.h" bodystart="617" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classiceberg_1_1GeographyType_1a108d67d29628eb821bfa700d86fe662b" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1GeographyType" kindref="compound">GeographyType</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::unique_ptr&lt; GeographyType &gt; &gt; iceberg::GeographyType::Make</definition>
+        <argsstring>()</argsstring>
+        <name>Make</name>
+        <qualifiedname>iceberg::GeographyType::Make</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/type.h" line="596" column="17" bodyfile="iceberg/type.cc" bodystart="406" bodyend="408"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1GeographyType_1a77fc62dfc16499968d35ef7e200c04ab" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1GeographyType" kindref="compound">GeographyType</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::unique_ptr&lt; GeographyType &gt; &gt; iceberg::GeographyType::Make</definition>
+        <argsstring>(std::string crs)</argsstring>
+        <name>Make</name>
+        <qualifiedname>iceberg::GeographyType::Make</qualifiedname>
+        <param>
+          <type>std::string</type>
+          <declname>crs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/type.h" line="597" column="17" bodyfile="iceberg/type.cc" bodystart="410" bodyend="415"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1GeographyType_1aca94347a153e10a5eead0e1ac693e286" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1GeographyType" kindref="compound">GeographyType</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::unique_ptr&lt; GeographyType &gt; &gt; iceberg::GeographyType::Make</definition>
+        <argsstring>(std::string crs, EdgeAlgorithm algorithm)</argsstring>
+        <name>Make</name>
+        <qualifiedname>iceberg::GeographyType::Make</qualifiedname>
+        <param>
+          <type>std::string</type>
+          <declname>crs</declname>
+        </param>
+        <param>
+          <type><ref refid="type__fwd_8h_1a6f85ebd724bcb5a1a2470a0c2d52ab19" kindref="member">EdgeAlgorithm</ref></type>
+          <declname>algorithm</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/type.h" line="598" column="17" bodyfile="iceberg/type.cc" bodystart="417" bodyend="423"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1GeographyType_1ad197e6b00a2eaa88a4fdbcb4c227cd2d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::GeographyType::~GeographyType</definition>
+        <argsstring>() override=default</argsstring>
+        <name>~GeographyType</name>
+        <qualifiedname>iceberg::GeographyType::~GeographyType</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/type.h" line="600" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1GeographyType_1acb196f1d6a12d552a3edc10ec8f3125a" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>std::string_view</type>
+        <definition>std::string_view iceberg::GeographyType::crs</definition>
+        <argsstring>() const</argsstring>
+        <name>crs</name>
+        <qualifiedname>iceberg::GeographyType::crs</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/type.h" line="602" column="20" bodyfile="iceberg/type.cc" bodystart="438" bodyend="440"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1GeographyType_1aa8f461dac468732617dae1ba19787077" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="type__fwd_8h_1a6f85ebd724bcb5a1a2470a0c2d52ab19" kindref="member">EdgeAlgorithm</ref></type>
+        <definition>EdgeAlgorithm iceberg::GeographyType::algorithm</definition>
+        <argsstring>() const</argsstring>
+        <name>algorithm</name>
+        <qualifiedname>iceberg::GeographyType::algorithm</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/type.h" line="603" column="17" bodyfile="iceberg/type.cc" bodystart="441" bodyend="443"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1GeographyType_1afc55dab12ef6a2648e84d2e508899b00" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type><ref refid="type__fwd_8h_1afd7801064886b233ca23eadf5ba2c1b8" kindref="member">TypeId</ref></type>
+        <definition>TypeId iceberg::GeographyType::type_id</definition>
+        <argsstring>() const override</argsstring>
+        <name>type_id</name>
+        <qualifiedname>iceberg::GeographyType::type_id</qualifiedname>
+        <reimplements refid="classiceberg_1_1Type_1a492b2d8720b13673ad0955bd5fe3bf27">type_id</reimplements>
+        <briefdescription>
+<para>Get the type ID. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/type.h" line="605" column="10" bodyfile="iceberg/type.cc" bodystart="444" bodyend="444"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1GeographyType_1a18341bbf5dbe3f8218ae1325f9cf8630" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>std::string</type>
+        <definition>std::string iceberg::GeographyType::ToString</definition>
+        <argsstring>() const override</argsstring>
+        <name>ToString</name>
+        <qualifiedname>iceberg::GeographyType::ToString</qualifiedname>
+        <reimplements refid="classiceberg_1_1util_1_1Formattable_1a79618aca5b3bf63610d9c87ac5ae0386">ToString</reimplements>
+        <briefdescription>
+<para>Get a user-readable string representation. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/type.h" line="606" column="15" bodyfile="iceberg/type.cc" bodystart="445" bodyend="453"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="protected-func">
+      <memberdef kind="function" id="classiceberg_1_1GeographyType_1ab205edbe6d6e2ef80b11db760b1f6603" prot="protected" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>bool</type>
+        <definition>bool iceberg::GeographyType::Equals</definition>
+        <argsstring>(const Type &amp;other) const override</argsstring>
+        <name>Equals</name>
+        <qualifiedname>iceberg::GeographyType::Equals</qualifiedname>
+        <reimplements refid="classiceberg_1_1Type_1a9eb55b3cb339747a0b8081c5c5d73103">Equals</reimplements>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Type" kindref="compound">Type</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+<para>Compare two types for equality. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/type.h" line="609" column="8" bodyfile="iceberg/type.cc" bodystart="454" bodyend="460"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classiceberg_1_1GeographyType_1af9500e356f350922e202e9ff8d9502b5" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::GeographyType::GeographyType</definition>
+        <argsstring>()=default</argsstring>
+        <name>GeographyType</name>
+        <qualifiedname>iceberg::GeographyType::GeographyType</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/type.h" line="612" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1GeographyType_1aa9242286f106279bd852ce7b5caddeb1" prot="private" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::GeographyType::GeographyType</definition>
+        <argsstring>(std::string crs)</argsstring>
+        <name>GeographyType</name>
+        <qualifiedname>iceberg::GeographyType::GeographyType</qualifiedname>
+        <param>
+          <type>std::string</type>
+          <declname>crs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/type.h" line="613" column="12" bodyfile="iceberg/type.cc" bodystart="425" bodyend="429"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1GeographyType_1a0c6b00286bed43711e8bbb590fd2cf36" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::GeographyType::GeographyType</definition>
+        <argsstring>(std::string crs, EdgeAlgorithm algorithm)</argsstring>
+        <name>GeographyType</name>
+        <qualifiedname>iceberg::GeographyType::GeographyType</qualifiedname>
+        <param>
+          <type>std::string</type>
+          <declname>crs</declname>
+        </param>
+        <param>
+          <type><ref refid="type__fwd_8h_1a6f85ebd724bcb5a1a2470a0c2d52ab19" kindref="member">EdgeAlgorithm</ref></type>
+          <declname>algorithm</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/type.h" line="614" column="3" bodyfile="iceberg/type.cc" bodystart="431" bodyend="436"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>A data type representing OGC geography in WKB format. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>iceberg::GeographyType</label>
+        <link refid="classiceberg_1_1GeographyType"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::PrimitiveType</label>
+        <link refid="classiceberg_1_1PrimitiveType"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>iceberg::Type</label>
+        <link refid="classiceberg_1_1Type"/>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::GeographyType</label>
+        <link refid="classiceberg_1_1GeographyType"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>kDefaultCrs</edgelabel>
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::PrimitiveType</label>
+        <link refid="classiceberg_1_1PrimitiveType"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>iceberg::Type</label>
+        <link refid="classiceberg_1_1Type"/>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+      <node id="6">
+        <label>std::basic_string_view&lt; Char &gt;</label>
+      </node>
+      <node id="5">
+        <label>std::string_view</label>
+        <childnode refid="6" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/type.h" line="590" column="1" bodyfile="iceberg/type.h" bodystart="590" bodyend="618"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1GeographyType_1aa8f461dac468732617dae1ba19787077" prot="public" virt="non-virtual"><scope>iceberg::GeographyType</scope><name>algorithm</name></member>
+      <member refid="classiceberg_1_1GeographyType_1ac8097b8fad4f830acd438c24f3c26111" prot="private" virt="non-virtual"><scope>iceberg::GeographyType</scope><name>algorithm_</name></member>
+      <member refid="classiceberg_1_1GeographyType_1acb196f1d6a12d552a3edc10ec8f3125a" prot="public" virt="non-virtual"><scope>iceberg::GeographyType</scope><name>crs</name></member>
+      <member refid="classiceberg_1_1GeographyType_1a6d32b8ef57c735ede83dfcabe5b76250" prot="private" virt="non-virtual"><scope>iceberg::GeographyType</scope><name>crs_</name></member>
+      <member refid="classiceberg_1_1GeographyType_1ab205edbe6d6e2ef80b11db760b1f6603" prot="protected" virt="virtual"><scope>iceberg::GeographyType</scope><name>Equals</name></member>
+      <member refid="classiceberg_1_1GeographyType_1af9500e356f350922e202e9ff8d9502b5" prot="private" virt="non-virtual"><scope>iceberg::GeographyType</scope><name>GeographyType</name></member>
+      <member refid="classiceberg_1_1GeographyType_1aa9242286f106279bd852ce7b5caddeb1" prot="private" virt="non-virtual"><scope>iceberg::GeographyType</scope><name>GeographyType</name></member>
+      <member refid="classiceberg_1_1GeographyType_1a0c6b00286bed43711e8bbb590fd2cf36" prot="private" virt="non-virtual"><scope>iceberg::GeographyType</scope><name>GeographyType</name></member>
+      <member refid="classiceberg_1_1Type_1ae5523cfad406c9c349d6a4400b732eb8" prot="public" virt="non-virtual"><scope>iceberg::GeographyType</scope><name>is_list</name></member>
+      <member refid="classiceberg_1_1Type_1af1b95b0616c48e6b34ef4093aeb0e2cd" prot="public" virt="non-virtual"><scope>iceberg::GeographyType</scope><name>is_map</name></member>
+      <member refid="classiceberg_1_1PrimitiveType_1ae8b76f12af1e8e9861b2a9fbab776f7c" prot="public" virt="virtual"><scope>iceberg::GeographyType</scope><name>is_nested</name></member>
+      <member refid="classiceberg_1_1PrimitiveType_1a1cc061d5de221d54396f571681bf090a" prot="public" virt="virtual"><scope>iceberg::GeographyType</scope><name>is_primitive</name></member>
+      <member refid="classiceberg_1_1Type_1a43dd96f2d1a28e0ba6abc37423d57772" prot="public" virt="non-virtual"><scope>iceberg::GeographyType</scope><name>is_struct</name></member>
+      <member refid="classiceberg_1_1Type_1a83dab14e5ee756c353053b9ddbbd8fd5" prot="public" virt="non-virtual"><scope>iceberg::GeographyType</scope><name>is_variant</name></member>
+      <member refid="classiceberg_1_1GeographyType_1a38998011c8b52eebc82eb46cae32d56a" prot="public" virt="non-virtual"><scope>iceberg::GeographyType</scope><name>kDefaultAlgorithm</name></member>
+      <member refid="classiceberg_1_1GeographyType_1ac5ffb3514b2eedc4651bf1cd4f9d929f" prot="public" virt="non-virtual"><scope>iceberg::GeographyType</scope><name>kDefaultCrs</name></member>
+      <member refid="classiceberg_1_1GeographyType_1a18b56f14b5f61e97f676a13fe3989649" prot="public" virt="non-virtual"><scope>iceberg::GeographyType</scope><name>kTypeId</name></member>
+      <member refid="classiceberg_1_1GeographyType_1a108d67d29628eb821bfa700d86fe662b" prot="public" virt="non-virtual"><scope>iceberg::GeographyType</scope><name>Make</name></member>
+      <member refid="classiceberg_1_1GeographyType_1a77fc62dfc16499968d35ef7e200c04ab" prot="public" virt="non-virtual"><scope>iceberg::GeographyType</scope><name>Make</name></member>
+      <member refid="classiceberg_1_1GeographyType_1aca94347a153e10a5eead0e1ac693e286" prot="public" virt="non-virtual"><scope>iceberg::GeographyType</scope><name>Make</name></member>
+      <member refid="classiceberg_1_1GeographyType_1a18341bbf5dbe3f8218ae1325f9cf8630" prot="public" virt="virtual"><scope>iceberg::GeographyType</scope><name>ToString</name></member>
+      <member refid="classiceberg_1_1GeographyType_1afc55dab12ef6a2648e84d2e508899b00" prot="public" virt="virtual"><scope>iceberg::GeographyType</scope><name>type_id</name></member>
+      <member refid="classiceberg_1_1util_1_1Formattable_1acfe29264450018bab0ceab0828cf46f9" prot="public" virt="virtual"><scope>iceberg::GeographyType</scope><name>~Formattable</name></member>
+      <member refid="classiceberg_1_1GeographyType_1ad197e6b00a2eaa88a4fdbcb4c227cd2d" prot="public" virt="non-virtual"><scope>iceberg::GeographyType</scope><name>~GeographyType</name></member>
+      <member refid="classiceberg_1_1Type_1a62b9070ee3fd1c5f8949a5785a414c6c" prot="public" virt="non-virtual"><scope>iceberg::GeographyType</scope><name>~Type</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

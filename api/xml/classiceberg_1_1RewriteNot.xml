@@ -1,0 +1,228 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1RewriteNot" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::RewriteNot</compoundname>
+    <basecompoundref refid="classiceberg_1_1ExpressionVisitor" prot="public" virt="non-virtual">iceberg::ExpressionVisitor&lt; std::shared_ptr&lt; Expression &gt; &gt;</basecompoundref>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classiceberg_1_1RewriteNot_1a62cb5cbc2ece7ffedf42b841896be4fe" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::shared_ptr&lt; <ref refid="classiceberg_1_1Expression" kindref="compound">Expression</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::shared_ptr&lt; Expression &gt; &gt; iceberg::RewriteNot::Visit</definition>
+        <argsstring>(std::shared_ptr&lt; Expression &gt; expr)</argsstring>
+        <name>Visit</name>
+        <qualifiedname>iceberg::RewriteNot::Visit</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Expression" kindref="compound">Expression</ref> &gt;</type>
+          <declname>expr</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/rewrite_not.h" line="33" column="17" bodyfile="iceberg/expression/rewrite_not.cc" bodystart="24" bodyend="28"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1RewriteNot_1a635ded0f65bda60e21b886a466f638b0" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>Result&lt; std::shared_ptr&lt; <ref refid="classiceberg_1_1Expression" kindref="compound">Expression</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::shared_ptr&lt; Expression &gt; &gt; iceberg::RewriteNot::AlwaysTrue</definition>
+        <argsstring>() override</argsstring>
+        <name>AlwaysTrue</name>
+        <qualifiedname>iceberg::RewriteNot::AlwaysTrue</qualifiedname>
+        <reimplements refid="classiceberg_1_1ExpressionVisitor_1aed1c555ca56ff0aaa898d31aa52f7287">AlwaysTrue</reimplements>
+        <briefdescription>
+<para>Visit a <ref refid="classiceberg_1_1True" kindref="compound">True</ref> expression (always evaluates to true). </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/rewrite_not.h" line="35" column="10" bodyfile="iceberg/expression/rewrite_not.cc" bodystart="30" bodyend="30"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1RewriteNot_1ac95479c41c803eb383cbc8c51de33746" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>Result&lt; std::shared_ptr&lt; <ref refid="classiceberg_1_1Expression" kindref="compound">Expression</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::shared_ptr&lt; Expression &gt; &gt; iceberg::RewriteNot::AlwaysFalse</definition>
+        <argsstring>() override</argsstring>
+        <name>AlwaysFalse</name>
+        <qualifiedname>iceberg::RewriteNot::AlwaysFalse</qualifiedname>
+        <reimplements refid="classiceberg_1_1ExpressionVisitor_1aa6abb6e1020467e2ab3a2e17563990be">AlwaysFalse</reimplements>
+        <briefdescription>
+<para>Visit a <ref refid="classiceberg_1_1False" kindref="compound">False</ref> expression (always evaluates to false). </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/rewrite_not.h" line="36" column="10" bodyfile="iceberg/expression/rewrite_not.cc" bodystart="32" bodyend="34"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1RewriteNot_1a279507430c10644e05d586bfd9bdbceb" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::shared_ptr&lt; <ref refid="classiceberg_1_1Expression" kindref="compound">Expression</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::shared_ptr&lt; Expression &gt; &gt; iceberg::RewriteNot::Not</definition>
+        <argsstring>(const std::shared_ptr&lt; Expression &gt; &amp;child_result) override</argsstring>
+        <name>Not</name>
+        <qualifiedname>iceberg::RewriteNot::Not</qualifiedname>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1Expression" kindref="compound">Expression</ref> &gt; &amp;</type>
+          <declname>child_result</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/rewrite_not.h" line="37" column="10" bodyfile="iceberg/expression/rewrite_not.cc" bodystart="36" bodyend="39"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1RewriteNot_1a31e2bb8e281ba59903fc102ec31ead71" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::shared_ptr&lt; <ref refid="classiceberg_1_1Expression" kindref="compound">Expression</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::shared_ptr&lt; Expression &gt; &gt; iceberg::RewriteNot::And</definition>
+        <argsstring>(const std::shared_ptr&lt; Expression &gt; &amp;left_result, const std::shared_ptr&lt; Expression &gt; &amp;right_result) override</argsstring>
+        <name>And</name>
+        <qualifiedname>iceberg::RewriteNot::And</qualifiedname>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1Expression" kindref="compound">Expression</ref> &gt; &amp;</type>
+          <declname>left_result</declname>
+        </param>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1Expression" kindref="compound">Expression</ref> &gt; &amp;</type>
+          <declname>right_result</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/rewrite_not.h" line="39" column="10" bodyfile="iceberg/expression/rewrite_not.cc" bodystart="41" bodyend="45"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1RewriteNot_1a9fa7a7f5e25bffb2cbe9921db035758d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::shared_ptr&lt; <ref refid="classiceberg_1_1Expression" kindref="compound">Expression</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::shared_ptr&lt; Expression &gt; &gt; iceberg::RewriteNot::Or</definition>
+        <argsstring>(const std::shared_ptr&lt; Expression &gt; &amp;left_result, const std::shared_ptr&lt; Expression &gt; &amp;right_result) override</argsstring>
+        <name>Or</name>
+        <qualifiedname>iceberg::RewriteNot::Or</qualifiedname>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1Expression" kindref="compound">Expression</ref> &gt; &amp;</type>
+          <declname>left_result</declname>
+        </param>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1Expression" kindref="compound">Expression</ref> &gt; &amp;</type>
+          <declname>right_result</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/rewrite_not.h" line="42" column="10" bodyfile="iceberg/expression/rewrite_not.cc" bodystart="47" bodyend="51"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1RewriteNot_1a29cc8fef2aee7e5eb962d26ae7172977" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>Result&lt; std::shared_ptr&lt; <ref refid="classiceberg_1_1Expression" kindref="compound">Expression</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::shared_ptr&lt; Expression &gt; &gt; iceberg::RewriteNot::Predicate</definition>
+        <argsstring>(const std::shared_ptr&lt; BoundPredicate &gt; &amp;pred) override</argsstring>
+        <name>Predicate</name>
+        <qualifiedname>iceberg::RewriteNot::Predicate</qualifiedname>
+        <reimplements refid="classiceberg_1_1ExpressionVisitor_1ae15b69bbbd82d8c0b941cb4bc3324fc4">Predicate</reimplements>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1BoundPredicate" kindref="compound">BoundPredicate</ref> &gt; &amp;</type>
+          <declname>pred</declname>
+        </param>
+        <briefdescription>
+<para>Visit a bound predicate. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>pred</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The bound predicate to visit </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/rewrite_not.h" line="45" column="10" bodyfile="iceberg/expression/rewrite_not.cc" bodystart="53" bodyend="56"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1RewriteNot_1a487cc9b28c253a888a2521a59243f23b" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>Result&lt; std::shared_ptr&lt; <ref refid="classiceberg_1_1Expression" kindref="compound">Expression</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::shared_ptr&lt; Expression &gt; &gt; iceberg::RewriteNot::Predicate</definition>
+        <argsstring>(const std::shared_ptr&lt; UnboundPredicate &gt; &amp;pred) override</argsstring>
+        <name>Predicate</name>
+        <qualifiedname>iceberg::RewriteNot::Predicate</qualifiedname>
+        <reimplements refid="classiceberg_1_1ExpressionVisitor_1a1c01ceb403a5c6e2706f9b197d729ead">Predicate</reimplements>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1UnboundPredicate" kindref="compound">UnboundPredicate</ref> &gt; &amp;</type>
+          <declname>pred</declname>
+        </param>
+        <briefdescription>
+<para>Visit an unbound predicate. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>pred</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The unbound predicate to visit </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/rewrite_not.h" line="47" column="10" bodyfile="iceberg/expression/rewrite_not.cc" bodystart="58" bodyend="61"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>iceberg::ExpressionVisitor&lt; std::shared_ptr&lt; Expression &gt; &gt;</label>
+        <link refid="classiceberg_1_1ExpressionVisitor"/>
+      </node>
+      <node id="1">
+        <label>iceberg::RewriteNot</label>
+        <link refid="classiceberg_1_1RewriteNot"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="2">
+        <label>iceberg::ExpressionVisitor&lt; std::shared_ptr&lt; Expression &gt; &gt;</label>
+        <link refid="classiceberg_1_1ExpressionVisitor"/>
+      </node>
+      <node id="1">
+        <label>iceberg::RewriteNot</label>
+        <link refid="classiceberg_1_1RewriteNot"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/expression/rewrite_not.h" line="31" column="1" bodyfile="iceberg/expression/rewrite_not.h" bodystart="31" bodyend="49"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1ExpressionVisitor_1a4a7c83473af339c9c64cef5e9f3947ee" prot="public" virt="virtual"><scope>iceberg::RewriteNot</scope><name>Aggregate</name></member>
+      <member refid="classiceberg_1_1ExpressionVisitor_1a699e13e4420928256b3fb08a87674a9f" prot="public" virt="virtual"><scope>iceberg::RewriteNot</scope><name>Aggregate</name></member>
+      <member refid="classiceberg_1_1RewriteNot_1ac95479c41c803eb383cbc8c51de33746" prot="public" virt="virtual"><scope>iceberg::RewriteNot</scope><name>AlwaysFalse</name></member>
+      <member refid="classiceberg_1_1RewriteNot_1a635ded0f65bda60e21b886a466f638b0" prot="public" virt="virtual"><scope>iceberg::RewriteNot</scope><name>AlwaysTrue</name></member>
+      <member refid="classiceberg_1_1RewriteNot_1a31e2bb8e281ba59903fc102ec31ead71" prot="public" virt="non-virtual"><scope>iceberg::RewriteNot</scope><name>And</name></member>
+      <member refid="classiceberg_1_1ExpressionVisitor_1a134636ef9aac1bbf8ade254e1c1c24d6" prot="public" virt="pure-virtual" ambiguityscope="ExpressionVisitor&lt; std::shared_ptr&lt; Expression &gt; &gt;::"><scope>iceberg::RewriteNot</scope><name>And</name></member>
+      <member refid="classiceberg_1_1RewriteNot_1a279507430c10644e05d586bfd9bdbceb" prot="public" virt="non-virtual"><scope>iceberg::RewriteNot</scope><name>Not</name></member>
+      <member refid="classiceberg_1_1ExpressionVisitor_1a3785b1824deecc35b76c64ae6bb57f23" prot="public" virt="pure-virtual" ambiguityscope="ExpressionVisitor&lt; std::shared_ptr&lt; Expression &gt; &gt;::"><scope>iceberg::RewriteNot</scope><name>Not</name></member>
+      <member refid="classiceberg_1_1RewriteNot_1a9fa7a7f5e25bffb2cbe9921db035758d" prot="public" virt="non-virtual"><scope>iceberg::RewriteNot</scope><name>Or</name></member>
+      <member refid="classiceberg_1_1ExpressionVisitor_1aa21a66f372f1b32f94d8be2bb5643440" prot="public" virt="pure-virtual" ambiguityscope="ExpressionVisitor&lt; std::shared_ptr&lt; Expression &gt; &gt;::"><scope>iceberg::RewriteNot</scope><name>Or</name></member>
+      <member refid="classiceberg_1_1RewriteNot_1a29cc8fef2aee7e5eb962d26ae7172977" prot="public" virt="virtual"><scope>iceberg::RewriteNot</scope><name>Predicate</name></member>
+      <member refid="classiceberg_1_1RewriteNot_1a487cc9b28c253a888a2521a59243f23b" prot="public" virt="virtual"><scope>iceberg::RewriteNot</scope><name>Predicate</name></member>
+      <member refid="classiceberg_1_1RewriteNot_1a62cb5cbc2ece7ffedf42b841896be4fe" prot="public" virt="non-virtual"><scope>iceberg::RewriteNot</scope><name>Visit</name></member>
+      <member refid="classiceberg_1_1ExpressionVisitor_1a94e8c3eb4910ab2e221163c19fda6492" prot="public" virt="virtual"><scope>iceberg::RewriteNot</scope><name>~ExpressionVisitor</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

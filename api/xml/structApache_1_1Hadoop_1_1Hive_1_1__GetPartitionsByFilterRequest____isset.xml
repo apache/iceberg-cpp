@@ -1,0 +1,160 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structApache_1_1Hadoop_1_1Hive_1_1__GetPartitionsByFilterRequest____isset" kind="struct" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::_GetPartitionsByFilterRequest__isset</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__GetPartitionsByFilterRequest____isset_1a05b5d115e16adc28b5baaf7e775d9c34" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_GetPartitionsByFilterRequest__isset::catName</definition>
+        <argsstring></argsstring>
+        <name>catName</name>
+        <qualifiedname>Apache::Hadoop::Hive::_GetPartitionsByFilterRequest__isset::catName</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14446" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="14446" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__GetPartitionsByFilterRequest____isset_1a1e10df8dd540ed6d6bfe783ecf07f81b" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_GetPartitionsByFilterRequest__isset::dbName</definition>
+        <argsstring></argsstring>
+        <name>dbName</name>
+        <qualifiedname>Apache::Hadoop::Hive::_GetPartitionsByFilterRequest__isset::dbName</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14447" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="14447" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__GetPartitionsByFilterRequest____isset_1a1c659c9e9f98c621326647dd01761802" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_GetPartitionsByFilterRequest__isset::tblName</definition>
+        <argsstring></argsstring>
+        <name>tblName</name>
+        <qualifiedname>Apache::Hadoop::Hive::_GetPartitionsByFilterRequest__isset::tblName</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14448" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="14448" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__GetPartitionsByFilterRequest____isset_1af5472308396d854aea5ca23cdde6e817" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_GetPartitionsByFilterRequest__isset::filter</definition>
+        <argsstring></argsstring>
+        <name>filter</name>
+        <qualifiedname>Apache::Hadoop::Hive::_GetPartitionsByFilterRequest__isset::filter</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14449" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="14449" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__GetPartitionsByFilterRequest____isset_1af67401b4458308c623c79120f3a2ccea" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_GetPartitionsByFilterRequest__isset::maxParts</definition>
+        <argsstring></argsstring>
+        <name>maxParts</name>
+        <qualifiedname>Apache::Hadoop::Hive::_GetPartitionsByFilterRequest__isset::maxParts</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14450" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="14450" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__GetPartitionsByFilterRequest____isset_1aa3cf12d12d603ad9232bd845b9d25d37" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_GetPartitionsByFilterRequest__isset::skipColumnSchemaForPartition</definition>
+        <argsstring></argsstring>
+        <name>skipColumnSchemaForPartition</name>
+        <qualifiedname>Apache::Hadoop::Hive::_GetPartitionsByFilterRequest__isset::skipColumnSchemaForPartition</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14451" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="14451" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__GetPartitionsByFilterRequest____isset_1a02262351273a5a9316b6dc5cf916d280" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_GetPartitionsByFilterRequest__isset::includeParamKeyPattern</definition>
+        <argsstring></argsstring>
+        <name>includeParamKeyPattern</name>
+        <qualifiedname>Apache::Hadoop::Hive::_GetPartitionsByFilterRequest__isset::includeParamKeyPattern</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14452" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="14452" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__GetPartitionsByFilterRequest____isset_1a7a4e7e40df3b52aea8084e41ef24195b" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_GetPartitionsByFilterRequest__isset::excludeParamKeyPattern</definition>
+        <argsstring></argsstring>
+        <name>excludeParamKeyPattern</name>
+        <qualifiedname>Apache::Hadoop::Hive::_GetPartitionsByFilterRequest__isset::excludeParamKeyPattern</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14453" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="14453" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structApache_1_1Hadoop_1_1Hive_1_1__GetPartitionsByFilterRequest____isset_1a20c66a604c5e651c08cb5b5fa8954459" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::_GetPartitionsByFilterRequest__isset::_GetPartitionsByFilterRequest__isset</definition>
+        <argsstring>()</argsstring>
+        <name>_GetPartitionsByFilterRequest__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::_GetPartitionsByFilterRequest__isset::_GetPartitionsByFilterRequest__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14445" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="14445" bodyend="14445"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14444" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="14444" bodyend="14454"/>
+    <listofallmembers>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__GetPartitionsByFilterRequest____isset_1a20c66a604c5e651c08cb5b5fa8954459" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_GetPartitionsByFilterRequest__isset</scope><name>_GetPartitionsByFilterRequest__isset</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__GetPartitionsByFilterRequest____isset_1a05b5d115e16adc28b5baaf7e775d9c34" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_GetPartitionsByFilterRequest__isset</scope><name>catName</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__GetPartitionsByFilterRequest____isset_1a1e10df8dd540ed6d6bfe783ecf07f81b" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_GetPartitionsByFilterRequest__isset</scope><name>dbName</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__GetPartitionsByFilterRequest____isset_1a7a4e7e40df3b52aea8084e41ef24195b" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_GetPartitionsByFilterRequest__isset</scope><name>excludeParamKeyPattern</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__GetPartitionsByFilterRequest____isset_1af5472308396d854aea5ca23cdde6e817" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_GetPartitionsByFilterRequest__isset</scope><name>filter</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__GetPartitionsByFilterRequest____isset_1a02262351273a5a9316b6dc5cf916d280" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_GetPartitionsByFilterRequest__isset</scope><name>includeParamKeyPattern</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__GetPartitionsByFilterRequest____isset_1af67401b4458308c623c79120f3a2ccea" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_GetPartitionsByFilterRequest__isset</scope><name>maxParts</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__GetPartitionsByFilterRequest____isset_1aa3cf12d12d603ad9232bd845b9d25d37" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_GetPartitionsByFilterRequest__isset</scope><name>skipColumnSchemaForPartition</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__GetPartitionsByFilterRequest____isset_1a1c659c9e9f98c621326647dd01761802" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_GetPartitionsByFilterRequest__isset</scope><name>tblName</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

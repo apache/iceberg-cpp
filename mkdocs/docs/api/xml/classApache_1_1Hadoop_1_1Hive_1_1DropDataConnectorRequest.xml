@@ -1,0 +1,356 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1DropDataConnectorRequest" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::DropDataConnectorRequest</compoundname>
+    <basecompoundref prot="public" virt="virtual">apache::thrift::TBase</basecompoundref>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1DropDataConnectorRequest_1a349ef5cb19ea4ceaecacd4148e37f7ca" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::DropDataConnectorRequest::connectorName</definition>
+        <argsstring></argsstring>
+        <name>connectorName</name>
+        <qualifiedname>Apache::Hadoop::Hive::DropDataConnectorRequest::connectorName</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13327" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="13327" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1DropDataConnectorRequest_1a037a03a88b1d905b810f8ca4d02fae52" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::DropDataConnectorRequest::ifNotExists</definition>
+        <argsstring></argsstring>
+        <name>ifNotExists</name>
+        <qualifiedname>Apache::Hadoop::Hive::DropDataConnectorRequest::ifNotExists</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13328" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="13328" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1DropDataConnectorRequest_1ab36826ca2cf1338c32ed407be123b8bb" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::DropDataConnectorRequest::checkReferences</definition>
+        <argsstring></argsstring>
+        <name>checkReferences</name>
+        <qualifiedname>Apache::Hadoop::Hive::DropDataConnectorRequest::checkReferences</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13329" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="13329" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1DropDataConnectorRequest_1adbfe1ffcdebec740d7959f03d917d5f6" prot="public" static="no" mutable="no">
+        <type><ref refid="structApache_1_1Hadoop_1_1Hive_1_1__DropDataConnectorRequest____isset" kindref="compound">_DropDataConnectorRequest__isset</ref></type>
+        <definition>_DropDataConnectorRequest__isset Apache::Hadoop::Hive::DropDataConnectorRequest::__isset</definition>
+        <argsstring></argsstring>
+        <name>__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::DropDataConnectorRequest::__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13331" column="36" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="13331" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1DropDataConnectorRequest_1aa51f02cdc0bfcae66404d0e797389994" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::DropDataConnectorRequest::DropDataConnectorRequest</definition>
+        <argsstring>(const DropDataConnectorRequest &amp;)</argsstring>
+        <name>DropDataConnectorRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::DropDataConnectorRequest::DropDataConnectorRequest</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1DropDataConnectorRequest" kindref="compound">DropDataConnectorRequest</ref> &amp;</type>
+          <defname>other1637</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13322" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="52230" bodyend="52235"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1DropDataConnectorRequest_1ad289526e31380dc5bdef55b1fefc07a9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1DropDataConnectorRequest" kindref="compound">DropDataConnectorRequest</ref> &amp;</type>
+        <definition>DropDataConnectorRequest &amp; Apache::Hadoop::Hive::DropDataConnectorRequest::operator=</definition>
+        <argsstring>(const DropDataConnectorRequest &amp;)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::DropDataConnectorRequest::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1DropDataConnectorRequest" kindref="compound">DropDataConnectorRequest</ref> &amp;</type>
+          <defname>other1638</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13323" column="28" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="52236" bodyend="52242"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1DropDataConnectorRequest_1a44f6977e80d33baf2a0b34d144483050" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::DropDataConnectorRequest::DropDataConnectorRequest</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>DropDataConnectorRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::DropDataConnectorRequest::DropDataConnectorRequest</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13324" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="52097" bodyend="52101"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1DropDataConnectorRequest_1a2e45f1497f1c929ae71ac38aa6ef01d9" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::DropDataConnectorRequest::~DropDataConnectorRequest</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~DropDataConnectorRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::DropDataConnectorRequest::~DropDataConnectorRequest</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13326" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="52094" bodyend="52095"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1DropDataConnectorRequest_1a235fee8e0525a04e30015d160ef1cfa7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::DropDataConnectorRequest::__set_connectorName</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_connectorName</name>
+        <qualifiedname>Apache::Hadoop::Hive::DropDataConnectorRequest::__set_connectorName</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13333" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="52103" bodyend="52105"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1DropDataConnectorRequest_1a0c39e66b0d4e9098254d8d32baed32b9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::DropDataConnectorRequest::__set_ifNotExists</definition>
+        <argsstring>(const bool val)</argsstring>
+        <name>__set_ifNotExists</name>
+        <qualifiedname>Apache::Hadoop::Hive::DropDataConnectorRequest::__set_ifNotExists</qualifiedname>
+        <param>
+          <type>const bool</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13335" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="52107" bodyend="52110"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1DropDataConnectorRequest_1afe6c14716335068955e6b540c824348d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::DropDataConnectorRequest::__set_checkReferences</definition>
+        <argsstring>(const bool val)</argsstring>
+        <name>__set_checkReferences</name>
+        <qualifiedname>Apache::Hadoop::Hive::DropDataConnectorRequest::__set_checkReferences</qualifiedname>
+        <param>
+          <type>const bool</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13337" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="52112" bodyend="52115"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1DropDataConnectorRequest_1a8654f138248e0cd70790c96a4dd1bbe9" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::DropDataConnectorRequest::operator==</definition>
+        <argsstring>(const DropDataConnectorRequest &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::DropDataConnectorRequest::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1DropDataConnectorRequest" kindref="compound">DropDataConnectorRequest</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13339" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="52215" bodyend="52228"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1DropDataConnectorRequest_1a153c050b923646a4ca7fde1d57c53660" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::DropDataConnectorRequest::operator!=</definition>
+        <argsstring>(const DropDataConnectorRequest &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::DropDataConnectorRequest::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1DropDataConnectorRequest" kindref="compound">DropDataConnectorRequest</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13340" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="13340" bodyend="13342"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1DropDataConnectorRequest_1a7b0e406ab73e9b993d9288b27ce31a02" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::DropDataConnectorRequest::operator&lt;</definition>
+        <argsstring>(const DropDataConnectorRequest &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::DropDataConnectorRequest::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1DropDataConnectorRequest" kindref="compound">DropDataConnectorRequest</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13344" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1DropDataConnectorRequest_1ab822d2429951435031e785c35a6cf762" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::DropDataConnectorRequest::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot) override</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::DropDataConnectorRequest::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13346" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="52123" bodyend="52181"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1DropDataConnectorRequest_1a86281f17d6dc23ad10b909dba6b4d293" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::DropDataConnectorRequest::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const override</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::DropDataConnectorRequest::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13347" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="52183" bodyend="52205"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1DropDataConnectorRequest_1a31d8b1e19a7677580654c007553013ca" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::DropDataConnectorRequest::printTo</definition>
+        <argsstring>(std::ostream &amp;out) const</argsstring>
+        <name>printTo</name>
+        <qualifiedname>Apache::Hadoop::Hive::DropDataConnectorRequest::printTo</qualifiedname>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13349" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="52243" bodyend="52250"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::DropDataConnectorRequest</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1DropDataConnectorRequest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::DropDataConnectorRequest</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1DropDataConnectorRequest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>connectorName</edgelabel>
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="5">
+        <label>Apache::Hadoop::Hive::_DropDataConnectorRequest__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__DropDataConnectorRequest____isset"/>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+      <node id="4">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="3">
+        <label>std::string</label>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13319" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="13319" bodyend="13350"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1DropDataConnectorRequest_1adbfe1ffcdebec740d7959f03d917d5f6" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::DropDataConnectorRequest</scope><name>__isset</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1DropDataConnectorRequest_1afe6c14716335068955e6b540c824348d" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::DropDataConnectorRequest</scope><name>__set_checkReferences</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1DropDataConnectorRequest_1a235fee8e0525a04e30015d160ef1cfa7" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::DropDataConnectorRequest</scope><name>__set_connectorName</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1DropDataConnectorRequest_1a0c39e66b0d4e9098254d8d32baed32b9" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::DropDataConnectorRequest</scope><name>__set_ifNotExists</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1DropDataConnectorRequest_1ab36826ca2cf1338c32ed407be123b8bb" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::DropDataConnectorRequest</scope><name>checkReferences</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1DropDataConnectorRequest_1a349ef5cb19ea4ceaecacd4148e37f7ca" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::DropDataConnectorRequest</scope><name>connectorName</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1DropDataConnectorRequest_1aa51f02cdc0bfcae66404d0e797389994" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::DropDataConnectorRequest</scope><name>DropDataConnectorRequest</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1DropDataConnectorRequest_1a44f6977e80d33baf2a0b34d144483050" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::DropDataConnectorRequest</scope><name>DropDataConnectorRequest</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1DropDataConnectorRequest_1a037a03a88b1d905b810f8ca4d02fae52" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::DropDataConnectorRequest</scope><name>ifNotExists</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1DropDataConnectorRequest_1a153c050b923646a4ca7fde1d57c53660" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::DropDataConnectorRequest</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1DropDataConnectorRequest_1a7b0e406ab73e9b993d9288b27ce31a02" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::DropDataConnectorRequest</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1DropDataConnectorRequest_1ad289526e31380dc5bdef55b1fefc07a9" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::DropDataConnectorRequest</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1DropDataConnectorRequest_1a8654f138248e0cd70790c96a4dd1bbe9" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::DropDataConnectorRequest</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1DropDataConnectorRequest_1a31d8b1e19a7677580654c007553013ca" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::DropDataConnectorRequest</scope><name>printTo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1DropDataConnectorRequest_1ab822d2429951435031e785c35a6cf762" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::DropDataConnectorRequest</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1DropDataConnectorRequest_1a86281f17d6dc23ad10b909dba6b4d293" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::DropDataConnectorRequest</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1DropDataConnectorRequest_1a2e45f1497f1c929ae71ac38aa6ef01d9" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::DropDataConnectorRequest</scope><name>~DropDataConnectorRequest</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

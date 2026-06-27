@@ -1,0 +1,435 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1WMGetResourcePlanResponse" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::WMGetResourcePlanResponse</compoundname>
+    <basecompoundref prot="public" virt="virtual">apache::thrift::TBase</basecompoundref>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1WMGetResourcePlanResponse_1a11261ca927e635de0f3c2ad6065297d3" prot="public" static="no" mutable="no">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1WMFullResourcePlan" kindref="compound">WMFullResourcePlan</ref></type>
+        <definition>WMFullResourcePlan Apache::Hadoop::Hive::WMGetResourcePlanResponse::resourcePlan</definition>
+        <argsstring></argsstring>
+        <name>resourcePlan</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMGetResourcePlanResponse::resourcePlan</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11486" column="22" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="11486" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1WMGetResourcePlanResponse_1add7a0df7fd3e2d095b17962d725103fb" prot="public" static="no" mutable="no">
+        <type><ref refid="structApache_1_1Hadoop_1_1Hive_1_1__WMGetResourcePlanResponse____isset" kindref="compound">_WMGetResourcePlanResponse__isset</ref></type>
+        <definition>_WMGetResourcePlanResponse__isset Apache::Hadoop::Hive::WMGetResourcePlanResponse::__isset</definition>
+        <argsstring></argsstring>
+        <name>__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMGetResourcePlanResponse::__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11488" column="37" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="11488" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMGetResourcePlanResponse_1ae84f45bb548caca1c47999d5c1df4669" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::WMGetResourcePlanResponse::WMGetResourcePlanResponse</definition>
+        <argsstring>(const WMGetResourcePlanResponse &amp;)</argsstring>
+        <name>WMGetResourcePlanResponse</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMGetResourcePlanResponse::WMGetResourcePlanResponse</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1WMGetResourcePlanResponse" kindref="compound">WMGetResourcePlanResponse</ref> &amp;</type>
+          <defname>other1452</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11481" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="45608" bodyend="45611"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMGetResourcePlanResponse_1a5864af0b6681f4506393bd47c72b369e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1WMGetResourcePlanResponse" kindref="compound">WMGetResourcePlanResponse</ref> &amp;</type>
+        <definition>WMGetResourcePlanResponse &amp; Apache::Hadoop::Hive::WMGetResourcePlanResponse::operator=</definition>
+        <argsstring>(const WMGetResourcePlanResponse &amp;)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMGetResourcePlanResponse::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1WMGetResourcePlanResponse" kindref="compound">WMGetResourcePlanResponse</ref> &amp;</type>
+          <defname>other1453</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11482" column="29" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="45612" bodyend="45616"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMGetResourcePlanResponse_1a2d24d86c9942ad86c182e51f16f0bcfa" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::WMGetResourcePlanResponse::WMGetResourcePlanResponse</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>WMGetResourcePlanResponse</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMGetResourcePlanResponse::WMGetResourcePlanResponse</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11483" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="45523" bodyend="45524"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMGetResourcePlanResponse_1aed816121ddc7919d530bc5a2420d6a2e" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::WMGetResourcePlanResponse::~WMGetResourcePlanResponse</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~WMGetResourcePlanResponse</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMGetResourcePlanResponse::~WMGetResourcePlanResponse</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11485" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="45520" bodyend="45521"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMGetResourcePlanResponse_1a709355a8121ce9d7b100ecd8892d0ee8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::WMGetResourcePlanResponse::__set_resourcePlan</definition>
+        <argsstring>(const WMFullResourcePlan &amp;val)</argsstring>
+        <name>__set_resourcePlan</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMGetResourcePlanResponse::__set_resourcePlan</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1WMFullResourcePlan" kindref="compound">WMFullResourcePlan</ref> &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11490" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="45526" bodyend="45529"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMGetResourcePlanResponse_1a2d744a749a72ff2c6f3386c44062081e" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::WMGetResourcePlanResponse::operator==</definition>
+        <argsstring>(const WMGetResourcePlanResponse &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMGetResourcePlanResponse::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1WMGetResourcePlanResponse" kindref="compound">WMGetResourcePlanResponse</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11492" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="45599" bodyend="45606"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMGetResourcePlanResponse_1a986c2a96ca8f8742d5789b0b124c5d4c" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::WMGetResourcePlanResponse::operator!=</definition>
+        <argsstring>(const WMGetResourcePlanResponse &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMGetResourcePlanResponse::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1WMGetResourcePlanResponse" kindref="compound">WMGetResourcePlanResponse</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11493" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="11493" bodyend="11495"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMGetResourcePlanResponse_1a1e5f2813dacab7068d863c496aa01a09" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::WMGetResourcePlanResponse::operator&lt;</definition>
+        <argsstring>(const WMGetResourcePlanResponse &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMGetResourcePlanResponse::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1WMGetResourcePlanResponse" kindref="compound">WMGetResourcePlanResponse</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11497" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMGetResourcePlanResponse_1af60fdd17c5cd8118e7835e7d79dca162" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::WMGetResourcePlanResponse::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot) override</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMGetResourcePlanResponse::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11499" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="45537" bodyend="45576"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMGetResourcePlanResponse_1a4ca353769fbe79129f1ca0d7d8840abf" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::WMGetResourcePlanResponse::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const override</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMGetResourcePlanResponse::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11500" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="45578" bodyend="45591"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMGetResourcePlanResponse_1a612b65745f1be430e10799f07f8a2e2a" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::WMGetResourcePlanResponse::printTo</definition>
+        <argsstring>(std::ostream &amp;out) const</argsstring>
+        <name>printTo</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMGetResourcePlanResponse::printTo</qualifiedname>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11502" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="45617" bodyend="45622"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::WMGetResourcePlanResponse</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1WMGetResourcePlanResponse"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="3">
+        <label>Apache::Hadoop::Hive::WMFullResourcePlan</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1WMFullResourcePlan"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>plan</edgelabel>
+        </childnode>
+        <childnode refid="8" relation="usage">
+          <edgelabel>pools</edgelabel>
+        </childnode>
+        <childnode refid="11" relation="usage">
+          <edgelabel>mappings</edgelabel>
+        </childnode>
+        <childnode refid="14" relation="usage">
+          <edgelabel>triggers</edgelabel>
+        </childnode>
+        <childnode refid="17" relation="usage">
+          <edgelabel>poolTriggers</edgelabel>
+        </childnode>
+        <childnode refid="20" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::WMGetResourcePlanResponse</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1WMGetResourcePlanResponse"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>resourcePlan</edgelabel>
+        </childnode>
+        <childnode refid="21" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="12">
+        <label>Apache::Hadoop::Hive::WMMapping</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1WMMapping"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>entityName</edgelabel>
+          <edgelabel>entityType</edgelabel>
+          <edgelabel>ns</edgelabel>
+          <edgelabel>poolPath</edgelabel>
+          <edgelabel>resourcePlanName</edgelabel>
+        </childnode>
+        <childnode refid="13" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="9">
+        <label>Apache::Hadoop::Hive::WMPool</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1WMPool"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>ns</edgelabel>
+          <edgelabel>poolPath</edgelabel>
+          <edgelabel>resourcePlanName</edgelabel>
+          <edgelabel>schedulingPolicy</edgelabel>
+        </childnode>
+        <childnode refid="10" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="18">
+        <label>Apache::Hadoop::Hive::WMPoolTrigger</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1WMPoolTrigger"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>ns</edgelabel>
+          <edgelabel>pool</edgelabel>
+          <edgelabel>trigger</edgelabel>
+        </childnode>
+        <childnode refid="19" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="4">
+        <label>Apache::Hadoop::Hive::WMResourcePlan</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1WMResourcePlan"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>defaultPoolPath</edgelabel>
+          <edgelabel>name</edgelabel>
+          <edgelabel>ns</edgelabel>
+        </childnode>
+        <childnode refid="7" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="15">
+        <label>Apache::Hadoop::Hive::WMTrigger</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1WMTrigger"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>actionExpression</edgelabel>
+          <edgelabel>ns</edgelabel>
+          <edgelabel>resourcePlanName</edgelabel>
+          <edgelabel>triggerExpression</edgelabel>
+          <edgelabel>triggerName</edgelabel>
+        </childnode>
+        <childnode refid="16" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="20">
+        <label>Apache::Hadoop::Hive::_WMFullResourcePlan__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__WMFullResourcePlan____isset"/>
+      </node>
+      <node id="21">
+        <label>Apache::Hadoop::Hive::_WMGetResourcePlanResponse__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__WMGetResourcePlanResponse____isset"/>
+      </node>
+      <node id="13">
+        <label>Apache::Hadoop::Hive::_WMMapping__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__WMMapping____isset"/>
+      </node>
+      <node id="19">
+        <label>Apache::Hadoop::Hive::_WMPoolTrigger__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__WMPoolTrigger____isset"/>
+      </node>
+      <node id="10">
+        <label>Apache::Hadoop::Hive::_WMPool__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__WMPool____isset"/>
+      </node>
+      <node id="7">
+        <label>Apache::Hadoop::Hive::_WMResourcePlan__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__WMResourcePlan____isset"/>
+      </node>
+      <node id="16">
+        <label>Apache::Hadoop::Hive::_WMTrigger__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__WMTrigger____isset"/>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+      <node id="6">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="5">
+        <label>std::string</label>
+        <childnode refid="6" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="11">
+        <label>std::vector&lt; Apache::Hadoop::Hive::WMMapping &gt;</label>
+        <childnode refid="12" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="8">
+        <label>std::vector&lt; Apache::Hadoop::Hive::WMPool &gt;</label>
+        <childnode refid="9" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="17">
+        <label>std::vector&lt; Apache::Hadoop::Hive::WMPoolTrigger &gt;</label>
+        <childnode refid="18" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="14">
+        <label>std::vector&lt; Apache::Hadoop::Hive::WMTrigger &gt;</label>
+        <childnode refid="15" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11478" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="11478" bodyend="11503"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMGetResourcePlanResponse_1add7a0df7fd3e2d095b17962d725103fb" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMGetResourcePlanResponse</scope><name>__isset</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMGetResourcePlanResponse_1a709355a8121ce9d7b100ecd8892d0ee8" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMGetResourcePlanResponse</scope><name>__set_resourcePlan</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMGetResourcePlanResponse_1a986c2a96ca8f8742d5789b0b124c5d4c" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMGetResourcePlanResponse</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMGetResourcePlanResponse_1a1e5f2813dacab7068d863c496aa01a09" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMGetResourcePlanResponse</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMGetResourcePlanResponse_1a5864af0b6681f4506393bd47c72b369e" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMGetResourcePlanResponse</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMGetResourcePlanResponse_1a2d744a749a72ff2c6f3386c44062081e" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMGetResourcePlanResponse</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMGetResourcePlanResponse_1a612b65745f1be430e10799f07f8a2e2a" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::WMGetResourcePlanResponse</scope><name>printTo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMGetResourcePlanResponse_1af60fdd17c5cd8118e7835e7d79dca162" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMGetResourcePlanResponse</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMGetResourcePlanResponse_1a11261ca927e635de0f3c2ad6065297d3" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMGetResourcePlanResponse</scope><name>resourcePlan</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMGetResourcePlanResponse_1ae84f45bb548caca1c47999d5c1df4669" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMGetResourcePlanResponse</scope><name>WMGetResourcePlanResponse</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMGetResourcePlanResponse_1a2d24d86c9942ad86c182e51f16f0bcfa" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMGetResourcePlanResponse</scope><name>WMGetResourcePlanResponse</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMGetResourcePlanResponse_1a4ca353769fbe79129f1ca0d7d8840abf" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMGetResourcePlanResponse</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMGetResourcePlanResponse_1aed816121ddc7919d530bc5a2420d6a2e" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::WMGetResourcePlanResponse</scope><name>~WMGetResourcePlanResponse</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

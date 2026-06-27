@@ -1,0 +1,160 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structApache_1_1Hadoop_1_1Hive_1_1__AlterTableRequest____isset" kind="struct" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::_AlterTableRequest__isset</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__AlterTableRequest____isset_1a3c7efa1bd152f1f71b77678632807f87" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_AlterTableRequest__isset::catName</definition>
+        <argsstring></argsstring>
+        <name>catName</name>
+        <qualifiedname>Apache::Hadoop::Hive::_AlterTableRequest__isset::catName</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13843" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="13843" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__AlterTableRequest____isset_1a25ece741683f66c0c777c4fb9b6687d2" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_AlterTableRequest__isset::environmentContext</definition>
+        <argsstring></argsstring>
+        <name>environmentContext</name>
+        <qualifiedname>Apache::Hadoop::Hive::_AlterTableRequest__isset::environmentContext</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13844" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="13844" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__AlterTableRequest____isset_1a2cc16e87194bb82989f4f6558ce471fe" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_AlterTableRequest__isset::writeId</definition>
+        <argsstring></argsstring>
+        <name>writeId</name>
+        <qualifiedname>Apache::Hadoop::Hive::_AlterTableRequest__isset::writeId</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13845" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="13845" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__AlterTableRequest____isset_1afed748746150e5cd77376b288e965806" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_AlterTableRequest__isset::validWriteIdList</definition>
+        <argsstring></argsstring>
+        <name>validWriteIdList</name>
+        <qualifiedname>Apache::Hadoop::Hive::_AlterTableRequest__isset::validWriteIdList</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13846" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="13846" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__AlterTableRequest____isset_1ac7a9ed278881ddd960f58c25c4ab467a" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_AlterTableRequest__isset::processorCapabilities</definition>
+        <argsstring></argsstring>
+        <name>processorCapabilities</name>
+        <qualifiedname>Apache::Hadoop::Hive::_AlterTableRequest__isset::processorCapabilities</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13847" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="13847" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__AlterTableRequest____isset_1aa8d2c2aebe38375c57065bb901ea565d" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_AlterTableRequest__isset::processorIdentifier</definition>
+        <argsstring></argsstring>
+        <name>processorIdentifier</name>
+        <qualifiedname>Apache::Hadoop::Hive::_AlterTableRequest__isset::processorIdentifier</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13848" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="13848" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__AlterTableRequest____isset_1ab2aa7a26211b32da7cd766ea29c9effb" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_AlterTableRequest__isset::expectedParameterKey</definition>
+        <argsstring></argsstring>
+        <name>expectedParameterKey</name>
+        <qualifiedname>Apache::Hadoop::Hive::_AlterTableRequest__isset::expectedParameterKey</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13849" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="13849" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__AlterTableRequest____isset_1a1bc1841c2e04689f3c1ce8a663b1f17e" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_AlterTableRequest__isset::expectedParameterValue</definition>
+        <argsstring></argsstring>
+        <name>expectedParameterValue</name>
+        <qualifiedname>Apache::Hadoop::Hive::_AlterTableRequest__isset::expectedParameterValue</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13850" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="13850" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structApache_1_1Hadoop_1_1Hive_1_1__AlterTableRequest____isset_1a0525c9cfc85be8894e99a13d12074080" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::_AlterTableRequest__isset::_AlterTableRequest__isset</definition>
+        <argsstring>()</argsstring>
+        <name>_AlterTableRequest__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::_AlterTableRequest__isset::_AlterTableRequest__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13842" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="13842" bodyend="13842"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13841" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="13841" bodyend="13851"/>
+    <listofallmembers>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__AlterTableRequest____isset_1a0525c9cfc85be8894e99a13d12074080" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_AlterTableRequest__isset</scope><name>_AlterTableRequest__isset</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__AlterTableRequest____isset_1a3c7efa1bd152f1f71b77678632807f87" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_AlterTableRequest__isset</scope><name>catName</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__AlterTableRequest____isset_1a25ece741683f66c0c777c4fb9b6687d2" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_AlterTableRequest__isset</scope><name>environmentContext</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__AlterTableRequest____isset_1ab2aa7a26211b32da7cd766ea29c9effb" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_AlterTableRequest__isset</scope><name>expectedParameterKey</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__AlterTableRequest____isset_1a1bc1841c2e04689f3c1ce8a663b1f17e" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_AlterTableRequest__isset</scope><name>expectedParameterValue</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__AlterTableRequest____isset_1ac7a9ed278881ddd960f58c25c4ab467a" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_AlterTableRequest__isset</scope><name>processorCapabilities</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__AlterTableRequest____isset_1aa8d2c2aebe38375c57065bb901ea565d" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_AlterTableRequest__isset</scope><name>processorIdentifier</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__AlterTableRequest____isset_1afed748746150e5cd77376b288e965806" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_AlterTableRequest__isset</scope><name>validWriteIdList</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__AlterTableRequest____isset_1a2cc16e87194bb82989f4f6558ce471fe" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_AlterTableRequest__isset</scope><name>writeId</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

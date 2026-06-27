@@ -1,0 +1,319 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1UnknownPartitionException" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::UnknownPartitionException</compoundname>
+    <basecompoundref prot="public" virt="non-virtual">apache::thrift::TException</basecompoundref>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1UnknownPartitionException_1a9706915ec129469a1e8412c966831f1b" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::UnknownPartitionException::message</definition>
+        <argsstring></argsstring>
+        <name>message</name>
+        <qualifiedname>Apache::Hadoop::Hive::UnknownPartitionException::message</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15467" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="15467" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1UnknownPartitionException_1a98f798b7fdd47e81991052cf9d82e9fe" prot="public" static="no" mutable="no">
+        <type><ref refid="structApache_1_1Hadoop_1_1Hive_1_1__UnknownPartitionException____isset" kindref="compound">_UnknownPartitionException__isset</ref></type>
+        <definition>_UnknownPartitionException__isset Apache::Hadoop::Hive::UnknownPartitionException::__isset</definition>
+        <argsstring></argsstring>
+        <name>__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::UnknownPartitionException::__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15469" column="37" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="15469" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1UnknownPartitionException_1a9f1c5c2f4202f356128e6a9d96a36010" prot="public" static="no" mutable="yes">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::UnknownPartitionException::thriftTExceptionMessageHolder_</definition>
+        <argsstring></argsstring>
+        <name>thriftTExceptionMessageHolder_</name>
+        <qualifiedname>Apache::Hadoop::Hive::UnknownPartitionException::thriftTExceptionMessageHolder_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15484" column="23" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="15484" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1UnknownPartitionException_1ab9ef59ce6c7d69912a607eb7ff3c7505" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::UnknownPartitionException::UnknownPartitionException</definition>
+        <argsstring>(const UnknownPartitionException &amp;)</argsstring>
+        <name>UnknownPartitionException</name>
+        <qualifiedname>Apache::Hadoop::Hive::UnknownPartitionException::UnknownPartitionException</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1UnknownPartitionException" kindref="compound">UnknownPartitionException</ref> &amp;</type>
+          <defname>other1863</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15462" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="61052" bodyend="61055"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1UnknownPartitionException_1a7974ad5eb5b91d70f7a956be42e0fa69" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1UnknownPartitionException" kindref="compound">UnknownPartitionException</ref> &amp;</type>
+        <definition>UnknownPartitionException &amp; Apache::Hadoop::Hive::UnknownPartitionException::operator=</definition>
+        <argsstring>(const UnknownPartitionException &amp;)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::UnknownPartitionException::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1UnknownPartitionException" kindref="compound">UnknownPartitionException</ref> &amp;</type>
+          <defname>other1864</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15463" column="29" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="61056" bodyend="61060"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1UnknownPartitionException_1a4ffc237ea972e848afa8b8c95525fb53" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::UnknownPartitionException::UnknownPartitionException</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>UnknownPartitionException</name>
+        <qualifiedname>Apache::Hadoop::Hive::UnknownPartitionException::UnknownPartitionException</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15464" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="60970" bodyend="60972"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1UnknownPartitionException_1a755dbcb1fa4e67b5952a25162691cce6" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::UnknownPartitionException::~UnknownPartitionException</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~UnknownPartitionException</name>
+        <qualifiedname>Apache::Hadoop::Hive::UnknownPartitionException::~UnknownPartitionException</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15466" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="60967" bodyend="60968"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1UnknownPartitionException_1aaee2c0bdabdc71985aa58960aa3cdd3a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::UnknownPartitionException::__set_message</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_message</name>
+        <qualifiedname>Apache::Hadoop::Hive::UnknownPartitionException::__set_message</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15471" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="60974" bodyend="60976"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1UnknownPartitionException_1a677494e1f8c5b1df42419b99360e0096" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::UnknownPartitionException::operator==</definition>
+        <argsstring>(const UnknownPartitionException &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::UnknownPartitionException::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1UnknownPartitionException" kindref="compound">UnknownPartitionException</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15473" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="61045" bodyend="61050"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1UnknownPartitionException_1afdcdfe8f5f8c3349951d511deff920ab" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::UnknownPartitionException::operator!=</definition>
+        <argsstring>(const UnknownPartitionException &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::UnknownPartitionException::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1UnknownPartitionException" kindref="compound">UnknownPartitionException</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15474" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="15474" bodyend="15476"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1UnknownPartitionException_1a91075fb60c7c0ee36b5d7fb52f9d46e9" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::UnknownPartitionException::operator&lt;</definition>
+        <argsstring>(const UnknownPartitionException &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::UnknownPartitionException::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1UnknownPartitionException" kindref="compound">UnknownPartitionException</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15478" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1UnknownPartitionException_1af6e629de2ace0fb44949a3d6e47f6f5a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::UnknownPartitionException::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot)</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::UnknownPartitionException::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15480" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="60984" bodyend="61023"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1UnknownPartitionException_1ac1a2efd4d0d4def65bf0942cae58fe4e" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::UnknownPartitionException::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::UnknownPartitionException::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15481" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="61025" bodyend="61037"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1UnknownPartitionException_1a7380957e5282cebd74166f62d2ab23d5" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::UnknownPartitionException::printTo</definition>
+        <argsstring>(std::ostream &amp;out) const</argsstring>
+        <name>printTo</name>
+        <qualifiedname>Apache::Hadoop::Hive::UnknownPartitionException::printTo</qualifiedname>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15483" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="61061" bodyend="61066"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1UnknownPartitionException_1a792ba065d9819540557d01629ecb6ec1" prot="public" static="no" const="yes" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type>const char *</type>
+        <definition>const char * Apache::Hadoop::Hive::UnknownPartitionException::what</definition>
+        <argsstring>() const noexcept override</argsstring>
+        <name>what</name>
+        <qualifiedname>Apache::Hadoop::Hive::UnknownPartitionException::what</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15485" column="14" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="61068" bodyend="61077"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::UnknownPartitionException</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1UnknownPartitionException"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TException</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::UnknownPartitionException</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1UnknownPartitionException"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>message</edgelabel>
+          <edgelabel>thriftTExceptionMessageHolder_</edgelabel>
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="5">
+        <label>Apache::Hadoop::Hive::_UnknownPartitionException__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__UnknownPartitionException____isset"/>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TException</label>
+      </node>
+      <node id="4">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="3">
+        <label>std::string</label>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15459" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="15459" bodyend="15486"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1UnknownPartitionException_1a98f798b7fdd47e81991052cf9d82e9fe" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::UnknownPartitionException</scope><name>__isset</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1UnknownPartitionException_1aaee2c0bdabdc71985aa58960aa3cdd3a" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::UnknownPartitionException</scope><name>__set_message</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1UnknownPartitionException_1a9706915ec129469a1e8412c966831f1b" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::UnknownPartitionException</scope><name>message</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1UnknownPartitionException_1afdcdfe8f5f8c3349951d511deff920ab" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::UnknownPartitionException</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1UnknownPartitionException_1a91075fb60c7c0ee36b5d7fb52f9d46e9" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::UnknownPartitionException</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1UnknownPartitionException_1a7974ad5eb5b91d70f7a956be42e0fa69" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::UnknownPartitionException</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1UnknownPartitionException_1a677494e1f8c5b1df42419b99360e0096" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::UnknownPartitionException</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1UnknownPartitionException_1a7380957e5282cebd74166f62d2ab23d5" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::UnknownPartitionException</scope><name>printTo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1UnknownPartitionException_1af6e629de2ace0fb44949a3d6e47f6f5a" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::UnknownPartitionException</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1UnknownPartitionException_1a9f1c5c2f4202f356128e6a9d96a36010" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::UnknownPartitionException</scope><name>thriftTExceptionMessageHolder_</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1UnknownPartitionException_1ab9ef59ce6c7d69912a607eb7ff3c7505" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::UnknownPartitionException</scope><name>UnknownPartitionException</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1UnknownPartitionException_1a4ffc237ea972e848afa8b8c95525fb53" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::UnknownPartitionException</scope><name>UnknownPartitionException</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1UnknownPartitionException_1a792ba065d9819540557d01629ecb6ec1" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::UnknownPartitionException</scope><name>what</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1UnknownPartitionException_1ac1a2efd4d0d4def65bf0942cae58fe4e" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::UnknownPartitionException</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1UnknownPartitionException_1a755dbcb1fa4e67b5952a25162691cce6" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::UnknownPartitionException</scope><name>~UnknownPartitionException</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

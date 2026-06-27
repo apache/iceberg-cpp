@@ -1,0 +1,96 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structApache_1_1Hadoop_1_1Hive_1_1__WMTrigger____isset" kind="struct" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::_WMTrigger__isset</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__WMTrigger____isset_1a7dc40da51eba8942936c598c6323fdf3" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_WMTrigger__isset::triggerExpression</definition>
+        <argsstring></argsstring>
+        <name>triggerExpression</name>
+        <qualifiedname>Apache::Hadoop::Hive::_WMTrigger__isset::triggerExpression</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11097" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="11097" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__WMTrigger____isset_1a5439399938d5f4c4093f7be2a36964e7" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_WMTrigger__isset::actionExpression</definition>
+        <argsstring></argsstring>
+        <name>actionExpression</name>
+        <qualifiedname>Apache::Hadoop::Hive::_WMTrigger__isset::actionExpression</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11098" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="11098" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__WMTrigger____isset_1ad78b2d10d8cbf2dd270d8d27f5302ae2" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_WMTrigger__isset::isInUnmanaged</definition>
+        <argsstring></argsstring>
+        <name>isInUnmanaged</name>
+        <qualifiedname>Apache::Hadoop::Hive::_WMTrigger__isset::isInUnmanaged</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11099" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="11099" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__WMTrigger____isset_1a5c7ed11dbf18948b7e5024ce106fd87e" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_WMTrigger__isset::ns</definition>
+        <argsstring></argsstring>
+        <name>ns</name>
+        <qualifiedname>Apache::Hadoop::Hive::_WMTrigger__isset::ns</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11100" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="11100" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structApache_1_1Hadoop_1_1Hive_1_1__WMTrigger____isset_1a094c5822e1011e08a23d8f912822810c" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::_WMTrigger__isset::_WMTrigger__isset</definition>
+        <argsstring>()</argsstring>
+        <name>_WMTrigger__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::_WMTrigger__isset::_WMTrigger__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11096" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="11096" bodyend="11096"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11095" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="11095" bodyend="11101"/>
+    <listofallmembers>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__WMTrigger____isset_1a094c5822e1011e08a23d8f912822810c" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_WMTrigger__isset</scope><name>_WMTrigger__isset</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__WMTrigger____isset_1a5439399938d5f4c4093f7be2a36964e7" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_WMTrigger__isset</scope><name>actionExpression</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__WMTrigger____isset_1ad78b2d10d8cbf2dd270d8d27f5302ae2" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_WMTrigger__isset</scope><name>isInUnmanaged</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__WMTrigger____isset_1a5c7ed11dbf18948b7e5024ce106fd87e" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_WMTrigger__isset</scope><name>ns</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__WMTrigger____isset_1a7dc40da51eba8942936c598c6323fdf3" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_WMTrigger__isset</scope><name>triggerExpression</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,64 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structApache_1_1Hadoop_1_1Hive_1_1__AlterCatalogRequest____isset" kind="struct" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::_AlterCatalogRequest__isset</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__AlterCatalogRequest____isset_1ace5f18e66b010d6adf0c9249da2d2767" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_AlterCatalogRequest__isset::name</definition>
+        <argsstring></argsstring>
+        <name>name</name>
+        <qualifiedname>Apache::Hadoop::Hive::_AlterCatalogRequest__isset::name</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="2720" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="2720" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__AlterCatalogRequest____isset_1a01ef7b807e069e9f9fd37337a3308dc4" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_AlterCatalogRequest__isset::newCat</definition>
+        <argsstring></argsstring>
+        <name>newCat</name>
+        <qualifiedname>Apache::Hadoop::Hive::_AlterCatalogRequest__isset::newCat</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="2721" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="2721" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structApache_1_1Hadoop_1_1Hive_1_1__AlterCatalogRequest____isset_1a7afc75d1c0ee84c8ebc514ffec3c4f02" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::_AlterCatalogRequest__isset::_AlterCatalogRequest__isset</definition>
+        <argsstring>()</argsstring>
+        <name>_AlterCatalogRequest__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::_AlterCatalogRequest__isset::_AlterCatalogRequest__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="2719" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="2719" bodyend="2719"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="2718" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="2718" bodyend="2722"/>
+    <listofallmembers>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__AlterCatalogRequest____isset_1a7afc75d1c0ee84c8ebc514ffec3c4f02" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_AlterCatalogRequest__isset</scope><name>_AlterCatalogRequest__isset</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__AlterCatalogRequest____isset_1ace5f18e66b010d6adf0c9249da2d2767" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_AlterCatalogRequest__isset</scope><name>name</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__AlterCatalogRequest____isset_1a01ef7b807e069e9f9fd37337a3308dc4" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_AlterCatalogRequest__isset</scope><name>newCat</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

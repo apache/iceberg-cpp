@@ -1,0 +1,176 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structApache_1_1Hadoop_1_1Hive_1_1__SQLPrimaryKey____isset" kind="struct" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::_SQLPrimaryKey__isset</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__SQLPrimaryKey____isset_1a58cc11d97405d5c45977ead7d56888e7" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_SQLPrimaryKey__isset::table_db</definition>
+        <argsstring></argsstring>
+        <name>table_db</name>
+        <qualifiedname>Apache::Hadoop::Hive::_SQLPrimaryKey__isset::table_db</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1218" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="1218" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__SQLPrimaryKey____isset_1ac7098a28e1e18454280834b34849e429" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_SQLPrimaryKey__isset::table_name</definition>
+        <argsstring></argsstring>
+        <name>table_name</name>
+        <qualifiedname>Apache::Hadoop::Hive::_SQLPrimaryKey__isset::table_name</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1219" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="1219" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__SQLPrimaryKey____isset_1aaff886f20ff1857041427a1b0b6e8257" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_SQLPrimaryKey__isset::column_name</definition>
+        <argsstring></argsstring>
+        <name>column_name</name>
+        <qualifiedname>Apache::Hadoop::Hive::_SQLPrimaryKey__isset::column_name</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1220" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="1220" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__SQLPrimaryKey____isset_1ae62ca170623ae144139ac603abe2043a" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_SQLPrimaryKey__isset::key_seq</definition>
+        <argsstring></argsstring>
+        <name>key_seq</name>
+        <qualifiedname>Apache::Hadoop::Hive::_SQLPrimaryKey__isset::key_seq</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1221" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="1221" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__SQLPrimaryKey____isset_1a2f0525c2c84e590b8c152c0aeea2dbe9" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_SQLPrimaryKey__isset::pk_name</definition>
+        <argsstring></argsstring>
+        <name>pk_name</name>
+        <qualifiedname>Apache::Hadoop::Hive::_SQLPrimaryKey__isset::pk_name</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1222" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="1222" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__SQLPrimaryKey____isset_1a74747177f03c3e0339a434735d304bb5" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_SQLPrimaryKey__isset::enable_cstr</definition>
+        <argsstring></argsstring>
+        <name>enable_cstr</name>
+        <qualifiedname>Apache::Hadoop::Hive::_SQLPrimaryKey__isset::enable_cstr</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1223" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="1223" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__SQLPrimaryKey____isset_1a7efd79da8f6bfc8abbccd442e39ae4b6" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_SQLPrimaryKey__isset::validate_cstr</definition>
+        <argsstring></argsstring>
+        <name>validate_cstr</name>
+        <qualifiedname>Apache::Hadoop::Hive::_SQLPrimaryKey__isset::validate_cstr</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1224" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="1224" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__SQLPrimaryKey____isset_1aefabccafe795fe59da6cdd54305daaaf" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_SQLPrimaryKey__isset::rely_cstr</definition>
+        <argsstring></argsstring>
+        <name>rely_cstr</name>
+        <qualifiedname>Apache::Hadoop::Hive::_SQLPrimaryKey__isset::rely_cstr</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1225" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="1225" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__SQLPrimaryKey____isset_1a4e328cdd16337252e14d8f604926d187" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_SQLPrimaryKey__isset::catName</definition>
+        <argsstring></argsstring>
+        <name>catName</name>
+        <qualifiedname>Apache::Hadoop::Hive::_SQLPrimaryKey__isset::catName</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1226" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="1226" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structApache_1_1Hadoop_1_1Hive_1_1__SQLPrimaryKey____isset_1a9247dcb6aae54244291fd0e36cd61c47" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::_SQLPrimaryKey__isset::_SQLPrimaryKey__isset</definition>
+        <argsstring>()</argsstring>
+        <name>_SQLPrimaryKey__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::_SQLPrimaryKey__isset::_SQLPrimaryKey__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1217" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="1217" bodyend="1217"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1216" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="1216" bodyend="1227"/>
+    <listofallmembers>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__SQLPrimaryKey____isset_1a9247dcb6aae54244291fd0e36cd61c47" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_SQLPrimaryKey__isset</scope><name>_SQLPrimaryKey__isset</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__SQLPrimaryKey____isset_1a4e328cdd16337252e14d8f604926d187" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_SQLPrimaryKey__isset</scope><name>catName</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__SQLPrimaryKey____isset_1aaff886f20ff1857041427a1b0b6e8257" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_SQLPrimaryKey__isset</scope><name>column_name</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__SQLPrimaryKey____isset_1a74747177f03c3e0339a434735d304bb5" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_SQLPrimaryKey__isset</scope><name>enable_cstr</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__SQLPrimaryKey____isset_1ae62ca170623ae144139ac603abe2043a" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_SQLPrimaryKey__isset</scope><name>key_seq</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__SQLPrimaryKey____isset_1a2f0525c2c84e590b8c152c0aeea2dbe9" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_SQLPrimaryKey__isset</scope><name>pk_name</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__SQLPrimaryKey____isset_1aefabccafe795fe59da6cdd54305daaaf" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_SQLPrimaryKey__isset</scope><name>rely_cstr</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__SQLPrimaryKey____isset_1a58cc11d97405d5c45977ead7d56888e7" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_SQLPrimaryKey__isset</scope><name>table_db</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__SQLPrimaryKey____isset_1ac7098a28e1e18454280834b34849e429" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_SQLPrimaryKey__isset</scope><name>table_name</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__SQLPrimaryKey____isset_1a7efd79da8f6bfc8abbccd442e39ae4b6" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_SQLPrimaryKey__isset</scope><name>validate_cstr</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

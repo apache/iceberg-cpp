@@ -1,0 +1,90 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1avro_1_1AvroMetrics" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::avro::AvroMetrics</compoundname>
+    <includes refid="avro__metrics_8h" local="no">avro_metrics.h</includes>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1avro_1_1AvroMetrics_1a65452e588aa4e1dc1706ae6a0fa607ec" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::AvroMetrics::AvroMetrics</definition>
+        <argsstring>()=delete</argsstring>
+        <name>AvroMetrics</name>
+        <qualifiedname>iceberg::avro::AvroMetrics::AvroMetrics</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_metrics.h" line="35" column="3"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classiceberg_1_1avro_1_1AvroMetrics_1a52ec83059017a4afee00310f57e80b29" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="structiceberg_1_1Metrics" kindref="compound">Metrics</ref></type>
+        <definition>Metrics iceberg::avro::AvroMetrics::GetMetrics</definition>
+        <argsstring>(const Schema &amp;schema, int64_t num_records, const MetricsConfig &amp;metrics_config)</argsstring>
+        <name>GetMetrics</name>
+        <qualifiedname>iceberg::avro::AvroMetrics::GetMetrics</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &amp;</type>
+          <declname>schema</declname>
+        </param>
+        <param>
+          <type>int64_t</type>
+          <declname>num_records</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classiceberg_1_1MetricsConfig" kindref="compound">MetricsConfig</ref> &amp;</type>
+          <declname>metrics_config</declname>
+        </param>
+        <briefdescription>
+<para>Compute metrics from writer state. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>schema</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The Iceberg schema of the written data. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>num_records</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The number of records written. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>metrics_config</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The metrics configuration. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para><ref refid="structiceberg_1_1Metrics" kindref="compound">Metrics</ref> for the written Avro file. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_metrics.h" line="42" column="18" bodyfile="iceberg/avro/avro_metrics.cc" bodystart="24" bodyend="29"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Utility class for computing Avro file metrics. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/avro/avro_metrics.h" line="33" column="1" bodyfile="iceberg/avro/avro_metrics.h" bodystart="33" bodyend="44"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1avro_1_1AvroMetrics_1a65452e588aa4e1dc1706ae6a0fa607ec" prot="public" virt="non-virtual"><scope>iceberg::avro::AvroMetrics</scope><name>AvroMetrics</name></member>
+      <member refid="classiceberg_1_1avro_1_1AvroMetrics_1a52ec83059017a4afee00310f57e80b29" prot="public" virt="non-virtual"><scope>iceberg::avro::AvroMetrics</scope><name>GetMetrics</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

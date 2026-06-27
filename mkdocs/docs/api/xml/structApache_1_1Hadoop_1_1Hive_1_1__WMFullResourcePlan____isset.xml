@@ -1,0 +1,80 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structApache_1_1Hadoop_1_1Hive_1_1__WMFullResourcePlan____isset" kind="struct" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::_WMFullResourcePlan__isset</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__WMFullResourcePlan____isset_1a7e2772de0acfe740c17d3a78168bc028" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_WMFullResourcePlan__isset::mappings</definition>
+        <argsstring></argsstring>
+        <name>mappings</name>
+        <qualifiedname>Apache::Hadoop::Hive::_WMFullResourcePlan__isset::mappings</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11246" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="11246" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__WMFullResourcePlan____isset_1aa01bb2c1c6fd65458c2716a34a8d46f9" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_WMFullResourcePlan__isset::triggers</definition>
+        <argsstring></argsstring>
+        <name>triggers</name>
+        <qualifiedname>Apache::Hadoop::Hive::_WMFullResourcePlan__isset::triggers</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11247" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="11247" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__WMFullResourcePlan____isset_1a8af584903c71f1a1cbfab2c1dd5c450f" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_WMFullResourcePlan__isset::poolTriggers</definition>
+        <argsstring></argsstring>
+        <name>poolTriggers</name>
+        <qualifiedname>Apache::Hadoop::Hive::_WMFullResourcePlan__isset::poolTriggers</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11248" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="11248" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structApache_1_1Hadoop_1_1Hive_1_1__WMFullResourcePlan____isset_1a2310e5c92cbad1abe136ffc089c7edeb" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::_WMFullResourcePlan__isset::_WMFullResourcePlan__isset</definition>
+        <argsstring>()</argsstring>
+        <name>_WMFullResourcePlan__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::_WMFullResourcePlan__isset::_WMFullResourcePlan__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11245" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="11245" bodyend="11245"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11244" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="11244" bodyend="11249"/>
+    <listofallmembers>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__WMFullResourcePlan____isset_1a2310e5c92cbad1abe136ffc089c7edeb" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_WMFullResourcePlan__isset</scope><name>_WMFullResourcePlan__isset</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__WMFullResourcePlan____isset_1a7e2772de0acfe740c17d3a78168bc028" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_WMFullResourcePlan__isset</scope><name>mappings</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__WMFullResourcePlan____isset_1a8af584903c71f1a1cbfab2c1dd5c450f" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_WMFullResourcePlan__isset</scope><name>poolTriggers</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__WMFullResourcePlan____isset_1aa01bb2c1c6fd65458c2716a34a8d46f9" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_WMFullResourcePlan__isset</scope><name>triggers</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,96 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structApache_1_1Hadoop_1_1Hive_1_1__TableMeta____isset" kind="struct" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::_TableMeta__isset</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__TableMeta____isset_1adb839b804364984b069aa46cccb02511" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_TableMeta__isset::comments</definition>
+        <argsstring></argsstring>
+        <name>comments</name>
+        <qualifiedname>Apache::Hadoop::Hive::_TableMeta__isset::comments</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10772" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="10772" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__TableMeta____isset_1a14506647080564b91e42a11efd0d5e64" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_TableMeta__isset::catName</definition>
+        <argsstring></argsstring>
+        <name>catName</name>
+        <qualifiedname>Apache::Hadoop::Hive::_TableMeta__isset::catName</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10773" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="10773" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__TableMeta____isset_1a85704dff8a872492a477ac6d06e17620" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_TableMeta__isset::ownerName</definition>
+        <argsstring></argsstring>
+        <name>ownerName</name>
+        <qualifiedname>Apache::Hadoop::Hive::_TableMeta__isset::ownerName</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10774" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="10774" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__TableMeta____isset_1aa05005f327d77b2dff5b8ca2d7983d26" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_TableMeta__isset::ownerType</definition>
+        <argsstring></argsstring>
+        <name>ownerType</name>
+        <qualifiedname>Apache::Hadoop::Hive::_TableMeta__isset::ownerType</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10775" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="10775" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structApache_1_1Hadoop_1_1Hive_1_1__TableMeta____isset_1a7759a9c373d87cdff490965470eb6712" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::_TableMeta__isset::_TableMeta__isset</definition>
+        <argsstring>()</argsstring>
+        <name>_TableMeta__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::_TableMeta__isset::_TableMeta__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10771" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="10771" bodyend="10771"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10770" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="10770" bodyend="10776"/>
+    <listofallmembers>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__TableMeta____isset_1a7759a9c373d87cdff490965470eb6712" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_TableMeta__isset</scope><name>_TableMeta__isset</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__TableMeta____isset_1a14506647080564b91e42a11efd0d5e64" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_TableMeta__isset</scope><name>catName</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__TableMeta____isset_1adb839b804364984b069aa46cccb02511" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_TableMeta__isset</scope><name>comments</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__TableMeta____isset_1a85704dff8a872492a477ac6d06e17620" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_TableMeta__isset</scope><name>ownerName</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__TableMeta____isset_1aa05005f327d77b2dff5b8ca2d7983d26" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_TableMeta__isset</scope><name>ownerType</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

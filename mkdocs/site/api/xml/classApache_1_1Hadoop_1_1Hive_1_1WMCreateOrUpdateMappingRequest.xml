@@ -1,0 +1,342 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1WMCreateOrUpdateMappingRequest" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::WMCreateOrUpdateMappingRequest</compoundname>
+    <basecompoundref prot="public" virt="virtual">apache::thrift::TBase</basecompoundref>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1WMCreateOrUpdateMappingRequest_1ae2e34e457398816dfc8ff753ea2a652b" prot="public" static="no" mutable="no">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1WMMapping" kindref="compound">WMMapping</ref></type>
+        <definition>WMMapping Apache::Hadoop::Hive::WMCreateOrUpdateMappingRequest::mapping</definition>
+        <argsstring></argsstring>
+        <name>mapping</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMCreateOrUpdateMappingRequest::mapping</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12308" column="13" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="12308" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1WMCreateOrUpdateMappingRequest_1a5c9a515a2c3a8a4b094341220cb5fa0c" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::WMCreateOrUpdateMappingRequest::update</definition>
+        <argsstring></argsstring>
+        <name>update</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMCreateOrUpdateMappingRequest::update</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12309" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="12309" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1WMCreateOrUpdateMappingRequest_1aced2e13bb7614fbdd28347ffbf9a3af6" prot="public" static="no" mutable="no">
+        <type><ref refid="structApache_1_1Hadoop_1_1Hive_1_1__WMCreateOrUpdateMappingRequest____isset" kindref="compound">_WMCreateOrUpdateMappingRequest__isset</ref></type>
+        <definition>_WMCreateOrUpdateMappingRequest__isset Apache::Hadoop::Hive::WMCreateOrUpdateMappingRequest::__isset</definition>
+        <argsstring></argsstring>
+        <name>__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMCreateOrUpdateMappingRequest::__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12311" column="42" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="12311" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMCreateOrUpdateMappingRequest_1a8d4cf3a3656f625eecc8b8669b61ab38" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::WMCreateOrUpdateMappingRequest::WMCreateOrUpdateMappingRequest</definition>
+        <argsstring>(const WMCreateOrUpdateMappingRequest &amp;)</argsstring>
+        <name>WMCreateOrUpdateMappingRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMCreateOrUpdateMappingRequest::WMCreateOrUpdateMappingRequest</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1WMCreateOrUpdateMappingRequest" kindref="compound">WMCreateOrUpdateMappingRequest</ref> &amp;</type>
+          <defname>other1522</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12303" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="48300" bodyend="48304"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMCreateOrUpdateMappingRequest_1a69b66f9f6aa6e4c37a2ce1a31ceaa77d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1WMCreateOrUpdateMappingRequest" kindref="compound">WMCreateOrUpdateMappingRequest</ref> &amp;</type>
+        <definition>WMCreateOrUpdateMappingRequest &amp; Apache::Hadoop::Hive::WMCreateOrUpdateMappingRequest::operator=</definition>
+        <argsstring>(const WMCreateOrUpdateMappingRequest &amp;)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMCreateOrUpdateMappingRequest::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1WMCreateOrUpdateMappingRequest" kindref="compound">WMCreateOrUpdateMappingRequest</ref> &amp;</type>
+          <defname>other1523</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12304" column="34" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="48305" bodyend="48310"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMCreateOrUpdateMappingRequest_1a50a60d753b65c5be0c1c0a6e43183724" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::WMCreateOrUpdateMappingRequest::WMCreateOrUpdateMappingRequest</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>WMCreateOrUpdateMappingRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMCreateOrUpdateMappingRequest::WMCreateOrUpdateMappingRequest</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12305" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="48191" bodyend="48193"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMCreateOrUpdateMappingRequest_1a79798155ea9e1027f8df10736b71bf28" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::WMCreateOrUpdateMappingRequest::~WMCreateOrUpdateMappingRequest</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~WMCreateOrUpdateMappingRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMCreateOrUpdateMappingRequest::~WMCreateOrUpdateMappingRequest</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12307" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="48188" bodyend="48189"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMCreateOrUpdateMappingRequest_1ade6f1227b5737e3a31878fbe868ff784" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::WMCreateOrUpdateMappingRequest::__set_mapping</definition>
+        <argsstring>(const WMMapping &amp;val)</argsstring>
+        <name>__set_mapping</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMCreateOrUpdateMappingRequest::__set_mapping</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1WMMapping" kindref="compound">WMMapping</ref> &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12313" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="48195" bodyend="48198"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMCreateOrUpdateMappingRequest_1a3d805e122f512ff074146f3262ffd17c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::WMCreateOrUpdateMappingRequest::__set_update</definition>
+        <argsstring>(const bool val)</argsstring>
+        <name>__set_update</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMCreateOrUpdateMappingRequest::__set_update</qualifiedname>
+        <param>
+          <type>const bool</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12315" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="48200" bodyend="48203"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMCreateOrUpdateMappingRequest_1a3a4fd9295270b38a302225d7e315cdf6" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::WMCreateOrUpdateMappingRequest::operator==</definition>
+        <argsstring>(const WMCreateOrUpdateMappingRequest &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMCreateOrUpdateMappingRequest::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1WMCreateOrUpdateMappingRequest" kindref="compound">WMCreateOrUpdateMappingRequest</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12317" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="48287" bodyend="48298"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMCreateOrUpdateMappingRequest_1aa9a8dc8d98c90ca6b5c2782f2032b390" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::WMCreateOrUpdateMappingRequest::operator!=</definition>
+        <argsstring>(const WMCreateOrUpdateMappingRequest &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMCreateOrUpdateMappingRequest::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1WMCreateOrUpdateMappingRequest" kindref="compound">WMCreateOrUpdateMappingRequest</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12318" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="12318" bodyend="12320"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMCreateOrUpdateMappingRequest_1a1a8a512ca1d80fa7d5c5792ebe978c90" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::WMCreateOrUpdateMappingRequest::operator&lt;</definition>
+        <argsstring>(const WMCreateOrUpdateMappingRequest &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMCreateOrUpdateMappingRequest::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1WMCreateOrUpdateMappingRequest" kindref="compound">WMCreateOrUpdateMappingRequest</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12322" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMCreateOrUpdateMappingRequest_1a76b1a936b69f147d500be8fbb2eb5da3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::WMCreateOrUpdateMappingRequest::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot) override</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMCreateOrUpdateMappingRequest::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12324" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="48211" bodyend="48258"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMCreateOrUpdateMappingRequest_1aabc7519e69068f94af37ff98ad8356cb" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::WMCreateOrUpdateMappingRequest::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const override</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMCreateOrUpdateMappingRequest::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12325" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="48260" bodyend="48278"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMCreateOrUpdateMappingRequest_1a747acd0e62a55fb5e26780fc869a9944" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::WMCreateOrUpdateMappingRequest::printTo</definition>
+        <argsstring>(std::ostream &amp;out) const</argsstring>
+        <name>printTo</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMCreateOrUpdateMappingRequest::printTo</qualifiedname>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12327" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="48311" bodyend="48317"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::WMCreateOrUpdateMappingRequest</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1WMCreateOrUpdateMappingRequest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::WMCreateOrUpdateMappingRequest</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1WMCreateOrUpdateMappingRequest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>mapping</edgelabel>
+        </childnode>
+        <childnode refid="7" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>Apache::Hadoop::Hive::WMMapping</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1WMMapping"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>entityName</edgelabel>
+          <edgelabel>entityType</edgelabel>
+          <edgelabel>ns</edgelabel>
+          <edgelabel>poolPath</edgelabel>
+          <edgelabel>resourcePlanName</edgelabel>
+        </childnode>
+        <childnode refid="6" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="7">
+        <label>Apache::Hadoop::Hive::_WMCreateOrUpdateMappingRequest__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__WMCreateOrUpdateMappingRequest____isset"/>
+      </node>
+      <node id="6">
+        <label>Apache::Hadoop::Hive::_WMMapping__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__WMMapping____isset"/>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+      <node id="5">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="4">
+        <label>std::string</label>
+        <childnode refid="5" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12300" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="12300" bodyend="12328"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMCreateOrUpdateMappingRequest_1aced2e13bb7614fbdd28347ffbf9a3af6" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMCreateOrUpdateMappingRequest</scope><name>__isset</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMCreateOrUpdateMappingRequest_1ade6f1227b5737e3a31878fbe868ff784" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMCreateOrUpdateMappingRequest</scope><name>__set_mapping</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMCreateOrUpdateMappingRequest_1a3d805e122f512ff074146f3262ffd17c" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMCreateOrUpdateMappingRequest</scope><name>__set_update</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMCreateOrUpdateMappingRequest_1ae2e34e457398816dfc8ff753ea2a652b" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMCreateOrUpdateMappingRequest</scope><name>mapping</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMCreateOrUpdateMappingRequest_1aa9a8dc8d98c90ca6b5c2782f2032b390" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMCreateOrUpdateMappingRequest</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMCreateOrUpdateMappingRequest_1a1a8a512ca1d80fa7d5c5792ebe978c90" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMCreateOrUpdateMappingRequest</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMCreateOrUpdateMappingRequest_1a69b66f9f6aa6e4c37a2ce1a31ceaa77d" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMCreateOrUpdateMappingRequest</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMCreateOrUpdateMappingRequest_1a3a4fd9295270b38a302225d7e315cdf6" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMCreateOrUpdateMappingRequest</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMCreateOrUpdateMappingRequest_1a747acd0e62a55fb5e26780fc869a9944" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::WMCreateOrUpdateMappingRequest</scope><name>printTo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMCreateOrUpdateMappingRequest_1a76b1a936b69f147d500be8fbb2eb5da3" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMCreateOrUpdateMappingRequest</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMCreateOrUpdateMappingRequest_1a5c9a515a2c3a8a4b094341220cb5fa0c" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMCreateOrUpdateMappingRequest</scope><name>update</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMCreateOrUpdateMappingRequest_1a8d4cf3a3656f625eecc8b8669b61ab38" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMCreateOrUpdateMappingRequest</scope><name>WMCreateOrUpdateMappingRequest</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMCreateOrUpdateMappingRequest_1a50a60d753b65c5be0c1c0a6e43183724" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMCreateOrUpdateMappingRequest</scope><name>WMCreateOrUpdateMappingRequest</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMCreateOrUpdateMappingRequest_1aabc7519e69068f94af37ff98ad8356cb" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMCreateOrUpdateMappingRequest</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMCreateOrUpdateMappingRequest_1a79798155ea9e1027f8df10736b71bf28" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::WMCreateOrUpdateMappingRequest</scope><name>~WMCreateOrUpdateMappingRequest</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

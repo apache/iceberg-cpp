@@ -1,0 +1,281 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1ObjectDictionary" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::ObjectDictionary</compoundname>
+    <basecompoundref prot="public" virt="virtual">apache::thrift::TBase</basecompoundref>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ObjectDictionary_1ad6cf7445eea707d01a5317d57aaed00e" prot="public" static="no" mutable="no">
+        <type>std::map&lt; std::string, std::vector&lt; std::string &gt; &gt;</type>
+        <definition>std::map&lt;std::string, std::vector&lt;std::string&gt; &gt; Apache::Hadoop::Hive::ObjectDictionary::values</definition>
+        <argsstring></argsstring>
+        <name>values</name>
+        <qualifiedname>Apache::Hadoop::Hive::ObjectDictionary::values</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="4031" column="13" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="4031" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ObjectDictionary_1a508c89a8ad2f58998a1541b94b9cc4ee" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::ObjectDictionary::ObjectDictionary</definition>
+        <argsstring>(const ObjectDictionary &amp;)</argsstring>
+        <name>ObjectDictionary</name>
+        <qualifiedname>Apache::Hadoop::Hive::ObjectDictionary::ObjectDictionary</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ObjectDictionary" kindref="compound">ObjectDictionary</ref> &amp;</type>
+          <defname>other404</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="4026" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="13025" bodyend="13027"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ObjectDictionary_1abf21cbd5646f070d065a87ebb0945d99" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1ObjectDictionary" kindref="compound">ObjectDictionary</ref> &amp;</type>
+        <definition>ObjectDictionary &amp; Apache::Hadoop::Hive::ObjectDictionary::operator=</definition>
+        <argsstring>(const ObjectDictionary &amp;)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::ObjectDictionary::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ObjectDictionary" kindref="compound">ObjectDictionary</ref> &amp;</type>
+          <defname>other405</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="4027" column="20" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="13028" bodyend="13031"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ObjectDictionary_1ac6b9444ce208922b630f187971558c9a" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::ObjectDictionary::ObjectDictionary</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>ObjectDictionary</name>
+        <qualifiedname>Apache::Hadoop::Hive::ObjectDictionary::ObjectDictionary</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="4028" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="12898" bodyend="12899"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ObjectDictionary_1a0087338dd80c6e81e106d3405c8eb714" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::ObjectDictionary::~ObjectDictionary</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~ObjectDictionary</name>
+        <qualifiedname>Apache::Hadoop::Hive::ObjectDictionary::~ObjectDictionary</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="4030" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="12895" bodyend="12896"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ObjectDictionary_1ac7cb4ebaa0f57ca272e8294b993de43d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::ObjectDictionary::__set_values</definition>
+        <argsstring>(const std::map&lt; std::string, std::vector&lt; std::string &gt; &gt; &amp;val)</argsstring>
+        <name>__set_values</name>
+        <qualifiedname>Apache::Hadoop::Hive::ObjectDictionary::__set_values</qualifiedname>
+        <param>
+          <type>const std::map&lt; std::string, std::vector&lt; std::string &gt; &gt; &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="4033" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="12901" bodyend="12903"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ObjectDictionary_1a6f19ea999bc89f90fc5f70dacacb5803" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::ObjectDictionary::operator==</definition>
+        <argsstring>(const ObjectDictionary &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::ObjectDictionary::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ObjectDictionary" kindref="compound">ObjectDictionary</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="4035" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="13018" bodyend="13023"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ObjectDictionary_1aa5bdc7a475de020575e7ce7c3d7927dc" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::ObjectDictionary::operator!=</definition>
+        <argsstring>(const ObjectDictionary &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::ObjectDictionary::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ObjectDictionary" kindref="compound">ObjectDictionary</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="4036" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="4036" bodyend="4038"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ObjectDictionary_1a5c6c6e6fafee31d8e275962817b594b7" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::ObjectDictionary::operator&lt;</definition>
+        <argsstring>(const ObjectDictionary &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::ObjectDictionary::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ObjectDictionary" kindref="compound">ObjectDictionary</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="4040" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ObjectDictionary_1a2edef8cb6c35e1cdf5f9e2c0f8477b6e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::ObjectDictionary::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot) override</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::ObjectDictionary::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="4042" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="12911" bodyend="12980"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ObjectDictionary_1af9ea09c35c16a93693ef975ee45c8025" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::ObjectDictionary::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const override</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::ObjectDictionary::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="4043" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="12982" bodyend="13011"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ObjectDictionary_1ade9c1300145381c4d703b69eb7c6ba8d" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::ObjectDictionary::printTo</definition>
+        <argsstring>(std::ostream &amp;out) const</argsstring>
+        <name>printTo</name>
+        <qualifiedname>Apache::Hadoop::Hive::ObjectDictionary::printTo</qualifiedname>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="4045" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="13032" bodyend="13037"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::ObjectDictionary</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1ObjectDictionary"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::ObjectDictionary</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1ObjectDictionary"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>values</edgelabel>
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+      <node id="3">
+        <label>std::map&lt; std::string, std::vector&lt; std::string &gt; &gt;</label>
+        <childnode refid="4" relation="usage">
+          <edgelabel>keys</edgelabel>
+        </childnode>
+        <childnode refid="6" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="5">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="4">
+        <label>std::string</label>
+        <childnode refid="5" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="6">
+        <label>std::vector&lt; std::string &gt;</label>
+        <childnode refid="4" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="4023" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="4023" bodyend="4046"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ObjectDictionary_1ac7cb4ebaa0f57ca272e8294b993de43d" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ObjectDictionary</scope><name>__set_values</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ObjectDictionary_1a508c89a8ad2f58998a1541b94b9cc4ee" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ObjectDictionary</scope><name>ObjectDictionary</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ObjectDictionary_1ac6b9444ce208922b630f187971558c9a" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ObjectDictionary</scope><name>ObjectDictionary</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ObjectDictionary_1aa5bdc7a475de020575e7ce7c3d7927dc" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ObjectDictionary</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ObjectDictionary_1a5c6c6e6fafee31d8e275962817b594b7" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ObjectDictionary</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ObjectDictionary_1abf21cbd5646f070d065a87ebb0945d99" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ObjectDictionary</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ObjectDictionary_1a6f19ea999bc89f90fc5f70dacacb5803" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ObjectDictionary</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ObjectDictionary_1ade9c1300145381c4d703b69eb7c6ba8d" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::ObjectDictionary</scope><name>printTo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ObjectDictionary_1a2edef8cb6c35e1cdf5f9e2c0f8477b6e" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ObjectDictionary</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ObjectDictionary_1ad6cf7445eea707d01a5317d57aaed00e" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ObjectDictionary</scope><name>values</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ObjectDictionary_1af9ea09c35c16a93693ef975ee45c8025" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ObjectDictionary</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ObjectDictionary_1a0087338dd80c6e81e106d3405c8eb714" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::ObjectDictionary</scope><name>~ObjectDictionary</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,293 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1AddCheckConstraintRequest" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::AddCheckConstraintRequest</compoundname>
+    <basecompoundref prot="public" virt="virtual">apache::thrift::TBase</basecompoundref>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1AddCheckConstraintRequest_1a92a166b4627cdd575d4af2a7e67980a3" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; <ref refid="classApache_1_1Hadoop_1_1Hive_1_1SQLCheckConstraint" kindref="compound">SQLCheckConstraint</ref> &gt;</type>
+        <definition>std::vector&lt;SQLCheckConstraint&gt; Apache::Hadoop::Hive::AddCheckConstraintRequest::checkConstraintCols</definition>
+        <argsstring></argsstring>
+        <name>checkConstraintCols</name>
+        <qualifiedname>Apache::Hadoop::Hive::AddCheckConstraintRequest::checkConstraintCols</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="5451" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="5451" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AddCheckConstraintRequest_1a21edd6b0f0ab0590cb9cdd6d39f3ec4c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::AddCheckConstraintRequest::AddCheckConstraintRequest</definition>
+        <argsstring>(const AddCheckConstraintRequest &amp;)</argsstring>
+        <name>AddCheckConstraintRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::AddCheckConstraintRequest::AddCheckConstraintRequest</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1AddCheckConstraintRequest" kindref="compound">AddCheckConstraintRequest</ref> &amp;</type>
+          <defname>other633</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="5446" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="19247" bodyend="19249"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AddCheckConstraintRequest_1a33632a77be86efb7abadace01055e51c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1AddCheckConstraintRequest" kindref="compound">AddCheckConstraintRequest</ref> &amp;</type>
+        <definition>AddCheckConstraintRequest &amp; Apache::Hadoop::Hive::AddCheckConstraintRequest::operator=</definition>
+        <argsstring>(const AddCheckConstraintRequest &amp;)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::AddCheckConstraintRequest::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1AddCheckConstraintRequest" kindref="compound">AddCheckConstraintRequest</ref> &amp;</type>
+          <defname>other634</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="5447" column="29" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="19250" bodyend="19253"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AddCheckConstraintRequest_1aa68fa55f528d78313103974517117e20" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::AddCheckConstraintRequest::AddCheckConstraintRequest</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>AddCheckConstraintRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::AddCheckConstraintRequest::AddCheckConstraintRequest</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="5448" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="19144" bodyend="19145"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AddCheckConstraintRequest_1aa7a6e8ba05b857f278c0f3766c29a49c" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::AddCheckConstraintRequest::~AddCheckConstraintRequest</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~AddCheckConstraintRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::AddCheckConstraintRequest::~AddCheckConstraintRequest</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="5450" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="19141" bodyend="19142"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AddCheckConstraintRequest_1a5e809409aff5709760d119748338d1a1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::AddCheckConstraintRequest::__set_checkConstraintCols</definition>
+        <argsstring>(const std::vector&lt; SQLCheckConstraint &gt; &amp;val)</argsstring>
+        <name>__set_checkConstraintCols</name>
+        <qualifiedname>Apache::Hadoop::Hive::AddCheckConstraintRequest::__set_checkConstraintCols</qualifiedname>
+        <param>
+          <type>const std::vector&lt; <ref refid="classApache_1_1Hadoop_1_1Hive_1_1SQLCheckConstraint" kindref="compound">SQLCheckConstraint</ref> &gt; &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="5453" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="19147" bodyend="19149"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AddCheckConstraintRequest_1a2d15c207ac4b5e605f2a2c119b659866" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::AddCheckConstraintRequest::operator==</definition>
+        <argsstring>(const AddCheckConstraintRequest &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::AddCheckConstraintRequest::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1AddCheckConstraintRequest" kindref="compound">AddCheckConstraintRequest</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="5455" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="19240" bodyend="19245"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AddCheckConstraintRequest_1ad9a9868622c33e78f74e53f13fda2de0" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::AddCheckConstraintRequest::operator!=</definition>
+        <argsstring>(const AddCheckConstraintRequest &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::AddCheckConstraintRequest::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1AddCheckConstraintRequest" kindref="compound">AddCheckConstraintRequest</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="5456" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="5456" bodyend="5458"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AddCheckConstraintRequest_1a9ebf33cf44d06cdc1e788142446e27ab" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::AddCheckConstraintRequest::operator&lt;</definition>
+        <argsstring>(const AddCheckConstraintRequest &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::AddCheckConstraintRequest::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1AddCheckConstraintRequest" kindref="compound">AddCheckConstraintRequest</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="5460" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AddCheckConstraintRequest_1a70db07e6c2e5c86f57f90449b1f858cd" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::AddCheckConstraintRequest::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot) override</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::AddCheckConstraintRequest::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="5462" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="19157" bodyend="19211"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AddCheckConstraintRequest_1a9c42e381d7b5b513d8dea8aeed90985e" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::AddCheckConstraintRequest::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const override</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::AddCheckConstraintRequest::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="5463" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="19213" bodyend="19233"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AddCheckConstraintRequest_1acbf2cd1e378bbb825598b190cabe55b3" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::AddCheckConstraintRequest::printTo</definition>
+        <argsstring>(std::ostream &amp;out) const</argsstring>
+        <name>printTo</name>
+        <qualifiedname>Apache::Hadoop::Hive::AddCheckConstraintRequest::printTo</qualifiedname>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="5465" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="19254" bodyend="19259"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::AddCheckConstraintRequest</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1AddCheckConstraintRequest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::AddCheckConstraintRequest</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1AddCheckConstraintRequest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>checkConstraintCols</edgelabel>
+        </childnode>
+      </node>
+      <node id="4">
+        <label>Apache::Hadoop::Hive::SQLCheckConstraint</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1SQLCheckConstraint"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>catName</edgelabel>
+          <edgelabel>check_expression</edgelabel>
+          <edgelabel>column_name</edgelabel>
+          <edgelabel>dc_name</edgelabel>
+          <edgelabel>table_db</edgelabel>
+          <edgelabel>table_name</edgelabel>
+        </childnode>
+        <childnode refid="7" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="7">
+        <label>Apache::Hadoop::Hive::_SQLCheckConstraint__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__SQLCheckConstraint____isset"/>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+      <node id="6">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="5">
+        <label>std::string</label>
+        <childnode refid="6" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::vector&lt; Apache::Hadoop::Hive::SQLCheckConstraint &gt;</label>
+        <childnode refid="4" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="5443" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="5443" bodyend="5466"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AddCheckConstraintRequest_1a5e809409aff5709760d119748338d1a1" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AddCheckConstraintRequest</scope><name>__set_checkConstraintCols</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AddCheckConstraintRequest_1a21edd6b0f0ab0590cb9cdd6d39f3ec4c" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AddCheckConstraintRequest</scope><name>AddCheckConstraintRequest</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AddCheckConstraintRequest_1aa68fa55f528d78313103974517117e20" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AddCheckConstraintRequest</scope><name>AddCheckConstraintRequest</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AddCheckConstraintRequest_1a92a166b4627cdd575d4af2a7e67980a3" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AddCheckConstraintRequest</scope><name>checkConstraintCols</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AddCheckConstraintRequest_1ad9a9868622c33e78f74e53f13fda2de0" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AddCheckConstraintRequest</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AddCheckConstraintRequest_1a9ebf33cf44d06cdc1e788142446e27ab" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AddCheckConstraintRequest</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AddCheckConstraintRequest_1a33632a77be86efb7abadace01055e51c" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AddCheckConstraintRequest</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AddCheckConstraintRequest_1a2d15c207ac4b5e605f2a2c119b659866" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AddCheckConstraintRequest</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AddCheckConstraintRequest_1acbf2cd1e378bbb825598b190cabe55b3" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::AddCheckConstraintRequest</scope><name>printTo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AddCheckConstraintRequest_1a70db07e6c2e5c86f57f90449b1f858cd" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AddCheckConstraintRequest</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AddCheckConstraintRequest_1a9c42e381d7b5b513d8dea8aeed90985e" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AddCheckConstraintRequest</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AddCheckConstraintRequest_1aa7a6e8ba05b857f278c0f3766c29a49c" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::AddCheckConstraintRequest</scope><name>~AddCheckConstraintRequest</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

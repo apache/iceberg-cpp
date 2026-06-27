@@ -1,0 +1,357 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1UpdateTransactionalStatsRequest" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::UpdateTransactionalStatsRequest</compoundname>
+    <basecompoundref prot="public" virt="virtual">apache::thrift::TBase</basecompoundref>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1UpdateTransactionalStatsRequest_1ab96a5b80d181bef86fc2cd0ccddddc6e" prot="public" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t Apache::Hadoop::Hive::UpdateTransactionalStatsRequest::tableId</definition>
+        <argsstring></argsstring>
+        <name>tableId</name>
+        <qualifiedname>Apache::Hadoop::Hive::UpdateTransactionalStatsRequest::tableId</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7076" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="7076" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1UpdateTransactionalStatsRequest_1a5d9068d37de4e8f1730784beac5909d2" prot="public" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t Apache::Hadoop::Hive::UpdateTransactionalStatsRequest::insertCount</definition>
+        <argsstring></argsstring>
+        <name>insertCount</name>
+        <qualifiedname>Apache::Hadoop::Hive::UpdateTransactionalStatsRequest::insertCount</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7077" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="7077" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1UpdateTransactionalStatsRequest_1ac37f4c5f7b24f98b0ba226b63a459616" prot="public" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t Apache::Hadoop::Hive::UpdateTransactionalStatsRequest::updatedCount</definition>
+        <argsstring></argsstring>
+        <name>updatedCount</name>
+        <qualifiedname>Apache::Hadoop::Hive::UpdateTransactionalStatsRequest::updatedCount</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7078" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="7078" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1UpdateTransactionalStatsRequest_1a35103ba54b8a8b55ad8ea66367f8f7f9" prot="public" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t Apache::Hadoop::Hive::UpdateTransactionalStatsRequest::deletedCount</definition>
+        <argsstring></argsstring>
+        <name>deletedCount</name>
+        <qualifiedname>Apache::Hadoop::Hive::UpdateTransactionalStatsRequest::deletedCount</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7079" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="7079" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1UpdateTransactionalStatsRequest_1a6bda63375627509352f206ceb60d9109" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::UpdateTransactionalStatsRequest::UpdateTransactionalStatsRequest</definition>
+        <argsstring>(const UpdateTransactionalStatsRequest &amp;) noexcept</argsstring>
+        <name>UpdateTransactionalStatsRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::UpdateTransactionalStatsRequest::UpdateTransactionalStatsRequest</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1UpdateTransactionalStatsRequest" kindref="compound">UpdateTransactionalStatsRequest</ref> &amp;</type>
+          <defname>other896</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7071" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="26710" bodyend="26715"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1UpdateTransactionalStatsRequest_1a9cf0dd430680589da268f15df00559cf" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1UpdateTransactionalStatsRequest" kindref="compound">UpdateTransactionalStatsRequest</ref> &amp;</type>
+        <definition>UpdateTransactionalStatsRequest &amp; Apache::Hadoop::Hive::UpdateTransactionalStatsRequest::operator=</definition>
+        <argsstring>(const UpdateTransactionalStatsRequest &amp;) noexcept</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::UpdateTransactionalStatsRequest::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1UpdateTransactionalStatsRequest" kindref="compound">UpdateTransactionalStatsRequest</ref> &amp;</type>
+          <defname>other897</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7072" column="35" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="26716" bodyend="26722"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1UpdateTransactionalStatsRequest_1a65ed0f6c5348d0db7eec2adae9926e28" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::UpdateTransactionalStatsRequest::UpdateTransactionalStatsRequest</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>UpdateTransactionalStatsRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::UpdateTransactionalStatsRequest::UpdateTransactionalStatsRequest</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7073" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="26557" bodyend="26562"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1UpdateTransactionalStatsRequest_1acf5b9b4a4e2fe6a14bc02c460094d71c" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::UpdateTransactionalStatsRequest::~UpdateTransactionalStatsRequest</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~UpdateTransactionalStatsRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::UpdateTransactionalStatsRequest::~UpdateTransactionalStatsRequest</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7075" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="26554" bodyend="26555"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1UpdateTransactionalStatsRequest_1a693cb6c0a66868090ebef0b65d7a7455" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::UpdateTransactionalStatsRequest::__set_tableId</definition>
+        <argsstring>(const int64_t val)</argsstring>
+        <name>__set_tableId</name>
+        <qualifiedname>Apache::Hadoop::Hive::UpdateTransactionalStatsRequest::__set_tableId</qualifiedname>
+        <param>
+          <type>const int64_t</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7081" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="26564" bodyend="26566"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1UpdateTransactionalStatsRequest_1a69d1e973f07870fda02322ab48908485" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::UpdateTransactionalStatsRequest::__set_insertCount</definition>
+        <argsstring>(const int64_t val)</argsstring>
+        <name>__set_insertCount</name>
+        <qualifiedname>Apache::Hadoop::Hive::UpdateTransactionalStatsRequest::__set_insertCount</qualifiedname>
+        <param>
+          <type>const int64_t</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7083" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="26568" bodyend="26570"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1UpdateTransactionalStatsRequest_1a39af7e030fb33623d3be00b080c81be4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::UpdateTransactionalStatsRequest::__set_updatedCount</definition>
+        <argsstring>(const int64_t val)</argsstring>
+        <name>__set_updatedCount</name>
+        <qualifiedname>Apache::Hadoop::Hive::UpdateTransactionalStatsRequest::__set_updatedCount</qualifiedname>
+        <param>
+          <type>const int64_t</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7085" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="26572" bodyend="26574"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1UpdateTransactionalStatsRequest_1a2a5efa1d818815e6cff651d71f29d881" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::UpdateTransactionalStatsRequest::__set_deletedCount</definition>
+        <argsstring>(const int64_t val)</argsstring>
+        <name>__set_deletedCount</name>
+        <qualifiedname>Apache::Hadoop::Hive::UpdateTransactionalStatsRequest::__set_deletedCount</qualifiedname>
+        <param>
+          <type>const int64_t</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7087" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="26576" bodyend="26578"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1UpdateTransactionalStatsRequest_1a4bb9c70643862d1678ca00c3893b9ea2" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::UpdateTransactionalStatsRequest::operator==</definition>
+        <argsstring>(const UpdateTransactionalStatsRequest &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::UpdateTransactionalStatsRequest::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1UpdateTransactionalStatsRequest" kindref="compound">UpdateTransactionalStatsRequest</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7089" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="26697" bodyend="26708"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1UpdateTransactionalStatsRequest_1aa187832b3ba4d854c68d602eba717707" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::UpdateTransactionalStatsRequest::operator!=</definition>
+        <argsstring>(const UpdateTransactionalStatsRequest &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::UpdateTransactionalStatsRequest::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1UpdateTransactionalStatsRequest" kindref="compound">UpdateTransactionalStatsRequest</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7090" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="7090" bodyend="7092"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1UpdateTransactionalStatsRequest_1a1b93a8da5b4200152e6a7be66a120a4c" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::UpdateTransactionalStatsRequest::operator&lt;</definition>
+        <argsstring>(const UpdateTransactionalStatsRequest &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::UpdateTransactionalStatsRequest::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1UpdateTransactionalStatsRequest" kindref="compound">UpdateTransactionalStatsRequest</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7094" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1UpdateTransactionalStatsRequest_1abe14cb2a7e9ef0bf29878986720ebdeb" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::UpdateTransactionalStatsRequest::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot) override</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::UpdateTransactionalStatsRequest::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7096" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="26586" bodyend="26661"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1UpdateTransactionalStatsRequest_1a8c53201bf62239acb0419b7a147766dc" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::UpdateTransactionalStatsRequest::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const override</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::UpdateTransactionalStatsRequest::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7097" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="26663" bodyend="26687"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1UpdateTransactionalStatsRequest_1afb093babd528b29955e549f1259c780a" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::UpdateTransactionalStatsRequest::printTo</definition>
+        <argsstring>(std::ostream &amp;out) const</argsstring>
+        <name>printTo</name>
+        <qualifiedname>Apache::Hadoop::Hive::UpdateTransactionalStatsRequest::printTo</qualifiedname>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7099" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="26723" bodyend="26731"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::UpdateTransactionalStatsRequest</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1UpdateTransactionalStatsRequest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::UpdateTransactionalStatsRequest</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1UpdateTransactionalStatsRequest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7068" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="7068" bodyend="7100"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1UpdateTransactionalStatsRequest_1a2a5efa1d818815e6cff651d71f29d881" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::UpdateTransactionalStatsRequest</scope><name>__set_deletedCount</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1UpdateTransactionalStatsRequest_1a69d1e973f07870fda02322ab48908485" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::UpdateTransactionalStatsRequest</scope><name>__set_insertCount</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1UpdateTransactionalStatsRequest_1a693cb6c0a66868090ebef0b65d7a7455" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::UpdateTransactionalStatsRequest</scope><name>__set_tableId</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1UpdateTransactionalStatsRequest_1a39af7e030fb33623d3be00b080c81be4" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::UpdateTransactionalStatsRequest</scope><name>__set_updatedCount</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1UpdateTransactionalStatsRequest_1a35103ba54b8a8b55ad8ea66367f8f7f9" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::UpdateTransactionalStatsRequest</scope><name>deletedCount</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1UpdateTransactionalStatsRequest_1a5d9068d37de4e8f1730784beac5909d2" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::UpdateTransactionalStatsRequest</scope><name>insertCount</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1UpdateTransactionalStatsRequest_1aa187832b3ba4d854c68d602eba717707" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::UpdateTransactionalStatsRequest</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1UpdateTransactionalStatsRequest_1a1b93a8da5b4200152e6a7be66a120a4c" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::UpdateTransactionalStatsRequest</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1UpdateTransactionalStatsRequest_1a9cf0dd430680589da268f15df00559cf" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::UpdateTransactionalStatsRequest</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1UpdateTransactionalStatsRequest_1a4bb9c70643862d1678ca00c3893b9ea2" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::UpdateTransactionalStatsRequest</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1UpdateTransactionalStatsRequest_1afb093babd528b29955e549f1259c780a" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::UpdateTransactionalStatsRequest</scope><name>printTo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1UpdateTransactionalStatsRequest_1abe14cb2a7e9ef0bf29878986720ebdeb" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::UpdateTransactionalStatsRequest</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1UpdateTransactionalStatsRequest_1ab96a5b80d181bef86fc2cd0ccddddc6e" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::UpdateTransactionalStatsRequest</scope><name>tableId</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1UpdateTransactionalStatsRequest_1ac37f4c5f7b24f98b0ba226b63a459616" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::UpdateTransactionalStatsRequest</scope><name>updatedCount</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1UpdateTransactionalStatsRequest_1a6bda63375627509352f206ceb60d9109" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::UpdateTransactionalStatsRequest</scope><name>UpdateTransactionalStatsRequest</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1UpdateTransactionalStatsRequest_1a65ed0f6c5348d0db7eec2adae9926e28" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::UpdateTransactionalStatsRequest</scope><name>UpdateTransactionalStatsRequest</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1UpdateTransactionalStatsRequest_1a8c53201bf62239acb0419b7a147766dc" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::UpdateTransactionalStatsRequest</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1UpdateTransactionalStatsRequest_1acf5b9b4a4e2fe6a14bc02c460094d71c" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::UpdateTransactionalStatsRequest</scope><name>~UpdateTransactionalStatsRequest</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

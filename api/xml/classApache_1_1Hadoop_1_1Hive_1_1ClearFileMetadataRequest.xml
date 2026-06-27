@@ -1,0 +1,261 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1ClearFileMetadataRequest" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::ClearFileMetadataRequest</compoundname>
+    <basecompoundref prot="public" virt="virtual">apache::thrift::TBase</basecompoundref>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ClearFileMetadataRequest_1a78e31f25d3299f26d461a792652ee7e2" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; int64_t &gt;</type>
+        <definition>std::vector&lt;int64_t&gt; Apache::Hadoop::Hive::ClearFileMetadataRequest::fileIds</definition>
+        <argsstring></argsstring>
+        <name>fileIds</name>
+        <qualifiedname>Apache::Hadoop::Hive::ClearFileMetadataRequest::fileIds</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10003" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="10003" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ClearFileMetadataRequest_1ad7187e2c80a6a4f135e4174eb370319e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::ClearFileMetadataRequest::ClearFileMetadataRequest</definition>
+        <argsstring>(const ClearFileMetadataRequest &amp;)</argsstring>
+        <name>ClearFileMetadataRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::ClearFileMetadataRequest::ClearFileMetadataRequest</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ClearFileMetadataRequest" kindref="compound">ClearFileMetadataRequest</ref> &amp;</type>
+          <defname>other1292</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9998" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="39427" bodyend="39429"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ClearFileMetadataRequest_1a84ec307243ca2332d3041c12a10aeeec" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1ClearFileMetadataRequest" kindref="compound">ClearFileMetadataRequest</ref> &amp;</type>
+        <definition>ClearFileMetadataRequest &amp; Apache::Hadoop::Hive::ClearFileMetadataRequest::operator=</definition>
+        <argsstring>(const ClearFileMetadataRequest &amp;)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::ClearFileMetadataRequest::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ClearFileMetadataRequest" kindref="compound">ClearFileMetadataRequest</ref> &amp;</type>
+          <defname>other1293</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9999" column="28" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="39430" bodyend="39433"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ClearFileMetadataRequest_1a8505a15830154d07accb39f2394db0e0" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::ClearFileMetadataRequest::ClearFileMetadataRequest</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>ClearFileMetadataRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::ClearFileMetadataRequest::ClearFileMetadataRequest</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10000" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="39324" bodyend="39325"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ClearFileMetadataRequest_1ad05289bb3a854d7ccd8941c47fa1bead" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::ClearFileMetadataRequest::~ClearFileMetadataRequest</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~ClearFileMetadataRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::ClearFileMetadataRequest::~ClearFileMetadataRequest</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10002" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="39321" bodyend="39322"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ClearFileMetadataRequest_1a76c132329ed53a920ce1b9e40ecc8e66" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::ClearFileMetadataRequest::__set_fileIds</definition>
+        <argsstring>(const std::vector&lt; int64_t &gt; &amp;val)</argsstring>
+        <name>__set_fileIds</name>
+        <qualifiedname>Apache::Hadoop::Hive::ClearFileMetadataRequest::__set_fileIds</qualifiedname>
+        <param>
+          <type>const std::vector&lt; int64_t &gt; &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10005" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="39327" bodyend="39329"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ClearFileMetadataRequest_1a9bb2e48f522579d7fb1bf704bbb4737d" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::ClearFileMetadataRequest::operator==</definition>
+        <argsstring>(const ClearFileMetadataRequest &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::ClearFileMetadataRequest::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ClearFileMetadataRequest" kindref="compound">ClearFileMetadataRequest</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10007" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="39420" bodyend="39425"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ClearFileMetadataRequest_1ac0e7944c24aee37aa601b3beb0b14e62" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::ClearFileMetadataRequest::operator!=</definition>
+        <argsstring>(const ClearFileMetadataRequest &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::ClearFileMetadataRequest::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ClearFileMetadataRequest" kindref="compound">ClearFileMetadataRequest</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10008" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="10008" bodyend="10010"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ClearFileMetadataRequest_1ab718a9ee5c3364984bd5a398d038cebc" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::ClearFileMetadataRequest::operator&lt;</definition>
+        <argsstring>(const ClearFileMetadataRequest &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::ClearFileMetadataRequest::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ClearFileMetadataRequest" kindref="compound">ClearFileMetadataRequest</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10012" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ClearFileMetadataRequest_1a7fc8fc11fceafdea05c9707128260f1b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::ClearFileMetadataRequest::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot) override</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::ClearFileMetadataRequest::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10014" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="39337" bodyend="39391"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ClearFileMetadataRequest_1a0689cef9d1ed7db4c6336c5768d609c0" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::ClearFileMetadataRequest::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const override</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::ClearFileMetadataRequest::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10015" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="39393" bodyend="39413"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ClearFileMetadataRequest_1a6bd27e73eda277e79de7954111579f24" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::ClearFileMetadataRequest::printTo</definition>
+        <argsstring>(std::ostream &amp;out) const</argsstring>
+        <name>printTo</name>
+        <qualifiedname>Apache::Hadoop::Hive::ClearFileMetadataRequest::printTo</qualifiedname>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10017" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="39434" bodyend="39439"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::ClearFileMetadataRequest</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1ClearFileMetadataRequest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::ClearFileMetadataRequest</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1ClearFileMetadataRequest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>fileIds</edgelabel>
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+      <node id="3">
+        <label>std::vector&lt; int64_t &gt;</label>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9995" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="9995" bodyend="10018"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ClearFileMetadataRequest_1a76c132329ed53a920ce1b9e40ecc8e66" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ClearFileMetadataRequest</scope><name>__set_fileIds</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ClearFileMetadataRequest_1ad7187e2c80a6a4f135e4174eb370319e" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ClearFileMetadataRequest</scope><name>ClearFileMetadataRequest</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ClearFileMetadataRequest_1a8505a15830154d07accb39f2394db0e0" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ClearFileMetadataRequest</scope><name>ClearFileMetadataRequest</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ClearFileMetadataRequest_1a78e31f25d3299f26d461a792652ee7e2" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ClearFileMetadataRequest</scope><name>fileIds</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ClearFileMetadataRequest_1ac0e7944c24aee37aa601b3beb0b14e62" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ClearFileMetadataRequest</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ClearFileMetadataRequest_1ab718a9ee5c3364984bd5a398d038cebc" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ClearFileMetadataRequest</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ClearFileMetadataRequest_1a84ec307243ca2332d3041c12a10aeeec" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ClearFileMetadataRequest</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ClearFileMetadataRequest_1a9bb2e48f522579d7fb1bf704bbb4737d" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ClearFileMetadataRequest</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ClearFileMetadataRequest_1a6bd27e73eda277e79de7954111579f24" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::ClearFileMetadataRequest</scope><name>printTo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ClearFileMetadataRequest_1a7fc8fc11fceafdea05c9707128260f1b" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ClearFileMetadataRequest</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ClearFileMetadataRequest_1a0689cef9d1ed7db4c6336c5768d609c0" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ClearFileMetadataRequest</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ClearFileMetadataRequest_1ad05289bb3a854d7ccd8941c47fa1bead" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::ClearFileMetadataRequest</scope><name>~ClearFileMetadataRequest</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

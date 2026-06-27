@@ -1,0 +1,128 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structApache_1_1Hadoop_1_1Hive_1_1__CommitTxnRequest____isset" kind="struct" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::_CommitTxnRequest__isset</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__CommitTxnRequest____isset_1a70239ae67c8b344bb0aa22d9ce08bb53" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_CommitTxnRequest__isset::replPolicy</definition>
+        <argsstring></argsstring>
+        <name>replPolicy</name>
+        <qualifiedname>Apache::Hadoop::Hive::_CommitTxnRequest__isset::replPolicy</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7108" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="7108" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__CommitTxnRequest____isset_1ab50d6df8e0a543f3fa4745bf6c090f86" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_CommitTxnRequest__isset::writeEventInfos</definition>
+        <argsstring></argsstring>
+        <name>writeEventInfos</name>
+        <qualifiedname>Apache::Hadoop::Hive::_CommitTxnRequest__isset::writeEventInfos</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7109" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="7109" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__CommitTxnRequest____isset_1aa6a8290df079d16302efd4c6bcf01d96" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_CommitTxnRequest__isset::replLastIdInfo</definition>
+        <argsstring></argsstring>
+        <name>replLastIdInfo</name>
+        <qualifiedname>Apache::Hadoop::Hive::_CommitTxnRequest__isset::replLastIdInfo</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7110" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="7110" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__CommitTxnRequest____isset_1a9ec7a82586e88f5bab82d9e537f0c4ad" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_CommitTxnRequest__isset::keyValue</definition>
+        <argsstring></argsstring>
+        <name>keyValue</name>
+        <qualifiedname>Apache::Hadoop::Hive::_CommitTxnRequest__isset::keyValue</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7111" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="7111" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__CommitTxnRequest____isset_1a59140ab75acb7c86edce0249f1154a24" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_CommitTxnRequest__isset::exclWriteEnabled</definition>
+        <argsstring></argsstring>
+        <name>exclWriteEnabled</name>
+        <qualifiedname>Apache::Hadoop::Hive::_CommitTxnRequest__isset::exclWriteEnabled</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7112" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="7112" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__CommitTxnRequest____isset_1a6ebcf2f85f707501645c6771840e53b3" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_CommitTxnRequest__isset::txn_type</definition>
+        <argsstring></argsstring>
+        <name>txn_type</name>
+        <qualifiedname>Apache::Hadoop::Hive::_CommitTxnRequest__isset::txn_type</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7113" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="7113" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structApache_1_1Hadoop_1_1Hive_1_1__CommitTxnRequest____isset_1a2a5118bb3b860e822e3d55abaee6af2c" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::_CommitTxnRequest__isset::_CommitTxnRequest__isset</definition>
+        <argsstring>()</argsstring>
+        <name>_CommitTxnRequest__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::_CommitTxnRequest__isset::_CommitTxnRequest__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7107" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="7107" bodyend="7107"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7106" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="7106" bodyend="7114"/>
+    <listofallmembers>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__CommitTxnRequest____isset_1a2a5118bb3b860e822e3d55abaee6af2c" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_CommitTxnRequest__isset</scope><name>_CommitTxnRequest__isset</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__CommitTxnRequest____isset_1a59140ab75acb7c86edce0249f1154a24" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_CommitTxnRequest__isset</scope><name>exclWriteEnabled</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__CommitTxnRequest____isset_1a9ec7a82586e88f5bab82d9e537f0c4ad" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_CommitTxnRequest__isset</scope><name>keyValue</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__CommitTxnRequest____isset_1aa6a8290df079d16302efd4c6bcf01d96" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_CommitTxnRequest__isset</scope><name>replLastIdInfo</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__CommitTxnRequest____isset_1a70239ae67c8b344bb0aa22d9ce08bb53" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_CommitTxnRequest__isset</scope><name>replPolicy</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__CommitTxnRequest____isset_1a6ebcf2f85f707501645c6771840e53b3" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_CommitTxnRequest__isset</scope><name>txn_type</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__CommitTxnRequest____isset_1ab50d6df8e0a543f3fa4745bf6c090f86" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_CommitTxnRequest__isset</scope><name>writeEventInfos</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

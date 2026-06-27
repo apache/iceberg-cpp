@@ -1,0 +1,358 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1WMDropPoolRequest" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::WMDropPoolRequest</compoundname>
+    <basecompoundref prot="public" virt="virtual">apache::thrift::TBase</basecompoundref>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1WMDropPoolRequest_1aa3fcca0fc4116e1f9e6cf75635745e9f" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::WMDropPoolRequest::resourcePlanName</definition>
+        <argsstring></argsstring>
+        <name>resourcePlanName</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMDropPoolRequest::resourcePlanName</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12238" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="12238" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1WMDropPoolRequest_1a8b69eceaf56e0e1bbd1abf2aa5f7b837" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::WMDropPoolRequest::poolPath</definition>
+        <argsstring></argsstring>
+        <name>poolPath</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMDropPoolRequest::poolPath</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12239" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="12239" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1WMDropPoolRequest_1afe72a7a1ee78ef46b1ead1f9e61594f7" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::WMDropPoolRequest::ns</definition>
+        <argsstring></argsstring>
+        <name>ns</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMDropPoolRequest::ns</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12240" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="12240" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1WMDropPoolRequest_1a017de38d169dacc4346807bb57c07ff4" prot="public" static="no" mutable="no">
+        <type><ref refid="structApache_1_1Hadoop_1_1Hive_1_1__WMDropPoolRequest____isset" kindref="compound">_WMDropPoolRequest__isset</ref></type>
+        <definition>_WMDropPoolRequest__isset Apache::Hadoop::Hive::WMDropPoolRequest::__isset</definition>
+        <argsstring></argsstring>
+        <name>__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMDropPoolRequest::__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12242" column="29" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="12242" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMDropPoolRequest_1a656c44b4e5b115b1363237cbee2c331a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::WMDropPoolRequest::WMDropPoolRequest</definition>
+        <argsstring>(const WMDropPoolRequest &amp;)</argsstring>
+        <name>WMDropPoolRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMDropPoolRequest::WMDropPoolRequest</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1WMDropPoolRequest" kindref="compound">WMDropPoolRequest</ref> &amp;</type>
+          <defname>other1518</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12233" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="48090" bodyend="48095"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMDropPoolRequest_1a8d259010e320611802787957ac3326ee" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1WMDropPoolRequest" kindref="compound">WMDropPoolRequest</ref> &amp;</type>
+        <definition>WMDropPoolRequest &amp; Apache::Hadoop::Hive::WMDropPoolRequest::operator=</definition>
+        <argsstring>(const WMDropPoolRequest &amp;)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMDropPoolRequest::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1WMDropPoolRequest" kindref="compound">WMDropPoolRequest</ref> &amp;</type>
+          <defname>other1519</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12234" column="21" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="48096" bodyend="48102"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMDropPoolRequest_1a7bcdc1e519923a458c4ed4c0b147ad68" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::WMDropPoolRequest::WMDropPoolRequest</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>WMDropPoolRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMDropPoolRequest::WMDropPoolRequest</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12235" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="47956" bodyend="47960"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMDropPoolRequest_1a6179304d71c93cfa87a667f6c04d5308" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::WMDropPoolRequest::~WMDropPoolRequest</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~WMDropPoolRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMDropPoolRequest::~WMDropPoolRequest</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12237" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="47953" bodyend="47954"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMDropPoolRequest_1a9b65c27bd28b27a8505a27b8293195c2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::WMDropPoolRequest::__set_resourcePlanName</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_resourcePlanName</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMDropPoolRequest::__set_resourcePlanName</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12244" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="47962" bodyend="47965"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMDropPoolRequest_1adb03a812eeaf89ada1285fa4f42d4064" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::WMDropPoolRequest::__set_poolPath</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_poolPath</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMDropPoolRequest::__set_poolPath</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12246" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="47967" bodyend="47970"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMDropPoolRequest_1a8b19a653eaa6bdc1b9e77bc9360b13b9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::WMDropPoolRequest::__set_ns</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_ns</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMDropPoolRequest::__set_ns</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12248" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="47972" bodyend="47975"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMDropPoolRequest_1a6f8ffb7096aebaa521ff1a108f37de72" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::WMDropPoolRequest::operator==</definition>
+        <argsstring>(const WMDropPoolRequest &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMDropPoolRequest::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1WMDropPoolRequest" kindref="compound">WMDropPoolRequest</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12250" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="48073" bodyend="48088"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMDropPoolRequest_1aad3a4c2decc8efad9acc2746a4daff75" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::WMDropPoolRequest::operator!=</definition>
+        <argsstring>(const WMDropPoolRequest &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMDropPoolRequest::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1WMDropPoolRequest" kindref="compound">WMDropPoolRequest</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12251" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="12251" bodyend="12253"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMDropPoolRequest_1a8c559a9abdb345c073bc419913857411" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::WMDropPoolRequest::operator&lt;</definition>
+        <argsstring>(const WMDropPoolRequest &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMDropPoolRequest::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1WMDropPoolRequest" kindref="compound">WMDropPoolRequest</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12255" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMDropPoolRequest_1a266889f9f849c745991a217a2fe15a34" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::WMDropPoolRequest::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot) override</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMDropPoolRequest::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12257" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="47983" bodyend="48038"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMDropPoolRequest_1a754fad82199b96a5ad99c6795f295244" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::WMDropPoolRequest::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const override</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMDropPoolRequest::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12258" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="48040" bodyend="48063"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMDropPoolRequest_1a65c348741ede000bf82c9574a7d58ea2" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::WMDropPoolRequest::printTo</definition>
+        <argsstring>(std::ostream &amp;out) const</argsstring>
+        <name>printTo</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMDropPoolRequest::printTo</qualifiedname>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12260" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="48103" bodyend="48110"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::WMDropPoolRequest</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1WMDropPoolRequest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::WMDropPoolRequest</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1WMDropPoolRequest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>ns</edgelabel>
+          <edgelabel>poolPath</edgelabel>
+          <edgelabel>resourcePlanName</edgelabel>
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="5">
+        <label>Apache::Hadoop::Hive::_WMDropPoolRequest__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__WMDropPoolRequest____isset"/>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+      <node id="4">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="3">
+        <label>std::string</label>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12230" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="12230" bodyend="12261"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMDropPoolRequest_1a017de38d169dacc4346807bb57c07ff4" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMDropPoolRequest</scope><name>__isset</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMDropPoolRequest_1a8b19a653eaa6bdc1b9e77bc9360b13b9" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMDropPoolRequest</scope><name>__set_ns</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMDropPoolRequest_1adb03a812eeaf89ada1285fa4f42d4064" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMDropPoolRequest</scope><name>__set_poolPath</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMDropPoolRequest_1a9b65c27bd28b27a8505a27b8293195c2" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMDropPoolRequest</scope><name>__set_resourcePlanName</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMDropPoolRequest_1afe72a7a1ee78ef46b1ead1f9e61594f7" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMDropPoolRequest</scope><name>ns</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMDropPoolRequest_1aad3a4c2decc8efad9acc2746a4daff75" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMDropPoolRequest</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMDropPoolRequest_1a8c559a9abdb345c073bc419913857411" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMDropPoolRequest</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMDropPoolRequest_1a8d259010e320611802787957ac3326ee" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMDropPoolRequest</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMDropPoolRequest_1a6f8ffb7096aebaa521ff1a108f37de72" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMDropPoolRequest</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMDropPoolRequest_1a8b69eceaf56e0e1bbd1abf2aa5f7b837" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMDropPoolRequest</scope><name>poolPath</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMDropPoolRequest_1a65c348741ede000bf82c9574a7d58ea2" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::WMDropPoolRequest</scope><name>printTo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMDropPoolRequest_1a266889f9f849c745991a217a2fe15a34" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMDropPoolRequest</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMDropPoolRequest_1aa3fcca0fc4116e1f9e6cf75635745e9f" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMDropPoolRequest</scope><name>resourcePlanName</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMDropPoolRequest_1a656c44b4e5b115b1363237cbee2c331a" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMDropPoolRequest</scope><name>WMDropPoolRequest</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMDropPoolRequest_1a7bcdc1e519923a458c4ed4c0b147ad68" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMDropPoolRequest</scope><name>WMDropPoolRequest</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMDropPoolRequest_1a754fad82199b96a5ad99c6795f295244" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMDropPoolRequest</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMDropPoolRequest_1a6179304d71c93cfa87a667f6c04d5308" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::WMDropPoolRequest</scope><name>~WMDropPoolRequest</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

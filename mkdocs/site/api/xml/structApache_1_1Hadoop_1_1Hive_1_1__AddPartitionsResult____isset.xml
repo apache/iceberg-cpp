@@ -1,0 +1,80 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structApache_1_1Hadoop_1_1Hive_1_1__AddPartitionsResult____isset" kind="struct" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::_AddPartitionsResult__isset</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__AddPartitionsResult____isset_1a7dc0f2c764c6e7d178fe9835e59635e7" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_AddPartitionsResult__isset::partitions</definition>
+        <argsstring></argsstring>
+        <name>partitions</name>
+        <qualifiedname>Apache::Hadoop::Hive::_AddPartitionsResult__isset::partitions</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="5808" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="5808" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__AddPartitionsResult____isset_1a700ac170b45c85efbc88ceec8bfd9a48" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_AddPartitionsResult__isset::isStatsCompliant</definition>
+        <argsstring></argsstring>
+        <name>isStatsCompliant</name>
+        <qualifiedname>Apache::Hadoop::Hive::_AddPartitionsResult__isset::isStatsCompliant</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="5809" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="5809" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__AddPartitionsResult____isset_1ae95493a7aeb2f1fa80478be1239dec63" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_AddPartitionsResult__isset::partitionColSchema</definition>
+        <argsstring></argsstring>
+        <name>partitionColSchema</name>
+        <qualifiedname>Apache::Hadoop::Hive::_AddPartitionsResult__isset::partitionColSchema</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="5810" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="5810" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structApache_1_1Hadoop_1_1Hive_1_1__AddPartitionsResult____isset_1af8a3d2d22b183363126ce6b1bcdb4916" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::_AddPartitionsResult__isset::_AddPartitionsResult__isset</definition>
+        <argsstring>()</argsstring>
+        <name>_AddPartitionsResult__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::_AddPartitionsResult__isset::_AddPartitionsResult__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="5807" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="5807" bodyend="5807"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="5806" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="5806" bodyend="5811"/>
+    <listofallmembers>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__AddPartitionsResult____isset_1af8a3d2d22b183363126ce6b1bcdb4916" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_AddPartitionsResult__isset</scope><name>_AddPartitionsResult__isset</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__AddPartitionsResult____isset_1a700ac170b45c85efbc88ceec8bfd9a48" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_AddPartitionsResult__isset</scope><name>isStatsCompliant</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__AddPartitionsResult____isset_1ae95493a7aeb2f1fa80478be1239dec63" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_AddPartitionsResult__isset</scope><name>partitionColSchema</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__AddPartitionsResult____isset_1a7dc0f2c764c6e7d178fe9835e59635e7" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_AddPartitionsResult__isset</scope><name>partitions</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,334 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1ScheduledQueryMaintenanceRequest" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::ScheduledQueryMaintenanceRequest</compoundname>
+    <basecompoundref prot="public" virt="virtual">apache::thrift::TBase</basecompoundref>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ScheduledQueryMaintenanceRequest_1a6ed43a3324399ac1f42d90b7657d5f18" prot="public" static="no" mutable="no">
+        <type>ScheduledQueryMaintenanceRequestType::type</type>
+        <definition>ScheduledQueryMaintenanceRequestType::type Apache::Hadoop::Hive::ScheduledQueryMaintenanceRequest::type</definition>
+        <argsstring></argsstring>
+        <name>type</name>
+        <qualifiedname>Apache::Hadoop::Hive::ScheduledQueryMaintenanceRequest::type</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="see"><para><ref refid="structApache_1_1Hadoop_1_1Hive_1_1ScheduledQueryMaintenanceRequestType" kindref="compound">ScheduledQueryMaintenanceRequestType</ref> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13535" column="46" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="13535" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ScheduledQueryMaintenanceRequest_1aa44f71be0694c265732622bce2c2fa6e" prot="public" static="no" mutable="no">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1ScheduledQuery" kindref="compound">ScheduledQuery</ref></type>
+        <definition>ScheduledQuery Apache::Hadoop::Hive::ScheduledQueryMaintenanceRequest::scheduledQuery</definition>
+        <argsstring></argsstring>
+        <name>scheduledQuery</name>
+        <qualifiedname>Apache::Hadoop::Hive::ScheduledQueryMaintenanceRequest::scheduledQuery</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13536" column="18" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="13536" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ScheduledQueryMaintenanceRequest_1a5b7759cde32adc3d4369a731ab15ba2e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::ScheduledQueryMaintenanceRequest::ScheduledQueryMaintenanceRequest</definition>
+        <argsstring>(const ScheduledQueryMaintenanceRequest &amp;)</argsstring>
+        <name>ScheduledQueryMaintenanceRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::ScheduledQueryMaintenanceRequest::ScheduledQueryMaintenanceRequest</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ScheduledQueryMaintenanceRequest" kindref="compound">ScheduledQueryMaintenanceRequest</ref> &amp;</type>
+          <defname>other1648</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13526" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="53019" bodyend="53022"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ScheduledQueryMaintenanceRequest_1acdb46932ebade8579edf2a5278a44e25" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1ScheduledQueryMaintenanceRequest" kindref="compound">ScheduledQueryMaintenanceRequest</ref> &amp;</type>
+        <definition>ScheduledQueryMaintenanceRequest &amp; Apache::Hadoop::Hive::ScheduledQueryMaintenanceRequest::operator=</definition>
+        <argsstring>(const ScheduledQueryMaintenanceRequest &amp;)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::ScheduledQueryMaintenanceRequest::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ScheduledQueryMaintenanceRequest" kindref="compound">ScheduledQueryMaintenanceRequest</ref> &amp;</type>
+          <defname>other1649</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13527" column="36" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="53023" bodyend="53027"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ScheduledQueryMaintenanceRequest_1a2bb7504411bedc4c141d01beaf17b11f" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::ScheduledQueryMaintenanceRequest::ScheduledQueryMaintenanceRequest</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>ScheduledQueryMaintenanceRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::ScheduledQueryMaintenanceRequest::ScheduledQueryMaintenanceRequest</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13528" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="52911" bodyend="52913"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ScheduledQueryMaintenanceRequest_1ac49c69a76a9d344f10224e3be1e8ab2f" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::ScheduledQueryMaintenanceRequest::~ScheduledQueryMaintenanceRequest</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~ScheduledQueryMaintenanceRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::ScheduledQueryMaintenanceRequest::~ScheduledQueryMaintenanceRequest</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13530" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="52908" bodyend="52909"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ScheduledQueryMaintenanceRequest_1a4dff8cdb49984572cad5fda14c534354" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::ScheduledQueryMaintenanceRequest::__set_type</definition>
+        <argsstring>(const ScheduledQueryMaintenanceRequestType::type val)</argsstring>
+        <name>__set_type</name>
+        <qualifiedname>Apache::Hadoop::Hive::ScheduledQueryMaintenanceRequest::__set_type</qualifiedname>
+        <param>
+          <type>const ScheduledQueryMaintenanceRequestType::type</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13538" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="52915" bodyend="52917"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ScheduledQueryMaintenanceRequest_1ad8608df39dd6239d53820012e81b62b8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::ScheduledQueryMaintenanceRequest::__set_scheduledQuery</definition>
+        <argsstring>(const ScheduledQuery &amp;val)</argsstring>
+        <name>__set_scheduledQuery</name>
+        <qualifiedname>Apache::Hadoop::Hive::ScheduledQueryMaintenanceRequest::__set_scheduledQuery</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ScheduledQuery" kindref="compound">ScheduledQuery</ref> &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13540" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="52919" bodyend="52921"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ScheduledQueryMaintenanceRequest_1a965986bce0b55f64426f3332cbdc9aef" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::ScheduledQueryMaintenanceRequest::operator==</definition>
+        <argsstring>(const ScheduledQueryMaintenanceRequest &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::ScheduledQueryMaintenanceRequest::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ScheduledQueryMaintenanceRequest" kindref="compound">ScheduledQueryMaintenanceRequest</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13542" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="53010" bodyend="53017"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ScheduledQueryMaintenanceRequest_1a42a03ea7046be819d9e8c9a9a556660c" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::ScheduledQueryMaintenanceRequest::operator!=</definition>
+        <argsstring>(const ScheduledQueryMaintenanceRequest &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::ScheduledQueryMaintenanceRequest::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ScheduledQueryMaintenanceRequest" kindref="compound">ScheduledQueryMaintenanceRequest</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13543" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="13543" bodyend="13545"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ScheduledQueryMaintenanceRequest_1a599ab8d3021f347777b455228bd0ee0c" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::ScheduledQueryMaintenanceRequest::operator&lt;</definition>
+        <argsstring>(const ScheduledQueryMaintenanceRequest &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::ScheduledQueryMaintenanceRequest::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ScheduledQueryMaintenanceRequest" kindref="compound">ScheduledQueryMaintenanceRequest</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13547" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ScheduledQueryMaintenanceRequest_1a9ae0e2c865bd08924d10fb9dea313513" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::ScheduledQueryMaintenanceRequest::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot) override</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::ScheduledQueryMaintenanceRequest::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13549" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="52929" bodyend="52984"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ScheduledQueryMaintenanceRequest_1acec32384631954ca239588a671bf5659" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::ScheduledQueryMaintenanceRequest::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const override</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::ScheduledQueryMaintenanceRequest::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13550" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="52986" bodyend="53002"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ScheduledQueryMaintenanceRequest_1a8d275cee0bb8fc588722475c071780b5" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::ScheduledQueryMaintenanceRequest::printTo</definition>
+        <argsstring>(std::ostream &amp;out) const</argsstring>
+        <name>printTo</name>
+        <qualifiedname>Apache::Hadoop::Hive::ScheduledQueryMaintenanceRequest::printTo</qualifiedname>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13552" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="53028" bodyend="53034"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::ScheduledQueryMaintenanceRequest</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1ScheduledQueryMaintenanceRequest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="3">
+        <label>Apache::Hadoop::Hive::ScheduledQuery</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1ScheduledQuery"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>scheduleKey</edgelabel>
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>query</edgelabel>
+          <edgelabel>schedule</edgelabel>
+          <edgelabel>user</edgelabel>
+        </childnode>
+        <childnode refid="7" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="4">
+        <label>Apache::Hadoop::Hive::ScheduledQueryKey</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1ScheduledQueryKey"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>clusterNamespace</edgelabel>
+          <edgelabel>scheduleName</edgelabel>
+        </childnode>
+      </node>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::ScheduledQueryMaintenanceRequest</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1ScheduledQueryMaintenanceRequest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>scheduledQuery</edgelabel>
+        </childnode>
+      </node>
+      <node id="7">
+        <label>Apache::Hadoop::Hive::_ScheduledQuery__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__ScheduledQuery____isset"/>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+      <node id="6">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="5">
+        <label>std::string</label>
+        <childnode refid="6" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13523" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="13523" bodyend="13553"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ScheduledQueryMaintenanceRequest_1ad8608df39dd6239d53820012e81b62b8" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ScheduledQueryMaintenanceRequest</scope><name>__set_scheduledQuery</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ScheduledQueryMaintenanceRequest_1a4dff8cdb49984572cad5fda14c534354" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ScheduledQueryMaintenanceRequest</scope><name>__set_type</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ScheduledQueryMaintenanceRequest_1a42a03ea7046be819d9e8c9a9a556660c" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ScheduledQueryMaintenanceRequest</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ScheduledQueryMaintenanceRequest_1a599ab8d3021f347777b455228bd0ee0c" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ScheduledQueryMaintenanceRequest</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ScheduledQueryMaintenanceRequest_1acdb46932ebade8579edf2a5278a44e25" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ScheduledQueryMaintenanceRequest</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ScheduledQueryMaintenanceRequest_1a965986bce0b55f64426f3332cbdc9aef" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ScheduledQueryMaintenanceRequest</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ScheduledQueryMaintenanceRequest_1a8d275cee0bb8fc588722475c071780b5" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::ScheduledQueryMaintenanceRequest</scope><name>printTo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ScheduledQueryMaintenanceRequest_1a9ae0e2c865bd08924d10fb9dea313513" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ScheduledQueryMaintenanceRequest</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ScheduledQueryMaintenanceRequest_1aa44f71be0694c265732622bce2c2fa6e" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ScheduledQueryMaintenanceRequest</scope><name>scheduledQuery</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ScheduledQueryMaintenanceRequest_1a5b7759cde32adc3d4369a731ab15ba2e" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ScheduledQueryMaintenanceRequest</scope><name>ScheduledQueryMaintenanceRequest</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ScheduledQueryMaintenanceRequest_1a2bb7504411bedc4c141d01beaf17b11f" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ScheduledQueryMaintenanceRequest</scope><name>ScheduledQueryMaintenanceRequest</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ScheduledQueryMaintenanceRequest_1a6ed43a3324399ac1f42d90b7657d5f18" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ScheduledQueryMaintenanceRequest</scope><name>type</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ScheduledQueryMaintenanceRequest_1acec32384631954ca239588a671bf5659" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ScheduledQueryMaintenanceRequest</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ScheduledQueryMaintenanceRequest_1ac49c69a76a9d344f10224e3be1e8ab2f" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::ScheduledQueryMaintenanceRequest</scope><name>~ScheduledQueryMaintenanceRequest</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

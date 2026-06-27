@@ -1,0 +1,461 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1WMPool" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::WMPool</compoundname>
+    <basecompoundref prot="public" virt="virtual">apache::thrift::TBase</basecompoundref>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1WMPool_1a93c296ca9fe2c9d88da0a3b8a91f5236" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::WMPool::resourcePlanName</definition>
+        <argsstring></argsstring>
+        <name>resourcePlanName</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMPool::resourcePlanName</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10999" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="10999" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1WMPool_1aaa9d49d7837899ae99d7eb3d3e214220" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::WMPool::poolPath</definition>
+        <argsstring></argsstring>
+        <name>poolPath</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMPool::poolPath</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11000" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="11000" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1WMPool_1acad017713c92cb4f90510a9e2dce124e" prot="public" static="no" mutable="no">
+        <type>double</type>
+        <definition>double Apache::Hadoop::Hive::WMPool::allocFraction</definition>
+        <argsstring></argsstring>
+        <name>allocFraction</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMPool::allocFraction</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11001" column="10" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="11001" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1WMPool_1a74b653b7df6f62ca2b128ee376becf43" prot="public" static="no" mutable="no">
+        <type>int32_t</type>
+        <definition>int32_t Apache::Hadoop::Hive::WMPool::queryParallelism</definition>
+        <argsstring></argsstring>
+        <name>queryParallelism</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMPool::queryParallelism</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11002" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="11002" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1WMPool_1aa657e1be796f8b3d6ee35fed5b453860" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::WMPool::schedulingPolicy</definition>
+        <argsstring></argsstring>
+        <name>schedulingPolicy</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMPool::schedulingPolicy</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11003" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="11003" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1WMPool_1a18df47a1e0a4a5b88f2cf4611a6b53ab" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::WMPool::ns</definition>
+        <argsstring></argsstring>
+        <name>ns</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMPool::ns</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11004" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="11004" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1WMPool_1a2245ff130284a069b47f2b5f1e5c75ed" prot="public" static="no" mutable="no">
+        <type><ref refid="structApache_1_1Hadoop_1_1Hive_1_1__WMPool____isset" kindref="compound">_WMPool__isset</ref></type>
+        <definition>_WMPool__isset Apache::Hadoop::Hive::WMPool::__isset</definition>
+        <argsstring></argsstring>
+        <name>__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMPool::__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11006" column="18" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="11006" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMPool_1a0d23e82b098561f2ec76767b8b1f4136" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::WMPool::WMPool</definition>
+        <argsstring>(const WMPool &amp;)</argsstring>
+        <name>WMPool</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMPool::WMPool</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1WMPool" kindref="compound">WMPool</ref> &amp;</type>
+          <defname>other1406</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10994" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="43749" bodyend="43757"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMPool_1a310b26b701dd0b0fb8514fec3d0ed27d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1WMPool" kindref="compound">WMPool</ref> &amp;</type>
+        <definition>WMPool &amp; Apache::Hadoop::Hive::WMPool::operator=</definition>
+        <argsstring>(const WMPool &amp;)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMPool::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1WMPool" kindref="compound">WMPool</ref> &amp;</type>
+          <defname>other1407</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10995" column="10" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="43758" bodyend="43767"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMPool_1afb8618c6f20ef493c406876a8bffe777" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::WMPool::WMPool</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>WMPool</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMPool::WMPool</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10996" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="43545" bodyend="43552"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMPool_1a0d370b5e1547ce04c4636b10cb9ec9e2" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::WMPool::~WMPool</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~WMPool</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMPool::~WMPool</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10998" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="43542" bodyend="43543"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMPool_1ad948b17bbaa9a153ea82d77f7a9163fc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::WMPool::__set_resourcePlanName</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_resourcePlanName</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMPool::__set_resourcePlanName</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11008" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="43554" bodyend="43556"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMPool_1afbe518b59657821c49ca43c61c4bd43f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::WMPool::__set_poolPath</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_poolPath</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMPool::__set_poolPath</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11010" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="43558" bodyend="43560"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMPool_1ab56c2e37f829d4ff34bf804e43aa4406" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::WMPool::__set_allocFraction</definition>
+        <argsstring>(const double val)</argsstring>
+        <name>__set_allocFraction</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMPool::__set_allocFraction</qualifiedname>
+        <param>
+          <type>const double</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11012" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="43562" bodyend="43565"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMPool_1a2f4450095b0235a535be90c456b95dc3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::WMPool::__set_queryParallelism</definition>
+        <argsstring>(const int32_t val)</argsstring>
+        <name>__set_queryParallelism</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMPool::__set_queryParallelism</qualifiedname>
+        <param>
+          <type>const int32_t</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11014" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="43567" bodyend="43570"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMPool_1afb798e37f8160e3f846c8c10a9564cf9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::WMPool::__set_schedulingPolicy</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_schedulingPolicy</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMPool::__set_schedulingPolicy</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11016" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="43572" bodyend="43575"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMPool_1a6db3229cbcd5e0ef95681077326c1e7e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::WMPool::__set_ns</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_ns</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMPool::__set_ns</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11018" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="43577" bodyend="43580"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMPool_1a815f86042c0db2463f5d896ee6ead9ad" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::WMPool::operator==</definition>
+        <argsstring>(const WMPool &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMPool::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1WMPool" kindref="compound">WMPool</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11020" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="43724" bodyend="43747"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMPool_1aac97565c00613a757f2ce6a192f7ec3d" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::WMPool::operator!=</definition>
+        <argsstring>(const WMPool &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMPool::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1WMPool" kindref="compound">WMPool</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11021" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="11021" bodyend="11023"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMPool_1a114606e0b0e455e564ce2676459cb79e" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::WMPool::operator&lt;</definition>
+        <argsstring>(const WMPool &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMPool::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1WMPool" kindref="compound">WMPool</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11025" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMPool_1aa36ea5ea1148e2f286016c1f9d32ffbb" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::WMPool::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot) override</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMPool::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11027" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="43588" bodyend="43673"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMPool_1a75366f1b15e45b9b9f54b985743db540" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::WMPool::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const override</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMPool::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11028" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="43675" bodyend="43711"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMPool_1a6b9de2b758b4441320870aaeee87ff47" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::WMPool::printTo</definition>
+        <argsstring>(std::ostream &amp;out) const</argsstring>
+        <name>printTo</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMPool::printTo</qualifiedname>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11030" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="43768" bodyend="43778"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::WMPool</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1WMPool"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::WMPool</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1WMPool"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>ns</edgelabel>
+          <edgelabel>poolPath</edgelabel>
+          <edgelabel>resourcePlanName</edgelabel>
+          <edgelabel>schedulingPolicy</edgelabel>
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="5">
+        <label>Apache::Hadoop::Hive::_WMPool__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__WMPool____isset"/>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+      <node id="4">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="3">
+        <label>std::string</label>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10991" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="10991" bodyend="11031"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMPool_1a2245ff130284a069b47f2b5f1e5c75ed" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMPool</scope><name>__isset</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMPool_1ab56c2e37f829d4ff34bf804e43aa4406" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMPool</scope><name>__set_allocFraction</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMPool_1a6db3229cbcd5e0ef95681077326c1e7e" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMPool</scope><name>__set_ns</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMPool_1afbe518b59657821c49ca43c61c4bd43f" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMPool</scope><name>__set_poolPath</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMPool_1a2f4450095b0235a535be90c456b95dc3" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMPool</scope><name>__set_queryParallelism</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMPool_1ad948b17bbaa9a153ea82d77f7a9163fc" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMPool</scope><name>__set_resourcePlanName</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMPool_1afb798e37f8160e3f846c8c10a9564cf9" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMPool</scope><name>__set_schedulingPolicy</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMPool_1acad017713c92cb4f90510a9e2dce124e" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMPool</scope><name>allocFraction</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMPool_1a18df47a1e0a4a5b88f2cf4611a6b53ab" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMPool</scope><name>ns</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMPool_1aac97565c00613a757f2ce6a192f7ec3d" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMPool</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMPool_1a114606e0b0e455e564ce2676459cb79e" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMPool</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMPool_1a310b26b701dd0b0fb8514fec3d0ed27d" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMPool</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMPool_1a815f86042c0db2463f5d896ee6ead9ad" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMPool</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMPool_1aaa9d49d7837899ae99d7eb3d3e214220" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMPool</scope><name>poolPath</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMPool_1a6b9de2b758b4441320870aaeee87ff47" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::WMPool</scope><name>printTo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMPool_1a74b653b7df6f62ca2b128ee376becf43" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMPool</scope><name>queryParallelism</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMPool_1aa36ea5ea1148e2f286016c1f9d32ffbb" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMPool</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMPool_1a93c296ca9fe2c9d88da0a3b8a91f5236" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMPool</scope><name>resourcePlanName</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMPool_1aa657e1be796f8b3d6ee35fed5b453860" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMPool</scope><name>schedulingPolicy</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMPool_1a0d23e82b098561f2ec76767b8b1f4136" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMPool</scope><name>WMPool</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMPool_1afb8618c6f20ef493c406876a8bffe777" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMPool</scope><name>WMPool</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMPool_1a75366f1b15e45b9b9f54b985743db540" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMPool</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMPool_1a0d370b5e1547ce04c4636b10cb9ec9e2" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::WMPool</scope><name>~WMPool</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

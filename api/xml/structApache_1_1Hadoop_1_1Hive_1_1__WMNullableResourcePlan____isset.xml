@@ -1,0 +1,144 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structApache_1_1Hadoop_1_1Hive_1_1__WMNullableResourcePlan____isset" kind="struct" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::_WMNullableResourcePlan__isset</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__WMNullableResourcePlan____isset_1ab89d878614cd1067bc765ec4af9cce88" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_WMNullableResourcePlan__isset::name</definition>
+        <argsstring></argsstring>
+        <name>name</name>
+        <qualifiedname>Apache::Hadoop::Hive::_WMNullableResourcePlan__isset::name</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10921" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="10921" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__WMNullableResourcePlan____isset_1ad538ee68f1b15633437bd43d359c6f7e" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_WMNullableResourcePlan__isset::status</definition>
+        <argsstring></argsstring>
+        <name>status</name>
+        <qualifiedname>Apache::Hadoop::Hive::_WMNullableResourcePlan__isset::status</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10922" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="10922" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__WMNullableResourcePlan____isset_1adbeaa297c86e0fc55a10611a29cd6eb7" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_WMNullableResourcePlan__isset::queryParallelism</definition>
+        <argsstring></argsstring>
+        <name>queryParallelism</name>
+        <qualifiedname>Apache::Hadoop::Hive::_WMNullableResourcePlan__isset::queryParallelism</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10923" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="10923" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__WMNullableResourcePlan____isset_1a8f591df3e56076294d9f1d6076ca99e3" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_WMNullableResourcePlan__isset::isSetQueryParallelism</definition>
+        <argsstring></argsstring>
+        <name>isSetQueryParallelism</name>
+        <qualifiedname>Apache::Hadoop::Hive::_WMNullableResourcePlan__isset::isSetQueryParallelism</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10924" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="10924" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__WMNullableResourcePlan____isset_1ac9115c630292e7e4b58c0e6bde03cdf0" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_WMNullableResourcePlan__isset::defaultPoolPath</definition>
+        <argsstring></argsstring>
+        <name>defaultPoolPath</name>
+        <qualifiedname>Apache::Hadoop::Hive::_WMNullableResourcePlan__isset::defaultPoolPath</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10925" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="10925" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__WMNullableResourcePlan____isset_1ae57ded2693b781ddf3bc55c7ceaf855c" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_WMNullableResourcePlan__isset::isSetDefaultPoolPath</definition>
+        <argsstring></argsstring>
+        <name>isSetDefaultPoolPath</name>
+        <qualifiedname>Apache::Hadoop::Hive::_WMNullableResourcePlan__isset::isSetDefaultPoolPath</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10926" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="10926" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__WMNullableResourcePlan____isset_1a57421a4a9c2fe24f387de321a252f69c" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_WMNullableResourcePlan__isset::ns</definition>
+        <argsstring></argsstring>
+        <name>ns</name>
+        <qualifiedname>Apache::Hadoop::Hive::_WMNullableResourcePlan__isset::ns</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10927" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="10927" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structApache_1_1Hadoop_1_1Hive_1_1__WMNullableResourcePlan____isset_1adb53c4b7e045ab3f7d5fccb671c22649" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::_WMNullableResourcePlan__isset::_WMNullableResourcePlan__isset</definition>
+        <argsstring>()</argsstring>
+        <name>_WMNullableResourcePlan__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::_WMNullableResourcePlan__isset::_WMNullableResourcePlan__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10920" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="10920" bodyend="10920"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10919" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="10919" bodyend="10928"/>
+    <listofallmembers>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__WMNullableResourcePlan____isset_1adb53c4b7e045ab3f7d5fccb671c22649" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_WMNullableResourcePlan__isset</scope><name>_WMNullableResourcePlan__isset</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__WMNullableResourcePlan____isset_1ac9115c630292e7e4b58c0e6bde03cdf0" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_WMNullableResourcePlan__isset</scope><name>defaultPoolPath</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__WMNullableResourcePlan____isset_1ae57ded2693b781ddf3bc55c7ceaf855c" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_WMNullableResourcePlan__isset</scope><name>isSetDefaultPoolPath</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__WMNullableResourcePlan____isset_1a8f591df3e56076294d9f1d6076ca99e3" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_WMNullableResourcePlan__isset</scope><name>isSetQueryParallelism</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__WMNullableResourcePlan____isset_1ab89d878614cd1067bc765ec4af9cce88" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_WMNullableResourcePlan__isset</scope><name>name</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__WMNullableResourcePlan____isset_1a57421a4a9c2fe24f387de321a252f69c" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_WMNullableResourcePlan__isset</scope><name>ns</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__WMNullableResourcePlan____isset_1adbeaa297c86e0fc55a10611a29cd6eb7" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_WMNullableResourcePlan__isset</scope><name>queryParallelism</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__WMNullableResourcePlan____isset_1ad538ee68f1b15633437bd43d359c6f7e" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_WMNullableResourcePlan__isset</scope><name>status</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

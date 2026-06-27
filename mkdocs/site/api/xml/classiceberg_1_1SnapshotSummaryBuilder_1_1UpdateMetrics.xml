@@ -1,0 +1,432 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1SnapshotSummaryBuilder_1_1UpdateMetrics" kind="class" language="C++" prot="private">
+    <compoundname>iceberg::SnapshotSummaryBuilder::UpdateMetrics</compoundname>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1SnapshotSummaryBuilder_1_1UpdateMetrics_1aaec7227792d3aa4ac1b09cdf4a53a4e9" prot="private" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t iceberg::SnapshotSummaryBuilder::UpdateMetrics::added_size_</definition>
+        <argsstring></argsstring>
+        <name>added_size_</name>
+        <qualifiedname>iceberg::SnapshotSummaryBuilder::UpdateMetrics::added_size_</qualifiedname>
+        <initializer>{0}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/snapshot.h" line="273" column="13" bodyfile="iceberg/snapshot.h" bodystart="273" bodyend="273"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1SnapshotSummaryBuilder_1_1UpdateMetrics_1ad24d072ff6bdd03a75d9017c3aa15320" prot="private" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t iceberg::SnapshotSummaryBuilder::UpdateMetrics::removed_size_</definition>
+        <argsstring></argsstring>
+        <name>removed_size_</name>
+        <qualifiedname>iceberg::SnapshotSummaryBuilder::UpdateMetrics::removed_size_</qualifiedname>
+        <initializer>{0}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/snapshot.h" line="274" column="13" bodyfile="iceberg/snapshot.h" bodystart="274" bodyend="274"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1SnapshotSummaryBuilder_1_1UpdateMetrics_1a15a6d64f0e443f54b3268da9eb4cc52b" prot="private" static="no" mutable="no">
+        <type>int32_t</type>
+        <definition>int32_t iceberg::SnapshotSummaryBuilder::UpdateMetrics::added_files_</definition>
+        <argsstring></argsstring>
+        <name>added_files_</name>
+        <qualifiedname>iceberg::SnapshotSummaryBuilder::UpdateMetrics::added_files_</qualifiedname>
+        <initializer>{0}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/snapshot.h" line="275" column="13" bodyfile="iceberg/snapshot.h" bodystart="275" bodyend="275"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1SnapshotSummaryBuilder_1_1UpdateMetrics_1af7cde4d464bd5f193d3bf6118b3dc07f" prot="private" static="no" mutable="no">
+        <type>int32_t</type>
+        <definition>int32_t iceberg::SnapshotSummaryBuilder::UpdateMetrics::removed_files_</definition>
+        <argsstring></argsstring>
+        <name>removed_files_</name>
+        <qualifiedname>iceberg::SnapshotSummaryBuilder::UpdateMetrics::removed_files_</qualifiedname>
+        <initializer>{0}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/snapshot.h" line="276" column="13" bodyfile="iceberg/snapshot.h" bodystart="276" bodyend="276"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1SnapshotSummaryBuilder_1_1UpdateMetrics_1a94afe7650c8e7f9b4a3a3c2b3d466cad" prot="private" static="no" mutable="no">
+        <type>int32_t</type>
+        <definition>int32_t iceberg::SnapshotSummaryBuilder::UpdateMetrics::added_eq_delete_files_</definition>
+        <argsstring></argsstring>
+        <name>added_eq_delete_files_</name>
+        <qualifiedname>iceberg::SnapshotSummaryBuilder::UpdateMetrics::added_eq_delete_files_</qualifiedname>
+        <initializer>{0}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/snapshot.h" line="277" column="13" bodyfile="iceberg/snapshot.h" bodystart="277" bodyend="277"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1SnapshotSummaryBuilder_1_1UpdateMetrics_1a67363a415a78407ce2a79c74c014ed00" prot="private" static="no" mutable="no">
+        <type>int32_t</type>
+        <definition>int32_t iceberg::SnapshotSummaryBuilder::UpdateMetrics::removed_eq_delete_files_</definition>
+        <argsstring></argsstring>
+        <name>removed_eq_delete_files_</name>
+        <qualifiedname>iceberg::SnapshotSummaryBuilder::UpdateMetrics::removed_eq_delete_files_</qualifiedname>
+        <initializer>{0}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/snapshot.h" line="278" column="13" bodyfile="iceberg/snapshot.h" bodystart="278" bodyend="278"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1SnapshotSummaryBuilder_1_1UpdateMetrics_1a9a0c1a0e10d2953d8db62f2df1c5c7c7" prot="private" static="no" mutable="no">
+        <type>int32_t</type>
+        <definition>int32_t iceberg::SnapshotSummaryBuilder::UpdateMetrics::added_pos_delete_files_</definition>
+        <argsstring></argsstring>
+        <name>added_pos_delete_files_</name>
+        <qualifiedname>iceberg::SnapshotSummaryBuilder::UpdateMetrics::added_pos_delete_files_</qualifiedname>
+        <initializer>{0}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/snapshot.h" line="279" column="13" bodyfile="iceberg/snapshot.h" bodystart="279" bodyend="279"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1SnapshotSummaryBuilder_1_1UpdateMetrics_1a8ebe10aa6a11cf18e034a44ac8d39e25" prot="private" static="no" mutable="no">
+        <type>int32_t</type>
+        <definition>int32_t iceberg::SnapshotSummaryBuilder::UpdateMetrics::removed_pos_delete_files_</definition>
+        <argsstring></argsstring>
+        <name>removed_pos_delete_files_</name>
+        <qualifiedname>iceberg::SnapshotSummaryBuilder::UpdateMetrics::removed_pos_delete_files_</qualifiedname>
+        <initializer>{0}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/snapshot.h" line="280" column="13" bodyfile="iceberg/snapshot.h" bodystart="280" bodyend="280"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1SnapshotSummaryBuilder_1_1UpdateMetrics_1a2df7c8ef98e9442db2a31eba2c3890d3" prot="private" static="no" mutable="no">
+        <type>int32_t</type>
+        <definition>int32_t iceberg::SnapshotSummaryBuilder::UpdateMetrics::added_dvs_</definition>
+        <argsstring></argsstring>
+        <name>added_dvs_</name>
+        <qualifiedname>iceberg::SnapshotSummaryBuilder::UpdateMetrics::added_dvs_</qualifiedname>
+        <initializer>{0}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/snapshot.h" line="281" column="13" bodyfile="iceberg/snapshot.h" bodystart="281" bodyend="281"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1SnapshotSummaryBuilder_1_1UpdateMetrics_1a9f8e1793cdb1d7bf1fbea2902461a929" prot="private" static="no" mutable="no">
+        <type>int32_t</type>
+        <definition>int32_t iceberg::SnapshotSummaryBuilder::UpdateMetrics::removed_dvs_</definition>
+        <argsstring></argsstring>
+        <name>removed_dvs_</name>
+        <qualifiedname>iceberg::SnapshotSummaryBuilder::UpdateMetrics::removed_dvs_</qualifiedname>
+        <initializer>{0}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/snapshot.h" line="282" column="13" bodyfile="iceberg/snapshot.h" bodystart="282" bodyend="282"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1SnapshotSummaryBuilder_1_1UpdateMetrics_1a08464c40061a73f19c451e5a4f25768c" prot="private" static="no" mutable="no">
+        <type>int32_t</type>
+        <definition>int32_t iceberg::SnapshotSummaryBuilder::UpdateMetrics::added_delete_files_</definition>
+        <argsstring></argsstring>
+        <name>added_delete_files_</name>
+        <qualifiedname>iceberg::SnapshotSummaryBuilder::UpdateMetrics::added_delete_files_</qualifiedname>
+        <initializer>{0}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/snapshot.h" line="283" column="13" bodyfile="iceberg/snapshot.h" bodystart="283" bodyend="283"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1SnapshotSummaryBuilder_1_1UpdateMetrics_1a6ef41c364a5d123eb0b6955449d321fe" prot="private" static="no" mutable="no">
+        <type>int32_t</type>
+        <definition>int32_t iceberg::SnapshotSummaryBuilder::UpdateMetrics::removed_delete_files_</definition>
+        <argsstring></argsstring>
+        <name>removed_delete_files_</name>
+        <qualifiedname>iceberg::SnapshotSummaryBuilder::UpdateMetrics::removed_delete_files_</qualifiedname>
+        <initializer>{0}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/snapshot.h" line="284" column="13" bodyfile="iceberg/snapshot.h" bodystart="284" bodyend="284"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1SnapshotSummaryBuilder_1_1UpdateMetrics_1aefbbfb94d5c2a86ed2c15807c06c825c" prot="private" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t iceberg::SnapshotSummaryBuilder::UpdateMetrics::added_records_</definition>
+        <argsstring></argsstring>
+        <name>added_records_</name>
+        <qualifiedname>iceberg::SnapshotSummaryBuilder::UpdateMetrics::added_records_</qualifiedname>
+        <initializer>{0}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/snapshot.h" line="285" column="13" bodyfile="iceberg/snapshot.h" bodystart="285" bodyend="285"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1SnapshotSummaryBuilder_1_1UpdateMetrics_1a5a135956970684b2356ca47eb6746996" prot="private" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t iceberg::SnapshotSummaryBuilder::UpdateMetrics::deleted_records_</definition>
+        <argsstring></argsstring>
+        <name>deleted_records_</name>
+        <qualifiedname>iceberg::SnapshotSummaryBuilder::UpdateMetrics::deleted_records_</qualifiedname>
+        <initializer>{0}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/snapshot.h" line="286" column="13" bodyfile="iceberg/snapshot.h" bodystart="286" bodyend="286"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1SnapshotSummaryBuilder_1_1UpdateMetrics_1a138cc8cd36c9de421c5b524d317b9b58" prot="private" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t iceberg::SnapshotSummaryBuilder::UpdateMetrics::added_pos_deletes_</definition>
+        <argsstring></argsstring>
+        <name>added_pos_deletes_</name>
+        <qualifiedname>iceberg::SnapshotSummaryBuilder::UpdateMetrics::added_pos_deletes_</qualifiedname>
+        <initializer>{0}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/snapshot.h" line="287" column="13" bodyfile="iceberg/snapshot.h" bodystart="287" bodyend="287"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1SnapshotSummaryBuilder_1_1UpdateMetrics_1aa63b9577dceda6129d9a90d73d43c064" prot="private" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t iceberg::SnapshotSummaryBuilder::UpdateMetrics::removed_pos_deletes_</definition>
+        <argsstring></argsstring>
+        <name>removed_pos_deletes_</name>
+        <qualifiedname>iceberg::SnapshotSummaryBuilder::UpdateMetrics::removed_pos_deletes_</qualifiedname>
+        <initializer>{0}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/snapshot.h" line="288" column="13" bodyfile="iceberg/snapshot.h" bodystart="288" bodyend="288"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1SnapshotSummaryBuilder_1_1UpdateMetrics_1a0890ef525d608be35697b6c6214c5a42" prot="private" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t iceberg::SnapshotSummaryBuilder::UpdateMetrics::added_eq_deletes_</definition>
+        <argsstring></argsstring>
+        <name>added_eq_deletes_</name>
+        <qualifiedname>iceberg::SnapshotSummaryBuilder::UpdateMetrics::added_eq_deletes_</qualifiedname>
+        <initializer>{0}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/snapshot.h" line="289" column="13" bodyfile="iceberg/snapshot.h" bodystart="289" bodyend="289"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1SnapshotSummaryBuilder_1_1UpdateMetrics_1a8785243946a8e0ec0f586f677bfcb34c" prot="private" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t iceberg::SnapshotSummaryBuilder::UpdateMetrics::removed_eq_deletes_</definition>
+        <argsstring></argsstring>
+        <name>removed_eq_deletes_</name>
+        <qualifiedname>iceberg::SnapshotSummaryBuilder::UpdateMetrics::removed_eq_deletes_</qualifiedname>
+        <initializer>{0}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/snapshot.h" line="290" column="13" bodyfile="iceberg/snapshot.h" bodystart="290" bodyend="290"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1SnapshotSummaryBuilder_1_1UpdateMetrics_1a0f9cbced21402e1326e074c530354387" prot="private" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool iceberg::SnapshotSummaryBuilder::UpdateMetrics::trust_size_and_delete_counts_</definition>
+        <argsstring></argsstring>
+        <name>trust_size_and_delete_counts_</name>
+        <qualifiedname>iceberg::SnapshotSummaryBuilder::UpdateMetrics::trust_size_and_delete_counts_</qualifiedname>
+        <initializer>{true}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/snapshot.h" line="291" column="10" bodyfile="iceberg/snapshot.h" bodystart="291" bodyend="291"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1SnapshotSummaryBuilder_1_1UpdateMetrics_1a1942565d2a1cc997d6c77e108b5e19df" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::SnapshotSummaryBuilder::UpdateMetrics::Clear</definition>
+        <argsstring>()</argsstring>
+        <name>Clear</name>
+        <qualifiedname>iceberg::SnapshotSummaryBuilder::UpdateMetrics::Clear</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/snapshot.h" line="265" column="10" bodyfile="iceberg/snapshot.cc" bodystart="281" bodyend="301"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SnapshotSummaryBuilder_1_1UpdateMetrics_1ac5295f091e683a02a0ef5ac3b1143ab2" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::SnapshotSummaryBuilder::UpdateMetrics::AddTo</definition>
+        <argsstring>(std::unordered_map&lt; std::string, std::string &gt; &amp;builder) const</argsstring>
+        <name>AddTo</name>
+        <qualifiedname>iceberg::SnapshotSummaryBuilder::UpdateMetrics::AddTo</qualifiedname>
+        <param>
+          <type>std::unordered_map&lt; std::string, std::string &gt; &amp;</type>
+          <declname>builder</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/snapshot.h" line="266" column="10" bodyfile="iceberg/snapshot.cc" bodystart="303" bodyend="340"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SnapshotSummaryBuilder_1_1UpdateMetrics_1abe62d1bf3375bdb46d4167fb929f40f5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::SnapshotSummaryBuilder::UpdateMetrics::AddedFile</definition>
+        <argsstring>(const DataFile &amp;file)</argsstring>
+        <name>AddedFile</name>
+        <qualifiedname>iceberg::SnapshotSummaryBuilder::UpdateMetrics::AddedFile</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref> &amp;</type>
+          <declname>file</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/snapshot.h" line="267" column="10" bodyfile="iceberg/snapshot.cc" bodystart="342" bodyend="367"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SnapshotSummaryBuilder_1_1UpdateMetrics_1a79e80784a672ee6aea455c6aa74a0d78" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::SnapshotSummaryBuilder::UpdateMetrics::RemovedFile</definition>
+        <argsstring>(const DataFile &amp;file)</argsstring>
+        <name>RemovedFile</name>
+        <qualifiedname>iceberg::SnapshotSummaryBuilder::UpdateMetrics::RemovedFile</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref> &amp;</type>
+          <declname>file</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/snapshot.h" line="268" column="10" bodyfile="iceberg/snapshot.cc" bodystart="369" bodyend="394"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SnapshotSummaryBuilder_1_1UpdateMetrics_1a286ad06156b77df8f09bdce5b2373586" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::SnapshotSummaryBuilder::UpdateMetrics::AddedManifest</definition>
+        <argsstring>(const ManifestFile &amp;manifest)</argsstring>
+        <name>AddedManifest</name>
+        <qualifiedname>iceberg::SnapshotSummaryBuilder::UpdateMetrics::AddedManifest</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1ManifestFile" kindref="compound">ManifestFile</ref> &amp;</type>
+          <declname>manifest</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/snapshot.h" line="269" column="10" bodyfile="iceberg/snapshot.cc" bodystart="396" bodyend="412"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SnapshotSummaryBuilder_1_1UpdateMetrics_1abcfc724cef25ffb59134f7a6555cae91" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::SnapshotSummaryBuilder::UpdateMetrics::Merge</definition>
+        <argsstring>(const UpdateMetrics &amp;other)</argsstring>
+        <name>Merge</name>
+        <qualifiedname>iceberg::SnapshotSummaryBuilder::UpdateMetrics::Merge</qualifiedname>
+        <param>
+          <type>const UpdateMetrics &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/snapshot.h" line="270" column="10" bodyfile="iceberg/snapshot.cc" bodystart="414" bodyend="435"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para><ref refid="structiceberg_1_1Metrics" kindref="compound">Metrics</ref> tracking for added and removed files. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/snapshot.h" line="263" column="3" bodyfile="iceberg/snapshot.h" bodystart="263" bodyend="292"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1SnapshotSummaryBuilder_1_1UpdateMetrics_1a08464c40061a73f19c451e5a4f25768c" prot="private" virt="non-virtual"><scope>iceberg::SnapshotSummaryBuilder::UpdateMetrics</scope><name>added_delete_files_</name></member>
+      <member refid="classiceberg_1_1SnapshotSummaryBuilder_1_1UpdateMetrics_1a2df7c8ef98e9442db2a31eba2c3890d3" prot="private" virt="non-virtual"><scope>iceberg::SnapshotSummaryBuilder::UpdateMetrics</scope><name>added_dvs_</name></member>
+      <member refid="classiceberg_1_1SnapshotSummaryBuilder_1_1UpdateMetrics_1a94afe7650c8e7f9b4a3a3c2b3d466cad" prot="private" virt="non-virtual"><scope>iceberg::SnapshotSummaryBuilder::UpdateMetrics</scope><name>added_eq_delete_files_</name></member>
+      <member refid="classiceberg_1_1SnapshotSummaryBuilder_1_1UpdateMetrics_1a0890ef525d608be35697b6c6214c5a42" prot="private" virt="non-virtual"><scope>iceberg::SnapshotSummaryBuilder::UpdateMetrics</scope><name>added_eq_deletes_</name></member>
+      <member refid="classiceberg_1_1SnapshotSummaryBuilder_1_1UpdateMetrics_1a15a6d64f0e443f54b3268da9eb4cc52b" prot="private" virt="non-virtual"><scope>iceberg::SnapshotSummaryBuilder::UpdateMetrics</scope><name>added_files_</name></member>
+      <member refid="classiceberg_1_1SnapshotSummaryBuilder_1_1UpdateMetrics_1a9a0c1a0e10d2953d8db62f2df1c5c7c7" prot="private" virt="non-virtual"><scope>iceberg::SnapshotSummaryBuilder::UpdateMetrics</scope><name>added_pos_delete_files_</name></member>
+      <member refid="classiceberg_1_1SnapshotSummaryBuilder_1_1UpdateMetrics_1a138cc8cd36c9de421c5b524d317b9b58" prot="private" virt="non-virtual"><scope>iceberg::SnapshotSummaryBuilder::UpdateMetrics</scope><name>added_pos_deletes_</name></member>
+      <member refid="classiceberg_1_1SnapshotSummaryBuilder_1_1UpdateMetrics_1aefbbfb94d5c2a86ed2c15807c06c825c" prot="private" virt="non-virtual"><scope>iceberg::SnapshotSummaryBuilder::UpdateMetrics</scope><name>added_records_</name></member>
+      <member refid="classiceberg_1_1SnapshotSummaryBuilder_1_1UpdateMetrics_1aaec7227792d3aa4ac1b09cdf4a53a4e9" prot="private" virt="non-virtual"><scope>iceberg::SnapshotSummaryBuilder::UpdateMetrics</scope><name>added_size_</name></member>
+      <member refid="classiceberg_1_1SnapshotSummaryBuilder_1_1UpdateMetrics_1abe62d1bf3375bdb46d4167fb929f40f5" prot="public" virt="non-virtual"><scope>iceberg::SnapshotSummaryBuilder::UpdateMetrics</scope><name>AddedFile</name></member>
+      <member refid="classiceberg_1_1SnapshotSummaryBuilder_1_1UpdateMetrics_1a286ad06156b77df8f09bdce5b2373586" prot="public" virt="non-virtual"><scope>iceberg::SnapshotSummaryBuilder::UpdateMetrics</scope><name>AddedManifest</name></member>
+      <member refid="classiceberg_1_1SnapshotSummaryBuilder_1_1UpdateMetrics_1ac5295f091e683a02a0ef5ac3b1143ab2" prot="public" virt="non-virtual"><scope>iceberg::SnapshotSummaryBuilder::UpdateMetrics</scope><name>AddTo</name></member>
+      <member refid="classiceberg_1_1SnapshotSummaryBuilder_1_1UpdateMetrics_1a1942565d2a1cc997d6c77e108b5e19df" prot="public" virt="non-virtual"><scope>iceberg::SnapshotSummaryBuilder::UpdateMetrics</scope><name>Clear</name></member>
+      <member refid="classiceberg_1_1SnapshotSummaryBuilder_1_1UpdateMetrics_1a5a135956970684b2356ca47eb6746996" prot="private" virt="non-virtual"><scope>iceberg::SnapshotSummaryBuilder::UpdateMetrics</scope><name>deleted_records_</name></member>
+      <member refid="classiceberg_1_1SnapshotSummaryBuilder_1_1UpdateMetrics_1abcfc724cef25ffb59134f7a6555cae91" prot="public" virt="non-virtual"><scope>iceberg::SnapshotSummaryBuilder::UpdateMetrics</scope><name>Merge</name></member>
+      <member refid="classiceberg_1_1SnapshotSummaryBuilder_1_1UpdateMetrics_1a6ef41c364a5d123eb0b6955449d321fe" prot="private" virt="non-virtual"><scope>iceberg::SnapshotSummaryBuilder::UpdateMetrics</scope><name>removed_delete_files_</name></member>
+      <member refid="classiceberg_1_1SnapshotSummaryBuilder_1_1UpdateMetrics_1a9f8e1793cdb1d7bf1fbea2902461a929" prot="private" virt="non-virtual"><scope>iceberg::SnapshotSummaryBuilder::UpdateMetrics</scope><name>removed_dvs_</name></member>
+      <member refid="classiceberg_1_1SnapshotSummaryBuilder_1_1UpdateMetrics_1a67363a415a78407ce2a79c74c014ed00" prot="private" virt="non-virtual"><scope>iceberg::SnapshotSummaryBuilder::UpdateMetrics</scope><name>removed_eq_delete_files_</name></member>
+      <member refid="classiceberg_1_1SnapshotSummaryBuilder_1_1UpdateMetrics_1a8785243946a8e0ec0f586f677bfcb34c" prot="private" virt="non-virtual"><scope>iceberg::SnapshotSummaryBuilder::UpdateMetrics</scope><name>removed_eq_deletes_</name></member>
+      <member refid="classiceberg_1_1SnapshotSummaryBuilder_1_1UpdateMetrics_1af7cde4d464bd5f193d3bf6118b3dc07f" prot="private" virt="non-virtual"><scope>iceberg::SnapshotSummaryBuilder::UpdateMetrics</scope><name>removed_files_</name></member>
+      <member refid="classiceberg_1_1SnapshotSummaryBuilder_1_1UpdateMetrics_1a8ebe10aa6a11cf18e034a44ac8d39e25" prot="private" virt="non-virtual"><scope>iceberg::SnapshotSummaryBuilder::UpdateMetrics</scope><name>removed_pos_delete_files_</name></member>
+      <member refid="classiceberg_1_1SnapshotSummaryBuilder_1_1UpdateMetrics_1aa63b9577dceda6129d9a90d73d43c064" prot="private" virt="non-virtual"><scope>iceberg::SnapshotSummaryBuilder::UpdateMetrics</scope><name>removed_pos_deletes_</name></member>
+      <member refid="classiceberg_1_1SnapshotSummaryBuilder_1_1UpdateMetrics_1ad24d072ff6bdd03a75d9017c3aa15320" prot="private" virt="non-virtual"><scope>iceberg::SnapshotSummaryBuilder::UpdateMetrics</scope><name>removed_size_</name></member>
+      <member refid="classiceberg_1_1SnapshotSummaryBuilder_1_1UpdateMetrics_1a79e80784a672ee6aea455c6aa74a0d78" prot="public" virt="non-virtual"><scope>iceberg::SnapshotSummaryBuilder::UpdateMetrics</scope><name>RemovedFile</name></member>
+      <member refid="classiceberg_1_1SnapshotSummaryBuilder_1_1UpdateMetrics_1a0f9cbced21402e1326e074c530354387" prot="private" virt="non-virtual"><scope>iceberg::SnapshotSummaryBuilder::UpdateMetrics</scope><name>trust_size_and_delete_counts_</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

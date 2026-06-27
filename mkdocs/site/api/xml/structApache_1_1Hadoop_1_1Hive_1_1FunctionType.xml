@@ -1,0 +1,37 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structApache_1_1Hadoop_1_1Hive_1_1FunctionType" kind="struct" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::FunctionType</compoundname>
+    <sectiondef kind="public-type">
+      <memberdef kind="enum" id="structApache_1_1Hadoop_1_1Hive_1_1FunctionType_1adec168c77becf23d177ec8116e3f74cd" prot="public" static="no" strong="no">
+        <type></type>
+        <name>type</name>
+        <qualifiedname>Apache::Hadoop::Hive::FunctionType::type</qualifiedname>
+        <enumvalue id="structApache_1_1Hadoop_1_1Hive_1_1FunctionType_1adec168c77becf23d177ec8116e3f74cda0a6419839d309b449c6b1e58c59eaaef" prot="public">
+          <name>JAVA</name>
+          <initializer>= 1</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="272" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="272" bodyend="274"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="271" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="271" bodyend="275"/>
+    <listofallmembers>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1FunctionType_1adec168c77becf23d177ec8116e3f74cda0a6419839d309b449c6b1e58c59eaaef" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::FunctionType</scope><name>JAVA</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1FunctionType_1adec168c77becf23d177ec8116e3f74cd" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::FunctionType</scope><name>type</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

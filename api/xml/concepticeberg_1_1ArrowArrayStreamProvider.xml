@@ -1,0 +1,24 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="concepticeberg_1_1ArrowArrayStreamProvider" kind="concept">
+    <compoundname>iceberg::ArrowArrayStreamProvider</compoundname>
+    <includes refid="arrow__c__data__util__internal_8h" local="no">arrow_c_data_util_internal.h</includes>
+    <templateparamlist>
+      <param>
+        <type>typename Source</type>
+      </param>
+    </templateparamlist>
+    <initializer>template&lt;typename Source&gt;
+concept <ref refid="concepticeberg_1_1ArrowArrayStreamProvider" kindref="compound">iceberg::ArrowArrayStreamProvider</ref> =  requires(Source&amp; source) {
+  { source.Close() } -&gt; std::same_as&lt;Status&gt;;
+  { source.Next() } -&gt; std::same_as&lt;Result&lt;std::optional&lt;<ref refid="structArrowArray" kindref="compound">ArrowArray</ref>&gt;&gt;&gt;;
+  { source.Schema() } -&gt; std::same_as&lt;Result&lt;<ref refid="structArrowSchema" kindref="compound">ArrowSchema</ref>&gt;&gt;;
+}    </initializer>
+    <briefdescription>
+<para>Concept for sources that can be wrapped as ArrowArrayStreams. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/arrow_c_data_util_internal.h" line="116" column="1"/>
+  </compounddef>
+</doxygen>

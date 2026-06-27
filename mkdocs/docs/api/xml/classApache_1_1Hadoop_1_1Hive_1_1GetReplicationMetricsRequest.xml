@@ -1,0 +1,356 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1GetReplicationMetricsRequest" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::GetReplicationMetricsRequest</compoundname>
+    <basecompoundref prot="public" virt="virtual">apache::thrift::TBase</basecompoundref>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1GetReplicationMetricsRequest_1a76534cd3802b807057587e85a9fe7f7d" prot="public" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t Apache::Hadoop::Hive::GetReplicationMetricsRequest::scheduledExecutionId</definition>
+        <argsstring></argsstring>
+        <name>scheduledExecutionId</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetReplicationMetricsRequest::scheduledExecutionId</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14806" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="14806" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1GetReplicationMetricsRequest_1a6cdc678868838bc5f58899599bbfe836" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::GetReplicationMetricsRequest::policy</definition>
+        <argsstring></argsstring>
+        <name>policy</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetReplicationMetricsRequest::policy</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14807" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="14807" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1GetReplicationMetricsRequest_1a7f0373c581f9e99de583244d5c3b018b" prot="public" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t Apache::Hadoop::Hive::GetReplicationMetricsRequest::dumpExecutionId</definition>
+        <argsstring></argsstring>
+        <name>dumpExecutionId</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetReplicationMetricsRequest::dumpExecutionId</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14808" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="14808" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1GetReplicationMetricsRequest_1a00b234f4dce5f1b4789a38e8c8582dc2" prot="public" static="no" mutable="no">
+        <type><ref refid="structApache_1_1Hadoop_1_1Hive_1_1__GetReplicationMetricsRequest____isset" kindref="compound">_GetReplicationMetricsRequest__isset</ref></type>
+        <definition>_GetReplicationMetricsRequest__isset Apache::Hadoop::Hive::GetReplicationMetricsRequest::__isset</definition>
+        <argsstring></argsstring>
+        <name>__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetReplicationMetricsRequest::__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14810" column="40" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="14810" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetReplicationMetricsRequest_1a97d380c5be09fc61509e032a1861d1be" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::GetReplicationMetricsRequest::GetReplicationMetricsRequest</definition>
+        <argsstring>(const GetReplicationMetricsRequest &amp;)</argsstring>
+        <name>GetReplicationMetricsRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetReplicationMetricsRequest::GetReplicationMetricsRequest</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1GetReplicationMetricsRequest" kindref="compound">GetReplicationMetricsRequest</ref> &amp;</type>
+          <defname>other1824</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14801" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="58739" bodyend="58744"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetReplicationMetricsRequest_1a75ab2b9e8adfaae47e2c89ea23736f0a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1GetReplicationMetricsRequest" kindref="compound">GetReplicationMetricsRequest</ref> &amp;</type>
+        <definition>GetReplicationMetricsRequest &amp; Apache::Hadoop::Hive::GetReplicationMetricsRequest::operator=</definition>
+        <argsstring>(const GetReplicationMetricsRequest &amp;)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetReplicationMetricsRequest::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1GetReplicationMetricsRequest" kindref="compound">GetReplicationMetricsRequest</ref> &amp;</type>
+          <defname>other1825</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14802" column="32" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="58745" bodyend="58751"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetReplicationMetricsRequest_1ae3e58b82252fa9c33eb63034bc60c72e" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::GetReplicationMetricsRequest::GetReplicationMetricsRequest</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>GetReplicationMetricsRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetReplicationMetricsRequest::GetReplicationMetricsRequest</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14803" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="58605" bodyend="58609"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetReplicationMetricsRequest_1a641adb261f2b7e06dc7cb90190b6674f" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::GetReplicationMetricsRequest::~GetReplicationMetricsRequest</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~GetReplicationMetricsRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetReplicationMetricsRequest::~GetReplicationMetricsRequest</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14805" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="58602" bodyend="58603"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetReplicationMetricsRequest_1a35b7f7a023a510a49f41f7777fa84323" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::GetReplicationMetricsRequest::__set_scheduledExecutionId</definition>
+        <argsstring>(const int64_t val)</argsstring>
+        <name>__set_scheduledExecutionId</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetReplicationMetricsRequest::__set_scheduledExecutionId</qualifiedname>
+        <param>
+          <type>const int64_t</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14812" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="58611" bodyend="58614"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetReplicationMetricsRequest_1a343b9e47aa65ac111cdf642ef36a61c5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::GetReplicationMetricsRequest::__set_policy</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_policy</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetReplicationMetricsRequest::__set_policy</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14814" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="58616" bodyend="58619"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetReplicationMetricsRequest_1ac08d210ec1965b20fd7884dc5d029085" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::GetReplicationMetricsRequest::__set_dumpExecutionId</definition>
+        <argsstring>(const int64_t val)</argsstring>
+        <name>__set_dumpExecutionId</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetReplicationMetricsRequest::__set_dumpExecutionId</qualifiedname>
+        <param>
+          <type>const int64_t</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14816" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="58621" bodyend="58624"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetReplicationMetricsRequest_1a12afa5ba2ec8809d6760a5a4bf6c714e" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::GetReplicationMetricsRequest::operator==</definition>
+        <argsstring>(const GetReplicationMetricsRequest &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetReplicationMetricsRequest::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1GetReplicationMetricsRequest" kindref="compound">GetReplicationMetricsRequest</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14818" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="58722" bodyend="58737"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetReplicationMetricsRequest_1af16bd7bdc33499c1e8f27e4763114468" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::GetReplicationMetricsRequest::operator!=</definition>
+        <argsstring>(const GetReplicationMetricsRequest &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetReplicationMetricsRequest::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1GetReplicationMetricsRequest" kindref="compound">GetReplicationMetricsRequest</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14819" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="14819" bodyend="14821"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetReplicationMetricsRequest_1aaac6c482e4ee6bc380c5441a44ba4495" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::GetReplicationMetricsRequest::operator&lt;</definition>
+        <argsstring>(const GetReplicationMetricsRequest &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetReplicationMetricsRequest::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1GetReplicationMetricsRequest" kindref="compound">GetReplicationMetricsRequest</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14823" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetReplicationMetricsRequest_1a82a8466a6106510e9e53abad4072e904" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::GetReplicationMetricsRequest::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot) override</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetReplicationMetricsRequest::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14825" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="58632" bodyend="58687"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetReplicationMetricsRequest_1acc3793b8fa3a614efd02b59bdd7fa0cc" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::GetReplicationMetricsRequest::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const override</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetReplicationMetricsRequest::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14826" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="58689" bodyend="58712"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetReplicationMetricsRequest_1a948c95d157e553b20df241bba04283ea" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::GetReplicationMetricsRequest::printTo</definition>
+        <argsstring>(std::ostream &amp;out) const</argsstring>
+        <name>printTo</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetReplicationMetricsRequest::printTo</qualifiedname>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14828" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="58752" bodyend="58759"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::GetReplicationMetricsRequest</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1GetReplicationMetricsRequest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::GetReplicationMetricsRequest</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1GetReplicationMetricsRequest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>policy</edgelabel>
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="5">
+        <label>Apache::Hadoop::Hive::_GetReplicationMetricsRequest__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__GetReplicationMetricsRequest____isset"/>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+      <node id="4">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="3">
+        <label>std::string</label>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14798" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="14798" bodyend="14829"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetReplicationMetricsRequest_1a00b234f4dce5f1b4789a38e8c8582dc2" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetReplicationMetricsRequest</scope><name>__isset</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetReplicationMetricsRequest_1ac08d210ec1965b20fd7884dc5d029085" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetReplicationMetricsRequest</scope><name>__set_dumpExecutionId</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetReplicationMetricsRequest_1a343b9e47aa65ac111cdf642ef36a61c5" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetReplicationMetricsRequest</scope><name>__set_policy</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetReplicationMetricsRequest_1a35b7f7a023a510a49f41f7777fa84323" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetReplicationMetricsRequest</scope><name>__set_scheduledExecutionId</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetReplicationMetricsRequest_1a7f0373c581f9e99de583244d5c3b018b" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetReplicationMetricsRequest</scope><name>dumpExecutionId</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetReplicationMetricsRequest_1a97d380c5be09fc61509e032a1861d1be" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetReplicationMetricsRequest</scope><name>GetReplicationMetricsRequest</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetReplicationMetricsRequest_1ae3e58b82252fa9c33eb63034bc60c72e" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetReplicationMetricsRequest</scope><name>GetReplicationMetricsRequest</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetReplicationMetricsRequest_1af16bd7bdc33499c1e8f27e4763114468" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetReplicationMetricsRequest</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetReplicationMetricsRequest_1aaac6c482e4ee6bc380c5441a44ba4495" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetReplicationMetricsRequest</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetReplicationMetricsRequest_1a75ab2b9e8adfaae47e2c89ea23736f0a" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetReplicationMetricsRequest</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetReplicationMetricsRequest_1a12afa5ba2ec8809d6760a5a4bf6c714e" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetReplicationMetricsRequest</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetReplicationMetricsRequest_1a6cdc678868838bc5f58899599bbfe836" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetReplicationMetricsRequest</scope><name>policy</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetReplicationMetricsRequest_1a948c95d157e553b20df241bba04283ea" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::GetReplicationMetricsRequest</scope><name>printTo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetReplicationMetricsRequest_1a82a8466a6106510e9e53abad4072e904" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetReplicationMetricsRequest</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetReplicationMetricsRequest_1a76534cd3802b807057587e85a9fe7f7d" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetReplicationMetricsRequest</scope><name>scheduledExecutionId</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetReplicationMetricsRequest_1acc3793b8fa3a614efd02b59bdd7fa0cc" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetReplicationMetricsRequest</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetReplicationMetricsRequest_1a641adb261f2b7e06dc7cb90190b6674f" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::GetReplicationMetricsRequest</scope><name>~GetReplicationMetricsRequest</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

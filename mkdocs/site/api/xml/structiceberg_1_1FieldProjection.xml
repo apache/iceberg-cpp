@@ -1,0 +1,189 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1FieldProjection" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::FieldProjection</compoundname>
+    <includes refid="schema__util_8h" local="no">schema_util.h</includes>
+    <innerclass refid="structiceberg_1_1FieldProjection_1_1ExtraAttributes" prot="public">iceberg::FieldProjection::ExtraAttributes</innerclass>
+    <sectiondef kind="public-type">
+      <memberdef kind="enum" id="structiceberg_1_1FieldProjection_1a99745e34381f167e29f057e2045942ad" prot="public" static="no" strong="yes">
+        <type></type>
+        <name>Kind</name>
+        <qualifiedname>iceberg::FieldProjection::Kind</qualifiedname>
+        <enumvalue id="structiceberg_1_1FieldProjection_1a99745e34381f167e29f057e2045942adabbb9b6614134f223d02f032cd529275d" prot="public">
+          <name>kProjected</name>
+          <briefdescription>
+<para>The field is projected from the source with possible conversion for supported schema evolution. </para>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="structiceberg_1_1FieldProjection_1a99745e34381f167e29f057e2045942adadc744975fcdff37e4159bd60ef0ee5ab" prot="public">
+          <name>kMetadata</name>
+          <briefdescription>
+<para>Metadata column whose value is generated on demand. </para>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="structiceberg_1_1FieldProjection_1a99745e34381f167e29f057e2045942ada043b62a71551e8b511099802b2b59a98" prot="public">
+          <name>kConstant</name>
+          <briefdescription>
+<para>The field is a constant value (e.g. partition field value) </para>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="structiceberg_1_1FieldProjection_1a99745e34381f167e29f057e2045942ada6867faeaa475fda467e48267db2bb8a8" prot="public">
+          <name>kDefault</name>
+          <briefdescription>
+<para>The field is missing in the source and should be filled with default value. </para>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="structiceberg_1_1FieldProjection_1a99745e34381f167e29f057e2045942adaf2655c2dee87cb9b0646f678a630394b" prot="public">
+          <name>kNull</name>
+          <briefdescription>
+<para>An optional field that is not present in the source. </para>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <briefdescription>
+<para>How the field is projected. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/schema_util.h" line="37" column="3" bodyfile="iceberg/schema_util.h" bodystart="37" bodyend="49"/>
+      </memberdef>
+      <memberdef kind="typedef" id="structiceberg_1_1FieldProjection_1a12da62c9ae783f234891a8c709df1fd7" prot="public" static="no">
+        <type>std::variant&lt; std::monostate, size_t, <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &gt;</type>
+        <definition>using iceberg::FieldProjection::From =  std::variant&lt;std::monostate, size_t, Literal&gt;</definition>
+        <argsstring></argsstring>
+        <name>From</name>
+        <qualifiedname>iceberg::FieldProjection::From</qualifiedname>
+        <briefdescription>
+<para>A variant to indicate how to set the value of the field. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="note"><para><computeroutput>std::monostate</computeroutput> is used to indicate that the field is not projected. </para>
+</simplesect>
+<simplesect kind="note"><para><computeroutput>size_t</computeroutput> is used to indicate the field index in the source schema on the same nesting level when <computeroutput>kind</computeroutput> is <computeroutput>kProjected</computeroutput>. </para>
+</simplesect>
+<simplesect kind="note"><para><computeroutput><ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref></computeroutput> is used to indicate the value of the field when <computeroutput>kind</computeroutput> is <computeroutput>kConstant</computeroutput> or <computeroutput>kDefault</computeroutput>. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/schema_util.h" line="57" column="3" bodyfile="iceberg/schema_util.h" bodystart="57" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1FieldProjection_1a33852da336a2e50a50f18a340505a8c1" prot="public" static="no" mutable="no">
+        <type><ref refid="structiceberg_1_1FieldProjection_1a99745e34381f167e29f057e2045942ad" kindref="member">Kind</ref></type>
+        <definition>Kind iceberg::FieldProjection::kind</definition>
+        <argsstring></argsstring>
+        <name>kind</name>
+        <qualifiedname>iceberg::FieldProjection::kind</qualifiedname>
+        <briefdescription>
+<para>The kind of projection of the field it partners with. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/schema_util.h" line="67" column="8" bodyfile="iceberg/schema_util.h" bodystart="67" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1FieldProjection_1a569ebb40990a81d24a0e58ce65d444d9" prot="public" static="no" mutable="no">
+        <type><ref refid="structiceberg_1_1FieldProjection_1a12da62c9ae783f234891a8c709df1fd7" kindref="member">From</ref></type>
+        <definition>From iceberg::FieldProjection::from</definition>
+        <argsstring></argsstring>
+        <name>from</name>
+        <qualifiedname>iceberg::FieldProjection::from</qualifiedname>
+        <briefdescription>
+<para>The source to set the value of the field. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/schema_util.h" line="69" column="8" bodyfile="iceberg/schema_util.h" bodystart="69" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1FieldProjection_1a26bfceb35e63eadd0c757c6344d7bb5d" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; <ref refid="structiceberg_1_1FieldProjection" kindref="compound">FieldProjection</ref> &gt;</type>
+        <definition>std::vector&lt;FieldProjection&gt; iceberg::FieldProjection::children</definition>
+        <argsstring></argsstring>
+        <name>children</name>
+        <qualifiedname>iceberg::FieldProjection::children</qualifiedname>
+        <briefdescription>
+<para>The children of the field if it is a nested field. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/schema_util.h" line="71" column="15" bodyfile="iceberg/schema_util.h" bodystart="71" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1FieldProjection_1afd27c64e1fe20a9072469d46d7d102ab" prot="public" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="structiceberg_1_1FieldProjection_1_1ExtraAttributes" kindref="compound">ExtraAttributes</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;ExtraAttributes&gt; iceberg::FieldProjection::attributes</definition>
+        <argsstring></argsstring>
+        <name>attributes</name>
+        <qualifiedname>iceberg::FieldProjection::attributes</qualifiedname>
+        <briefdescription>
+<para>Format-specific attributes for the field. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/schema_util.h" line="73" column="19" bodyfile="iceberg/schema_util.h" bodystart="73" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>A field schema partner to carry projection information. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::FieldProjection</label>
+        <link refid="structiceberg_1_1FieldProjection"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>children</edgelabel>
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>attributes</edgelabel>
+        </childnode>
+      </node>
+      <node id="4">
+        <label>iceberg::FieldProjection::ExtraAttributes</label>
+        <link refid="structiceberg_1_1FieldProjection_1_1ExtraAttributes"/>
+      </node>
+      <node id="3">
+        <label>std::shared_ptr&lt; iceberg::FieldProjection::ExtraAttributes &gt;</label>
+        <childnode refid="4" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="2">
+        <label>std::vector&lt; iceberg::FieldProjection &gt;</label>
+        <childnode refid="1" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/schema_util.h" line="35" column="1" bodyfile="iceberg/schema_util.h" bodystart="35" bodyend="74"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1FieldProjection_1afd27c64e1fe20a9072469d46d7d102ab" prot="public" virt="non-virtual"><scope>iceberg::FieldProjection</scope><name>attributes</name></member>
+      <member refid="structiceberg_1_1FieldProjection_1a26bfceb35e63eadd0c757c6344d7bb5d" prot="public" virt="non-virtual"><scope>iceberg::FieldProjection</scope><name>children</name></member>
+      <member refid="structiceberg_1_1FieldProjection_1a12da62c9ae783f234891a8c709df1fd7" prot="public" virt="non-virtual"><scope>iceberg::FieldProjection</scope><name>From</name></member>
+      <member refid="structiceberg_1_1FieldProjection_1a569ebb40990a81d24a0e58ce65d444d9" prot="public" virt="non-virtual"><scope>iceberg::FieldProjection</scope><name>from</name></member>
+      <member refid="structiceberg_1_1FieldProjection_1a99745e34381f167e29f057e2045942ad" prot="public" virt="non-virtual"><scope>iceberg::FieldProjection</scope><name>Kind</name></member>
+      <member refid="structiceberg_1_1FieldProjection_1a33852da336a2e50a50f18a340505a8c1" prot="public" virt="non-virtual"><scope>iceberg::FieldProjection</scope><name>kind</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

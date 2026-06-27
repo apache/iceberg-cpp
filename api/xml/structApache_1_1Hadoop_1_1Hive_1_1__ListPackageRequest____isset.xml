@@ -1,0 +1,48 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structApache_1_1Hadoop_1_1Hive_1_1__ListPackageRequest____isset" kind="struct" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::_ListPackageRequest__isset</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__ListPackageRequest____isset_1aa56a827c91a1153da2b87e2fef620de4" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_ListPackageRequest__isset::dbName</definition>
+        <argsstring></argsstring>
+        <name>dbName</name>
+        <qualifiedname>Apache::Hadoop::Hive::_ListPackageRequest__isset::dbName</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15128" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="15128" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structApache_1_1Hadoop_1_1Hive_1_1__ListPackageRequest____isset_1ab4ace058dcf25c254e154ceab159bb68" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::_ListPackageRequest__isset::_ListPackageRequest__isset</definition>
+        <argsstring>()</argsstring>
+        <name>_ListPackageRequest__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::_ListPackageRequest__isset::_ListPackageRequest__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15127" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="15127" bodyend="15127"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15126" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="15126" bodyend="15129"/>
+    <listofallmembers>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__ListPackageRequest____isset_1ab4ace058dcf25c254e154ceab159bb68" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_ListPackageRequest__isset</scope><name>_ListPackageRequest__isset</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__ListPackageRequest____isset_1aa56a827c91a1153da2b87e2fef620de4" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_ListPackageRequest__isset</scope><name>dbName</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

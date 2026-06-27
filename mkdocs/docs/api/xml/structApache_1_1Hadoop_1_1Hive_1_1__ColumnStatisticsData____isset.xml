@@ -1,0 +1,160 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structApache_1_1Hadoop_1_1Hive_1_1__ColumnStatisticsData____isset" kind="struct" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::_ColumnStatisticsData__isset</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__ColumnStatisticsData____isset_1a2df5b4e1a8398a8cee4b7bd310faa706" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_ColumnStatisticsData__isset::booleanStats</definition>
+        <argsstring></argsstring>
+        <name>booleanStats</name>
+        <qualifiedname>Apache::Hadoop::Hive::_ColumnStatisticsData__isset::booleanStats</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3781" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="3781" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__ColumnStatisticsData____isset_1ab58984f91d845433c55fc9bbe202851a" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_ColumnStatisticsData__isset::longStats</definition>
+        <argsstring></argsstring>
+        <name>longStats</name>
+        <qualifiedname>Apache::Hadoop::Hive::_ColumnStatisticsData__isset::longStats</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3782" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="3782" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__ColumnStatisticsData____isset_1abc6441885d3c1b308ab694b722d8b54b" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_ColumnStatisticsData__isset::doubleStats</definition>
+        <argsstring></argsstring>
+        <name>doubleStats</name>
+        <qualifiedname>Apache::Hadoop::Hive::_ColumnStatisticsData__isset::doubleStats</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3783" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="3783" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__ColumnStatisticsData____isset_1af0ed0ebd08f38e8dc90db2508d9db5b5" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_ColumnStatisticsData__isset::stringStats</definition>
+        <argsstring></argsstring>
+        <name>stringStats</name>
+        <qualifiedname>Apache::Hadoop::Hive::_ColumnStatisticsData__isset::stringStats</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3784" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="3784" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__ColumnStatisticsData____isset_1af5675456997bd4156ad8a31591152f09" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_ColumnStatisticsData__isset::binaryStats</definition>
+        <argsstring></argsstring>
+        <name>binaryStats</name>
+        <qualifiedname>Apache::Hadoop::Hive::_ColumnStatisticsData__isset::binaryStats</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3785" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="3785" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__ColumnStatisticsData____isset_1a7017a47ea59568df3a49efb7378dbcf7" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_ColumnStatisticsData__isset::decimalStats</definition>
+        <argsstring></argsstring>
+        <name>decimalStats</name>
+        <qualifiedname>Apache::Hadoop::Hive::_ColumnStatisticsData__isset::decimalStats</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3786" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="3786" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__ColumnStatisticsData____isset_1ae5fd93ce81f4c99b628de6e0e5be84e8" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_ColumnStatisticsData__isset::dateStats</definition>
+        <argsstring></argsstring>
+        <name>dateStats</name>
+        <qualifiedname>Apache::Hadoop::Hive::_ColumnStatisticsData__isset::dateStats</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3787" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="3787" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__ColumnStatisticsData____isset_1a4eaf5251d0ef3f0488113b88fc374f26" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_ColumnStatisticsData__isset::timestampStats</definition>
+        <argsstring></argsstring>
+        <name>timestampStats</name>
+        <qualifiedname>Apache::Hadoop::Hive::_ColumnStatisticsData__isset::timestampStats</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3788" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="3788" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structApache_1_1Hadoop_1_1Hive_1_1__ColumnStatisticsData____isset_1a38c0d49a51da456c05917041b2bafe58" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::_ColumnStatisticsData__isset::_ColumnStatisticsData__isset</definition>
+        <argsstring>()</argsstring>
+        <name>_ColumnStatisticsData__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::_ColumnStatisticsData__isset::_ColumnStatisticsData__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3780" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="3780" bodyend="3780"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3779" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="3779" bodyend="3789"/>
+    <listofallmembers>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__ColumnStatisticsData____isset_1a38c0d49a51da456c05917041b2bafe58" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_ColumnStatisticsData__isset</scope><name>_ColumnStatisticsData__isset</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__ColumnStatisticsData____isset_1af5675456997bd4156ad8a31591152f09" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_ColumnStatisticsData__isset</scope><name>binaryStats</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__ColumnStatisticsData____isset_1a2df5b4e1a8398a8cee4b7bd310faa706" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_ColumnStatisticsData__isset</scope><name>booleanStats</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__ColumnStatisticsData____isset_1ae5fd93ce81f4c99b628de6e0e5be84e8" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_ColumnStatisticsData__isset</scope><name>dateStats</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__ColumnStatisticsData____isset_1a7017a47ea59568df3a49efb7378dbcf7" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_ColumnStatisticsData__isset</scope><name>decimalStats</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__ColumnStatisticsData____isset_1abc6441885d3c1b308ab694b722d8b54b" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_ColumnStatisticsData__isset</scope><name>doubleStats</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__ColumnStatisticsData____isset_1ab58984f91d845433c55fc9bbe202851a" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_ColumnStatisticsData__isset</scope><name>longStats</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__ColumnStatisticsData____isset_1af0ed0ebd08f38e8dc90db2508d9db5b5" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_ColumnStatisticsData__isset</scope><name>stringStats</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__ColumnStatisticsData____isset_1a4eaf5251d0ef3f0488113b88fc374f26" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_ColumnStatisticsData__isset</scope><name>timestampStats</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,490 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1WriteNotificationLogRequest" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::WriteNotificationLogRequest</compoundname>
+    <basecompoundref prot="public" virt="virtual">apache::thrift::TBase</basecompoundref>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1WriteNotificationLogRequest_1a0248c84ee649b56af6d941cc3181efe3" prot="public" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t Apache::Hadoop::Hive::WriteNotificationLogRequest::txnId</definition>
+        <argsstring></argsstring>
+        <name>txnId</name>
+        <qualifiedname>Apache::Hadoop::Hive::WriteNotificationLogRequest::txnId</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9577" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="9577" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1WriteNotificationLogRequest_1ab8a56459cac89f7a2060dac5cd775c96" prot="public" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t Apache::Hadoop::Hive::WriteNotificationLogRequest::writeId</definition>
+        <argsstring></argsstring>
+        <name>writeId</name>
+        <qualifiedname>Apache::Hadoop::Hive::WriteNotificationLogRequest::writeId</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9578" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="9578" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1WriteNotificationLogRequest_1a9ba3258a293c7f0d911a8703492b10d7" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::WriteNotificationLogRequest::db</definition>
+        <argsstring></argsstring>
+        <name>db</name>
+        <qualifiedname>Apache::Hadoop::Hive::WriteNotificationLogRequest::db</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9579" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="9579" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1WriteNotificationLogRequest_1ab25912264177aec353cbf1bd6ecc19fc" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::WriteNotificationLogRequest::table</definition>
+        <argsstring></argsstring>
+        <name>table</name>
+        <qualifiedname>Apache::Hadoop::Hive::WriteNotificationLogRequest::table</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9580" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="9580" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1WriteNotificationLogRequest_1a0422e5b0ae5e0b49e972e5567ca7821f" prot="public" static="no" mutable="no">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1InsertEventRequestData" kindref="compound">InsertEventRequestData</ref></type>
+        <definition>InsertEventRequestData Apache::Hadoop::Hive::WriteNotificationLogRequest::fileInfo</definition>
+        <argsstring></argsstring>
+        <name>fileInfo</name>
+        <qualifiedname>Apache::Hadoop::Hive::WriteNotificationLogRequest::fileInfo</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9581" column="26" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="9581" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1WriteNotificationLogRequest_1ad6dc341c264ba5887972665f5db7b706" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; std::string &gt;</type>
+        <definition>std::vector&lt;std::string&gt; Apache::Hadoop::Hive::WriteNotificationLogRequest::partitionVals</definition>
+        <argsstring></argsstring>
+        <name>partitionVals</name>
+        <qualifiedname>Apache::Hadoop::Hive::WriteNotificationLogRequest::partitionVals</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9582" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="9582" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1WriteNotificationLogRequest_1a6adee4c83f18c7a2d2800c6927d510fc" prot="public" static="no" mutable="no">
+        <type><ref refid="structApache_1_1Hadoop_1_1Hive_1_1__WriteNotificationLogRequest____isset" kindref="compound">_WriteNotificationLogRequest__isset</ref></type>
+        <definition>_WriteNotificationLogRequest__isset Apache::Hadoop::Hive::WriteNotificationLogRequest::__isset</definition>
+        <argsstring></argsstring>
+        <name>__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::WriteNotificationLogRequest::__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9584" column="39" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="9584" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WriteNotificationLogRequest_1a1630e2832ca7cfb073a26582202a818f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::WriteNotificationLogRequest::WriteNotificationLogRequest</definition>
+        <argsstring>(const WriteNotificationLogRequest &amp;)</argsstring>
+        <name>WriteNotificationLogRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::WriteNotificationLogRequest::WriteNotificationLogRequest</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1WriteNotificationLogRequest" kindref="compound">WriteNotificationLogRequest</ref> &amp;</type>
+          <defname>other1214</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9572" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="37830" bodyend="37838"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WriteNotificationLogRequest_1a3dc95a75d68c5c5a1aa8325e05bac58f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1WriteNotificationLogRequest" kindref="compound">WriteNotificationLogRequest</ref> &amp;</type>
+        <definition>WriteNotificationLogRequest &amp; Apache::Hadoop::Hive::WriteNotificationLogRequest::operator=</definition>
+        <argsstring>(const WriteNotificationLogRequest &amp;)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::WriteNotificationLogRequest::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1WriteNotificationLogRequest" kindref="compound">WriteNotificationLogRequest</ref> &amp;</type>
+          <defname>other1215</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9573" column="31" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="37839" bodyend="37848"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WriteNotificationLogRequest_1aa454f15310e67e384e1aaaca65aa8dc4" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::WriteNotificationLogRequest::WriteNotificationLogRequest</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>WriteNotificationLogRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::WriteNotificationLogRequest::WriteNotificationLogRequest</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9574" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="37611" bodyend="37616"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WriteNotificationLogRequest_1aaae5f34d8fb3f94981dc5ba5b3012106" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::WriteNotificationLogRequest::~WriteNotificationLogRequest</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~WriteNotificationLogRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::WriteNotificationLogRequest::~WriteNotificationLogRequest</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9576" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="37608" bodyend="37609"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WriteNotificationLogRequest_1a03102aca0e727a2be83b75c2e9810f2c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::WriteNotificationLogRequest::__set_txnId</definition>
+        <argsstring>(const int64_t val)</argsstring>
+        <name>__set_txnId</name>
+        <qualifiedname>Apache::Hadoop::Hive::WriteNotificationLogRequest::__set_txnId</qualifiedname>
+        <param>
+          <type>const int64_t</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9586" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="37618" bodyend="37620"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WriteNotificationLogRequest_1af011415ac20bf704614aef753c06d7df" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::WriteNotificationLogRequest::__set_writeId</definition>
+        <argsstring>(const int64_t val)</argsstring>
+        <name>__set_writeId</name>
+        <qualifiedname>Apache::Hadoop::Hive::WriteNotificationLogRequest::__set_writeId</qualifiedname>
+        <param>
+          <type>const int64_t</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9588" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="37622" bodyend="37624"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WriteNotificationLogRequest_1a99cb46315e1403c32c3156c9141f73a8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::WriteNotificationLogRequest::__set_db</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_db</name>
+        <qualifiedname>Apache::Hadoop::Hive::WriteNotificationLogRequest::__set_db</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9590" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="37626" bodyend="37628"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WriteNotificationLogRequest_1a5dd7698770f2eca0eafd48277042c45c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::WriteNotificationLogRequest::__set_table</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_table</name>
+        <qualifiedname>Apache::Hadoop::Hive::WriteNotificationLogRequest::__set_table</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9592" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="37630" bodyend="37632"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WriteNotificationLogRequest_1a83e2ffe11c89f5941e7d97ae6727510a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::WriteNotificationLogRequest::__set_fileInfo</definition>
+        <argsstring>(const InsertEventRequestData &amp;val)</argsstring>
+        <name>__set_fileInfo</name>
+        <qualifiedname>Apache::Hadoop::Hive::WriteNotificationLogRequest::__set_fileInfo</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1InsertEventRequestData" kindref="compound">InsertEventRequestData</ref> &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9594" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="37634" bodyend="37636"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WriteNotificationLogRequest_1a5b34ab7284363ae74e00485c85f5be60" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::WriteNotificationLogRequest::__set_partitionVals</definition>
+        <argsstring>(const std::vector&lt; std::string &gt; &amp;val)</argsstring>
+        <name>__set_partitionVals</name>
+        <qualifiedname>Apache::Hadoop::Hive::WriteNotificationLogRequest::__set_partitionVals</qualifiedname>
+        <param>
+          <type>const std::vector&lt; std::string &gt; &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9596" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="37638" bodyend="37641"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WriteNotificationLogRequest_1a11d91640a5b91c9271dd625b4e2b7d7f" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::WriteNotificationLogRequest::operator==</definition>
+        <argsstring>(const WriteNotificationLogRequest &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::WriteNotificationLogRequest::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1WriteNotificationLogRequest" kindref="compound">WriteNotificationLogRequest</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9598" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="37811" bodyend="37828"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WriteNotificationLogRequest_1a04d6c8b901de471bf61d07bee9c9675c" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::WriteNotificationLogRequest::operator!=</definition>
+        <argsstring>(const WriteNotificationLogRequest &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::WriteNotificationLogRequest::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1WriteNotificationLogRequest" kindref="compound">WriteNotificationLogRequest</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9599" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="9599" bodyend="9601"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WriteNotificationLogRequest_1a352be702c569a35f352ca4766b1d84f5" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::WriteNotificationLogRequest::operator&lt;</definition>
+        <argsstring>(const WriteNotificationLogRequest &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::WriteNotificationLogRequest::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1WriteNotificationLogRequest" kindref="compound">WriteNotificationLogRequest</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9603" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WriteNotificationLogRequest_1a897b6fedc2ee30d77be37498d3d5924e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::WriteNotificationLogRequest::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot) override</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::WriteNotificationLogRequest::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9605" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="37649" bodyend="37755"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WriteNotificationLogRequest_1a7a01abf724224ae442e6fe16f361b394" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::WriteNotificationLogRequest::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const override</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::WriteNotificationLogRequest::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9606" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="37757" bodyend="37798"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WriteNotificationLogRequest_1a078ab6d1e552c57a487df31270e34d05" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::WriteNotificationLogRequest::printTo</definition>
+        <argsstring>(std::ostream &amp;out) const</argsstring>
+        <name>printTo</name>
+        <qualifiedname>Apache::Hadoop::Hive::WriteNotificationLogRequest::printTo</qualifiedname>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9608" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="37849" bodyend="37859"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::WriteNotificationLogRequest</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1WriteNotificationLogRequest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="5">
+        <label>Apache::Hadoop::Hive::InsertEventRequestData</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1InsertEventRequestData"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="6" relation="usage">
+          <edgelabel>filesAdded</edgelabel>
+          <edgelabel>filesAddedChecksum</edgelabel>
+          <edgelabel>partitionVal</edgelabel>
+          <edgelabel>subDirectoryList</edgelabel>
+        </childnode>
+        <childnode refid="7" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::WriteNotificationLogRequest</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1WriteNotificationLogRequest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>db</edgelabel>
+          <edgelabel>table</edgelabel>
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>fileInfo</edgelabel>
+        </childnode>
+        <childnode refid="6" relation="usage">
+          <edgelabel>partitionVals</edgelabel>
+        </childnode>
+        <childnode refid="8" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="7">
+        <label>Apache::Hadoop::Hive::_InsertEventRequestData__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__InsertEventRequestData____isset"/>
+      </node>
+      <node id="8">
+        <label>Apache::Hadoop::Hive::_WriteNotificationLogRequest__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__WriteNotificationLogRequest____isset"/>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+      <node id="4">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="3">
+        <label>std::string</label>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="6">
+        <label>std::vector&lt; std::string &gt;</label>
+        <childnode refid="3" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9569" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="9569" bodyend="9609"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WriteNotificationLogRequest_1a6adee4c83f18c7a2d2800c6927d510fc" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WriteNotificationLogRequest</scope><name>__isset</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WriteNotificationLogRequest_1a99cb46315e1403c32c3156c9141f73a8" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WriteNotificationLogRequest</scope><name>__set_db</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WriteNotificationLogRequest_1a83e2ffe11c89f5941e7d97ae6727510a" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WriteNotificationLogRequest</scope><name>__set_fileInfo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WriteNotificationLogRequest_1a5b34ab7284363ae74e00485c85f5be60" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WriteNotificationLogRequest</scope><name>__set_partitionVals</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WriteNotificationLogRequest_1a5dd7698770f2eca0eafd48277042c45c" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WriteNotificationLogRequest</scope><name>__set_table</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WriteNotificationLogRequest_1a03102aca0e727a2be83b75c2e9810f2c" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WriteNotificationLogRequest</scope><name>__set_txnId</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WriteNotificationLogRequest_1af011415ac20bf704614aef753c06d7df" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WriteNotificationLogRequest</scope><name>__set_writeId</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WriteNotificationLogRequest_1a9ba3258a293c7f0d911a8703492b10d7" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WriteNotificationLogRequest</scope><name>db</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WriteNotificationLogRequest_1a0422e5b0ae5e0b49e972e5567ca7821f" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WriteNotificationLogRequest</scope><name>fileInfo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WriteNotificationLogRequest_1a04d6c8b901de471bf61d07bee9c9675c" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WriteNotificationLogRequest</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WriteNotificationLogRequest_1a352be702c569a35f352ca4766b1d84f5" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WriteNotificationLogRequest</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WriteNotificationLogRequest_1a3dc95a75d68c5c5a1aa8325e05bac58f" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WriteNotificationLogRequest</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WriteNotificationLogRequest_1a11d91640a5b91c9271dd625b4e2b7d7f" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WriteNotificationLogRequest</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WriteNotificationLogRequest_1ad6dc341c264ba5887972665f5db7b706" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WriteNotificationLogRequest</scope><name>partitionVals</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WriteNotificationLogRequest_1a078ab6d1e552c57a487df31270e34d05" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::WriteNotificationLogRequest</scope><name>printTo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WriteNotificationLogRequest_1a897b6fedc2ee30d77be37498d3d5924e" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WriteNotificationLogRequest</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WriteNotificationLogRequest_1ab25912264177aec353cbf1bd6ecc19fc" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WriteNotificationLogRequest</scope><name>table</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WriteNotificationLogRequest_1a0248c84ee649b56af6d941cc3181efe3" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WriteNotificationLogRequest</scope><name>txnId</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WriteNotificationLogRequest_1a7a01abf724224ae442e6fe16f361b394" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WriteNotificationLogRequest</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WriteNotificationLogRequest_1ab8a56459cac89f7a2060dac5cd775c96" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WriteNotificationLogRequest</scope><name>writeId</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WriteNotificationLogRequest_1a1630e2832ca7cfb073a26582202a818f" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WriteNotificationLogRequest</scope><name>WriteNotificationLogRequest</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WriteNotificationLogRequest_1aa454f15310e67e384e1aaaca65aa8dc4" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WriteNotificationLogRequest</scope><name>WriteNotificationLogRequest</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WriteNotificationLogRequest_1aaae5f34d8fb3f94981dc5ba5b3012106" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::WriteNotificationLogRequest</scope><name>~WriteNotificationLogRequest</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

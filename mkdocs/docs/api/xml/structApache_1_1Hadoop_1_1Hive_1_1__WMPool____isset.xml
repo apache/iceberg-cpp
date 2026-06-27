@@ -1,0 +1,96 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structApache_1_1Hadoop_1_1Hive_1_1__WMPool____isset" kind="struct" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::_WMPool__isset</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__WMPool____isset_1a565c7409601026d36c5c6cc318c78bb0" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_WMPool__isset::allocFraction</definition>
+        <argsstring></argsstring>
+        <name>allocFraction</name>
+        <qualifiedname>Apache::Hadoop::Hive::_WMPool__isset::allocFraction</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10985" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="10985" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__WMPool____isset_1a3a5899180d9301ec2b50c8b41c4b9373" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_WMPool__isset::queryParallelism</definition>
+        <argsstring></argsstring>
+        <name>queryParallelism</name>
+        <qualifiedname>Apache::Hadoop::Hive::_WMPool__isset::queryParallelism</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10986" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="10986" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__WMPool____isset_1a1027019417b1a7d33dc26193ebbb2948" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_WMPool__isset::schedulingPolicy</definition>
+        <argsstring></argsstring>
+        <name>schedulingPolicy</name>
+        <qualifiedname>Apache::Hadoop::Hive::_WMPool__isset::schedulingPolicy</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10987" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="10987" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__WMPool____isset_1ac136996cddcda0cb5ba061f7d98c5999" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_WMPool__isset::ns</definition>
+        <argsstring></argsstring>
+        <name>ns</name>
+        <qualifiedname>Apache::Hadoop::Hive::_WMPool__isset::ns</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10988" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="10988" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structApache_1_1Hadoop_1_1Hive_1_1__WMPool____isset_1a1d33ab83167d8813425eb37de8b0945d" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::_WMPool__isset::_WMPool__isset</definition>
+        <argsstring>()</argsstring>
+        <name>_WMPool__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::_WMPool__isset::_WMPool__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10984" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="10984" bodyend="10984"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10983" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="10983" bodyend="10989"/>
+    <listofallmembers>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__WMPool____isset_1a1d33ab83167d8813425eb37de8b0945d" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_WMPool__isset</scope><name>_WMPool__isset</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__WMPool____isset_1a565c7409601026d36c5c6cc318c78bb0" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_WMPool__isset</scope><name>allocFraction</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__WMPool____isset_1ac136996cddcda0cb5ba061f7d98c5999" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_WMPool__isset</scope><name>ns</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__WMPool____isset_1a3a5899180d9301ec2b50c8b41c4b9373" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_WMPool__isset</scope><name>queryParallelism</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__WMPool____isset_1a1027019417b1a7d33dc26193ebbb2948" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_WMPool__isset</scope><name>schedulingPolicy</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

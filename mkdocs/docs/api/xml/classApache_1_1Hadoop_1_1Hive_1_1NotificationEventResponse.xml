@@ -1,0 +1,293 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1NotificationEventResponse" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::NotificationEventResponse</compoundname>
+    <basecompoundref prot="public" virt="virtual">apache::thrift::TBase</basecompoundref>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1NotificationEventResponse_1aff6cdaad384e9271213bfa2ee53fb135" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; <ref refid="classApache_1_1Hadoop_1_1Hive_1_1NotificationEvent" kindref="compound">NotificationEvent</ref> &gt;</type>
+        <definition>std::vector&lt;NotificationEvent&gt; Apache::Hadoop::Hive::NotificationEventResponse::events</definition>
+        <argsstring></argsstring>
+        <name>events</name>
+        <qualifiedname>Apache::Hadoop::Hive::NotificationEventResponse::events</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9240" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="9240" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1NotificationEventResponse_1ae1942a83d8b8226188cad3c5a3ebad19" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::NotificationEventResponse::NotificationEventResponse</definition>
+        <argsstring>(const NotificationEventResponse &amp;)</argsstring>
+        <name>NotificationEventResponse</name>
+        <qualifiedname>Apache::Hadoop::Hive::NotificationEventResponse::NotificationEventResponse</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1NotificationEventResponse" kindref="compound">NotificationEventResponse</ref> &amp;</type>
+          <defname>other1136</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9235" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="36236" bodyend="36238"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1NotificationEventResponse_1a30b920381067f98885a12f6fe9cf51c9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1NotificationEventResponse" kindref="compound">NotificationEventResponse</ref> &amp;</type>
+        <definition>NotificationEventResponse &amp; Apache::Hadoop::Hive::NotificationEventResponse::operator=</definition>
+        <argsstring>(const NotificationEventResponse &amp;)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::NotificationEventResponse::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1NotificationEventResponse" kindref="compound">NotificationEventResponse</ref> &amp;</type>
+          <defname>other1137</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9236" column="29" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="36239" bodyend="36242"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1NotificationEventResponse_1a0ea30fe43b9b8dd0e459f29a4c27b059" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::NotificationEventResponse::NotificationEventResponse</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>NotificationEventResponse</name>
+        <qualifiedname>Apache::Hadoop::Hive::NotificationEventResponse::NotificationEventResponse</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9237" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="36133" bodyend="36134"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1NotificationEventResponse_1a9a2ddc1849f3e9fa335c7573683d414e" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::NotificationEventResponse::~NotificationEventResponse</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~NotificationEventResponse</name>
+        <qualifiedname>Apache::Hadoop::Hive::NotificationEventResponse::~NotificationEventResponse</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9239" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="36130" bodyend="36131"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1NotificationEventResponse_1af86bd6d0dd020a86772569e1163be4ec" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::NotificationEventResponse::__set_events</definition>
+        <argsstring>(const std::vector&lt; NotificationEvent &gt; &amp;val)</argsstring>
+        <name>__set_events</name>
+        <qualifiedname>Apache::Hadoop::Hive::NotificationEventResponse::__set_events</qualifiedname>
+        <param>
+          <type>const std::vector&lt; <ref refid="classApache_1_1Hadoop_1_1Hive_1_1NotificationEvent" kindref="compound">NotificationEvent</ref> &gt; &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9242" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="36136" bodyend="36138"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1NotificationEventResponse_1a4d733aae88163079b104b15ddf057e88" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::NotificationEventResponse::operator==</definition>
+        <argsstring>(const NotificationEventResponse &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::NotificationEventResponse::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1NotificationEventResponse" kindref="compound">NotificationEventResponse</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9244" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="36229" bodyend="36234"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1NotificationEventResponse_1a20a1bb62b948d097e605943c1dac8b7f" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::NotificationEventResponse::operator!=</definition>
+        <argsstring>(const NotificationEventResponse &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::NotificationEventResponse::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1NotificationEventResponse" kindref="compound">NotificationEventResponse</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9245" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="9245" bodyend="9247"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1NotificationEventResponse_1ad1868adce56c6e0c773d33be8e44ac01" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::NotificationEventResponse::operator&lt;</definition>
+        <argsstring>(const NotificationEventResponse &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::NotificationEventResponse::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1NotificationEventResponse" kindref="compound">NotificationEventResponse</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9249" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1NotificationEventResponse_1a72b37e64b612187efecb7145ade5a0b1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::NotificationEventResponse::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot) override</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::NotificationEventResponse::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9251" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="36146" bodyend="36200"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1NotificationEventResponse_1a1e4000ff387c1da965c16449dce074db" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::NotificationEventResponse::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const override</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::NotificationEventResponse::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9252" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="36202" bodyend="36222"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1NotificationEventResponse_1ae5cae0e07e5cf4565308a1836aa95dac" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::NotificationEventResponse::printTo</definition>
+        <argsstring>(std::ostream &amp;out) const</argsstring>
+        <name>printTo</name>
+        <qualifiedname>Apache::Hadoop::Hive::NotificationEventResponse::printTo</qualifiedname>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9254" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="36243" bodyend="36248"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::NotificationEventResponse</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1NotificationEventResponse"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="4">
+        <label>Apache::Hadoop::Hive::NotificationEvent</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1NotificationEvent"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>catName</edgelabel>
+          <edgelabel>dbName</edgelabel>
+          <edgelabel>eventType</edgelabel>
+          <edgelabel>message</edgelabel>
+          <edgelabel>messageFormat</edgelabel>
+          <edgelabel>tableName</edgelabel>
+        </childnode>
+        <childnode refid="7" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::NotificationEventResponse</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1NotificationEventResponse"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>events</edgelabel>
+        </childnode>
+      </node>
+      <node id="7">
+        <label>Apache::Hadoop::Hive::_NotificationEvent__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__NotificationEvent____isset"/>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+      <node id="6">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="5">
+        <label>std::string</label>
+        <childnode refid="6" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::vector&lt; Apache::Hadoop::Hive::NotificationEvent &gt;</label>
+        <childnode refid="4" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9232" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="9232" bodyend="9255"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1NotificationEventResponse_1af86bd6d0dd020a86772569e1163be4ec" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::NotificationEventResponse</scope><name>__set_events</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1NotificationEventResponse_1aff6cdaad384e9271213bfa2ee53fb135" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::NotificationEventResponse</scope><name>events</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1NotificationEventResponse_1ae1942a83d8b8226188cad3c5a3ebad19" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::NotificationEventResponse</scope><name>NotificationEventResponse</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1NotificationEventResponse_1a0ea30fe43b9b8dd0e459f29a4c27b059" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::NotificationEventResponse</scope><name>NotificationEventResponse</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1NotificationEventResponse_1a20a1bb62b948d097e605943c1dac8b7f" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::NotificationEventResponse</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1NotificationEventResponse_1ad1868adce56c6e0c773d33be8e44ac01" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::NotificationEventResponse</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1NotificationEventResponse_1a30b920381067f98885a12f6fe9cf51c9" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::NotificationEventResponse</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1NotificationEventResponse_1a4d733aae88163079b104b15ddf057e88" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::NotificationEventResponse</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1NotificationEventResponse_1ae5cae0e07e5cf4565308a1836aa95dac" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::NotificationEventResponse</scope><name>printTo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1NotificationEventResponse_1a72b37e64b612187efecb7145ade5a0b1" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::NotificationEventResponse</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1NotificationEventResponse_1a1e4000ff387c1da965c16449dce074db" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::NotificationEventResponse</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1NotificationEventResponse_1a9a2ddc1849f3e9fa335c7573683d414e" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::NotificationEventResponse</scope><name>~NotificationEventResponse</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

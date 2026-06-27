@@ -1,0 +1,138 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1rest_1_1CreateTableErrorHandler" kind="class" language="C++" prot="public" final="yes">
+    <compoundname>iceberg::rest::CreateTableErrorHandler</compoundname>
+    <basecompoundref refid="classiceberg_1_1rest_1_1TableCommitErrorHandler" prot="public" virt="non-virtual">iceberg::rest::TableCommitErrorHandler</basecompoundref>
+    <includes refid="error__handlers_8h" local="no">error_handlers.h</includes>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1CreateTableErrorHandler_1ae496433c44e2535956eb497b65ca0347" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1rest_1_1CreateTableErrorHandler" kindref="compound">CreateTableErrorHandler</ref> &gt; &amp;</type>
+        <definition>const std::shared_ptr&lt; CreateTableErrorHandler &gt; &amp; iceberg::rest::CreateTableErrorHandler::Instance</definition>
+        <argsstring>()</argsstring>
+        <name>Instance</name>
+        <qualifiedname>iceberg::rest::CreateTableErrorHandler::Instance</qualifiedname>
+        <briefdescription>
+<para>Returns the singleton instance. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/error_handlers.h" line="134" column="32" bodyfile="iceberg/catalog/rest/error_handlers.cc" bodystart="199" bodyend="203"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1CreateTableErrorHandler_1ad990bd05dfed60c51fb0374985284963" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>Status</type>
+        <definition>Status iceberg::rest::CreateTableErrorHandler::Accept</definition>
+        <argsstring>(const ErrorResponse &amp;error) const override</argsstring>
+        <name>Accept</name>
+        <qualifiedname>iceberg::rest::CreateTableErrorHandler::Accept</qualifiedname>
+        <reimplements refid="classiceberg_1_1rest_1_1ErrorHandler_1a067914297e11fab05071d5bef97950e6">Accept</reimplements>
+        <param>
+          <type>const <ref refid="structiceberg_1_1rest_1_1ErrorResponse" kindref="compound">ErrorResponse</ref> &amp;</type>
+          <declname>error</declname>
+        </param>
+        <briefdescription>
+<para>Process an error response and return an appropriate <ref refid="structiceberg_1_1Error" kindref="compound">Error</ref>. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>error</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The error response parsed from the HTTP response body </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>An <ref refid="structiceberg_1_1Error" kindref="compound">Error</ref> object with appropriate ErrorKind and message </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/error_handlers.h" line="136" column="10" bodyfile="iceberg/catalog/rest/error_handlers.cc" bodystart="205" bodyend="214"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1CreateTableErrorHandler_1acebb69078c216339ff369fd444c4aa5c" prot="private" static="no" constexpr="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>constexpr</type>
+        <definition>constexpr iceberg::rest::CreateTableErrorHandler::CreateTableErrorHandler</definition>
+        <argsstring>()=default</argsstring>
+        <name>CreateTableErrorHandler</name>
+        <qualifiedname>iceberg::rest::CreateTableErrorHandler::CreateTableErrorHandler</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/error_handlers.h" line="139" column="13"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para><ref refid="classiceberg_1_1Table" kindref="compound">Table</ref> create commit operation error handler. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>iceberg::rest::CreateTableErrorHandler</label>
+        <link refid="classiceberg_1_1rest_1_1CreateTableErrorHandler"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>iceberg::rest::DefaultErrorHandler</label>
+        <link refid="classiceberg_1_1rest_1_1DefaultErrorHandler"/>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>iceberg::rest::ErrorHandler</label>
+        <link refid="classiceberg_1_1rest_1_1ErrorHandler"/>
+      </node>
+      <node id="2">
+        <label>iceberg::rest::TableCommitErrorHandler</label>
+        <link refid="classiceberg_1_1rest_1_1TableCommitErrorHandler"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::rest::CreateTableErrorHandler</label>
+        <link refid="classiceberg_1_1rest_1_1CreateTableErrorHandler"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>iceberg::rest::DefaultErrorHandler</label>
+        <link refid="classiceberg_1_1rest_1_1DefaultErrorHandler"/>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>iceberg::rest::ErrorHandler</label>
+        <link refid="classiceberg_1_1rest_1_1ErrorHandler"/>
+      </node>
+      <node id="2">
+        <label>iceberg::rest::TableCommitErrorHandler</label>
+        <link refid="classiceberg_1_1rest_1_1TableCommitErrorHandler"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/rest/error_handlers.h" line="131" column="1" bodyfile="iceberg/catalog/rest/error_handlers.h" bodystart="131" bodyend="140"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1rest_1_1CreateTableErrorHandler_1ad990bd05dfed60c51fb0374985284963" prot="public" virt="virtual"><scope>iceberg::rest::CreateTableErrorHandler</scope><name>Accept</name></member>
+      <member refid="classiceberg_1_1rest_1_1CreateTableErrorHandler_1acebb69078c216339ff369fd444c4aa5c" prot="private" virt="non-virtual"><scope>iceberg::rest::CreateTableErrorHandler</scope><name>CreateTableErrorHandler</name></member>
+      <member refid="classiceberg_1_1rest_1_1DefaultErrorHandler_1a69713ed946e5365409eac265d78ddcf7" prot="protected" virt="non-virtual"><scope>iceberg::rest::CreateTableErrorHandler</scope><name>DefaultErrorHandler</name></member>
+      <member refid="classiceberg_1_1rest_1_1CreateTableErrorHandler_1ae496433c44e2535956eb497b65ca0347" prot="public" virt="non-virtual"><scope>iceberg::rest::CreateTableErrorHandler</scope><name>Instance</name></member>
+      <member refid="classiceberg_1_1rest_1_1DefaultErrorHandler_1a9a53f7c6a5f373563678aeaea1e37049" prot="public" virt="virtual"><scope>iceberg::rest::CreateTableErrorHandler</scope><name>ParseResponse</name></member>
+      <member refid="classiceberg_1_1rest_1_1TableCommitErrorHandler_1a719724a522ee9d0815ea27013ae4f7aa" prot="protected" virt="non-virtual"><scope>iceberg::rest::CreateTableErrorHandler</scope><name>TableCommitErrorHandler</name></member>
+      <member refid="classiceberg_1_1rest_1_1ErrorHandler_1a1e4b61afbcf63e4f937ba67063493823" prot="public" virt="virtual"><scope>iceberg::rest::CreateTableErrorHandler</scope><name>~ErrorHandler</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

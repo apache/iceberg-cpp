@@ -1,0 +1,307 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1WMCreatePoolRequest" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::WMCreatePoolRequest</compoundname>
+    <basecompoundref prot="public" virt="virtual">apache::thrift::TBase</basecompoundref>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1WMCreatePoolRequest_1a7e015f36a62f1f75b0877807aac97820" prot="public" static="no" mutable="no">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1WMPool" kindref="compound">WMPool</ref></type>
+        <definition>WMPool Apache::Hadoop::Hive::WMCreatePoolRequest::pool</definition>
+        <argsstring></argsstring>
+        <name>pool</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMCreatePoolRequest::pool</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12106" column="10" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="12106" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1WMCreatePoolRequest_1a916d1f79bb0ee1812e9055fc0f2da57a" prot="public" static="no" mutable="no">
+        <type><ref refid="structApache_1_1Hadoop_1_1Hive_1_1__WMCreatePoolRequest____isset" kindref="compound">_WMCreatePoolRequest__isset</ref></type>
+        <definition>_WMCreatePoolRequest__isset Apache::Hadoop::Hive::WMCreatePoolRequest::__isset</definition>
+        <argsstring></argsstring>
+        <name>__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMCreatePoolRequest::__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12108" column="31" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="12108" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMCreatePoolRequest_1addd4e9887c40fcfaff6077119db9f5b1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::WMCreatePoolRequest::WMCreatePoolRequest</definition>
+        <argsstring>(const WMCreatePoolRequest &amp;)</argsstring>
+        <name>WMCreatePoolRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMCreatePoolRequest::WMCreatePoolRequest</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1WMCreatePoolRequest" kindref="compound">WMCreatePoolRequest</ref> &amp;</type>
+          <defname>other1510</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12101" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="47654" bodyend="47657"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMCreatePoolRequest_1a9fe1241a4620fb78f8eb487f8255844c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1WMCreatePoolRequest" kindref="compound">WMCreatePoolRequest</ref> &amp;</type>
+        <definition>WMCreatePoolRequest &amp; Apache::Hadoop::Hive::WMCreatePoolRequest::operator=</definition>
+        <argsstring>(const WMCreatePoolRequest &amp;)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMCreatePoolRequest::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1WMCreatePoolRequest" kindref="compound">WMCreatePoolRequest</ref> &amp;</type>
+          <defname>other1511</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12102" column="23" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="47658" bodyend="47662"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMCreatePoolRequest_1a15fd2e5b0ae0c816b02b9b4fff0ae357" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::WMCreatePoolRequest::WMCreatePoolRequest</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>WMCreatePoolRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMCreatePoolRequest::WMCreatePoolRequest</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12103" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="47569" bodyend="47570"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMCreatePoolRequest_1aa51d40653c652bf4afff58413a4dd676" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::WMCreatePoolRequest::~WMCreatePoolRequest</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~WMCreatePoolRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMCreatePoolRequest::~WMCreatePoolRequest</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12105" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="47566" bodyend="47567"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMCreatePoolRequest_1a44309c82fb8c052eace1384d247ccd78" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::WMCreatePoolRequest::__set_pool</definition>
+        <argsstring>(const WMPool &amp;val)</argsstring>
+        <name>__set_pool</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMCreatePoolRequest::__set_pool</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1WMPool" kindref="compound">WMPool</ref> &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12110" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="47572" bodyend="47575"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMCreatePoolRequest_1a07e5d481c85cdefbd616cd2fa921e6a3" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::WMCreatePoolRequest::operator==</definition>
+        <argsstring>(const WMCreatePoolRequest &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMCreatePoolRequest::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1WMCreatePoolRequest" kindref="compound">WMCreatePoolRequest</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12112" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="47645" bodyend="47652"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMCreatePoolRequest_1afb414bb396e24e9c8c6b7207bfd92016" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::WMCreatePoolRequest::operator!=</definition>
+        <argsstring>(const WMCreatePoolRequest &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMCreatePoolRequest::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1WMCreatePoolRequest" kindref="compound">WMCreatePoolRequest</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12113" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="12113" bodyend="12115"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMCreatePoolRequest_1a5217d9dcfd1f94a464473b2a696a9829" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::WMCreatePoolRequest::operator&lt;</definition>
+        <argsstring>(const WMCreatePoolRequest &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMCreatePoolRequest::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1WMCreatePoolRequest" kindref="compound">WMCreatePoolRequest</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12117" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMCreatePoolRequest_1aaa578237c9802869b1fc13cee19ecdab" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::WMCreatePoolRequest::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot) override</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMCreatePoolRequest::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12119" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="47583" bodyend="47622"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMCreatePoolRequest_1a9b8519f35c9f566604ce93c19f2f07f7" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::WMCreatePoolRequest::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const override</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMCreatePoolRequest::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12120" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="47624" bodyend="47637"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMCreatePoolRequest_1a949f91648b1e089c33917d1394e4fc66" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::WMCreatePoolRequest::printTo</definition>
+        <argsstring>(std::ostream &amp;out) const</argsstring>
+        <name>printTo</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMCreatePoolRequest::printTo</qualifiedname>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12122" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="47663" bodyend="47668"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::WMCreatePoolRequest</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1WMCreatePoolRequest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::WMCreatePoolRequest</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1WMCreatePoolRequest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>pool</edgelabel>
+        </childnode>
+        <childnode refid="7" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>Apache::Hadoop::Hive::WMPool</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1WMPool"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>ns</edgelabel>
+          <edgelabel>poolPath</edgelabel>
+          <edgelabel>resourcePlanName</edgelabel>
+          <edgelabel>schedulingPolicy</edgelabel>
+        </childnode>
+        <childnode refid="6" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="7">
+        <label>Apache::Hadoop::Hive::_WMCreatePoolRequest__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__WMCreatePoolRequest____isset"/>
+      </node>
+      <node id="6">
+        <label>Apache::Hadoop::Hive::_WMPool__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__WMPool____isset"/>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+      <node id="5">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="4">
+        <label>std::string</label>
+        <childnode refid="5" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12098" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="12098" bodyend="12123"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMCreatePoolRequest_1a916d1f79bb0ee1812e9055fc0f2da57a" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMCreatePoolRequest</scope><name>__isset</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMCreatePoolRequest_1a44309c82fb8c052eace1384d247ccd78" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMCreatePoolRequest</scope><name>__set_pool</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMCreatePoolRequest_1afb414bb396e24e9c8c6b7207bfd92016" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMCreatePoolRequest</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMCreatePoolRequest_1a5217d9dcfd1f94a464473b2a696a9829" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMCreatePoolRequest</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMCreatePoolRequest_1a9fe1241a4620fb78f8eb487f8255844c" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMCreatePoolRequest</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMCreatePoolRequest_1a07e5d481c85cdefbd616cd2fa921e6a3" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMCreatePoolRequest</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMCreatePoolRequest_1a7e015f36a62f1f75b0877807aac97820" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMCreatePoolRequest</scope><name>pool</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMCreatePoolRequest_1a949f91648b1e089c33917d1394e4fc66" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::WMCreatePoolRequest</scope><name>printTo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMCreatePoolRequest_1aaa578237c9802869b1fc13cee19ecdab" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMCreatePoolRequest</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMCreatePoolRequest_1addd4e9887c40fcfaff6077119db9f5b1" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMCreatePoolRequest</scope><name>WMCreatePoolRequest</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMCreatePoolRequest_1a15fd2e5b0ae0c816b02b9b4fff0ae357" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMCreatePoolRequest</scope><name>WMCreatePoolRequest</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMCreatePoolRequest_1a9b8519f35c9f566604ce93c19f2f07f7" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMCreatePoolRequest</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMCreatePoolRequest_1aa51d40653c652bf4afff58413a4dd676" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::WMCreatePoolRequest</scope><name>~WMCreatePoolRequest</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

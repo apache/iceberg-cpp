@@ -1,0 +1,106 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classfacebook_1_1fb303_1_1FacebookServiceProcessorFactory" kind="class" language="C++" prot="public">
+    <compoundname>facebook::fb303::FacebookServiceProcessorFactory</compoundname>
+    <basecompoundref prot="public" virt="non-virtual">apache::thrift::TProcessorFactory</basecompoundref>
+    <sectiondef kind="protected-attrib">
+      <memberdef kind="variable" id="classfacebook_1_1fb303_1_1FacebookServiceProcessorFactory_1aced2ee09daa78c25f803b22aa83f1aba" prot="protected" static="no" mutable="no">
+        <type>::std::shared_ptr&lt; <ref refid="classfacebook_1_1fb303_1_1FacebookServiceIfFactory" kindref="compound">FacebookServiceIfFactory</ref> &gt;</type>
+        <definition>::std::shared_ptr&lt; FacebookServiceIfFactory &gt; facebook::fb303::FacebookServiceProcessorFactory::handlerFactory_</definition>
+        <argsstring></argsstring>
+        <name>handlerFactory_</name>
+        <qualifiedname>facebook::fb303::FacebookServiceProcessorFactory::handlerFactory_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="1351" column="21" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.h" bodystart="1351" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookServiceProcessorFactory_1ac7d7c382fa3a1d13735cbb454cbbc62d" prot="public" static="no" const="no" explicit="no" inline="yes" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>facebook::fb303::FacebookServiceProcessorFactory::FacebookServiceProcessorFactory</definition>
+        <argsstring>(const ::std::shared_ptr&lt; FacebookServiceIfFactory &gt; &amp;handlerFactory) noexcept</argsstring>
+        <name>FacebookServiceProcessorFactory</name>
+        <qualifiedname>facebook::fb303::FacebookServiceProcessorFactory::FacebookServiceProcessorFactory</qualifiedname>
+        <param>
+          <type>const ::std::shared_ptr&lt; <ref refid="classfacebook_1_1fb303_1_1FacebookServiceIfFactory" kindref="compound">FacebookServiceIfFactory</ref> &gt; &amp;</type>
+          <declname>handlerFactory</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="1345" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.h" bodystart="1345" bodyend="1346"/>
+      </memberdef>
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookServiceProcessorFactory_1ac99ee3ed9f757022c2d03fbc357b311b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>::std::shared_ptr&lt; ::apache::thrift::TProcessor &gt;</type>
+        <definition>std::shared_ptr&lt;::apache::thrift::TProcessor &gt; facebook::fb303::FacebookServiceProcessorFactory::getProcessor</definition>
+        <argsstring>(const ::apache::thrift::TConnectionInfo &amp;connInfo) override</argsstring>
+        <name>getProcessor</name>
+        <qualifiedname>facebook::fb303::FacebookServiceProcessorFactory::getProcessor</qualifiedname>
+        <param>
+          <type>const ::apache::thrift::TConnectionInfo &amp;</type>
+          <declname>connInfo</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="1348" column="21" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.cpp" bodystart="3514" bodyend="3519"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>apache::thrift::TProcessorFactory</label>
+      </node>
+      <node id="1">
+        <label>facebook::fb303::FacebookServiceProcessorFactory</label>
+        <link refid="classfacebook_1_1fb303_1_1FacebookServiceProcessorFactory"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="2">
+        <label>apache::thrift::TProcessorFactory</label>
+      </node>
+      <node id="4">
+        <label>facebook::fb303::FacebookServiceIfFactory</label>
+        <link refid="classfacebook_1_1fb303_1_1FacebookServiceIfFactory"/>
+      </node>
+      <node id="1">
+        <label>facebook::fb303::FacebookServiceProcessorFactory</label>
+        <link refid="classfacebook_1_1fb303_1_1FacebookServiceProcessorFactory"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>handlerFactory_</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::shared_ptr&lt; facebook::fb303::FacebookServiceIfFactory &gt;</label>
+        <childnode refid="4" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="1343" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.h" bodystart="1343" bodyend="1352"/>
+    <listofallmembers>
+      <member refid="classfacebook_1_1fb303_1_1FacebookServiceProcessorFactory_1ac7d7c382fa3a1d13735cbb454cbbc62d" prot="public" virt="non-virtual"><scope>facebook::fb303::FacebookServiceProcessorFactory</scope><name>FacebookServiceProcessorFactory</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookServiceProcessorFactory_1ac99ee3ed9f757022c2d03fbc357b311b" prot="public" virt="non-virtual"><scope>facebook::fb303::FacebookServiceProcessorFactory</scope><name>getProcessor</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookServiceProcessorFactory_1aced2ee09daa78c25f803b22aa83f1aba" prot="protected" virt="non-virtual"><scope>facebook::fb303::FacebookServiceProcessorFactory</scope><name>handlerFactory_</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

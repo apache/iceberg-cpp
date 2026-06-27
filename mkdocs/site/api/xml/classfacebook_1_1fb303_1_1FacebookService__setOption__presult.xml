@@ -1,0 +1,49 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classfacebook_1_1fb303_1_1FacebookService__setOption__presult" kind="class" language="C++" prot="public">
+    <compoundname>facebook::fb303::FacebookService_setOption_presult</compoundname>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookService__setOption__presult_1af8289010d0f90cbaba89d8b55644f0c1" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>facebook::fb303::FacebookService_setOption_presult::~FacebookService_setOption_presult</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~FacebookService_setOption_presult</name>
+        <qualifiedname>facebook::fb303::FacebookService_setOption_presult::~FacebookService_setOption_presult</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="762" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.cpp" bodystart="1247" bodyend="1248"/>
+      </memberdef>
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookService__setOption__presult_1ad52c693102643de9a3a224a7c0c3fb0c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t facebook::fb303::FacebookService_setOption_presult::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot)</argsstring>
+        <name>read</name>
+        <qualifiedname>facebook::fb303::FacebookService_setOption_presult::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="764" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.cpp" bodystart="1251" bodyend="1277"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="758" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.h" bodystart="758" bodyend="766"/>
+    <listofallmembers>
+      <member refid="classfacebook_1_1fb303_1_1FacebookService__setOption__presult_1ad52c693102643de9a3a224a7c0c3fb0c" prot="public" virt="non-virtual"><scope>facebook::fb303::FacebookService_setOption_presult</scope><name>read</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookService__setOption__presult_1af8289010d0f90cbaba89d8b55644f0c1" prot="public" virt="virtual"><scope>facebook::fb303::FacebookService_setOption_presult</scope><name>~FacebookService_setOption_presult</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

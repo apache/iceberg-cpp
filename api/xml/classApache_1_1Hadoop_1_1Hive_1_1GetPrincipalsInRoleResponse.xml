@@ -1,0 +1,290 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1GetPrincipalsInRoleResponse" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::GetPrincipalsInRoleResponse</compoundname>
+    <basecompoundref prot="public" virt="virtual">apache::thrift::TBase</basecompoundref>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1GetPrincipalsInRoleResponse_1a213151a3326d03ebf739a6ef69c0ac56" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; <ref refid="classApache_1_1Hadoop_1_1Hive_1_1RolePrincipalGrant" kindref="compound">RolePrincipalGrant</ref> &gt;</type>
+        <definition>std::vector&lt;RolePrincipalGrant&gt; Apache::Hadoop::Hive::GetPrincipalsInRoleResponse::principalGrants</definition>
+        <argsstring></argsstring>
+        <name>principalGrants</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetPrincipalsInRoleResponse::principalGrants</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="2505" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="2505" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetPrincipalsInRoleResponse_1a85268168776358286a23e000a1e4cf96" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::GetPrincipalsInRoleResponse::GetPrincipalsInRoleResponse</definition>
+        <argsstring>(const GetPrincipalsInRoleResponse &amp;)</argsstring>
+        <name>GetPrincipalsInRoleResponse</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetPrincipalsInRoleResponse::GetPrincipalsInRoleResponse</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1GetPrincipalsInRoleResponse" kindref="compound">GetPrincipalsInRoleResponse</ref> &amp;</type>
+          <defname>other215</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="2500" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="6701" bodyend="6703"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetPrincipalsInRoleResponse_1a552ba6b589eb04f696311656505aef7c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1GetPrincipalsInRoleResponse" kindref="compound">GetPrincipalsInRoleResponse</ref> &amp;</type>
+        <definition>GetPrincipalsInRoleResponse &amp; Apache::Hadoop::Hive::GetPrincipalsInRoleResponse::operator=</definition>
+        <argsstring>(const GetPrincipalsInRoleResponse &amp;)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetPrincipalsInRoleResponse::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1GetPrincipalsInRoleResponse" kindref="compound">GetPrincipalsInRoleResponse</ref> &amp;</type>
+          <defname>other216</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="2501" column="31" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="6704" bodyend="6707"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetPrincipalsInRoleResponse_1ac105e9dabb89a2c2fccdc21e449bd21e" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::GetPrincipalsInRoleResponse::GetPrincipalsInRoleResponse</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>GetPrincipalsInRoleResponse</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetPrincipalsInRoleResponse::GetPrincipalsInRoleResponse</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="2502" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="6598" bodyend="6599"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetPrincipalsInRoleResponse_1a2ec66a88c39d7525c0545b3f5b34dc5f" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::GetPrincipalsInRoleResponse::~GetPrincipalsInRoleResponse</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~GetPrincipalsInRoleResponse</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetPrincipalsInRoleResponse::~GetPrincipalsInRoleResponse</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="2504" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="6595" bodyend="6596"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetPrincipalsInRoleResponse_1a8e0a54fb3f19a21af44586744c16f258" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::GetPrincipalsInRoleResponse::__set_principalGrants</definition>
+        <argsstring>(const std::vector&lt; RolePrincipalGrant &gt; &amp;val)</argsstring>
+        <name>__set_principalGrants</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetPrincipalsInRoleResponse::__set_principalGrants</qualifiedname>
+        <param>
+          <type>const std::vector&lt; <ref refid="classApache_1_1Hadoop_1_1Hive_1_1RolePrincipalGrant" kindref="compound">RolePrincipalGrant</ref> &gt; &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="2507" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="6601" bodyend="6603"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetPrincipalsInRoleResponse_1a0747878fd410087680c6cbf37057afe1" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::GetPrincipalsInRoleResponse::operator==</definition>
+        <argsstring>(const GetPrincipalsInRoleResponse &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetPrincipalsInRoleResponse::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1GetPrincipalsInRoleResponse" kindref="compound">GetPrincipalsInRoleResponse</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="2509" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="6694" bodyend="6699"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetPrincipalsInRoleResponse_1a313fd5820a0810b73b00db13a5f7b984" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::GetPrincipalsInRoleResponse::operator!=</definition>
+        <argsstring>(const GetPrincipalsInRoleResponse &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetPrincipalsInRoleResponse::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1GetPrincipalsInRoleResponse" kindref="compound">GetPrincipalsInRoleResponse</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="2510" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="2510" bodyend="2512"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetPrincipalsInRoleResponse_1a27dfb932e1df37c01e87ce3d0d275f9d" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::GetPrincipalsInRoleResponse::operator&lt;</definition>
+        <argsstring>(const GetPrincipalsInRoleResponse &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetPrincipalsInRoleResponse::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1GetPrincipalsInRoleResponse" kindref="compound">GetPrincipalsInRoleResponse</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="2514" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetPrincipalsInRoleResponse_1ab4c40474f505cbe27b85c1bae5fde037" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::GetPrincipalsInRoleResponse::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot) override</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetPrincipalsInRoleResponse::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="2516" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="6611" bodyend="6665"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetPrincipalsInRoleResponse_1a831d1d89d330a2f6e709c499aa2bedcf" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::GetPrincipalsInRoleResponse::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const override</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetPrincipalsInRoleResponse::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="2517" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="6667" bodyend="6687"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetPrincipalsInRoleResponse_1a130ba95d5fb363d8cb73562af9f643bd" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::GetPrincipalsInRoleResponse::printTo</definition>
+        <argsstring>(std::ostream &amp;out) const</argsstring>
+        <name>printTo</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetPrincipalsInRoleResponse::printTo</qualifiedname>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="2519" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="6708" bodyend="6713"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::GetPrincipalsInRoleResponse</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1GetPrincipalsInRoleResponse"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::GetPrincipalsInRoleResponse</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1GetPrincipalsInRoleResponse"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>principalGrants</edgelabel>
+        </childnode>
+      </node>
+      <node id="4">
+        <label>Apache::Hadoop::Hive::RolePrincipalGrant</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1RolePrincipalGrant"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>grantorName</edgelabel>
+          <edgelabel>principalName</edgelabel>
+          <edgelabel>roleName</edgelabel>
+        </childnode>
+        <childnode refid="7" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="7">
+        <label>Apache::Hadoop::Hive::_RolePrincipalGrant__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__RolePrincipalGrant____isset"/>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+      <node id="6">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="5">
+        <label>std::string</label>
+        <childnode refid="6" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::vector&lt; Apache::Hadoop::Hive::RolePrincipalGrant &gt;</label>
+        <childnode refid="4" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="2497" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="2497" bodyend="2520"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetPrincipalsInRoleResponse_1a8e0a54fb3f19a21af44586744c16f258" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetPrincipalsInRoleResponse</scope><name>__set_principalGrants</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetPrincipalsInRoleResponse_1a85268168776358286a23e000a1e4cf96" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetPrincipalsInRoleResponse</scope><name>GetPrincipalsInRoleResponse</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetPrincipalsInRoleResponse_1ac105e9dabb89a2c2fccdc21e449bd21e" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetPrincipalsInRoleResponse</scope><name>GetPrincipalsInRoleResponse</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetPrincipalsInRoleResponse_1a313fd5820a0810b73b00db13a5f7b984" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetPrincipalsInRoleResponse</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetPrincipalsInRoleResponse_1a27dfb932e1df37c01e87ce3d0d275f9d" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetPrincipalsInRoleResponse</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetPrincipalsInRoleResponse_1a552ba6b589eb04f696311656505aef7c" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetPrincipalsInRoleResponse</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetPrincipalsInRoleResponse_1a0747878fd410087680c6cbf37057afe1" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetPrincipalsInRoleResponse</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetPrincipalsInRoleResponse_1a213151a3326d03ebf739a6ef69c0ac56" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetPrincipalsInRoleResponse</scope><name>principalGrants</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetPrincipalsInRoleResponse_1a130ba95d5fb363d8cb73562af9f643bd" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::GetPrincipalsInRoleResponse</scope><name>printTo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetPrincipalsInRoleResponse_1ab4c40474f505cbe27b85c1bae5fde037" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetPrincipalsInRoleResponse</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetPrincipalsInRoleResponse_1a831d1d89d330a2f6e709c499aa2bedcf" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetPrincipalsInRoleResponse</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetPrincipalsInRoleResponse_1a2ec66a88c39d7525c0545b3f5b34dc5f" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::GetPrincipalsInRoleResponse</scope><name>~GetPrincipalsInRoleResponse</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

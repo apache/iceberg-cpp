@@ -1,0 +1,48 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structApache_1_1Hadoop_1_1Hive_1_1__InvalidInputException____isset" kind="struct" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::_InvalidInputException__isset</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__InvalidInputException____isset_1a861ea18b828836c0ebcd7510afe65408" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_InvalidInputException__isset::message</definition>
+        <argsstring></argsstring>
+        <name>message</name>
+        <qualifiedname>Apache::Hadoop::Hive::_InvalidInputException__isset::message</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15646" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="15646" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structApache_1_1Hadoop_1_1Hive_1_1__InvalidInputException____isset_1a76fcaf3a71370e9d341e91f4ca75692b" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::_InvalidInputException__isset::_InvalidInputException__isset</definition>
+        <argsstring>()</argsstring>
+        <name>_InvalidInputException__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::_InvalidInputException__isset::_InvalidInputException__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15645" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="15645" bodyend="15645"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15644" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="15644" bodyend="15647"/>
+    <listofallmembers>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__InvalidInputException____isset_1a76fcaf3a71370e9d341e91f4ca75692b" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_InvalidInputException__isset</scope><name>_InvalidInputException__isset</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__InvalidInputException____isset_1a861ea18b828836c0ebcd7510afe65408" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_InvalidInputException__isset</scope><name>message</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

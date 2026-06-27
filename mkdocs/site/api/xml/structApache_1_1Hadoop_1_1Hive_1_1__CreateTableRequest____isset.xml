@@ -1,0 +1,176 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structApache_1_1Hadoop_1_1Hive_1_1__CreateTableRequest____isset" kind="struct" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::_CreateTableRequest__isset</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__CreateTableRequest____isset_1ae0f97575750dec52b8f977d73f6a7547" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_CreateTableRequest__isset::envContext</definition>
+        <argsstring></argsstring>
+        <name>envContext</name>
+        <qualifiedname>Apache::Hadoop::Hive::_CreateTableRequest__isset::envContext</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13060" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="13060" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__CreateTableRequest____isset_1a40fc355ca24e625f11ef46c6cd6c22ff" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_CreateTableRequest__isset::primaryKeys</definition>
+        <argsstring></argsstring>
+        <name>primaryKeys</name>
+        <qualifiedname>Apache::Hadoop::Hive::_CreateTableRequest__isset::primaryKeys</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13061" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="13061" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__CreateTableRequest____isset_1a10a74f0841dc45bff6ffaeb35ad147b7" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_CreateTableRequest__isset::foreignKeys</definition>
+        <argsstring></argsstring>
+        <name>foreignKeys</name>
+        <qualifiedname>Apache::Hadoop::Hive::_CreateTableRequest__isset::foreignKeys</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13062" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="13062" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__CreateTableRequest____isset_1ad964c425d0e1c94806ee2bd13495b0fb" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_CreateTableRequest__isset::uniqueConstraints</definition>
+        <argsstring></argsstring>
+        <name>uniqueConstraints</name>
+        <qualifiedname>Apache::Hadoop::Hive::_CreateTableRequest__isset::uniqueConstraints</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13063" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="13063" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__CreateTableRequest____isset_1a1ca75f81f7acee8606d6e72d0f675dac" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_CreateTableRequest__isset::notNullConstraints</definition>
+        <argsstring></argsstring>
+        <name>notNullConstraints</name>
+        <qualifiedname>Apache::Hadoop::Hive::_CreateTableRequest__isset::notNullConstraints</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13064" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="13064" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__CreateTableRequest____isset_1a3e2461c37ff26dc344f993fe94d9758c" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_CreateTableRequest__isset::defaultConstraints</definition>
+        <argsstring></argsstring>
+        <name>defaultConstraints</name>
+        <qualifiedname>Apache::Hadoop::Hive::_CreateTableRequest__isset::defaultConstraints</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13065" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="13065" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__CreateTableRequest____isset_1a75e1f13b3a013bb9fd52440597719d68" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_CreateTableRequest__isset::checkConstraints</definition>
+        <argsstring></argsstring>
+        <name>checkConstraints</name>
+        <qualifiedname>Apache::Hadoop::Hive::_CreateTableRequest__isset::checkConstraints</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13066" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="13066" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__CreateTableRequest____isset_1a9925f244f44886c504ee9399e7d15b82" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_CreateTableRequest__isset::processorCapabilities</definition>
+        <argsstring></argsstring>
+        <name>processorCapabilities</name>
+        <qualifiedname>Apache::Hadoop::Hive::_CreateTableRequest__isset::processorCapabilities</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13067" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="13067" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__CreateTableRequest____isset_1a5d2d52cf037c70a26325c23efdc1f5dc" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_CreateTableRequest__isset::processorIdentifier</definition>
+        <argsstring></argsstring>
+        <name>processorIdentifier</name>
+        <qualifiedname>Apache::Hadoop::Hive::_CreateTableRequest__isset::processorIdentifier</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13068" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="13068" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structApache_1_1Hadoop_1_1Hive_1_1__CreateTableRequest____isset_1ad597bc229a7466afa406dd2d71b6d19a" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::_CreateTableRequest__isset::_CreateTableRequest__isset</definition>
+        <argsstring>()</argsstring>
+        <name>_CreateTableRequest__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::_CreateTableRequest__isset::_CreateTableRequest__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13059" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="13059" bodyend="13059"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13058" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="13058" bodyend="13069"/>
+    <listofallmembers>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__CreateTableRequest____isset_1ad597bc229a7466afa406dd2d71b6d19a" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_CreateTableRequest__isset</scope><name>_CreateTableRequest__isset</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__CreateTableRequest____isset_1a75e1f13b3a013bb9fd52440597719d68" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_CreateTableRequest__isset</scope><name>checkConstraints</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__CreateTableRequest____isset_1a3e2461c37ff26dc344f993fe94d9758c" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_CreateTableRequest__isset</scope><name>defaultConstraints</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__CreateTableRequest____isset_1ae0f97575750dec52b8f977d73f6a7547" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_CreateTableRequest__isset</scope><name>envContext</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__CreateTableRequest____isset_1a10a74f0841dc45bff6ffaeb35ad147b7" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_CreateTableRequest__isset</scope><name>foreignKeys</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__CreateTableRequest____isset_1a1ca75f81f7acee8606d6e72d0f675dac" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_CreateTableRequest__isset</scope><name>notNullConstraints</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__CreateTableRequest____isset_1a40fc355ca24e625f11ef46c6cd6c22ff" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_CreateTableRequest__isset</scope><name>primaryKeys</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__CreateTableRequest____isset_1a9925f244f44886c504ee9399e7d15b82" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_CreateTableRequest__isset</scope><name>processorCapabilities</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__CreateTableRequest____isset_1a5d2d52cf037c70a26325c23efdc1f5dc" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_CreateTableRequest__isset</scope><name>processorIdentifier</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__CreateTableRequest____isset_1ad964c425d0e1c94806ee2bd13495b0fb" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_CreateTableRequest__isset</scope><name>uniqueConstraints</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

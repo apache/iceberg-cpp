@@ -1,0 +1,112 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structApache_1_1Hadoop_1_1Hive_1_1__LockRequest____isset" kind="struct" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::_LockRequest__isset</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__LockRequest____isset_1a9a00e9bd449a637ef825055a9f7562e6" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_LockRequest__isset::txnid</definition>
+        <argsstring></argsstring>
+        <name>txnid</name>
+        <qualifiedname>Apache::Hadoop::Hive::_LockRequest__isset::txnid</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7662" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="7662" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__LockRequest____isset_1a62880ff777f9e24a8bc257be64b0a275" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_LockRequest__isset::agentInfo</definition>
+        <argsstring></argsstring>
+        <name>agentInfo</name>
+        <qualifiedname>Apache::Hadoop::Hive::_LockRequest__isset::agentInfo</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7663" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="7663" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__LockRequest____isset_1a8205b774e59dcc07e91090513db8c1b1" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_LockRequest__isset::zeroWaitReadEnabled</definition>
+        <argsstring></argsstring>
+        <name>zeroWaitReadEnabled</name>
+        <qualifiedname>Apache::Hadoop::Hive::_LockRequest__isset::zeroWaitReadEnabled</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7664" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="7664" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__LockRequest____isset_1ada2220f6276234179e6511ab04e69ba9" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_LockRequest__isset::exclusiveCTAS</definition>
+        <argsstring></argsstring>
+        <name>exclusiveCTAS</name>
+        <qualifiedname>Apache::Hadoop::Hive::_LockRequest__isset::exclusiveCTAS</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7665" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="7665" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__LockRequest____isset_1a41ceff18ba5cce1ab4ded3514931fdb6" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_LockRequest__isset::locklessReadsEnabled</definition>
+        <argsstring></argsstring>
+        <name>locklessReadsEnabled</name>
+        <qualifiedname>Apache::Hadoop::Hive::_LockRequest__isset::locklessReadsEnabled</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7666" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="7666" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structApache_1_1Hadoop_1_1Hive_1_1__LockRequest____isset_1a1d85f58d5695f12998ee6fd76c6f46a0" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::_LockRequest__isset::_LockRequest__isset</definition>
+        <argsstring>()</argsstring>
+        <name>_LockRequest__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::_LockRequest__isset::_LockRequest__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7661" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="7661" bodyend="7661"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7660" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="7660" bodyend="7667"/>
+    <listofallmembers>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__LockRequest____isset_1a1d85f58d5695f12998ee6fd76c6f46a0" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_LockRequest__isset</scope><name>_LockRequest__isset</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__LockRequest____isset_1a62880ff777f9e24a8bc257be64b0a275" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_LockRequest__isset</scope><name>agentInfo</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__LockRequest____isset_1ada2220f6276234179e6511ab04e69ba9" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_LockRequest__isset</scope><name>exclusiveCTAS</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__LockRequest____isset_1a41ceff18ba5cce1ab4ded3514931fdb6" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_LockRequest__isset</scope><name>locklessReadsEnabled</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__LockRequest____isset_1a9a00e9bd449a637ef825055a9f7562e6" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_LockRequest__isset</scope><name>txnid</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__LockRequest____isset_1a8205b774e59dcc07e91090513db8c1b1" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_LockRequest__isset</scope><name>zeroWaitReadEnabled</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

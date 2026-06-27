@@ -1,0 +1,160 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1test_1_1ThreadExecutor" kind="class" language="C++" prot="public" final="yes">
+    <compoundname>iceberg::test::ThreadExecutor</compoundname>
+    <basecompoundref refid="classiceberg_1_1Executor" prot="public" virt="non-virtual">iceberg::Executor</basecompoundref>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1test_1_1ThreadExecutor_1a67b9e420e3e33dda7ef09d51c595e0d6" prot="private" static="no" mutable="no">
+        <type>Status</type>
+        <definition>Status iceberg::test::ThreadExecutor::submit_status_</definition>
+        <argsstring></argsstring>
+        <name>submit_status_</name>
+        <qualifiedname>iceberg::test::ThreadExecutor::submit_status_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/executor.h" line="57" column="10" bodyfile="iceberg/test/executor.h" bodystart="57" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1test_1_1ThreadExecutor_1adaa126d0f54545e29ba7211badce3fc0" prot="private" static="no" mutable="no">
+        <type>std::atomic&lt; int &gt;</type>
+        <definition>std::atomic&lt;int&gt; iceberg::test::ThreadExecutor::submit_count_</definition>
+        <argsstring></argsstring>
+        <name>submit_count_</name>
+        <qualifiedname>iceberg::test::ThreadExecutor::submit_count_</qualifiedname>
+        <initializer>{0}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/executor.h" line="58" column="15" bodyfile="iceberg/test/executor.h" bodystart="58" bodyend="58"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1test_1_1ThreadExecutor_1aace57b90056a0d0d69f0ebcd6b567343" prot="private" static="no" mutable="no">
+        <type>std::vector&lt; std::thread &gt;</type>
+        <definition>std::vector&lt;std::thread&gt; iceberg::test::ThreadExecutor::threads_</definition>
+        <argsstring></argsstring>
+        <name>threads_</name>
+        <qualifiedname>iceberg::test::ThreadExecutor::threads_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/executor.h" line="59" column="15" bodyfile="iceberg/test/executor.h" bodystart="59" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1test_1_1ThreadExecutor_1a96448bb03596fe2b7d31627d0956f8d2" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::test::ThreadExecutor::ThreadExecutor</definition>
+        <argsstring>(Status submit_status={})</argsstring>
+        <name>ThreadExecutor</name>
+        <qualifiedname>iceberg::test::ThreadExecutor::ThreadExecutor</qualifiedname>
+        <param>
+          <type>Status</type>
+          <declname>submit_status</declname>
+          <defval>{}</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/executor.h" line="34" column="12" bodyfile="iceberg/test/executor.h" bodystart="34" bodyend="35"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1test_1_1ThreadExecutor_1a193b93dd1bcbf1dd49d921125424a263" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::test::ThreadExecutor::~ThreadExecutor</definition>
+        <argsstring>() override</argsstring>
+        <name>~ThreadExecutor</name>
+        <qualifiedname>iceberg::test::ThreadExecutor::~ThreadExecutor</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/executor.h" line="37" column="3" bodyfile="iceberg/test/executor.h" bodystart="37" bodyend="43"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1test_1_1ThreadExecutor_1a6185fa3214b4b397c624d2105f947fda" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>Status</type>
+        <definition>Status iceberg::test::ThreadExecutor::Submit</definition>
+        <argsstring>(ExecutorTask task) override</argsstring>
+        <name>Submit</name>
+        <qualifiedname>iceberg::test::ThreadExecutor::Submit</qualifiedname>
+        <reimplements refid="classiceberg_1_1Executor_1a2a0779bcdb4943cda5cbdf20a9c5117f">Submit</reimplements>
+        <param>
+          <type><ref refid="classiceberg_1_1FnOnce" kindref="compound">ExecutorTask</ref></type>
+          <declname>task</declname>
+        </param>
+        <briefdescription>
+<para>Schedule a task for execution. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/executor.h" line="45" column="10" bodyfile="iceberg/test/executor.h" bodystart="45" bodyend="52"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1test_1_1ThreadExecutor_1a4b251fa75d4ba1f426c75e2dad57fab0" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>int</type>
+        <definition>int iceberg::test::ThreadExecutor::submit_count</definition>
+        <argsstring>() const</argsstring>
+        <name>submit_count</name>
+        <qualifiedname>iceberg::test::ThreadExecutor::submit_count</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/executor.h" line="54" column="7" bodyfile="iceberg/test/executor.h" bodystart="54" bodyend="54"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>iceberg::Executor</label>
+        <link refid="classiceberg_1_1Executor"/>
+      </node>
+      <node id="1">
+        <label>iceberg::test::ThreadExecutor</label>
+        <link refid="classiceberg_1_1test_1_1ThreadExecutor"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="2">
+        <label>iceberg::Executor</label>
+        <link refid="classiceberg_1_1Executor"/>
+      </node>
+      <node id="1">
+        <label>iceberg::test::ThreadExecutor</label>
+        <link refid="classiceberg_1_1test_1_1ThreadExecutor"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/test/executor.h" line="32" column="1" bodyfile="iceberg/test/executor.h" bodystart="32" bodyend="60"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1test_1_1ThreadExecutor_1a6185fa3214b4b397c624d2105f947fda" prot="public" virt="virtual"><scope>iceberg::test::ThreadExecutor</scope><name>Submit</name></member>
+      <member refid="classiceberg_1_1test_1_1ThreadExecutor_1a4b251fa75d4ba1f426c75e2dad57fab0" prot="public" virt="non-virtual"><scope>iceberg::test::ThreadExecutor</scope><name>submit_count</name></member>
+      <member refid="classiceberg_1_1test_1_1ThreadExecutor_1adaa126d0f54545e29ba7211badce3fc0" prot="private" virt="non-virtual"><scope>iceberg::test::ThreadExecutor</scope><name>submit_count_</name></member>
+      <member refid="classiceberg_1_1test_1_1ThreadExecutor_1a67b9e420e3e33dda7ef09d51c595e0d6" prot="private" virt="non-virtual"><scope>iceberg::test::ThreadExecutor</scope><name>submit_status_</name></member>
+      <member refid="classiceberg_1_1test_1_1ThreadExecutor_1a96448bb03596fe2b7d31627d0956f8d2" prot="public" virt="non-virtual"><scope>iceberg::test::ThreadExecutor</scope><name>ThreadExecutor</name></member>
+      <member refid="classiceberg_1_1test_1_1ThreadExecutor_1aace57b90056a0d0d69f0ebcd6b567343" prot="private" virt="non-virtual"><scope>iceberg::test::ThreadExecutor</scope><name>threads_</name></member>
+      <member refid="classiceberg_1_1Executor_1a0ef7ed8b68254f54ea766670958150bf" prot="public" virt="virtual"><scope>iceberg::test::ThreadExecutor</scope><name>~Executor</name></member>
+      <member refid="classiceberg_1_1test_1_1ThreadExecutor_1a193b93dd1bcbf1dd49d921125424a263" prot="public" virt="non-virtual"><scope>iceberg::test::ThreadExecutor</scope><name>~ThreadExecutor</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

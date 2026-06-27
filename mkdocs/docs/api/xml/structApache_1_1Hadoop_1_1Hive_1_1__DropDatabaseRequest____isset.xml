@@ -1,0 +1,96 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structApache_1_1Hadoop_1_1Hive_1_1__DropDatabaseRequest____isset" kind="struct" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::_DropDatabaseRequest__isset</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__DropDatabaseRequest____isset_1af93855bdf5e68b9a46b18b8d1e144dcb" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_DropDatabaseRequest__isset::catalogName</definition>
+        <argsstring></argsstring>
+        <name>catalogName</name>
+        <qualifiedname>Apache::Hadoop::Hive::_DropDatabaseRequest__isset::catalogName</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10652" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="10652" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__DropDatabaseRequest____isset_1af04c45be06b45ec34514acde5d2ef248" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_DropDatabaseRequest__isset::softDelete</definition>
+        <argsstring></argsstring>
+        <name>softDelete</name>
+        <qualifiedname>Apache::Hadoop::Hive::_DropDatabaseRequest__isset::softDelete</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10653" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="10653" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__DropDatabaseRequest____isset_1a578710c126f11be27541374b1e14e162" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_DropDatabaseRequest__isset::txnId</definition>
+        <argsstring></argsstring>
+        <name>txnId</name>
+        <qualifiedname>Apache::Hadoop::Hive::_DropDatabaseRequest__isset::txnId</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10654" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="10654" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__DropDatabaseRequest____isset_1ac16d7510b4a469512c2a425dc1b1f208" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_DropDatabaseRequest__isset::deleteManagedDir</definition>
+        <argsstring></argsstring>
+        <name>deleteManagedDir</name>
+        <qualifiedname>Apache::Hadoop::Hive::_DropDatabaseRequest__isset::deleteManagedDir</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10655" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="10655" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structApache_1_1Hadoop_1_1Hive_1_1__DropDatabaseRequest____isset_1ac67e98dda277ca70b8a26b2a4f892bd2" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::_DropDatabaseRequest__isset::_DropDatabaseRequest__isset</definition>
+        <argsstring>()</argsstring>
+        <name>_DropDatabaseRequest__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::_DropDatabaseRequest__isset::_DropDatabaseRequest__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10651" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="10651" bodyend="10651"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10650" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="10650" bodyend="10656"/>
+    <listofallmembers>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__DropDatabaseRequest____isset_1ac67e98dda277ca70b8a26b2a4f892bd2" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_DropDatabaseRequest__isset</scope><name>_DropDatabaseRequest__isset</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__DropDatabaseRequest____isset_1af93855bdf5e68b9a46b18b8d1e144dcb" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_DropDatabaseRequest__isset</scope><name>catalogName</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__DropDatabaseRequest____isset_1ac16d7510b4a469512c2a425dc1b1f208" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_DropDatabaseRequest__isset</scope><name>deleteManagedDir</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__DropDatabaseRequest____isset_1af04c45be06b45ec34514acde5d2ef248" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_DropDatabaseRequest__isset</scope><name>softDelete</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__DropDatabaseRequest____isset_1a578710c126f11be27541374b1e14e162" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_DropDatabaseRequest__isset</scope><name>txnId</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,176 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structApache_1_1Hadoop_1_1Hive_1_1__ShowLocksResponseElement____isset" kind="struct" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::_ShowLocksResponseElement__isset</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__ShowLocksResponseElement____isset_1aa938bc3193b77620205b1926bef6e1e6" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_ShowLocksResponseElement__isset::tablename</definition>
+        <argsstring></argsstring>
+        <name>tablename</name>
+        <qualifiedname>Apache::Hadoop::Hive::_ShowLocksResponseElement__isset::tablename</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7894" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="7894" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__ShowLocksResponseElement____isset_1ab047d26957b688a5647cba4398b37c5f" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_ShowLocksResponseElement__isset::partname</definition>
+        <argsstring></argsstring>
+        <name>partname</name>
+        <qualifiedname>Apache::Hadoop::Hive::_ShowLocksResponseElement__isset::partname</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7895" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="7895" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__ShowLocksResponseElement____isset_1a2e831bc2b83667e0a7771631174cef9f" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_ShowLocksResponseElement__isset::txnid</definition>
+        <argsstring></argsstring>
+        <name>txnid</name>
+        <qualifiedname>Apache::Hadoop::Hive::_ShowLocksResponseElement__isset::txnid</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7896" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="7896" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__ShowLocksResponseElement____isset_1aa08787e75bd9c3437aa41aaf9b1f4192" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_ShowLocksResponseElement__isset::acquiredat</definition>
+        <argsstring></argsstring>
+        <name>acquiredat</name>
+        <qualifiedname>Apache::Hadoop::Hive::_ShowLocksResponseElement__isset::acquiredat</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7897" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="7897" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__ShowLocksResponseElement____isset_1a8741fe44d0ccf2f1b3f03700bdc52d00" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_ShowLocksResponseElement__isset::heartbeatCount</definition>
+        <argsstring></argsstring>
+        <name>heartbeatCount</name>
+        <qualifiedname>Apache::Hadoop::Hive::_ShowLocksResponseElement__isset::heartbeatCount</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7898" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="7898" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__ShowLocksResponseElement____isset_1a5b99840b13d577bf81e74381aa4fc520" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_ShowLocksResponseElement__isset::agentInfo</definition>
+        <argsstring></argsstring>
+        <name>agentInfo</name>
+        <qualifiedname>Apache::Hadoop::Hive::_ShowLocksResponseElement__isset::agentInfo</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7899" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="7899" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__ShowLocksResponseElement____isset_1abdcbde1891e35d7a54aaef49a0402f61" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_ShowLocksResponseElement__isset::blockedByExtId</definition>
+        <argsstring></argsstring>
+        <name>blockedByExtId</name>
+        <qualifiedname>Apache::Hadoop::Hive::_ShowLocksResponseElement__isset::blockedByExtId</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7900" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="7900" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__ShowLocksResponseElement____isset_1a6204e42ede65bd76650a3356e9b19be0" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_ShowLocksResponseElement__isset::blockedByIntId</definition>
+        <argsstring></argsstring>
+        <name>blockedByIntId</name>
+        <qualifiedname>Apache::Hadoop::Hive::_ShowLocksResponseElement__isset::blockedByIntId</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7901" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="7901" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__ShowLocksResponseElement____isset_1ae4b5ef794727a7bf9d5db2b8631bda74" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_ShowLocksResponseElement__isset::lockIdInternal</definition>
+        <argsstring></argsstring>
+        <name>lockIdInternal</name>
+        <qualifiedname>Apache::Hadoop::Hive::_ShowLocksResponseElement__isset::lockIdInternal</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7902" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="7902" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structApache_1_1Hadoop_1_1Hive_1_1__ShowLocksResponseElement____isset_1a19ecf9811b46cddf4e7fa32bfe08f5f6" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::_ShowLocksResponseElement__isset::_ShowLocksResponseElement__isset</definition>
+        <argsstring>()</argsstring>
+        <name>_ShowLocksResponseElement__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::_ShowLocksResponseElement__isset::_ShowLocksResponseElement__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7893" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="7893" bodyend="7893"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7892" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="7892" bodyend="7903"/>
+    <listofallmembers>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__ShowLocksResponseElement____isset_1a19ecf9811b46cddf4e7fa32bfe08f5f6" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_ShowLocksResponseElement__isset</scope><name>_ShowLocksResponseElement__isset</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__ShowLocksResponseElement____isset_1aa08787e75bd9c3437aa41aaf9b1f4192" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_ShowLocksResponseElement__isset</scope><name>acquiredat</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__ShowLocksResponseElement____isset_1a5b99840b13d577bf81e74381aa4fc520" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_ShowLocksResponseElement__isset</scope><name>agentInfo</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__ShowLocksResponseElement____isset_1abdcbde1891e35d7a54aaef49a0402f61" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_ShowLocksResponseElement__isset</scope><name>blockedByExtId</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__ShowLocksResponseElement____isset_1a6204e42ede65bd76650a3356e9b19be0" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_ShowLocksResponseElement__isset</scope><name>blockedByIntId</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__ShowLocksResponseElement____isset_1a8741fe44d0ccf2f1b3f03700bdc52d00" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_ShowLocksResponseElement__isset</scope><name>heartbeatCount</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__ShowLocksResponseElement____isset_1ae4b5ef794727a7bf9d5db2b8631bda74" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_ShowLocksResponseElement__isset</scope><name>lockIdInternal</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__ShowLocksResponseElement____isset_1ab047d26957b688a5647cba4398b37c5f" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_ShowLocksResponseElement__isset</scope><name>partname</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__ShowLocksResponseElement____isset_1aa938bc3193b77620205b1926bef6e1e6" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_ShowLocksResponseElement__isset</scope><name>tablename</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__ShowLocksResponseElement____isset_1a2e831bc2b83667e0a7771631174cef9f" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_ShowLocksResponseElement__isset</scope><name>txnid</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

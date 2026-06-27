@@ -1,0 +1,82 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structApache_1_1Hadoop_1_1Hive_1_1DataOperationType" kind="struct" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::DataOperationType</compoundname>
+    <sectiondef kind="public-type">
+      <memberdef kind="enum" id="structApache_1_1Hadoop_1_1Hive_1_1DataOperationType_1a5caf19de65ac876315415a265897f83d" prot="public" static="no" strong="no">
+        <type></type>
+        <name>type</name>
+        <qualifiedname>Apache::Hadoop::Hive::DataOperationType::type</qualifiedname>
+        <enumvalue id="structApache_1_1Hadoop_1_1Hive_1_1DataOperationType_1a5caf19de65ac876315415a265897f83daf972aadfcf90ffb3a480fb5c021bf006" prot="public">
+          <name>SELECT</name>
+          <initializer>= 1</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="structApache_1_1Hadoop_1_1Hive_1_1DataOperationType_1a5caf19de65ac876315415a265897f83da5d2990376e8693432150648643888269" prot="public">
+          <name>INSERT</name>
+          <initializer>= 2</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="structApache_1_1Hadoop_1_1Hive_1_1DataOperationType_1a5caf19de65ac876315415a265897f83dabe10ac6e8d11d642eac38caba5937c80" prot="public">
+          <name>UPDATE</name>
+          <initializer>= 3</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="structApache_1_1Hadoop_1_1Hive_1_1DataOperationType_1a5caf19de65ac876315415a265897f83dac236b8844fd93ddf47f963c872042190" prot="public">
+          <name>DELETE</name>
+          <initializer>= 4</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="structApache_1_1Hadoop_1_1Hive_1_1DataOperationType_1a5caf19de65ac876315415a265897f83daa7b00c742a0c3eb934af21bd7f73e994" prot="public">
+          <name>UNSET</name>
+          <initializer>= 5</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="structApache_1_1Hadoop_1_1Hive_1_1DataOperationType_1a5caf19de65ac876315415a265897f83da692d0267fdf076fff0df8f1a79de6d02" prot="public">
+          <name>NO_TXN</name>
+          <initializer>= 6</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="155" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="155" bodyend="162"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="154" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="154" bodyend="163"/>
+    <listofallmembers>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1DataOperationType_1a5caf19de65ac876315415a265897f83dac236b8844fd93ddf47f963c872042190" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::DataOperationType</scope><name>DELETE</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1DataOperationType_1a5caf19de65ac876315415a265897f83da5d2990376e8693432150648643888269" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::DataOperationType</scope><name>INSERT</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1DataOperationType_1a5caf19de65ac876315415a265897f83da692d0267fdf076fff0df8f1a79de6d02" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::DataOperationType</scope><name>NO_TXN</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1DataOperationType_1a5caf19de65ac876315415a265897f83daf972aadfcf90ffb3a480fb5c021bf006" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::DataOperationType</scope><name>SELECT</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1DataOperationType_1a5caf19de65ac876315415a265897f83d" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::DataOperationType</scope><name>type</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1DataOperationType_1a5caf19de65ac876315415a265897f83daa7b00c742a0c3eb934af21bd7f73e994" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::DataOperationType</scope><name>UNSET</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1DataOperationType_1a5caf19de65ac876315415a265897f83dabe10ac6e8d11d642eac38caba5937c80" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::DataOperationType</scope><name>UPDATE</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

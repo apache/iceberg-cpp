@@ -1,0 +1,48 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structApache_1_1Hadoop_1_1Hive_1_1__GetCatalogsResponse____isset" kind="struct" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::_GetCatalogsResponse__isset</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__GetCatalogsResponse____isset_1ad69e1e8a629679afdc9eef7ef1711801" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_GetCatalogsResponse__isset::names</definition>
+        <argsstring></argsstring>
+        <name>names</name>
+        <qualifiedname>Apache::Hadoop::Hive::_GetCatalogsResponse__isset::names</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="2832" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="2832" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structApache_1_1Hadoop_1_1Hive_1_1__GetCatalogsResponse____isset_1aa5feb3f7ebf8b94a5037a048ef69b001" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::_GetCatalogsResponse__isset::_GetCatalogsResponse__isset</definition>
+        <argsstring>()</argsstring>
+        <name>_GetCatalogsResponse__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::_GetCatalogsResponse__isset::_GetCatalogsResponse__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="2831" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="2831" bodyend="2831"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="2830" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="2830" bodyend="2833"/>
+    <listofallmembers>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__GetCatalogsResponse____isset_1aa5feb3f7ebf8b94a5037a048ef69b001" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_GetCatalogsResponse__isset</scope><name>_GetCatalogsResponse__isset</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__GetCatalogsResponse____isset_1ad69e1e8a629679afdc9eef7ef1711801" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_GetCatalogsResponse__isset</scope><name>names</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

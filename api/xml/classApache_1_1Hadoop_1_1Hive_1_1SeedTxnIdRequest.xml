@@ -1,0 +1,255 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1SeedTxnIdRequest" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::SeedTxnIdRequest</compoundname>
+    <basecompoundref prot="public" virt="virtual">apache::thrift::TBase</basecompoundref>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1SeedTxnIdRequest_1af89afb1e8518f27571a8d12675162fde" prot="public" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t Apache::Hadoop::Hive::SeedTxnIdRequest::seedTxnId</definition>
+        <argsstring></argsstring>
+        <name>seedTxnId</name>
+        <qualifiedname>Apache::Hadoop::Hive::SeedTxnIdRequest::seedTxnId</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7566" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="7566" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1SeedTxnIdRequest_1a131c212c4195f852ef94b217021ff712" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::SeedTxnIdRequest::SeedTxnIdRequest</definition>
+        <argsstring>(const SeedTxnIdRequest &amp;) noexcept</argsstring>
+        <name>SeedTxnIdRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::SeedTxnIdRequest::SeedTxnIdRequest</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1SeedTxnIdRequest" kindref="compound">SeedTxnIdRequest</ref> &amp;</type>
+          <defname>other969</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7561" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="28800" bodyend="28802"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1SeedTxnIdRequest_1a39c9bd9d08600b04dc8131512de4fd07" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1SeedTxnIdRequest" kindref="compound">SeedTxnIdRequest</ref> &amp;</type>
+        <definition>SeedTxnIdRequest &amp; Apache::Hadoop::Hive::SeedTxnIdRequest::operator=</definition>
+        <argsstring>(const SeedTxnIdRequest &amp;) noexcept</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::SeedTxnIdRequest::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1SeedTxnIdRequest" kindref="compound">SeedTxnIdRequest</ref> &amp;</type>
+          <defname>other970</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7562" column="20" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="28803" bodyend="28806"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1SeedTxnIdRequest_1a98a841783b594edf7c3d591e5681d46a" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::SeedTxnIdRequest::SeedTxnIdRequest</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>SeedTxnIdRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::SeedTxnIdRequest::SeedTxnIdRequest</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7563" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="28716" bodyend="28718"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1SeedTxnIdRequest_1af03532fffe84462ca575722362d98d51" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::SeedTxnIdRequest::~SeedTxnIdRequest</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~SeedTxnIdRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::SeedTxnIdRequest::~SeedTxnIdRequest</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7565" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="28713" bodyend="28714"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1SeedTxnIdRequest_1a5b8c517a7424b27f1ecfb4aadc32feb2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::SeedTxnIdRequest::__set_seedTxnId</definition>
+        <argsstring>(const int64_t val)</argsstring>
+        <name>__set_seedTxnId</name>
+        <qualifiedname>Apache::Hadoop::Hive::SeedTxnIdRequest::__set_seedTxnId</qualifiedname>
+        <param>
+          <type>const int64_t</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7568" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="28720" bodyend="28722"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1SeedTxnIdRequest_1ac89ba6b8d2c8446654789367ee646fe5" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::SeedTxnIdRequest::operator==</definition>
+        <argsstring>(const SeedTxnIdRequest &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::SeedTxnIdRequest::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1SeedTxnIdRequest" kindref="compound">SeedTxnIdRequest</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7570" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="28793" bodyend="28798"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1SeedTxnIdRequest_1ae715d701787e27b6159afdf3054f3df5" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::SeedTxnIdRequest::operator!=</definition>
+        <argsstring>(const SeedTxnIdRequest &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::SeedTxnIdRequest::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1SeedTxnIdRequest" kindref="compound">SeedTxnIdRequest</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7571" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="7571" bodyend="7573"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1SeedTxnIdRequest_1a1cd6469ec585c33b4877a1b2f66c1739" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::SeedTxnIdRequest::operator&lt;</definition>
+        <argsstring>(const SeedTxnIdRequest &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::SeedTxnIdRequest::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1SeedTxnIdRequest" kindref="compound">SeedTxnIdRequest</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7575" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1SeedTxnIdRequest_1abcfb414fda19bce851d18bc33a205373" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::SeedTxnIdRequest::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot) override</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::SeedTxnIdRequest::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7577" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="28730" bodyend="28772"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1SeedTxnIdRequest_1a4bc2ed42442e5ffedf8be6b407625d84" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::SeedTxnIdRequest::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const override</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::SeedTxnIdRequest::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7578" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="28774" bodyend="28786"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1SeedTxnIdRequest_1a33c8cfd9004c3ac3c64eb704ca745098" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::SeedTxnIdRequest::printTo</definition>
+        <argsstring>(std::ostream &amp;out) const</argsstring>
+        <name>printTo</name>
+        <qualifiedname>Apache::Hadoop::Hive::SeedTxnIdRequest::printTo</qualifiedname>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7580" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="28807" bodyend="28812"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::SeedTxnIdRequest</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1SeedTxnIdRequest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::SeedTxnIdRequest</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1SeedTxnIdRequest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7558" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="7558" bodyend="7581"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1SeedTxnIdRequest_1a5b8c517a7424b27f1ecfb4aadc32feb2" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::SeedTxnIdRequest</scope><name>__set_seedTxnId</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1SeedTxnIdRequest_1ae715d701787e27b6159afdf3054f3df5" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::SeedTxnIdRequest</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1SeedTxnIdRequest_1a1cd6469ec585c33b4877a1b2f66c1739" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::SeedTxnIdRequest</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1SeedTxnIdRequest_1a39c9bd9d08600b04dc8131512de4fd07" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::SeedTxnIdRequest</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1SeedTxnIdRequest_1ac89ba6b8d2c8446654789367ee646fe5" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::SeedTxnIdRequest</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1SeedTxnIdRequest_1a33c8cfd9004c3ac3c64eb704ca745098" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::SeedTxnIdRequest</scope><name>printTo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1SeedTxnIdRequest_1abcfb414fda19bce851d18bc33a205373" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::SeedTxnIdRequest</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1SeedTxnIdRequest_1af89afb1e8518f27571a8d12675162fde" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::SeedTxnIdRequest</scope><name>seedTxnId</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1SeedTxnIdRequest_1a131c212c4195f852ef94b217021ff712" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::SeedTxnIdRequest</scope><name>SeedTxnIdRequest</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1SeedTxnIdRequest_1a98a841783b594edf7c3d591e5681d46a" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::SeedTxnIdRequest</scope><name>SeedTxnIdRequest</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1SeedTxnIdRequest_1a4bc2ed42442e5ffedf8be6b407625d84" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::SeedTxnIdRequest</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1SeedTxnIdRequest_1af03532fffe84462ca575722362d98d51" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::SeedTxnIdRequest</scope><name>~SeedTxnIdRequest</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

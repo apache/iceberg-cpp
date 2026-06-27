@@ -1,0 +1,64 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structApache_1_1Hadoop_1_1Hive_1_1__GetValidWriteIdsRequest____isset" kind="struct" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::_GetValidWriteIdsRequest__isset</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__GetValidWriteIdsRequest____isset_1a8d99f8c9abea6c658ba80196ea33abae" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_GetValidWriteIdsRequest__isset::validTxnList</definition>
+        <argsstring></argsstring>
+        <name>validTxnList</name>
+        <qualifiedname>Apache::Hadoop::Hive::_GetValidWriteIdsRequest__isset::validTxnList</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7222" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="7222" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__GetValidWriteIdsRequest____isset_1afbac3cc78860d638f69697e6c635aa2a" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_GetValidWriteIdsRequest__isset::writeId</definition>
+        <argsstring></argsstring>
+        <name>writeId</name>
+        <qualifiedname>Apache::Hadoop::Hive::_GetValidWriteIdsRequest__isset::writeId</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7223" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="7223" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structApache_1_1Hadoop_1_1Hive_1_1__GetValidWriteIdsRequest____isset_1ad85fa6b2d42e6d056ed3975798e676cd" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::_GetValidWriteIdsRequest__isset::_GetValidWriteIdsRequest__isset</definition>
+        <argsstring>()</argsstring>
+        <name>_GetValidWriteIdsRequest__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::_GetValidWriteIdsRequest__isset::_GetValidWriteIdsRequest__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7221" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="7221" bodyend="7221"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7220" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="7220" bodyend="7224"/>
+    <listofallmembers>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__GetValidWriteIdsRequest____isset_1ad85fa6b2d42e6d056ed3975798e676cd" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_GetValidWriteIdsRequest__isset</scope><name>_GetValidWriteIdsRequest__isset</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__GetValidWriteIdsRequest____isset_1a8d99f8c9abea6c658ba80196ea33abae" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_GetValidWriteIdsRequest__isset</scope><name>validTxnList</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__GetValidWriteIdsRequest____isset_1afbac3cc78860d638f69697e6c635aa2a" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_GetValidWriteIdsRequest__isset</scope><name>writeId</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,573 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1FileScanTaskReaderTest" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::FileScanTaskReaderTest</compoundname>
+    <basecompoundref refid="classiceberg_1_1TempFileTestBase" prot="public" virt="non-virtual">iceberg::TempFileTestBase</basecompoundref>
+    <sectiondef kind="protected-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1FileScanTaskReaderTest_1a1a10dac0e3324d3a2b19a612407cf6e3" prot="protected" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;FileIO&gt; iceberg::FileScanTaskReaderTest::file_io_</definition>
+        <argsstring></argsstring>
+        <name>file_io_</name>
+        <qualifiedname>iceberg::FileScanTaskReaderTest::file_io_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/file_scan_task_reader_test.cc" line="352" column="19" bodyfile="iceberg/test/file_scan_task_reader_test.cc" bodystart="352" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1FileScanTaskReaderTest_1ae74e7f98526cd4b553520d6f75bbad62" prot="protected" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1PartitionSpec" kindref="compound">PartitionSpec</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;PartitionSpec&gt; iceberg::FileScanTaskReaderTest::partition_spec_</definition>
+        <argsstring></argsstring>
+        <name>partition_spec_</name>
+        <qualifiedname>iceberg::FileScanTaskReaderTest::partition_spec_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/file_scan_task_reader_test.cc" line="353" column="19" bodyfile="iceberg/test/file_scan_task_reader_test.cc" bodystart="353" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1FileScanTaskReaderTest_1add46471da183dd0a2e76bf97c5f049b6" prot="protected" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;Schema&gt; iceberg::FileScanTaskReaderTest::table_schema_</definition>
+        <argsstring></argsstring>
+        <name>table_schema_</name>
+        <qualifiedname>iceberg::FileScanTaskReaderTest::table_schema_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/file_scan_task_reader_test.cc" line="354" column="19" bodyfile="iceberg/test/file_scan_task_reader_test.cc" bodystart="354" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1FileScanTaskReaderTest_1a9cd10bbf676f554d518dd69e87517605" prot="protected" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;Schema&gt; iceberg::FileScanTaskReaderTest::projected_schema_</definition>
+        <argsstring></argsstring>
+        <name>projected_schema_</name>
+        <qualifiedname>iceberg::FileScanTaskReaderTest::projected_schema_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/file_scan_task_reader_test.cc" line="355" column="19" bodyfile="iceberg/test/file_scan_task_reader_test.cc" bodystart="355" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="protected-static-func">
+      <memberdef kind="function" id="classiceberg_1_1FileScanTaskReaderTest_1adc8e31573409c5fbd4da9b3c5f0bd01d" prot="protected" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>static void iceberg::FileScanTaskReaderTest::SetUpTestSuite</definition>
+        <argsstring>()</argsstring>
+        <name>SetUpTestSuite</name>
+        <qualifiedname>iceberg::FileScanTaskReaderTest::SetUpTestSuite</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/file_scan_task_reader_test.cc" line="91" column="15" bodyfile="iceberg/test/file_scan_task_reader_test.cc" bodystart="91" bodyend="94"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="protected-func">
+      <memberdef kind="function" id="classiceberg_1_1FileScanTaskReaderTest_1a2b92e98e2caffa1c7b3dc862e70e3de2" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::FileScanTaskReaderTest::SetUp</definition>
+        <argsstring>() override</argsstring>
+        <name>SetUp</name>
+        <qualifiedname>iceberg::FileScanTaskReaderTest::SetUp</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/file_scan_task_reader_test.cc" line="96" column="8" bodyfile="iceberg/test/file_scan_task_reader_test.cc" bodystart="96" bodyend="109"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1FileScanTaskReaderTest_1a53432819e6b6f9f831e861581f68701e" prot="protected" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>Result&lt; ExportedBatch &gt;</type>
+        <definition>Result&lt; ExportedBatch &gt; iceberg::FileScanTaskReaderTest::MakeBatch</definition>
+        <argsstring>(const Schema &amp;schema, const std::string &amp;json_data) const</argsstring>
+        <name>MakeBatch</name>
+        <qualifiedname>iceberg::FileScanTaskReaderTest::MakeBatch</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &amp;</type>
+          <declname>schema</declname>
+        </param>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>json_data</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/file_scan_task_reader_test.cc" line="111" column="10" bodyfile="iceberg/test/file_scan_task_reader_test.cc" bodystart="111" bodyend="128"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1FileScanTaskReaderTest_1a8aae4a49d548813a93805afe701ff67e" prot="protected" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>Result&lt; std::shared_ptr&lt;::arrow::Schema &gt; &gt;</type>
+        <definition>Result&lt; std::shared_ptr&lt;::arrow::Schema &gt; &gt; iceberg::FileScanTaskReaderTest::MakeArrowSchema</definition>
+        <argsstring>(const Schema &amp;schema) const</argsstring>
+        <name>MakeArrowSchema</name>
+        <qualifiedname>iceberg::FileScanTaskReaderTest::MakeArrowSchema</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &amp;</type>
+          <declname>schema</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/file_scan_task_reader_test.cc" line="130" column="10" bodyfile="iceberg/test/file_scan_task_reader_test.cc" bodystart="130" bodyend="138"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1FileScanTaskReaderTest_1a6947e38aa7692a452cd111330695e38e" prot="protected" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>Result&lt; std::shared_ptr&lt;::arrow::RecordBatch &gt; &gt;</type>
+        <definition>Result&lt; std::shared_ptr&lt;::arrow::RecordBatch &gt; &gt; iceberg::FileScanTaskReaderTest::MakeRecordBatch</definition>
+        <argsstring>(const std::shared_ptr&lt;::arrow::Schema &gt; &amp;arrow_schema, const std::string &amp;json_data) const</argsstring>
+        <name>MakeRecordBatch</name>
+        <qualifiedname>iceberg::FileScanTaskReaderTest::MakeRecordBatch</qualifiedname>
+        <param>
+          <type>const std::shared_ptr&lt;::arrow::Schema &gt; &amp;</type>
+          <declname>arrow_schema</declname>
+        </param>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>json_data</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/file_scan_task_reader_test.cc" line="140" column="10" bodyfile="iceberg/test/file_scan_task_reader_test.cc" bodystart="140" bodyend="155"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1FileScanTaskReaderTest_1a3e44620a4116c49bb71296aaa38ed233" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>Result&lt; std::string &gt;</type>
+        <definition>Result&lt; std::string &gt; iceberg::FileScanTaskReaderTest::CreateParquetDataFile</definition>
+        <argsstring>(std::shared_ptr&lt; Schema &gt; schema, const std::string &amp;json_data, int64_t row_group_size=1024)</argsstring>
+        <name>CreateParquetDataFile</name>
+        <qualifiedname>iceberg::FileScanTaskReaderTest::CreateParquetDataFile</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &gt;</type>
+          <declname>schema</declname>
+        </param>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>json_data</declname>
+        </param>
+        <param>
+          <type>int64_t</type>
+          <declname>row_group_size</declname>
+          <defval>1024</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/file_scan_task_reader_test.cc" line="157" column="10" bodyfile="iceberg/test/file_scan_task_reader_test.cc" bodystart="157" bodyend="181"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1FileScanTaskReaderTest_1a3f19775197bfdf49393b5ce3c0f9b808" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>Result&lt; std::string &gt;</type>
+        <definition>Result&lt; std::string &gt; iceberg::FileScanTaskReaderTest::CreateParquetDataFile</definition>
+        <argsstring>(std::shared_ptr&lt; Schema &gt; schema, const std::vector&lt; std::string &gt; &amp;json_batches, int64_t max_row_group_length)</argsstring>
+        <name>CreateParquetDataFile</name>
+        <qualifiedname>iceberg::FileScanTaskReaderTest::CreateParquetDataFile</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &gt;</type>
+          <declname>schema</declname>
+        </param>
+        <param>
+          <type>const std::vector&lt; std::string &gt; &amp;</type>
+          <declname>json_batches</declname>
+        </param>
+        <param>
+          <type>int64_t</type>
+          <declname>max_row_group_length</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/file_scan_task_reader_test.cc" line="183" column="10" bodyfile="iceberg/test/file_scan_task_reader_test.cc" bodystart="183" bodyend="221"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1FileScanTaskReaderTest_1a131c1cd772c4502ecb0b1b5dfec09359" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>Result&lt; std::shared_ptr&lt; <ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::shared_ptr&lt; DataFile &gt; &gt; iceberg::FileScanTaskReaderTest::MakeDataFile</definition>
+        <argsstring>(std::shared_ptr&lt; Schema &gt; schema, const std::string &amp;json_data, int64_t record_count=3)</argsstring>
+        <name>MakeDataFile</name>
+        <qualifiedname>iceberg::FileScanTaskReaderTest::MakeDataFile</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &gt;</type>
+          <declname>schema</declname>
+        </param>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>json_data</declname>
+        </param>
+        <param>
+          <type>int64_t</type>
+          <declname>record_count</declname>
+          <defval>3</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/file_scan_task_reader_test.cc" line="223" column="10" bodyfile="iceberg/test/file_scan_task_reader_test.cc" bodystart="223" bodyend="237"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1FileScanTaskReaderTest_1af9bb571407084ef5401c7772b915b546" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>Result&lt; std::shared_ptr&lt; <ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::shared_ptr&lt; DataFile &gt; &gt; iceberg::FileScanTaskReaderTest::MakeDataFile</definition>
+        <argsstring>(std::shared_ptr&lt; Schema &gt; schema, const std::vector&lt; std::string &gt; &amp;json_batches, int64_t record_count, int64_t max_row_group_length)</argsstring>
+        <name>MakeDataFile</name>
+        <qualifiedname>iceberg::FileScanTaskReaderTest::MakeDataFile</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &gt;</type>
+          <declname>schema</declname>
+        </param>
+        <param>
+          <type>const std::vector&lt; std::string &gt; &amp;</type>
+          <declname>json_batches</declname>
+        </param>
+        <param>
+          <type>int64_t</type>
+          <declname>record_count</declname>
+        </param>
+        <param>
+          <type>int64_t</type>
+          <declname>max_row_group_length</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/file_scan_task_reader_test.cc" line="239" column="10" bodyfile="iceberg/test/file_scan_task_reader_test.cc" bodystart="239" bodyend="254"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1FileScanTaskReaderTest_1af492dd14ce3a021380a081a6d09f928d" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>Result&lt; std::shared_ptr&lt; <ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::shared_ptr&lt; DataFile &gt; &gt; iceberg::FileScanTaskReaderTest::MakePositionDeleteFile</definition>
+        <argsstring>(const std::string &amp;path, const std::vector&lt; int64_t &gt; &amp;positions, const std::string &amp;data_path)</argsstring>
+        <name>MakePositionDeleteFile</name>
+        <qualifiedname>iceberg::FileScanTaskReaderTest::MakePositionDeleteFile</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>path</declname>
+        </param>
+        <param>
+          <type>const std::vector&lt; int64_t &gt; &amp;</type>
+          <declname>positions</declname>
+        </param>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>data_path</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/file_scan_task_reader_test.cc" line="256" column="10" bodyfile="iceberg/test/file_scan_task_reader_test.cc" bodystart="256" bodyend="277"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1FileScanTaskReaderTest_1af5491258cb81c44f756166bd55625f41" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>Result&lt; std::shared_ptr&lt; <ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::shared_ptr&lt; DataFile &gt; &gt; iceberg::FileScanTaskReaderTest::MakeEqualityDeleteFile</definition>
+        <argsstring>(const std::string &amp;path, std::shared_ptr&lt; Schema &gt; schema, const std::string &amp;json_data, std::vector&lt; int32_t &gt; equality_field_ids)</argsstring>
+        <name>MakeEqualityDeleteFile</name>
+        <qualifiedname>iceberg::FileScanTaskReaderTest::MakeEqualityDeleteFile</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>path</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &gt;</type>
+          <declname>schema</declname>
+        </param>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>json_data</declname>
+        </param>
+        <param>
+          <type>std::vector&lt; int32_t &gt;</type>
+          <declname>equality_field_ids</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/file_scan_task_reader_test.cc" line="279" column="10" bodyfile="iceberg/test/file_scan_task_reader_test.cc" bodystart="279" bodyend="299"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1FileScanTaskReaderTest_1a4b717618e970545247a2ce41bc0bbda9" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::FileScanTaskReaderTest::VerifyStream</definition>
+        <argsstring>(struct ArrowArrayStream *stream, std::string_view expected_json)</argsstring>
+        <name>VerifyStream</name>
+        <qualifiedname>iceberg::FileScanTaskReaderTest::VerifyStream</qualifiedname>
+        <param>
+          <type>struct <ref refid="structArrowArrayStream" kindref="compound">ArrowArrayStream</ref> *</type>
+          <declname>stream</declname>
+        </param>
+        <param>
+          <type>std::string_view</type>
+          <declname>expected_json</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/file_scan_task_reader_test.cc" line="301" column="8" bodyfile="iceberg/test/file_scan_task_reader_test.cc" bodystart="301" bodyend="323"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1FileScanTaskReaderTest_1aef772aa632e94dd40f4fa47407979b97" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::FileScanTaskReaderTest::VerifyDataReaderBatchLengths</definition>
+        <argsstring>(const DataFile &amp;data_file, const std::vector&lt; int64_t &gt; &amp;expected_lengths, ReaderProperties properties={})</argsstring>
+        <name>VerifyDataReaderBatchLengths</name>
+        <qualifiedname>iceberg::FileScanTaskReaderTest::VerifyDataReaderBatchLengths</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref> &amp;</type>
+          <declname>data_file</declname>
+        </param>
+        <param>
+          <type>const std::vector&lt; int64_t &gt; &amp;</type>
+          <declname>expected_lengths</declname>
+        </param>
+        <param>
+          <type><ref refid="classiceberg_1_1ReaderProperties" kindref="compound">ReaderProperties</ref></type>
+          <declname>properties</declname>
+          <defval>{}</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/file_scan_task_reader_test.cc" line="325" column="8" bodyfile="iceberg/test/file_scan_task_reader_test.cc" bodystart="325" bodyend="350"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>iceberg::FileScanTaskReaderTest</label>
+        <link refid="classiceberg_1_1FileScanTaskReaderTest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::TempFileTestBase</label>
+        <link refid="classiceberg_1_1TempFileTestBase"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>testing::Test</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="19">
+        <label>iceberg::Lazy&lt; InitFieldById &gt;</label>
+        <link refid="classiceberg_1_1Lazy"/>
+      </node>
+      <node id="21">
+        <label>iceberg::Lazy&lt; InitFieldByLowerCaseName &gt;</label>
+        <link refid="classiceberg_1_1Lazy"/>
+      </node>
+      <node id="20">
+        <label>iceberg::Lazy&lt; InitFieldByName &gt;</label>
+        <link refid="classiceberg_1_1Lazy"/>
+      </node>
+      <node id="8">
+        <label>iceberg::FileIO</label>
+        <link refid="classiceberg_1_1FileIO"/>
+      </node>
+      <node id="1">
+        <label>iceberg::FileScanTaskReaderTest</label>
+        <link refid="classiceberg_1_1FileScanTaskReaderTest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="7" relation="usage">
+          <edgelabel>file_io_</edgelabel>
+        </childnode>
+        <childnode refid="9" relation="usage">
+          <edgelabel>partition_spec_</edgelabel>
+        </childnode>
+        <childnode refid="12" relation="usage">
+          <edgelabel>projected_schema_</edgelabel>
+          <edgelabel>table_schema_</edgelabel>
+        </childnode>
+      </node>
+      <node id="15">
+        <label>iceberg::NestedType</label>
+        <link refid="classiceberg_1_1NestedType"/>
+        <childnode refid="16" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="10">
+        <label>iceberg::PartitionSpec</label>
+        <link refid="classiceberg_1_1PartitionSpec"/>
+        <childnode refid="11" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="13">
+        <label>iceberg::Schema</label>
+        <link refid="classiceberg_1_1Schema"/>
+        <childnode refid="14" relation="public-inheritance">
+        </childnode>
+        <childnode refid="22" relation="usage">
+          <edgelabel>kAllColumns</edgelabel>
+        </childnode>
+      </node>
+      <node id="18">
+        <label>iceberg::SchemaField</label>
+        <link refid="classiceberg_1_1SchemaField"/>
+        <childnode refid="11" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="14">
+        <label>iceberg::StructType</label>
+        <link refid="classiceberg_1_1StructType"/>
+        <childnode refid="15" relation="public-inheritance">
+        </childnode>
+        <childnode refid="17" relation="usage">
+          <edgelabel>fields_</edgelabel>
+        </childnode>
+        <childnode refid="19" relation="usage">
+          <edgelabel>field_by_id_</edgelabel>
+        </childnode>
+        <childnode refid="20" relation="usage">
+          <edgelabel>field_by_name_</edgelabel>
+        </childnode>
+        <childnode refid="21" relation="usage">
+          <edgelabel>field_by_lowercase_name_</edgelabel>
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::TempFileTestBase</label>
+        <link refid="classiceberg_1_1TempFileTestBase"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>created_temp_files_</edgelabel>
+        </childnode>
+      </node>
+      <node id="16">
+        <label>iceberg::Type</label>
+        <link refid="classiceberg_1_1Type"/>
+        <childnode refid="11" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="11">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+      <node id="7">
+        <label>std::shared_ptr&lt; iceberg::FileIO &gt;</label>
+        <childnode refid="8" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="9">
+        <label>std::shared_ptr&lt; iceberg::PartitionSpec &gt;</label>
+        <childnode refid="10" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="12">
+        <label>std::shared_ptr&lt; iceberg::Schema &gt;</label>
+        <childnode refid="13" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="6">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="23">
+        <label>std::basic_string_view&lt; Char &gt;</label>
+      </node>
+      <node id="5">
+        <label>std::string</label>
+        <childnode refid="6" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="22">
+        <label>std::string_view</label>
+        <childnode refid="23" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>testing::Test</label>
+      </node>
+      <node id="17">
+        <label>std::vector&lt; iceberg::SchemaField &gt;</label>
+        <childnode refid="18" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="4">
+        <label>std::vector&lt; std::string &gt;</label>
+        <childnode refid="5" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/test/file_scan_task_reader_test.cc" line="89" column="1" bodyfile="iceberg/test/file_scan_task_reader_test.cc" bodystart="89" bodyend="356"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1TempFileTestBase_1a81e8f787019341a0f6e808b06944692c" prot="protected" virt="non-virtual"><scope>iceberg::FileScanTaskReaderTest</scope><name>created_temp_files_</name></member>
+      <member refid="classiceberg_1_1TempFileTestBase_1a469206ba6bfaea7b40483a594c819d8f" prot="protected" virt="non-virtual"><scope>iceberg::FileScanTaskReaderTest</scope><name>CreateNewTempFilePath</name></member>
+      <member refid="classiceberg_1_1TempFileTestBase_1a79c5ec372d23b44b3b25f90faadafcdf" prot="protected" virt="non-virtual"><scope>iceberg::FileScanTaskReaderTest</scope><name>CreateNewTempFilePathWithSuffix</name></member>
+      <member refid="classiceberg_1_1FileScanTaskReaderTest_1a3e44620a4116c49bb71296aaa38ed233" prot="protected" virt="non-virtual"><scope>iceberg::FileScanTaskReaderTest</scope><name>CreateParquetDataFile</name></member>
+      <member refid="classiceberg_1_1FileScanTaskReaderTest_1a3f19775197bfdf49393b5ce3c0f9b808" prot="protected" virt="non-virtual"><scope>iceberg::FileScanTaskReaderTest</scope><name>CreateParquetDataFile</name></member>
+      <member refid="classiceberg_1_1TempFileTestBase_1a78b1aeba8972a7b7a1efe8250fc275b9" prot="protected" virt="non-virtual"><scope>iceberg::FileScanTaskReaderTest</scope><name>CreateTempDirectory</name></member>
+      <member refid="classiceberg_1_1TempFileTestBase_1a0f94d0c787eed57fca2687c77f0873dd" prot="protected" virt="non-virtual"><scope>iceberg::FileScanTaskReaderTest</scope><name>CreateTempFileWithContent</name></member>
+      <member refid="classiceberg_1_1FileScanTaskReaderTest_1a1a10dac0e3324d3a2b19a612407cf6e3" prot="protected" virt="non-virtual"><scope>iceberg::FileScanTaskReaderTest</scope><name>file_io_</name></member>
+      <member refid="classiceberg_1_1TempFileTestBase_1ab8c455679ca860cf68d867b134fd6dbc" prot="protected" virt="non-virtual"><scope>iceberg::FileScanTaskReaderTest</scope><name>GenerateRandomString</name></member>
+      <member refid="classiceberg_1_1TempFileTestBase_1ac4a5a13677373ca5e40f5251f2fc16d5" prot="protected" virt="non-virtual"><scope>iceberg::FileScanTaskReaderTest</scope><name>GenerateUniqueTempFilePath</name></member>
+      <member refid="classiceberg_1_1TempFileTestBase_1a25203f87d8d23209c611949d95749559" prot="protected" virt="non-virtual"><scope>iceberg::FileScanTaskReaderTest</scope><name>GenerateUniqueTempFilePathWithSuffix</name></member>
+      <member refid="classiceberg_1_1FileScanTaskReaderTest_1a8aae4a49d548813a93805afe701ff67e" prot="protected" virt="non-virtual"><scope>iceberg::FileScanTaskReaderTest</scope><name>MakeArrowSchema</name></member>
+      <member refid="classiceberg_1_1FileScanTaskReaderTest_1a53432819e6b6f9f831e861581f68701e" prot="protected" virt="non-virtual"><scope>iceberg::FileScanTaskReaderTest</scope><name>MakeBatch</name></member>
+      <member refid="classiceberg_1_1FileScanTaskReaderTest_1a131c1cd772c4502ecb0b1b5dfec09359" prot="protected" virt="non-virtual"><scope>iceberg::FileScanTaskReaderTest</scope><name>MakeDataFile</name></member>
+      <member refid="classiceberg_1_1FileScanTaskReaderTest_1af9bb571407084ef5401c7772b915b546" prot="protected" virt="non-virtual"><scope>iceberg::FileScanTaskReaderTest</scope><name>MakeDataFile</name></member>
+      <member refid="classiceberg_1_1FileScanTaskReaderTest_1af5491258cb81c44f756166bd55625f41" prot="protected" virt="non-virtual"><scope>iceberg::FileScanTaskReaderTest</scope><name>MakeEqualityDeleteFile</name></member>
+      <member refid="classiceberg_1_1FileScanTaskReaderTest_1af492dd14ce3a021380a081a6d09f928d" prot="protected" virt="non-virtual"><scope>iceberg::FileScanTaskReaderTest</scope><name>MakePositionDeleteFile</name></member>
+      <member refid="classiceberg_1_1FileScanTaskReaderTest_1a6947e38aa7692a452cd111330695e38e" prot="protected" virt="non-virtual"><scope>iceberg::FileScanTaskReaderTest</scope><name>MakeRecordBatch</name></member>
+      <member refid="classiceberg_1_1FileScanTaskReaderTest_1ae74e7f98526cd4b553520d6f75bbad62" prot="protected" virt="non-virtual"><scope>iceberg::FileScanTaskReaderTest</scope><name>partition_spec_</name></member>
+      <member refid="classiceberg_1_1FileScanTaskReaderTest_1a9cd10bbf676f554d518dd69e87517605" prot="protected" virt="non-virtual"><scope>iceberg::FileScanTaskReaderTest</scope><name>projected_schema_</name></member>
+      <member refid="classiceberg_1_1FileScanTaskReaderTest_1a2b92e98e2caffa1c7b3dc862e70e3de2" prot="protected" virt="non-virtual"><scope>iceberg::FileScanTaskReaderTest</scope><name>SetUp</name></member>
+      <member refid="classiceberg_1_1FileScanTaskReaderTest_1adc8e31573409c5fbd4da9b3c5f0bd01d" prot="protected" virt="non-virtual"><scope>iceberg::FileScanTaskReaderTest</scope><name>SetUpTestSuite</name></member>
+      <member refid="classiceberg_1_1FileScanTaskReaderTest_1add46471da183dd0a2e76bf97c5f049b6" prot="protected" virt="non-virtual"><scope>iceberg::FileScanTaskReaderTest</scope><name>table_schema_</name></member>
+      <member refid="classiceberg_1_1TempFileTestBase_1ad0259e7197a5f7c88a6cd9688efe6b53" prot="protected" virt="non-virtual"><scope>iceberg::FileScanTaskReaderTest</scope><name>TearDown</name></member>
+      <member refid="classiceberg_1_1TempFileTestBase_1ac5dbf7b55b849f990733840057bd450f" prot="protected" virt="non-virtual"><scope>iceberg::FileScanTaskReaderTest</scope><name>TestInfo</name></member>
+      <member refid="classiceberg_1_1FileScanTaskReaderTest_1aef772aa632e94dd40f4fa47407979b97" prot="protected" virt="non-virtual"><scope>iceberg::FileScanTaskReaderTest</scope><name>VerifyDataReaderBatchLengths</name></member>
+      <member refid="classiceberg_1_1FileScanTaskReaderTest_1a4b717618e970545247a2ce41bc0bbda9" prot="protected" virt="non-virtual"><scope>iceberg::FileScanTaskReaderTest</scope><name>VerifyStream</name></member>
+      <member refid="classiceberg_1_1TempFileTestBase_1a3ba86e7547c2ea06ac70f76e61040af5" prot="protected" virt="non-virtual"><scope>iceberg::FileScanTaskReaderTest</scope><name>WriteContentToFile</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

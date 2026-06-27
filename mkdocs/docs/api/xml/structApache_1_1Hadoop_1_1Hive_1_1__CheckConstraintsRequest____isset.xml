@@ -1,0 +1,64 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structApache_1_1Hadoop_1_1Hive_1_1__CheckConstraintsRequest____isset" kind="struct" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::_CheckConstraintsRequest__isset</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__CheckConstraintsRequest____isset_1ab33b96aba276b82511d419aa3317afc7" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_CheckConstraintsRequest__isset::validWriteIdList</definition>
+        <argsstring></argsstring>
+        <name>validWriteIdList</name>
+        <qualifiedname>Apache::Hadoop::Hive::_CheckConstraintsRequest__isset::validWriteIdList</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="5091" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="5091" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__CheckConstraintsRequest____isset_1a10b2ffae269dd7d3e744ce4d903afaa3" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_CheckConstraintsRequest__isset::tableId</definition>
+        <argsstring></argsstring>
+        <name>tableId</name>
+        <qualifiedname>Apache::Hadoop::Hive::_CheckConstraintsRequest__isset::tableId</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="5092" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="5092" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structApache_1_1Hadoop_1_1Hive_1_1__CheckConstraintsRequest____isset_1ad4dbd30513c411032402dd772b6ecae3" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::_CheckConstraintsRequest__isset::_CheckConstraintsRequest__isset</definition>
+        <argsstring>()</argsstring>
+        <name>_CheckConstraintsRequest__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::_CheckConstraintsRequest__isset::_CheckConstraintsRequest__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="5090" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="5090" bodyend="5090"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="5089" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="5089" bodyend="5093"/>
+    <listofallmembers>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__CheckConstraintsRequest____isset_1ad4dbd30513c411032402dd772b6ecae3" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_CheckConstraintsRequest__isset</scope><name>_CheckConstraintsRequest__isset</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__CheckConstraintsRequest____isset_1a10b2ffae269dd7d3e744ce4d903afaa3" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_CheckConstraintsRequest__isset</scope><name>tableId</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__CheckConstraintsRequest____isset_1ab33b96aba276b82511d419aa3317afc7" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_CheckConstraintsRequest__isset</scope><name>validWriteIdList</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,37 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structApache_1_1Hadoop_1_1Hive_1_1PartitionEventType" kind="struct" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::PartitionEventType</compoundname>
+    <sectiondef kind="public-type">
+      <memberdef kind="enum" id="structApache_1_1Hadoop_1_1Hive_1_1PartitionEventType_1a4ef5521a75402764127709502e448aa2" prot="public" static="no" strong="no">
+        <type></type>
+        <name>type</name>
+        <qualifiedname>Apache::Hadoop::Hive::PartitionEventType::type</qualifiedname>
+        <enumvalue id="structApache_1_1Hadoop_1_1Hive_1_1PartitionEventType_1a4ef5521a75402764127709502e448aa2a505ef78b2976260de3cf2aaa90d431a4" prot="public">
+          <name>LOAD_DONE</name>
+          <initializer>= 1</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="57" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="57" bodyend="59"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="56" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="56" bodyend="60"/>
+    <listofallmembers>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1PartitionEventType_1a4ef5521a75402764127709502e448aa2a505ef78b2976260de3cf2aaa90d431a4" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::PartitionEventType</scope><name>LOAD_DONE</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1PartitionEventType_1a4ef5521a75402764127709502e448aa2" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::PartitionEventType</scope><name>type</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

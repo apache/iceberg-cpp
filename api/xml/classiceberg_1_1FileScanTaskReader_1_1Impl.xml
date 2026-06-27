@@ -1,0 +1,191 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1FileScanTaskReader_1_1Impl" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::FileScanTaskReader::Impl</compoundname>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1FileScanTaskReader_1_1Impl_1a2388e0e151598b343c8d267a03bfedbd" prot="private" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;FileIO&gt; iceberg::FileScanTaskReader::Impl::io_</definition>
+        <argsstring></argsstring>
+        <name>io_</name>
+        <qualifiedname>iceberg::FileScanTaskReader::Impl::io_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/file_scan_task_reader.cc" line="212" column="19" bodyfile="iceberg/data/file_scan_task_reader.cc" bodystart="212" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1FileScanTaskReader_1_1Impl_1a2ceb88245327feb401deb05a7ebe2bc9" prot="private" static="no" mutable="no">
+        <type>std::vector&lt; std::shared_ptr&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &gt; &gt;</type>
+        <definition>std::vector&lt;std::shared_ptr&lt;Schema&gt; &gt; iceberg::FileScanTaskReader::Impl::schemas_</definition>
+        <argsstring></argsstring>
+        <name>schemas_</name>
+        <qualifiedname>iceberg::FileScanTaskReader::Impl::schemas_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/file_scan_task_reader.cc" line="213" column="15" bodyfile="iceberg/data/file_scan_task_reader.cc" bodystart="213" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1FileScanTaskReader_1_1Impl_1aaf91ce2ef36b546bfd5d70e4d311972d" prot="private" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;Schema&gt; iceberg::FileScanTaskReader::Impl::projected_schema_</definition>
+        <argsstring></argsstring>
+        <name>projected_schema_</name>
+        <qualifiedname>iceberg::FileScanTaskReader::Impl::projected_schema_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/file_scan_task_reader.cc" line="214" column="19" bodyfile="iceberg/data/file_scan_task_reader.cc" bodystart="214" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1FileScanTaskReader_1_1Impl_1ab521c2bf3d979f7163892fc00d5580fe" prot="private" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1NameMapping" kindref="compound">NameMapping</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;NameMapping&gt; iceberg::FileScanTaskReader::Impl::name_mapping_</definition>
+        <argsstring></argsstring>
+        <name>name_mapping_</name>
+        <qualifiedname>iceberg::FileScanTaskReader::Impl::name_mapping_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/file_scan_task_reader.cc" line="215" column="19" bodyfile="iceberg/data/file_scan_task_reader.cc" bodystart="215" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1FileScanTaskReader_1_1Impl_1af6ae0bad7b3459a8a2dfdf530bb76458" prot="private" static="no" mutable="no">
+        <type><ref refid="classiceberg_1_1ReaderProperties" kindref="compound">ReaderProperties</ref></type>
+        <definition>ReaderProperties iceberg::FileScanTaskReader::Impl::properties_</definition>
+        <argsstring></argsstring>
+        <name>properties_</name>
+        <qualifiedname>iceberg::FileScanTaskReader::Impl::properties_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/file_scan_task_reader.cc" line="216" column="20" bodyfile="iceberg/data/file_scan_task_reader.cc" bodystart="216" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1FileScanTaskReader_1_1Impl_1aa16667229ee4edc1d7ccc356cfcb7568" prot="private" static="no" mutable="no">
+        <type><ref refid="classiceberg_1_1DeleteFilter_1ad80fcce828b8cd1a160cfe77c8ef9292" kindref="member">DeleteFilter::FieldLookup</ref></type>
+        <definition>DeleteFilter::FieldLookup iceberg::FileScanTaskReader::Impl::field_lookup_</definition>
+        <argsstring></argsstring>
+        <name>field_lookup_</name>
+        <qualifiedname>iceberg::FileScanTaskReader::Impl::field_lookup_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/file_scan_task_reader.cc" line="217" column="29" bodyfile="iceberg/data/file_scan_task_reader.cc" bodystart="217" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1FileScanTaskReader_1_1Impl_1aa56d86318ea98791372ebead32b22b11" prot="private" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1DeleteCounter" kindref="compound">DeleteCounter</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;DeleteCounter&gt; iceberg::FileScanTaskReader::Impl::delete_counter_</definition>
+        <argsstring></argsstring>
+        <name>delete_counter_</name>
+        <qualifiedname>iceberg::FileScanTaskReader::Impl::delete_counter_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/file_scan_task_reader.cc" line="218" column="19" bodyfile="iceberg/data/file_scan_task_reader.cc" bodystart="218" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classiceberg_1_1FileScanTaskReader_1_1Impl_1af52ffa0958b42ab17a479a741ab6ab28" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>Result&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1FileScanTaskReader_1_1Impl" kindref="compound">Impl</ref> &gt; &gt;</type>
+        <definition>static Result&lt; std::unique_ptr&lt; Impl &gt; &gt; iceberg::FileScanTaskReader::Impl::Make</definition>
+        <argsstring>(Options options)</argsstring>
+        <name>Make</name>
+        <qualifiedname>iceberg::FileScanTaskReader::Impl::Make</qualifiedname>
+        <param>
+          <type><ref refid="structiceberg_1_1FileScanTaskReader_1_1Options" kindref="compound">Options</ref></type>
+          <declname>options</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/file_scan_task_reader.cc" line="138" column="17" bodyfile="iceberg/data/file_scan_task_reader.cc" bodystart="138" bodyend="154"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1FileScanTaskReader_1_1Impl_1a44f2078d9a58ea314166b18491b08101" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>Result&lt; <ref refid="structArrowArrayStream" kindref="compound">ArrowArrayStream</ref> &gt;</type>
+        <definition>Result&lt; ArrowArrayStream &gt; iceberg::FileScanTaskReader::Impl::Open</definition>
+        <argsstring>(const FileScanTask &amp;task)</argsstring>
+        <name>Open</name>
+        <qualifiedname>iceberg::FileScanTaskReader::Impl::Open</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1FileScanTask" kindref="compound">FileScanTask</ref> &amp;</type>
+          <declname>task</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/file_scan_task_reader.cc" line="156" column="10" bodyfile="iceberg/data/file_scan_task_reader.cc" bodystart="156" bodyend="199"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classiceberg_1_1FileScanTaskReader_1_1Impl_1ae7b591aa69b4ce75aa4cb16f67a36302" prot="private" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::FileScanTaskReader::Impl::Impl</definition>
+        <argsstring>(Options options, DeleteFilter::FieldLookup field_lookup, std::shared_ptr&lt; DeleteCounter &gt; delete_counter)</argsstring>
+        <name>Impl</name>
+        <qualifiedname>iceberg::FileScanTaskReader::Impl::Impl</qualifiedname>
+        <param>
+          <type><ref refid="structiceberg_1_1FileScanTaskReader_1_1Options" kindref="compound">Options</ref></type>
+          <declname>options</declname>
+        </param>
+        <param>
+          <type><ref refid="classiceberg_1_1DeleteFilter_1ad80fcce828b8cd1a160cfe77c8ef9292" kindref="member">DeleteFilter::FieldLookup</ref></type>
+          <declname>field_lookup</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1DeleteCounter" kindref="compound">DeleteCounter</ref> &gt;</type>
+          <declname>delete_counter</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/file_scan_task_reader.cc" line="202" column="3" bodyfile="iceberg/data/file_scan_task_reader.cc" bodystart="202" bodyend="210"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/data/file_scan_task_reader.cc" line="136" column="1" bodyfile="iceberg/data/file_scan_task_reader.cc" bodystart="136" bodyend="219"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1FileScanTaskReader_1_1Impl_1aa56d86318ea98791372ebead32b22b11" prot="private" virt="non-virtual"><scope>iceberg::FileScanTaskReader::Impl</scope><name>delete_counter_</name></member>
+      <member refid="classiceberg_1_1FileScanTaskReader_1_1Impl_1aa16667229ee4edc1d7ccc356cfcb7568" prot="private" virt="non-virtual"><scope>iceberg::FileScanTaskReader::Impl</scope><name>field_lookup_</name></member>
+      <member refid="classiceberg_1_1FileScanTaskReader_1_1Impl_1ae7b591aa69b4ce75aa4cb16f67a36302" prot="private" virt="non-virtual"><scope>iceberg::FileScanTaskReader::Impl</scope><name>Impl</name></member>
+      <member refid="classiceberg_1_1FileScanTaskReader_1_1Impl_1a2388e0e151598b343c8d267a03bfedbd" prot="private" virt="non-virtual"><scope>iceberg::FileScanTaskReader::Impl</scope><name>io_</name></member>
+      <member refid="classiceberg_1_1FileScanTaskReader_1_1Impl_1af52ffa0958b42ab17a479a741ab6ab28" prot="public" virt="non-virtual"><scope>iceberg::FileScanTaskReader::Impl</scope><name>Make</name></member>
+      <member refid="classiceberg_1_1FileScanTaskReader_1_1Impl_1ab521c2bf3d979f7163892fc00d5580fe" prot="private" virt="non-virtual"><scope>iceberg::FileScanTaskReader::Impl</scope><name>name_mapping_</name></member>
+      <member refid="classiceberg_1_1FileScanTaskReader_1_1Impl_1a44f2078d9a58ea314166b18491b08101" prot="public" virt="non-virtual"><scope>iceberg::FileScanTaskReader::Impl</scope><name>Open</name></member>
+      <member refid="classiceberg_1_1FileScanTaskReader_1_1Impl_1aaf91ce2ef36b546bfd5d70e4d311972d" prot="private" virt="non-virtual"><scope>iceberg::FileScanTaskReader::Impl</scope><name>projected_schema_</name></member>
+      <member refid="classiceberg_1_1FileScanTaskReader_1_1Impl_1af6ae0bad7b3459a8a2dfdf530bb76458" prot="private" virt="non-virtual"><scope>iceberg::FileScanTaskReader::Impl</scope><name>properties_</name></member>
+      <member refid="classiceberg_1_1FileScanTaskReader_1_1Impl_1a2ceb88245327feb401deb05a7ebe2bc9" prot="private" virt="non-virtual"><scope>iceberg::FileScanTaskReader::Impl</scope><name>schemas_</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

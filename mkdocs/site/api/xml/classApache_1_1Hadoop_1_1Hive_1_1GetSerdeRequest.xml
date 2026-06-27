@@ -1,0 +1,288 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1GetSerdeRequest" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::GetSerdeRequest</compoundname>
+    <basecompoundref prot="public" virt="virtual">apache::thrift::TBase</basecompoundref>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1GetSerdeRequest_1a603c41a4dba6e468775c7d8096e91d3c" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::GetSerdeRequest::serdeName</definition>
+        <argsstring></argsstring>
+        <name>serdeName</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetSerdeRequest::serdeName</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12960" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="12960" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1GetSerdeRequest_1af2b492b5c4980bcccdc714d0503b0102" prot="public" static="no" mutable="no">
+        <type><ref refid="structApache_1_1Hadoop_1_1Hive_1_1__GetSerdeRequest____isset" kindref="compound">_GetSerdeRequest__isset</ref></type>
+        <definition>_GetSerdeRequest__isset Apache::Hadoop::Hive::GetSerdeRequest::__isset</definition>
+        <argsstring></argsstring>
+        <name>__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetSerdeRequest::__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12962" column="27" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="12962" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetSerdeRequest_1a593235b5557f3d3cc57576c55a4369dd" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::GetSerdeRequest::GetSerdeRequest</definition>
+        <argsstring>(const GetSerdeRequest &amp;)</argsstring>
+        <name>GetSerdeRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetSerdeRequest::GetSerdeRequest</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1GetSerdeRequest" kindref="compound">GetSerdeRequest</ref> &amp;</type>
+          <defname>other1569</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12955" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="50527" bodyend="50530"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetSerdeRequest_1a5db22ad1b53e4af07bdda99a7e16e393" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1GetSerdeRequest" kindref="compound">GetSerdeRequest</ref> &amp;</type>
+        <definition>GetSerdeRequest &amp; Apache::Hadoop::Hive::GetSerdeRequest::operator=</definition>
+        <argsstring>(const GetSerdeRequest &amp;)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetSerdeRequest::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1GetSerdeRequest" kindref="compound">GetSerdeRequest</ref> &amp;</type>
+          <defname>other1570</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12956" column="19" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="50531" bodyend="50535"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetSerdeRequest_1acacd3705bcb53416245523e145325643" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::GetSerdeRequest::GetSerdeRequest</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>GetSerdeRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetSerdeRequest::GetSerdeRequest</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12957" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="50445" bodyend="50447"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetSerdeRequest_1a07499fb913571b1a601f4fb40ddc739f" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::GetSerdeRequest::~GetSerdeRequest</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~GetSerdeRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetSerdeRequest::~GetSerdeRequest</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12959" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="50442" bodyend="50443"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetSerdeRequest_1a751e2d11051781adcb98488bce00472a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::GetSerdeRequest::__set_serdeName</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_serdeName</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetSerdeRequest::__set_serdeName</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12964" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="50449" bodyend="50451"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetSerdeRequest_1a50c04ef96d07c8c00596d0bf5439c0b8" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::GetSerdeRequest::operator==</definition>
+        <argsstring>(const GetSerdeRequest &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetSerdeRequest::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1GetSerdeRequest" kindref="compound">GetSerdeRequest</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12966" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="50520" bodyend="50525"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetSerdeRequest_1a2d71384e68e5838ff33e6e0835592d74" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::GetSerdeRequest::operator!=</definition>
+        <argsstring>(const GetSerdeRequest &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetSerdeRequest::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1GetSerdeRequest" kindref="compound">GetSerdeRequest</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12967" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="12967" bodyend="12969"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetSerdeRequest_1a604586251b5f91a2a916be28f2d7fbad" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::GetSerdeRequest::operator&lt;</definition>
+        <argsstring>(const GetSerdeRequest &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetSerdeRequest::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1GetSerdeRequest" kindref="compound">GetSerdeRequest</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12971" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetSerdeRequest_1a7c2decb52cfaee42cec1a6509b7668e4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::GetSerdeRequest::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot) override</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetSerdeRequest::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12973" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="50459" bodyend="50498"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetSerdeRequest_1a70f4ca6f92b4976b252afccac530cdb2" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::GetSerdeRequest::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const override</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetSerdeRequest::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12974" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="50500" bodyend="50512"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetSerdeRequest_1a644f4cc8cfe6f22d2b3344890f394000" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::GetSerdeRequest::printTo</definition>
+        <argsstring>(std::ostream &amp;out) const</argsstring>
+        <name>printTo</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetSerdeRequest::printTo</qualifiedname>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12976" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="50536" bodyend="50541"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::GetSerdeRequest</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1GetSerdeRequest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::GetSerdeRequest</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1GetSerdeRequest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>serdeName</edgelabel>
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="5">
+        <label>Apache::Hadoop::Hive::_GetSerdeRequest__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__GetSerdeRequest____isset"/>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+      <node id="4">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="3">
+        <label>std::string</label>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12952" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="12952" bodyend="12977"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetSerdeRequest_1af2b492b5c4980bcccdc714d0503b0102" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetSerdeRequest</scope><name>__isset</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetSerdeRequest_1a751e2d11051781adcb98488bce00472a" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetSerdeRequest</scope><name>__set_serdeName</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetSerdeRequest_1a593235b5557f3d3cc57576c55a4369dd" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetSerdeRequest</scope><name>GetSerdeRequest</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetSerdeRequest_1acacd3705bcb53416245523e145325643" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetSerdeRequest</scope><name>GetSerdeRequest</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetSerdeRequest_1a2d71384e68e5838ff33e6e0835592d74" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetSerdeRequest</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetSerdeRequest_1a604586251b5f91a2a916be28f2d7fbad" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetSerdeRequest</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetSerdeRequest_1a5db22ad1b53e4af07bdda99a7e16e393" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetSerdeRequest</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetSerdeRequest_1a50c04ef96d07c8c00596d0bf5439c0b8" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetSerdeRequest</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetSerdeRequest_1a644f4cc8cfe6f22d2b3344890f394000" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::GetSerdeRequest</scope><name>printTo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetSerdeRequest_1a7c2decb52cfaee42cec1a6509b7668e4" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetSerdeRequest</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetSerdeRequest_1a603c41a4dba6e468775c7d8096e91d3c" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetSerdeRequest</scope><name>serdeName</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetSerdeRequest_1a70f4ca6f92b4976b252afccac530cdb2" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetSerdeRequest</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetSerdeRequest_1a07499fb913571b1a601f4fb40ddc739f" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::GetSerdeRequest</scope><name>~GetSerdeRequest</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

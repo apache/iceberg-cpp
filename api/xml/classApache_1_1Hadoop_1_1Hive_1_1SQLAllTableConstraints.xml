@@ -1,0 +1,635 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1SQLAllTableConstraints" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::SQLAllTableConstraints</compoundname>
+    <basecompoundref prot="public" virt="virtual">apache::thrift::TBase</basecompoundref>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1SQLAllTableConstraints_1a49d2fea46e7e57280a42c0aaa455e371" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; <ref refid="classApache_1_1Hadoop_1_1Hive_1_1SQLPrimaryKey" kindref="compound">SQLPrimaryKey</ref> &gt;</type>
+        <definition>std::vector&lt;SQLPrimaryKey&gt; Apache::Hadoop::Hive::SQLAllTableConstraints::primaryKeys</definition>
+        <argsstring></argsstring>
+        <name>primaryKeys</name>
+        <qualifiedname>Apache::Hadoop::Hive::SQLAllTableConstraints::primaryKeys</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1662" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="1662" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1SQLAllTableConstraints_1afce76b3ba5c89c76ddac80ce5f581643" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; <ref refid="classApache_1_1Hadoop_1_1Hive_1_1SQLForeignKey" kindref="compound">SQLForeignKey</ref> &gt;</type>
+        <definition>std::vector&lt;SQLForeignKey&gt; Apache::Hadoop::Hive::SQLAllTableConstraints::foreignKeys</definition>
+        <argsstring></argsstring>
+        <name>foreignKeys</name>
+        <qualifiedname>Apache::Hadoop::Hive::SQLAllTableConstraints::foreignKeys</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1663" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="1663" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1SQLAllTableConstraints_1abcb2e8aaf81566b7028042e79520cdc4" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; <ref refid="classApache_1_1Hadoop_1_1Hive_1_1SQLUniqueConstraint" kindref="compound">SQLUniqueConstraint</ref> &gt;</type>
+        <definition>std::vector&lt;SQLUniqueConstraint&gt; Apache::Hadoop::Hive::SQLAllTableConstraints::uniqueConstraints</definition>
+        <argsstring></argsstring>
+        <name>uniqueConstraints</name>
+        <qualifiedname>Apache::Hadoop::Hive::SQLAllTableConstraints::uniqueConstraints</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1664" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="1664" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1SQLAllTableConstraints_1a162ae316585ce7a1a29aab25f440d21d" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; <ref refid="classApache_1_1Hadoop_1_1Hive_1_1SQLNotNullConstraint" kindref="compound">SQLNotNullConstraint</ref> &gt;</type>
+        <definition>std::vector&lt;SQLNotNullConstraint&gt; Apache::Hadoop::Hive::SQLAllTableConstraints::notNullConstraints</definition>
+        <argsstring></argsstring>
+        <name>notNullConstraints</name>
+        <qualifiedname>Apache::Hadoop::Hive::SQLAllTableConstraints::notNullConstraints</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1665" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="1665" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1SQLAllTableConstraints_1a1869565c24cabb11c0a3d9f98fc0ec4b" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; <ref refid="classApache_1_1Hadoop_1_1Hive_1_1SQLDefaultConstraint" kindref="compound">SQLDefaultConstraint</ref> &gt;</type>
+        <definition>std::vector&lt;SQLDefaultConstraint&gt; Apache::Hadoop::Hive::SQLAllTableConstraints::defaultConstraints</definition>
+        <argsstring></argsstring>
+        <name>defaultConstraints</name>
+        <qualifiedname>Apache::Hadoop::Hive::SQLAllTableConstraints::defaultConstraints</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1666" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="1666" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1SQLAllTableConstraints_1ad63cd65e5bed17e8dc4fc455298d34d9" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; <ref refid="classApache_1_1Hadoop_1_1Hive_1_1SQLCheckConstraint" kindref="compound">SQLCheckConstraint</ref> &gt;</type>
+        <definition>std::vector&lt;SQLCheckConstraint&gt; Apache::Hadoop::Hive::SQLAllTableConstraints::checkConstraints</definition>
+        <argsstring></argsstring>
+        <name>checkConstraints</name>
+        <qualifiedname>Apache::Hadoop::Hive::SQLAllTableConstraints::checkConstraints</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1667" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="1667" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1SQLAllTableConstraints_1a93715a4ac844525a4cc16d6bedfedbe7" prot="public" static="no" mutable="no">
+        <type><ref refid="structApache_1_1Hadoop_1_1Hive_1_1__SQLAllTableConstraints____isset" kindref="compound">_SQLAllTableConstraints__isset</ref></type>
+        <definition>_SQLAllTableConstraints__isset Apache::Hadoop::Hive::SQLAllTableConstraints::__isset</definition>
+        <argsstring></argsstring>
+        <name>__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::SQLAllTableConstraints::__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1669" column="34" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="1669" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1SQLAllTableConstraints_1ab3f51fd166813d49f684886107388a9f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::SQLAllTableConstraints::SQLAllTableConstraints</definition>
+        <argsstring>(const SQLAllTableConstraints &amp;)</argsstring>
+        <name>SQLAllTableConstraints</name>
+        <qualifiedname>Apache::Hadoop::Hive::SQLAllTableConstraints::SQLAllTableConstraints</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1SQLAllTableConstraints" kindref="compound">SQLAllTableConstraints</ref> &amp;</type>
+          <defname>other62</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1657" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="3494" bodyend="3502"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1SQLAllTableConstraints_1ae2a62d85aa8b330240b0a192f97a3fe8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1SQLAllTableConstraints" kindref="compound">SQLAllTableConstraints</ref> &amp;</type>
+        <definition>SQLAllTableConstraints &amp; Apache::Hadoop::Hive::SQLAllTableConstraints::operator=</definition>
+        <argsstring>(const SQLAllTableConstraints &amp;)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::SQLAllTableConstraints::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1SQLAllTableConstraints" kindref="compound">SQLAllTableConstraints</ref> &amp;</type>
+          <defname>other63</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1658" column="26" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="3503" bodyend="3512"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1SQLAllTableConstraints_1ac8b7e247b7e4e6701e7f2da439b12dc5" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::SQLAllTableConstraints::SQLAllTableConstraints</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>SQLAllTableConstraints</name>
+        <qualifiedname>Apache::Hadoop::Hive::SQLAllTableConstraints::SQLAllTableConstraints</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1659" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="3174" bodyend="3175"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1SQLAllTableConstraints_1a186b2bbe44d2e0f1e6c97eecffb8fa72" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::SQLAllTableConstraints::~SQLAllTableConstraints</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~SQLAllTableConstraints</name>
+        <qualifiedname>Apache::Hadoop::Hive::SQLAllTableConstraints::~SQLAllTableConstraints</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1661" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="3171" bodyend="3172"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1SQLAllTableConstraints_1a6135d7383933ca79d8dee75779bb359f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::SQLAllTableConstraints::__set_primaryKeys</definition>
+        <argsstring>(const std::vector&lt; SQLPrimaryKey &gt; &amp;val)</argsstring>
+        <name>__set_primaryKeys</name>
+        <qualifiedname>Apache::Hadoop::Hive::SQLAllTableConstraints::__set_primaryKeys</qualifiedname>
+        <param>
+          <type>const std::vector&lt; <ref refid="classApache_1_1Hadoop_1_1Hive_1_1SQLPrimaryKey" kindref="compound">SQLPrimaryKey</ref> &gt; &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1671" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="3177" bodyend="3180"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1SQLAllTableConstraints_1aedeb4dee0ae0ad8019a6795def603604" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::SQLAllTableConstraints::__set_foreignKeys</definition>
+        <argsstring>(const std::vector&lt; SQLForeignKey &gt; &amp;val)</argsstring>
+        <name>__set_foreignKeys</name>
+        <qualifiedname>Apache::Hadoop::Hive::SQLAllTableConstraints::__set_foreignKeys</qualifiedname>
+        <param>
+          <type>const std::vector&lt; <ref refid="classApache_1_1Hadoop_1_1Hive_1_1SQLForeignKey" kindref="compound">SQLForeignKey</ref> &gt; &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1673" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="3182" bodyend="3185"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1SQLAllTableConstraints_1afa90ab4ab571b6797767238f81403e87" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::SQLAllTableConstraints::__set_uniqueConstraints</definition>
+        <argsstring>(const std::vector&lt; SQLUniqueConstraint &gt; &amp;val)</argsstring>
+        <name>__set_uniqueConstraints</name>
+        <qualifiedname>Apache::Hadoop::Hive::SQLAllTableConstraints::__set_uniqueConstraints</qualifiedname>
+        <param>
+          <type>const std::vector&lt; <ref refid="classApache_1_1Hadoop_1_1Hive_1_1SQLUniqueConstraint" kindref="compound">SQLUniqueConstraint</ref> &gt; &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1675" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="3187" bodyend="3190"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1SQLAllTableConstraints_1abcbf4f477037eb2736a26ed7d2b2c5f2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::SQLAllTableConstraints::__set_notNullConstraints</definition>
+        <argsstring>(const std::vector&lt; SQLNotNullConstraint &gt; &amp;val)</argsstring>
+        <name>__set_notNullConstraints</name>
+        <qualifiedname>Apache::Hadoop::Hive::SQLAllTableConstraints::__set_notNullConstraints</qualifiedname>
+        <param>
+          <type>const std::vector&lt; <ref refid="classApache_1_1Hadoop_1_1Hive_1_1SQLNotNullConstraint" kindref="compound">SQLNotNullConstraint</ref> &gt; &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1677" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="3192" bodyend="3195"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1SQLAllTableConstraints_1a8aa8e3173fd35648f3b18f589febca6f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::SQLAllTableConstraints::__set_defaultConstraints</definition>
+        <argsstring>(const std::vector&lt; SQLDefaultConstraint &gt; &amp;val)</argsstring>
+        <name>__set_defaultConstraints</name>
+        <qualifiedname>Apache::Hadoop::Hive::SQLAllTableConstraints::__set_defaultConstraints</qualifiedname>
+        <param>
+          <type>const std::vector&lt; <ref refid="classApache_1_1Hadoop_1_1Hive_1_1SQLDefaultConstraint" kindref="compound">SQLDefaultConstraint</ref> &gt; &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1679" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="3197" bodyend="3200"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1SQLAllTableConstraints_1a7a21516e5e5c038788a291e517fcaf0e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::SQLAllTableConstraints::__set_checkConstraints</definition>
+        <argsstring>(const std::vector&lt; SQLCheckConstraint &gt; &amp;val)</argsstring>
+        <name>__set_checkConstraints</name>
+        <qualifiedname>Apache::Hadoop::Hive::SQLAllTableConstraints::__set_checkConstraints</qualifiedname>
+        <param>
+          <type>const std::vector&lt; <ref refid="classApache_1_1Hadoop_1_1Hive_1_1SQLCheckConstraint" kindref="compound">SQLCheckConstraint</ref> &gt; &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1681" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="3202" bodyend="3205"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1SQLAllTableConstraints_1a725bec6178a4aff1c641def69dc0617f" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::SQLAllTableConstraints::operator==</definition>
+        <argsstring>(const SQLAllTableConstraints &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::SQLAllTableConstraints::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1SQLAllTableConstraints" kindref="compound">SQLAllTableConstraints</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1683" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="3465" bodyend="3492"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1SQLAllTableConstraints_1a2446931ec5130e5523b73da1685257aa" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::SQLAllTableConstraints::operator!=</definition>
+        <argsstring>(const SQLAllTableConstraints &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::SQLAllTableConstraints::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1SQLAllTableConstraints" kindref="compound">SQLAllTableConstraints</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1684" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="1684" bodyend="1686"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1SQLAllTableConstraints_1a9d9cf49843f1ad86f1325c85255c47ea" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::SQLAllTableConstraints::operator&lt;</definition>
+        <argsstring>(const SQLAllTableConstraints &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::SQLAllTableConstraints::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1SQLAllTableConstraints" kindref="compound">SQLAllTableConstraints</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1688" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1SQLAllTableConstraints_1a6a9122991395537b532940316cc81a01" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::SQLAllTableConstraints::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot) override</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::SQLAllTableConstraints::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1690" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="3213" bodyend="3364"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1SQLAllTableConstraints_1ab0ea7dfcaa9b86b4c23fb3972c5d3cef" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::SQLAllTableConstraints::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const override</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::SQLAllTableConstraints::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1691" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="3366" bodyend="3452"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1SQLAllTableConstraints_1a37850abde752e038128611fd765097b9" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::SQLAllTableConstraints::printTo</definition>
+        <argsstring>(std::ostream &amp;out) const</argsstring>
+        <name>printTo</name>
+        <qualifiedname>Apache::Hadoop::Hive::SQLAllTableConstraints::printTo</qualifiedname>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1693" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="3513" bodyend="3523"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::SQLAllTableConstraints</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1SQLAllTableConstraints"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::SQLAllTableConstraints</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1SQLAllTableConstraints"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>primaryKeys</edgelabel>
+        </childnode>
+        <childnode refid="8" relation="usage">
+          <edgelabel>foreignKeys</edgelabel>
+        </childnode>
+        <childnode refid="11" relation="usage">
+          <edgelabel>uniqueConstraints</edgelabel>
+        </childnode>
+        <childnode refid="14" relation="usage">
+          <edgelabel>notNullConstraints</edgelabel>
+        </childnode>
+        <childnode refid="17" relation="usage">
+          <edgelabel>defaultConstraints</edgelabel>
+        </childnode>
+        <childnode refid="20" relation="usage">
+          <edgelabel>checkConstraints</edgelabel>
+        </childnode>
+        <childnode refid="23" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="21">
+        <label>Apache::Hadoop::Hive::SQLCheckConstraint</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1SQLCheckConstraint"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>catName</edgelabel>
+          <edgelabel>check_expression</edgelabel>
+          <edgelabel>column_name</edgelabel>
+          <edgelabel>dc_name</edgelabel>
+          <edgelabel>table_db</edgelabel>
+          <edgelabel>table_name</edgelabel>
+        </childnode>
+        <childnode refid="22" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="18">
+        <label>Apache::Hadoop::Hive::SQLDefaultConstraint</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1SQLDefaultConstraint"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>catName</edgelabel>
+          <edgelabel>column_name</edgelabel>
+          <edgelabel>dc_name</edgelabel>
+          <edgelabel>default_value</edgelabel>
+          <edgelabel>table_db</edgelabel>
+          <edgelabel>table_name</edgelabel>
+        </childnode>
+        <childnode refid="19" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="9">
+        <label>Apache::Hadoop::Hive::SQLForeignKey</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1SQLForeignKey"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>catName</edgelabel>
+          <edgelabel>fk_name</edgelabel>
+          <edgelabel>fkcolumn_name</edgelabel>
+          <edgelabel>fktable_db</edgelabel>
+          <edgelabel>fktable_name</edgelabel>
+          <edgelabel>pk_name</edgelabel>
+          <edgelabel>pkcolumn_name</edgelabel>
+          <edgelabel>pktable_db</edgelabel>
+          <edgelabel>pktable_name</edgelabel>
+        </childnode>
+        <childnode refid="10" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="15">
+        <label>Apache::Hadoop::Hive::SQLNotNullConstraint</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1SQLNotNullConstraint"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>catName</edgelabel>
+          <edgelabel>column_name</edgelabel>
+          <edgelabel>nn_name</edgelabel>
+          <edgelabel>table_db</edgelabel>
+          <edgelabel>table_name</edgelabel>
+        </childnode>
+        <childnode refid="16" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="4">
+        <label>Apache::Hadoop::Hive::SQLPrimaryKey</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1SQLPrimaryKey"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>catName</edgelabel>
+          <edgelabel>column_name</edgelabel>
+          <edgelabel>pk_name</edgelabel>
+          <edgelabel>table_db</edgelabel>
+          <edgelabel>table_name</edgelabel>
+        </childnode>
+        <childnode refid="7" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="12">
+        <label>Apache::Hadoop::Hive::SQLUniqueConstraint</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1SQLUniqueConstraint"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>catName</edgelabel>
+          <edgelabel>column_name</edgelabel>
+          <edgelabel>table_db</edgelabel>
+          <edgelabel>table_name</edgelabel>
+          <edgelabel>uk_name</edgelabel>
+        </childnode>
+        <childnode refid="13" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="23">
+        <label>Apache::Hadoop::Hive::_SQLAllTableConstraints__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__SQLAllTableConstraints____isset"/>
+      </node>
+      <node id="22">
+        <label>Apache::Hadoop::Hive::_SQLCheckConstraint__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__SQLCheckConstraint____isset"/>
+      </node>
+      <node id="19">
+        <label>Apache::Hadoop::Hive::_SQLDefaultConstraint__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__SQLDefaultConstraint____isset"/>
+      </node>
+      <node id="10">
+        <label>Apache::Hadoop::Hive::_SQLForeignKey__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__SQLForeignKey____isset"/>
+      </node>
+      <node id="16">
+        <label>Apache::Hadoop::Hive::_SQLNotNullConstraint__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__SQLNotNullConstraint____isset"/>
+      </node>
+      <node id="7">
+        <label>Apache::Hadoop::Hive::_SQLPrimaryKey__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__SQLPrimaryKey____isset"/>
+      </node>
+      <node id="13">
+        <label>Apache::Hadoop::Hive::_SQLUniqueConstraint__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__SQLUniqueConstraint____isset"/>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+      <node id="6">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="5">
+        <label>std::string</label>
+        <childnode refid="6" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="20">
+        <label>std::vector&lt; Apache::Hadoop::Hive::SQLCheckConstraint &gt;</label>
+        <childnode refid="21" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="17">
+        <label>std::vector&lt; Apache::Hadoop::Hive::SQLDefaultConstraint &gt;</label>
+        <childnode refid="18" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="8">
+        <label>std::vector&lt; Apache::Hadoop::Hive::SQLForeignKey &gt;</label>
+        <childnode refid="9" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="14">
+        <label>std::vector&lt; Apache::Hadoop::Hive::SQLNotNullConstraint &gt;</label>
+        <childnode refid="15" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::vector&lt; Apache::Hadoop::Hive::SQLPrimaryKey &gt;</label>
+        <childnode refid="4" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="11">
+        <label>std::vector&lt; Apache::Hadoop::Hive::SQLUniqueConstraint &gt;</label>
+        <childnode refid="12" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1654" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="1654" bodyend="1694"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1SQLAllTableConstraints_1a93715a4ac844525a4cc16d6bedfedbe7" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::SQLAllTableConstraints</scope><name>__isset</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1SQLAllTableConstraints_1a7a21516e5e5c038788a291e517fcaf0e" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::SQLAllTableConstraints</scope><name>__set_checkConstraints</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1SQLAllTableConstraints_1a8aa8e3173fd35648f3b18f589febca6f" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::SQLAllTableConstraints</scope><name>__set_defaultConstraints</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1SQLAllTableConstraints_1aedeb4dee0ae0ad8019a6795def603604" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::SQLAllTableConstraints</scope><name>__set_foreignKeys</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1SQLAllTableConstraints_1abcbf4f477037eb2736a26ed7d2b2c5f2" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::SQLAllTableConstraints</scope><name>__set_notNullConstraints</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1SQLAllTableConstraints_1a6135d7383933ca79d8dee75779bb359f" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::SQLAllTableConstraints</scope><name>__set_primaryKeys</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1SQLAllTableConstraints_1afa90ab4ab571b6797767238f81403e87" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::SQLAllTableConstraints</scope><name>__set_uniqueConstraints</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1SQLAllTableConstraints_1ad63cd65e5bed17e8dc4fc455298d34d9" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::SQLAllTableConstraints</scope><name>checkConstraints</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1SQLAllTableConstraints_1a1869565c24cabb11c0a3d9f98fc0ec4b" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::SQLAllTableConstraints</scope><name>defaultConstraints</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1SQLAllTableConstraints_1afce76b3ba5c89c76ddac80ce5f581643" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::SQLAllTableConstraints</scope><name>foreignKeys</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1SQLAllTableConstraints_1a162ae316585ce7a1a29aab25f440d21d" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::SQLAllTableConstraints</scope><name>notNullConstraints</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1SQLAllTableConstraints_1a2446931ec5130e5523b73da1685257aa" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::SQLAllTableConstraints</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1SQLAllTableConstraints_1a9d9cf49843f1ad86f1325c85255c47ea" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::SQLAllTableConstraints</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1SQLAllTableConstraints_1ae2a62d85aa8b330240b0a192f97a3fe8" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::SQLAllTableConstraints</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1SQLAllTableConstraints_1a725bec6178a4aff1c641def69dc0617f" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::SQLAllTableConstraints</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1SQLAllTableConstraints_1a49d2fea46e7e57280a42c0aaa455e371" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::SQLAllTableConstraints</scope><name>primaryKeys</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1SQLAllTableConstraints_1a37850abde752e038128611fd765097b9" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::SQLAllTableConstraints</scope><name>printTo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1SQLAllTableConstraints_1a6a9122991395537b532940316cc81a01" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::SQLAllTableConstraints</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1SQLAllTableConstraints_1ab3f51fd166813d49f684886107388a9f" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::SQLAllTableConstraints</scope><name>SQLAllTableConstraints</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1SQLAllTableConstraints_1ac8b7e247b7e4e6701e7f2da439b12dc5" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::SQLAllTableConstraints</scope><name>SQLAllTableConstraints</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1SQLAllTableConstraints_1abcb2e8aaf81566b7028042e79520cdc4" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::SQLAllTableConstraints</scope><name>uniqueConstraints</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1SQLAllTableConstraints_1ab0ea7dfcaa9b86b4c23fb3972c5d3cef" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::SQLAllTableConstraints</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1SQLAllTableConstraints_1a186b2bbe44d2e0f1e6c97eecffb8fa72" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::SQLAllTableConstraints</scope><name>~SQLAllTableConstraints</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

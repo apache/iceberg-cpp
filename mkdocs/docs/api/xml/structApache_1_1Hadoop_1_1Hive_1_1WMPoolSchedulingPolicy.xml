@@ -1,0 +1,46 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structApache_1_1Hadoop_1_1Hive_1_1WMPoolSchedulingPolicy" kind="struct" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::WMPoolSchedulingPolicy</compoundname>
+    <sectiondef kind="public-type">
+      <memberdef kind="enum" id="structApache_1_1Hadoop_1_1Hive_1_1WMPoolSchedulingPolicy_1a0822edc4ab1c567f96610b1e1d8e8d75" prot="public" static="no" strong="no">
+        <type></type>
+        <name>type</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMPoolSchedulingPolicy::type</qualifiedname>
+        <enumvalue id="structApache_1_1Hadoop_1_1Hive_1_1WMPoolSchedulingPolicy_1a0822edc4ab1c567f96610b1e1d8e8d75a8f5b1c419eefbcba968b00b5d89af05e" prot="public">
+          <name>FAIR</name>
+          <initializer>= 1</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="structApache_1_1Hadoop_1_1Hive_1_1WMPoolSchedulingPolicy_1a0822edc4ab1c567f96610b1e1d8e8d75a957ac8df4ad62c9ea07a9194269768e4" prot="public">
+          <name>FIFO</name>
+          <initializer>= 2</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="383" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="383" bodyend="386"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="382" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="382" bodyend="387"/>
+    <listofallmembers>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1WMPoolSchedulingPolicy_1a0822edc4ab1c567f96610b1e1d8e8d75a8f5b1c419eefbcba968b00b5d89af05e" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMPoolSchedulingPolicy</scope><name>FAIR</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1WMPoolSchedulingPolicy_1a0822edc4ab1c567f96610b1e1d8e8d75a957ac8df4ad62c9ea07a9194269768e4" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMPoolSchedulingPolicy</scope><name>FIFO</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1WMPoolSchedulingPolicy_1a0822edc4ab1c567f96610b1e1d8e8d75" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMPoolSchedulingPolicy</scope><name>type</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

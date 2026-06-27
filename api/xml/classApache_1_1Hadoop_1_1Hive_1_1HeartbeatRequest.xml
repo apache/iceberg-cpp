@@ -1,0 +1,311 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1HeartbeatRequest" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::HeartbeatRequest</compoundname>
+    <basecompoundref prot="public" virt="virtual">apache::thrift::TBase</basecompoundref>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1HeartbeatRequest_1a8018d2478113c7df3522afa10e2b3e12" prot="public" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t Apache::Hadoop::Hive::HeartbeatRequest::lockid</definition>
+        <argsstring></argsstring>
+        <name>lockid</name>
+        <qualifiedname>Apache::Hadoop::Hive::HeartbeatRequest::lockid</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8039" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="8039" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1HeartbeatRequest_1acb2cde986ccd468b1921241981e34be5" prot="public" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t Apache::Hadoop::Hive::HeartbeatRequest::txnid</definition>
+        <argsstring></argsstring>
+        <name>txnid</name>
+        <qualifiedname>Apache::Hadoop::Hive::HeartbeatRequest::txnid</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8040" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="8040" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1HeartbeatRequest_1a9ac83d191e8dc1cfd9e78ac905e0a538" prot="public" static="no" mutable="no">
+        <type><ref refid="structApache_1_1Hadoop_1_1Hive_1_1__HeartbeatRequest____isset" kindref="compound">_HeartbeatRequest__isset</ref></type>
+        <definition>_HeartbeatRequest__isset Apache::Hadoop::Hive::HeartbeatRequest::__isset</definition>
+        <argsstring></argsstring>
+        <name>__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::HeartbeatRequest::__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8042" column="28" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="8042" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1HeartbeatRequest_1a9d2bb26cb9715c2cb088b9131208c641" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::HeartbeatRequest::HeartbeatRequest</definition>
+        <argsstring>(const HeartbeatRequest &amp;) noexcept</argsstring>
+        <name>HeartbeatRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::HeartbeatRequest::HeartbeatRequest</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1HeartbeatRequest" kindref="compound">HeartbeatRequest</ref> &amp;</type>
+          <defname>other1005</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8034" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="30800" bodyend="30804"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1HeartbeatRequest_1aae9a46aa059ff60b421ba0f3d3bf7680" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1HeartbeatRequest" kindref="compound">HeartbeatRequest</ref> &amp;</type>
+        <definition>HeartbeatRequest &amp; Apache::Hadoop::Hive::HeartbeatRequest::operator=</definition>
+        <argsstring>(const HeartbeatRequest &amp;) noexcept</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::HeartbeatRequest::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1HeartbeatRequest" kindref="compound">HeartbeatRequest</ref> &amp;</type>
+          <defname>other1006</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8035" column="20" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="30805" bodyend="30810"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1HeartbeatRequest_1accb398f6149f39d508cb39caa15698fa" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::HeartbeatRequest::HeartbeatRequest</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>HeartbeatRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::HeartbeatRequest::HeartbeatRequest</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8036" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="30690" bodyend="30693"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1HeartbeatRequest_1a7c4db8da7f9dbd8d8d0d370161bb9584" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::HeartbeatRequest::~HeartbeatRequest</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~HeartbeatRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::HeartbeatRequest::~HeartbeatRequest</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8038" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="30687" bodyend="30688"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1HeartbeatRequest_1ae650ef4d6bab51fadeec718722e60257" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::HeartbeatRequest::__set_lockid</definition>
+        <argsstring>(const int64_t val)</argsstring>
+        <name>__set_lockid</name>
+        <qualifiedname>Apache::Hadoop::Hive::HeartbeatRequest::__set_lockid</qualifiedname>
+        <param>
+          <type>const int64_t</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8044" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="30695" bodyend="30698"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1HeartbeatRequest_1a0c9a8e80a493267d7413ae285d3c1709" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::HeartbeatRequest::__set_txnid</definition>
+        <argsstring>(const int64_t val)</argsstring>
+        <name>__set_txnid</name>
+        <qualifiedname>Apache::Hadoop::Hive::HeartbeatRequest::__set_txnid</qualifiedname>
+        <param>
+          <type>const int64_t</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8046" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="30700" bodyend="30703"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1HeartbeatRequest_1a615d02f27a0118722a6dff73239c6470" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::HeartbeatRequest::operator==</definition>
+        <argsstring>(const HeartbeatRequest &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::HeartbeatRequest::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1HeartbeatRequest" kindref="compound">HeartbeatRequest</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8048" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="30787" bodyend="30798"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1HeartbeatRequest_1a30716b0ad859b168086d81529bbaca9d" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::HeartbeatRequest::operator!=</definition>
+        <argsstring>(const HeartbeatRequest &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::HeartbeatRequest::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1HeartbeatRequest" kindref="compound">HeartbeatRequest</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8049" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="8049" bodyend="8051"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1HeartbeatRequest_1a004c2f0af7bda568452776fadcbac3cc" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::HeartbeatRequest::operator&lt;</definition>
+        <argsstring>(const HeartbeatRequest &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::HeartbeatRequest::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1HeartbeatRequest" kindref="compound">HeartbeatRequest</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8053" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1HeartbeatRequest_1aedac616004b2df924fa13eed0b2b9b02" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::HeartbeatRequest::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot) override</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::HeartbeatRequest::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8055" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="30711" bodyend="30758"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1HeartbeatRequest_1a9b3562717ce2bca26b9709a2adbe22d3" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::HeartbeatRequest::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const override</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::HeartbeatRequest::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8056" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="30760" bodyend="30778"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1HeartbeatRequest_1a25568d0cba77ae0ea1467b52c6420292" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::HeartbeatRequest::printTo</definition>
+        <argsstring>(std::ostream &amp;out) const</argsstring>
+        <name>printTo</name>
+        <qualifiedname>Apache::Hadoop::Hive::HeartbeatRequest::printTo</qualifiedname>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8058" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="30811" bodyend="30817"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::HeartbeatRequest</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1HeartbeatRequest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::HeartbeatRequest</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1HeartbeatRequest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>Apache::Hadoop::Hive::_HeartbeatRequest__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__HeartbeatRequest____isset"/>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8031" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="8031" bodyend="8059"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1HeartbeatRequest_1a9ac83d191e8dc1cfd9e78ac905e0a538" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::HeartbeatRequest</scope><name>__isset</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1HeartbeatRequest_1ae650ef4d6bab51fadeec718722e60257" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::HeartbeatRequest</scope><name>__set_lockid</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1HeartbeatRequest_1a0c9a8e80a493267d7413ae285d3c1709" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::HeartbeatRequest</scope><name>__set_txnid</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1HeartbeatRequest_1a9d2bb26cb9715c2cb088b9131208c641" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::HeartbeatRequest</scope><name>HeartbeatRequest</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1HeartbeatRequest_1accb398f6149f39d508cb39caa15698fa" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::HeartbeatRequest</scope><name>HeartbeatRequest</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1HeartbeatRequest_1a8018d2478113c7df3522afa10e2b3e12" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::HeartbeatRequest</scope><name>lockid</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1HeartbeatRequest_1a30716b0ad859b168086d81529bbaca9d" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::HeartbeatRequest</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1HeartbeatRequest_1a004c2f0af7bda568452776fadcbac3cc" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::HeartbeatRequest</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1HeartbeatRequest_1aae9a46aa059ff60b421ba0f3d3bf7680" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::HeartbeatRequest</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1HeartbeatRequest_1a615d02f27a0118722a6dff73239c6470" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::HeartbeatRequest</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1HeartbeatRequest_1a25568d0cba77ae0ea1467b52c6420292" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::HeartbeatRequest</scope><name>printTo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1HeartbeatRequest_1aedac616004b2df924fa13eed0b2b9b02" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::HeartbeatRequest</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1HeartbeatRequest_1acb2cde986ccd468b1921241981e34be5" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::HeartbeatRequest</scope><name>txnid</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1HeartbeatRequest_1a9b3562717ce2bca26b9709a2adbe22d3" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::HeartbeatRequest</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1HeartbeatRequest_1a7c4db8da7f9dbd8d8d0d370161bb9584" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::HeartbeatRequest</scope><name>~HeartbeatRequest</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,48 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structApache_1_1Hadoop_1_1Hive_1_1__DropConstraintRequest____isset" kind="struct" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::_DropConstraintRequest__isset</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__DropConstraintRequest____isset_1a19c911c7e1f5f1285bf82580ab7727c1" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_DropConstraintRequest__isset::catName</definition>
+        <argsstring></argsstring>
+        <name>catName</name>
+        <qualifiedname>Apache::Hadoop::Hive::_DropConstraintRequest__isset::catName</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="5249" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="5249" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structApache_1_1Hadoop_1_1Hive_1_1__DropConstraintRequest____isset_1a5eb3e6cacc411643383eefb8c962f7e0" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::_DropConstraintRequest__isset::_DropConstraintRequest__isset</definition>
+        <argsstring>()</argsstring>
+        <name>_DropConstraintRequest__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::_DropConstraintRequest__isset::_DropConstraintRequest__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="5248" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="5248" bodyend="5248"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="5247" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="5247" bodyend="5250"/>
+    <listofallmembers>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__DropConstraintRequest____isset_1a5eb3e6cacc411643383eefb8c962f7e0" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_DropConstraintRequest__isset</scope><name>_DropConstraintRequest__isset</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__DropConstraintRequest____isset_1a19c911c7e1f5f1285bf82580ab7727c1" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_DropConstraintRequest__isset</scope><name>catName</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

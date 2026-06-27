@@ -1,0 +1,108 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1BoundPredicateToJsonParam" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::BoundPredicateToJsonParam</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1BoundPredicateToJsonParam_1a61afc6cbc5fb7746abf76417325a1b96" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::BoundPredicateToJsonParam::name</definition>
+        <argsstring></argsstring>
+        <name>name</name>
+        <qualifiedname>iceberg::BoundPredicateToJsonParam::name</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/expression_json_test.cc" line="276" column="15" bodyfile="iceberg/test/expression_json_test.cc" bodystart="276" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1BoundPredicateToJsonParam_1af3470c97549b0a93de5cfa4bcc7884e2" prot="public" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1UnboundPredicate" kindref="compound">UnboundPredicate</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;UnboundPredicate&gt; iceberg::BoundPredicateToJsonParam::pred</definition>
+        <argsstring></argsstring>
+        <name>pred</name>
+        <qualifiedname>iceberg::BoundPredicateToJsonParam::pred</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/expression_json_test.cc" line="277" column="19" bodyfile="iceberg/test/expression_json_test.cc" bodystart="277" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1BoundPredicateToJsonParam_1a6440ffecc9dd0df560f11a52d24d834f" prot="public" static="no" mutable="no">
+        <type>nlohmann::json</type>
+        <definition>nlohmann::json iceberg::BoundPredicateToJsonParam::expected_json</definition>
+        <argsstring></argsstring>
+        <name>expected_json</name>
+        <qualifiedname>iceberg::BoundPredicateToJsonParam::expected_json</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/expression_json_test.cc" line="278" column="18" bodyfile="iceberg/test/expression_json_test.cc" bodystart="278" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="8">
+        <label>iceberg::Unbound&lt; Expression &gt;</label>
+        <link refid="classiceberg_1_1Unbound"/>
+      </node>
+      <node id="1">
+        <label>iceberg::BoundPredicateToJsonParam</label>
+        <link refid="structiceberg_1_1BoundPredicateToJsonParam"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>name</edgelabel>
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>pred</edgelabel>
+        </childnode>
+      </node>
+      <node id="6">
+        <label>iceberg::Expression</label>
+        <link refid="classiceberg_1_1Expression"/>
+        <childnode refid="7" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>iceberg::UnboundPredicate</label>
+        <link refid="classiceberg_1_1UnboundPredicate"/>
+        <childnode refid="6" relation="public-inheritance">
+        </childnode>
+        <childnode refid="8" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="7">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+      <node id="4">
+        <label>std::shared_ptr&lt; iceberg::UnboundPredicate &gt;</label>
+        <childnode refid="5" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="2">
+        <label>std::string</label>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/test/expression_json_test.cc" line="275" column="1" bodyfile="iceberg/test/expression_json_test.cc" bodystart="275" bodyend="279"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1BoundPredicateToJsonParam_1a6440ffecc9dd0df560f11a52d24d834f" prot="public" virt="non-virtual"><scope>iceberg::BoundPredicateToJsonParam</scope><name>expected_json</name></member>
+      <member refid="structiceberg_1_1BoundPredicateToJsonParam_1a61afc6cbc5fb7746abf76417325a1b96" prot="public" virt="non-virtual"><scope>iceberg::BoundPredicateToJsonParam</scope><name>name</name></member>
+      <member refid="structiceberg_1_1BoundPredicateToJsonParam_1af3470c97549b0a93de5cfa4bcc7884e2" prot="public" virt="non-virtual"><scope>iceberg::BoundPredicateToJsonParam</scope><name>pred</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

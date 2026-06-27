@@ -1,0 +1,82 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structApache_1_1Hadoop_1_1Hive_1_1QueryState" kind="struct" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::QueryState</compoundname>
+    <sectiondef kind="public-type">
+      <memberdef kind="enum" id="structApache_1_1Hadoop_1_1Hive_1_1QueryState_1ac707f01793842719af207b261512c42a" prot="public" static="no" strong="no">
+        <type></type>
+        <name>type</name>
+        <qualifiedname>Apache::Hadoop::Hive::QueryState::type</qualifiedname>
+        <enumvalue id="structApache_1_1Hadoop_1_1Hive_1_1QueryState_1ac707f01793842719af207b261512c42aa93e47e9fea8d4290d2da0642ee5239e9" prot="public">
+          <name>INITED</name>
+          <initializer>= 0</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="structApache_1_1Hadoop_1_1Hive_1_1QueryState_1ac707f01793842719af207b261512c42aaa414ab657f019bc73abcded8351e32c7" prot="public">
+          <name>EXECUTING</name>
+          <initializer>= 1</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="structApache_1_1Hadoop_1_1Hive_1_1QueryState_1ac707f01793842719af207b261512c42aa345dfa972c50bcf1a8892b5d94189008" prot="public">
+          <name>FAILED</name>
+          <initializer>= 2</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="structApache_1_1Hadoop_1_1Hive_1_1QueryState_1ac707f01793842719af207b261512c42aa8140ddc00cfdfb3c752f55d1ce58d312" prot="public">
+          <name>FINISHED</name>
+          <initializer>= 3</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="structApache_1_1Hadoop_1_1Hive_1_1QueryState_1ac707f01793842719af207b261512c42aacb3b128dd01bfcbb57138eb4328e0eec" prot="public">
+          <name>TIMED_OUT</name>
+          <initializer>= 4</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="structApache_1_1Hadoop_1_1Hive_1_1QueryState_1ac707f01793842719af207b261512c42aa46be723c9d49cd2c22e1ef8b0e57d55c" prot="public">
+          <name>AUTO_DISABLED</name>
+          <initializer>= 5</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="410" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="410" bodyend="417"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="409" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="409" bodyend="418"/>
+    <listofallmembers>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1QueryState_1ac707f01793842719af207b261512c42aa46be723c9d49cd2c22e1ef8b0e57d55c" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::QueryState</scope><name>AUTO_DISABLED</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1QueryState_1ac707f01793842719af207b261512c42aaa414ab657f019bc73abcded8351e32c7" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::QueryState</scope><name>EXECUTING</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1QueryState_1ac707f01793842719af207b261512c42aa345dfa972c50bcf1a8892b5d94189008" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::QueryState</scope><name>FAILED</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1QueryState_1ac707f01793842719af207b261512c42aa8140ddc00cfdfb3c752f55d1ce58d312" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::QueryState</scope><name>FINISHED</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1QueryState_1ac707f01793842719af207b261512c42aa93e47e9fea8d4290d2da0642ee5239e9" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::QueryState</scope><name>INITED</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1QueryState_1ac707f01793842719af207b261512c42aacb3b128dd01bfcbb57138eb4328e0eec" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::QueryState</scope><name>TIMED_OUT</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1QueryState_1ac707f01793842719af207b261512c42a" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::QueryState</scope><name>type</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,80 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structApache_1_1Hadoop_1_1Hive_1_1__FindSchemasByColsRqst____isset" kind="struct" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::_FindSchemasByColsRqst__isset</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__FindSchemasByColsRqst____isset_1a82cb7905bd021ec251c98805a2f6f181" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_FindSchemasByColsRqst__isset::colName</definition>
+        <argsstring></argsstring>
+        <name>colName</name>
+        <qualifiedname>Apache::Hadoop::Hive::_FindSchemasByColsRqst__isset::colName</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12785" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="12785" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__FindSchemasByColsRqst____isset_1a63508493ccff1a2fc0bc82d9aa94f57e" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_FindSchemasByColsRqst__isset::colNamespace</definition>
+        <argsstring></argsstring>
+        <name>colNamespace</name>
+        <qualifiedname>Apache::Hadoop::Hive::_FindSchemasByColsRqst__isset::colNamespace</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12786" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="12786" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__FindSchemasByColsRqst____isset_1a365c4475ed13c1de2438cea07e186b03" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_FindSchemasByColsRqst__isset::type</definition>
+        <argsstring></argsstring>
+        <name>type</name>
+        <qualifiedname>Apache::Hadoop::Hive::_FindSchemasByColsRqst__isset::type</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12787" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="12787" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structApache_1_1Hadoop_1_1Hive_1_1__FindSchemasByColsRqst____isset_1a524b257dcf0d36f130c78c93941b487a" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::_FindSchemasByColsRqst__isset::_FindSchemasByColsRqst__isset</definition>
+        <argsstring>()</argsstring>
+        <name>_FindSchemasByColsRqst__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::_FindSchemasByColsRqst__isset::_FindSchemasByColsRqst__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12784" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="12784" bodyend="12784"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12783" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="12783" bodyend="12788"/>
+    <listofallmembers>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__FindSchemasByColsRqst____isset_1a524b257dcf0d36f130c78c93941b487a" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_FindSchemasByColsRqst__isset</scope><name>_FindSchemasByColsRqst__isset</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__FindSchemasByColsRqst____isset_1a82cb7905bd021ec251c98805a2f6f181" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_FindSchemasByColsRqst__isset</scope><name>colName</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__FindSchemasByColsRqst____isset_1a63508493ccff1a2fc0bc82d9aa94f57e" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_FindSchemasByColsRqst__isset</scope><name>colNamespace</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__FindSchemasByColsRqst____isset_1a365c4475ed13c1de2438cea07e186b03" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_FindSchemasByColsRqst__isset</scope><name>type</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

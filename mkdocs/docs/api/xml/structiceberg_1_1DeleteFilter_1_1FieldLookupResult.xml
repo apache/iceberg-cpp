@@ -1,0 +1,68 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1DeleteFilter_1_1FieldLookupResult" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::DeleteFilter::FieldLookupResult</compoundname>
+    <includes refid="delete__filter_8h" local="no">delete_filter.h</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1DeleteFilter_1_1FieldLookupResult_1a173830032e4efff2c9031965ca8ce242" prot="public" static="no" mutable="no">
+        <type><ref refid="classiceberg_1_1SchemaField" kindref="compound">SchemaField</ref></type>
+        <definition>SchemaField iceberg::DeleteFilter::FieldLookupResult::field</definition>
+        <argsstring></argsstring>
+        <name>field</name>
+        <qualifiedname>iceberg::DeleteFilter::FieldLookupResult::field</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/delete_filter.h" line="78" column="17" bodyfile="iceberg/data/delete_filter.h" bodystart="78" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1DeleteFilter_1_1FieldLookupResult_1a2ac62debc37e8085c26362abff2cee2b" prot="public" static="no" mutable="no">
+        <type><ref refid="classiceberg_1_1SchemaField" kindref="compound">SchemaField</ref></type>
+        <definition>SchemaField iceberg::DeleteFilter::FieldLookupResult::projection_field</definition>
+        <argsstring></argsstring>
+        <name>projection_field</name>
+        <qualifiedname>iceberg::DeleteFilter::FieldLookupResult::projection_field</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/delete_filter.h" line="79" column="17" bodyfile="iceberg/data/delete_filter.h" bodystart="79" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Field lookup output for current or fallback equality-delete fields. </para>
+    </briefdescription>
+    <detaileddescription>
+<para><computeroutput>field</computeroutput> is the exact field for validation. <computeroutput>projection_field</computeroutput> is the top-level field, possibly with a pruned nested struct path, that must be merged into RequiredSchema so the data reader can materialize the delete column. </para>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::DeleteFilter::FieldLookupResult</label>
+        <link refid="structiceberg_1_1DeleteFilter_1_1FieldLookupResult"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>field</edgelabel>
+          <edgelabel>projection_field</edgelabel>
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::SchemaField</label>
+        <link refid="classiceberg_1_1SchemaField"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/data/delete_filter.h" line="77" column="3" bodyfile="iceberg/data/delete_filter.h" bodystart="77" bodyend="80"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1DeleteFilter_1_1FieldLookupResult_1a173830032e4efff2c9031965ca8ce242" prot="public" virt="non-virtual"><scope>iceberg::DeleteFilter::FieldLookupResult</scope><name>field</name></member>
+      <member refid="structiceberg_1_1DeleteFilter_1_1FieldLookupResult_1a2ac62debc37e8085c26362abff2cee2b" prot="public" virt="non-virtual"><scope>iceberg::DeleteFilter::FieldLookupResult</scope><name>projection_field</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,36 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classDataFileToJsonInvalidTest" kind="class" language="C++" prot="public">
+    <compoundname>DataFileToJsonInvalidTest</compoundname>
+    <basecompoundref prot="public" virt="non-virtual">testing::TestWithParam&lt; DataFileToJsonInvalidParam &gt;</basecompoundref>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>DataFileToJsonInvalidTest</label>
+        <link refid="classDataFileToJsonInvalidTest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>testing::TestWithParam&lt; DataFileToJsonInvalidParam &gt;</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>DataFileToJsonInvalidTest</label>
+        <link refid="classDataFileToJsonInvalidTest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>testing::TestWithParam&lt; DataFileToJsonInvalidParam &gt;</label>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/test/rest_json_serde_test.cc" line="2192" column="1" bodyfile="iceberg/test/rest_json_serde_test.cc" bodystart="2193" bodyend="2193"/>
+    <listofallmembers>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

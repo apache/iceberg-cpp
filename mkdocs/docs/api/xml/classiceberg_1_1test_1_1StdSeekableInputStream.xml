@@ -1,0 +1,209 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1test_1_1StdSeekableInputStream" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::test::StdSeekableInputStream</compoundname>
+    <basecompoundref refid="classiceberg_1_1SeekableInputStream" prot="public" virt="non-virtual">iceberg::SeekableInputStream</basecompoundref>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1test_1_1StdSeekableInputStream_1ae48bc40aac8521be2e164eef83f4ea99" prot="private" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::test::StdSeekableInputStream::location_</definition>
+        <argsstring></argsstring>
+        <name>location_</name>
+        <qualifiedname>iceberg::test::StdSeekableInputStream::location_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/std_io.h" line="153" column="15" bodyfile="iceberg/test/std_io.h" bodystart="153" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1test_1_1StdSeekableInputStream_1a002e01a4f89ac5f26c6cbdaf8dd1b053" prot="private" static="no" mutable="yes">
+        <type>std::ifstream</type>
+        <definition>std::ifstream iceberg::test::StdSeekableInputStream::file_</definition>
+        <argsstring></argsstring>
+        <name>file_</name>
+        <qualifiedname>iceberg::test::StdSeekableInputStream::file_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/std_io.h" line="154" column="25" bodyfile="iceberg/test/std_io.h" bodystart="154" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1test_1_1StdSeekableInputStream_1a7114faf427d2b10e323a41bee825136e" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::test::StdSeekableInputStream::StdSeekableInputStream</definition>
+        <argsstring>(std::string location)</argsstring>
+        <name>StdSeekableInputStream</name>
+        <qualifiedname>iceberg::test::StdSeekableInputStream::StdSeekableInputStream</qualifiedname>
+        <param>
+          <type>std::string</type>
+          <declname>location</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/std_io.h" line="62" column="12" bodyfile="iceberg/test/std_io.h" bodystart="62" bodyend="63"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1test_1_1StdSeekableInputStream_1a8ac5756238c06fa918c3e23600aa2737" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::test::StdSeekableInputStream::is_open</definition>
+        <argsstring>() const</argsstring>
+        <name>is_open</name>
+        <qualifiedname>iceberg::test::StdSeekableInputStream::is_open</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/std_io.h" line="65" column="8" bodyfile="iceberg/test/std_io.h" bodystart="65" bodyend="65"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1test_1_1StdSeekableInputStream_1afda1a87c8c93ecf18cee6c1f5563940d" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
+        <type>Result&lt; int64_t &gt;</type>
+        <definition>Result&lt; int64_t &gt; iceberg::test::StdSeekableInputStream::Position</definition>
+        <argsstring>() const override</argsstring>
+        <name>Position</name>
+        <qualifiedname>iceberg::test::StdSeekableInputStream::Position</qualifiedname>
+        <reimplements refid="classiceberg_1_1SeekableInputStream_1a15f4cc3bf14906e53ed6c4cb15db8d60">Position</reimplements>
+        <briefdescription>
+<para>Return the current read position. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/std_io.h" line="67" column="10" bodyfile="iceberg/test/std_io.h" bodystart="67" bodyend="73"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1test_1_1StdSeekableInputStream_1a41a2e25806e4f3222a1d54fc8d38ff75" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>Status</type>
+        <definition>Status iceberg::test::StdSeekableInputStream::Seek</definition>
+        <argsstring>(int64_t position) override</argsstring>
+        <name>Seek</name>
+        <qualifiedname>iceberg::test::StdSeekableInputStream::Seek</qualifiedname>
+        <reimplements refid="classiceberg_1_1SeekableInputStream_1aeadf82ee6dfd2d55ede7fe5455a8b840">Seek</reimplements>
+        <param>
+          <type>int64_t</type>
+          <declname>position</declname>
+        </param>
+        <briefdescription>
+<para>Seek to an absolute byte position. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/std_io.h" line="75" column="10" bodyfile="iceberg/test/std_io.h" bodystart="75" bodyend="85"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1test_1_1StdSeekableInputStream_1aa2f03b762c02bcbf068a1654f653775a" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>Result&lt; int64_t &gt;</type>
+        <definition>Result&lt; int64_t &gt; iceberg::test::StdSeekableInputStream::Read</definition>
+        <argsstring>(std::span&lt; std::byte &gt; out) override</argsstring>
+        <name>Read</name>
+        <qualifiedname>iceberg::test::StdSeekableInputStream::Read</qualifiedname>
+        <reimplements refid="classiceberg_1_1SeekableInputStream_1a596aa5878a505860a303d62bae01fc30">Read</reimplements>
+        <param>
+          <type>std::span&lt; std::byte &gt;</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+<para>Read up to out.size() bytes from the current position. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/std_io.h" line="87" column="10" bodyfile="iceberg/test/std_io.h" bodystart="87" bodyend="104"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1test_1_1StdSeekableInputStream_1ae197c5d531c16e0d063daf9d37f9e420" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>Status</type>
+        <definition>Status iceberg::test::StdSeekableInputStream::ReadFully</definition>
+        <argsstring>(int64_t position, std::span&lt; std::byte &gt; out) override</argsstring>
+        <name>ReadFully</name>
+        <qualifiedname>iceberg::test::StdSeekableInputStream::ReadFully</qualifiedname>
+        <reimplements refid="classiceberg_1_1SeekableInputStream_1afbe1a1b7cbdae7b20bd47aa0beb2b0e0">ReadFully</reimplements>
+        <param>
+          <type>int64_t</type>
+          <declname>position</declname>
+        </param>
+        <param>
+          <type>std::span&lt; std::byte &gt;</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+<para>Read exactly out.size() bytes from an absolute position. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Fails if fewer than out.size() bytes are available. The current stream position after this call is unspecified; callers should Seek before subsequent position-dependent reads. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/std_io.h" line="106" column="10" bodyfile="iceberg/test/std_io.h" bodystart="106" bodyend="139"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1test_1_1StdSeekableInputStream_1a2d9ffc37f8c10aadce37cbc9d74af476" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>Status</type>
+        <definition>Status iceberg::test::StdSeekableInputStream::Close</definition>
+        <argsstring>() override</argsstring>
+        <name>Close</name>
+        <qualifiedname>iceberg::test::StdSeekableInputStream::Close</qualifiedname>
+        <reimplements refid="classiceberg_1_1SeekableInputStream_1aef1ea679d2801b518a527390c07065ae">Close</reimplements>
+        <briefdescription>
+<para>Close the stream. Implementations should allow repeated Close calls. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/std_io.h" line="141" column="10" bodyfile="iceberg/test/std_io.h" bodystart="141" bodyend="150"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>iceberg::SeekableInputStream</label>
+        <link refid="classiceberg_1_1SeekableInputStream"/>
+      </node>
+      <node id="1">
+        <label>iceberg::test::StdSeekableInputStream</label>
+        <link refid="classiceberg_1_1test_1_1StdSeekableInputStream"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="2">
+        <label>iceberg::SeekableInputStream</label>
+        <link refid="classiceberg_1_1SeekableInputStream"/>
+      </node>
+      <node id="1">
+        <label>iceberg::test::StdSeekableInputStream</label>
+        <link refid="classiceberg_1_1test_1_1StdSeekableInputStream"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/test/std_io.h" line="60" column="1" bodyfile="iceberg/test/std_io.h" bodystart="60" bodyend="155"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1test_1_1StdSeekableInputStream_1a2d9ffc37f8c10aadce37cbc9d74af476" prot="public" virt="virtual"><scope>iceberg::test::StdSeekableInputStream</scope><name>Close</name></member>
+      <member refid="classiceberg_1_1test_1_1StdSeekableInputStream_1a002e01a4f89ac5f26c6cbdaf8dd1b053" prot="private" virt="non-virtual"><scope>iceberg::test::StdSeekableInputStream</scope><name>file_</name></member>
+      <member refid="classiceberg_1_1test_1_1StdSeekableInputStream_1a8ac5756238c06fa918c3e23600aa2737" prot="public" virt="non-virtual"><scope>iceberg::test::StdSeekableInputStream</scope><name>is_open</name></member>
+      <member refid="classiceberg_1_1test_1_1StdSeekableInputStream_1ae48bc40aac8521be2e164eef83f4ea99" prot="private" virt="non-virtual"><scope>iceberg::test::StdSeekableInputStream</scope><name>location_</name></member>
+      <member refid="classiceberg_1_1test_1_1StdSeekableInputStream_1afda1a87c8c93ecf18cee6c1f5563940d" prot="public" virt="virtual"><scope>iceberg::test::StdSeekableInputStream</scope><name>Position</name></member>
+      <member refid="classiceberg_1_1test_1_1StdSeekableInputStream_1aa2f03b762c02bcbf068a1654f653775a" prot="public" virt="virtual"><scope>iceberg::test::StdSeekableInputStream</scope><name>Read</name></member>
+      <member refid="classiceberg_1_1test_1_1StdSeekableInputStream_1ae197c5d531c16e0d063daf9d37f9e420" prot="public" virt="virtual"><scope>iceberg::test::StdSeekableInputStream</scope><name>ReadFully</name></member>
+      <member refid="classiceberg_1_1test_1_1StdSeekableInputStream_1a41a2e25806e4f3222a1d54fc8d38ff75" prot="public" virt="virtual"><scope>iceberg::test::StdSeekableInputStream</scope><name>Seek</name></member>
+      <member refid="classiceberg_1_1test_1_1StdSeekableInputStream_1a7114faf427d2b10e323a41bee825136e" prot="public" virt="non-virtual"><scope>iceberg::test::StdSeekableInputStream</scope><name>StdSeekableInputStream</name></member>
+      <member refid="classiceberg_1_1SeekableInputStream_1a3737c67961a7eb13c33d9ab369085f97" prot="public" virt="virtual"><scope>iceberg::test::StdSeekableInputStream</scope><name>~SeekableInputStream</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

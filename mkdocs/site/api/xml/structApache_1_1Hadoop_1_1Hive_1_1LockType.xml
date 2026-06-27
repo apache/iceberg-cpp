@@ -1,0 +1,64 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structApache_1_1Hadoop_1_1Hive_1_1LockType" kind="struct" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::LockType</compoundname>
+    <sectiondef kind="public-type">
+      <memberdef kind="enum" id="structApache_1_1Hadoop_1_1Hive_1_1LockType_1ae3d18c1ea6837c334551e62daca1e28a" prot="public" static="no" strong="no">
+        <type></type>
+        <name>type</name>
+        <qualifiedname>Apache::Hadoop::Hive::LockType::type</qualifiedname>
+        <enumvalue id="structApache_1_1Hadoop_1_1Hive_1_1LockType_1ae3d18c1ea6837c334551e62daca1e28aafb545394b2efc1c72d018474113bacbb" prot="public">
+          <name>SHARED_READ</name>
+          <initializer>= 1</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="structApache_1_1Hadoop_1_1Hive_1_1LockType_1ae3d18c1ea6837c334551e62daca1e28aaafb8fd2e272939bf6b314a1ca8dd541c" prot="public">
+          <name>SHARED_WRITE</name>
+          <initializer>= 2</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="structApache_1_1Hadoop_1_1Hive_1_1LockType_1ae3d18c1ea6837c334551e62daca1e28aae3bc096a645e9c39819c89ff32ff8785" prot="public">
+          <name>EXCLUSIVE</name>
+          <initializer>= 3</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="structApache_1_1Hadoop_1_1Hive_1_1LockType_1ae3d18c1ea6837c334551e62daca1e28aab6dc87d26d9d8cf7da6f7673ba8eb863" prot="public">
+          <name>EXCL_WRITE</name>
+          <initializer>= 4</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="112" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="112" bodyend="117"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="111" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="111" bodyend="118"/>
+    <listofallmembers>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1LockType_1ae3d18c1ea6837c334551e62daca1e28aab6dc87d26d9d8cf7da6f7673ba8eb863" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::LockType</scope><name>EXCL_WRITE</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1LockType_1ae3d18c1ea6837c334551e62daca1e28aae3bc096a645e9c39819c89ff32ff8785" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::LockType</scope><name>EXCLUSIVE</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1LockType_1ae3d18c1ea6837c334551e62daca1e28aafb545394b2efc1c72d018474113bacbb" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::LockType</scope><name>SHARED_READ</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1LockType_1ae3d18c1ea6837c334551e62daca1e28aaafb8fd2e272939bf6b314a1ca8dd541c" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::LockType</scope><name>SHARED_WRITE</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1LockType_1ae3d18c1ea6837c334551e62daca1e28a" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::LockType</scope><name>type</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,68 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1sql_1_1IcebergNamespaceProperties___1_1Namespace" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::sql::IcebergNamespaceProperties_::Namespace</compoundname>
+    <sectiondef kind="public-type">
+      <memberdef kind="typedef" id="structiceberg_1_1sql_1_1IcebergNamespaceProperties___1_1Namespace_1aa0ad939d946c79b2fe4e89743bdc5166" prot="public" static="no">
+        <type>::sqlpp::text</type>
+        <definition>using iceberg::sql::IcebergNamespaceProperties_::Namespace::data_type =  ::sqlpp::text</definition>
+        <argsstring></argsstring>
+        <name>data_type</name>
+        <qualifiedname>iceberg::sql::IcebergNamespaceProperties_::Namespace::data_type</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/sql_catalog_tables_internal.h" line="105" column="5" bodyfile="iceberg/catalog/sql/sql_catalog_tables_internal.h" bodystart="105" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="structiceberg_1_1sql_1_1IcebergNamespaceProperties___1_1Namespace_1a1d2f2cc84345545a262640133a67b02d" prot="public" static="no">
+        <type>std::false_type</type>
+        <definition>using iceberg::sql::IcebergNamespaceProperties_::Namespace::has_default =  std::false_type</definition>
+        <argsstring></argsstring>
+        <name>has_default</name>
+        <qualifiedname>iceberg::sql::IcebergNamespaceProperties_::Namespace::has_default</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/sql_catalog_tables_internal.h" line="106" column="5" bodyfile="iceberg/catalog/sql/sql_catalog_tables_internal.h" bodystart="106" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structiceberg_1_1sql_1_1IcebergNamespaceProperties___1_1Namespace_1abd352ba9c28f12b84dc49603d7642fbb" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::sql::IcebergNamespaceProperties_::Namespace::SQLPP_CREATE_NAME_TAG_FOR_SQL_AND_CPP</definition>
+        <argsstring>(namespace, ns)</argsstring>
+        <name>SQLPP_CREATE_NAME_TAG_FOR_SQL_AND_CPP</name>
+        <qualifiedname>iceberg::sql::IcebergNamespaceProperties_::Namespace::SQLPP_CREATE_NAME_TAG_FOR_SQL_AND_CPP</qualifiedname>
+        <param>
+          <type>namespace</type>
+        </param>
+        <param>
+          <type>ns</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/sql_catalog_tables_internal.h" line="104" column="5"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/sql/sql_catalog_tables_internal.h" line="102" column="3" bodyfile="iceberg/catalog/sql/sql_catalog_tables_internal.h" bodystart="102" bodyend="107"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1sql_1_1IcebergNamespaceProperties___1_1Namespace_1aa0ad939d946c79b2fe4e89743bdc5166" prot="public" virt="non-virtual"><scope>iceberg::sql::IcebergNamespaceProperties_::Namespace</scope><name>data_type</name></member>
+      <member refid="structiceberg_1_1sql_1_1IcebergNamespaceProperties___1_1Namespace_1a1d2f2cc84345545a262640133a67b02d" prot="public" virt="non-virtual"><scope>iceberg::sql::IcebergNamespaceProperties_::Namespace</scope><name>has_default</name></member>
+      <member refid="structiceberg_1_1sql_1_1IcebergNamespaceProperties___1_1Namespace_1abd352ba9c28f12b84dc49603d7642fbb" prot="public" virt="non-virtual"><scope>iceberg::sql::IcebergNamespaceProperties_::Namespace</scope><name>SQLPP_CREATE_NAME_TAG_FOR_SQL_AND_CPP</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,224 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structApache_1_1Hadoop_1_1Hive_1_1__StorageDescriptor____isset" kind="struct" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::_StorageDescriptor__isset</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__StorageDescriptor____isset_1a4f8f6c1cd810040e84db66bb5ac6d368" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_StorageDescriptor__isset::cols</definition>
+        <argsstring></argsstring>
+        <name>cols</name>
+        <qualifiedname>Apache::Hadoop::Hive::_StorageDescriptor__isset::cols</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3144" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="3144" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__StorageDescriptor____isset_1ae1d62b66c41dc7f0cfc1a8a93c0ee98e" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_StorageDescriptor__isset::location</definition>
+        <argsstring></argsstring>
+        <name>location</name>
+        <qualifiedname>Apache::Hadoop::Hive::_StorageDescriptor__isset::location</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3145" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="3145" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__StorageDescriptor____isset_1a8fc4553c6b046fd331b5e99c078caaed" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_StorageDescriptor__isset::inputFormat</definition>
+        <argsstring></argsstring>
+        <name>inputFormat</name>
+        <qualifiedname>Apache::Hadoop::Hive::_StorageDescriptor__isset::inputFormat</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3146" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="3146" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__StorageDescriptor____isset_1a39cac41ca084dd6f2598b1aa39082add" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_StorageDescriptor__isset::outputFormat</definition>
+        <argsstring></argsstring>
+        <name>outputFormat</name>
+        <qualifiedname>Apache::Hadoop::Hive::_StorageDescriptor__isset::outputFormat</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3147" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="3147" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__StorageDescriptor____isset_1a1a93178931a0474cd2abf8c728d06170" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_StorageDescriptor__isset::compressed</definition>
+        <argsstring></argsstring>
+        <name>compressed</name>
+        <qualifiedname>Apache::Hadoop::Hive::_StorageDescriptor__isset::compressed</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3148" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="3148" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__StorageDescriptor____isset_1a15d1349b474460f5521fad25407b85c7" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_StorageDescriptor__isset::numBuckets</definition>
+        <argsstring></argsstring>
+        <name>numBuckets</name>
+        <qualifiedname>Apache::Hadoop::Hive::_StorageDescriptor__isset::numBuckets</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3149" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="3149" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__StorageDescriptor____isset_1ac7ae4a9d7a393e129a832cd5b5851d54" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_StorageDescriptor__isset::serdeInfo</definition>
+        <argsstring></argsstring>
+        <name>serdeInfo</name>
+        <qualifiedname>Apache::Hadoop::Hive::_StorageDescriptor__isset::serdeInfo</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3150" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="3150" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__StorageDescriptor____isset_1a18d34375c3b202b5e76ff0d33298000f" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_StorageDescriptor__isset::bucketCols</definition>
+        <argsstring></argsstring>
+        <name>bucketCols</name>
+        <qualifiedname>Apache::Hadoop::Hive::_StorageDescriptor__isset::bucketCols</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3151" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="3151" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__StorageDescriptor____isset_1a0a2944c4b6ef08c1a36173a03f8d3755" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_StorageDescriptor__isset::sortCols</definition>
+        <argsstring></argsstring>
+        <name>sortCols</name>
+        <qualifiedname>Apache::Hadoop::Hive::_StorageDescriptor__isset::sortCols</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3152" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="3152" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__StorageDescriptor____isset_1a66aaf49166a318d92f315a6e1255d06a" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_StorageDescriptor__isset::parameters</definition>
+        <argsstring></argsstring>
+        <name>parameters</name>
+        <qualifiedname>Apache::Hadoop::Hive::_StorageDescriptor__isset::parameters</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3153" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="3153" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__StorageDescriptor____isset_1a3b800e85dc4f67f1473df2330c7d1cfb" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_StorageDescriptor__isset::skewedInfo</definition>
+        <argsstring></argsstring>
+        <name>skewedInfo</name>
+        <qualifiedname>Apache::Hadoop::Hive::_StorageDescriptor__isset::skewedInfo</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3154" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="3154" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__StorageDescriptor____isset_1a7cb424a07fd0bcc7dd082a63b0393cf4" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_StorageDescriptor__isset::storedAsSubDirectories</definition>
+        <argsstring></argsstring>
+        <name>storedAsSubDirectories</name>
+        <qualifiedname>Apache::Hadoop::Hive::_StorageDescriptor__isset::storedAsSubDirectories</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3155" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="3155" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structApache_1_1Hadoop_1_1Hive_1_1__StorageDescriptor____isset_1a6e1baab8674e20c3582ab9ff828f3915" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::_StorageDescriptor__isset::_StorageDescriptor__isset</definition>
+        <argsstring>()</argsstring>
+        <name>_StorageDescriptor__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::_StorageDescriptor__isset::_StorageDescriptor__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3143" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="3143" bodyend="3143"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3142" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="3142" bodyend="3156"/>
+    <listofallmembers>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__StorageDescriptor____isset_1a6e1baab8674e20c3582ab9ff828f3915" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_StorageDescriptor__isset</scope><name>_StorageDescriptor__isset</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__StorageDescriptor____isset_1a18d34375c3b202b5e76ff0d33298000f" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_StorageDescriptor__isset</scope><name>bucketCols</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__StorageDescriptor____isset_1a4f8f6c1cd810040e84db66bb5ac6d368" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_StorageDescriptor__isset</scope><name>cols</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__StorageDescriptor____isset_1a1a93178931a0474cd2abf8c728d06170" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_StorageDescriptor__isset</scope><name>compressed</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__StorageDescriptor____isset_1a8fc4553c6b046fd331b5e99c078caaed" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_StorageDescriptor__isset</scope><name>inputFormat</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__StorageDescriptor____isset_1ae1d62b66c41dc7f0cfc1a8a93c0ee98e" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_StorageDescriptor__isset</scope><name>location</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__StorageDescriptor____isset_1a15d1349b474460f5521fad25407b85c7" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_StorageDescriptor__isset</scope><name>numBuckets</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__StorageDescriptor____isset_1a39cac41ca084dd6f2598b1aa39082add" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_StorageDescriptor__isset</scope><name>outputFormat</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__StorageDescriptor____isset_1a66aaf49166a318d92f315a6e1255d06a" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_StorageDescriptor__isset</scope><name>parameters</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__StorageDescriptor____isset_1ac7ae4a9d7a393e129a832cd5b5851d54" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_StorageDescriptor__isset</scope><name>serdeInfo</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__StorageDescriptor____isset_1a3b800e85dc4f67f1473df2330c7d1cfb" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_StorageDescriptor__isset</scope><name>skewedInfo</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__StorageDescriptor____isset_1a0a2944c4b6ef08c1a36173a03f8d3755" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_StorageDescriptor__isset</scope><name>sortCols</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__StorageDescriptor____isset_1a7cb424a07fd0bcc7dd082a63b0393cf4" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_StorageDescriptor__isset</scope><name>storedAsSubDirectories</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

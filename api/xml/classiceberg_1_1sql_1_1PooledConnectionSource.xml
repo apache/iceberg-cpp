@@ -1,0 +1,219 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1sql_1_1PooledConnectionSource" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::sql::PooledConnectionSource</compoundname>
+    <innerclass refid="classiceberg_1_1sql_1_1PooledConnectionSource_1_1ConnectionLease" prot="private">iceberg::sql::PooledConnectionSource::ConnectionLease</innerclass>
+    <innerclass refid="classiceberg_1_1sql_1_1PooledConnectionSource_1_1ScopedTransactionContext" prot="private">iceberg::sql::PooledConnectionSource::ScopedTransactionContext</innerclass>
+    <innerclass refid="structiceberg_1_1sql_1_1PooledConnectionSource_1_1TransactionContext" prot="private">iceberg::sql::PooledConnectionSource::TransactionContext</innerclass>
+    <templateparamlist>
+      <param>
+        <type>typename Pool</type>
+      </param>
+    </templateparamlist>
+    <sectiondef kind="public-type">
+      <memberdef kind="typedef" id="classiceberg_1_1sql_1_1PooledConnectionSource_1a68beea6e20fb35c72f46544c66e49408" prot="public" static="no">
+        <type>typename Pool::_pooled_connection_t</type>
+        <definition>using iceberg::sql::PooledConnectionSource&lt; Pool &gt;::Connection =  typename Pool::_pooled_connection_t</definition>
+        <argsstring></argsstring>
+        <name>Connection</name>
+        <qualifiedname>iceberg::sql::PooledConnectionSource::Connection</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/catalog_store_sqlpp23_internal.h" line="96" column="3" bodyfile="iceberg/catalog/sql/catalog_store_sqlpp23_internal.h" bodystart="96" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1sql_1_1PooledConnectionSource_1aae688aa7b9dedd637bfdc4985b6f2049" prot="private" static="no" mutable="no">
+        <type>Pool</type>
+        <definition>Pool iceberg::sql::PooledConnectionSource&lt; Pool &gt;::pool_</definition>
+        <argsstring></argsstring>
+        <name>pool_</name>
+        <qualifiedname>iceberg::sql::PooledConnectionSource::pool_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/catalog_store_sqlpp23_internal.h" line="197" column="8" bodyfile="iceberg/catalog/sql/catalog_store_sqlpp23_internal.h" bodystart="197" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1sql_1_1PooledConnectionSource_1a069ffb747c4da03b1f2abadf82aaf098" prot="private" static="no" mutable="no">
+        <type>const int32_t</type>
+        <definition>const int32_t iceberg::sql::PooledConnectionSource&lt; Pool &gt;::max_connections_</definition>
+        <argsstring></argsstring>
+        <name>max_connections_</name>
+        <qualifiedname>iceberg::sql::PooledConnectionSource::max_connections_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/catalog_store_sqlpp23_internal.h" line="198" column="17" bodyfile="iceberg/catalog/sql/catalog_store_sqlpp23_internal.h" bodystart="198" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1sql_1_1PooledConnectionSource_1a5180253924d6bc0414b277324bea1045" prot="private" static="no" mutable="no">
+        <type>std::mutex</type>
+        <definition>std::mutex iceberg::sql::PooledConnectionSource&lt; Pool &gt;::mutex_</definition>
+        <argsstring></argsstring>
+        <name>mutex_</name>
+        <qualifiedname>iceberg::sql::PooledConnectionSource::mutex_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/catalog_store_sqlpp23_internal.h" line="199" column="14" bodyfile="iceberg/catalog/sql/catalog_store_sqlpp23_internal.h" bodystart="199" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1sql_1_1PooledConnectionSource_1abd9d91443e0d60642d6276b7ddd6f41b" prot="private" static="no" mutable="no">
+        <type>std::condition_variable</type>
+        <definition>std::condition_variable iceberg::sql::PooledConnectionSource&lt; Pool &gt;::available_</definition>
+        <argsstring></argsstring>
+        <name>available_</name>
+        <qualifiedname>iceberg::sql::PooledConnectionSource::available_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/catalog_store_sqlpp23_internal.h" line="200" column="27" bodyfile="iceberg/catalog/sql/catalog_store_sqlpp23_internal.h" bodystart="200" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1sql_1_1PooledConnectionSource_1add5573ad416f248fa9e835749b5fb1fe" prot="private" static="no" mutable="no">
+        <type>int32_t</type>
+        <definition>int32_t iceberg::sql::PooledConnectionSource&lt; Pool &gt;::active_connections_</definition>
+        <argsstring></argsstring>
+        <name>active_connections_</name>
+        <qualifiedname>iceberg::sql::PooledConnectionSource::active_connections_</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/catalog_store_sqlpp23_internal.h" line="201" column="11" bodyfile="iceberg/catalog/sql/catalog_store_sqlpp23_internal.h" bodystart="201" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-static-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1sql_1_1PooledConnectionSource_1a811c29fe83b680a97a01d58731ce3111" prot="private" static="yes" mutable="no">
+        <type>thread_local TransactionContext *</type>
+        <definition>thread_local TransactionContext* iceberg::sql::PooledConnectionSource&lt; Pool &gt;::active_context_</definition>
+        <argsstring></argsstring>
+        <name>active_context_</name>
+        <qualifiedname>iceberg::sql::PooledConnectionSource::active_context_</qualifiedname>
+        <initializer>= nullptr</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/catalog_store_sqlpp23_internal.h" line="203" column="49" bodyfile="iceberg/catalog/sql/catalog_store_sqlpp23_internal.h" bodystart="203" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1sql_1_1PooledConnectionSource_1a4336da9455b1a264400a89e4c135d555" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::sql::PooledConnectionSource&lt; Pool &gt;::PooledConnectionSource</definition>
+        <argsstring>(Pool pool, int32_t max_connections)</argsstring>
+        <name>PooledConnectionSource</name>
+        <qualifiedname>iceberg::sql::PooledConnectionSource::PooledConnectionSource</qualifiedname>
+        <param>
+          <type>Pool</type>
+          <declname>pool</declname>
+        </param>
+        <param>
+          <type>int32_t</type>
+          <declname>max_connections</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/catalog_store_sqlpp23_internal.h" line="98" column="3" bodyfile="iceberg/catalog/sql/catalog_store_sqlpp23_internal.h" bodystart="98" bodyend="99"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1sql_1_1PooledConnectionSource_1a37b7d941faccda31146f24b138abbad1" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename Fn</type>
+          </param>
+        </templateparamlist>
+        <type>decltype(auto)</type>
+        <definition>decltype(auto) iceberg::sql::PooledConnectionSource&lt; Pool &gt;::WithConnection</definition>
+        <argsstring>(Fn &amp;&amp;fn)</argsstring>
+        <name>WithConnection</name>
+        <qualifiedname>iceberg::sql::PooledConnectionSource::WithConnection</qualifiedname>
+        <param>
+          <type>Fn &amp;&amp;</type>
+          <declname>fn</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/catalog_store_sqlpp23_internal.h" line="102" column="12" bodyfile="iceberg/catalog/sql/catalog_store_sqlpp23_internal.h" bodystart="102" bodyend="110"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1sql_1_1PooledConnectionSource_1af223f5d9d59a5281685831fe4f79a294" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::sql::PooledConnectionSource&lt; Pool &gt;::RunInTransaction</definition>
+        <argsstring>(const std::function&lt; Status()&gt; &amp;body)</argsstring>
+        <name>RunInTransaction</name>
+        <qualifiedname>iceberg::sql::PooledConnectionSource::RunInTransaction</qualifiedname>
+        <param>
+          <type>const std::function&lt; Status()&gt; &amp;</type>
+          <declname>body</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/catalog_store_sqlpp23_internal.h" line="112" column="10" bodyfile="iceberg/catalog/sql/catalog_store_sqlpp23_internal.h" bodystart="112" bodyend="138"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classiceberg_1_1sql_1_1PooledConnectionSource_1a131dcff5e6170dfae34c4b9fe91f1f52" prot="private" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>Connection *</type>
+        <definition>Connection * iceberg::sql::PooledConnectionSource&lt; Pool &gt;::ActiveTransactionConnection</definition>
+        <argsstring>()</argsstring>
+        <name>ActiveTransactionConnection</name>
+        <qualifiedname>iceberg::sql::PooledConnectionSource::ActiveTransactionConnection</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/catalog_store_sqlpp23_internal.h" line="190" column="14" bodyfile="iceberg/catalog/sql/catalog_store_sqlpp23_internal.h" bodystart="190" bodyend="195"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/sql/catalog_store_sqlpp23_internal.h" line="94" column="1" bodyfile="iceberg/catalog/sql/catalog_store_sqlpp23_internal.h" bodystart="94" bodyend="204"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1sql_1_1PooledConnectionSource_1add5573ad416f248fa9e835749b5fb1fe" prot="private" virt="non-virtual"><scope>iceberg::sql::PooledConnectionSource</scope><name>active_connections_</name></member>
+      <member refid="classiceberg_1_1sql_1_1PooledConnectionSource_1a811c29fe83b680a97a01d58731ce3111" prot="private" virt="non-virtual"><scope>iceberg::sql::PooledConnectionSource</scope><name>active_context_</name></member>
+      <member refid="classiceberg_1_1sql_1_1PooledConnectionSource_1a131dcff5e6170dfae34c4b9fe91f1f52" prot="private" virt="non-virtual"><scope>iceberg::sql::PooledConnectionSource</scope><name>ActiveTransactionConnection</name></member>
+      <member refid="classiceberg_1_1sql_1_1PooledConnectionSource_1abd9d91443e0d60642d6276b7ddd6f41b" prot="private" virt="non-virtual"><scope>iceberg::sql::PooledConnectionSource</scope><name>available_</name></member>
+      <member refid="classiceberg_1_1sql_1_1PooledConnectionSource_1a68beea6e20fb35c72f46544c66e49408" prot="public" virt="non-virtual"><scope>iceberg::sql::PooledConnectionSource</scope><name>Connection</name></member>
+      <member refid="classiceberg_1_1sql_1_1PooledConnectionSource_1a069ffb747c4da03b1f2abadf82aaf098" prot="private" virt="non-virtual"><scope>iceberg::sql::PooledConnectionSource</scope><name>max_connections_</name></member>
+      <member refid="classiceberg_1_1sql_1_1PooledConnectionSource_1a5180253924d6bc0414b277324bea1045" prot="private" virt="non-virtual"><scope>iceberg::sql::PooledConnectionSource</scope><name>mutex_</name></member>
+      <member refid="classiceberg_1_1sql_1_1PooledConnectionSource_1aae688aa7b9dedd637bfdc4985b6f2049" prot="private" virt="non-virtual"><scope>iceberg::sql::PooledConnectionSource</scope><name>pool_</name></member>
+      <member refid="classiceberg_1_1sql_1_1PooledConnectionSource_1a4336da9455b1a264400a89e4c135d555" prot="public" virt="non-virtual"><scope>iceberg::sql::PooledConnectionSource</scope><name>PooledConnectionSource</name></member>
+      <member refid="classiceberg_1_1sql_1_1PooledConnectionSource_1af223f5d9d59a5281685831fe4f79a294" prot="public" virt="non-virtual"><scope>iceberg::sql::PooledConnectionSource</scope><name>RunInTransaction</name></member>
+      <member refid="classiceberg_1_1sql_1_1PooledConnectionSource_1a37b7d941faccda31146f24b138abbad1" prot="public" virt="non-virtual"><scope>iceberg::sql::PooledConnectionSource</scope><name>WithConnection</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

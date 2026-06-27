@@ -1,0 +1,140 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1ParseParam" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::ParseParam</compoundname>
+    <sectiondef kind="public-type">
+      <memberdef kind="enum" id="structiceberg_1_1ParseParam_1ae2a4d72e151e6356954a650e5a39887c" prot="public" static="no" strong="no">
+        <type></type>
+        <name>Kind</name>
+        <qualifiedname>iceberg::ParseParam::Kind</qualifiedname>
+        <enumvalue id="structiceberg_1_1ParseParam_1ae2a4d72e151e6356954a650e5a39887ca620de38afcec29a093bc32c3274e189e" prot="public">
+          <name>kDay</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="structiceberg_1_1ParseParam_1ae2a4d72e151e6356954a650e5a39887cae65e11feb51ebe31da48bfd716f09bcb" prot="public">
+          <name>kTime</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="structiceberg_1_1ParseParam_1ae2a4d72e151e6356954a650e5a39887ca327222b242e42d7259eb264a74806de3" prot="public">
+          <name>kTimestamp</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="structiceberg_1_1ParseParam_1ae2a4d72e151e6356954a650e5a39887cac6870597a192a7efa6d3dac8303dbfdd" prot="public">
+          <name>kTimestampTz</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/temporal_util_test.cc" line="97" column="3" bodyfile="iceberg/test/temporal_util_test.cc" bodystart="97" bodyend="97"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1ParseParam_1a3dd4d3477ad1b85950f6c50421bc7094" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::ParseParam::name</definition>
+        <argsstring></argsstring>
+        <name>name</name>
+        <qualifiedname>iceberg::ParseParam::name</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/temporal_util_test.cc" line="94" column="15" bodyfile="iceberg/test/temporal_util_test.cc" bodystart="94" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1ParseParam_1a4ae1b9cd8a234acb2d4495d24d2ee058" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::ParseParam::str</definition>
+        <argsstring></argsstring>
+        <name>str</name>
+        <qualifiedname>iceberg::ParseParam::str</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/temporal_util_test.cc" line="95" column="15" bodyfile="iceberg/test/temporal_util_test.cc" bodystart="95" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1ParseParam_1ae7f75a2546ebf985f9926c41fbb5a185" prot="public" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t iceberg::ParseParam::value</definition>
+        <argsstring></argsstring>
+        <name>value</name>
+        <qualifiedname>iceberg::ParseParam::value</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/temporal_util_test.cc" line="96" column="11" bodyfile="iceberg/test/temporal_util_test.cc" bodystart="96" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1ParseParam_1a1e1f035961229fa63b26cef820c425c5" prot="public" static="no" mutable="no">
+        <type>enum iceberg::ParseParam::Kind</type>
+        <definition>enum iceberg::ParseParam::Kind iceberg::ParseParam::kind</definition>
+        <argsstring></argsstring>
+        <name>kind</name>
+        <qualifiedname>iceberg::ParseParam::kind</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/temporal_util_test.cc" line="97" column="17"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::ParseParam</label>
+        <link refid="structiceberg_1_1ParseParam"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>name</edgelabel>
+          <edgelabel>str</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="2">
+        <label>std::string</label>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/test/temporal_util_test.cc" line="93" column="1" bodyfile="iceberg/test/temporal_util_test.cc" bodystart="93" bodyend="98"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1ParseParam_1ae2a4d72e151e6356954a650e5a39887ca620de38afcec29a093bc32c3274e189e" prot="public" virt="non-virtual"><scope>iceberg::ParseParam</scope><name>kDay</name></member>
+      <member refid="structiceberg_1_1ParseParam_1ae2a4d72e151e6356954a650e5a39887c" prot="public" virt="non-virtual"><scope>iceberg::ParseParam</scope><name>Kind</name></member>
+      <member refid="structiceberg_1_1ParseParam_1a1e1f035961229fa63b26cef820c425c5" prot="public" virt="non-virtual"><scope>iceberg::ParseParam</scope><name>kind</name></member>
+      <member refid="structiceberg_1_1ParseParam_1ae2a4d72e151e6356954a650e5a39887cae65e11feb51ebe31da48bfd716f09bcb" prot="public" virt="non-virtual"><scope>iceberg::ParseParam</scope><name>kTime</name></member>
+      <member refid="structiceberg_1_1ParseParam_1ae2a4d72e151e6356954a650e5a39887ca327222b242e42d7259eb264a74806de3" prot="public" virt="non-virtual"><scope>iceberg::ParseParam</scope><name>kTimestamp</name></member>
+      <member refid="structiceberg_1_1ParseParam_1ae2a4d72e151e6356954a650e5a39887cac6870597a192a7efa6d3dac8303dbfdd" prot="public" virt="non-virtual"><scope>iceberg::ParseParam</scope><name>kTimestampTz</name></member>
+      <member refid="structiceberg_1_1ParseParam_1a3dd4d3477ad1b85950f6c50421bc7094" prot="public" virt="non-virtual"><scope>iceberg::ParseParam</scope><name>name</name></member>
+      <member refid="structiceberg_1_1ParseParam_1a4ae1b9cd8a234acb2d4495d24d2ee058" prot="public" virt="non-virtual"><scope>iceberg::ParseParam</scope><name>str</name></member>
+      <member refid="structiceberg_1_1ParseParam_1ae7f75a2546ebf985f9926c41fbb5a185" prot="public" virt="non-virtual"><scope>iceberg::ParseParam</scope><name>value</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

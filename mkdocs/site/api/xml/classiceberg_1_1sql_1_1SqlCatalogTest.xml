@@ -1,0 +1,229 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1sql_1_1SqlCatalogTest" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::sql::SqlCatalogTest</compoundname>
+    <basecompoundref prot="public" virt="non-virtual">testing::Test</basecompoundref>
+    <sectiondef kind="protected-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1sql_1_1SqlCatalogTest_1ae8db4897dfe29bda7a0fe355e52d63e1" prot="protected" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;FileIO&gt; iceberg::sql::SqlCatalogTest::file_io_</definition>
+        <argsstring></argsstring>
+        <name>file_io_</name>
+        <qualifiedname>iceberg::sql::SqlCatalogTest::file_io_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/sql_catalog_test.cc" line="146" column="19" bodyfile="iceberg/test/sql_catalog_test.cc" bodystart="146" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1sql_1_1SqlCatalogTest_1a18b5176d92bfc554e16b759fec9185cd" prot="protected" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1sql_1_1CatalogStore" kindref="compound">CatalogStore</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;CatalogStore&gt; iceberg::sql::SqlCatalogTest::store_</definition>
+        <argsstring></argsstring>
+        <name>store_</name>
+        <qualifiedname>iceberg::sql::SqlCatalogTest::store_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/sql_catalog_test.cc" line="147" column="19" bodyfile="iceberg/test/sql_catalog_test.cc" bodystart="147" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1sql_1_1SqlCatalogTest_1aab8dc4de7629269c2427054d9ff75389" prot="protected" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1sql_1_1SqlCatalog" kindref="compound">SqlCatalog</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;SqlCatalog&gt; iceberg::sql::SqlCatalogTest::catalog_</definition>
+        <argsstring></argsstring>
+        <name>catalog_</name>
+        <qualifiedname>iceberg::sql::SqlCatalogTest::catalog_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/sql_catalog_test.cc" line="148" column="19" bodyfile="iceberg/test/sql_catalog_test.cc" bodystart="148" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="protected-func">
+      <memberdef kind="function" id="classiceberg_1_1sql_1_1SqlCatalogTest_1a8000c377736794d9b168696943918427" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::sql::SqlCatalogTest::SetUp</definition>
+        <argsstring>() override</argsstring>
+        <name>SetUp</name>
+        <qualifiedname>iceberg::sql::SqlCatalogTest::SetUp</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/sql_catalog_test.cc" line="102" column="8" bodyfile="iceberg/test/sql_catalog_test.cc" bodystart="102" bodyend="117"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1sql_1_1SqlCatalogTest_1ab9c8ad770a106a90766f8fd01b0a5feb" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::sql::SqlCatalogTest::TearDown</definition>
+        <argsstring>() override</argsstring>
+        <name>TearDown</name>
+        <qualifiedname>iceberg::sql::SqlCatalogTest::TearDown</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/sql_catalog_test.cc" line="119" column="8" bodyfile="iceberg/test/sql_catalog_test.cc" bodystart="119" bodyend="122"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1sql_1_1SqlCatalogTest_1ad5099d7347b8e1564418e6a572581b9a" prot="protected" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::string</type>
+        <definition>std::string iceberg::sql::SqlCatalogTest::WarehouseDir</definition>
+        <argsstring>() const</argsstring>
+        <name>WarehouseDir</name>
+        <qualifiedname>iceberg::sql::SqlCatalogTest::WarehouseDir</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/sql_catalog_test.cc" line="124" column="15" bodyfile="iceberg/test/sql_catalog_test.cc" bodystart="124" bodyend="126"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1sql_1_1SqlCatalogTest_1a869feef315b1816aa3803448cb7600a0" prot="protected" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::string</type>
+        <definition>std::string iceberg::sql::SqlCatalogTest::WarehouseLocation</definition>
+        <argsstring>() const</argsstring>
+        <name>WarehouseLocation</name>
+        <qualifiedname>iceberg::sql::SqlCatalogTest::WarehouseLocation</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/sql_catalog_test.cc" line="128" column="15" bodyfile="iceberg/test/sql_catalog_test.cc" bodystart="128" bodyend="130"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1sql_1_1SqlCatalogTest_1a15d7d9c6710ee509fa83fa355d9d8898" prot="protected" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::string</type>
+        <definition>std::string iceberg::sql::SqlCatalogTest::MakeTableLocation</definition>
+        <argsstring>(const std::string &amp;name) const</argsstring>
+        <name>MakeTableLocation</name>
+        <qualifiedname>iceberg::sql::SqlCatalogTest::MakeTableLocation</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>name</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/sql_catalog_test.cc" line="134" column="15" bodyfile="iceberg/test/sql_catalog_test.cc" bodystart="134" bodyend="138"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1sql_1_1SqlCatalogTest_1a5ba1333fdd439be92259578e4cc4bbc0" prot="protected" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &gt;</type>
+        <definition>std::shared_ptr&lt; Schema &gt; iceberg::sql::SqlCatalogTest::MakeSchema</definition>
+        <argsstring>() const</argsstring>
+        <name>MakeSchema</name>
+        <qualifiedname>iceberg::sql::SqlCatalogTest::MakeSchema</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/sql_catalog_test.cc" line="140" column="19" bodyfile="iceberg/test/sql_catalog_test.cc" bodystart="140" bodyend="144"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>iceberg::sql::SqlCatalogTest</label>
+        <link refid="classiceberg_1_1sql_1_1SqlCatalogTest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>testing::Test</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="9">
+        <label>iceberg::Catalog</label>
+        <link refid="classiceberg_1_1Catalog"/>
+      </node>
+      <node id="4">
+        <label>iceberg::FileIO</label>
+        <link refid="classiceberg_1_1FileIO"/>
+      </node>
+      <node id="6">
+        <label>iceberg::sql::CatalogStore</label>
+        <link refid="classiceberg_1_1sql_1_1CatalogStore"/>
+      </node>
+      <node id="8">
+        <label>iceberg::sql::SqlCatalog</label>
+        <link refid="classiceberg_1_1sql_1_1SqlCatalog"/>
+        <childnode refid="9" relation="public-inheritance">
+        </childnode>
+        <childnode refid="10" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::sql::SqlCatalogTest</label>
+        <link refid="classiceberg_1_1sql_1_1SqlCatalogTest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>file_io_</edgelabel>
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>store_</edgelabel>
+        </childnode>
+        <childnode refid="7" relation="usage">
+          <edgelabel>catalog_</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::shared_ptr&lt; iceberg::FileIO &gt;</label>
+        <childnode refid="4" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="5">
+        <label>std::shared_ptr&lt; iceberg::sql::CatalogStore &gt;</label>
+        <childnode refid="6" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="7">
+        <label>std::shared_ptr&lt; iceberg::sql::SqlCatalog &gt;</label>
+        <childnode refid="8" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="10">
+        <label>std::enable_shared_from_this&lt; SqlCatalog &gt;</label>
+      </node>
+      <node id="2">
+        <label>testing::Test</label>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/test/sql_catalog_test.cc" line="100" column="1" bodyfile="iceberg/test/sql_catalog_test.cc" bodystart="100" bodyend="149"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1sql_1_1SqlCatalogTest_1aab8dc4de7629269c2427054d9ff75389" prot="protected" virt="non-virtual"><scope>iceberg::sql::SqlCatalogTest</scope><name>catalog_</name></member>
+      <member refid="classiceberg_1_1sql_1_1SqlCatalogTest_1ae8db4897dfe29bda7a0fe355e52d63e1" prot="protected" virt="non-virtual"><scope>iceberg::sql::SqlCatalogTest</scope><name>file_io_</name></member>
+      <member refid="classiceberg_1_1sql_1_1SqlCatalogTest_1a5ba1333fdd439be92259578e4cc4bbc0" prot="protected" virt="non-virtual"><scope>iceberg::sql::SqlCatalogTest</scope><name>MakeSchema</name></member>
+      <member refid="classiceberg_1_1sql_1_1SqlCatalogTest_1a15d7d9c6710ee509fa83fa355d9d8898" prot="protected" virt="non-virtual"><scope>iceberg::sql::SqlCatalogTest</scope><name>MakeTableLocation</name></member>
+      <member refid="classiceberg_1_1sql_1_1SqlCatalogTest_1a8000c377736794d9b168696943918427" prot="protected" virt="non-virtual"><scope>iceberg::sql::SqlCatalogTest</scope><name>SetUp</name></member>
+      <member refid="classiceberg_1_1sql_1_1SqlCatalogTest_1a18b5176d92bfc554e16b759fec9185cd" prot="protected" virt="non-virtual"><scope>iceberg::sql::SqlCatalogTest</scope><name>store_</name></member>
+      <member refid="classiceberg_1_1sql_1_1SqlCatalogTest_1ab9c8ad770a106a90766f8fd01b0a5feb" prot="protected" virt="non-virtual"><scope>iceberg::sql::SqlCatalogTest</scope><name>TearDown</name></member>
+      <member refid="classiceberg_1_1sql_1_1SqlCatalogTest_1ad5099d7347b8e1564418e6a572581b9a" prot="protected" virt="non-virtual"><scope>iceberg::sql::SqlCatalogTest</scope><name>WarehouseDir</name></member>
+      <member refid="classiceberg_1_1sql_1_1SqlCatalogTest_1a869feef315b1816aa3803448cb7600a0" prot="protected" virt="non-virtual"><scope>iceberg::sql::SqlCatalogTest</scope><name>WarehouseLocation</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

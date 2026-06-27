@@ -1,0 +1,125 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1SimpleArrayLike" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::SimpleArrayLike</compoundname>
+    <basecompoundref refid="classiceberg_1_1ArrayLike" prot="public" virt="non-virtual">iceberg::ArrayLike</basecompoundref>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1SimpleArrayLike_1aa8765d8825bccd97771e6bb206f27f01" prot="private" static="no" mutable="no">
+        <type>std::vector&lt; <ref refid="struct__like_8h_1a3b5162f202989971e28bc310237964db" kindref="member">Scalar</ref> &gt;</type>
+        <definition>std::vector&lt;Scalar&gt; iceberg::SimpleArrayLike::elements_</definition>
+        <argsstring></argsstring>
+        <name>elements_</name>
+        <qualifiedname>iceberg::SimpleArrayLike::elements_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/struct_like_set_test.cc" line="68" column="15" bodyfile="iceberg/test/struct_like_set_test.cc" bodystart="68" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1SimpleArrayLike_1a8f47a75a6532caf72395965941388a75" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::SimpleArrayLike::SimpleArrayLike</definition>
+        <argsstring>(std::vector&lt; Scalar &gt; elements)</argsstring>
+        <name>SimpleArrayLike</name>
+        <qualifiedname>iceberg::SimpleArrayLike::SimpleArrayLike</qualifiedname>
+        <param>
+          <type>std::vector&lt; <ref refid="struct__like_8h_1a3b5162f202989971e28bc310237964db" kindref="member">Scalar</ref> &gt;</type>
+          <declname>elements</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/struct_like_set_test.cc" line="55" column="12" bodyfile="iceberg/test/struct_like_set_test.cc" bodystart="55" bodyend="56"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SimpleArrayLike_1ab9401de6f9f36c3be033b074c07b0529" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
+        <type>Result&lt; <ref refid="struct__like_8h_1a3b5162f202989971e28bc310237964db" kindref="member">Scalar</ref> &gt;</type>
+        <definition>Result&lt; Scalar &gt; iceberg::SimpleArrayLike::GetElement</definition>
+        <argsstring>(size_t pos) const override</argsstring>
+        <name>GetElement</name>
+        <qualifiedname>iceberg::SimpleArrayLike::GetElement</qualifiedname>
+        <reimplements refid="classiceberg_1_1ArrayLike_1a11be6b4e1e25d7dc923a7376bd52d9bf">GetElement</reimplements>
+        <param>
+          <type>size_t</type>
+          <declname>pos</declname>
+        </param>
+        <briefdescription>
+<para>Get the array element at the given position. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>pos</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The position of the element in the array. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/struct_like_set_test.cc" line="58" column="10" bodyfile="iceberg/test/struct_like_set_test.cc" bodystart="58" bodyend="63"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SimpleArrayLike_1ae6b49eb926d60bf5157194bdf17a2650" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
+        <type>size_t</type>
+        <definition>size_t iceberg::SimpleArrayLike::size</definition>
+        <argsstring>() const override</argsstring>
+        <name>size</name>
+        <qualifiedname>iceberg::SimpleArrayLike::size</qualifiedname>
+        <reimplements refid="classiceberg_1_1ArrayLike_1a3bef2486b022eab4c391646447fe2ee8">size</reimplements>
+        <briefdescription>
+<para>Get the number of elements in the array. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/struct_like_set_test.cc" line="65" column="10" bodyfile="iceberg/test/struct_like_set_test.cc" bodystart="65" bodyend="65"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>iceberg::ArrayLike</label>
+        <link refid="classiceberg_1_1ArrayLike"/>
+      </node>
+      <node id="1">
+        <label>iceberg::SimpleArrayLike</label>
+        <link refid="classiceberg_1_1SimpleArrayLike"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="2">
+        <label>iceberg::ArrayLike</label>
+        <link refid="classiceberg_1_1ArrayLike"/>
+      </node>
+      <node id="1">
+        <label>iceberg::SimpleArrayLike</label>
+        <link refid="classiceberg_1_1SimpleArrayLike"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/test/struct_like_set_test.cc" line="53" column="1" bodyfile="iceberg/test/struct_like_set_test.cc" bodystart="53" bodyend="69"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1SimpleArrayLike_1aa8765d8825bccd97771e6bb206f27f01" prot="private" virt="non-virtual"><scope>iceberg::SimpleArrayLike</scope><name>elements_</name></member>
+      <member refid="classiceberg_1_1SimpleArrayLike_1ab9401de6f9f36c3be033b074c07b0529" prot="public" virt="virtual"><scope>iceberg::SimpleArrayLike</scope><name>GetElement</name></member>
+      <member refid="classiceberg_1_1SimpleArrayLike_1a8f47a75a6532caf72395965941388a75" prot="public" virt="non-virtual"><scope>iceberg::SimpleArrayLike</scope><name>SimpleArrayLike</name></member>
+      <member refid="classiceberg_1_1SimpleArrayLike_1ae6b49eb926d60bf5157194bdf17a2650" prot="public" virt="virtual"><scope>iceberg::SimpleArrayLike</scope><name>size</name></member>
+      <member refid="classiceberg_1_1ArrayLike_1a2420855468d16012f3619a980d914d91" prot="public" virt="virtual"><scope>iceberg::SimpleArrayLike</scope><name>~ArrayLike</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

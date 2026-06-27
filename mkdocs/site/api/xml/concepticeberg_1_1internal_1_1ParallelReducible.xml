@@ -1,0 +1,28 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="concepticeberg_1_1internal_1_1ParallelReducible" kind="concept">
+    <compoundname>iceberg::internal::ParallelReducible</compoundname>
+    <templateparamlist>
+      <param>
+        <type>typename T</type>
+      </param>
+      <param>
+        <type>auto...</type>
+        <declname>Options</declname>
+        <defname>Options</defname>
+      </param>
+    </templateparamlist>
+    <initializer>template&lt;typename T, auto... Options&gt;
+concept <ref refid="concepticeberg_1_1internal_1_1ParallelReducible" kindref="compound">iceberg::internal::ParallelReducible</ref> =  requires(std::vector&lt;T&gt;&amp; values) {
+  typename ParallelReduce&lt;T, Options...&gt;::result_type;
+  {
+    ParallelReduce&lt;T, Options...&gt;::Reduce(values)
+  } -&gt; std::same_as&lt;typename ParallelReduce&lt;T, Options...&gt;::result_type&gt;;
+}    </initializer>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/util/executor_util_internal.h" line="46" column="1"/>
+  </compounddef>
+</doxygen>

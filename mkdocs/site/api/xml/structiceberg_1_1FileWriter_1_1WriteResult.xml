@@ -1,0 +1,144 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1FileWriter_1_1WriteResult" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::FileWriter::WriteResult</compoundname>
+    <includes refid="writer_8h" local="no">writer.h</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1FileWriter_1_1WriteResult_1a39897b987d6eb0b8b8cdd5ade5bc557c" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; std::shared_ptr&lt; <ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref> &gt; &gt;</type>
+        <definition>std::vector&lt;std::shared_ptr&lt;DataFile&gt; &gt; iceberg::FileWriter::WriteResult::data_files</definition>
+        <argsstring></argsstring>
+        <name>data_files</name>
+        <qualifiedname>iceberg::FileWriter::WriteResult::data_files</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Usually a writer produces a single data or delete file. Position delete writer may produce multiple file-scoped delete files. In the future, multiple files can be produced if file rolling is supported. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/writer.h" line="56" column="17" bodyfile="iceberg/data/writer.h" bodystart="56" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>File metadata for all files produced by this writer. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="4">
+        <label>iceberg::DataFile</label>
+        <link refid="structiceberg_1_1DataFile"/>
+        <childnode refid="5" relation="usage">
+          <edgelabel>file_path</edgelabel>
+          <edgelabel>kPartitionDoc</edgelabel>
+          <edgelabel>kPartitionField</edgelabel>
+        </childnode>
+        <childnode refid="7" relation="usage">
+          <edgelabel>partition</edgelabel>
+        </childnode>
+        <childnode refid="9" relation="usage">
+          <edgelabel>column_sizes</edgelabel>
+          <edgelabel>nan_value_counts</edgelabel>
+          <edgelabel>null_value_counts</edgelabel>
+          <edgelabel>value_counts</edgelabel>
+        </childnode>
+        <childnode refid="10" relation="usage">
+          <edgelabel>lower_bounds</edgelabel>
+          <edgelabel>upper_bounds</edgelabel>
+        </childnode>
+        <childnode refid="11" relation="usage">
+          <edgelabel>key_metadata</edgelabel>
+        </childnode>
+        <childnode refid="12" relation="usage">
+          <edgelabel>split_offsets</edgelabel>
+        </childnode>
+        <childnode refid="13" relation="usage">
+          <edgelabel>equality_ids</edgelabel>
+        </childnode>
+        <childnode refid="14" relation="usage">
+          <edgelabel>kColumnSizes</edgelabel>
+          <edgelabel>kContent</edgelabel>
+          <edgelabel>kContentOffset</edgelabel>
+          <edgelabel>kContentSize</edgelabel>
+          <edgelabel>kEqualityIds</edgelabel>
+          <edgelabel>kFileFormat</edgelabel>
+          <edgelabel>kFilePath</edgelabel>
+          <edgelabel>kFileSize</edgelabel>
+          <edgelabel>kFirstRowId</edgelabel>
+          <edgelabel>kKeyMetadata</edgelabel>
+          <edgelabel>...</edgelabel>
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::FileWriter::WriteResult</label>
+        <link refid="structiceberg_1_1FileWriter_1_1WriteResult"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>data_files</edgelabel>
+        </childnode>
+      </node>
+      <node id="7">
+        <label>iceberg::PartitionValues</label>
+        <link refid="classiceberg_1_1PartitionValues"/>
+        <childnode refid="8" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="14">
+        <label>iceberg::SchemaField</label>
+        <link refid="classiceberg_1_1SchemaField"/>
+        <childnode refid="15" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="8">
+        <label>iceberg::StructLike</label>
+        <link refid="classiceberg_1_1StructLike"/>
+      </node>
+      <node id="15">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+      <node id="9">
+        <label>std::map&lt; int32_t, int64_t &gt;</label>
+      </node>
+      <node id="10">
+        <label>std::map&lt; int32_t, std::vector&lt; uint8_t &gt; &gt;</label>
+        <childnode refid="11" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::shared_ptr&lt; iceberg::DataFile &gt;</label>
+        <childnode refid="4" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="6">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="5">
+        <label>std::string</label>
+        <childnode refid="6" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="13">
+        <label>std::vector&lt; int32_t &gt;</label>
+      </node>
+      <node id="12">
+        <label>std::vector&lt; int64_t &gt;</label>
+      </node>
+      <node id="2">
+        <label>std::vector&lt; std::shared_ptr&lt; iceberg::DataFile &gt; &gt;</label>
+        <childnode refid="3" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="11">
+        <label>std::vector&lt; uint8_t &gt;</label>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/data/writer.h" line="52" column="3" bodyfile="iceberg/data/writer.h" bodystart="52" bodyend="57"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1FileWriter_1_1WriteResult_1a39897b987d6eb0b8b8cdd5ade5bc557c" prot="public" virt="non-virtual"><scope>iceberg::FileWriter::WriteResult</scope><name>data_files</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

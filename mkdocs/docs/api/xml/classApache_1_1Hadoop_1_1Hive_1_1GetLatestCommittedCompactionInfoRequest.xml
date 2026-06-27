@@ -1,0 +1,400 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1GetLatestCommittedCompactionInfoRequest" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::GetLatestCommittedCompactionInfoRequest</compoundname>
+    <basecompoundref prot="public" virt="virtual">apache::thrift::TBase</basecompoundref>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1GetLatestCommittedCompactionInfoRequest_1ad2e8982052135761cc0809dc0307fdc3" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::GetLatestCommittedCompactionInfoRequest::dbname</definition>
+        <argsstring></argsstring>
+        <name>dbname</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetLatestCommittedCompactionInfoRequest::dbname</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8900" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="8900" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1GetLatestCommittedCompactionInfoRequest_1af6b6e5503ef3b36e0a0af38c9c918d8f" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::GetLatestCommittedCompactionInfoRequest::tablename</definition>
+        <argsstring></argsstring>
+        <name>tablename</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetLatestCommittedCompactionInfoRequest::tablename</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8901" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="8901" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1GetLatestCommittedCompactionInfoRequest_1aaa3b9c247e9caaacbc4f46e61040a527" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; std::string &gt;</type>
+        <definition>std::vector&lt;std::string&gt; Apache::Hadoop::Hive::GetLatestCommittedCompactionInfoRequest::partitionnames</definition>
+        <argsstring></argsstring>
+        <name>partitionnames</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetLatestCommittedCompactionInfoRequest::partitionnames</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8902" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="8902" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1GetLatestCommittedCompactionInfoRequest_1ad470fea32f16920caa07d2b0fdd5705c" prot="public" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t Apache::Hadoop::Hive::GetLatestCommittedCompactionInfoRequest::lastCompactionId</definition>
+        <argsstring></argsstring>
+        <name>lastCompactionId</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetLatestCommittedCompactionInfoRequest::lastCompactionId</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8903" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="8903" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1GetLatestCommittedCompactionInfoRequest_1addfd913b399e520f987cdac7d4ed4621" prot="public" static="no" mutable="no">
+        <type><ref refid="structApache_1_1Hadoop_1_1Hive_1_1__GetLatestCommittedCompactionInfoRequest____isset" kindref="compound">_GetLatestCommittedCompactionInfoRequest__isset</ref></type>
+        <definition>_GetLatestCommittedCompactionInfoRequest__isset Apache::Hadoop::Hive::GetLatestCommittedCompactionInfoRequest::__isset</definition>
+        <argsstring></argsstring>
+        <name>__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetLatestCommittedCompactionInfoRequest::__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8905" column="51" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="8905" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetLatestCommittedCompactionInfoRequest_1a3f1a95463aa4fe27259048588b0281ec" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::GetLatestCommittedCompactionInfoRequest::GetLatestCommittedCompactionInfoRequest</definition>
+        <argsstring>(const GetLatestCommittedCompactionInfoRequest &amp;)</argsstring>
+        <name>GetLatestCommittedCompactionInfoRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetLatestCommittedCompactionInfoRequest::GetLatestCommittedCompactionInfoRequest</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1GetLatestCommittedCompactionInfoRequest" kindref="compound">GetLatestCommittedCompactionInfoRequest</ref> &amp;</type>
+          <defname>other1091</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8895" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="34757" bodyend="34763"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetLatestCommittedCompactionInfoRequest_1a4c245ed900ceec2afdfe0703b77a40f4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1GetLatestCommittedCompactionInfoRequest" kindref="compound">GetLatestCommittedCompactionInfoRequest</ref> &amp;</type>
+        <definition>GetLatestCommittedCompactionInfoRequest &amp; Apache::Hadoop::Hive::GetLatestCommittedCompactionInfoRequest::operator=</definition>
+        <argsstring>(const GetLatestCommittedCompactionInfoRequest &amp;)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetLatestCommittedCompactionInfoRequest::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1GetLatestCommittedCompactionInfoRequest" kindref="compound">GetLatestCommittedCompactionInfoRequest</ref> &amp;</type>
+          <defname>other1092</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8896" column="43" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="34764" bodyend="34771"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetLatestCommittedCompactionInfoRequest_1a5288cf21f5a8c02ffcc4846f3b3260ea" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::GetLatestCommittedCompactionInfoRequest::GetLatestCommittedCompactionInfoRequest</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>GetLatestCommittedCompactionInfoRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetLatestCommittedCompactionInfoRequest::GetLatestCommittedCompactionInfoRequest</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8897" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="34582" bodyend="34586"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetLatestCommittedCompactionInfoRequest_1ab106c73ffca1e7789635a78328a7d33a" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::GetLatestCommittedCompactionInfoRequest::~GetLatestCommittedCompactionInfoRequest</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~GetLatestCommittedCompactionInfoRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetLatestCommittedCompactionInfoRequest::~GetLatestCommittedCompactionInfoRequest</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8899" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="34579" bodyend="34580"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetLatestCommittedCompactionInfoRequest_1a58a3beae3af85f00d6fd6700c9cccb5b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::GetLatestCommittedCompactionInfoRequest::__set_dbname</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_dbname</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetLatestCommittedCompactionInfoRequest::__set_dbname</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8907" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="34588" bodyend="34590"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetLatestCommittedCompactionInfoRequest_1afa37e08b53210caec6045b658679114a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::GetLatestCommittedCompactionInfoRequest::__set_tablename</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_tablename</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetLatestCommittedCompactionInfoRequest::__set_tablename</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8909" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="34592" bodyend="34594"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetLatestCommittedCompactionInfoRequest_1ab77a0aa620106a79437d1abebec89b29" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::GetLatestCommittedCompactionInfoRequest::__set_partitionnames</definition>
+        <argsstring>(const std::vector&lt; std::string &gt; &amp;val)</argsstring>
+        <name>__set_partitionnames</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetLatestCommittedCompactionInfoRequest::__set_partitionnames</qualifiedname>
+        <param>
+          <type>const std::vector&lt; std::string &gt; &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8911" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="34596" bodyend="34599"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetLatestCommittedCompactionInfoRequest_1abe251c35fd92b02e795ea140c659b2b3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::GetLatestCommittedCompactionInfoRequest::__set_lastCompactionId</definition>
+        <argsstring>(const int64_t val)</argsstring>
+        <name>__set_lastCompactionId</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetLatestCommittedCompactionInfoRequest::__set_lastCompactionId</qualifiedname>
+        <param>
+          <type>const int64_t</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8913" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="34601" bodyend="34604"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetLatestCommittedCompactionInfoRequest_1a3e82c2ab3919fc2efd1500f37e607605" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::GetLatestCommittedCompactionInfoRequest::operator==</definition>
+        <argsstring>(const GetLatestCommittedCompactionInfoRequest &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetLatestCommittedCompactionInfoRequest::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1GetLatestCommittedCompactionInfoRequest" kindref="compound">GetLatestCommittedCompactionInfoRequest</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8915" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="34740" bodyend="34755"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetLatestCommittedCompactionInfoRequest_1ac8facde758912b0efaf7dd2e903e6444" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::GetLatestCommittedCompactionInfoRequest::operator!=</definition>
+        <argsstring>(const GetLatestCommittedCompactionInfoRequest &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetLatestCommittedCompactionInfoRequest::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1GetLatestCommittedCompactionInfoRequest" kindref="compound">GetLatestCommittedCompactionInfoRequest</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8916" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="8916" bodyend="8918"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetLatestCommittedCompactionInfoRequest_1a900c78219156e1c33bd538a3923cf4ad" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::GetLatestCommittedCompactionInfoRequest::operator&lt;</definition>
+        <argsstring>(const GetLatestCommittedCompactionInfoRequest &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetLatestCommittedCompactionInfoRequest::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1GetLatestCommittedCompactionInfoRequest" kindref="compound">GetLatestCommittedCompactionInfoRequest</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8920" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetLatestCommittedCompactionInfoRequest_1a7d6e341d34d266fef0651048459abf53" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::GetLatestCommittedCompactionInfoRequest::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot) override</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetLatestCommittedCompactionInfoRequest::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8922" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="34612" bodyend="34693"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetLatestCommittedCompactionInfoRequest_1ab79c8c9bafb036d56cf2d9c4be48a6d6" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::GetLatestCommittedCompactionInfoRequest::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const override</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetLatestCommittedCompactionInfoRequest::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8923" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="34695" bodyend="34729"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetLatestCommittedCompactionInfoRequest_1a6221a34bae641be850055b5d689bc216" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::GetLatestCommittedCompactionInfoRequest::printTo</definition>
+        <argsstring>(std::ostream &amp;out) const</argsstring>
+        <name>printTo</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetLatestCommittedCompactionInfoRequest::printTo</qualifiedname>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8925" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="34772" bodyend="34780"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::GetLatestCommittedCompactionInfoRequest</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1GetLatestCommittedCompactionInfoRequest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::GetLatestCommittedCompactionInfoRequest</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1GetLatestCommittedCompactionInfoRequest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>dbname</edgelabel>
+          <edgelabel>tablename</edgelabel>
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>partitionnames</edgelabel>
+        </childnode>
+        <childnode refid="6" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="6">
+        <label>Apache::Hadoop::Hive::_GetLatestCommittedCompactionInfoRequest__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__GetLatestCommittedCompactionInfoRequest____isset"/>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+      <node id="4">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="3">
+        <label>std::string</label>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>std::vector&lt; std::string &gt;</label>
+        <childnode refid="3" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8892" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="8892" bodyend="8926"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetLatestCommittedCompactionInfoRequest_1addfd913b399e520f987cdac7d4ed4621" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetLatestCommittedCompactionInfoRequest</scope><name>__isset</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetLatestCommittedCompactionInfoRequest_1a58a3beae3af85f00d6fd6700c9cccb5b" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetLatestCommittedCompactionInfoRequest</scope><name>__set_dbname</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetLatestCommittedCompactionInfoRequest_1abe251c35fd92b02e795ea140c659b2b3" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetLatestCommittedCompactionInfoRequest</scope><name>__set_lastCompactionId</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetLatestCommittedCompactionInfoRequest_1ab77a0aa620106a79437d1abebec89b29" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetLatestCommittedCompactionInfoRequest</scope><name>__set_partitionnames</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetLatestCommittedCompactionInfoRequest_1afa37e08b53210caec6045b658679114a" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetLatestCommittedCompactionInfoRequest</scope><name>__set_tablename</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetLatestCommittedCompactionInfoRequest_1ad2e8982052135761cc0809dc0307fdc3" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetLatestCommittedCompactionInfoRequest</scope><name>dbname</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetLatestCommittedCompactionInfoRequest_1a3f1a95463aa4fe27259048588b0281ec" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetLatestCommittedCompactionInfoRequest</scope><name>GetLatestCommittedCompactionInfoRequest</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetLatestCommittedCompactionInfoRequest_1a5288cf21f5a8c02ffcc4846f3b3260ea" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetLatestCommittedCompactionInfoRequest</scope><name>GetLatestCommittedCompactionInfoRequest</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetLatestCommittedCompactionInfoRequest_1ad470fea32f16920caa07d2b0fdd5705c" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetLatestCommittedCompactionInfoRequest</scope><name>lastCompactionId</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetLatestCommittedCompactionInfoRequest_1ac8facde758912b0efaf7dd2e903e6444" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetLatestCommittedCompactionInfoRequest</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetLatestCommittedCompactionInfoRequest_1a900c78219156e1c33bd538a3923cf4ad" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetLatestCommittedCompactionInfoRequest</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetLatestCommittedCompactionInfoRequest_1a4c245ed900ceec2afdfe0703b77a40f4" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetLatestCommittedCompactionInfoRequest</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetLatestCommittedCompactionInfoRequest_1a3e82c2ab3919fc2efd1500f37e607605" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetLatestCommittedCompactionInfoRequest</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetLatestCommittedCompactionInfoRequest_1aaa3b9c247e9caaacbc4f46e61040a527" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetLatestCommittedCompactionInfoRequest</scope><name>partitionnames</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetLatestCommittedCompactionInfoRequest_1a6221a34bae641be850055b5d689bc216" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::GetLatestCommittedCompactionInfoRequest</scope><name>printTo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetLatestCommittedCompactionInfoRequest_1a7d6e341d34d266fef0651048459abf53" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetLatestCommittedCompactionInfoRequest</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetLatestCommittedCompactionInfoRequest_1af6b6e5503ef3b36e0a0af38c9c918d8f" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetLatestCommittedCompactionInfoRequest</scope><name>tablename</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetLatestCommittedCompactionInfoRequest_1ab79c8c9bafb036d56cf2d9c4be48a6d6" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetLatestCommittedCompactionInfoRequest</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetLatestCommittedCompactionInfoRequest_1ab106c73ffca1e7789635a78328a7d33a" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::GetLatestCommittedCompactionInfoRequest</scope><name>~GetLatestCommittedCompactionInfoRequest</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

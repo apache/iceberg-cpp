@@ -1,0 +1,55 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structApache_1_1Hadoop_1_1Hive_1_1TxnState" kind="struct" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::TxnState</compoundname>
+    <sectiondef kind="public-type">
+      <memberdef kind="enum" id="structApache_1_1Hadoop_1_1Hive_1_1TxnState_1ad7414a075e98a960b09583db9b272420" prot="public" static="no" strong="no">
+        <type></type>
+        <name>type</name>
+        <qualifiedname>Apache::Hadoop::Hive::TxnState::type</qualifiedname>
+        <enumvalue id="structApache_1_1Hadoop_1_1Hive_1_1TxnState_1ad7414a075e98a960b09583db9b272420a8a8f0c50a4600c27c942b620f8013008" prot="public">
+          <name>COMMITTED</name>
+          <initializer>= 1</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="structApache_1_1Hadoop_1_1Hive_1_1TxnState_1ad7414a075e98a960b09583db9b272420a5c17a53855aa1bf40db0e8dea09225af" prot="public">
+          <name>ABORTED</name>
+          <initializer>= 2</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="structApache_1_1Hadoop_1_1Hive_1_1TxnState_1ad7414a075e98a960b09583db9b272420a133cec70ce471eb85954ddf48b1ef43a" prot="public">
+          <name>OPEN</name>
+          <initializer>= 3</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="69" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="69" bodyend="73"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="68" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="68" bodyend="74"/>
+    <listofallmembers>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1TxnState_1ad7414a075e98a960b09583db9b272420a5c17a53855aa1bf40db0e8dea09225af" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::TxnState</scope><name>ABORTED</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1TxnState_1ad7414a075e98a960b09583db9b272420a8a8f0c50a4600c27c942b620f8013008" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::TxnState</scope><name>COMMITTED</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1TxnState_1ad7414a075e98a960b09583db9b272420a133cec70ce471eb85954ddf48b1ef43a" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::TxnState</scope><name>OPEN</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1TxnState_1ad7414a075e98a960b09583db9b272420" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::TxnState</scope><name>type</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

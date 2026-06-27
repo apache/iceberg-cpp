@@ -1,0 +1,96 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structApache_1_1Hadoop_1_1Hive_1_1__DropTableRequest____isset" kind="struct" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::_DropTableRequest__isset</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__DropTableRequest____isset_1a51fa4b3764c3af7e80043cd31028301c" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_DropTableRequest__isset::catalogName</definition>
+        <argsstring></argsstring>
+        <name>catalogName</name>
+        <qualifiedname>Apache::Hadoop::Hive::_DropTableRequest__isset::catalogName</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10517" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="10517" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__DropTableRequest____isset_1a4b7d434fb0cc131a22ec7b91f9f523b6" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_DropTableRequest__isset::deleteData</definition>
+        <argsstring></argsstring>
+        <name>deleteData</name>
+        <qualifiedname>Apache::Hadoop::Hive::_DropTableRequest__isset::deleteData</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10518" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="10518" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__DropTableRequest____isset_1aa058c4b10b7e1e45bb79601211d5fcb1" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_DropTableRequest__isset::envContext</definition>
+        <argsstring></argsstring>
+        <name>envContext</name>
+        <qualifiedname>Apache::Hadoop::Hive::_DropTableRequest__isset::envContext</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10519" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="10519" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__DropTableRequest____isset_1ac39fbd71b50fd168bfdeb6d380b1bcda" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_DropTableRequest__isset::dropPartitions</definition>
+        <argsstring></argsstring>
+        <name>dropPartitions</name>
+        <qualifiedname>Apache::Hadoop::Hive::_DropTableRequest__isset::dropPartitions</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10520" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="10520" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structApache_1_1Hadoop_1_1Hive_1_1__DropTableRequest____isset_1a7b2d422ed095ba3cc8ff8f702dbe0a8d" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::_DropTableRequest__isset::_DropTableRequest__isset</definition>
+        <argsstring>()</argsstring>
+        <name>_DropTableRequest__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::_DropTableRequest__isset::_DropTableRequest__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10516" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="10516" bodyend="10516"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10515" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="10515" bodyend="10521"/>
+    <listofallmembers>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__DropTableRequest____isset_1a7b2d422ed095ba3cc8ff8f702dbe0a8d" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_DropTableRequest__isset</scope><name>_DropTableRequest__isset</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__DropTableRequest____isset_1a51fa4b3764c3af7e80043cd31028301c" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_DropTableRequest__isset</scope><name>catalogName</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__DropTableRequest____isset_1a4b7d434fb0cc131a22ec7b91f9f523b6" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_DropTableRequest__isset</scope><name>deleteData</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__DropTableRequest____isset_1ac39fbd71b50fd168bfdeb6d380b1bcda" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_DropTableRequest__isset</scope><name>dropPartitions</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__DropTableRequest____isset_1aa058c4b10b7e1e45bb79601211d5fcb1" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_DropTableRequest__isset</scope><name>envContext</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

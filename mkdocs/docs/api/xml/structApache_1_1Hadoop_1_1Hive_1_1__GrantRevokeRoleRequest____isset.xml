@@ -1,0 +1,144 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structApache_1_1Hadoop_1_1Hive_1_1__GrantRevokeRoleRequest____isset" kind="struct" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::_GrantRevokeRoleRequest__isset</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__GrantRevokeRoleRequest____isset_1afb0c47310793148075cdac6fbead3db5" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_GrantRevokeRoleRequest__isset::requestType</definition>
+        <argsstring></argsstring>
+        <name>requestType</name>
+        <qualifiedname>Apache::Hadoop::Hive::_GrantRevokeRoleRequest__isset::requestType</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="2528" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="2528" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__GrantRevokeRoleRequest____isset_1a0c4b1cfff2dc28c994de707f8a0e394a" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_GrantRevokeRoleRequest__isset::roleName</definition>
+        <argsstring></argsstring>
+        <name>roleName</name>
+        <qualifiedname>Apache::Hadoop::Hive::_GrantRevokeRoleRequest__isset::roleName</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="2529" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="2529" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__GrantRevokeRoleRequest____isset_1aa19daf9ccc1f6edbae621d943ce9d16b" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_GrantRevokeRoleRequest__isset::principalName</definition>
+        <argsstring></argsstring>
+        <name>principalName</name>
+        <qualifiedname>Apache::Hadoop::Hive::_GrantRevokeRoleRequest__isset::principalName</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="2530" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="2530" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__GrantRevokeRoleRequest____isset_1abfc3169b3a26557ac9386c06bd575b9a" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_GrantRevokeRoleRequest__isset::principalType</definition>
+        <argsstring></argsstring>
+        <name>principalType</name>
+        <qualifiedname>Apache::Hadoop::Hive::_GrantRevokeRoleRequest__isset::principalType</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="2531" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="2531" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__GrantRevokeRoleRequest____isset_1a77045ccf21e6292a1083cd8d9244c1d7" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_GrantRevokeRoleRequest__isset::grantor</definition>
+        <argsstring></argsstring>
+        <name>grantor</name>
+        <qualifiedname>Apache::Hadoop::Hive::_GrantRevokeRoleRequest__isset::grantor</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="2532" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="2532" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__GrantRevokeRoleRequest____isset_1a2fcf346e6f3c709ad24af71bee5e75ea" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_GrantRevokeRoleRequest__isset::grantorType</definition>
+        <argsstring></argsstring>
+        <name>grantorType</name>
+        <qualifiedname>Apache::Hadoop::Hive::_GrantRevokeRoleRequest__isset::grantorType</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="2533" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="2533" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__GrantRevokeRoleRequest____isset_1a29c69446eb2d8bf9f71dd1aae39a2bad" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_GrantRevokeRoleRequest__isset::grantOption</definition>
+        <argsstring></argsstring>
+        <name>grantOption</name>
+        <qualifiedname>Apache::Hadoop::Hive::_GrantRevokeRoleRequest__isset::grantOption</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="2534" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="2534" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structApache_1_1Hadoop_1_1Hive_1_1__GrantRevokeRoleRequest____isset_1aadb47488fa785cc4cad9e24204238804" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::_GrantRevokeRoleRequest__isset::_GrantRevokeRoleRequest__isset</definition>
+        <argsstring>()</argsstring>
+        <name>_GrantRevokeRoleRequest__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::_GrantRevokeRoleRequest__isset::_GrantRevokeRoleRequest__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="2527" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="2527" bodyend="2527"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="2526" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="2526" bodyend="2535"/>
+    <listofallmembers>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__GrantRevokeRoleRequest____isset_1aadb47488fa785cc4cad9e24204238804" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_GrantRevokeRoleRequest__isset</scope><name>_GrantRevokeRoleRequest__isset</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__GrantRevokeRoleRequest____isset_1a29c69446eb2d8bf9f71dd1aae39a2bad" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_GrantRevokeRoleRequest__isset</scope><name>grantOption</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__GrantRevokeRoleRequest____isset_1a77045ccf21e6292a1083cd8d9244c1d7" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_GrantRevokeRoleRequest__isset</scope><name>grantor</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__GrantRevokeRoleRequest____isset_1a2fcf346e6f3c709ad24af71bee5e75ea" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_GrantRevokeRoleRequest__isset</scope><name>grantorType</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__GrantRevokeRoleRequest____isset_1aa19daf9ccc1f6edbae621d943ce9d16b" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_GrantRevokeRoleRequest__isset</scope><name>principalName</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__GrantRevokeRoleRequest____isset_1abfc3169b3a26557ac9386c06bd575b9a" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_GrantRevokeRoleRequest__isset</scope><name>principalType</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__GrantRevokeRoleRequest____isset_1afb0c47310793148075cdac6fbead3db5" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_GrantRevokeRoleRequest__isset</scope><name>requestType</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__GrantRevokeRoleRequest____isset_1a0c4b1cfff2dc28c994de707f8a0e394a" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_GrantRevokeRoleRequest__isset</scope><name>roleName</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,55 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structApache_1_1Hadoop_1_1Hive_1_1GetTablesExtRequestFields" kind="struct" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::GetTablesExtRequestFields</compoundname>
+    <sectiondef kind="public-type">
+      <memberdef kind="enum" id="structApache_1_1Hadoop_1_1Hive_1_1GetTablesExtRequestFields_1a1106b0992ee2c14111200780825547bf" prot="public" static="no" strong="no">
+        <type></type>
+        <name>type</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetTablesExtRequestFields::type</qualifiedname>
+        <enumvalue id="structApache_1_1Hadoop_1_1Hive_1_1GetTablesExtRequestFields_1a1106b0992ee2c14111200780825547bfa0a25b09c8ec1f1ced486bcc07ead1c54" prot="public">
+          <name>ACCESS_TYPE</name>
+          <initializer>= 1</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="structApache_1_1Hadoop_1_1Hive_1_1GetTablesExtRequestFields_1a1106b0992ee2c14111200780825547bfa65ca0c5213bc52871d79b942ce5eb37a" prot="public">
+          <name>PROCESSOR_CAPABILITIES</name>
+          <initializer>= 2</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="structApache_1_1Hadoop_1_1Hive_1_1GetTablesExtRequestFields_1a1106b0992ee2c14111200780825547bfa9e79e788b04339d56500427826d316a7" prot="public">
+          <name>ALL</name>
+          <initializer>= 2147483647</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="316" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="316" bodyend="320"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="315" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="315" bodyend="321"/>
+    <listofallmembers>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1GetTablesExtRequestFields_1a1106b0992ee2c14111200780825547bfa0a25b09c8ec1f1ced486bcc07ead1c54" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetTablesExtRequestFields</scope><name>ACCESS_TYPE</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1GetTablesExtRequestFields_1a1106b0992ee2c14111200780825547bfa9e79e788b04339d56500427826d316a7" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetTablesExtRequestFields</scope><name>ALL</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1GetTablesExtRequestFields_1a1106b0992ee2c14111200780825547bfa65ca0c5213bc52871d79b942ce5eb37a" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetTablesExtRequestFields</scope><name>PROCESSOR_CAPABILITIES</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1GetTablesExtRequestFields_1a1106b0992ee2c14111200780825547bf" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetTablesExtRequestFields</scope><name>type</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,64 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structApache_1_1Hadoop_1_1Hive_1_1__MetadataPpdResult____isset" kind="struct" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::_MetadataPpdResult__isset</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__MetadataPpdResult____isset_1a08e8eaaad214c6f131bc170ce25d44f5" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_MetadataPpdResult__isset::metadata</definition>
+        <argsstring></argsstring>
+        <name>metadata</name>
+        <qualifiedname>Apache::Hadoop::Hive::_MetadataPpdResult__isset::metadata</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9710" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="9710" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__MetadataPpdResult____isset_1ade01dfd94001412938fbc89e5bee1f34" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_MetadataPpdResult__isset::includeBitset</definition>
+        <argsstring></argsstring>
+        <name>includeBitset</name>
+        <qualifiedname>Apache::Hadoop::Hive::_MetadataPpdResult__isset::includeBitset</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9711" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="9711" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structApache_1_1Hadoop_1_1Hive_1_1__MetadataPpdResult____isset_1a195a92dc6a8968c11864670c1f76cbf9" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::_MetadataPpdResult__isset::_MetadataPpdResult__isset</definition>
+        <argsstring>()</argsstring>
+        <name>_MetadataPpdResult__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::_MetadataPpdResult__isset::_MetadataPpdResult__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9709" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="9709" bodyend="9709"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9708" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="9708" bodyend="9712"/>
+    <listofallmembers>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__MetadataPpdResult____isset_1a195a92dc6a8968c11864670c1f76cbf9" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_MetadataPpdResult__isset</scope><name>_MetadataPpdResult__isset</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__MetadataPpdResult____isset_1ade01dfd94001412938fbc89e5bee1f34" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_MetadataPpdResult__isset</scope><name>includeBitset</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__MetadataPpdResult____isset_1a08e8eaaad214c6f131bc170ce25d44f5" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_MetadataPpdResult__isset</scope><name>metadata</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

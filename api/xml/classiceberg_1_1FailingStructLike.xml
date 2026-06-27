@@ -1,0 +1,125 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1FailingStructLike" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::FailingStructLike</compoundname>
+    <basecompoundref refid="classiceberg_1_1StructLike" prot="public" virt="non-virtual">iceberg::StructLike</basecompoundref>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1FailingStructLike_1acb0051f5c6016158c23b4cddd752833b" prot="private" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t iceberg::FailingStructLike::num_fields_</definition>
+        <argsstring></argsstring>
+        <name>num_fields_</name>
+        <qualifiedname>iceberg::FailingStructLike::num_fields_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/struct_like_set_test.cc" line="108" column="10" bodyfile="iceberg/test/struct_like_set_test.cc" bodystart="108" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1FailingStructLike_1a6cd92b201d8848daaa49f6c3b5afebb8" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::FailingStructLike::FailingStructLike</definition>
+        <argsstring>(size_t num_fields)</argsstring>
+        <name>FailingStructLike</name>
+        <qualifiedname>iceberg::FailingStructLike::FailingStructLike</qualifiedname>
+        <param>
+          <type>size_t</type>
+          <declname>num_fields</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/struct_like_set_test.cc" line="99" column="12" bodyfile="iceberg/test/struct_like_set_test.cc" bodystart="99" bodyend="99"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1FailingStructLike_1af528cce038e606ec28548061d1a766bf" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
+        <type>Result&lt; <ref refid="struct__like_8h_1a3b5162f202989971e28bc310237964db" kindref="member">Scalar</ref> &gt;</type>
+        <definition>Result&lt; Scalar &gt; iceberg::FailingStructLike::GetField</definition>
+        <argsstring>(size_t pos) const override</argsstring>
+        <name>GetField</name>
+        <qualifiedname>iceberg::FailingStructLike::GetField</qualifiedname>
+        <reimplements refid="classiceberg_1_1StructLike_1a1bed712ac299583f54ad2fcd91087e11">GetField</reimplements>
+        <param>
+          <type>size_t</type>
+          <declname>pos</declname>
+        </param>
+        <briefdescription>
+<para>Get the field value at the given position. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>pos</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The position of the field in the struct. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/struct_like_set_test.cc" line="101" column="10" bodyfile="iceberg/test/struct_like_set_test.cc" bodystart="101" bodyend="103"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1FailingStructLike_1a66e2d5c2d8c5938feb66bd16090cddd5" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
+        <type>size_t</type>
+        <definition>size_t iceberg::FailingStructLike::num_fields</definition>
+        <argsstring>() const override</argsstring>
+        <name>num_fields</name>
+        <qualifiedname>iceberg::FailingStructLike::num_fields</qualifiedname>
+        <reimplements refid="classiceberg_1_1StructLike_1a3c9041a832eb91386eaf51753d745914">num_fields</reimplements>
+        <briefdescription>
+<para>Get the number of fields in the struct. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/struct_like_set_test.cc" line="105" column="10" bodyfile="iceberg/test/struct_like_set_test.cc" bodystart="105" bodyend="105"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>iceberg::FailingStructLike</label>
+        <link refid="classiceberg_1_1FailingStructLike"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::StructLike</label>
+        <link refid="classiceberg_1_1StructLike"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::FailingStructLike</label>
+        <link refid="classiceberg_1_1FailingStructLike"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::StructLike</label>
+        <link refid="classiceberg_1_1StructLike"/>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/test/struct_like_set_test.cc" line="97" column="1" bodyfile="iceberg/test/struct_like_set_test.cc" bodystart="97" bodyend="109"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1FailingStructLike_1a6cd92b201d8848daaa49f6c3b5afebb8" prot="public" virt="non-virtual"><scope>iceberg::FailingStructLike</scope><name>FailingStructLike</name></member>
+      <member refid="classiceberg_1_1FailingStructLike_1af528cce038e606ec28548061d1a766bf" prot="public" virt="virtual"><scope>iceberg::FailingStructLike</scope><name>GetField</name></member>
+      <member refid="classiceberg_1_1FailingStructLike_1a66e2d5c2d8c5938feb66bd16090cddd5" prot="public" virt="virtual"><scope>iceberg::FailingStructLike</scope><name>num_fields</name></member>
+      <member refid="classiceberg_1_1FailingStructLike_1acb0051f5c6016158c23b4cddd752833b" prot="private" virt="non-virtual"><scope>iceberg::FailingStructLike</scope><name>num_fields_</name></member>
+      <member refid="classiceberg_1_1StructLike_1a5f697a43dd30857364ee3a96f2064e4b" prot="public" virt="virtual"><scope>iceberg::FailingStructLike</scope><name>~StructLike</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

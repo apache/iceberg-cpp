@@ -1,0 +1,357 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1AbortCompactionResponseElement" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::AbortCompactionResponseElement</compoundname>
+    <basecompoundref prot="public" virt="virtual">apache::thrift::TBase</basecompoundref>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1AbortCompactionResponseElement_1af2a19eb0ca588c9a9100a76d69a49574" prot="public" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t Apache::Hadoop::Hive::AbortCompactionResponseElement::compactionId</definition>
+        <argsstring></argsstring>
+        <name>compactionId</name>
+        <qualifiedname>Apache::Hadoop::Hive::AbortCompactionResponseElement::compactionId</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8827" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="8827" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1AbortCompactionResponseElement_1a29d43fd0afea9dfc957c22bf77e7d265" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::AbortCompactionResponseElement::status</definition>
+        <argsstring></argsstring>
+        <name>status</name>
+        <qualifiedname>Apache::Hadoop::Hive::AbortCompactionResponseElement::status</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8828" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="8828" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1AbortCompactionResponseElement_1a1d35c02e2f0bffe23e77b87e497dab2b" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::AbortCompactionResponseElement::message</definition>
+        <argsstring></argsstring>
+        <name>message</name>
+        <qualifiedname>Apache::Hadoop::Hive::AbortCompactionResponseElement::message</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8829" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="8829" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1AbortCompactionResponseElement_1afee1aee0f72918445a50dd452211a639" prot="public" static="no" mutable="no">
+        <type><ref refid="structApache_1_1Hadoop_1_1Hive_1_1__AbortCompactionResponseElement____isset" kindref="compound">_AbortCompactionResponseElement__isset</ref></type>
+        <definition>_AbortCompactionResponseElement__isset Apache::Hadoop::Hive::AbortCompactionResponseElement::__isset</definition>
+        <argsstring></argsstring>
+        <name>__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::AbortCompactionResponseElement::__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8831" column="42" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="8831" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AbortCompactionResponseElement_1aca0035c0105577d680be1a2b3c8e2f64" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::AbortCompactionResponseElement::AbortCompactionResponseElement</definition>
+        <argsstring>(const AbortCompactionResponseElement &amp;)</argsstring>
+        <name>AbortCompactionResponseElement</name>
+        <qualifiedname>Apache::Hadoop::Hive::AbortCompactionResponseElement::AbortCompactionResponseElement</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1AbortCompactionResponseElement" kindref="compound">AbortCompactionResponseElement</ref> &amp;</type>
+          <defname>other1073</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8822" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="34431" bodyend="34436"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AbortCompactionResponseElement_1a5eb11f4de43393b6f21738d77e3306e1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1AbortCompactionResponseElement" kindref="compound">AbortCompactionResponseElement</ref> &amp;</type>
+        <definition>AbortCompactionResponseElement &amp; Apache::Hadoop::Hive::AbortCompactionResponseElement::operator=</definition>
+        <argsstring>(const AbortCompactionResponseElement &amp;)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::AbortCompactionResponseElement::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1AbortCompactionResponseElement" kindref="compound">AbortCompactionResponseElement</ref> &amp;</type>
+          <defname>other1074</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8823" column="34" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="34437" bodyend="34443"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AbortCompactionResponseElement_1a21b0b4d58bbfdd58d17cc97ab21b8a42" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::AbortCompactionResponseElement::AbortCompactionResponseElement</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>AbortCompactionResponseElement</name>
+        <qualifiedname>Apache::Hadoop::Hive::AbortCompactionResponseElement::AbortCompactionResponseElement</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8824" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="34298" bodyend="34302"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AbortCompactionResponseElement_1aa11773fc339b7523ebef4caf1e7d2c9d" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::AbortCompactionResponseElement::~AbortCompactionResponseElement</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~AbortCompactionResponseElement</name>
+        <qualifiedname>Apache::Hadoop::Hive::AbortCompactionResponseElement::~AbortCompactionResponseElement</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8826" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="34295" bodyend="34296"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AbortCompactionResponseElement_1acc9682d49ffb57ee4b09d24adf4aadc3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::AbortCompactionResponseElement::__set_compactionId</definition>
+        <argsstring>(const int64_t val)</argsstring>
+        <name>__set_compactionId</name>
+        <qualifiedname>Apache::Hadoop::Hive::AbortCompactionResponseElement::__set_compactionId</qualifiedname>
+        <param>
+          <type>const int64_t</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8833" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="34304" bodyend="34306"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AbortCompactionResponseElement_1a8253e1f34a0e0238ff8e8576f36edc19" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::AbortCompactionResponseElement::__set_status</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_status</name>
+        <qualifiedname>Apache::Hadoop::Hive::AbortCompactionResponseElement::__set_status</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8835" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="34308" bodyend="34311"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AbortCompactionResponseElement_1a0296d304ac64c499688d7d74c99c4f6f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::AbortCompactionResponseElement::__set_message</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_message</name>
+        <qualifiedname>Apache::Hadoop::Hive::AbortCompactionResponseElement::__set_message</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8837" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="34313" bodyend="34316"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AbortCompactionResponseElement_1af131d87cf10a976d6d85d70a4e9010ac" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::AbortCompactionResponseElement::operator==</definition>
+        <argsstring>(const AbortCompactionResponseElement &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::AbortCompactionResponseElement::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1AbortCompactionResponseElement" kindref="compound">AbortCompactionResponseElement</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8839" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="34416" bodyend="34429"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AbortCompactionResponseElement_1a7d19c1247ab072beb8aafd9c612aa67a" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::AbortCompactionResponseElement::operator!=</definition>
+        <argsstring>(const AbortCompactionResponseElement &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::AbortCompactionResponseElement::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1AbortCompactionResponseElement" kindref="compound">AbortCompactionResponseElement</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8840" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="8840" bodyend="8842"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AbortCompactionResponseElement_1a06988b7281d5139d7f85cae995d7e6c8" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::AbortCompactionResponseElement::operator&lt;</definition>
+        <argsstring>(const AbortCompactionResponseElement &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::AbortCompactionResponseElement::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1AbortCompactionResponseElement" kindref="compound">AbortCompactionResponseElement</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8844" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AbortCompactionResponseElement_1a3b2ca7c02515c9843139f15e3008d672" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::AbortCompactionResponseElement::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot) override</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::AbortCompactionResponseElement::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8846" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="34324" bodyend="34382"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AbortCompactionResponseElement_1a8aa42e7863f32e3b6483dc064bb04e96" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::AbortCompactionResponseElement::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const override</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::AbortCompactionResponseElement::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8847" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="34384" bodyend="34406"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AbortCompactionResponseElement_1a1ae25625f7a093bf947580ef46667f2c" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::AbortCompactionResponseElement::printTo</definition>
+        <argsstring>(std::ostream &amp;out) const</argsstring>
+        <name>printTo</name>
+        <qualifiedname>Apache::Hadoop::Hive::AbortCompactionResponseElement::printTo</qualifiedname>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8849" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="34444" bodyend="34451"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::AbortCompactionResponseElement</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1AbortCompactionResponseElement"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::AbortCompactionResponseElement</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1AbortCompactionResponseElement"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>message</edgelabel>
+          <edgelabel>status</edgelabel>
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="5">
+        <label>Apache::Hadoop::Hive::_AbortCompactionResponseElement__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__AbortCompactionResponseElement____isset"/>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+      <node id="4">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="3">
+        <label>std::string</label>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8819" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="8819" bodyend="8850"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AbortCompactionResponseElement_1afee1aee0f72918445a50dd452211a639" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AbortCompactionResponseElement</scope><name>__isset</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AbortCompactionResponseElement_1acc9682d49ffb57ee4b09d24adf4aadc3" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AbortCompactionResponseElement</scope><name>__set_compactionId</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AbortCompactionResponseElement_1a0296d304ac64c499688d7d74c99c4f6f" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AbortCompactionResponseElement</scope><name>__set_message</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AbortCompactionResponseElement_1a8253e1f34a0e0238ff8e8576f36edc19" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AbortCompactionResponseElement</scope><name>__set_status</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AbortCompactionResponseElement_1aca0035c0105577d680be1a2b3c8e2f64" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AbortCompactionResponseElement</scope><name>AbortCompactionResponseElement</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AbortCompactionResponseElement_1a21b0b4d58bbfdd58d17cc97ab21b8a42" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AbortCompactionResponseElement</scope><name>AbortCompactionResponseElement</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AbortCompactionResponseElement_1af2a19eb0ca588c9a9100a76d69a49574" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AbortCompactionResponseElement</scope><name>compactionId</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AbortCompactionResponseElement_1a1d35c02e2f0bffe23e77b87e497dab2b" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AbortCompactionResponseElement</scope><name>message</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AbortCompactionResponseElement_1a7d19c1247ab072beb8aafd9c612aa67a" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AbortCompactionResponseElement</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AbortCompactionResponseElement_1a06988b7281d5139d7f85cae995d7e6c8" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AbortCompactionResponseElement</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AbortCompactionResponseElement_1a5eb11f4de43393b6f21738d77e3306e1" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AbortCompactionResponseElement</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AbortCompactionResponseElement_1af131d87cf10a976d6d85d70a4e9010ac" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AbortCompactionResponseElement</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AbortCompactionResponseElement_1a1ae25625f7a093bf947580ef46667f2c" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::AbortCompactionResponseElement</scope><name>printTo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AbortCompactionResponseElement_1a3b2ca7c02515c9843139f15e3008d672" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AbortCompactionResponseElement</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AbortCompactionResponseElement_1a29d43fd0afea9dfc957c22bf77e7d265" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AbortCompactionResponseElement</scope><name>status</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AbortCompactionResponseElement_1a8aa42e7863f32e3b6483dc064bb04e96" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AbortCompactionResponseElement</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AbortCompactionResponseElement_1aa11773fc339b7523ebef4caf1e7d2c9d" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::AbortCompactionResponseElement</scope><name>~AbortCompactionResponseElement</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

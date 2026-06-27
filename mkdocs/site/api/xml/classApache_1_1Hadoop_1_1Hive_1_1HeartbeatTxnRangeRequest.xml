@@ -1,0 +1,289 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1HeartbeatTxnRangeRequest" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::HeartbeatTxnRangeRequest</compoundname>
+    <basecompoundref prot="public" virt="virtual">apache::thrift::TBase</basecompoundref>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1HeartbeatTxnRangeRequest_1a8b0bc033d1eac1727df51ea73a540762" prot="public" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t Apache::Hadoop::Hive::HeartbeatTxnRangeRequest::min</definition>
+        <argsstring></argsstring>
+        <name>min</name>
+        <qualifiedname>Apache::Hadoop::Hive::HeartbeatTxnRangeRequest::min</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8074" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="8074" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1HeartbeatTxnRangeRequest_1a6cd1295888ae50aa265a370e6356d052" prot="public" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t Apache::Hadoop::Hive::HeartbeatTxnRangeRequest::max</definition>
+        <argsstring></argsstring>
+        <name>max</name>
+        <qualifiedname>Apache::Hadoop::Hive::HeartbeatTxnRangeRequest::max</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8075" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="8075" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1HeartbeatTxnRangeRequest_1a337b91776f4dba069ad8c5e4d7e3eac9" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::HeartbeatTxnRangeRequest::HeartbeatTxnRangeRequest</definition>
+        <argsstring>(const HeartbeatTxnRangeRequest &amp;) noexcept</argsstring>
+        <name>HeartbeatTxnRangeRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::HeartbeatTxnRangeRequest::HeartbeatTxnRangeRequest</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1HeartbeatTxnRangeRequest" kindref="compound">HeartbeatTxnRangeRequest</ref> &amp;</type>
+          <defname>other1007</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8069" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="30930" bodyend="30933"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1HeartbeatTxnRangeRequest_1a85c53331edadd6aad60cbfbb5142cb8d" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1HeartbeatTxnRangeRequest" kindref="compound">HeartbeatTxnRangeRequest</ref> &amp;</type>
+        <definition>HeartbeatTxnRangeRequest &amp; Apache::Hadoop::Hive::HeartbeatTxnRangeRequest::operator=</definition>
+        <argsstring>(const HeartbeatTxnRangeRequest &amp;) noexcept</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::HeartbeatTxnRangeRequest::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1HeartbeatTxnRangeRequest" kindref="compound">HeartbeatTxnRangeRequest</ref> &amp;</type>
+          <defname>other1008</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8070" column="28" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="30934" bodyend="30938"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1HeartbeatTxnRangeRequest_1a411c57a9e82fc06b6e641a821dc0dfa8" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::HeartbeatTxnRangeRequest::HeartbeatTxnRangeRequest</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>HeartbeatTxnRangeRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::HeartbeatTxnRangeRequest::HeartbeatTxnRangeRequest</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8071" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="30823" bodyend="30826"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1HeartbeatTxnRangeRequest_1a40c1065e553fa3001f9c4077edc78fec" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::HeartbeatTxnRangeRequest::~HeartbeatTxnRangeRequest</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~HeartbeatTxnRangeRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::HeartbeatTxnRangeRequest::~HeartbeatTxnRangeRequest</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8073" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="30820" bodyend="30821"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1HeartbeatTxnRangeRequest_1a7267be96e94fb10cbbaf2363f6557249" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::HeartbeatTxnRangeRequest::__set_min</definition>
+        <argsstring>(const int64_t val)</argsstring>
+        <name>__set_min</name>
+        <qualifiedname>Apache::Hadoop::Hive::HeartbeatTxnRangeRequest::__set_min</qualifiedname>
+        <param>
+          <type>const int64_t</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8077" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="30828" bodyend="30830"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1HeartbeatTxnRangeRequest_1ad767e98934b6beda2f10bf4d57da9fe3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::HeartbeatTxnRangeRequest::__set_max</definition>
+        <argsstring>(const int64_t val)</argsstring>
+        <name>__set_max</name>
+        <qualifiedname>Apache::Hadoop::Hive::HeartbeatTxnRangeRequest::__set_max</qualifiedname>
+        <param>
+          <type>const int64_t</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8079" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="30832" bodyend="30834"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1HeartbeatTxnRangeRequest_1af42792c8cae118a67601253e340fb2a1" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::HeartbeatTxnRangeRequest::operator==</definition>
+        <argsstring>(const HeartbeatTxnRangeRequest &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::HeartbeatTxnRangeRequest::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1HeartbeatTxnRangeRequest" kindref="compound">HeartbeatTxnRangeRequest</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8081" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="30921" bodyend="30928"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1HeartbeatTxnRangeRequest_1ac9b0b14038cbea56cc0b91f6b133cdcd" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::HeartbeatTxnRangeRequest::operator!=</definition>
+        <argsstring>(const HeartbeatTxnRangeRequest &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::HeartbeatTxnRangeRequest::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1HeartbeatTxnRangeRequest" kindref="compound">HeartbeatTxnRangeRequest</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8082" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="8082" bodyend="8084"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1HeartbeatTxnRangeRequest_1a9a225d907ef791fc0213a8ff4dbad62d" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::HeartbeatTxnRangeRequest::operator&lt;</definition>
+        <argsstring>(const HeartbeatTxnRangeRequest &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::HeartbeatTxnRangeRequest::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1HeartbeatTxnRangeRequest" kindref="compound">HeartbeatTxnRangeRequest</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8086" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1HeartbeatTxnRangeRequest_1a3704c277b8c4730f460c0961a50d1ec5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::HeartbeatTxnRangeRequest::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot) override</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::HeartbeatTxnRangeRequest::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8088" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="30842" bodyend="30895"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1HeartbeatTxnRangeRequest_1a6656d20aa33d5f8fe3c86633546e079b" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::HeartbeatTxnRangeRequest::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const override</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::HeartbeatTxnRangeRequest::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8089" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="30897" bodyend="30913"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1HeartbeatTxnRangeRequest_1a922789d4d6eccc99126cef7ec3795d4d" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::HeartbeatTxnRangeRequest::printTo</definition>
+        <argsstring>(std::ostream &amp;out) const</argsstring>
+        <name>printTo</name>
+        <qualifiedname>Apache::Hadoop::Hive::HeartbeatTxnRangeRequest::printTo</qualifiedname>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8091" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="30939" bodyend="30945"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::HeartbeatTxnRangeRequest</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1HeartbeatTxnRangeRequest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::HeartbeatTxnRangeRequest</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1HeartbeatTxnRangeRequest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8066" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="8066" bodyend="8092"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1HeartbeatTxnRangeRequest_1ad767e98934b6beda2f10bf4d57da9fe3" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::HeartbeatTxnRangeRequest</scope><name>__set_max</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1HeartbeatTxnRangeRequest_1a7267be96e94fb10cbbaf2363f6557249" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::HeartbeatTxnRangeRequest</scope><name>__set_min</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1HeartbeatTxnRangeRequest_1a337b91776f4dba069ad8c5e4d7e3eac9" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::HeartbeatTxnRangeRequest</scope><name>HeartbeatTxnRangeRequest</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1HeartbeatTxnRangeRequest_1a411c57a9e82fc06b6e641a821dc0dfa8" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::HeartbeatTxnRangeRequest</scope><name>HeartbeatTxnRangeRequest</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1HeartbeatTxnRangeRequest_1a6cd1295888ae50aa265a370e6356d052" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::HeartbeatTxnRangeRequest</scope><name>max</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1HeartbeatTxnRangeRequest_1a8b0bc033d1eac1727df51ea73a540762" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::HeartbeatTxnRangeRequest</scope><name>min</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1HeartbeatTxnRangeRequest_1ac9b0b14038cbea56cc0b91f6b133cdcd" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::HeartbeatTxnRangeRequest</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1HeartbeatTxnRangeRequest_1a9a225d907ef791fc0213a8ff4dbad62d" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::HeartbeatTxnRangeRequest</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1HeartbeatTxnRangeRequest_1a85c53331edadd6aad60cbfbb5142cb8d" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::HeartbeatTxnRangeRequest</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1HeartbeatTxnRangeRequest_1af42792c8cae118a67601253e340fb2a1" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::HeartbeatTxnRangeRequest</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1HeartbeatTxnRangeRequest_1a922789d4d6eccc99126cef7ec3795d4d" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::HeartbeatTxnRangeRequest</scope><name>printTo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1HeartbeatTxnRangeRequest_1a3704c277b8c4730f460c0961a50d1ec5" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::HeartbeatTxnRangeRequest</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1HeartbeatTxnRangeRequest_1a6656d20aa33d5f8fe3c86633546e079b" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::HeartbeatTxnRangeRequest</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1HeartbeatTxnRangeRequest_1a40c1065e553fa3001f9c4077edc78fec" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::HeartbeatTxnRangeRequest</scope><name>~HeartbeatTxnRangeRequest</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

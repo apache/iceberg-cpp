@@ -1,0 +1,323 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1MetadataPpdResult" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::MetadataPpdResult</compoundname>
+    <basecompoundref prot="public" virt="virtual">apache::thrift::TBase</basecompoundref>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1MetadataPpdResult_1a127f2dba8f22c4decb950b5b604358a1" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::MetadataPpdResult::metadata</definition>
+        <argsstring></argsstring>
+        <name>metadata</name>
+        <qualifiedname>Apache::Hadoop::Hive::MetadataPpdResult::metadata</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9722" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="9722" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1MetadataPpdResult_1ad5d58c5ac1ecc3732e71bffcc121d57f" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::MetadataPpdResult::includeBitset</definition>
+        <argsstring></argsstring>
+        <name>includeBitset</name>
+        <qualifiedname>Apache::Hadoop::Hive::MetadataPpdResult::includeBitset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9723" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="9723" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1MetadataPpdResult_1a4de2b90fa683a26e4e99d0f3272fb669" prot="public" static="no" mutable="no">
+        <type><ref refid="structApache_1_1Hadoop_1_1Hive_1_1__MetadataPpdResult____isset" kindref="compound">_MetadataPpdResult__isset</ref></type>
+        <definition>_MetadataPpdResult__isset Apache::Hadoop::Hive::MetadataPpdResult::__isset</definition>
+        <argsstring></argsstring>
+        <name>__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::MetadataPpdResult::__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9725" column="29" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="9725" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1MetadataPpdResult_1a017506b101923fdc02ad8d1a018fb002" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::MetadataPpdResult::MetadataPpdResult</definition>
+        <argsstring>(const MetadataPpdResult &amp;)</argsstring>
+        <name>MetadataPpdResult</name>
+        <qualifiedname>Apache::Hadoop::Hive::MetadataPpdResult::MetadataPpdResult</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1MetadataPpdResult" kindref="compound">MetadataPpdResult</ref> &amp;</type>
+          <defname>other1228</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9717" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="38324" bodyend="38328"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1MetadataPpdResult_1aac96022a901880865e1eb7301e0f1e30" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1MetadataPpdResult" kindref="compound">MetadataPpdResult</ref> &amp;</type>
+        <definition>MetadataPpdResult &amp; Apache::Hadoop::Hive::MetadataPpdResult::operator=</definition>
+        <argsstring>(const MetadataPpdResult &amp;)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::MetadataPpdResult::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1MetadataPpdResult" kindref="compound">MetadataPpdResult</ref> &amp;</type>
+          <defname>other1229</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9718" column="21" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="38329" bodyend="38334"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1MetadataPpdResult_1ad26299d01e893427fcc8ccbcd0f01f26" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::MetadataPpdResult::MetadataPpdResult</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>MetadataPpdResult</name>
+        <qualifiedname>Apache::Hadoop::Hive::MetadataPpdResult::MetadataPpdResult</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9719" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="38214" bodyend="38217"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1MetadataPpdResult_1aaaa47eb0f038a01d6e1d9aa86b7f2582" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::MetadataPpdResult::~MetadataPpdResult</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~MetadataPpdResult</name>
+        <qualifiedname>Apache::Hadoop::Hive::MetadataPpdResult::~MetadataPpdResult</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9721" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="38211" bodyend="38212"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1MetadataPpdResult_1a47c985d917a2e894d47b7c7800524366" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::MetadataPpdResult::__set_metadata</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_metadata</name>
+        <qualifiedname>Apache::Hadoop::Hive::MetadataPpdResult::__set_metadata</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9727" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="38219" bodyend="38222"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1MetadataPpdResult_1a7dc43514f75a1c02133b61caf31d3a7c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::MetadataPpdResult::__set_includeBitset</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_includeBitset</name>
+        <qualifiedname>Apache::Hadoop::Hive::MetadataPpdResult::__set_includeBitset</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9729" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="38224" bodyend="38227"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1MetadataPpdResult_1a36370b8a866d9b308027f2ceee21c4b1" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::MetadataPpdResult::operator==</definition>
+        <argsstring>(const MetadataPpdResult &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::MetadataPpdResult::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1MetadataPpdResult" kindref="compound">MetadataPpdResult</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9731" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="38311" bodyend="38322"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1MetadataPpdResult_1a721f87ecb03c4a03aeebfff1f6bd35f8" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::MetadataPpdResult::operator!=</definition>
+        <argsstring>(const MetadataPpdResult &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::MetadataPpdResult::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1MetadataPpdResult" kindref="compound">MetadataPpdResult</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9732" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="9732" bodyend="9734"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1MetadataPpdResult_1a213bceec7d6bda9825e2b4b37b2dac47" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::MetadataPpdResult::operator&lt;</definition>
+        <argsstring>(const MetadataPpdResult &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::MetadataPpdResult::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1MetadataPpdResult" kindref="compound">MetadataPpdResult</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9736" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1MetadataPpdResult_1ad23f357d00184e5308218cda5e15a48e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::MetadataPpdResult::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot) override</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::MetadataPpdResult::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9738" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="38235" bodyend="38282"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1MetadataPpdResult_1a752a3a403e8bc6d618e71ae22d4eab6d" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::MetadataPpdResult::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const override</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::MetadataPpdResult::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9739" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="38284" bodyend="38302"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1MetadataPpdResult_1a4d5d7f3b22ede3065b73812fd7105b2b" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::MetadataPpdResult::printTo</definition>
+        <argsstring>(std::ostream &amp;out) const</argsstring>
+        <name>printTo</name>
+        <qualifiedname>Apache::Hadoop::Hive::MetadataPpdResult::printTo</qualifiedname>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9741" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="38335" bodyend="38341"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::MetadataPpdResult</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1MetadataPpdResult"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::MetadataPpdResult</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1MetadataPpdResult"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>includeBitset</edgelabel>
+          <edgelabel>metadata</edgelabel>
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="5">
+        <label>Apache::Hadoop::Hive::_MetadataPpdResult__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__MetadataPpdResult____isset"/>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+      <node id="4">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="3">
+        <label>std::string</label>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9714" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="9714" bodyend="9742"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1MetadataPpdResult_1a4de2b90fa683a26e4e99d0f3272fb669" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::MetadataPpdResult</scope><name>__isset</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1MetadataPpdResult_1a7dc43514f75a1c02133b61caf31d3a7c" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::MetadataPpdResult</scope><name>__set_includeBitset</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1MetadataPpdResult_1a47c985d917a2e894d47b7c7800524366" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::MetadataPpdResult</scope><name>__set_metadata</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1MetadataPpdResult_1ad5d58c5ac1ecc3732e71bffcc121d57f" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::MetadataPpdResult</scope><name>includeBitset</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1MetadataPpdResult_1a127f2dba8f22c4decb950b5b604358a1" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::MetadataPpdResult</scope><name>metadata</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1MetadataPpdResult_1a017506b101923fdc02ad8d1a018fb002" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::MetadataPpdResult</scope><name>MetadataPpdResult</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1MetadataPpdResult_1ad26299d01e893427fcc8ccbcd0f01f26" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::MetadataPpdResult</scope><name>MetadataPpdResult</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1MetadataPpdResult_1a721f87ecb03c4a03aeebfff1f6bd35f8" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::MetadataPpdResult</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1MetadataPpdResult_1a213bceec7d6bda9825e2b4b37b2dac47" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::MetadataPpdResult</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1MetadataPpdResult_1aac96022a901880865e1eb7301e0f1e30" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::MetadataPpdResult</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1MetadataPpdResult_1a36370b8a866d9b308027f2ceee21c4b1" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::MetadataPpdResult</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1MetadataPpdResult_1a4d5d7f3b22ede3065b73812fd7105b2b" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::MetadataPpdResult</scope><name>printTo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1MetadataPpdResult_1ad23f357d00184e5308218cda5e15a48e" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::MetadataPpdResult</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1MetadataPpdResult_1a752a3a403e8bc6d618e71ae22d4eab6d" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::MetadataPpdResult</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1MetadataPpdResult_1aaaa47eb0f038a01d6e1d9aa86b7f2582" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::MetadataPpdResult</scope><name>~MetadataPpdResult</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,363 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1AlterISchemaRequest" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::AlterISchemaRequest</compoundname>
+    <basecompoundref prot="public" virt="virtual">apache::thrift::TBase</basecompoundref>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1AlterISchemaRequest_1adc7a8c9581bb47d553a4d18c57145206" prot="public" static="no" mutable="no">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1ISchemaName" kindref="compound">ISchemaName</ref></type>
+        <definition>ISchemaName Apache::Hadoop::Hive::AlterISchemaRequest::name</definition>
+        <argsstring></argsstring>
+        <name>name</name>
+        <qualifiedname>Apache::Hadoop::Hive::AlterISchemaRequest::name</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12641" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="12641" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1AlterISchemaRequest_1ae99874bbe0001b847261a11cd191ee95" prot="public" static="no" mutable="no">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1ISchema" kindref="compound">ISchema</ref></type>
+        <definition>ISchema Apache::Hadoop::Hive::AlterISchemaRequest::newSchema</definition>
+        <argsstring></argsstring>
+        <name>newSchema</name>
+        <qualifiedname>Apache::Hadoop::Hive::AlterISchemaRequest::newSchema</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12642" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="12642" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1AlterISchemaRequest_1a47990ce3f813907e3a796437dd9c343a" prot="public" static="no" mutable="no">
+        <type><ref refid="structApache_1_1Hadoop_1_1Hive_1_1__AlterISchemaRequest____isset" kindref="compound">_AlterISchemaRequest__isset</ref></type>
+        <definition>_AlterISchemaRequest__isset Apache::Hadoop::Hive::AlterISchemaRequest::__isset</definition>
+        <argsstring></argsstring>
+        <name>__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::AlterISchemaRequest::__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12644" column="31" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="12644" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AlterISchemaRequest_1a06c88be501cb850eb340539369dd30e3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::AlterISchemaRequest::AlterISchemaRequest</definition>
+        <argsstring>(const AlterISchemaRequest &amp;)</argsstring>
+        <name>AlterISchemaRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::AlterISchemaRequest::AlterISchemaRequest</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1AlterISchemaRequest" kindref="compound">AlterISchemaRequest</ref> &amp;</type>
+          <defname>other1541</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12636" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="49415" bodyend="49419"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AlterISchemaRequest_1a4eeb7576e0a33cf9519400bb632948dc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1AlterISchemaRequest" kindref="compound">AlterISchemaRequest</ref> &amp;</type>
+        <definition>AlterISchemaRequest &amp; Apache::Hadoop::Hive::AlterISchemaRequest::operator=</definition>
+        <argsstring>(const AlterISchemaRequest &amp;)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::AlterISchemaRequest::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1AlterISchemaRequest" kindref="compound">AlterISchemaRequest</ref> &amp;</type>
+          <defname>other1542</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12637" column="23" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="49420" bodyend="49425"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AlterISchemaRequest_1acd89f51a63c419e6b4c437817cee6eda" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::AlterISchemaRequest::AlterISchemaRequest</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>AlterISchemaRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::AlterISchemaRequest::AlterISchemaRequest</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12638" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="49315" bodyend="49316"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AlterISchemaRequest_1a94a29dfc70d5a6ce95cb6418286dc307" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::AlterISchemaRequest::~AlterISchemaRequest</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~AlterISchemaRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::AlterISchemaRequest::~AlterISchemaRequest</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12640" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="49312" bodyend="49313"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AlterISchemaRequest_1a86da47ba652e18499966555f6176f718" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::AlterISchemaRequest::__set_name</definition>
+        <argsstring>(const ISchemaName &amp;val)</argsstring>
+        <name>__set_name</name>
+        <qualifiedname>Apache::Hadoop::Hive::AlterISchemaRequest::__set_name</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ISchemaName" kindref="compound">ISchemaName</ref> &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12646" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="49318" bodyend="49320"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AlterISchemaRequest_1a0722c05d13381116ece5e80955cdb37e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::AlterISchemaRequest::__set_newSchema</definition>
+        <argsstring>(const ISchema &amp;val)</argsstring>
+        <name>__set_newSchema</name>
+        <qualifiedname>Apache::Hadoop::Hive::AlterISchemaRequest::__set_newSchema</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ISchema" kindref="compound">ISchema</ref> &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12648" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="49322" bodyend="49324"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AlterISchemaRequest_1aa272b9323fc249211e0b38e035c809a8" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::AlterISchemaRequest::operator==</definition>
+        <argsstring>(const AlterISchemaRequest &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::AlterISchemaRequest::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1AlterISchemaRequest" kindref="compound">AlterISchemaRequest</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12650" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="49406" bodyend="49413"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AlterISchemaRequest_1a8b53b246ac66991a85340a7006bd783d" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::AlterISchemaRequest::operator!=</definition>
+        <argsstring>(const AlterISchemaRequest &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::AlterISchemaRequest::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1AlterISchemaRequest" kindref="compound">AlterISchemaRequest</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12651" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="12651" bodyend="12653"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AlterISchemaRequest_1a21b609ecfc72fce5cd6e0b19f6f56257" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::AlterISchemaRequest::operator&lt;</definition>
+        <argsstring>(const AlterISchemaRequest &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::AlterISchemaRequest::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1AlterISchemaRequest" kindref="compound">AlterISchemaRequest</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12655" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AlterISchemaRequest_1a498cf374aa7b514236f8214f910185ee" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::AlterISchemaRequest::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot) override</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::AlterISchemaRequest::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12657" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="49332" bodyend="49379"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AlterISchemaRequest_1af61a2c80a457ba3771a8d1bed47e7d4e" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::AlterISchemaRequest::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const override</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::AlterISchemaRequest::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12658" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="49381" bodyend="49397"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AlterISchemaRequest_1a5e813ac24f81296d1670e4ddb8acd2cc" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::AlterISchemaRequest::printTo</definition>
+        <argsstring>(std::ostream &amp;out) const</argsstring>
+        <name>printTo</name>
+        <qualifiedname>Apache::Hadoop::Hive::AlterISchemaRequest::printTo</qualifiedname>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12660" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="49426" bodyend="49432"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::AlterISchemaRequest</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1AlterISchemaRequest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::AlterISchemaRequest</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1AlterISchemaRequest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>name</edgelabel>
+        </childnode>
+        <childnode refid="7" relation="usage">
+          <edgelabel>newSchema</edgelabel>
+        </childnode>
+        <childnode refid="9" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="7">
+        <label>Apache::Hadoop::Hive::ISchema</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1ISchema"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>catName</edgelabel>
+          <edgelabel>dbName</edgelabel>
+          <edgelabel>description</edgelabel>
+          <edgelabel>name</edgelabel>
+          <edgelabel>schemaGroup</edgelabel>
+        </childnode>
+        <childnode refid="8" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>Apache::Hadoop::Hive::ISchemaName</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1ISchemaName"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>catName</edgelabel>
+          <edgelabel>dbName</edgelabel>
+          <edgelabel>schemaName</edgelabel>
+        </childnode>
+        <childnode refid="6" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="9">
+        <label>Apache::Hadoop::Hive::_AlterISchemaRequest__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__AlterISchemaRequest____isset"/>
+      </node>
+      <node id="6">
+        <label>Apache::Hadoop::Hive::_ISchemaName__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__ISchemaName____isset"/>
+      </node>
+      <node id="8">
+        <label>Apache::Hadoop::Hive::_ISchema__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__ISchema____isset"/>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+      <node id="5">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="4">
+        <label>std::string</label>
+        <childnode refid="5" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12633" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="12633" bodyend="12661"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AlterISchemaRequest_1a47990ce3f813907e3a796437dd9c343a" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AlterISchemaRequest</scope><name>__isset</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AlterISchemaRequest_1a86da47ba652e18499966555f6176f718" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AlterISchemaRequest</scope><name>__set_name</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AlterISchemaRequest_1a0722c05d13381116ece5e80955cdb37e" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AlterISchemaRequest</scope><name>__set_newSchema</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AlterISchemaRequest_1a06c88be501cb850eb340539369dd30e3" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AlterISchemaRequest</scope><name>AlterISchemaRequest</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AlterISchemaRequest_1acd89f51a63c419e6b4c437817cee6eda" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AlterISchemaRequest</scope><name>AlterISchemaRequest</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AlterISchemaRequest_1adc7a8c9581bb47d553a4d18c57145206" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AlterISchemaRequest</scope><name>name</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AlterISchemaRequest_1ae99874bbe0001b847261a11cd191ee95" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AlterISchemaRequest</scope><name>newSchema</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AlterISchemaRequest_1a8b53b246ac66991a85340a7006bd783d" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AlterISchemaRequest</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AlterISchemaRequest_1a21b609ecfc72fce5cd6e0b19f6f56257" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AlterISchemaRequest</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AlterISchemaRequest_1a4eeb7576e0a33cf9519400bb632948dc" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AlterISchemaRequest</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AlterISchemaRequest_1aa272b9323fc249211e0b38e035c809a8" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AlterISchemaRequest</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AlterISchemaRequest_1a5e813ac24f81296d1670e4ddb8acd2cc" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::AlterISchemaRequest</scope><name>printTo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AlterISchemaRequest_1a498cf374aa7b514236f8214f910185ee" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AlterISchemaRequest</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AlterISchemaRequest_1af61a2c80a457ba3771a8d1bed47e7d4e" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AlterISchemaRequest</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AlterISchemaRequest_1a94a29dfc70d5a6ce95cb6418286dc307" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::AlterISchemaRequest</scope><name>~AlterISchemaRequest</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

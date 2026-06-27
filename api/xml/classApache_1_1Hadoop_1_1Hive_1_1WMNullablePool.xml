@@ -1,0 +1,495 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1WMNullablePool" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::WMNullablePool</compoundname>
+    <basecompoundref prot="public" virt="virtual">apache::thrift::TBase</basecompoundref>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1WMNullablePool_1a13a7fbbceaa70e3712b9b36e0beaa96f" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::WMNullablePool::resourcePlanName</definition>
+        <argsstring></argsstring>
+        <name>resourcePlanName</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMNullablePool::resourcePlanName</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11054" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="11054" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1WMNullablePool_1aace324f0ad05da368f52717bb0eff3e5" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::WMNullablePool::poolPath</definition>
+        <argsstring></argsstring>
+        <name>poolPath</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMNullablePool::poolPath</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11055" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="11055" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1WMNullablePool_1afca1e30590951b40026d239330305d26" prot="public" static="no" mutable="no">
+        <type>double</type>
+        <definition>double Apache::Hadoop::Hive::WMNullablePool::allocFraction</definition>
+        <argsstring></argsstring>
+        <name>allocFraction</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMNullablePool::allocFraction</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11056" column="10" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="11056" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1WMNullablePool_1a41deb6e8eb2cb3c8ccad051c7e325653" prot="public" static="no" mutable="no">
+        <type>int32_t</type>
+        <definition>int32_t Apache::Hadoop::Hive::WMNullablePool::queryParallelism</definition>
+        <argsstring></argsstring>
+        <name>queryParallelism</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMNullablePool::queryParallelism</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11057" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="11057" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1WMNullablePool_1a4bcdf34ef4844e6df035eef2dc25d1a5" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::WMNullablePool::schedulingPolicy</definition>
+        <argsstring></argsstring>
+        <name>schedulingPolicy</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMNullablePool::schedulingPolicy</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11058" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="11058" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1WMNullablePool_1a678a39e5974d13095b51630828c53ac6" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::WMNullablePool::isSetSchedulingPolicy</definition>
+        <argsstring></argsstring>
+        <name>isSetSchedulingPolicy</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMNullablePool::isSetSchedulingPolicy</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11059" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="11059" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1WMNullablePool_1a6dc1ce203fcb8b87b2c60327139745c6" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::WMNullablePool::ns</definition>
+        <argsstring></argsstring>
+        <name>ns</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMNullablePool::ns</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11060" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="11060" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1WMNullablePool_1a8bf5da24e6303899a683d3cc77bf03af" prot="public" static="no" mutable="no">
+        <type><ref refid="structApache_1_1Hadoop_1_1Hive_1_1__WMNullablePool____isset" kindref="compound">_WMNullablePool__isset</ref></type>
+        <definition>_WMNullablePool__isset Apache::Hadoop::Hive::WMNullablePool::__isset</definition>
+        <argsstring></argsstring>
+        <name>__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMNullablePool::__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11062" column="26" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="11062" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMNullablePool_1a74a1680a4591538343a6541b2d981cde" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::WMNullablePool::WMNullablePool</definition>
+        <argsstring>(const WMNullablePool &amp;)</argsstring>
+        <name>WMNullablePool</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMNullablePool::WMNullablePool</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1WMNullablePool" kindref="compound">WMNullablePool</ref> &amp;</type>
+          <defname>other1408</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11049" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="44012" bodyend="44021"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMNullablePool_1ae839e816b95267436dbb0f71e447b407" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1WMNullablePool" kindref="compound">WMNullablePool</ref> &amp;</type>
+        <definition>WMNullablePool &amp; Apache::Hadoop::Hive::WMNullablePool::operator=</definition>
+        <argsstring>(const WMNullablePool &amp;)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMNullablePool::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1WMNullablePool" kindref="compound">WMNullablePool</ref> &amp;</type>
+          <defname>other1409</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11050" column="18" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="44022" bodyend="44032"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMNullablePool_1a493f9d29e98483565677a2ac7d82fa35" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::WMNullablePool::WMNullablePool</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>WMNullablePool</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMNullablePool::WMNullablePool</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11051" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="43784" bodyend="43792"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMNullablePool_1a703756f4bf5569e42ad19b08f5f1a2a7" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::WMNullablePool::~WMNullablePool</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~WMNullablePool</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMNullablePool::~WMNullablePool</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11053" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="43781" bodyend="43782"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMNullablePool_1a696de63bb5a72626f04f17bb84938b31" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::WMNullablePool::__set_resourcePlanName</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_resourcePlanName</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMNullablePool::__set_resourcePlanName</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11064" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="43794" bodyend="43796"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMNullablePool_1a840bd545cbc872a98581acf21aa849c3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::WMNullablePool::__set_poolPath</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_poolPath</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMNullablePool::__set_poolPath</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11066" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="43798" bodyend="43800"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMNullablePool_1a3e559ad27f6ebe952e135bf69ee99cdd" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::WMNullablePool::__set_allocFraction</definition>
+        <argsstring>(const double val)</argsstring>
+        <name>__set_allocFraction</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMNullablePool::__set_allocFraction</qualifiedname>
+        <param>
+          <type>const double</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11068" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="43802" bodyend="43805"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMNullablePool_1afaed450a761f989c93f8557ca59e4b2b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::WMNullablePool::__set_queryParallelism</definition>
+        <argsstring>(const int32_t val)</argsstring>
+        <name>__set_queryParallelism</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMNullablePool::__set_queryParallelism</qualifiedname>
+        <param>
+          <type>const int32_t</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11070" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="43807" bodyend="43810"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMNullablePool_1a2f214745c03d4bad80299cd559866dbb" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::WMNullablePool::__set_schedulingPolicy</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_schedulingPolicy</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMNullablePool::__set_schedulingPolicy</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11072" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="43812" bodyend="43815"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMNullablePool_1ac5e4bc39c9f157df85e7b4ac25155106" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::WMNullablePool::__set_isSetSchedulingPolicy</definition>
+        <argsstring>(const bool val)</argsstring>
+        <name>__set_isSetSchedulingPolicy</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMNullablePool::__set_isSetSchedulingPolicy</qualifiedname>
+        <param>
+          <type>const bool</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11074" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="43817" bodyend="43820"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMNullablePool_1aa489c5a501deb252880a64196f1f7679" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::WMNullablePool::__set_ns</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_ns</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMNullablePool::__set_ns</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11076" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="43822" bodyend="43825"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMNullablePool_1a050ab0735f797c5f1a20e74e96ebc304" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::WMNullablePool::operator==</definition>
+        <argsstring>(const WMNullablePool &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMNullablePool::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1WMNullablePool" kindref="compound">WMNullablePool</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11078" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="43983" bodyend="44010"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMNullablePool_1a69d1252cb5518a236e1d4cd8c4d5714b" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::WMNullablePool::operator!=</definition>
+        <argsstring>(const WMNullablePool &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMNullablePool::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1WMNullablePool" kindref="compound">WMNullablePool</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11079" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="11079" bodyend="11081"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMNullablePool_1aa72cdbd2c4228171248f8433d869281d" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::WMNullablePool::operator&lt;</definition>
+        <argsstring>(const WMNullablePool &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMNullablePool::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1WMNullablePool" kindref="compound">WMNullablePool</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11083" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMNullablePool_1aeae268e9578cbbd2b99edf807bf5f0d8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::WMNullablePool::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot) override</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMNullablePool::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11085" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="43833" bodyend="43926"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMNullablePool_1a99bc37852d9b93bf1c9d31d4632b71e1" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::WMNullablePool::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const override</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMNullablePool::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11086" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="43928" bodyend="43969"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMNullablePool_1ab0cac5c02b3203936924a72d879354da" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::WMNullablePool::printTo</definition>
+        <argsstring>(std::ostream &amp;out) const</argsstring>
+        <name>printTo</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMNullablePool::printTo</qualifiedname>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11088" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="44033" bodyend="44044"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::WMNullablePool</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1WMNullablePool"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::WMNullablePool</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1WMNullablePool"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>ns</edgelabel>
+          <edgelabel>poolPath</edgelabel>
+          <edgelabel>resourcePlanName</edgelabel>
+          <edgelabel>schedulingPolicy</edgelabel>
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="5">
+        <label>Apache::Hadoop::Hive::_WMNullablePool__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__WMNullablePool____isset"/>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+      <node id="4">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="3">
+        <label>std::string</label>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11046" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="11046" bodyend="11089"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMNullablePool_1a8bf5da24e6303899a683d3cc77bf03af" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMNullablePool</scope><name>__isset</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMNullablePool_1a3e559ad27f6ebe952e135bf69ee99cdd" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMNullablePool</scope><name>__set_allocFraction</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMNullablePool_1ac5e4bc39c9f157df85e7b4ac25155106" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMNullablePool</scope><name>__set_isSetSchedulingPolicy</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMNullablePool_1aa489c5a501deb252880a64196f1f7679" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMNullablePool</scope><name>__set_ns</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMNullablePool_1a840bd545cbc872a98581acf21aa849c3" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMNullablePool</scope><name>__set_poolPath</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMNullablePool_1afaed450a761f989c93f8557ca59e4b2b" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMNullablePool</scope><name>__set_queryParallelism</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMNullablePool_1a696de63bb5a72626f04f17bb84938b31" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMNullablePool</scope><name>__set_resourcePlanName</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMNullablePool_1a2f214745c03d4bad80299cd559866dbb" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMNullablePool</scope><name>__set_schedulingPolicy</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMNullablePool_1afca1e30590951b40026d239330305d26" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMNullablePool</scope><name>allocFraction</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMNullablePool_1a678a39e5974d13095b51630828c53ac6" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMNullablePool</scope><name>isSetSchedulingPolicy</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMNullablePool_1a6dc1ce203fcb8b87b2c60327139745c6" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMNullablePool</scope><name>ns</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMNullablePool_1a69d1252cb5518a236e1d4cd8c4d5714b" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMNullablePool</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMNullablePool_1aa72cdbd2c4228171248f8433d869281d" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMNullablePool</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMNullablePool_1ae839e816b95267436dbb0f71e447b407" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMNullablePool</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMNullablePool_1a050ab0735f797c5f1a20e74e96ebc304" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMNullablePool</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMNullablePool_1aace324f0ad05da368f52717bb0eff3e5" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMNullablePool</scope><name>poolPath</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMNullablePool_1ab0cac5c02b3203936924a72d879354da" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::WMNullablePool</scope><name>printTo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMNullablePool_1a41deb6e8eb2cb3c8ccad051c7e325653" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMNullablePool</scope><name>queryParallelism</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMNullablePool_1aeae268e9578cbbd2b99edf807bf5f0d8" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMNullablePool</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMNullablePool_1a13a7fbbceaa70e3712b9b36e0beaa96f" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMNullablePool</scope><name>resourcePlanName</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMNullablePool_1a4bcdf34ef4844e6df035eef2dc25d1a5" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMNullablePool</scope><name>schedulingPolicy</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMNullablePool_1a74a1680a4591538343a6541b2d981cde" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMNullablePool</scope><name>WMNullablePool</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMNullablePool_1a493f9d29e98483565677a2ac7d82fa35" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMNullablePool</scope><name>WMNullablePool</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMNullablePool_1a99bc37852d9b93bf1c9d31d4632b71e1" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMNullablePool</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMNullablePool_1a703756f4bf5569e42ad19b08f5f1a2a7" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::WMNullablePool</scope><name>~WMNullablePool</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,55 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structApache_1_1Hadoop_1_1Hive_1_1PrincipalType" kind="struct" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::PrincipalType</compoundname>
+    <sectiondef kind="public-type">
+      <memberdef kind="enum" id="structApache_1_1Hadoop_1_1Hive_1_1PrincipalType_1af0e2e6e7ca1402c517dc16edc005859b" prot="public" static="no" strong="no">
+        <type></type>
+        <name>type</name>
+        <qualifiedname>Apache::Hadoop::Hive::PrincipalType::type</qualifiedname>
+        <enumvalue id="structApache_1_1Hadoop_1_1Hive_1_1PrincipalType_1af0e2e6e7ca1402c517dc16edc005859ba350ad399a112a95ba3b0208830e7559b" prot="public">
+          <name>USER</name>
+          <initializer>= 1</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="structApache_1_1Hadoop_1_1Hive_1_1PrincipalType_1af0e2e6e7ca1402c517dc16edc005859ba8cd71d46d2e54f29a971093c7b3870b8" prot="public">
+          <name>ROLE</name>
+          <initializer>= 2</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="structApache_1_1Hadoop_1_1Hive_1_1PrincipalType_1af0e2e6e7ca1402c517dc16edc005859baa12061c0b344751f83e4f1383c9c6992" prot="public">
+          <name>GROUP</name>
+          <initializer>= 3</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="43" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="43" bodyend="47"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="42" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="42" bodyend="48"/>
+    <listofallmembers>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1PrincipalType_1af0e2e6e7ca1402c517dc16edc005859baa12061c0b344751f83e4f1383c9c6992" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::PrincipalType</scope><name>GROUP</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1PrincipalType_1af0e2e6e7ca1402c517dc16edc005859ba8cd71d46d2e54f29a971093c7b3870b8" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::PrincipalType</scope><name>ROLE</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1PrincipalType_1af0e2e6e7ca1402c517dc16edc005859b" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::PrincipalType</scope><name>type</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1PrincipalType_1af0e2e6e7ca1402c517dc16edc005859ba350ad399a112a95ba3b0208830e7559b" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::PrincipalType</scope><name>USER</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

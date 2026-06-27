@@ -1,0 +1,154 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="namespaceiceberg_1_1retry" kind="namespace" language="C++">
+    <compoundname>iceberg::retry</compoundname>
+    <innerclass refid="structiceberg_1_1retry_1_1RetryPolicy" prot="protected">iceberg::retry::RetryPolicy</innerclass>
+    <sectiondef kind="enum">
+      <memberdef kind="enum" id="retry__util_8h_1a7914952f216f906a39cbd4b3688ed6f4" prot="protected" static="no" strong="yes">
+        <type></type>
+        <name>RetryPolicyMode</name>
+        <qualifiedname>iceberg::retry::RetryPolicyMode</qualifiedname>
+        <enumvalue id="retry__util_8h_1a7914952f216f906a39cbd4b3688ed6f4a078820fb58b45764c10d9421ab686380" prot="protected">
+          <name>kNoRetry</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="retry__util_8h_1a7914952f216f906a39cbd4b3688ed6f4ae4df8bdfb8ec10df275ea40842678005" prot="protected">
+          <name>kOnlyRetryOn</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="retry__util_8h_1a7914952f216f906a39cbd4b3688ed6f4af47e858f465890c6e23ad60e2c51e7e3" prot="protected">
+          <name>kStopRetryOn</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/retry_util.h" line="84" column="1" bodyfile="iceberg/util/retry_util.h" bodystart="84" bodyend="88"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="typedef">
+      <memberdef kind="typedef" id="retry__util_8h_1a2045c82b4d25fc5d555689ba5277d2ed" prot="protected" static="no">
+        <type><ref refid="structiceberg_1_1retry_1_1RetryPolicy" kindref="compound">RetryPolicy</ref>&lt; RetryPolicyMode::kNoRetry &gt;</type>
+        <definition>using iceberg::retry::NoRetry = typedef RetryPolicy&lt;RetryPolicyMode::kNoRetry&gt;</definition>
+        <argsstring></argsstring>
+        <name>NoRetry</name>
+        <qualifiedname>iceberg::retry::NoRetry</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/retry_util.h" line="111" column="1" bodyfile="iceberg/util/retry_util.h" bodystart="111" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="retry__util_8h_1a08d6fd6ac96bab005ae592ffb3da6ed1" prot="protected" static="no">
+        <templateparamlist>
+          <param>
+            <type>ErrorKind...</type>
+            <declname>Kinds</declname>
+            <defname>Kinds</defname>
+          </param>
+        </templateparamlist>
+        <type><ref refid="structiceberg_1_1retry_1_1RetryPolicy" kindref="compound">RetryPolicy</ref>&lt; RetryPolicyMode::kOnlyRetryOn, Kinds... &gt;</type>
+        <definition>using iceberg::retry::OnlyRetryOn = typedef RetryPolicy&lt;RetryPolicyMode::kOnlyRetryOn, Kinds...&gt;</definition>
+        <argsstring></argsstring>
+        <name>OnlyRetryOn</name>
+        <qualifiedname>iceberg::retry::OnlyRetryOn</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/retry_util.h" line="114" column="1" bodyfile="iceberg/util/retry_util.h" bodystart="114" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="retry__util_8h_1aa75a81fb2715f2eeaed91852fc859fcf" prot="protected" static="no">
+        <templateparamlist>
+          <param>
+            <type>ErrorKind...</type>
+            <declname>Kinds</declname>
+            <defname>Kinds</defname>
+          </param>
+        </templateparamlist>
+        <type><ref refid="structiceberg_1_1retry_1_1RetryPolicy" kindref="compound">RetryPolicy</ref>&lt; RetryPolicyMode::kStopRetryOn, Kinds... &gt;</type>
+        <definition>using iceberg::retry::StopRetryOn = typedef RetryPolicy&lt;RetryPolicyMode::kStopRetryOn, Kinds...&gt;</definition>
+        <argsstring></argsstring>
+        <name>StopRetryOn</name>
+        <qualifiedname>iceberg::retry::StopRetryOn</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/retry_util.h" line="117" column="1" bodyfile="iceberg/util/retry_util.h" bodystart="117" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="var">
+      <memberdef kind="variable" id="retry__util_8h_1a364de74b4e71c798eb8f7870e62306f8" prot="protected" static="no" constexpr="yes" mutable="no">
+        <templateparamlist>
+          <param>
+            <type>typename T</type>
+          </param>
+        </templateparamlist>
+        <type>constexpr bool</type>
+        <definition>constexpr bool iceberg::retry::kIsRetryPolicy</definition>
+        <argsstring></argsstring>
+        <name>kIsRetryPolicy</name>
+        <qualifiedname>iceberg::retry::kIsRetryPolicy</qualifiedname>
+        <initializer>= false</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/retry_util.h" line="120" column="23" bodyfile="iceberg/util/retry_util.h" bodystart="120" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="retry__util_8h_1a40fad00cf40394febd99734ef49c2aaa" prot="protected" static="no" constexpr="yes" mutable="no">
+        <templateparamlist>
+          <param>
+            <type>RetryPolicyMode</type>
+            <declname>Mode</declname>
+            <defname>Mode</defname>
+          </param>
+          <param>
+            <type>ErrorKind...</type>
+            <declname>Kinds</declname>
+            <defname>Kinds</defname>
+          </param>
+        </templateparamlist>
+        <type>constexpr bool</type>
+        <definition>constexpr bool iceberg::retry::kIsRetryPolicy&lt; RetryPolicy&lt; Mode, Kinds... &gt; &gt;</definition>
+        <argsstring></argsstring>
+        <name>kIsRetryPolicy&lt; RetryPolicy&lt; Mode, Kinds... &gt; &gt;</name>
+        <qualifiedname>iceberg::retry::kIsRetryPolicy&lt; RetryPolicy&lt; Mode, Kinds... &gt; &gt;</qualifiedname>
+        <initializer>= true</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/retry_util.h" line="123" column="18" bodyfile="iceberg/util/retry_util.h" bodystart="123" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/util/retry_util.h" line="82" column="1"/>
+  </compounddef>
+</doxygen>

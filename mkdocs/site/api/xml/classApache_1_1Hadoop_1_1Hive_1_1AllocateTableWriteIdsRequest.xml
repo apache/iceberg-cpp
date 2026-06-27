@@ -1,0 +1,481 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1AllocateTableWriteIdsRequest" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::AllocateTableWriteIdsRequest</compoundname>
+    <basecompoundref prot="public" virt="virtual">apache::thrift::TBase</basecompoundref>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1AllocateTableWriteIdsRequest_1af32719ad3845bc20348d0b16496b319c" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::AllocateTableWriteIdsRequest::dbName</definition>
+        <argsstring></argsstring>
+        <name>dbName</name>
+        <qualifiedname>Apache::Hadoop::Hive::AllocateTableWriteIdsRequest::dbName</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7390" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="7390" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1AllocateTableWriteIdsRequest_1a1d4e8d151af0d593c70e3d26e953e783" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::AllocateTableWriteIdsRequest::tableName</definition>
+        <argsstring></argsstring>
+        <name>tableName</name>
+        <qualifiedname>Apache::Hadoop::Hive::AllocateTableWriteIdsRequest::tableName</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7391" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="7391" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1AllocateTableWriteIdsRequest_1a0b6436241f8f869f573cfd9ebd44a37c" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; int64_t &gt;</type>
+        <definition>std::vector&lt;int64_t&gt; Apache::Hadoop::Hive::AllocateTableWriteIdsRequest::txnIds</definition>
+        <argsstring></argsstring>
+        <name>txnIds</name>
+        <qualifiedname>Apache::Hadoop::Hive::AllocateTableWriteIdsRequest::txnIds</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7392" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="7392" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1AllocateTableWriteIdsRequest_1a335523bb805481212a78d4498a328bef" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::AllocateTableWriteIdsRequest::replPolicy</definition>
+        <argsstring></argsstring>
+        <name>replPolicy</name>
+        <qualifiedname>Apache::Hadoop::Hive::AllocateTableWriteIdsRequest::replPolicy</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7393" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="7393" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1AllocateTableWriteIdsRequest_1acf970c2bac68df7d25081dcaf15b4d62" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; <ref refid="classApache_1_1Hadoop_1_1Hive_1_1TxnToWriteId" kindref="compound">TxnToWriteId</ref> &gt;</type>
+        <definition>std::vector&lt;TxnToWriteId&gt; Apache::Hadoop::Hive::AllocateTableWriteIdsRequest::srcTxnToWriteIdList</definition>
+        <argsstring></argsstring>
+        <name>srcTxnToWriteIdList</name>
+        <qualifiedname>Apache::Hadoop::Hive::AllocateTableWriteIdsRequest::srcTxnToWriteIdList</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7394" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="7394" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1AllocateTableWriteIdsRequest_1a67286fb4e90fbadf2f6d37b0178c0242" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::AllocateTableWriteIdsRequest::reallocate</definition>
+        <argsstring></argsstring>
+        <name>reallocate</name>
+        <qualifiedname>Apache::Hadoop::Hive::AllocateTableWriteIdsRequest::reallocate</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7395" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="7395" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1AllocateTableWriteIdsRequest_1ad2b7eeaf71d3493f7aa673eab41de2c4" prot="public" static="no" mutable="no">
+        <type><ref refid="structApache_1_1Hadoop_1_1Hive_1_1__AllocateTableWriteIdsRequest____isset" kindref="compound">_AllocateTableWriteIdsRequest__isset</ref></type>
+        <definition>_AllocateTableWriteIdsRequest__isset Apache::Hadoop::Hive::AllocateTableWriteIdsRequest::__isset</definition>
+        <argsstring></argsstring>
+        <name>__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::AllocateTableWriteIdsRequest::__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7397" column="40" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="7397" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AllocateTableWriteIdsRequest_1a5539d9cb62e5db54ec1440b779a185b7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::AllocateTableWriteIdsRequest::AllocateTableWriteIdsRequest</definition>
+        <argsstring>(const AllocateTableWriteIdsRequest &amp;)</argsstring>
+        <name>AllocateTableWriteIdsRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::AllocateTableWriteIdsRequest::AllocateTableWriteIdsRequest</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1AllocateTableWriteIdsRequest" kindref="compound">AllocateTableWriteIdsRequest</ref> &amp;</type>
+          <defname>other953</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7385" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="28176" bodyend="28184"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AllocateTableWriteIdsRequest_1affc7d4da8f2677723ebcfcd5dee13b59" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1AllocateTableWriteIdsRequest" kindref="compound">AllocateTableWriteIdsRequest</ref> &amp;</type>
+        <definition>AllocateTableWriteIdsRequest &amp; Apache::Hadoop::Hive::AllocateTableWriteIdsRequest::operator=</definition>
+        <argsstring>(const AllocateTableWriteIdsRequest &amp;)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::AllocateTableWriteIdsRequest::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1AllocateTableWriteIdsRequest" kindref="compound">AllocateTableWriteIdsRequest</ref> &amp;</type>
+          <defname>other954</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7386" column="32" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="28185" bodyend="28194"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AllocateTableWriteIdsRequest_1a96ccc082e7b9027a555ea0ad08a3f9f8" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::AllocateTableWriteIdsRequest::AllocateTableWriteIdsRequest</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>AllocateTableWriteIdsRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::AllocateTableWriteIdsRequest::AllocateTableWriteIdsRequest</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7387" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="27934" bodyend="27939"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AllocateTableWriteIdsRequest_1a3956b6f8cec723ba038138085b2ce229" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::AllocateTableWriteIdsRequest::~AllocateTableWriteIdsRequest</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~AllocateTableWriteIdsRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::AllocateTableWriteIdsRequest::~AllocateTableWriteIdsRequest</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7389" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="27931" bodyend="27932"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AllocateTableWriteIdsRequest_1a3954376b604fe9c4a93424804f7cb4fe" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::AllocateTableWriteIdsRequest::__set_dbName</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_dbName</name>
+        <qualifiedname>Apache::Hadoop::Hive::AllocateTableWriteIdsRequest::__set_dbName</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7399" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="27941" bodyend="27943"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AllocateTableWriteIdsRequest_1af00a9013f7683ddf5e2c78f7cc457966" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::AllocateTableWriteIdsRequest::__set_tableName</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_tableName</name>
+        <qualifiedname>Apache::Hadoop::Hive::AllocateTableWriteIdsRequest::__set_tableName</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7401" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="27945" bodyend="27947"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AllocateTableWriteIdsRequest_1ab2504faf050c2d10125ecd255e6079f7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::AllocateTableWriteIdsRequest::__set_txnIds</definition>
+        <argsstring>(const std::vector&lt; int64_t &gt; &amp;val)</argsstring>
+        <name>__set_txnIds</name>
+        <qualifiedname>Apache::Hadoop::Hive::AllocateTableWriteIdsRequest::__set_txnIds</qualifiedname>
+        <param>
+          <type>const std::vector&lt; int64_t &gt; &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7403" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="27949" bodyend="27952"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AllocateTableWriteIdsRequest_1ad9725227b00c10f9b8369f32ceafc933" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::AllocateTableWriteIdsRequest::__set_replPolicy</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_replPolicy</name>
+        <qualifiedname>Apache::Hadoop::Hive::AllocateTableWriteIdsRequest::__set_replPolicy</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7405" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="27954" bodyend="27957"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AllocateTableWriteIdsRequest_1a0f96a0de495ac26d9ac507ed348b5cdc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::AllocateTableWriteIdsRequest::__set_srcTxnToWriteIdList</definition>
+        <argsstring>(const std::vector&lt; TxnToWriteId &gt; &amp;val)</argsstring>
+        <name>__set_srcTxnToWriteIdList</name>
+        <qualifiedname>Apache::Hadoop::Hive::AllocateTableWriteIdsRequest::__set_srcTxnToWriteIdList</qualifiedname>
+        <param>
+          <type>const std::vector&lt; <ref refid="classApache_1_1Hadoop_1_1Hive_1_1TxnToWriteId" kindref="compound">TxnToWriteId</ref> &gt; &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7407" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="27959" bodyend="27962"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AllocateTableWriteIdsRequest_1a4c259aeabfff48adef6b156bedbf7291" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::AllocateTableWriteIdsRequest::__set_reallocate</definition>
+        <argsstring>(const bool val)</argsstring>
+        <name>__set_reallocate</name>
+        <qualifiedname>Apache::Hadoop::Hive::AllocateTableWriteIdsRequest::__set_reallocate</qualifiedname>
+        <param>
+          <type>const bool</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7409" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="27964" bodyend="27967"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AllocateTableWriteIdsRequest_1a8537d59bdc6de3a64120caa636831343" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::AllocateTableWriteIdsRequest::operator==</definition>
+        <argsstring>(const AllocateTableWriteIdsRequest &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::AllocateTableWriteIdsRequest::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1AllocateTableWriteIdsRequest" kindref="compound">AllocateTableWriteIdsRequest</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7411" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="28151" bodyend="28174"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AllocateTableWriteIdsRequest_1a94a85155339259cc5ae811cd82bd7a63" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::AllocateTableWriteIdsRequest::operator!=</definition>
+        <argsstring>(const AllocateTableWriteIdsRequest &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::AllocateTableWriteIdsRequest::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1AllocateTableWriteIdsRequest" kindref="compound">AllocateTableWriteIdsRequest</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7412" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="7412" bodyend="7414"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AllocateTableWriteIdsRequest_1a171686779ccc62a4b44bcedeced0263d" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::AllocateTableWriteIdsRequest::operator&lt;</definition>
+        <argsstring>(const AllocateTableWriteIdsRequest &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::AllocateTableWriteIdsRequest::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1AllocateTableWriteIdsRequest" kindref="compound">AllocateTableWriteIdsRequest</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7416" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AllocateTableWriteIdsRequest_1a8c9f15fe84f436fc7ba290d093699519" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::AllocateTableWriteIdsRequest::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot) override</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::AllocateTableWriteIdsRequest::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7418" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="27975" bodyend="28084"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AllocateTableWriteIdsRequest_1a569fc7544ce0c121289bd2bb993921d6" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::AllocateTableWriteIdsRequest::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const override</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::AllocateTableWriteIdsRequest::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7419" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="28086" bodyend="28138"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AllocateTableWriteIdsRequest_1ae6c56aaba7e7c78099d22ab7851a8e48" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::AllocateTableWriteIdsRequest::printTo</definition>
+        <argsstring>(std::ostream &amp;out) const</argsstring>
+        <name>printTo</name>
+        <qualifiedname>Apache::Hadoop::Hive::AllocateTableWriteIdsRequest::printTo</qualifiedname>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7421" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="28195" bodyend="28205"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::AllocateTableWriteIdsRequest</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1AllocateTableWriteIdsRequest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::AllocateTableWriteIdsRequest</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1AllocateTableWriteIdsRequest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>dbName</edgelabel>
+          <edgelabel>replPolicy</edgelabel>
+          <edgelabel>tableName</edgelabel>
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>txnIds</edgelabel>
+        </childnode>
+        <childnode refid="6" relation="usage">
+          <edgelabel>srcTxnToWriteIdList</edgelabel>
+        </childnode>
+        <childnode refid="8" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="7">
+        <label>Apache::Hadoop::Hive::TxnToWriteId</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1TxnToWriteId"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="8">
+        <label>Apache::Hadoop::Hive::_AllocateTableWriteIdsRequest__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__AllocateTableWriteIdsRequest____isset"/>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+      <node id="4">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="3">
+        <label>std::string</label>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="6">
+        <label>std::vector&lt; Apache::Hadoop::Hive::TxnToWriteId &gt;</label>
+        <childnode refid="7" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="5">
+        <label>std::vector&lt; int64_t &gt;</label>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7382" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="7382" bodyend="7422"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AllocateTableWriteIdsRequest_1ad2b7eeaf71d3493f7aa673eab41de2c4" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AllocateTableWriteIdsRequest</scope><name>__isset</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AllocateTableWriteIdsRequest_1a3954376b604fe9c4a93424804f7cb4fe" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AllocateTableWriteIdsRequest</scope><name>__set_dbName</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AllocateTableWriteIdsRequest_1a4c259aeabfff48adef6b156bedbf7291" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AllocateTableWriteIdsRequest</scope><name>__set_reallocate</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AllocateTableWriteIdsRequest_1ad9725227b00c10f9b8369f32ceafc933" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AllocateTableWriteIdsRequest</scope><name>__set_replPolicy</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AllocateTableWriteIdsRequest_1a0f96a0de495ac26d9ac507ed348b5cdc" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AllocateTableWriteIdsRequest</scope><name>__set_srcTxnToWriteIdList</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AllocateTableWriteIdsRequest_1af00a9013f7683ddf5e2c78f7cc457966" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AllocateTableWriteIdsRequest</scope><name>__set_tableName</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AllocateTableWriteIdsRequest_1ab2504faf050c2d10125ecd255e6079f7" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AllocateTableWriteIdsRequest</scope><name>__set_txnIds</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AllocateTableWriteIdsRequest_1a5539d9cb62e5db54ec1440b779a185b7" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AllocateTableWriteIdsRequest</scope><name>AllocateTableWriteIdsRequest</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AllocateTableWriteIdsRequest_1a96ccc082e7b9027a555ea0ad08a3f9f8" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AllocateTableWriteIdsRequest</scope><name>AllocateTableWriteIdsRequest</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AllocateTableWriteIdsRequest_1af32719ad3845bc20348d0b16496b319c" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AllocateTableWriteIdsRequest</scope><name>dbName</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AllocateTableWriteIdsRequest_1a94a85155339259cc5ae811cd82bd7a63" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AllocateTableWriteIdsRequest</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AllocateTableWriteIdsRequest_1a171686779ccc62a4b44bcedeced0263d" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AllocateTableWriteIdsRequest</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AllocateTableWriteIdsRequest_1affc7d4da8f2677723ebcfcd5dee13b59" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AllocateTableWriteIdsRequest</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AllocateTableWriteIdsRequest_1a8537d59bdc6de3a64120caa636831343" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AllocateTableWriteIdsRequest</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AllocateTableWriteIdsRequest_1ae6c56aaba7e7c78099d22ab7851a8e48" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::AllocateTableWriteIdsRequest</scope><name>printTo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AllocateTableWriteIdsRequest_1a8c9f15fe84f436fc7ba290d093699519" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AllocateTableWriteIdsRequest</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AllocateTableWriteIdsRequest_1a67286fb4e90fbadf2f6d37b0178c0242" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AllocateTableWriteIdsRequest</scope><name>reallocate</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AllocateTableWriteIdsRequest_1a335523bb805481212a78d4498a328bef" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AllocateTableWriteIdsRequest</scope><name>replPolicy</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AllocateTableWriteIdsRequest_1acf970c2bac68df7d25081dcaf15b4d62" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AllocateTableWriteIdsRequest</scope><name>srcTxnToWriteIdList</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AllocateTableWriteIdsRequest_1a1d4e8d151af0d593c70e3d26e953e783" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AllocateTableWriteIdsRequest</scope><name>tableName</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AllocateTableWriteIdsRequest_1a0b6436241f8f869f573cfd9ebd44a37c" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AllocateTableWriteIdsRequest</scope><name>txnIds</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AllocateTableWriteIdsRequest_1a569fc7544ce0c121289bd2bb993921d6" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AllocateTableWriteIdsRequest</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AllocateTableWriteIdsRequest_1a3956b6f8cec723ba038138085b2ce229" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::AllocateTableWriteIdsRequest</scope><name>~AllocateTableWriteIdsRequest</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

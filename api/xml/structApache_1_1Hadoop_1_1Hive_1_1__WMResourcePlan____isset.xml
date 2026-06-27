@@ -1,0 +1,96 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structApache_1_1Hadoop_1_1Hive_1_1__WMResourcePlan____isset" kind="struct" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::_WMResourcePlan__isset</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__WMResourcePlan____isset_1a30b53c81080dff363ec941e9d9e9a6f4" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_WMResourcePlan__isset::status</definition>
+        <argsstring></argsstring>
+        <name>status</name>
+        <qualifiedname>Apache::Hadoop::Hive::_WMResourcePlan__isset::status</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10866" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="10866" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__WMResourcePlan____isset_1af8f63d71121820e1bdd6847afc4ce941" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_WMResourcePlan__isset::queryParallelism</definition>
+        <argsstring></argsstring>
+        <name>queryParallelism</name>
+        <qualifiedname>Apache::Hadoop::Hive::_WMResourcePlan__isset::queryParallelism</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10867" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="10867" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__WMResourcePlan____isset_1aa87116bb519eaec29d0e5c4e703d17c8" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_WMResourcePlan__isset::defaultPoolPath</definition>
+        <argsstring></argsstring>
+        <name>defaultPoolPath</name>
+        <qualifiedname>Apache::Hadoop::Hive::_WMResourcePlan__isset::defaultPoolPath</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10868" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="10868" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__WMResourcePlan____isset_1a5d5ae3abff81c2d68f5c91ae86473c16" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_WMResourcePlan__isset::ns</definition>
+        <argsstring></argsstring>
+        <name>ns</name>
+        <qualifiedname>Apache::Hadoop::Hive::_WMResourcePlan__isset::ns</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10869" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="10869" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structApache_1_1Hadoop_1_1Hive_1_1__WMResourcePlan____isset_1a1a0f0265b82a996c185b487a7b82bd89" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::_WMResourcePlan__isset::_WMResourcePlan__isset</definition>
+        <argsstring>()</argsstring>
+        <name>_WMResourcePlan__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::_WMResourcePlan__isset::_WMResourcePlan__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10865" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="10865" bodyend="10865"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10864" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="10864" bodyend="10870"/>
+    <listofallmembers>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__WMResourcePlan____isset_1a1a0f0265b82a996c185b487a7b82bd89" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_WMResourcePlan__isset</scope><name>_WMResourcePlan__isset</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__WMResourcePlan____isset_1aa87116bb519eaec29d0e5c4e703d17c8" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_WMResourcePlan__isset</scope><name>defaultPoolPath</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__WMResourcePlan____isset_1a5d5ae3abff81c2d68f5c91ae86473c16" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_WMResourcePlan__isset</scope><name>ns</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__WMResourcePlan____isset_1af8f63d71121820e1bdd6847afc4ce941" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_WMResourcePlan__isset</scope><name>queryParallelism</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__WMResourcePlan____isset_1a30b53c81080dff363ec941e9d9e9a6f4" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_WMResourcePlan__isset</scope><name>status</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

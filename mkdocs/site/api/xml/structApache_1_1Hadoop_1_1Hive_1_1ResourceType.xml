@@ -1,0 +1,55 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structApache_1_1Hadoop_1_1Hive_1_1ResourceType" kind="struct" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::ResourceType</compoundname>
+    <sectiondef kind="public-type">
+      <memberdef kind="enum" id="structApache_1_1Hadoop_1_1Hive_1_1ResourceType_1a439849aafee3637614d95417d03bcc0e" prot="public" static="no" strong="no">
+        <type></type>
+        <name>type</name>
+        <qualifiedname>Apache::Hadoop::Hive::ResourceType::type</qualifiedname>
+        <enumvalue id="structApache_1_1Hadoop_1_1Hive_1_1ResourceType_1a439849aafee3637614d95417d03bcc0eaecf2ab505df473973fb9f0c65868054c" prot="public">
+          <name>JAR</name>
+          <initializer>= 1</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="structApache_1_1Hadoop_1_1Hive_1_1ResourceType_1a439849aafee3637614d95417d03bcc0eaaa6f39d9c036d82688a5d4ebe80a54c9" prot="public">
+          <name>FILE</name>
+          <initializer>= 2</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="structApache_1_1Hadoop_1_1Hive_1_1ResourceType_1a439849aafee3637614d95417d03bcc0eae1624ab9bc71569eda127954afcc7983" prot="public">
+          <name>ARCHIVE</name>
+          <initializer>= 3</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="284" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="284" bodyend="288"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="283" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="283" bodyend="289"/>
+    <listofallmembers>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1ResourceType_1a439849aafee3637614d95417d03bcc0eae1624ab9bc71569eda127954afcc7983" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ResourceType</scope><name>ARCHIVE</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1ResourceType_1a439849aafee3637614d95417d03bcc0eaaa6f39d9c036d82688a5d4ebe80a54c9" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ResourceType</scope><name>FILE</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1ResourceType_1a439849aafee3637614d95417d03bcc0eaecf2ab505df473973fb9f0c65868054c" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ResourceType</scope><name>JAR</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1ResourceType_1a439849aafee3637614d95417d03bcc0e" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ResourceType</scope><name>type</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

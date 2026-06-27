@@ -1,0 +1,144 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structApache_1_1Hadoop_1_1Hive_1_1__SerDeInfo____isset" kind="struct" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::_SerDeInfo__isset</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__SerDeInfo____isset_1ab7742539d1d7e2387063b359fd3973a6" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_SerDeInfo__isset::name</definition>
+        <argsstring></argsstring>
+        <name>name</name>
+        <qualifiedname>Apache::Hadoop::Hive::_SerDeInfo__isset::name</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="2996" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="2996" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__SerDeInfo____isset_1afe4353bb7f7ecf6737d8538281701252" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_SerDeInfo__isset::serializationLib</definition>
+        <argsstring></argsstring>
+        <name>serializationLib</name>
+        <qualifiedname>Apache::Hadoop::Hive::_SerDeInfo__isset::serializationLib</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="2997" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="2997" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__SerDeInfo____isset_1a09dab2841750312bf03ee74aff0f2f07" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_SerDeInfo__isset::parameters</definition>
+        <argsstring></argsstring>
+        <name>parameters</name>
+        <qualifiedname>Apache::Hadoop::Hive::_SerDeInfo__isset::parameters</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="2998" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="2998" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__SerDeInfo____isset_1ab7451ec9531f0610e32a4df798b290d4" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_SerDeInfo__isset::description</definition>
+        <argsstring></argsstring>
+        <name>description</name>
+        <qualifiedname>Apache::Hadoop::Hive::_SerDeInfo__isset::description</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="2999" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="2999" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__SerDeInfo____isset_1ad5fe444d8691f22a8af22ffcb7e013a7" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_SerDeInfo__isset::serializerClass</definition>
+        <argsstring></argsstring>
+        <name>serializerClass</name>
+        <qualifiedname>Apache::Hadoop::Hive::_SerDeInfo__isset::serializerClass</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3000" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="3000" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__SerDeInfo____isset_1a269f78404ff6fd33767b52230a1e5865" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_SerDeInfo__isset::deserializerClass</definition>
+        <argsstring></argsstring>
+        <name>deserializerClass</name>
+        <qualifiedname>Apache::Hadoop::Hive::_SerDeInfo__isset::deserializerClass</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3001" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="3001" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__SerDeInfo____isset_1a4cc3f7b2d43011a85ac1a63bd682cfba" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_SerDeInfo__isset::serdeType</definition>
+        <argsstring></argsstring>
+        <name>serdeType</name>
+        <qualifiedname>Apache::Hadoop::Hive::_SerDeInfo__isset::serdeType</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3002" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="3002" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structApache_1_1Hadoop_1_1Hive_1_1__SerDeInfo____isset_1a83dad104909275142ae8f0405cd2d805" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::_SerDeInfo__isset::_SerDeInfo__isset</definition>
+        <argsstring>()</argsstring>
+        <name>_SerDeInfo__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::_SerDeInfo__isset::_SerDeInfo__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="2995" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="2995" bodyend="2995"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="2994" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="2994" bodyend="3003"/>
+    <listofallmembers>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__SerDeInfo____isset_1a83dad104909275142ae8f0405cd2d805" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_SerDeInfo__isset</scope><name>_SerDeInfo__isset</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__SerDeInfo____isset_1ab7451ec9531f0610e32a4df798b290d4" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_SerDeInfo__isset</scope><name>description</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__SerDeInfo____isset_1a269f78404ff6fd33767b52230a1e5865" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_SerDeInfo__isset</scope><name>deserializerClass</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__SerDeInfo____isset_1ab7742539d1d7e2387063b359fd3973a6" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_SerDeInfo__isset</scope><name>name</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__SerDeInfo____isset_1a09dab2841750312bf03ee74aff0f2f07" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_SerDeInfo__isset</scope><name>parameters</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__SerDeInfo____isset_1a4cc3f7b2d43011a85ac1a63bd682cfba" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_SerDeInfo__isset</scope><name>serdeType</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__SerDeInfo____isset_1afe4353bb7f7ecf6737d8538281701252" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_SerDeInfo__isset</scope><name>serializationLib</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__SerDeInfo____isset_1ad5fe444d8691f22a8af22ffcb7e013a7" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_SerDeInfo__isset</scope><name>serializerClass</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

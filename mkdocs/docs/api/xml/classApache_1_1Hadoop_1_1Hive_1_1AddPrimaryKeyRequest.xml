@@ -1,0 +1,292 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1AddPrimaryKeyRequest" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::AddPrimaryKeyRequest</compoundname>
+    <basecompoundref prot="public" virt="virtual">apache::thrift::TBase</basecompoundref>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1AddPrimaryKeyRequest_1abfb5b942b78fc3ed9a46191d96601aad" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; <ref refid="classApache_1_1Hadoop_1_1Hive_1_1SQLPrimaryKey" kindref="compound">SQLPrimaryKey</ref> &gt;</type>
+        <definition>std::vector&lt;SQLPrimaryKey&gt; Apache::Hadoop::Hive::AddPrimaryKeyRequest::primaryKeyCols</definition>
+        <argsstring></argsstring>
+        <name>primaryKeyCols</name>
+        <qualifiedname>Apache::Hadoop::Hive::AddPrimaryKeyRequest::primaryKeyCols</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="5301" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="5301" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AddPrimaryKeyRequest_1aa0378910820e5a961b1a28c6070e48f7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::AddPrimaryKeyRequest::AddPrimaryKeyRequest</definition>
+        <argsstring>(const AddPrimaryKeyRequest &amp;)</argsstring>
+        <name>AddPrimaryKeyRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::AddPrimaryKeyRequest::AddPrimaryKeyRequest</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1AddPrimaryKeyRequest" kindref="compound">AddPrimaryKeyRequest</ref> &amp;</type>
+          <defname>other593</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="5296" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="18642" bodyend="18644"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AddPrimaryKeyRequest_1a58b03a5c253de0220afa4846e49d0bcb" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1AddPrimaryKeyRequest" kindref="compound">AddPrimaryKeyRequest</ref> &amp;</type>
+        <definition>AddPrimaryKeyRequest &amp; Apache::Hadoop::Hive::AddPrimaryKeyRequest::operator=</definition>
+        <argsstring>(const AddPrimaryKeyRequest &amp;)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::AddPrimaryKeyRequest::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1AddPrimaryKeyRequest" kindref="compound">AddPrimaryKeyRequest</ref> &amp;</type>
+          <defname>other594</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="5297" column="24" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="18645" bodyend="18648"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AddPrimaryKeyRequest_1aa5aad285d447e7aa40b6434f16f15905" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::AddPrimaryKeyRequest::AddPrimaryKeyRequest</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>AddPrimaryKeyRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::AddPrimaryKeyRequest::AddPrimaryKeyRequest</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="5298" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="18539" bodyend="18540"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AddPrimaryKeyRequest_1a6540f23901427db88f428a54d4bd91be" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::AddPrimaryKeyRequest::~AddPrimaryKeyRequest</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~AddPrimaryKeyRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::AddPrimaryKeyRequest::~AddPrimaryKeyRequest</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="5300" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="18536" bodyend="18537"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AddPrimaryKeyRequest_1a13c9ff7739ab45697383633081d5830a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::AddPrimaryKeyRequest::__set_primaryKeyCols</definition>
+        <argsstring>(const std::vector&lt; SQLPrimaryKey &gt; &amp;val)</argsstring>
+        <name>__set_primaryKeyCols</name>
+        <qualifiedname>Apache::Hadoop::Hive::AddPrimaryKeyRequest::__set_primaryKeyCols</qualifiedname>
+        <param>
+          <type>const std::vector&lt; <ref refid="classApache_1_1Hadoop_1_1Hive_1_1SQLPrimaryKey" kindref="compound">SQLPrimaryKey</ref> &gt; &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="5303" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="18542" bodyend="18544"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AddPrimaryKeyRequest_1a3989d422cd26cec35a880dba9d838d4c" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::AddPrimaryKeyRequest::operator==</definition>
+        <argsstring>(const AddPrimaryKeyRequest &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::AddPrimaryKeyRequest::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1AddPrimaryKeyRequest" kindref="compound">AddPrimaryKeyRequest</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="5305" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="18635" bodyend="18640"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AddPrimaryKeyRequest_1adb7a6b32e954c0aa45cbd450b6dfe773" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::AddPrimaryKeyRequest::operator!=</definition>
+        <argsstring>(const AddPrimaryKeyRequest &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::AddPrimaryKeyRequest::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1AddPrimaryKeyRequest" kindref="compound">AddPrimaryKeyRequest</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="5306" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="5306" bodyend="5308"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AddPrimaryKeyRequest_1ae8912c0b0805274173e67159f4292676" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::AddPrimaryKeyRequest::operator&lt;</definition>
+        <argsstring>(const AddPrimaryKeyRequest &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::AddPrimaryKeyRequest::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1AddPrimaryKeyRequest" kindref="compound">AddPrimaryKeyRequest</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="5310" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AddPrimaryKeyRequest_1a1a62444d11156dbd0a20bf5e09342751" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::AddPrimaryKeyRequest::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot) override</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::AddPrimaryKeyRequest::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="5312" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="18552" bodyend="18606"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AddPrimaryKeyRequest_1a40a9b84e4ffed2ff017e0ac87eab9509" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::AddPrimaryKeyRequest::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const override</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::AddPrimaryKeyRequest::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="5313" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="18608" bodyend="18628"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AddPrimaryKeyRequest_1ade83ccfec2ff67e486d61b2d5ac535ea" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::AddPrimaryKeyRequest::printTo</definition>
+        <argsstring>(std::ostream &amp;out) const</argsstring>
+        <name>printTo</name>
+        <qualifiedname>Apache::Hadoop::Hive::AddPrimaryKeyRequest::printTo</qualifiedname>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="5315" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="18649" bodyend="18654"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::AddPrimaryKeyRequest</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1AddPrimaryKeyRequest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::AddPrimaryKeyRequest</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1AddPrimaryKeyRequest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>primaryKeyCols</edgelabel>
+        </childnode>
+      </node>
+      <node id="4">
+        <label>Apache::Hadoop::Hive::SQLPrimaryKey</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1SQLPrimaryKey"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>catName</edgelabel>
+          <edgelabel>column_name</edgelabel>
+          <edgelabel>pk_name</edgelabel>
+          <edgelabel>table_db</edgelabel>
+          <edgelabel>table_name</edgelabel>
+        </childnode>
+        <childnode refid="7" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="7">
+        <label>Apache::Hadoop::Hive::_SQLPrimaryKey__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__SQLPrimaryKey____isset"/>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+      <node id="6">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="5">
+        <label>std::string</label>
+        <childnode refid="6" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::vector&lt; Apache::Hadoop::Hive::SQLPrimaryKey &gt;</label>
+        <childnode refid="4" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="5293" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="5293" bodyend="5316"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AddPrimaryKeyRequest_1a13c9ff7739ab45697383633081d5830a" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AddPrimaryKeyRequest</scope><name>__set_primaryKeyCols</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AddPrimaryKeyRequest_1aa0378910820e5a961b1a28c6070e48f7" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AddPrimaryKeyRequest</scope><name>AddPrimaryKeyRequest</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AddPrimaryKeyRequest_1aa5aad285d447e7aa40b6434f16f15905" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AddPrimaryKeyRequest</scope><name>AddPrimaryKeyRequest</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AddPrimaryKeyRequest_1adb7a6b32e954c0aa45cbd450b6dfe773" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AddPrimaryKeyRequest</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AddPrimaryKeyRequest_1ae8912c0b0805274173e67159f4292676" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AddPrimaryKeyRequest</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AddPrimaryKeyRequest_1a58b03a5c253de0220afa4846e49d0bcb" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AddPrimaryKeyRequest</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AddPrimaryKeyRequest_1a3989d422cd26cec35a880dba9d838d4c" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AddPrimaryKeyRequest</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AddPrimaryKeyRequest_1abfb5b942b78fc3ed9a46191d96601aad" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AddPrimaryKeyRequest</scope><name>primaryKeyCols</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AddPrimaryKeyRequest_1ade83ccfec2ff67e486d61b2d5ac535ea" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::AddPrimaryKeyRequest</scope><name>printTo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AddPrimaryKeyRequest_1a1a62444d11156dbd0a20bf5e09342751" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AddPrimaryKeyRequest</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AddPrimaryKeyRequest_1a40a9b84e4ffed2ff017e0ac87eab9509" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AddPrimaryKeyRequest</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AddPrimaryKeyRequest_1a6540f23901427db88f428a54d4bd91be" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::AddPrimaryKeyRequest</scope><name>~AddPrimaryKeyRequest</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

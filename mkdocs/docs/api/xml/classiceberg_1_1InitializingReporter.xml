@@ -1,0 +1,178 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1InitializingReporter" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::InitializingReporter</compoundname>
+    <basecompoundref refid="classiceberg_1_1MetricsReporter" prot="public" virt="non-virtual">iceberg::MetricsReporter</basecompoundref>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1InitializingReporter_1a56fb1afb8f62aa2306a3da7f1323c975" prot="private" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool iceberg::InitializingReporter::initialized_</definition>
+        <argsstring></argsstring>
+        <name>initialized_</name>
+        <qualifiedname>iceberg::InitializingReporter::initialized_</qualifiedname>
+        <initializer>= false</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/metrics_reporter_test.cc" line="333" column="8" bodyfile="iceberg/test/metrics_reporter_test.cc" bodystart="333" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1InitializingReporter_1a98d8225fd9d7544d0256e8680efd9f81" prot="private" static="no" mutable="no">
+        <type>std::unordered_map&lt; std::string, std::string &gt;</type>
+        <definition>std::unordered_map&lt;std::string, std::string&gt; iceberg::InitializingReporter::init_props_</definition>
+        <argsstring></argsstring>
+        <name>init_props_</name>
+        <qualifiedname>iceberg::InitializingReporter::init_props_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/metrics_reporter_test.cc" line="334" column="22" bodyfile="iceberg/test/metrics_reporter_test.cc" bodystart="334" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classiceberg_1_1InitializingReporter_1a09617020e9faa94115c74c44ce299d60" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>Result&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1MetricsReporter" kindref="compound">MetricsReporter</ref> &gt; &gt;</type>
+        <definition>static Result&lt; std::unique_ptr&lt; MetricsReporter &gt; &gt; iceberg::InitializingReporter::Make</definition>
+        <argsstring>(const std::unordered_map&lt; std::string, std::string &gt; &amp;)</argsstring>
+        <name>Make</name>
+        <qualifiedname>iceberg::InitializingReporter::Make</qualifiedname>
+        <param>
+          <type>const std::unordered_map&lt; std::string, std::string &gt; &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/metrics_reporter_test.cc" line="317" column="17" bodyfile="iceberg/test/metrics_reporter_test.cc" bodystart="317" bodyend="320"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1InitializingReporter_1a4f9d55944b23e2c5b3ab13c16382414d" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>Status</type>
+        <definition>Status iceberg::InitializingReporter::Initialize</definition>
+        <argsstring>(const std::unordered_map&lt; std::string, std::string &gt; &amp;props) override</argsstring>
+        <name>Initialize</name>
+        <qualifiedname>iceberg::InitializingReporter::Initialize</qualifiedname>
+        <reimplements refid="classiceberg_1_1MetricsReporter_1a4a61bb9e321d19b3cbf3364c849e08f7">Initialize</reimplements>
+        <param>
+          <type>const std::unordered_map&lt; std::string, std::string &gt; &amp;</type>
+          <declname>properties</declname>
+        </param>
+        <briefdescription>
+<para>Initialize the reporter with catalog properties after construction. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Called by <ref refid="classiceberg_1_1MetricsReporters_1a4246661863289079c323014fd4317d47" kindref="member">MetricsReporters::Load()</ref> before the first <ref refid="classiceberg_1_1InitializingReporter_1afb8bbb5e6a6554ad7464a73063a07bc9" kindref="member">Report()</ref> invocation. The default implementation is a no-op. Override to perform property-based setup (e.g., configure endpoints, credentials, sampling rates). </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/metrics_reporter_test.cc" line="321" column="10" bodyfile="iceberg/test/metrics_reporter_test.cc" bodystart="321" bodyend="325"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1InitializingReporter_1afb8bbb5e6a6554ad7464a73063a07bc9" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>Status</type>
+        <definition>Status iceberg::InitializingReporter::Report</definition>
+        <argsstring>(const MetricsReport &amp;) override</argsstring>
+        <name>Report</name>
+        <qualifiedname>iceberg::InitializingReporter::Report</qualifiedname>
+        <reimplements refid="classiceberg_1_1MetricsReporter_1ada754787bbf4f5625b4739ee489296c7">Report</reimplements>
+        <param>
+          <type>const MetricsReport &amp;</type>
+          <declname>report</declname>
+        </param>
+        <briefdescription>
+<para>Report a metrics report. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Implementations should handle the report according to their purpose (e.g., logging, sending to a metrics service, etc.).</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>report</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The metrics report to process. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/metrics_reporter_test.cc" line="326" column="10" bodyfile="iceberg/test/metrics_reporter_test.cc" bodystart="326" bodyend="326"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1InitializingReporter_1a40c8b50085550a3d3ef6f4fafc7d864c" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::InitializingReporter::initialized</definition>
+        <argsstring>() const</argsstring>
+        <name>initialized</name>
+        <qualifiedname>iceberg::InitializingReporter::initialized</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/metrics_reporter_test.cc" line="327" column="8" bodyfile="iceberg/test/metrics_reporter_test.cc" bodystart="327" bodyend="327"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1InitializingReporter_1ab051f2625a9a7bd0ccea6d5f65c8e80d" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>const std::unordered_map&lt; std::string, std::string &gt; &amp;</type>
+        <definition>const std::unordered_map&lt; std::string, std::string &gt; &amp; iceberg::InitializingReporter::init_props</definition>
+        <argsstring>() const</argsstring>
+        <name>init_props</name>
+        <qualifiedname>iceberg::InitializingReporter::init_props</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/metrics_reporter_test.cc" line="328" column="28" bodyfile="iceberg/test/metrics_reporter_test.cc" bodystart="328" bodyend="330"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>iceberg::InitializingReporter</label>
+        <link refid="classiceberg_1_1InitializingReporter"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::MetricsReporter</label>
+        <link refid="classiceberg_1_1MetricsReporter"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::InitializingReporter</label>
+        <link refid="classiceberg_1_1InitializingReporter"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::MetricsReporter</label>
+        <link refid="classiceberg_1_1MetricsReporter"/>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/test/metrics_reporter_test.cc" line="315" column="1" bodyfile="iceberg/test/metrics_reporter_test.cc" bodystart="315" bodyend="335"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1InitializingReporter_1ab051f2625a9a7bd0ccea6d5f65c8e80d" prot="public" virt="non-virtual"><scope>iceberg::InitializingReporter</scope><name>init_props</name></member>
+      <member refid="classiceberg_1_1InitializingReporter_1a98d8225fd9d7544d0256e8680efd9f81" prot="private" virt="non-virtual"><scope>iceberg::InitializingReporter</scope><name>init_props_</name></member>
+      <member refid="classiceberg_1_1InitializingReporter_1a4f9d55944b23e2c5b3ab13c16382414d" prot="public" virt="virtual"><scope>iceberg::InitializingReporter</scope><name>Initialize</name></member>
+      <member refid="classiceberg_1_1InitializingReporter_1a40c8b50085550a3d3ef6f4fafc7d864c" prot="public" virt="non-virtual"><scope>iceberg::InitializingReporter</scope><name>initialized</name></member>
+      <member refid="classiceberg_1_1InitializingReporter_1a56fb1afb8f62aa2306a3da7f1323c975" prot="private" virt="non-virtual"><scope>iceberg::InitializingReporter</scope><name>initialized_</name></member>
+      <member refid="classiceberg_1_1InitializingReporter_1a09617020e9faa94115c74c44ce299d60" prot="public" virt="non-virtual"><scope>iceberg::InitializingReporter</scope><name>Make</name></member>
+      <member refid="classiceberg_1_1InitializingReporter_1afb8bbb5e6a6554ad7464a73063a07bc9" prot="public" virt="virtual"><scope>iceberg::InitializingReporter</scope><name>Report</name></member>
+      <member refid="classiceberg_1_1MetricsReporter_1a67e7d83391a15f8c28b608ca2949cef1" prot="public" virt="virtual"><scope>iceberg::InitializingReporter</scope><name>~MetricsReporter</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

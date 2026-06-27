@@ -1,0 +1,801 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1StorageDescriptor" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::StorageDescriptor</compoundname>
+    <basecompoundref prot="public" virt="virtual">apache::thrift::TBase</basecompoundref>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1StorageDescriptor_1a6ddcaa81747671e26f937e5c6e17f170" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; <ref refid="classApache_1_1Hadoop_1_1Hive_1_1FieldSchema" kindref="compound">FieldSchema</ref> &gt;</type>
+        <definition>std::vector&lt;FieldSchema&gt; Apache::Hadoop::Hive::StorageDescriptor::cols</definition>
+        <argsstring></argsstring>
+        <name>cols</name>
+        <qualifiedname>Apache::Hadoop::Hive::StorageDescriptor::cols</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3166" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="3166" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1StorageDescriptor_1a60ebf665ab1ecd13c41ad5615473fd76" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::StorageDescriptor::location</definition>
+        <argsstring></argsstring>
+        <name>location</name>
+        <qualifiedname>Apache::Hadoop::Hive::StorageDescriptor::location</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3167" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="3167" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1StorageDescriptor_1ad17d53c89691ba1a4b0e21cb29c2688d" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::StorageDescriptor::inputFormat</definition>
+        <argsstring></argsstring>
+        <name>inputFormat</name>
+        <qualifiedname>Apache::Hadoop::Hive::StorageDescriptor::inputFormat</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3168" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="3168" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1StorageDescriptor_1a1cf062c2372b8228a7b4ffb57ee46a54" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::StorageDescriptor::outputFormat</definition>
+        <argsstring></argsstring>
+        <name>outputFormat</name>
+        <qualifiedname>Apache::Hadoop::Hive::StorageDescriptor::outputFormat</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3169" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="3169" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1StorageDescriptor_1a3d0093e98e0d88ae65bfc5b602d943d4" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::StorageDescriptor::compressed</definition>
+        <argsstring></argsstring>
+        <name>compressed</name>
+        <qualifiedname>Apache::Hadoop::Hive::StorageDescriptor::compressed</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3170" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="3170" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1StorageDescriptor_1a18fec56f35b81f7203edc6531894e307" prot="public" static="no" mutable="no">
+        <type>int32_t</type>
+        <definition>int32_t Apache::Hadoop::Hive::StorageDescriptor::numBuckets</definition>
+        <argsstring></argsstring>
+        <name>numBuckets</name>
+        <qualifiedname>Apache::Hadoop::Hive::StorageDescriptor::numBuckets</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3171" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="3171" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1StorageDescriptor_1a995faa17b4e94d0d3a9b1d61904b5800" prot="public" static="no" mutable="no">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1SerDeInfo" kindref="compound">SerDeInfo</ref></type>
+        <definition>SerDeInfo Apache::Hadoop::Hive::StorageDescriptor::serdeInfo</definition>
+        <argsstring></argsstring>
+        <name>serdeInfo</name>
+        <qualifiedname>Apache::Hadoop::Hive::StorageDescriptor::serdeInfo</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3172" column="13" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="3172" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1StorageDescriptor_1a047b3fb3bc689eaf202d9410e312fc47" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; std::string &gt;</type>
+        <definition>std::vector&lt;std::string&gt; Apache::Hadoop::Hive::StorageDescriptor::bucketCols</definition>
+        <argsstring></argsstring>
+        <name>bucketCols</name>
+        <qualifiedname>Apache::Hadoop::Hive::StorageDescriptor::bucketCols</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3173" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="3173" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1StorageDescriptor_1a605401d15ccc75a43e4a1b020e742399" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; <ref refid="classApache_1_1Hadoop_1_1Hive_1_1Order" kindref="compound">Order</ref> &gt;</type>
+        <definition>std::vector&lt;Order&gt; Apache::Hadoop::Hive::StorageDescriptor::sortCols</definition>
+        <argsstring></argsstring>
+        <name>sortCols</name>
+        <qualifiedname>Apache::Hadoop::Hive::StorageDescriptor::sortCols</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3174" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="3174" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1StorageDescriptor_1a69cf5a7b60e2692ec4aa6122f789377b" prot="public" static="no" mutable="no">
+        <type>std::map&lt; std::string, std::string &gt;</type>
+        <definition>std::map&lt;std::string, std::string&gt; Apache::Hadoop::Hive::StorageDescriptor::parameters</definition>
+        <argsstring></argsstring>
+        <name>parameters</name>
+        <qualifiedname>Apache::Hadoop::Hive::StorageDescriptor::parameters</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3175" column="13" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="3175" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1StorageDescriptor_1a429ea89b593b92f01d6000b3ca3e2819" prot="public" static="no" mutable="no">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1SkewedInfo" kindref="compound">SkewedInfo</ref></type>
+        <definition>SkewedInfo Apache::Hadoop::Hive::StorageDescriptor::skewedInfo</definition>
+        <argsstring></argsstring>
+        <name>skewedInfo</name>
+        <qualifiedname>Apache::Hadoop::Hive::StorageDescriptor::skewedInfo</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3176" column="14" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="3176" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1StorageDescriptor_1a3dba725f7a3dfe6c4642e4ec1fb9437d" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::StorageDescriptor::storedAsSubDirectories</definition>
+        <argsstring></argsstring>
+        <name>storedAsSubDirectories</name>
+        <qualifiedname>Apache::Hadoop::Hive::StorageDescriptor::storedAsSubDirectories</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3177" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="3177" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1StorageDescriptor_1adc6a920a070fdb7cc785326676bd3ad0" prot="public" static="no" mutable="no">
+        <type><ref refid="structApache_1_1Hadoop_1_1Hive_1_1__StorageDescriptor____isset" kindref="compound">_StorageDescriptor__isset</ref></type>
+        <definition>_StorageDescriptor__isset Apache::Hadoop::Hive::StorageDescriptor::__isset</definition>
+        <argsstring></argsstring>
+        <name>__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::StorageDescriptor::__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3179" column="29" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="3179" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1StorageDescriptor_1af365d8174c5ad6f76943e70aaea853ff" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::StorageDescriptor::StorageDescriptor</definition>
+        <argsstring>(const StorageDescriptor &amp;)</argsstring>
+        <name>StorageDescriptor</name>
+        <qualifiedname>Apache::Hadoop::Hive::StorageDescriptor::StorageDescriptor</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1StorageDescriptor" kindref="compound">StorageDescriptor</ref> &amp;</type>
+          <defname>other329</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3161" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="9396" bodyend="9410"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1StorageDescriptor_1a892b05577428ce5666b25db12240e8ef" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1StorageDescriptor" kindref="compound">StorageDescriptor</ref> &amp;</type>
+        <definition>StorageDescriptor &amp; Apache::Hadoop::Hive::StorageDescriptor::operator=</definition>
+        <argsstring>(const StorageDescriptor &amp;)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::StorageDescriptor::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1StorageDescriptor" kindref="compound">StorageDescriptor</ref> &amp;</type>
+          <defname>other330</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3162" column="21" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="9411" bodyend="9426"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1StorageDescriptor_1a2ae1c9b27fa040ef48512c23c27dab10" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::StorageDescriptor::StorageDescriptor</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>StorageDescriptor</name>
+        <qualifiedname>Apache::Hadoop::Hive::StorageDescriptor::StorageDescriptor</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3163" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="9008" bodyend="9015"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1StorageDescriptor_1a9812853c189365a1bda3fbbefebdfd87" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::StorageDescriptor::~StorageDescriptor</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~StorageDescriptor</name>
+        <qualifiedname>Apache::Hadoop::Hive::StorageDescriptor::~StorageDescriptor</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3165" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="9005" bodyend="9006"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1StorageDescriptor_1a481d54200d1989bd30e1ccb5f6ee3ed6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::StorageDescriptor::__set_cols</definition>
+        <argsstring>(const std::vector&lt; FieldSchema &gt; &amp;val)</argsstring>
+        <name>__set_cols</name>
+        <qualifiedname>Apache::Hadoop::Hive::StorageDescriptor::__set_cols</qualifiedname>
+        <param>
+          <type>const std::vector&lt; <ref refid="classApache_1_1Hadoop_1_1Hive_1_1FieldSchema" kindref="compound">FieldSchema</ref> &gt; &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3181" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="9017" bodyend="9019"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1StorageDescriptor_1ae671f57879b5d160d3859c6848e3e334" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::StorageDescriptor::__set_location</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_location</name>
+        <qualifiedname>Apache::Hadoop::Hive::StorageDescriptor::__set_location</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3183" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="9021" bodyend="9023"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1StorageDescriptor_1addb7dbd0a31fe808251954454fc29af8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::StorageDescriptor::__set_inputFormat</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_inputFormat</name>
+        <qualifiedname>Apache::Hadoop::Hive::StorageDescriptor::__set_inputFormat</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3185" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="9025" bodyend="9027"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1StorageDescriptor_1a9673caae5224af337fcc82b341b5d0f2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::StorageDescriptor::__set_outputFormat</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_outputFormat</name>
+        <qualifiedname>Apache::Hadoop::Hive::StorageDescriptor::__set_outputFormat</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3187" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="9029" bodyend="9031"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1StorageDescriptor_1a40bba1602ea66bfa354d25b9a4f070f1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::StorageDescriptor::__set_compressed</definition>
+        <argsstring>(const bool val)</argsstring>
+        <name>__set_compressed</name>
+        <qualifiedname>Apache::Hadoop::Hive::StorageDescriptor::__set_compressed</qualifiedname>
+        <param>
+          <type>const bool</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3189" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="9033" bodyend="9035"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1StorageDescriptor_1a9812e2016019649b7aca74dca69829d5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::StorageDescriptor::__set_numBuckets</definition>
+        <argsstring>(const int32_t val)</argsstring>
+        <name>__set_numBuckets</name>
+        <qualifiedname>Apache::Hadoop::Hive::StorageDescriptor::__set_numBuckets</qualifiedname>
+        <param>
+          <type>const int32_t</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3191" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="9037" bodyend="9039"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1StorageDescriptor_1ae8c9555113507113946a1cccae1ee3e7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::StorageDescriptor::__set_serdeInfo</definition>
+        <argsstring>(const SerDeInfo &amp;val)</argsstring>
+        <name>__set_serdeInfo</name>
+        <qualifiedname>Apache::Hadoop::Hive::StorageDescriptor::__set_serdeInfo</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1SerDeInfo" kindref="compound">SerDeInfo</ref> &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3193" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="9041" bodyend="9043"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1StorageDescriptor_1a320e4de5e2924a93c1f3916ba7e43a2a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::StorageDescriptor::__set_bucketCols</definition>
+        <argsstring>(const std::vector&lt; std::string &gt; &amp;val)</argsstring>
+        <name>__set_bucketCols</name>
+        <qualifiedname>Apache::Hadoop::Hive::StorageDescriptor::__set_bucketCols</qualifiedname>
+        <param>
+          <type>const std::vector&lt; std::string &gt; &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3195" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="9045" bodyend="9047"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1StorageDescriptor_1a261e75e0bcbb984a5b3545f7cb5aceb3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::StorageDescriptor::__set_sortCols</definition>
+        <argsstring>(const std::vector&lt; Order &gt; &amp;val)</argsstring>
+        <name>__set_sortCols</name>
+        <qualifiedname>Apache::Hadoop::Hive::StorageDescriptor::__set_sortCols</qualifiedname>
+        <param>
+          <type>const std::vector&lt; <ref refid="classApache_1_1Hadoop_1_1Hive_1_1Order" kindref="compound">Order</ref> &gt; &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3197" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="9049" bodyend="9051"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1StorageDescriptor_1ad60bede1a81e27ab7d1f52ce84c51502" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::StorageDescriptor::__set_parameters</definition>
+        <argsstring>(const std::map&lt; std::string, std::string &gt; &amp;val)</argsstring>
+        <name>__set_parameters</name>
+        <qualifiedname>Apache::Hadoop::Hive::StorageDescriptor::__set_parameters</qualifiedname>
+        <param>
+          <type>const std::map&lt; std::string, std::string &gt; &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3199" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="9053" bodyend="9055"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1StorageDescriptor_1a08cfd9272f3b4fe36a796d681a93ce52" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::StorageDescriptor::__set_skewedInfo</definition>
+        <argsstring>(const SkewedInfo &amp;val)</argsstring>
+        <name>__set_skewedInfo</name>
+        <qualifiedname>Apache::Hadoop::Hive::StorageDescriptor::__set_skewedInfo</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1SkewedInfo" kindref="compound">SkewedInfo</ref> &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3201" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="9057" bodyend="9060"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1StorageDescriptor_1a5542bea6682e5301458116efee848c86" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::StorageDescriptor::__set_storedAsSubDirectories</definition>
+        <argsstring>(const bool val)</argsstring>
+        <name>__set_storedAsSubDirectories</name>
+        <qualifiedname>Apache::Hadoop::Hive::StorageDescriptor::__set_storedAsSubDirectories</qualifiedname>
+        <param>
+          <type>const bool</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3203" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="9062" bodyend="9065"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1StorageDescriptor_1aecfc845602d01516beef0f46af83108d" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::StorageDescriptor::operator==</definition>
+        <argsstring>(const StorageDescriptor &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::StorageDescriptor::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1StorageDescriptor" kindref="compound">StorageDescriptor</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3205" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="9363" bodyend="9394"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1StorageDescriptor_1a84808fe358d80a62a7484e36aa1f9edb" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::StorageDescriptor::operator!=</definition>
+        <argsstring>(const StorageDescriptor &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::StorageDescriptor::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1StorageDescriptor" kindref="compound">StorageDescriptor</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3206" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="3206" bodyend="3208"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1StorageDescriptor_1ac5acd599bc9e8d01af768c19906c0308" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::StorageDescriptor::operator&lt;</definition>
+        <argsstring>(const StorageDescriptor &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::StorageDescriptor::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1StorageDescriptor" kindref="compound">StorageDescriptor</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3210" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1StorageDescriptor_1a189aa97fae6509b28681343756e36180" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::StorageDescriptor::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot) override</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::StorageDescriptor::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3212" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="9073" bodyend="9251"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1StorageDescriptor_1a53ef43279c3584ccec371c87f0487b9e" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::StorageDescriptor::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const override</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::StorageDescriptor::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3213" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="9253" bodyend="9344"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1StorageDescriptor_1a8bdd22f6838c8d413ab179b53a860bac" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::StorageDescriptor::printTo</definition>
+        <argsstring>(std::ostream &amp;out) const</argsstring>
+        <name>printTo</name>
+        <qualifiedname>Apache::Hadoop::Hive::StorageDescriptor::printTo</qualifiedname>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3215" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="9427" bodyend="9443"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::StorageDescriptor</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1StorageDescriptor"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="4">
+        <label>Apache::Hadoop::Hive::FieldSchema</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1FieldSchema"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>comment</edgelabel>
+          <edgelabel>name</edgelabel>
+          <edgelabel>type</edgelabel>
+        </childnode>
+        <childnode refid="7" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="13">
+        <label>Apache::Hadoop::Hive::Order</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1Order"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>col</edgelabel>
+        </childnode>
+        <childnode refid="14" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="8">
+        <label>Apache::Hadoop::Hive::SerDeInfo</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1SerDeInfo"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>description</edgelabel>
+          <edgelabel>deserializerClass</edgelabel>
+          <edgelabel>name</edgelabel>
+          <edgelabel>serializationLib</edgelabel>
+          <edgelabel>serializerClass</edgelabel>
+        </childnode>
+        <childnode refid="9" relation="usage">
+          <edgelabel>parameters</edgelabel>
+        </childnode>
+        <childnode refid="10" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="15">
+        <label>Apache::Hadoop::Hive::SkewedInfo</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1SkewedInfo"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="11" relation="usage">
+          <edgelabel>skewedColNames</edgelabel>
+        </childnode>
+        <childnode refid="16" relation="usage">
+          <edgelabel>skewedColValues</edgelabel>
+        </childnode>
+        <childnode refid="17" relation="usage">
+          <edgelabel>skewedColValueLocationMaps</edgelabel>
+        </childnode>
+        <childnode refid="18" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::StorageDescriptor</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1StorageDescriptor"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>cols</edgelabel>
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>inputFormat</edgelabel>
+          <edgelabel>location</edgelabel>
+          <edgelabel>outputFormat</edgelabel>
+        </childnode>
+        <childnode refid="8" relation="usage">
+          <edgelabel>serdeInfo</edgelabel>
+        </childnode>
+        <childnode refid="11" relation="usage">
+          <edgelabel>bucketCols</edgelabel>
+        </childnode>
+        <childnode refid="12" relation="usage">
+          <edgelabel>sortCols</edgelabel>
+        </childnode>
+        <childnode refid="9" relation="usage">
+          <edgelabel>parameters</edgelabel>
+        </childnode>
+        <childnode refid="15" relation="usage">
+          <edgelabel>skewedInfo</edgelabel>
+        </childnode>
+        <childnode refid="19" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="7">
+        <label>Apache::Hadoop::Hive::_FieldSchema__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__FieldSchema____isset"/>
+      </node>
+      <node id="14">
+        <label>Apache::Hadoop::Hive::_Order__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__Order____isset"/>
+      </node>
+      <node id="10">
+        <label>Apache::Hadoop::Hive::_SerDeInfo__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__SerDeInfo____isset"/>
+      </node>
+      <node id="18">
+        <label>Apache::Hadoop::Hive::_SkewedInfo__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__SkewedInfo____isset"/>
+      </node>
+      <node id="19">
+        <label>Apache::Hadoop::Hive::_StorageDescriptor__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__StorageDescriptor____isset"/>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+      <node id="9">
+        <label>std::map&lt; std::string, std::string &gt;</label>
+        <childnode refid="5" relation="usage">
+          <edgelabel>elements</edgelabel>
+          <edgelabel>keys</edgelabel>
+        </childnode>
+      </node>
+      <node id="17">
+        <label>std::map&lt; std::vector&lt; std::string &gt;, std::string &gt;</label>
+        <childnode refid="11" relation="usage">
+          <edgelabel>keys</edgelabel>
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="6">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="5">
+        <label>std::string</label>
+        <childnode refid="6" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::vector&lt; Apache::Hadoop::Hive::FieldSchema &gt;</label>
+        <childnode refid="4" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="12">
+        <label>std::vector&lt; Apache::Hadoop::Hive::Order &gt;</label>
+        <childnode refid="13" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="11">
+        <label>std::vector&lt; std::string &gt;</label>
+        <childnode refid="5" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="16">
+        <label>std::vector&lt; std::vector&lt; std::string &gt; &gt;</label>
+        <childnode refid="11" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3158" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="3158" bodyend="3216"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1StorageDescriptor_1adc6a920a070fdb7cc785326676bd3ad0" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::StorageDescriptor</scope><name>__isset</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1StorageDescriptor_1a320e4de5e2924a93c1f3916ba7e43a2a" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::StorageDescriptor</scope><name>__set_bucketCols</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1StorageDescriptor_1a481d54200d1989bd30e1ccb5f6ee3ed6" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::StorageDescriptor</scope><name>__set_cols</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1StorageDescriptor_1a40bba1602ea66bfa354d25b9a4f070f1" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::StorageDescriptor</scope><name>__set_compressed</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1StorageDescriptor_1addb7dbd0a31fe808251954454fc29af8" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::StorageDescriptor</scope><name>__set_inputFormat</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1StorageDescriptor_1ae671f57879b5d160d3859c6848e3e334" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::StorageDescriptor</scope><name>__set_location</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1StorageDescriptor_1a9812e2016019649b7aca74dca69829d5" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::StorageDescriptor</scope><name>__set_numBuckets</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1StorageDescriptor_1a9673caae5224af337fcc82b341b5d0f2" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::StorageDescriptor</scope><name>__set_outputFormat</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1StorageDescriptor_1ad60bede1a81e27ab7d1f52ce84c51502" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::StorageDescriptor</scope><name>__set_parameters</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1StorageDescriptor_1ae8c9555113507113946a1cccae1ee3e7" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::StorageDescriptor</scope><name>__set_serdeInfo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1StorageDescriptor_1a08cfd9272f3b4fe36a796d681a93ce52" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::StorageDescriptor</scope><name>__set_skewedInfo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1StorageDescriptor_1a261e75e0bcbb984a5b3545f7cb5aceb3" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::StorageDescriptor</scope><name>__set_sortCols</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1StorageDescriptor_1a5542bea6682e5301458116efee848c86" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::StorageDescriptor</scope><name>__set_storedAsSubDirectories</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1StorageDescriptor_1a047b3fb3bc689eaf202d9410e312fc47" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::StorageDescriptor</scope><name>bucketCols</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1StorageDescriptor_1a6ddcaa81747671e26f937e5c6e17f170" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::StorageDescriptor</scope><name>cols</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1StorageDescriptor_1a3d0093e98e0d88ae65bfc5b602d943d4" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::StorageDescriptor</scope><name>compressed</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1StorageDescriptor_1ad17d53c89691ba1a4b0e21cb29c2688d" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::StorageDescriptor</scope><name>inputFormat</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1StorageDescriptor_1a60ebf665ab1ecd13c41ad5615473fd76" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::StorageDescriptor</scope><name>location</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1StorageDescriptor_1a18fec56f35b81f7203edc6531894e307" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::StorageDescriptor</scope><name>numBuckets</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1StorageDescriptor_1a84808fe358d80a62a7484e36aa1f9edb" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::StorageDescriptor</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1StorageDescriptor_1ac5acd599bc9e8d01af768c19906c0308" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::StorageDescriptor</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1StorageDescriptor_1a892b05577428ce5666b25db12240e8ef" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::StorageDescriptor</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1StorageDescriptor_1aecfc845602d01516beef0f46af83108d" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::StorageDescriptor</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1StorageDescriptor_1a1cf062c2372b8228a7b4ffb57ee46a54" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::StorageDescriptor</scope><name>outputFormat</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1StorageDescriptor_1a69cf5a7b60e2692ec4aa6122f789377b" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::StorageDescriptor</scope><name>parameters</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1StorageDescriptor_1a8bdd22f6838c8d413ab179b53a860bac" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::StorageDescriptor</scope><name>printTo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1StorageDescriptor_1a189aa97fae6509b28681343756e36180" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::StorageDescriptor</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1StorageDescriptor_1a995faa17b4e94d0d3a9b1d61904b5800" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::StorageDescriptor</scope><name>serdeInfo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1StorageDescriptor_1a429ea89b593b92f01d6000b3ca3e2819" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::StorageDescriptor</scope><name>skewedInfo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1StorageDescriptor_1a605401d15ccc75a43e4a1b020e742399" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::StorageDescriptor</scope><name>sortCols</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1StorageDescriptor_1af365d8174c5ad6f76943e70aaea853ff" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::StorageDescriptor</scope><name>StorageDescriptor</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1StorageDescriptor_1a2ae1c9b27fa040ef48512c23c27dab10" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::StorageDescriptor</scope><name>StorageDescriptor</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1StorageDescriptor_1a3dba725f7a3dfe6c4642e4ec1fb9437d" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::StorageDescriptor</scope><name>storedAsSubDirectories</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1StorageDescriptor_1a53ef43279c3584ccec371c87f0487b9e" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::StorageDescriptor</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1StorageDescriptor_1a9812853c189365a1bda3fbbefebdfd87" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::StorageDescriptor</scope><name>~StorageDescriptor</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

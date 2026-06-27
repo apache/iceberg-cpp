@@ -1,0 +1,112 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structApache_1_1Hadoop_1_1Hive_1_1__WMCreateOrDropTriggerToPoolMappingRequest____isset" kind="struct" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::_WMCreateOrDropTriggerToPoolMappingRequest__isset</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__WMCreateOrDropTriggerToPoolMappingRequest____isset_1aac1571a0838075f0d52c476c9208acdb" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_WMCreateOrDropTriggerToPoolMappingRequest__isset::resourcePlanName</definition>
+        <argsstring></argsstring>
+        <name>resourcePlanName</name>
+        <qualifiedname>Apache::Hadoop::Hive::_WMCreateOrDropTriggerToPoolMappingRequest__isset::resourcePlanName</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12426" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="12426" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__WMCreateOrDropTriggerToPoolMappingRequest____isset_1ab448b7a92ff543b7a5c20dfc3a3ae461" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_WMCreateOrDropTriggerToPoolMappingRequest__isset::triggerName</definition>
+        <argsstring></argsstring>
+        <name>triggerName</name>
+        <qualifiedname>Apache::Hadoop::Hive::_WMCreateOrDropTriggerToPoolMappingRequest__isset::triggerName</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12427" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="12427" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__WMCreateOrDropTriggerToPoolMappingRequest____isset_1ae1a8af13e0a515863916ee54adeb1857" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_WMCreateOrDropTriggerToPoolMappingRequest__isset::poolPath</definition>
+        <argsstring></argsstring>
+        <name>poolPath</name>
+        <qualifiedname>Apache::Hadoop::Hive::_WMCreateOrDropTriggerToPoolMappingRequest__isset::poolPath</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12428" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="12428" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__WMCreateOrDropTriggerToPoolMappingRequest____isset_1a14e8e64b0342ee13dcb4fd086b3e3453" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_WMCreateOrDropTriggerToPoolMappingRequest__isset::drop</definition>
+        <argsstring></argsstring>
+        <name>drop</name>
+        <qualifiedname>Apache::Hadoop::Hive::_WMCreateOrDropTriggerToPoolMappingRequest__isset::drop</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12429" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="12429" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__WMCreateOrDropTriggerToPoolMappingRequest____isset_1a86ced896bf6f503381b66c60f4ef475a" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_WMCreateOrDropTriggerToPoolMappingRequest__isset::ns</definition>
+        <argsstring></argsstring>
+        <name>ns</name>
+        <qualifiedname>Apache::Hadoop::Hive::_WMCreateOrDropTriggerToPoolMappingRequest__isset::ns</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12430" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="12430" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structApache_1_1Hadoop_1_1Hive_1_1__WMCreateOrDropTriggerToPoolMappingRequest____isset_1a56e564cf6050f353f8fb9b061465c33f" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::_WMCreateOrDropTriggerToPoolMappingRequest__isset::_WMCreateOrDropTriggerToPoolMappingRequest__isset</definition>
+        <argsstring>()</argsstring>
+        <name>_WMCreateOrDropTriggerToPoolMappingRequest__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::_WMCreateOrDropTriggerToPoolMappingRequest__isset::_WMCreateOrDropTriggerToPoolMappingRequest__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12425" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="12425" bodyend="12425"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12424" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="12424" bodyend="12431"/>
+    <listofallmembers>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__WMCreateOrDropTriggerToPoolMappingRequest____isset_1a56e564cf6050f353f8fb9b061465c33f" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_WMCreateOrDropTriggerToPoolMappingRequest__isset</scope><name>_WMCreateOrDropTriggerToPoolMappingRequest__isset</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__WMCreateOrDropTriggerToPoolMappingRequest____isset_1a14e8e64b0342ee13dcb4fd086b3e3453" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_WMCreateOrDropTriggerToPoolMappingRequest__isset</scope><name>drop</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__WMCreateOrDropTriggerToPoolMappingRequest____isset_1a86ced896bf6f503381b66c60f4ef475a" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_WMCreateOrDropTriggerToPoolMappingRequest__isset</scope><name>ns</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__WMCreateOrDropTriggerToPoolMappingRequest____isset_1ae1a8af13e0a515863916ee54adeb1857" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_WMCreateOrDropTriggerToPoolMappingRequest__isset</scope><name>poolPath</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__WMCreateOrDropTriggerToPoolMappingRequest____isset_1aac1571a0838075f0d52c476c9208acdb" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_WMCreateOrDropTriggerToPoolMappingRequest__isset</scope><name>resourcePlanName</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__WMCreateOrDropTriggerToPoolMappingRequest____isset_1ab448b7a92ff543b7a5c20dfc3a3ae461" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_WMCreateOrDropTriggerToPoolMappingRequest__isset</scope><name>triggerName</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

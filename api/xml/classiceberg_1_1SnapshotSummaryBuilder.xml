@@ -1,0 +1,464 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1SnapshotSummaryBuilder" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::SnapshotSummaryBuilder</compoundname>
+    <includes refid="snapshot_8h" local="no">snapshot.h</includes>
+    <innerclass refid="classiceberg_1_1SnapshotSummaryBuilder_1_1UpdateMetrics" prot="private">iceberg::SnapshotSummaryBuilder::UpdateMetrics</innerclass>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1SnapshotSummaryBuilder_1a03971d044d211e91009aaca26e38d169" prot="private" static="no" mutable="no">
+        <type>std::unordered_map&lt; std::string, std::string &gt;</type>
+        <definition>std::unordered_map&lt;std::string, std::string&gt; iceberg::SnapshotSummaryBuilder::properties_</definition>
+        <argsstring></argsstring>
+        <name>properties_</name>
+        <qualifiedname>iceberg::SnapshotSummaryBuilder::properties_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/snapshot.h" line="356" column="22" bodyfile="iceberg/snapshot.h" bodystart="356" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1SnapshotSummaryBuilder_1a035a1284014697003d212a1f210c89c1" prot="private" static="no" mutable="no">
+        <type>std::unordered_map&lt; std::string, UpdateMetrics &gt;</type>
+        <definition>std::unordered_map&lt;std::string, UpdateMetrics&gt; iceberg::SnapshotSummaryBuilder::partition_metrics_</definition>
+        <argsstring></argsstring>
+        <name>partition_metrics_</name>
+        <qualifiedname>iceberg::SnapshotSummaryBuilder::partition_metrics_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/snapshot.h" line="357" column="22" bodyfile="iceberg/snapshot.h" bodystart="357" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1SnapshotSummaryBuilder_1a4131527e39dbddf97c404fa3f798443f" prot="private" static="no" mutable="no">
+        <type>UpdateMetrics</type>
+        <definition>UpdateMetrics iceberg::SnapshotSummaryBuilder::metrics_</definition>
+        <argsstring></argsstring>
+        <name>metrics_</name>
+        <qualifiedname>iceberg::SnapshotSummaryBuilder::metrics_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/snapshot.h" line="358" column="17" bodyfile="iceberg/snapshot.h" bodystart="358" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1SnapshotSummaryBuilder_1adfa086fc64fe0f01d9db7631d3b8fdb9" prot="private" static="no" mutable="no">
+        <type>int32_t</type>
+        <definition>int32_t iceberg::SnapshotSummaryBuilder::max_changed_partitions_for_summaries_</definition>
+        <argsstring></argsstring>
+        <name>max_changed_partitions_for_summaries_</name>
+        <qualifiedname>iceberg::SnapshotSummaryBuilder::max_changed_partitions_for_summaries_</qualifiedname>
+        <initializer>{0}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/snapshot.h" line="359" column="11" bodyfile="iceberg/snapshot.h" bodystart="359" bodyend="359"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1SnapshotSummaryBuilder_1a5341081997f4d55f456933737b4d7275" prot="private" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t iceberg::SnapshotSummaryBuilder::deleted_duplicate_files_</definition>
+        <argsstring></argsstring>
+        <name>deleted_duplicate_files_</name>
+        <qualifiedname>iceberg::SnapshotSummaryBuilder::deleted_duplicate_files_</qualifiedname>
+        <initializer>{0}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/snapshot.h" line="360" column="11" bodyfile="iceberg/snapshot.h" bodystart="360" bodyend="360"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1SnapshotSummaryBuilder_1a4380456b241b7f28a12b86b14cceba07" prot="private" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool iceberg::SnapshotSummaryBuilder::trust_partition_metrics_</definition>
+        <argsstring></argsstring>
+        <name>trust_partition_metrics_</name>
+        <qualifiedname>iceberg::SnapshotSummaryBuilder::trust_partition_metrics_</qualifiedname>
+        <initializer>{true}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/snapshot.h" line="361" column="8" bodyfile="iceberg/snapshot.h" bodystart="361" bodyend="361"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1SnapshotSummaryBuilder_1a1c3971ba0a50a42290677c9602b7e935" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::SnapshotSummaryBuilder::SnapshotSummaryBuilder</definition>
+        <argsstring>()=default</argsstring>
+        <name>SnapshotSummaryBuilder</name>
+        <qualifiedname>iceberg::SnapshotSummaryBuilder::SnapshotSummaryBuilder</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/snapshot.h" line="295" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SnapshotSummaryBuilder_1a07746c22fbb76e97dba0abf08ae6e56a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::SnapshotSummaryBuilder::Clear</definition>
+        <argsstring>()</argsstring>
+        <name>Clear</name>
+        <qualifiedname>iceberg::SnapshotSummaryBuilder::Clear</qualifiedname>
+        <briefdescription>
+<para>Clear all tracked metrics and properties. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/snapshot.h" line="298" column="8" bodyfile="iceberg/snapshot.cc" bodystart="439" bodyend="444"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SnapshotSummaryBuilder_1a9970b49e1f727ed18943ea1d1eb6339b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::SnapshotSummaryBuilder::SetPartitionSummaryLimit</definition>
+        <argsstring>(int32_t max)</argsstring>
+        <name>SetPartitionSummaryLimit</name>
+        <qualifiedname>iceberg::SnapshotSummaryBuilder::SetPartitionSummaryLimit</qualifiedname>
+        <param>
+          <type>int32_t</type>
+          <declname>max</declname>
+        </param>
+        <briefdescription>
+<para>Set the maximum number of changed partitions before partition summaries will be excluded. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>If the number of changed partitions is over this max, summaries will not be included. If the number of changed partitions is &lt;= this limit, then partition-level summaries will be included in the summary if they are available, and &quot;partition-summaries-included&quot; will be set to &quot;true&quot;.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>max</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Maximum number of changed partitions </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/snapshot.h" line="309" column="8" bodyfile="iceberg/snapshot.cc" bodystart="446" bodyend="448"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SnapshotSummaryBuilder_1a1c9ced4a939478c331660d8e36eb6c96" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::SnapshotSummaryBuilder::IncrementDuplicateDeletes</definition>
+        <argsstring>(int32_t increment=1)</argsstring>
+        <name>IncrementDuplicateDeletes</name>
+        <qualifiedname>iceberg::SnapshotSummaryBuilder::IncrementDuplicateDeletes</qualifiedname>
+        <param>
+          <type>int32_t</type>
+          <declname>increment</declname>
+          <defval>1</defval>
+        </param>
+        <briefdescription>
+<para>Increment the count of duplicate files deleted by a specific amount. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>increment</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Amount to increment by. Defaults to 1. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/snapshot.h" line="314" column="8" bodyfile="iceberg/snapshot.cc" bodystart="450" bodyend="452"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SnapshotSummaryBuilder_1a5b143effb1da9b3a86471d565fee3d9a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::SnapshotSummaryBuilder::AddedFile</definition>
+        <argsstring>(const PartitionSpec &amp;spec, const DataFile &amp;file)</argsstring>
+        <name>AddedFile</name>
+        <qualifiedname>iceberg::SnapshotSummaryBuilder::AddedFile</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1PartitionSpec" kindref="compound">PartitionSpec</ref> &amp;</type>
+          <declname>spec</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref> &amp;</type>
+          <declname>file</declname>
+        </param>
+        <briefdescription>
+<para>Track a data file being added to the snapshot. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>spec</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The partition spec </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>file</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The data file being added </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Status indicating success or error </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/snapshot.h" line="321" column="10" bodyfile="iceberg/snapshot.cc" bodystart="454" bodyend="459"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SnapshotSummaryBuilder_1a21eb0bd3439a3a5365eeb90eec958843" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::SnapshotSummaryBuilder::DeletedFile</definition>
+        <argsstring>(const PartitionSpec &amp;spec, const DataFile &amp;file)</argsstring>
+        <name>DeletedFile</name>
+        <qualifiedname>iceberg::SnapshotSummaryBuilder::DeletedFile</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1PartitionSpec" kindref="compound">PartitionSpec</ref> &amp;</type>
+          <declname>spec</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref> &amp;</type>
+          <declname>file</declname>
+        </param>
+        <briefdescription>
+<para>Track a data file being deleted from the snapshot. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>spec</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The partition spec </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>file</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The data file being deleted </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Status indicating success or error </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/snapshot.h" line="328" column="10" bodyfile="iceberg/snapshot.cc" bodystart="461" bodyend="466"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SnapshotSummaryBuilder_1a3e55f4d560771c5263995c8d8db1ce59" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::SnapshotSummaryBuilder::AddedManifest</definition>
+        <argsstring>(const ManifestFile &amp;manifest)</argsstring>
+        <name>AddedManifest</name>
+        <qualifiedname>iceberg::SnapshotSummaryBuilder::AddedManifest</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1ManifestFile" kindref="compound">ManifestFile</ref> &amp;</type>
+          <declname>manifest</declname>
+        </param>
+        <briefdescription>
+<para>Track a manifest being added. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>manifest</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The manifest file being added </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/snapshot.h" line="333" column="8" bodyfile="iceberg/snapshot.cc" bodystart="468" bodyend="472"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SnapshotSummaryBuilder_1ae91354da44db1184e0eedccecf5b3845" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::SnapshotSummaryBuilder::Set</definition>
+        <argsstring>(const std::string &amp;property, const std::string &amp;value)</argsstring>
+        <name>Set</name>
+        <qualifiedname>iceberg::SnapshotSummaryBuilder::Set</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>property</declname>
+        </param>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>value</declname>
+        </param>
+        <briefdescription>
+<para>Set a custom summary property. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>property</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Property name </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>value</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Property value </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/snapshot.h" line="339" column="8" bodyfile="iceberg/snapshot.cc" bodystart="474" bodyend="476"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SnapshotSummaryBuilder_1a70d4d20ae405dc0ff8e6119332f26d80" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::SnapshotSummaryBuilder::Merge</definition>
+        <argsstring>(const SnapshotSummaryBuilder &amp;other)</argsstring>
+        <name>Merge</name>
+        <qualifiedname>iceberg::SnapshotSummaryBuilder::Merge</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1SnapshotSummaryBuilder" kindref="compound">SnapshotSummaryBuilder</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+<para>Merge another builder&apos;s metrics into this one. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>other</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The builder to merge from </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/snapshot.h" line="344" column="8" bodyfile="iceberg/snapshot.cc" bodystart="478" bodyend="494"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SnapshotSummaryBuilder_1a882193f24962a5f7fe76b9c2d2230600" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>std::unordered_map&lt; std::string, std::string &gt;</type>
+        <definition>std::unordered_map&lt; std::string, std::string &gt; iceberg::SnapshotSummaryBuilder::Build</definition>
+        <argsstring>() const</argsstring>
+        <name>Build</name>
+        <qualifiedname>iceberg::SnapshotSummaryBuilder::Build</qualifiedname>
+        <briefdescription>
+<para>Build the final summary map. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>Map of summary properties </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/snapshot.h" line="349" column="22" bodyfile="iceberg/snapshot.cc" bodystart="496" bodyend="525"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classiceberg_1_1SnapshotSummaryBuilder_1a6319ef43a8269493fec1752a718cafb9" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::SnapshotSummaryBuilder::UpdatePartitions</definition>
+        <argsstring>(const PartitionSpec &amp;spec, const DataFile &amp;file, bool is_addition)</argsstring>
+        <name>UpdatePartitions</name>
+        <qualifiedname>iceberg::SnapshotSummaryBuilder::UpdatePartitions</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1PartitionSpec" kindref="compound">PartitionSpec</ref> &amp;</type>
+          <declname>spec</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref> &amp;</type>
+          <declname>file</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>is_addition</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/snapshot.h" line="352" column="10" bodyfile="iceberg/snapshot.cc" bodystart="527" bodyend="540"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SnapshotSummaryBuilder_1a6956d2e058674d6fb8c6cccf20aa9871" prot="private" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>std::string</type>
+        <definition>std::string iceberg::SnapshotSummaryBuilder::PartitionSummary</definition>
+        <argsstring>(const UpdateMetrics &amp;metrics) const</argsstring>
+        <name>PartitionSummary</name>
+        <qualifiedname>iceberg::SnapshotSummaryBuilder::PartitionSummary</qualifiedname>
+        <param>
+          <type>const UpdateMetrics &amp;</type>
+          <declname>metrics</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/snapshot.h" line="354" column="15" bodyfile="iceberg/snapshot.cc" bodystart="542" bodyend="557"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Helper class for building snapshot summaries. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>This class provides methods to track changes to data and delete files, and produces a map of summary properties for snapshot metadata. </para>
+    </detaileddescription>
+    <location file="iceberg/snapshot.h" line="260" column="1" bodyfile="iceberg/snapshot.h" bodystart="260" bodyend="362"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1SnapshotSummaryBuilder_1a5b143effb1da9b3a86471d565fee3d9a" prot="public" virt="non-virtual"><scope>iceberg::SnapshotSummaryBuilder</scope><name>AddedFile</name></member>
+      <member refid="classiceberg_1_1SnapshotSummaryBuilder_1a3e55f4d560771c5263995c8d8db1ce59" prot="public" virt="non-virtual"><scope>iceberg::SnapshotSummaryBuilder</scope><name>AddedManifest</name></member>
+      <member refid="classiceberg_1_1SnapshotSummaryBuilder_1a882193f24962a5f7fe76b9c2d2230600" prot="public" virt="non-virtual"><scope>iceberg::SnapshotSummaryBuilder</scope><name>Build</name></member>
+      <member refid="classiceberg_1_1SnapshotSummaryBuilder_1a07746c22fbb76e97dba0abf08ae6e56a" prot="public" virt="non-virtual"><scope>iceberg::SnapshotSummaryBuilder</scope><name>Clear</name></member>
+      <member refid="classiceberg_1_1SnapshotSummaryBuilder_1a5341081997f4d55f456933737b4d7275" prot="private" virt="non-virtual"><scope>iceberg::SnapshotSummaryBuilder</scope><name>deleted_duplicate_files_</name></member>
+      <member refid="classiceberg_1_1SnapshotSummaryBuilder_1a21eb0bd3439a3a5365eeb90eec958843" prot="public" virt="non-virtual"><scope>iceberg::SnapshotSummaryBuilder</scope><name>DeletedFile</name></member>
+      <member refid="classiceberg_1_1SnapshotSummaryBuilder_1a1c9ced4a939478c331660d8e36eb6c96" prot="public" virt="non-virtual"><scope>iceberg::SnapshotSummaryBuilder</scope><name>IncrementDuplicateDeletes</name></member>
+      <member refid="classiceberg_1_1SnapshotSummaryBuilder_1adfa086fc64fe0f01d9db7631d3b8fdb9" prot="private" virt="non-virtual"><scope>iceberg::SnapshotSummaryBuilder</scope><name>max_changed_partitions_for_summaries_</name></member>
+      <member refid="classiceberg_1_1SnapshotSummaryBuilder_1a70d4d20ae405dc0ff8e6119332f26d80" prot="public" virt="non-virtual"><scope>iceberg::SnapshotSummaryBuilder</scope><name>Merge</name></member>
+      <member refid="classiceberg_1_1SnapshotSummaryBuilder_1a4131527e39dbddf97c404fa3f798443f" prot="private" virt="non-virtual"><scope>iceberg::SnapshotSummaryBuilder</scope><name>metrics_</name></member>
+      <member refid="classiceberg_1_1SnapshotSummaryBuilder_1a035a1284014697003d212a1f210c89c1" prot="private" virt="non-virtual"><scope>iceberg::SnapshotSummaryBuilder</scope><name>partition_metrics_</name></member>
+      <member refid="classiceberg_1_1SnapshotSummaryBuilder_1a6956d2e058674d6fb8c6cccf20aa9871" prot="private" virt="non-virtual"><scope>iceberg::SnapshotSummaryBuilder</scope><name>PartitionSummary</name></member>
+      <member refid="classiceberg_1_1SnapshotSummaryBuilder_1a03971d044d211e91009aaca26e38d169" prot="private" virt="non-virtual"><scope>iceberg::SnapshotSummaryBuilder</scope><name>properties_</name></member>
+      <member refid="classiceberg_1_1SnapshotSummaryBuilder_1ae91354da44db1184e0eedccecf5b3845" prot="public" virt="non-virtual"><scope>iceberg::SnapshotSummaryBuilder</scope><name>Set</name></member>
+      <member refid="classiceberg_1_1SnapshotSummaryBuilder_1a9970b49e1f727ed18943ea1d1eb6339b" prot="public" virt="non-virtual"><scope>iceberg::SnapshotSummaryBuilder</scope><name>SetPartitionSummaryLimit</name></member>
+      <member refid="classiceberg_1_1SnapshotSummaryBuilder_1a1c3971ba0a50a42290677c9602b7e935" prot="public" virt="non-virtual"><scope>iceberg::SnapshotSummaryBuilder</scope><name>SnapshotSummaryBuilder</name></member>
+      <member refid="classiceberg_1_1SnapshotSummaryBuilder_1a4380456b241b7f28a12b86b14cceba07" prot="private" virt="non-virtual"><scope>iceberg::SnapshotSummaryBuilder</scope><name>trust_partition_metrics_</name></member>
+      <member refid="classiceberg_1_1SnapshotSummaryBuilder_1a6319ef43a8269493fec1752a718cafb9" prot="private" virt="non-virtual"><scope>iceberg::SnapshotSummaryBuilder</scope><name>UpdatePartitions</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,209 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1rest_1_1FetchScanTasksResponse" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::rest::FetchScanTasksResponse</compoundname>
+    <includes refid="types_8h" local="no">types.h</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1rest_1_1FetchScanTasksResponse_1a8bf2174aa8bf35e1ffcb37ba90c4b660" prot="public" static="no" mutable="no">
+        <type>std::optional&lt; std::vector&lt; std::string &gt; &gt;</type>
+        <definition>std::optional&lt;std::vector&lt;std::string&gt; &gt; iceberg::rest::FetchScanTasksResponse::plan_tasks</definition>
+        <argsstring></argsstring>
+        <name>plan_tasks</name>
+        <qualifiedname>iceberg::rest::FetchScanTasksResponse::plan_tasks</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/types.h" line="373" column="17" bodyfile="iceberg/catalog/rest/types.h" bodystart="373" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1rest_1_1FetchScanTasksResponse_1a6100f3408685c2880ccd84ba4cceb990" prot="public" static="no" mutable="no">
+        <type>std::optional&lt; std::vector&lt; std::shared_ptr&lt; <ref refid="classiceberg_1_1FileScanTask" kindref="compound">FileScanTask</ref> &gt; &gt; &gt;</type>
+        <definition>std::optional&lt;std::vector&lt;std::shared_ptr&lt;FileScanTask&gt; &gt; &gt; iceberg::rest::FetchScanTasksResponse::file_scan_tasks</definition>
+        <argsstring></argsstring>
+        <name>file_scan_tasks</name>
+        <qualifiedname>iceberg::rest::FetchScanTasksResponse::file_scan_tasks</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/types.h" line="374" column="17" bodyfile="iceberg/catalog/rest/types.h" bodystart="374" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1rest_1_1FetchScanTasksResponse_1a04ccbf1ee7f6721c22b7be368c8bb563" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; std::shared_ptr&lt; <ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref> &gt; &gt;</type>
+        <definition>std::vector&lt;std::shared_ptr&lt;DataFile&gt; &gt; iceberg::rest::FetchScanTasksResponse::delete_files</definition>
+        <argsstring></argsstring>
+        <name>delete_files</name>
+        <qualifiedname>iceberg::rest::FetchScanTasksResponse::delete_files</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/types.h" line="375" column="15" bodyfile="iceberg/catalog/rest/types.h" bodystart="375" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structiceberg_1_1rest_1_1FetchScanTasksResponse_1a5879f2cd7e32f0e67fdd7ec7489ad1fa" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::rest::FetchScanTasksResponse::Validate</definition>
+        <argsstring>() const</argsstring>
+        <name>Validate</name>
+        <qualifiedname>iceberg::rest::FetchScanTasksResponse::Validate</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/types.h" line="377" column="10" bodyfile="iceberg/catalog/rest/types.cc" bodystart="349" bodyend="360"/>
+      </memberdef>
+      <memberdef kind="function" id="structiceberg_1_1rest_1_1FetchScanTasksResponse_1a4b26bda0b83dc8b680769f1f9cce9721" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::rest::FetchScanTasksResponse::operator==</definition>
+        <argsstring>(const FetchScanTasksResponse &amp;) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>iceberg::rest::FetchScanTasksResponse::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1rest_1_1FetchScanTasksResponse" kindref="compound">FetchScanTasksResponse</ref> &amp;</type>
+          <defname>other</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/types.h" line="379" column="8" bodyfile="iceberg/catalog/rest/types.cc" bodystart="245" bodyend="247"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Response containing the file scan tasks for a given plan task token. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="4">
+        <label>iceberg::DataFile</label>
+        <link refid="structiceberg_1_1DataFile"/>
+        <childnode refid="5" relation="usage">
+          <edgelabel>file_path</edgelabel>
+          <edgelabel>kPartitionDoc</edgelabel>
+          <edgelabel>kPartitionField</edgelabel>
+        </childnode>
+        <childnode refid="7" relation="usage">
+          <edgelabel>partition</edgelabel>
+        </childnode>
+        <childnode refid="9" relation="usage">
+          <edgelabel>column_sizes</edgelabel>
+          <edgelabel>nan_value_counts</edgelabel>
+          <edgelabel>null_value_counts</edgelabel>
+          <edgelabel>value_counts</edgelabel>
+        </childnode>
+        <childnode refid="10" relation="usage">
+          <edgelabel>lower_bounds</edgelabel>
+          <edgelabel>upper_bounds</edgelabel>
+        </childnode>
+        <childnode refid="11" relation="usage">
+          <edgelabel>key_metadata</edgelabel>
+        </childnode>
+        <childnode refid="12" relation="usage">
+          <edgelabel>split_offsets</edgelabel>
+        </childnode>
+        <childnode refid="13" relation="usage">
+          <edgelabel>equality_ids</edgelabel>
+        </childnode>
+        <childnode refid="14" relation="usage">
+          <edgelabel>kColumnSizes</edgelabel>
+          <edgelabel>kContent</edgelabel>
+          <edgelabel>kContentOffset</edgelabel>
+          <edgelabel>kContentSize</edgelabel>
+          <edgelabel>kEqualityIds</edgelabel>
+          <edgelabel>kFileFormat</edgelabel>
+          <edgelabel>kFilePath</edgelabel>
+          <edgelabel>kFileSize</edgelabel>
+          <edgelabel>kFirstRowId</edgelabel>
+          <edgelabel>kKeyMetadata</edgelabel>
+          <edgelabel>...</edgelabel>
+        </childnode>
+      </node>
+      <node id="7">
+        <label>iceberg::PartitionValues</label>
+        <link refid="classiceberg_1_1PartitionValues"/>
+        <childnode refid="8" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="14">
+        <label>iceberg::SchemaField</label>
+        <link refid="classiceberg_1_1SchemaField"/>
+        <childnode refid="15" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="8">
+        <label>iceberg::StructLike</label>
+        <link refid="classiceberg_1_1StructLike"/>
+      </node>
+      <node id="1">
+        <label>iceberg::rest::FetchScanTasksResponse</label>
+        <link refid="structiceberg_1_1rest_1_1FetchScanTasksResponse"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>delete_files</edgelabel>
+        </childnode>
+      </node>
+      <node id="15">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+      <node id="9">
+        <label>std::map&lt; int32_t, int64_t &gt;</label>
+      </node>
+      <node id="10">
+        <label>std::map&lt; int32_t, std::vector&lt; uint8_t &gt; &gt;</label>
+        <childnode refid="11" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::shared_ptr&lt; iceberg::DataFile &gt;</label>
+        <childnode refid="4" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="6">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="5">
+        <label>std::string</label>
+        <childnode refid="6" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="13">
+        <label>std::vector&lt; int32_t &gt;</label>
+      </node>
+      <node id="12">
+        <label>std::vector&lt; int64_t &gt;</label>
+      </node>
+      <node id="2">
+        <label>std::vector&lt; std::shared_ptr&lt; iceberg::DataFile &gt; &gt;</label>
+        <childnode refid="3" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="11">
+        <label>std::vector&lt; uint8_t &gt;</label>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/rest/types.h" line="372" column="1" bodyfile="iceberg/catalog/rest/types.h" bodystart="372" bodyend="380"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1rest_1_1FetchScanTasksResponse_1a04ccbf1ee7f6721c22b7be368c8bb563" prot="public" virt="non-virtual"><scope>iceberg::rest::FetchScanTasksResponse</scope><name>delete_files</name></member>
+      <member refid="structiceberg_1_1rest_1_1FetchScanTasksResponse_1a6100f3408685c2880ccd84ba4cceb990" prot="public" virt="non-virtual"><scope>iceberg::rest::FetchScanTasksResponse</scope><name>file_scan_tasks</name></member>
+      <member refid="structiceberg_1_1rest_1_1FetchScanTasksResponse_1a4b26bda0b83dc8b680769f1f9cce9721" prot="public" virt="non-virtual"><scope>iceberg::rest::FetchScanTasksResponse</scope><name>operator==</name></member>
+      <member refid="structiceberg_1_1rest_1_1FetchScanTasksResponse_1a8bf2174aa8bf35e1ffcb37ba90c4b660" prot="public" virt="non-virtual"><scope>iceberg::rest::FetchScanTasksResponse</scope><name>plan_tasks</name></member>
+      <member refid="structiceberg_1_1rest_1_1FetchScanTasksResponse_1a5879f2cd7e32f0e67fdd7ec7489ad1fa" prot="public" virt="non-virtual"><scope>iceberg::rest::FetchScanTasksResponse</scope><name>Validate</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

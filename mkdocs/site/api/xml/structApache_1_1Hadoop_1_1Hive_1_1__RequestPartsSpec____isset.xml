@@ -1,0 +1,64 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structApache_1_1Hadoop_1_1Hive_1_1__RequestPartsSpec____isset" kind="struct" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::_RequestPartsSpec__isset</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__RequestPartsSpec____isset_1a3d77b23d5c97a397f00fe50fe37cf126" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_RequestPartsSpec__isset::names</definition>
+        <argsstring></argsstring>
+        <name>names</name>
+        <qualifiedname>Apache::Hadoop::Hive::_RequestPartsSpec__isset::names</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="5995" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="5995" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__RequestPartsSpec____isset_1abf301e884b1a0a2d2b2fdfbddb212048" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_RequestPartsSpec__isset::exprs</definition>
+        <argsstring></argsstring>
+        <name>exprs</name>
+        <qualifiedname>Apache::Hadoop::Hive::_RequestPartsSpec__isset::exprs</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="5996" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="5996" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structApache_1_1Hadoop_1_1Hive_1_1__RequestPartsSpec____isset_1ac0344ddc02849210cf10834c9eb06258" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::_RequestPartsSpec__isset::_RequestPartsSpec__isset</definition>
+        <argsstring>()</argsstring>
+        <name>_RequestPartsSpec__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::_RequestPartsSpec__isset::_RequestPartsSpec__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="5994" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="5994" bodyend="5994"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="5993" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="5993" bodyend="5997"/>
+    <listofallmembers>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__RequestPartsSpec____isset_1ac0344ddc02849210cf10834c9eb06258" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_RequestPartsSpec__isset</scope><name>_RequestPartsSpec__isset</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__RequestPartsSpec____isset_1abf301e884b1a0a2d2b2fdfbddb212048" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_RequestPartsSpec__isset</scope><name>exprs</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__RequestPartsSpec____isset_1a3d77b23d5c97a397f00fe50fe37cf126" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_RequestPartsSpec__isset</scope><name>names</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

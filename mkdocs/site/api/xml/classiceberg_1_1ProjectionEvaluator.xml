@@ -1,0 +1,133 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1ProjectionEvaluator" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::ProjectionEvaluator</compoundname>
+    <includes refid="projections_8h" local="no">projections.h</includes>
+    <sectiondef kind="friend">
+      <memberdef kind="friend" id="classiceberg_1_1ProjectionEvaluator_1adfb25668d9909c5f21bcd2b1a2558db6" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>class</type>
+        <definition>friend class Projections</definition>
+        <argsstring></argsstring>
+        <name>Projections</name>
+        <qualifiedname>iceberg::ProjectionEvaluator::Projections</qualifiedname>
+        <param>
+          <type><ref refid="structiceberg_1_1Projections" kindref="compound">Projections</ref></type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/projections.h" line="46" column="16" bodyfile="iceberg/expression/projections.h" bodystart="46" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1ProjectionEvaluator_1a9e3d4412eac86bf7201fcbb530cd29cc" prot="private" static="no" mutable="no">
+        <type>std::unique_ptr&lt; <ref refid="classiceberg_1_1ProjectionVisitor" kindref="compound">ProjectionVisitor</ref> &gt;</type>
+        <definition>std::unique_ptr&lt;ProjectionVisitor&gt; iceberg::ProjectionEvaluator::visitor_</definition>
+        <argsstring></argsstring>
+        <name>visitor_</name>
+        <qualifiedname>iceberg::ProjectionEvaluator::visitor_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/projections.h" line="53" column="19" bodyfile="iceberg/expression/projections.h" bodystart="53" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1ProjectionEvaluator_1ab8cd353902382f61ea19871e361aaf52" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::ProjectionEvaluator::~ProjectionEvaluator</definition>
+        <argsstring>()</argsstring>
+        <name>~ProjectionEvaluator</name>
+        <qualifiedname>iceberg::ProjectionEvaluator::~ProjectionEvaluator</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/projections.h" line="37" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ProjectionEvaluator_1a359328c63313ae3a0b6a5e205b8c9802" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::shared_ptr&lt; <ref refid="classiceberg_1_1Expression" kindref="compound">Expression</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::shared_ptr&lt; Expression &gt; &gt; iceberg::ProjectionEvaluator::Project</definition>
+        <argsstring>(const std::shared_ptr&lt; Expression &gt; &amp;expr)</argsstring>
+        <name>Project</name>
+        <qualifiedname>iceberg::ProjectionEvaluator::Project</qualifiedname>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1Expression" kindref="compound">Expression</ref> &gt; &amp;</type>
+          <declname>expr</declname>
+        </param>
+        <briefdescription>
+<para>Project the given row expression to a partition expression. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>expr</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>an expression on data rows </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>an expression on partition data (depends on the projection) </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/projections.h" line="43" column="10" bodyfile="iceberg/expression/projections.cc" bodystart="176" bodyend="186"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classiceberg_1_1ProjectionEvaluator_1a429641841cb6fe14fa92c24f1d818026" prot="private" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::ProjectionEvaluator::ProjectionEvaluator</definition>
+        <argsstring>(std::unique_ptr&lt; class ProjectionVisitor &gt; visitor)</argsstring>
+        <name>ProjectionEvaluator</name>
+        <qualifiedname>iceberg::ProjectionEvaluator::ProjectionEvaluator</qualifiedname>
+        <param>
+          <type>std::unique_ptr&lt; class <ref refid="classiceberg_1_1ProjectionVisitor" kindref="compound">ProjectionVisitor</ref> &gt;</type>
+          <declname>visitor</declname>
+        </param>
+        <briefdescription>
+<para>Create a <ref refid="classiceberg_1_1ProjectionEvaluator" kindref="compound">ProjectionEvaluator</ref>. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>visitor</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The projection visitor to use </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/projections.h" line="51" column="12" bodyfile="iceberg/expression/projections.cc" bodystart="83" bodyend="84"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>A class that projects expressions for a table&apos;s data rows into expressions on the table&apos;s partition values, for a table&apos;s partition spec. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/expression/projections.h" line="35" column="1" bodyfile="iceberg/expression/projections.h" bodystart="35" bodyend="54"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1ProjectionEvaluator_1a359328c63313ae3a0b6a5e205b8c9802" prot="public" virt="non-virtual"><scope>iceberg::ProjectionEvaluator</scope><name>Project</name></member>
+      <member refid="classiceberg_1_1ProjectionEvaluator_1a429641841cb6fe14fa92c24f1d818026" prot="private" virt="non-virtual"><scope>iceberg::ProjectionEvaluator</scope><name>ProjectionEvaluator</name></member>
+      <member refid="classiceberg_1_1ProjectionEvaluator_1adfb25668d9909c5f21bcd2b1a2558db6" prot="private" virt="non-virtual"><scope>iceberg::ProjectionEvaluator</scope><name>Projections</name></member>
+      <member refid="classiceberg_1_1ProjectionEvaluator_1a9e3d4412eac86bf7201fcbb530cd29cc" prot="private" virt="non-virtual"><scope>iceberg::ProjectionEvaluator</scope><name>visitor_</name></member>
+      <member refid="classiceberg_1_1ProjectionEvaluator_1ab8cd353902382f61ea19871e361aaf52" prot="public" virt="non-virtual"><scope>iceberg::ProjectionEvaluator</scope><name>~ProjectionEvaluator</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

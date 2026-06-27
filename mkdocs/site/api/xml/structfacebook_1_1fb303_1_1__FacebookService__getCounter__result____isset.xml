@@ -1,0 +1,48 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structfacebook_1_1fb303_1_1__FacebookService__getCounter__result____isset" kind="struct" language="C++" prot="public">
+    <compoundname>facebook::fb303::_FacebookService_getCounter_result__isset</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfacebook_1_1fb303_1_1__FacebookService__getCounter__result____isset_1ae74af3e6c1a587c6fd1de70c8fe11bce" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool facebook::fb303::_FacebookService_getCounter_result__isset::success</definition>
+        <argsstring></argsstring>
+        <name>success</name>
+        <qualifiedname>facebook::fb303::_FacebookService_getCounter_result__isset::success</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="640" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.h" bodystart="640" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structfacebook_1_1fb303_1_1__FacebookService__getCounter__result____isset_1a9c1892432a4f624e5588c6cc71f3b4e0" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>facebook::fb303::_FacebookService_getCounter_result__isset::_FacebookService_getCounter_result__isset</definition>
+        <argsstring>()</argsstring>
+        <name>_FacebookService_getCounter_result__isset</name>
+        <qualifiedname>facebook::fb303::_FacebookService_getCounter_result__isset::_FacebookService_getCounter_result__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="639" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.h" bodystart="639" bodyend="639"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="638" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.h" bodystart="638" bodyend="641"/>
+    <listofallmembers>
+      <member refid="structfacebook_1_1fb303_1_1__FacebookService__getCounter__result____isset_1a9c1892432a4f624e5588c6cc71f3b4e0" prot="public" virt="non-virtual"><scope>facebook::fb303::_FacebookService_getCounter_result__isset</scope><name>_FacebookService_getCounter_result__isset</name></member>
+      <member refid="structfacebook_1_1fb303_1_1__FacebookService__getCounter__result____isset_1ae74af3e6c1a587c6fd1de70c8fe11bce" prot="public" virt="non-virtual"><scope>facebook::fb303::_FacebookService_getCounter_result__isset</scope><name>success</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

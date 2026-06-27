@@ -1,0 +1,128 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structApache_1_1Hadoop_1_1Hive_1_1__HiveObjectRef____isset" kind="struct" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::_HiveObjectRef__isset</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__HiveObjectRef____isset_1ad6c8f4edc83b9ce933e29acf65ce1135" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_HiveObjectRef__isset::objectType</definition>
+        <argsstring></argsstring>
+        <name>objectType</name>
+        <qualifiedname>Apache::Hadoop::Hive::_HiveObjectRef__isset::objectType</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1872" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="1872" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__HiveObjectRef____isset_1a01e2f3a0effc33d8b633a4e98898132a" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_HiveObjectRef__isset::dbName</definition>
+        <argsstring></argsstring>
+        <name>dbName</name>
+        <qualifiedname>Apache::Hadoop::Hive::_HiveObjectRef__isset::dbName</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1873" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="1873" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__HiveObjectRef____isset_1aae15e4dd2a48745c84ac7d608f9b8572" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_HiveObjectRef__isset::objectName</definition>
+        <argsstring></argsstring>
+        <name>objectName</name>
+        <qualifiedname>Apache::Hadoop::Hive::_HiveObjectRef__isset::objectName</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1874" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="1874" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__HiveObjectRef____isset_1a28df7862e971ed41ecb8c15f5f9d905f" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_HiveObjectRef__isset::partValues</definition>
+        <argsstring></argsstring>
+        <name>partValues</name>
+        <qualifiedname>Apache::Hadoop::Hive::_HiveObjectRef__isset::partValues</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1875" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="1875" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__HiveObjectRef____isset_1ad99aed02c0d3e5142b7f33f4761b3e4d" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_HiveObjectRef__isset::columnName</definition>
+        <argsstring></argsstring>
+        <name>columnName</name>
+        <qualifiedname>Apache::Hadoop::Hive::_HiveObjectRef__isset::columnName</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1876" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="1876" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__HiveObjectRef____isset_1a8f0563d69a035c13118ebb727fdec2a0" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_HiveObjectRef__isset::catName</definition>
+        <argsstring></argsstring>
+        <name>catName</name>
+        <qualifiedname>Apache::Hadoop::Hive::_HiveObjectRef__isset::catName</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1877" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="1877" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structApache_1_1Hadoop_1_1Hive_1_1__HiveObjectRef____isset_1a95891a1a9d9d1c7f8fa745a6e89a0d8f" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::_HiveObjectRef__isset::_HiveObjectRef__isset</definition>
+        <argsstring>()</argsstring>
+        <name>_HiveObjectRef__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::_HiveObjectRef__isset::_HiveObjectRef__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1871" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="1871" bodyend="1871"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1870" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="1870" bodyend="1878"/>
+    <listofallmembers>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__HiveObjectRef____isset_1a95891a1a9d9d1c7f8fa745a6e89a0d8f" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_HiveObjectRef__isset</scope><name>_HiveObjectRef__isset</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__HiveObjectRef____isset_1a8f0563d69a035c13118ebb727fdec2a0" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_HiveObjectRef__isset</scope><name>catName</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__HiveObjectRef____isset_1ad99aed02c0d3e5142b7f33f4761b3e4d" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_HiveObjectRef__isset</scope><name>columnName</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__HiveObjectRef____isset_1a01e2f3a0effc33d8b633a4e98898132a" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_HiveObjectRef__isset</scope><name>dbName</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__HiveObjectRef____isset_1aae15e4dd2a48745c84ac7d608f9b8572" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_HiveObjectRef__isset</scope><name>objectName</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__HiveObjectRef____isset_1ad6c8f4edc83b9ce933e29acf65ce1135" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_HiveObjectRef__isset</scope><name>objectType</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__HiveObjectRef____isset_1a28df7862e971ed41ecb8c15f5f9d905f" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_HiveObjectRef__isset</scope><name>partValues</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

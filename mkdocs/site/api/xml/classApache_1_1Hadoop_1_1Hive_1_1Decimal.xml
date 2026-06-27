@@ -1,0 +1,300 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1Decimal" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::Decimal</compoundname>
+    <basecompoundref prot="public" virt="virtual">apache::thrift::TBase</basecompoundref>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1Decimal_1a05be9003ce2aa1997568ccf40f2220f8" prot="public" static="no" mutable="no">
+        <type>int16_t</type>
+        <definition>int16_t Apache::Hadoop::Hive::Decimal::scale</definition>
+        <argsstring></argsstring>
+        <name>scale</name>
+        <qualifiedname>Apache::Hadoop::Hive::Decimal::scale</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3533" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="3533" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1Decimal_1abcf629a646c2ab5f3aa1a6723eeb218c" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::Decimal::unscaled</definition>
+        <argsstring></argsstring>
+        <name>unscaled</name>
+        <qualifiedname>Apache::Hadoop::Hive::Decimal::unscaled</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3534" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="3534" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1Decimal_1ae5b335a8db31b146299e8920c4947844" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::Decimal::Decimal</definition>
+        <argsstring>(const Decimal &amp;)</argsstring>
+        <name>Decimal</name>
+        <qualifiedname>Apache::Hadoop::Hive::Decimal::Decimal</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1Decimal" kindref="compound">Decimal</ref> &amp;</type>
+          <defname>other356</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3528" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="10915" bodyend="10918"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1Decimal_1ac19e96ffc520f4e929ff2af502da3333" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1Decimal" kindref="compound">Decimal</ref> &amp;</type>
+        <definition>Decimal &amp; Apache::Hadoop::Hive::Decimal::operator=</definition>
+        <argsstring>(const Decimal &amp;)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::Decimal::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1Decimal" kindref="compound">Decimal</ref> &amp;</type>
+          <defname>other357</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3529" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="10919" bodyend="10923"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1Decimal_1aeb6aa0bd5b61f9314f2c5b0c078d6cee" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::Decimal::Decimal</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>Decimal</name>
+        <qualifiedname>Apache::Hadoop::Hive::Decimal::Decimal</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3530" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="10808" bodyend="10811"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1Decimal_1a8d79863622d3276899ab32294398ea7e" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::Decimal::~Decimal</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~Decimal</name>
+        <qualifiedname>Apache::Hadoop::Hive::Decimal::~Decimal</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3532" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="10805" bodyend="10806"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1Decimal_1a5d7a71f2f180dc66f5b2b4bb854efbd6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::Decimal::__set_scale</definition>
+        <argsstring>(const int16_t val)</argsstring>
+        <name>__set_scale</name>
+        <qualifiedname>Apache::Hadoop::Hive::Decimal::__set_scale</qualifiedname>
+        <param>
+          <type>const int16_t</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3536" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="10813" bodyend="10815"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1Decimal_1a6a8f54f78caf3b5db926ca6c8650735a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::Decimal::__set_unscaled</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_unscaled</name>
+        <qualifiedname>Apache::Hadoop::Hive::Decimal::__set_unscaled</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3538" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="10817" bodyend="10819"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1Decimal_1a84108b21fce7669634c6c995e34fa842" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::Decimal::operator==</definition>
+        <argsstring>(const Decimal &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::Decimal::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1Decimal" kindref="compound">Decimal</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3540" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="10906" bodyend="10913"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1Decimal_1a479d7113d7eda3c114dfa368d7b3f41e" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::Decimal::operator!=</definition>
+        <argsstring>(const Decimal &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::Decimal::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1Decimal" kindref="compound">Decimal</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3541" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="3541" bodyend="3543"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1Decimal_1a046587ed9b51eff5ae45d1583f63b399" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::Decimal::operator&lt;</definition>
+        <argsstring>(const Decimal &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::Decimal::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1Decimal" kindref="compound">Decimal</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3545" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1Decimal_1ad0b6c2354f17cdb3de0afe250d6955d3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::Decimal::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot) override</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::Decimal::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3547" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="10827" bodyend="10880"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1Decimal_1a0ff0cb75bdbf5e1e79df9d3f6778f91d" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::Decimal::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const override</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::Decimal::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3548" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="10882" bodyend="10898"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1Decimal_1a42a1066e5111f9dcb5ce316fbbdf38d1" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::Decimal::printTo</definition>
+        <argsstring>(std::ostream &amp;out) const</argsstring>
+        <name>printTo</name>
+        <qualifiedname>Apache::Hadoop::Hive::Decimal::printTo</qualifiedname>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3550" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="10924" bodyend="10930"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::Decimal</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1Decimal"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::Decimal</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1Decimal"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>unscaled</edgelabel>
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+      <node id="4">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="3">
+        <label>std::string</label>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3525" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="3525" bodyend="3551"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1Decimal_1a5d7a71f2f180dc66f5b2b4bb854efbd6" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::Decimal</scope><name>__set_scale</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1Decimal_1a6a8f54f78caf3b5db926ca6c8650735a" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::Decimal</scope><name>__set_unscaled</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1Decimal_1ae5b335a8db31b146299e8920c4947844" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::Decimal</scope><name>Decimal</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1Decimal_1aeb6aa0bd5b61f9314f2c5b0c078d6cee" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::Decimal</scope><name>Decimal</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1Decimal_1a479d7113d7eda3c114dfa368d7b3f41e" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::Decimal</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1Decimal_1a046587ed9b51eff5ae45d1583f63b399" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::Decimal</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1Decimal_1ac19e96ffc520f4e929ff2af502da3333" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::Decimal</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1Decimal_1a84108b21fce7669634c6c995e34fa842" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::Decimal</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1Decimal_1a42a1066e5111f9dcb5ce316fbbdf38d1" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::Decimal</scope><name>printTo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1Decimal_1ad0b6c2354f17cdb3de0afe250d6955d3" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::Decimal</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1Decimal_1a05be9003ce2aa1997568ccf40f2220f8" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::Decimal</scope><name>scale</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1Decimal_1abcf629a646c2ab5f3aa1a6723eeb218c" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::Decimal</scope><name>unscaled</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1Decimal_1a0ff0cb75bdbf5e1e79df9d3f6778f91d" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::Decimal</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1Decimal_1a8d79863622d3276899ab32294398ea7e" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::Decimal</scope><name>~Decimal</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

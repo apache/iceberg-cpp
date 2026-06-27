@@ -1,0 +1,121 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1SessionCatalog" kind="class" language="C++" prot="public" abstract="yes">
+    <compoundname>iceberg::SessionCatalog</compoundname>
+    <derivedcompoundref refid="classiceberg_1_1rest_1_1RestCatalog" prot="public" virt="non-virtual">iceberg::rest::RestCatalog</derivedcompoundref>
+    <includes refid="session__catalog_8h" local="no">session_catalog.h</includes>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1SessionCatalog_1ab2c5ff6d45f19f2c279630b8d5272596" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type></type>
+        <definition>iceberg::SessionCatalog::~SessionCatalog</definition>
+        <argsstring>()</argsstring>
+        <name>~SessionCatalog</name>
+        <qualifiedname>iceberg::SessionCatalog::~SessionCatalog</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/session_catalog.h" line="43" column="11"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SessionCatalog_1a11d686ff03b545d6e4c7247c0c986ea7" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
+        <type>std::string_view</type>
+        <definition>virtual std::string_view iceberg::SessionCatalog::name</definition>
+        <argsstring>() const =0</argsstring>
+        <name>name</name>
+        <qualifiedname>iceberg::SessionCatalog::name</qualifiedname>
+        <reimplementedby refid="classiceberg_1_1rest_1_1RestCatalog_1aa3a42d4824766f9b5b1269894997463b">name</reimplementedby>
+        <briefdescription>
+<para><ref refid="classiceberg_1_1Catalog" kindref="compound">Catalog</ref> name. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/session_catalog.h" line="46" column="28"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SessionCatalog_1a9ea90d84eedc5c556eed4f9510f301eb" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type>Result&lt; std::shared_ptr&lt; <ref refid="classiceberg_1_1Catalog" kindref="compound">Catalog</ref> &gt; &gt;</type>
+        <definition>virtual Result&lt; std::shared_ptr&lt; Catalog &gt; &gt; iceberg::SessionCatalog::AsCatalog</definition>
+        <argsstring>()=0</argsstring>
+        <name>AsCatalog</name>
+        <qualifiedname>iceberg::SessionCatalog::AsCatalog</qualifiedname>
+        <reimplementedby refid="classiceberg_1_1rest_1_1RestCatalog_1aa98124c18e4e91a6a6cf14f63235c69a">AsCatalog</reimplementedby>
+        <briefdescription>
+<para>Return a <computeroutput><ref refid="classiceberg_1_1Catalog" kindref="compound">Catalog</ref></computeroutput> view bound to the catalog&apos;s default session. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Implementations may cache and return the same default catalog view on repeated calls. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/session_catalog.h" line="52" column="18"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SessionCatalog_1ad9f9e4fdd90656239a2d850346d2e8c0" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type>Result&lt; std::shared_ptr&lt; <ref refid="classiceberg_1_1Catalog" kindref="compound">Catalog</ref> &gt; &gt;</type>
+        <definition>virtual Result&lt; std::shared_ptr&lt; Catalog &gt; &gt; iceberg::SessionCatalog::WithContext</definition>
+        <argsstring>(SessionContext context)=0</argsstring>
+        <name>WithContext</name>
+        <qualifiedname>iceberg::SessionCatalog::WithContext</qualifiedname>
+        <reimplementedby refid="classiceberg_1_1rest_1_1RestCatalog_1a973e796ea1c56de85c678ac53da83a99">WithContext</reimplementedby>
+        <param>
+          <type><ref refid="structiceberg_1_1SessionContext" kindref="compound">SessionContext</ref></type>
+          <declname>context</declname>
+        </param>
+        <briefdescription>
+<para>Return a <computeroutput><ref refid="classiceberg_1_1Catalog" kindref="compound">Catalog</ref></computeroutput> view bound to the supplied session context. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Implementations should reject invalid contexts, such as an empty <computeroutput><ref refid="structiceberg_1_1SessionContext_1a2142195dbea1438bbccec17d8c0927c4" kindref="member">SessionContext::session_id</ref></computeroutput>. Returned catalog views use the normal <computeroutput><ref refid="classiceberg_1_1Catalog" kindref="compound">Catalog</ref></computeroutput> interface for all table and namespace operations. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/session_catalog.h" line="59" column="18"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="protected-func">
+      <memberdef kind="function" id="classiceberg_1_1SessionCatalog_1aa113645c26206a2d08302117d3e40b57" prot="protected" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::SessionCatalog::SessionCatalog</definition>
+        <argsstring>()</argsstring>
+        <name>SessionCatalog</name>
+        <qualifiedname>iceberg::SessionCatalog::SessionCatalog</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/session_catalog.h" line="62" column="3"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Factory interface for creating context-bound catalog views. </para>
+    </briefdescription>
+    <detaileddescription>
+<para><computeroutput><ref refid="classiceberg_1_1SessionCatalog" kindref="compound">SessionCatalog</ref></computeroutput> is not a replacement for <computeroutput><ref refid="classiceberg_1_1Catalog" kindref="compound">Catalog</ref></computeroutput> and does not duplicate table or namespace operations. It is a small root interface for catalogs that can bind the standard <computeroutput><ref refid="classiceberg_1_1Catalog" kindref="compound">Catalog</ref></computeroutput> API to a <computeroutput><ref refid="structiceberg_1_1SessionContext" kindref="compound">SessionContext</ref></computeroutput>.</para>
+<para>Call <computeroutput><ref refid="classiceberg_1_1SessionCatalog_1a9ea90d84eedc5c556eed4f9510f301eb" kindref="member">AsCatalog()</ref></computeroutput> for the catalog&apos;s default session, or <computeroutput><ref refid="classiceberg_1_1SessionCatalog_1ad9f9e4fdd90656239a2d850346d2e8c0" kindref="member">WithContext()</ref></computeroutput> when the caller has an explicit session identity, properties, or credentials. </para>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>iceberg::SessionCatalog</label>
+        <link refid="classiceberg_1_1SessionCatalog"/>
+      </node>
+      <node id="2">
+        <label>iceberg::rest::RestCatalog</label>
+        <link refid="classiceberg_1_1rest_1_1RestCatalog"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <location file="iceberg/catalog/session_catalog.h" line="41" column="1" bodyfile="iceberg/catalog/session_catalog.h" bodystart="41" bodyend="63"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1SessionCatalog_1a9ea90d84eedc5c556eed4f9510f301eb" prot="public" virt="pure-virtual"><scope>iceberg::SessionCatalog</scope><name>AsCatalog</name></member>
+      <member refid="classiceberg_1_1SessionCatalog_1a11d686ff03b545d6e4c7247c0c986ea7" prot="public" virt="pure-virtual"><scope>iceberg::SessionCatalog</scope><name>name</name></member>
+      <member refid="classiceberg_1_1SessionCatalog_1aa113645c26206a2d08302117d3e40b57" prot="protected" virt="non-virtual"><scope>iceberg::SessionCatalog</scope><name>SessionCatalog</name></member>
+      <member refid="classiceberg_1_1SessionCatalog_1ad9f9e4fdd90656239a2d850346d2e8c0" prot="public" virt="pure-virtual"><scope>iceberg::SessionCatalog</scope><name>WithContext</name></member>
+      <member refid="classiceberg_1_1SessionCatalog_1ab2c5ff6d45f19f2c279630b8d5272596" prot="public" virt="virtual"><scope>iceberg::SessionCatalog</scope><name>~SessionCatalog</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

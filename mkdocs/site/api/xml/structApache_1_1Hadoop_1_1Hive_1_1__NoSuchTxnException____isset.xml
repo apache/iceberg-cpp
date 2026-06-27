@@ -1,0 +1,48 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structApache_1_1Hadoop_1_1Hive_1_1__NoSuchTxnException____isset" kind="struct" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::_NoSuchTxnException__isset</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__NoSuchTxnException____isset_1af77efdb1d1e89c56599d55a88f3ae22a" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_NoSuchTxnException__isset::message</definition>
+        <argsstring></argsstring>
+        <name>message</name>
+        <qualifiedname>Apache::Hadoop::Hive::_NoSuchTxnException__isset::message</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15684" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="15684" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structApache_1_1Hadoop_1_1Hive_1_1__NoSuchTxnException____isset_1a4f1b37241cee7017e544dbac32b340c5" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::_NoSuchTxnException__isset::_NoSuchTxnException__isset</definition>
+        <argsstring>()</argsstring>
+        <name>_NoSuchTxnException__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::_NoSuchTxnException__isset::_NoSuchTxnException__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15683" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="15683" bodyend="15683"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15682" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="15682" bodyend="15685"/>
+    <listofallmembers>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__NoSuchTxnException____isset_1a4f1b37241cee7017e544dbac32b340c5" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_NoSuchTxnException__isset</scope><name>_NoSuchTxnException__isset</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__NoSuchTxnException____isset_1af77efdb1d1e89c56599d55a88f3ae22a" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_NoSuchTxnException__isset</scope><name>message</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

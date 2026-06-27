@@ -1,0 +1,325 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1ResourceUri" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::ResourceUri</compoundname>
+    <basecompoundref prot="public" virt="virtual">apache::thrift::TBase</basecompoundref>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ResourceUri_1afc9518827419295cfc811e5126981e8b" prot="public" static="no" mutable="no">
+        <type>ResourceType::type</type>
+        <definition>ResourceType::type Apache::Hadoop::Hive::ResourceUri::resourceType</definition>
+        <argsstring></argsstring>
+        <name>resourceType</name>
+        <qualifiedname>Apache::Hadoop::Hive::ResourceUri::resourceType</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="see"><para><ref refid="structApache_1_1Hadoop_1_1Hive_1_1ResourceType" kindref="compound">ResourceType</ref> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6496" column="22" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="6496" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ResourceUri_1a8c479fa0d722bfc9a0845e665a4241ab" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::ResourceUri::uri</definition>
+        <argsstring></argsstring>
+        <name>uri</name>
+        <qualifiedname>Apache::Hadoop::Hive::ResourceUri::uri</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6497" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="6497" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ResourceUri_1a75b6524f0c6f77d951f89c6eb6bae959" prot="public" static="no" mutable="no">
+        <type><ref refid="structApache_1_1Hadoop_1_1Hive_1_1__ResourceUri____isset" kindref="compound">_ResourceUri__isset</ref></type>
+        <definition>_ResourceUri__isset Apache::Hadoop::Hive::ResourceUri::__isset</definition>
+        <argsstring></argsstring>
+        <name>__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::ResourceUri::__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6499" column="23" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="6499" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ResourceUri_1a0546a7d64d53d1fde3f2e78d5476d9bd" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::ResourceUri::ResourceUri</definition>
+        <argsstring>(const ResourceUri &amp;)</argsstring>
+        <name>ResourceUri</name>
+        <qualifiedname>Apache::Hadoop::Hive::ResourceUri::ResourceUri</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ResourceUri" kindref="compound">ResourceUri</ref> &amp;</type>
+          <defname>other825</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6487" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="24158" bodyend="24162"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ResourceUri_1aee89970d40463e6a8c46c4b4b7ce658c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1ResourceUri" kindref="compound">ResourceUri</ref> &amp;</type>
+        <definition>ResourceUri &amp; Apache::Hadoop::Hive::ResourceUri::operator=</definition>
+        <argsstring>(const ResourceUri &amp;)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::ResourceUri::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ResourceUri" kindref="compound">ResourceUri</ref> &amp;</type>
+          <defname>other826</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6488" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="24163" bodyend="24168"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ResourceUri_1add2bfe1da2ec7f130863e84685dcfc5d" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::ResourceUri::ResourceUri</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>ResourceUri</name>
+        <qualifiedname>Apache::Hadoop::Hive::ResourceUri::ResourceUri</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6489" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="24054" bodyend="24057"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ResourceUri_1a5e435bb054ca64eb71363f62fd7775e1" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::ResourceUri::~ResourceUri</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~ResourceUri</name>
+        <qualifiedname>Apache::Hadoop::Hive::ResourceUri::~ResourceUri</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6491" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="24051" bodyend="24052"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ResourceUri_1a93c18ad80f8aa1c262ff04ee887745e0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::ResourceUri::__set_resourceType</definition>
+        <argsstring>(const ResourceType::type val)</argsstring>
+        <name>__set_resourceType</name>
+        <qualifiedname>Apache::Hadoop::Hive::ResourceUri::__set_resourceType</qualifiedname>
+        <param>
+          <type>const ResourceType::type</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6501" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="24059" bodyend="24061"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ResourceUri_1aeb6f33a7ae6aa701180ce4a5cf520d69" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::ResourceUri::__set_uri</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_uri</name>
+        <qualifiedname>Apache::Hadoop::Hive::ResourceUri::__set_uri</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6503" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="24063" bodyend="24065"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ResourceUri_1aef5f24389e1c00ecb2a8d00da07d0188" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::ResourceUri::operator==</definition>
+        <argsstring>(const ResourceUri &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::ResourceUri::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ResourceUri" kindref="compound">ResourceUri</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6505" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="24149" bodyend="24156"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ResourceUri_1a3dd215198a2119ab14d2780d68fabcd4" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::ResourceUri::operator!=</definition>
+        <argsstring>(const ResourceUri &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::ResourceUri::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ResourceUri" kindref="compound">ResourceUri</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6506" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="6506" bodyend="6508"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ResourceUri_1a2e55f366c65cc757388353bf29ff8d0e" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::ResourceUri::operator&lt;</definition>
+        <argsstring>(const ResourceUri &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::ResourceUri::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ResourceUri" kindref="compound">ResourceUri</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6510" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ResourceUri_1a8a7490b75c6c6321d32e406ef6a954ba" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::ResourceUri::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot) override</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::ResourceUri::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6512" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="24073" bodyend="24122"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ResourceUri_1a77057d416e5423ac74e2bb299fa551c3" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::ResourceUri::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const override</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::ResourceUri::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6513" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="24124" bodyend="24140"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ResourceUri_1a9c8130a33dcd1dc1625596934f612b1a" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::ResourceUri::printTo</definition>
+        <argsstring>(std::ostream &amp;out) const</argsstring>
+        <name>printTo</name>
+        <qualifiedname>Apache::Hadoop::Hive::ResourceUri::printTo</qualifiedname>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6515" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="24169" bodyend="24175"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::ResourceUri</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1ResourceUri"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::ResourceUri</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1ResourceUri"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>uri</edgelabel>
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="5">
+        <label>Apache::Hadoop::Hive::_ResourceUri__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__ResourceUri____isset"/>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+      <node id="4">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="3">
+        <label>std::string</label>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6484" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="6484" bodyend="6516"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ResourceUri_1a75b6524f0c6f77d951f89c6eb6bae959" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ResourceUri</scope><name>__isset</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ResourceUri_1a93c18ad80f8aa1c262ff04ee887745e0" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ResourceUri</scope><name>__set_resourceType</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ResourceUri_1aeb6f33a7ae6aa701180ce4a5cf520d69" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ResourceUri</scope><name>__set_uri</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ResourceUri_1a3dd215198a2119ab14d2780d68fabcd4" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ResourceUri</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ResourceUri_1a2e55f366c65cc757388353bf29ff8d0e" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ResourceUri</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ResourceUri_1aee89970d40463e6a8c46c4b4b7ce658c" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ResourceUri</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ResourceUri_1aef5f24389e1c00ecb2a8d00da07d0188" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ResourceUri</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ResourceUri_1a9c8130a33dcd1dc1625596934f612b1a" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::ResourceUri</scope><name>printTo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ResourceUri_1a8a7490b75c6c6321d32e406ef6a954ba" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ResourceUri</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ResourceUri_1afc9518827419295cfc811e5126981e8b" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ResourceUri</scope><name>resourceType</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ResourceUri_1a0546a7d64d53d1fde3f2e78d5476d9bd" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ResourceUri</scope><name>ResourceUri</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ResourceUri_1add2bfe1da2ec7f130863e84685dcfc5d" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ResourceUri</scope><name>ResourceUri</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ResourceUri_1a8c479fa0d722bfc9a0845e665a4241ab" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ResourceUri</scope><name>uri</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ResourceUri_1a77057d416e5423ac74e2bb299fa551c3" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ResourceUri</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ResourceUri_1a5e435bb054ca64eb71363f62fd7775e1" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::ResourceUri</scope><name>~ResourceUri</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

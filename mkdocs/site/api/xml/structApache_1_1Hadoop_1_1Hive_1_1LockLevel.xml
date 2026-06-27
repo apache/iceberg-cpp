@@ -1,0 +1,55 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structApache_1_1Hadoop_1_1Hive_1_1LockLevel" kind="struct" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::LockLevel</compoundname>
+    <sectiondef kind="public-type">
+      <memberdef kind="enum" id="structApache_1_1Hadoop_1_1Hive_1_1LockLevel_1a33f28733de8b769678997c542aeeec92" prot="public" static="no" strong="no">
+        <type></type>
+        <name>type</name>
+        <qualifiedname>Apache::Hadoop::Hive::LockLevel::type</qualifiedname>
+        <enumvalue id="structApache_1_1Hadoop_1_1Hive_1_1LockLevel_1a33f28733de8b769678997c542aeeec92a93febde653f20631634715774777b343" prot="public">
+          <name>DB</name>
+          <initializer>= 1</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="structApache_1_1Hadoop_1_1Hive_1_1LockLevel_1a33f28733de8b769678997c542aeeec92a91f79643d0c8143d2e6658bff5ece43a" prot="public">
+          <name>TABLE</name>
+          <initializer>= 2</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="structApache_1_1Hadoop_1_1Hive_1_1LockLevel_1a33f28733de8b769678997c542aeeec92a0c4e42157a46881cc02f3f5fe71c7d0a" prot="public">
+          <name>PARTITION</name>
+          <initializer>= 3</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="83" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="83" bodyend="87"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="82" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="82" bodyend="88"/>
+    <listofallmembers>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1LockLevel_1a33f28733de8b769678997c542aeeec92a93febde653f20631634715774777b343" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::LockLevel</scope><name>DB</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1LockLevel_1a33f28733de8b769678997c542aeeec92a0c4e42157a46881cc02f3f5fe71c7d0a" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::LockLevel</scope><name>PARTITION</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1LockLevel_1a33f28733de8b769678997c542aeeec92a91f79643d0c8143d2e6658bff5ece43a" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::LockLevel</scope><name>TABLE</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1LockLevel_1a33f28733de8b769678997c542aeeec92" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::LockLevel</scope><name>type</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

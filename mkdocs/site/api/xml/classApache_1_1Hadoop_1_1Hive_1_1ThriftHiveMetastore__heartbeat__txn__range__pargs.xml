@@ -1,0 +1,84 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__heartbeat__txn__range__pargs" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::ThriftHiveMetastore_heartbeat_txn_range_pargs</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__heartbeat__txn__range__pargs_1a536adb03cbda8d6fa13fa1bc4ef80595" prot="public" static="no" mutable="no">
+        <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1HeartbeatTxnRangeRequest" kindref="compound">HeartbeatTxnRangeRequest</ref> *</type>
+        <definition>const HeartbeatTxnRangeRequest* Apache::Hadoop::Hive::ThriftHiveMetastore_heartbeat_txn_range_pargs::txns</definition>
+        <argsstring></argsstring>
+        <name>txns</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_heartbeat_txn_range_pargs::txns</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="22140" column="34" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="22140" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__heartbeat__txn__range__pargs_1ad417d0452b217add0d5c5d881196849f" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::ThriftHiveMetastore_heartbeat_txn_range_pargs::~ThriftHiveMetastore_heartbeat_txn_range_pargs</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~ThriftHiveMetastore_heartbeat_txn_range_pargs</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_heartbeat_txn_range_pargs::~ThriftHiveMetastore_heartbeat_txn_range_pargs</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="22139" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.cpp" bodystart="49371" bodyend="49372"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__heartbeat__txn__range__pargs_1a20d2021ae9abae2cdeec2f3b0572c872" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::ThriftHiveMetastore_heartbeat_txn_range_pargs::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_heartbeat_txn_range_pargs::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="22142" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.cpp" bodystart="49375" bodyend="49387"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="2">
+        <label>Apache::Hadoop::Hive::HeartbeatTxnRangeRequest</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1HeartbeatTxnRangeRequest"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::ThriftHiveMetastore_heartbeat_txn_range_pargs</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__heartbeat__txn__range__pargs"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>txns</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>apache::thrift::TBase</label>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="22135" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="22135" bodyend="22144"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__heartbeat__txn__range__pargs_1a536adb03cbda8d6fa13fa1bc4ef80595" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_heartbeat_txn_range_pargs</scope><name>txns</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__heartbeat__txn__range__pargs_1a20d2021ae9abae2cdeec2f3b0572c872" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_heartbeat_txn_range_pargs</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__heartbeat__txn__range__pargs_1ad417d0452b217add0d5c5d881196849f" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_heartbeat_txn_range_pargs</scope><name>~ThriftHiveMetastore_heartbeat_txn_range_pargs</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

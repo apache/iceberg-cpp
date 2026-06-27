@@ -1,0 +1,80 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structApache_1_1Hadoop_1_1Hive_1_1__FieldSchema____isset" kind="struct" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::_FieldSchema__isset</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__FieldSchema____isset_1a13993ed86f075178924133ae5fbefd87" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_FieldSchema__isset::name</definition>
+        <argsstring></argsstring>
+        <name>name</name>
+        <qualifiedname>Apache::Hadoop::Hive::_FieldSchema__isset::name</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1138" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="1138" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__FieldSchema____isset_1ada1f4b7bf9ea9e6f02587d67b3dd1876" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_FieldSchema__isset::type</definition>
+        <argsstring></argsstring>
+        <name>type</name>
+        <qualifiedname>Apache::Hadoop::Hive::_FieldSchema__isset::type</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1139" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="1139" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__FieldSchema____isset_1ab8bd48d860383f2ac9f1dae4d3f60011" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_FieldSchema__isset::comment</definition>
+        <argsstring></argsstring>
+        <name>comment</name>
+        <qualifiedname>Apache::Hadoop::Hive::_FieldSchema__isset::comment</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1140" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="1140" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structApache_1_1Hadoop_1_1Hive_1_1__FieldSchema____isset_1a9b64288375b19c987b6db46d8811682e" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::_FieldSchema__isset::_FieldSchema__isset</definition>
+        <argsstring>()</argsstring>
+        <name>_FieldSchema__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::_FieldSchema__isset::_FieldSchema__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1137" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="1137" bodyend="1137"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1136" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="1136" bodyend="1141"/>
+    <listofallmembers>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__FieldSchema____isset_1a9b64288375b19c987b6db46d8811682e" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_FieldSchema__isset</scope><name>_FieldSchema__isset</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__FieldSchema____isset_1ab8bd48d860383f2ac9f1dae4d3f60011" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_FieldSchema__isset</scope><name>comment</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__FieldSchema____isset_1a13993ed86f075178924133ae5fbefd87" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_FieldSchema__isset</scope><name>name</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__FieldSchema____isset_1ada1f4b7bf9ea9e6f02587d67b3dd1876" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_FieldSchema__isset</scope><name>type</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

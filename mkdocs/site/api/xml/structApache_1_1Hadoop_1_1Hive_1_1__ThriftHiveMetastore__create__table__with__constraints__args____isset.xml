@@ -1,0 +1,144 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structApache_1_1Hadoop_1_1Hive_1_1__ThriftHiveMetastore__create__table__with__constraints__args____isset" kind="struct" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::_ThriftHiveMetastore_create_table_with_constraints_args__isset</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__ThriftHiveMetastore__create__table__with__constraints__args____isset_1a0c4817a45c9b715b56da314db6af59f3" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_ThriftHiveMetastore_create_table_with_constraints_args__isset::tbl</definition>
+        <argsstring></argsstring>
+        <name>tbl</name>
+        <qualifiedname>Apache::Hadoop::Hive::_ThriftHiveMetastore_create_table_with_constraints_args__isset::tbl</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="4856" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="4856" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__ThriftHiveMetastore__create__table__with__constraints__args____isset_1a64287815887a399ed132294537d87fcd" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_ThriftHiveMetastore_create_table_with_constraints_args__isset::primaryKeys</definition>
+        <argsstring></argsstring>
+        <name>primaryKeys</name>
+        <qualifiedname>Apache::Hadoop::Hive::_ThriftHiveMetastore_create_table_with_constraints_args__isset::primaryKeys</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="4857" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="4857" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__ThriftHiveMetastore__create__table__with__constraints__args____isset_1af1577f999353747ce3f227deaa3ea2f2" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_ThriftHiveMetastore_create_table_with_constraints_args__isset::foreignKeys</definition>
+        <argsstring></argsstring>
+        <name>foreignKeys</name>
+        <qualifiedname>Apache::Hadoop::Hive::_ThriftHiveMetastore_create_table_with_constraints_args__isset::foreignKeys</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="4858" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="4858" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__ThriftHiveMetastore__create__table__with__constraints__args____isset_1ab9d3587089aa991a7cd6c32017f4ce9f" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_ThriftHiveMetastore_create_table_with_constraints_args__isset::uniqueConstraints</definition>
+        <argsstring></argsstring>
+        <name>uniqueConstraints</name>
+        <qualifiedname>Apache::Hadoop::Hive::_ThriftHiveMetastore_create_table_with_constraints_args__isset::uniqueConstraints</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="4859" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="4859" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__ThriftHiveMetastore__create__table__with__constraints__args____isset_1a8559387a4f236ed978edcc7e13e867bc" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_ThriftHiveMetastore_create_table_with_constraints_args__isset::notNullConstraints</definition>
+        <argsstring></argsstring>
+        <name>notNullConstraints</name>
+        <qualifiedname>Apache::Hadoop::Hive::_ThriftHiveMetastore_create_table_with_constraints_args__isset::notNullConstraints</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="4860" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="4860" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__ThriftHiveMetastore__create__table__with__constraints__args____isset_1abd81d4cd727ab981fbcb3ed487a1be20" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_ThriftHiveMetastore_create_table_with_constraints_args__isset::defaultConstraints</definition>
+        <argsstring></argsstring>
+        <name>defaultConstraints</name>
+        <qualifiedname>Apache::Hadoop::Hive::_ThriftHiveMetastore_create_table_with_constraints_args__isset::defaultConstraints</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="4861" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="4861" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__ThriftHiveMetastore__create__table__with__constraints__args____isset_1ab0afb0a9eb0bcc675091df499493fdaa" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_ThriftHiveMetastore_create_table_with_constraints_args__isset::checkConstraints</definition>
+        <argsstring></argsstring>
+        <name>checkConstraints</name>
+        <qualifiedname>Apache::Hadoop::Hive::_ThriftHiveMetastore_create_table_with_constraints_args__isset::checkConstraints</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="4862" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="4862" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structApache_1_1Hadoop_1_1Hive_1_1__ThriftHiveMetastore__create__table__with__constraints__args____isset_1a73526c9051566888f1c013b200d98d2a" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::_ThriftHiveMetastore_create_table_with_constraints_args__isset::_ThriftHiveMetastore_create_table_with_constraints_args__isset</definition>
+        <argsstring>()</argsstring>
+        <name>_ThriftHiveMetastore_create_table_with_constraints_args__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::_ThriftHiveMetastore_create_table_with_constraints_args__isset::_ThriftHiveMetastore_create_table_with_constraints_args__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="4855" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="4855" bodyend="4855"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="4854" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="4854" bodyend="4863"/>
+    <listofallmembers>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__ThriftHiveMetastore__create__table__with__constraints__args____isset_1a73526c9051566888f1c013b200d98d2a" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_ThriftHiveMetastore_create_table_with_constraints_args__isset</scope><name>_ThriftHiveMetastore_create_table_with_constraints_args__isset</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__ThriftHiveMetastore__create__table__with__constraints__args____isset_1ab0afb0a9eb0bcc675091df499493fdaa" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_ThriftHiveMetastore_create_table_with_constraints_args__isset</scope><name>checkConstraints</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__ThriftHiveMetastore__create__table__with__constraints__args____isset_1abd81d4cd727ab981fbcb3ed487a1be20" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_ThriftHiveMetastore_create_table_with_constraints_args__isset</scope><name>defaultConstraints</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__ThriftHiveMetastore__create__table__with__constraints__args____isset_1af1577f999353747ce3f227deaa3ea2f2" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_ThriftHiveMetastore_create_table_with_constraints_args__isset</scope><name>foreignKeys</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__ThriftHiveMetastore__create__table__with__constraints__args____isset_1a8559387a4f236ed978edcc7e13e867bc" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_ThriftHiveMetastore_create_table_with_constraints_args__isset</scope><name>notNullConstraints</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__ThriftHiveMetastore__create__table__with__constraints__args____isset_1a64287815887a399ed132294537d87fcd" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_ThriftHiveMetastore_create_table_with_constraints_args__isset</scope><name>primaryKeys</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__ThriftHiveMetastore__create__table__with__constraints__args____isset_1a0c4817a45c9b715b56da314db6af59f3" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_ThriftHiveMetastore_create_table_with_constraints_args__isset</scope><name>tbl</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__ThriftHiveMetastore__create__table__with__constraints__args____isset_1ab9d3587089aa991a7cd6c32017f4ce9f" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_ThriftHiveMetastore_create_table_with_constraints_args__isset</scope><name>uniqueConstraints</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

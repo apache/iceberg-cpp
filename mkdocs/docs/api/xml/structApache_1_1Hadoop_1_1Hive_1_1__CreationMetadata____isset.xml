@@ -1,0 +1,80 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structApache_1_1Hadoop_1_1Hive_1_1__CreationMetadata____isset" kind="struct" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::_CreationMetadata__isset</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__CreationMetadata____isset_1a167f30b04463768647a2459e6200a71c" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_CreationMetadata__isset::validTxnList</definition>
+        <argsstring></argsstring>
+        <name>validTxnList</name>
+        <qualifiedname>Apache::Hadoop::Hive::_CreationMetadata__isset::validTxnList</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3224" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="3224" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__CreationMetadata____isset_1ae8eff69dc830ef5e81ca9fab5e3a2a83" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_CreationMetadata__isset::materializationTime</definition>
+        <argsstring></argsstring>
+        <name>materializationTime</name>
+        <qualifiedname>Apache::Hadoop::Hive::_CreationMetadata__isset::materializationTime</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3225" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="3225" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__CreationMetadata____isset_1ad8734f24f8c19b3cd3772e68e9c9d774" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_CreationMetadata__isset::sourceTables</definition>
+        <argsstring></argsstring>
+        <name>sourceTables</name>
+        <qualifiedname>Apache::Hadoop::Hive::_CreationMetadata__isset::sourceTables</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3226" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="3226" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structApache_1_1Hadoop_1_1Hive_1_1__CreationMetadata____isset_1ae615da67ecb86092498137c6c0488041" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::_CreationMetadata__isset::_CreationMetadata__isset</definition>
+        <argsstring>()</argsstring>
+        <name>_CreationMetadata__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::_CreationMetadata__isset::_CreationMetadata__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3223" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="3223" bodyend="3223"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3222" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="3222" bodyend="3227"/>
+    <listofallmembers>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__CreationMetadata____isset_1ae615da67ecb86092498137c6c0488041" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_CreationMetadata__isset</scope><name>_CreationMetadata__isset</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__CreationMetadata____isset_1ae8eff69dc830ef5e81ca9fab5e3a2a83" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_CreationMetadata__isset</scope><name>materializationTime</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__CreationMetadata____isset_1ad8734f24f8c19b3cd3772e68e9c9d774" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_CreationMetadata__isset</scope><name>sourceTables</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__CreationMetadata____isset_1a167f30b04463768647a2459e6200a71c" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_CreationMetadata__isset</scope><name>validTxnList</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

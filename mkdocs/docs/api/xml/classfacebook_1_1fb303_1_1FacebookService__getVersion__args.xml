@@ -1,0 +1,174 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classfacebook_1_1fb303_1_1FacebookService__getVersion__args" kind="class" language="C++" prot="public">
+    <compoundname>facebook::fb303::FacebookService_getVersion_args</compoundname>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookService__getVersion__args_1ace641636af3aef5cf1bac8ef8154789c" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>facebook::fb303::FacebookService_getVersion_args::FacebookService_getVersion_args</definition>
+        <argsstring>(const FacebookService_getVersion_args &amp;) noexcept</argsstring>
+        <name>FacebookService_getVersion_args</name>
+        <qualifiedname>facebook::fb303::FacebookService_getVersion_args::FacebookService_getVersion_args</qualifiedname>
+        <param>
+          <type>const <ref refid="classfacebook_1_1fb303_1_1FacebookService__getVersion__args" kindref="compound">FacebookService_getVersion_args</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="263" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookService__getVersion__args_1ab60f06d7ac7138e651407a84106d61ea" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type><ref refid="classfacebook_1_1fb303_1_1FacebookService__getVersion__args" kindref="compound">FacebookService_getVersion_args</ref> &amp;</type>
+        <definition>FacebookService_getVersion_args &amp; facebook::fb303::FacebookService_getVersion_args::operator=</definition>
+        <argsstring>(const FacebookService_getVersion_args &amp;) noexcept</argsstring>
+        <name>operator=</name>
+        <qualifiedname>facebook::fb303::FacebookService_getVersion_args::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classfacebook_1_1fb303_1_1FacebookService__getVersion__args" kindref="compound">FacebookService_getVersion_args</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="264" column="35"/>
+      </memberdef>
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookService__getVersion__args_1a21acc6572ae709fcfba53f22a15dadc0" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>facebook::fb303::FacebookService_getVersion_args::FacebookService_getVersion_args</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>FacebookService_getVersion_args</name>
+        <qualifiedname>facebook::fb303::FacebookService_getVersion_args::FacebookService_getVersion_args</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="265" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.cpp" bodystart="186" bodyend="187"/>
+      </memberdef>
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookService__getVersion__args_1a4b8f6c4336865b086caf645777feb352" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>facebook::fb303::FacebookService_getVersion_args::~FacebookService_getVersion_args</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~FacebookService_getVersion_args</name>
+        <qualifiedname>facebook::fb303::FacebookService_getVersion_args::~FacebookService_getVersion_args</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="267" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.cpp" bodystart="183" bodyend="184"/>
+      </memberdef>
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookService__getVersion__args_1a82ab22dfaf666bff84c43581ed6d2f12" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool facebook::fb303::FacebookService_getVersion_args::operator==</definition>
+        <argsstring>(const FacebookService_getVersion_args &amp;) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>facebook::fb303::FacebookService_getVersion_args::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classfacebook_1_1fb303_1_1FacebookService__getVersion__args" kindref="compound">FacebookService_getVersion_args</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="269" column="8"/>
+      </memberdef>
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookService__getVersion__args_1afd92531db40b49d468d65c340e8d4c26" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool facebook::fb303::FacebookService_getVersion_args::operator!=</definition>
+        <argsstring>(const FacebookService_getVersion_args &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>facebook::fb303::FacebookService_getVersion_args::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classfacebook_1_1fb303_1_1FacebookService__getVersion__args" kindref="compound">FacebookService_getVersion_args</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="270" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.h" bodystart="270" bodyend="272"/>
+      </memberdef>
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookService__getVersion__args_1a71d71e64290eb1f7b8d39894b1b71cb4" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool facebook::fb303::FacebookService_getVersion_args::operator&lt;</definition>
+        <argsstring>(const FacebookService_getVersion_args &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>facebook::fb303::FacebookService_getVersion_args::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classfacebook_1_1fb303_1_1FacebookService__getVersion__args" kindref="compound">FacebookService_getVersion_args</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="274" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookService__getVersion__args_1a64cabf0b505740733ff0ab1beb262a5b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t facebook::fb303::FacebookService_getVersion_args::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot)</argsstring>
+        <name>read</name>
+        <qualifiedname>facebook::fb303::FacebookService_getVersion_args::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="276" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.cpp" bodystart="189" bodyend="215"/>
+      </memberdef>
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookService__getVersion__args_1a6699ba00cfdc0cb94de0242e33798795" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t facebook::fb303::FacebookService_getVersion_args::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const</argsstring>
+        <name>write</name>
+        <qualifiedname>facebook::fb303::FacebookService_getVersion_args::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="277" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.cpp" bodystart="217" bodyend="225"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="260" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.h" bodystart="260" bodyend="279"/>
+    <listofallmembers>
+      <member refid="classfacebook_1_1fb303_1_1FacebookService__getVersion__args_1ace641636af3aef5cf1bac8ef8154789c" prot="public" virt="non-virtual"><scope>facebook::fb303::FacebookService_getVersion_args</scope><name>FacebookService_getVersion_args</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookService__getVersion__args_1a21acc6572ae709fcfba53f22a15dadc0" prot="public" virt="non-virtual"><scope>facebook::fb303::FacebookService_getVersion_args</scope><name>FacebookService_getVersion_args</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookService__getVersion__args_1afd92531db40b49d468d65c340e8d4c26" prot="public" virt="non-virtual"><scope>facebook::fb303::FacebookService_getVersion_args</scope><name>operator!=</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookService__getVersion__args_1a71d71e64290eb1f7b8d39894b1b71cb4" prot="public" virt="non-virtual"><scope>facebook::fb303::FacebookService_getVersion_args</scope><name>operator&lt;</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookService__getVersion__args_1ab60f06d7ac7138e651407a84106d61ea" prot="public" virt="non-virtual"><scope>facebook::fb303::FacebookService_getVersion_args</scope><name>operator=</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookService__getVersion__args_1a82ab22dfaf666bff84c43581ed6d2f12" prot="public" virt="non-virtual"><scope>facebook::fb303::FacebookService_getVersion_args</scope><name>operator==</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookService__getVersion__args_1a64cabf0b505740733ff0ab1beb262a5b" prot="public" virt="non-virtual"><scope>facebook::fb303::FacebookService_getVersion_args</scope><name>read</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookService__getVersion__args_1a6699ba00cfdc0cb94de0242e33798795" prot="public" virt="non-virtual"><scope>facebook::fb303::FacebookService_getVersion_args</scope><name>write</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookService__getVersion__args_1a4b8f6c4336865b086caf645777feb352" prot="public" virt="virtual"><scope>facebook::fb303::FacebookService_getVersion_args</scope><name>~FacebookService_getVersion_args</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

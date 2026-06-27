@@ -1,0 +1,48 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structApache_1_1Hadoop_1_1Hive_1_1__PutFileMetadataRequest____isset" kind="struct" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::_PutFileMetadataRequest__isset</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__PutFileMetadataRequest____isset_1aec647401c38dfd69be17d000920b1381" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_PutFileMetadataRequest__isset::type</definition>
+        <argsstring></argsstring>
+        <name>type</name>
+        <qualifiedname>Apache::Hadoop::Hive::_PutFileMetadataRequest__isset::type</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9923" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="9923" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structApache_1_1Hadoop_1_1Hive_1_1__PutFileMetadataRequest____isset_1a7165162e8604e462d2dc32c85c2f084d" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::_PutFileMetadataRequest__isset::_PutFileMetadataRequest__isset</definition>
+        <argsstring>()</argsstring>
+        <name>_PutFileMetadataRequest__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::_PutFileMetadataRequest__isset::_PutFileMetadataRequest__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9922" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="9922" bodyend="9922"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9921" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="9921" bodyend="9924"/>
+    <listofallmembers>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__PutFileMetadataRequest____isset_1a7165162e8604e462d2dc32c85c2f084d" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_PutFileMetadataRequest__isset</scope><name>_PutFileMetadataRequest__isset</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__PutFileMetadataRequest____isset_1aec647401c38dfd69be17d000920b1381" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_PutFileMetadataRequest__isset</scope><name>type</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

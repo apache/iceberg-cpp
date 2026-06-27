@@ -1,0 +1,83 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classfacebook_1_1fb303_1_1FacebookService__getCounter__pargs" kind="class" language="C++" prot="public">
+    <compoundname>facebook::fb303::FacebookService_getCounter_pargs</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classfacebook_1_1fb303_1_1FacebookService__getCounter__pargs_1a3ff9a1aa2ff08f02f9160fd5a51ac8b0" prot="public" static="no" mutable="no">
+        <type>const std::string *</type>
+        <definition>const std::string* facebook::fb303::FacebookService_getCounter_pargs::key</definition>
+        <argsstring></argsstring>
+        <name>key</name>
+        <qualifiedname>facebook::fb303::FacebookService_getCounter_pargs::key</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="632" column="21" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.h" bodystart="632" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookService__getCounter__pargs_1a2c37b27dbb7c9bb6162cf0a5ac31cead" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>facebook::fb303::FacebookService_getCounter_pargs::~FacebookService_getCounter_pargs</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~FacebookService_getCounter_pargs</name>
+        <qualifiedname>facebook::fb303::FacebookService_getCounter_pargs::~FacebookService_getCounter_pargs</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="631" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.cpp" bodystart="972" bodyend="973"/>
+      </memberdef>
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookService__getCounter__pargs_1a565dd2d0bc3314ed4e3d81c3f692f0dc" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t facebook::fb303::FacebookService_getCounter_pargs::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const</argsstring>
+        <name>write</name>
+        <qualifiedname>facebook::fb303::FacebookService_getCounter_pargs::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="634" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.cpp" bodystart="976" bodyend="988"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>facebook::fb303::FacebookService_getCounter_pargs</label>
+        <link refid="classfacebook_1_1fb303_1_1FacebookService__getCounter__pargs"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>key</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="2">
+        <label>std::string</label>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="627" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.h" bodystart="627" bodyend="636"/>
+    <listofallmembers>
+      <member refid="classfacebook_1_1fb303_1_1FacebookService__getCounter__pargs_1a3ff9a1aa2ff08f02f9160fd5a51ac8b0" prot="public" virt="non-virtual"><scope>facebook::fb303::FacebookService_getCounter_pargs</scope><name>key</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookService__getCounter__pargs_1a565dd2d0bc3314ed4e3d81c3f692f0dc" prot="public" virt="non-virtual"><scope>facebook::fb303::FacebookService_getCounter_pargs</scope><name>write</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookService__getCounter__pargs_1a2c37b27dbb7c9bb6162cf0a5ac31cead" prot="public" virt="virtual"><scope>facebook::fb303::FacebookService_getCounter_pargs</scope><name>~FacebookService_getCounter_pargs</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

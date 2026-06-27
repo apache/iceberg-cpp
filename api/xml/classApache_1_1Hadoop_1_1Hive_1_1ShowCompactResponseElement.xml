@@ -1,0 +1,1083 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::ShowCompactResponseElement</compoundname>
+    <basecompoundref prot="public" virt="virtual">apache::thrift::TBase</basecompoundref>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement_1a90b7eff3ce8dfb79209f428a6892f330" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::ShowCompactResponseElement::dbname</definition>
+        <argsstring></argsstring>
+        <name>dbname</name>
+        <qualifiedname>Apache::Hadoop::Hive::ShowCompactResponseElement::dbname</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8644" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="8644" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement_1a64df3887af229af9a5cac915454eded4" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::ShowCompactResponseElement::tablename</definition>
+        <argsstring></argsstring>
+        <name>tablename</name>
+        <qualifiedname>Apache::Hadoop::Hive::ShowCompactResponseElement::tablename</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8645" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="8645" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement_1ae1645aeaeb6521fd37a9afaddaa4a12a" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::ShowCompactResponseElement::partitionname</definition>
+        <argsstring></argsstring>
+        <name>partitionname</name>
+        <qualifiedname>Apache::Hadoop::Hive::ShowCompactResponseElement::partitionname</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8646" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="8646" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement_1a6a6219da019070912900bc88cd1617d8" prot="public" static="no" mutable="no">
+        <type>CompactionType::type</type>
+        <definition>CompactionType::type Apache::Hadoop::Hive::ShowCompactResponseElement::type</definition>
+        <argsstring></argsstring>
+        <name>type</name>
+        <qualifiedname>Apache::Hadoop::Hive::ShowCompactResponseElement::type</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="see"><para><ref refid="structApache_1_1Hadoop_1_1Hive_1_1CompactionType" kindref="compound">CompactionType</ref> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8651" column="24" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="8651" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement_1a33bce1e4ba7714fc38fd6712e7ec8095" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::ShowCompactResponseElement::state</definition>
+        <argsstring></argsstring>
+        <name>state</name>
+        <qualifiedname>Apache::Hadoop::Hive::ShowCompactResponseElement::state</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8652" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="8652" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement_1a45f7a49cc4a8d2e3f56dec6f60eda4e1" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::ShowCompactResponseElement::workerid</definition>
+        <argsstring></argsstring>
+        <name>workerid</name>
+        <qualifiedname>Apache::Hadoop::Hive::ShowCompactResponseElement::workerid</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8653" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="8653" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement_1a95ca59d71124ec31adedaf7e1c71c9c1" prot="public" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t Apache::Hadoop::Hive::ShowCompactResponseElement::start</definition>
+        <argsstring></argsstring>
+        <name>start</name>
+        <qualifiedname>Apache::Hadoop::Hive::ShowCompactResponseElement::start</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8654" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="8654" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement_1a44b7aa4c794e5bed1a6fb5c69c01ccf9" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::ShowCompactResponseElement::runAs</definition>
+        <argsstring></argsstring>
+        <name>runAs</name>
+        <qualifiedname>Apache::Hadoop::Hive::ShowCompactResponseElement::runAs</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8655" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="8655" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement_1a56f09060af9c7df4c7988ad06b6e90d6" prot="public" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t Apache::Hadoop::Hive::ShowCompactResponseElement::hightestTxnId</definition>
+        <argsstring></argsstring>
+        <name>hightestTxnId</name>
+        <qualifiedname>Apache::Hadoop::Hive::ShowCompactResponseElement::hightestTxnId</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8656" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="8656" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement_1a1309abcb391c3e98854a347565e20a9d" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::ShowCompactResponseElement::metaInfo</definition>
+        <argsstring></argsstring>
+        <name>metaInfo</name>
+        <qualifiedname>Apache::Hadoop::Hive::ShowCompactResponseElement::metaInfo</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8657" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="8657" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement_1a687398dc363d27f995c55266a1fd9dd0" prot="public" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t Apache::Hadoop::Hive::ShowCompactResponseElement::endTime</definition>
+        <argsstring></argsstring>
+        <name>endTime</name>
+        <qualifiedname>Apache::Hadoop::Hive::ShowCompactResponseElement::endTime</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8658" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="8658" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement_1a1055eea80013bd6f85e009d7b1e892f5" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::ShowCompactResponseElement::hadoopJobId</definition>
+        <argsstring></argsstring>
+        <name>hadoopJobId</name>
+        <qualifiedname>Apache::Hadoop::Hive::ShowCompactResponseElement::hadoopJobId</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8659" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="8659" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement_1a973ce4cb06802f1b2ef82cf00256cf0d" prot="public" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t Apache::Hadoop::Hive::ShowCompactResponseElement::id</definition>
+        <argsstring></argsstring>
+        <name>id</name>
+        <qualifiedname>Apache::Hadoop::Hive::ShowCompactResponseElement::id</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8660" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="8660" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement_1ab4b59ebc4698c682859dd1bde046f3f8" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::ShowCompactResponseElement::errorMessage</definition>
+        <argsstring></argsstring>
+        <name>errorMessage</name>
+        <qualifiedname>Apache::Hadoop::Hive::ShowCompactResponseElement::errorMessage</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8661" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="8661" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement_1a8d689d8fd4cc63888d2d35a44418e31b" prot="public" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t Apache::Hadoop::Hive::ShowCompactResponseElement::enqueueTime</definition>
+        <argsstring></argsstring>
+        <name>enqueueTime</name>
+        <qualifiedname>Apache::Hadoop::Hive::ShowCompactResponseElement::enqueueTime</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8662" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="8662" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement_1acb58af6df925917fc56d824acd99ffa1" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::ShowCompactResponseElement::workerVersion</definition>
+        <argsstring></argsstring>
+        <name>workerVersion</name>
+        <qualifiedname>Apache::Hadoop::Hive::ShowCompactResponseElement::workerVersion</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8663" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="8663" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement_1a514ff776c7f343e491dbad906661b585" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::ShowCompactResponseElement::initiatorId</definition>
+        <argsstring></argsstring>
+        <name>initiatorId</name>
+        <qualifiedname>Apache::Hadoop::Hive::ShowCompactResponseElement::initiatorId</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8664" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="8664" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement_1a99d87d2e814fffbd11d8fc9f55563cb7" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::ShowCompactResponseElement::initiatorVersion</definition>
+        <argsstring></argsstring>
+        <name>initiatorVersion</name>
+        <qualifiedname>Apache::Hadoop::Hive::ShowCompactResponseElement::initiatorVersion</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8665" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="8665" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement_1af91936f8102b590f18904d9e7db8870f" prot="public" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t Apache::Hadoop::Hive::ShowCompactResponseElement::cleanerStart</definition>
+        <argsstring></argsstring>
+        <name>cleanerStart</name>
+        <qualifiedname>Apache::Hadoop::Hive::ShowCompactResponseElement::cleanerStart</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8666" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="8666" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement_1a99a4f18be42021d793bac5e27e9ab55d" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::ShowCompactResponseElement::poolName</definition>
+        <argsstring></argsstring>
+        <name>poolName</name>
+        <qualifiedname>Apache::Hadoop::Hive::ShowCompactResponseElement::poolName</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8667" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="8667" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement_1a275cf2ad5391fae016239fe4a668a012" prot="public" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t Apache::Hadoop::Hive::ShowCompactResponseElement::nextTxnId</definition>
+        <argsstring></argsstring>
+        <name>nextTxnId</name>
+        <qualifiedname>Apache::Hadoop::Hive::ShowCompactResponseElement::nextTxnId</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8668" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="8668" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement_1a7f6fec724a4c060759b1775e88fa605f" prot="public" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t Apache::Hadoop::Hive::ShowCompactResponseElement::txnId</definition>
+        <argsstring></argsstring>
+        <name>txnId</name>
+        <qualifiedname>Apache::Hadoop::Hive::ShowCompactResponseElement::txnId</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8669" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="8669" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement_1a9db37966380e8006c56c81f2f75f50ea" prot="public" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t Apache::Hadoop::Hive::ShowCompactResponseElement::commitTime</definition>
+        <argsstring></argsstring>
+        <name>commitTime</name>
+        <qualifiedname>Apache::Hadoop::Hive::ShowCompactResponseElement::commitTime</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8670" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="8670" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement_1a9322479785bad9df411b0d21133dea65" prot="public" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t Apache::Hadoop::Hive::ShowCompactResponseElement::hightestWriteId</definition>
+        <argsstring></argsstring>
+        <name>hightestWriteId</name>
+        <qualifiedname>Apache::Hadoop::Hive::ShowCompactResponseElement::hightestWriteId</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8671" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="8671" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement_1ab9cde90627c8743d3628bd888e4f6e65" prot="public" static="no" mutable="no">
+        <type><ref refid="structApache_1_1Hadoop_1_1Hive_1_1__ShowCompactResponseElement____isset" kindref="compound">_ShowCompactResponseElement__isset</ref></type>
+        <definition>_ShowCompactResponseElement__isset Apache::Hadoop::Hive::ShowCompactResponseElement::__isset</definition>
+        <argsstring></argsstring>
+        <name>__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::ShowCompactResponseElement::__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8673" column="38" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="8673" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement_1a7072f6a5ed8ccf4c881dcb2b6504047b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::ShowCompactResponseElement::ShowCompactResponseElement</definition>
+        <argsstring>(const ShowCompactResponseElement &amp;)</argsstring>
+        <name>ShowCompactResponseElement</name>
+        <qualifiedname>Apache::Hadoop::Hive::ShowCompactResponseElement::ShowCompactResponseElement</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement" kindref="compound">ShowCompactResponseElement</ref> &amp;</type>
+          <defname>other1055</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8639" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="33910" bodyend="33936"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement_1a9b6f0ca989d0215bd764b6f6225d4b1e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement" kindref="compound">ShowCompactResponseElement</ref> &amp;</type>
+        <definition>ShowCompactResponseElement &amp; Apache::Hadoop::Hive::ShowCompactResponseElement::operator=</definition>
+        <argsstring>(const ShowCompactResponseElement &amp;)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::ShowCompactResponseElement::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement" kindref="compound">ShowCompactResponseElement</ref> &amp;</type>
+          <defname>other1056</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8640" column="30" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="33937" bodyend="33964"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement_1a087132c549c887e987600cbffd8bd4f6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::ShowCompactResponseElement::ShowCompactResponseElement</definition>
+        <argsstring>()</argsstring>
+        <name>ShowCompactResponseElement</name>
+        <qualifiedname>Apache::Hadoop::Hive::ShowCompactResponseElement::ShowCompactResponseElement</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8641" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="33275" bodyend="33299"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement_1a46d87a50caa7eb03dd484273aba45ade" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::ShowCompactResponseElement::~ShowCompactResponseElement</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~ShowCompactResponseElement</name>
+        <qualifiedname>Apache::Hadoop::Hive::ShowCompactResponseElement::~ShowCompactResponseElement</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8643" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="33272" bodyend="33273"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement_1a25f530f71f7495c68cf54b618ed59c3d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::ShowCompactResponseElement::__set_dbname</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_dbname</name>
+        <qualifiedname>Apache::Hadoop::Hive::ShowCompactResponseElement::__set_dbname</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8675" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="33301" bodyend="33303"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement_1abb07d1d999c43505419e911078be8b98" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::ShowCompactResponseElement::__set_tablename</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_tablename</name>
+        <qualifiedname>Apache::Hadoop::Hive::ShowCompactResponseElement::__set_tablename</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8677" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="33305" bodyend="33307"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement_1abddb211bd36377a7c46e2f4972c664ff" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::ShowCompactResponseElement::__set_partitionname</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_partitionname</name>
+        <qualifiedname>Apache::Hadoop::Hive::ShowCompactResponseElement::__set_partitionname</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8679" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="33309" bodyend="33312"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement_1aa2808f59e7b0add37dfb8dac759228fb" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::ShowCompactResponseElement::__set_type</definition>
+        <argsstring>(const CompactionType::type val)</argsstring>
+        <name>__set_type</name>
+        <qualifiedname>Apache::Hadoop::Hive::ShowCompactResponseElement::__set_type</qualifiedname>
+        <param>
+          <type>const CompactionType::type</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8681" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="33314" bodyend="33316"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement_1a3d75d0b530c535c042450c62f5cd462f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::ShowCompactResponseElement::__set_state</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_state</name>
+        <qualifiedname>Apache::Hadoop::Hive::ShowCompactResponseElement::__set_state</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8683" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="33318" bodyend="33320"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement_1ab2159b1b9f58da678a96d72e536b3c50" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::ShowCompactResponseElement::__set_workerid</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_workerid</name>
+        <qualifiedname>Apache::Hadoop::Hive::ShowCompactResponseElement::__set_workerid</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8685" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="33322" bodyend="33325"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement_1ab3004f20bb3d00ddba6799b1ac833a64" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::ShowCompactResponseElement::__set_start</definition>
+        <argsstring>(const int64_t val)</argsstring>
+        <name>__set_start</name>
+        <qualifiedname>Apache::Hadoop::Hive::ShowCompactResponseElement::__set_start</qualifiedname>
+        <param>
+          <type>const int64_t</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8687" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="33327" bodyend="33330"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement_1a5a66cd0d574d1d73aa77be367a8a508e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::ShowCompactResponseElement::__set_runAs</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_runAs</name>
+        <qualifiedname>Apache::Hadoop::Hive::ShowCompactResponseElement::__set_runAs</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8689" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="33332" bodyend="33335"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement_1a4b261c601f09af69324cb0bea8924b9f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::ShowCompactResponseElement::__set_hightestTxnId</definition>
+        <argsstring>(const int64_t val)</argsstring>
+        <name>__set_hightestTxnId</name>
+        <qualifiedname>Apache::Hadoop::Hive::ShowCompactResponseElement::__set_hightestTxnId</qualifiedname>
+        <param>
+          <type>const int64_t</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8691" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="33337" bodyend="33340"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement_1a6ac0307c9d6d148aaba1bdc5a1405be0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::ShowCompactResponseElement::__set_metaInfo</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_metaInfo</name>
+        <qualifiedname>Apache::Hadoop::Hive::ShowCompactResponseElement::__set_metaInfo</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8693" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="33342" bodyend="33345"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement_1a239cae22a2b8d4f0aba68eacd774bc56" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::ShowCompactResponseElement::__set_endTime</definition>
+        <argsstring>(const int64_t val)</argsstring>
+        <name>__set_endTime</name>
+        <qualifiedname>Apache::Hadoop::Hive::ShowCompactResponseElement::__set_endTime</qualifiedname>
+        <param>
+          <type>const int64_t</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8695" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="33347" bodyend="33350"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement_1aa53fed704ccb0ddde0faba79d80a4847" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::ShowCompactResponseElement::__set_hadoopJobId</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_hadoopJobId</name>
+        <qualifiedname>Apache::Hadoop::Hive::ShowCompactResponseElement::__set_hadoopJobId</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8697" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="33352" bodyend="33355"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement_1a1cd41130d504dccc2c520eeb729fe2cf" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::ShowCompactResponseElement::__set_id</definition>
+        <argsstring>(const int64_t val)</argsstring>
+        <name>__set_id</name>
+        <qualifiedname>Apache::Hadoop::Hive::ShowCompactResponseElement::__set_id</qualifiedname>
+        <param>
+          <type>const int64_t</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8699" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="33357" bodyend="33360"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement_1a6a954f1a8ff13817635fd9352d5bd2aa" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::ShowCompactResponseElement::__set_errorMessage</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_errorMessage</name>
+        <qualifiedname>Apache::Hadoop::Hive::ShowCompactResponseElement::__set_errorMessage</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8701" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="33362" bodyend="33365"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement_1ae59ba186ceabcc46479ab3c4b12873b9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::ShowCompactResponseElement::__set_enqueueTime</definition>
+        <argsstring>(const int64_t val)</argsstring>
+        <name>__set_enqueueTime</name>
+        <qualifiedname>Apache::Hadoop::Hive::ShowCompactResponseElement::__set_enqueueTime</qualifiedname>
+        <param>
+          <type>const int64_t</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8703" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="33367" bodyend="33370"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement_1a170f8770062fe309ccc3daed6cad056d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::ShowCompactResponseElement::__set_workerVersion</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_workerVersion</name>
+        <qualifiedname>Apache::Hadoop::Hive::ShowCompactResponseElement::__set_workerVersion</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8705" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="33372" bodyend="33375"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement_1a66e839228fce0bfcff15f752d493a174" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::ShowCompactResponseElement::__set_initiatorId</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_initiatorId</name>
+        <qualifiedname>Apache::Hadoop::Hive::ShowCompactResponseElement::__set_initiatorId</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8707" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="33377" bodyend="33380"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement_1acdd0d77997d400f48cd078edb74e9b46" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::ShowCompactResponseElement::__set_initiatorVersion</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_initiatorVersion</name>
+        <qualifiedname>Apache::Hadoop::Hive::ShowCompactResponseElement::__set_initiatorVersion</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8709" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="33382" bodyend="33385"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement_1ab447af6629a6a2f7a92b424b823d1266" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::ShowCompactResponseElement::__set_cleanerStart</definition>
+        <argsstring>(const int64_t val)</argsstring>
+        <name>__set_cleanerStart</name>
+        <qualifiedname>Apache::Hadoop::Hive::ShowCompactResponseElement::__set_cleanerStart</qualifiedname>
+        <param>
+          <type>const int64_t</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8711" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="33387" bodyend="33390"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement_1ace0d61ca7e43811ee23efa92fb52cc39" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::ShowCompactResponseElement::__set_poolName</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_poolName</name>
+        <qualifiedname>Apache::Hadoop::Hive::ShowCompactResponseElement::__set_poolName</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8713" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="33392" bodyend="33395"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement_1a0923274f9bdc9a8dcac5f8c4d0ecf825" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::ShowCompactResponseElement::__set_nextTxnId</definition>
+        <argsstring>(const int64_t val)</argsstring>
+        <name>__set_nextTxnId</name>
+        <qualifiedname>Apache::Hadoop::Hive::ShowCompactResponseElement::__set_nextTxnId</qualifiedname>
+        <param>
+          <type>const int64_t</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8715" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="33397" bodyend="33400"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement_1a6541fde904c7a3569f12f24dd64a8b31" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::ShowCompactResponseElement::__set_txnId</definition>
+        <argsstring>(const int64_t val)</argsstring>
+        <name>__set_txnId</name>
+        <qualifiedname>Apache::Hadoop::Hive::ShowCompactResponseElement::__set_txnId</qualifiedname>
+        <param>
+          <type>const int64_t</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8717" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="33402" bodyend="33405"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement_1a111e2b14270b972f7b3876e4014fd674" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::ShowCompactResponseElement::__set_commitTime</definition>
+        <argsstring>(const int64_t val)</argsstring>
+        <name>__set_commitTime</name>
+        <qualifiedname>Apache::Hadoop::Hive::ShowCompactResponseElement::__set_commitTime</qualifiedname>
+        <param>
+          <type>const int64_t</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8719" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="33407" bodyend="33410"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement_1ae9fa7e6a81955206218e9240382a1ec0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::ShowCompactResponseElement::__set_hightestWriteId</definition>
+        <argsstring>(const int64_t val)</argsstring>
+        <name>__set_hightestWriteId</name>
+        <qualifiedname>Apache::Hadoop::Hive::ShowCompactResponseElement::__set_hightestWriteId</qualifiedname>
+        <param>
+          <type>const int64_t</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8721" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="33412" bodyend="33415"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement_1a95df09058045ba869119b726cd3d54a3" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::ShowCompactResponseElement::operator==</definition>
+        <argsstring>(const ShowCompactResponseElement &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::ShowCompactResponseElement::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement" kindref="compound">ShowCompactResponseElement</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8723" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="33817" bodyend="33908"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement_1abb99ffdb4d8379981980b02c338cc4e1" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::ShowCompactResponseElement::operator!=</definition>
+        <argsstring>(const ShowCompactResponseElement &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::ShowCompactResponseElement::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement" kindref="compound">ShowCompactResponseElement</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8724" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="8724" bodyend="8726"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement_1aebda1f90e0d0f539d2c735bf8bc95050" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::ShowCompactResponseElement::operator&lt;</definition>
+        <argsstring>(const ShowCompactResponseElement &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::ShowCompactResponseElement::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement" kindref="compound">ShowCompactResponseElement</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8728" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement_1a95673461befbf19a142a8c382c30c957" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::ShowCompactResponseElement::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot) override</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::ShowCompactResponseElement::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8730" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="33423" bodyend="33660"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement_1a220bd4fc7420804e74def1d2b18ddef3" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::ShowCompactResponseElement::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const override</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::ShowCompactResponseElement::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8731" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="33662" bodyend="33786"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement_1a437cffc67eb198016c3f0375bc1fd7a2" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::ShowCompactResponseElement::printTo</definition>
+        <argsstring>(std::ostream &amp;out) const</argsstring>
+        <name>printTo</name>
+        <qualifiedname>Apache::Hadoop::Hive::ShowCompactResponseElement::printTo</qualifiedname>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8733" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="33965" bodyend="33993"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::ShowCompactResponseElement</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::ShowCompactResponseElement</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>dbname</edgelabel>
+          <edgelabel>errorMessage</edgelabel>
+          <edgelabel>hadoopJobId</edgelabel>
+          <edgelabel>initiatorId</edgelabel>
+          <edgelabel>initiatorVersion</edgelabel>
+          <edgelabel>metaInfo</edgelabel>
+          <edgelabel>partitionname</edgelabel>
+          <edgelabel>poolName</edgelabel>
+          <edgelabel>runAs</edgelabel>
+          <edgelabel>state</edgelabel>
+          <edgelabel>...</edgelabel>
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="5">
+        <label>Apache::Hadoop::Hive::_ShowCompactResponseElement__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__ShowCompactResponseElement____isset"/>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+      <node id="4">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="3">
+        <label>std::string</label>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8636" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="8636" bodyend="8734"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement_1ab9cde90627c8743d3628bd888e4f6e65" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ShowCompactResponseElement</scope><name>__isset</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement_1ab447af6629a6a2f7a92b424b823d1266" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ShowCompactResponseElement</scope><name>__set_cleanerStart</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement_1a111e2b14270b972f7b3876e4014fd674" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ShowCompactResponseElement</scope><name>__set_commitTime</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement_1a25f530f71f7495c68cf54b618ed59c3d" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ShowCompactResponseElement</scope><name>__set_dbname</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement_1a239cae22a2b8d4f0aba68eacd774bc56" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ShowCompactResponseElement</scope><name>__set_endTime</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement_1ae59ba186ceabcc46479ab3c4b12873b9" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ShowCompactResponseElement</scope><name>__set_enqueueTime</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement_1a6a954f1a8ff13817635fd9352d5bd2aa" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ShowCompactResponseElement</scope><name>__set_errorMessage</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement_1aa53fed704ccb0ddde0faba79d80a4847" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ShowCompactResponseElement</scope><name>__set_hadoopJobId</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement_1a4b261c601f09af69324cb0bea8924b9f" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ShowCompactResponseElement</scope><name>__set_hightestTxnId</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement_1ae9fa7e6a81955206218e9240382a1ec0" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ShowCompactResponseElement</scope><name>__set_hightestWriteId</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement_1a1cd41130d504dccc2c520eeb729fe2cf" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ShowCompactResponseElement</scope><name>__set_id</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement_1a66e839228fce0bfcff15f752d493a174" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ShowCompactResponseElement</scope><name>__set_initiatorId</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement_1acdd0d77997d400f48cd078edb74e9b46" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ShowCompactResponseElement</scope><name>__set_initiatorVersion</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement_1a6ac0307c9d6d148aaba1bdc5a1405be0" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ShowCompactResponseElement</scope><name>__set_metaInfo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement_1a0923274f9bdc9a8dcac5f8c4d0ecf825" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ShowCompactResponseElement</scope><name>__set_nextTxnId</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement_1abddb211bd36377a7c46e2f4972c664ff" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ShowCompactResponseElement</scope><name>__set_partitionname</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement_1ace0d61ca7e43811ee23efa92fb52cc39" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ShowCompactResponseElement</scope><name>__set_poolName</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement_1a5a66cd0d574d1d73aa77be367a8a508e" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ShowCompactResponseElement</scope><name>__set_runAs</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement_1ab3004f20bb3d00ddba6799b1ac833a64" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ShowCompactResponseElement</scope><name>__set_start</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement_1a3d75d0b530c535c042450c62f5cd462f" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ShowCompactResponseElement</scope><name>__set_state</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement_1abb07d1d999c43505419e911078be8b98" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ShowCompactResponseElement</scope><name>__set_tablename</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement_1a6541fde904c7a3569f12f24dd64a8b31" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ShowCompactResponseElement</scope><name>__set_txnId</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement_1aa2808f59e7b0add37dfb8dac759228fb" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ShowCompactResponseElement</scope><name>__set_type</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement_1ab2159b1b9f58da678a96d72e536b3c50" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ShowCompactResponseElement</scope><name>__set_workerid</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement_1a170f8770062fe309ccc3daed6cad056d" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ShowCompactResponseElement</scope><name>__set_workerVersion</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement_1af91936f8102b590f18904d9e7db8870f" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ShowCompactResponseElement</scope><name>cleanerStart</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement_1a9db37966380e8006c56c81f2f75f50ea" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ShowCompactResponseElement</scope><name>commitTime</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement_1a90b7eff3ce8dfb79209f428a6892f330" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ShowCompactResponseElement</scope><name>dbname</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement_1a687398dc363d27f995c55266a1fd9dd0" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ShowCompactResponseElement</scope><name>endTime</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement_1a8d689d8fd4cc63888d2d35a44418e31b" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ShowCompactResponseElement</scope><name>enqueueTime</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement_1ab4b59ebc4698c682859dd1bde046f3f8" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ShowCompactResponseElement</scope><name>errorMessage</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement_1a1055eea80013bd6f85e009d7b1e892f5" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ShowCompactResponseElement</scope><name>hadoopJobId</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement_1a56f09060af9c7df4c7988ad06b6e90d6" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ShowCompactResponseElement</scope><name>hightestTxnId</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement_1a9322479785bad9df411b0d21133dea65" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ShowCompactResponseElement</scope><name>hightestWriteId</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement_1a973ce4cb06802f1b2ef82cf00256cf0d" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ShowCompactResponseElement</scope><name>id</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement_1a514ff776c7f343e491dbad906661b585" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ShowCompactResponseElement</scope><name>initiatorId</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement_1a99d87d2e814fffbd11d8fc9f55563cb7" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ShowCompactResponseElement</scope><name>initiatorVersion</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement_1a1309abcb391c3e98854a347565e20a9d" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ShowCompactResponseElement</scope><name>metaInfo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement_1a275cf2ad5391fae016239fe4a668a012" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ShowCompactResponseElement</scope><name>nextTxnId</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement_1abb99ffdb4d8379981980b02c338cc4e1" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ShowCompactResponseElement</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement_1aebda1f90e0d0f539d2c735bf8bc95050" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ShowCompactResponseElement</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement_1a9b6f0ca989d0215bd764b6f6225d4b1e" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ShowCompactResponseElement</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement_1a95df09058045ba869119b726cd3d54a3" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ShowCompactResponseElement</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement_1ae1645aeaeb6521fd37a9afaddaa4a12a" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ShowCompactResponseElement</scope><name>partitionname</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement_1a99a4f18be42021d793bac5e27e9ab55d" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ShowCompactResponseElement</scope><name>poolName</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement_1a437cffc67eb198016c3f0375bc1fd7a2" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::ShowCompactResponseElement</scope><name>printTo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement_1a95673461befbf19a142a8c382c30c957" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ShowCompactResponseElement</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement_1a44b7aa4c794e5bed1a6fb5c69c01ccf9" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ShowCompactResponseElement</scope><name>runAs</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement_1a7072f6a5ed8ccf4c881dcb2b6504047b" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ShowCompactResponseElement</scope><name>ShowCompactResponseElement</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement_1a087132c549c887e987600cbffd8bd4f6" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ShowCompactResponseElement</scope><name>ShowCompactResponseElement</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement_1a95ca59d71124ec31adedaf7e1c71c9c1" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ShowCompactResponseElement</scope><name>start</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement_1a33bce1e4ba7714fc38fd6712e7ec8095" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ShowCompactResponseElement</scope><name>state</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement_1a64df3887af229af9a5cac915454eded4" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ShowCompactResponseElement</scope><name>tablename</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement_1a7f6fec724a4c060759b1775e88fa605f" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ShowCompactResponseElement</scope><name>txnId</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement_1a6a6219da019070912900bc88cd1617d8" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ShowCompactResponseElement</scope><name>type</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement_1a45f7a49cc4a8d2e3f56dec6f60eda4e1" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ShowCompactResponseElement</scope><name>workerid</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement_1acb58af6df925917fc56d824acd99ffa1" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ShowCompactResponseElement</scope><name>workerVersion</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement_1a220bd4fc7420804e74def1d2b18ddef3" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ShowCompactResponseElement</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement_1a46d87a50caa7eb03dd484273aba45ade" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::ShowCompactResponseElement</scope><name>~ShowCompactResponseElement</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

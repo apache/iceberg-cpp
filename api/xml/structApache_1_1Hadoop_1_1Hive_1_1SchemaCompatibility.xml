@@ -1,0 +1,64 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structApache_1_1Hadoop_1_1Hive_1_1SchemaCompatibility" kind="struct" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::SchemaCompatibility</compoundname>
+    <sectiondef kind="public-type">
+      <memberdef kind="enum" id="structApache_1_1Hadoop_1_1Hive_1_1SchemaCompatibility_1a3cd7dc656b3cc493fdd659ea7c45048c" prot="public" static="no" strong="no">
+        <type></type>
+        <name>type</name>
+        <qualifiedname>Apache::Hadoop::Hive::SchemaCompatibility::type</qualifiedname>
+        <enumvalue id="structApache_1_1Hadoop_1_1Hive_1_1SchemaCompatibility_1a3cd7dc656b3cc493fdd659ea7c45048caea275fc8d22e52bba9d45c6c23d949d6" prot="public">
+          <name>NONE</name>
+          <initializer>= 1</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="structApache_1_1Hadoop_1_1Hive_1_1SchemaCompatibility_1a3cd7dc656b3cc493fdd659ea7c45048ca7bf3c7965daf502ce44eb4e115a771cb" prot="public">
+          <name>BACKWARD</name>
+          <initializer>= 2</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="structApache_1_1Hadoop_1_1Hive_1_1SchemaCompatibility_1a3cd7dc656b3cc493fdd659ea7c45048ca7dfbea70fc05e400ca39f15c42bae4a2" prot="public">
+          <name>FORWARD</name>
+          <initializer>= 3</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="structApache_1_1Hadoop_1_1Hive_1_1SchemaCompatibility_1a3cd7dc656b3cc493fdd659ea7c45048ca58b5b8797da6aaada879876c59567df0" prot="public">
+          <name>BOTH</name>
+          <initializer>= 4</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="212" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="212" bodyend="217"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="211" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="211" bodyend="218"/>
+    <listofallmembers>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1SchemaCompatibility_1a3cd7dc656b3cc493fdd659ea7c45048ca7bf3c7965daf502ce44eb4e115a771cb" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::SchemaCompatibility</scope><name>BACKWARD</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1SchemaCompatibility_1a3cd7dc656b3cc493fdd659ea7c45048ca58b5b8797da6aaada879876c59567df0" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::SchemaCompatibility</scope><name>BOTH</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1SchemaCompatibility_1a3cd7dc656b3cc493fdd659ea7c45048ca7dfbea70fc05e400ca39f15c42bae4a2" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::SchemaCompatibility</scope><name>FORWARD</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1SchemaCompatibility_1a3cd7dc656b3cc493fdd659ea7c45048caea275fc8d22e52bba9d45c6c23d949d6" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::SchemaCompatibility</scope><name>NONE</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1SchemaCompatibility_1a3cd7dc656b3cc493fdd659ea7c45048c" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::SchemaCompatibility</scope><name>type</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

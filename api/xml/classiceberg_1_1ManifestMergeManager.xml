@@ -1,0 +1,545 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1ManifestMergeManager" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::ManifestMergeManager</compoundname>
+    <includes refid="manifest__merge__manager_8h" local="no">manifest_merge_manager.h</includes>
+    <innerclass refid="structiceberg_1_1ManifestMergeManager_1_1MergedManifestCache" prot="private">iceberg::ManifestMergeManager::MergedManifestCache</innerclass>
+    <sectiondef kind="public-type">
+      <memberdef kind="typedef" id="classiceberg_1_1ManifestMergeManager_1a09606f80eb1dda59b4b3c86e132efc43" prot="public" static="no">
+        <type>std::function&lt; int64_t()&gt;</type>
+        <definition>using iceberg::ManifestMergeManager::SnapshotIdSupplier =  std::function&lt;int64_t()&gt;</definition>
+        <argsstring></argsstring>
+        <name>SnapshotIdSupplier</name>
+        <qualifiedname>iceberg::ManifestMergeManager::SnapshotIdSupplier</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_merge_manager.h" line="52" column="3" bodyfile="iceberg/manifest/manifest_merge_manager.h" bodystart="52" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1ManifestMergeManager_1ac5908876a39dbce2998261fa5c7aa190" prot="private" static="no" mutable="no">
+        <type>const <ref refid="manifest__list_8h_1a06efcb6319f35c7b0af2f629a9e7ae05" kindref="member">ManifestContent</ref></type>
+        <definition>const ManifestContent iceberg::ManifestMergeManager::manifest_content_</definition>
+        <argsstring></argsstring>
+        <name>manifest_content_</name>
+        <qualifiedname>iceberg::ManifestMergeManager::manifest_content_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_merge_manager.h" line="145" column="25" bodyfile="iceberg/manifest/manifest_merge_manager.h" bodystart="145" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1ManifestMergeManager_1ac988c1a43f655b015ee1a0bd40ae5576" prot="private" static="no" mutable="no">
+        <type>const int64_t</type>
+        <definition>const int64_t iceberg::ManifestMergeManager::target_size_bytes_</definition>
+        <argsstring></argsstring>
+        <name>target_size_bytes_</name>
+        <qualifiedname>iceberg::ManifestMergeManager::target_size_bytes_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_merge_manager.h" line="146" column="17" bodyfile="iceberg/manifest/manifest_merge_manager.h" bodystart="146" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1ManifestMergeManager_1a9fcd0106d5a31821283c4feded03d165" prot="private" static="no" mutable="no">
+        <type>const int32_t</type>
+        <definition>const int32_t iceberg::ManifestMergeManager::min_count_to_merge_</definition>
+        <argsstring></argsstring>
+        <name>min_count_to_merge_</name>
+        <qualifiedname>iceberg::ManifestMergeManager::min_count_to_merge_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_merge_manager.h" line="147" column="17" bodyfile="iceberg/manifest/manifest_merge_manager.h" bodystart="147" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1ManifestMergeManager_1a42863d1b1f0605700923eabb00ae2cf4" prot="private" static="no" mutable="no">
+        <type>const bool</type>
+        <definition>const bool iceberg::ManifestMergeManager::merge_enabled_</definition>
+        <argsstring></argsstring>
+        <name>merge_enabled_</name>
+        <qualifiedname>iceberg::ManifestMergeManager::merge_enabled_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_merge_manager.h" line="148" column="14" bodyfile="iceberg/manifest/manifest_merge_manager.h" bodystart="148" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1ManifestMergeManager_1a2fad3007c79b48686b78769ef4d7545e" prot="private" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;FileIO&gt; iceberg::ManifestMergeManager::file_io_</definition>
+        <argsstring></argsstring>
+        <name>file_io_</name>
+        <qualifiedname>iceberg::ManifestMergeManager::file_io_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_merge_manager.h" line="149" column="19" bodyfile="iceberg/manifest/manifest_merge_manager.h" bodystart="149" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1ManifestMergeManager_1a962f985951cffdb5c5005f57e24ba317" prot="private" static="no" mutable="no">
+        <type>SnapshotIdSupplier</type>
+        <definition>SnapshotIdSupplier iceberg::ManifestMergeManager::snapshot_id_supplier_</definition>
+        <argsstring></argsstring>
+        <name>snapshot_id_supplier_</name>
+        <qualifiedname>iceberg::ManifestMergeManager::snapshot_id_supplier_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_merge_manager.h" line="150" column="22" bodyfile="iceberg/manifest/manifest_merge_manager.h" bodystart="150" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1ManifestMergeManager_1a372b7a202979487907eb68fb0bfd68ab" prot="private" static="no" mutable="no">
+        <type>std::function&lt; Status(const std::string &amp;)&gt;</type>
+        <definition>std::function&lt;Status(const std::string&amp;)&gt; iceberg::ManifestMergeManager::delete_file_</definition>
+        <argsstring></argsstring>
+        <name>delete_file_</name>
+        <qualifiedname>iceberg::ManifestMergeManager::delete_file_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_merge_manager.h" line="151" column="17" bodyfile="iceberg/manifest/manifest_merge_manager.h" bodystart="151" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1ManifestMergeManager_1a6c1699f9dc1c307437d7919d87b3e839" prot="private" static="no" mutable="no">
+        <type>int32_t</type>
+        <definition>int32_t iceberg::ManifestMergeManager::replaced_manifests_count_</definition>
+        <argsstring></argsstring>
+        <name>replaced_manifests_count_</name>
+        <qualifiedname>iceberg::ManifestMergeManager::replaced_manifests_count_</qualifiedname>
+        <initializer>{0}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_merge_manager.h" line="152" column="11" bodyfile="iceberg/manifest/manifest_merge_manager.h" bodystart="152" bodyend="152"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1ManifestMergeManager_1ae847b3312b0dc7f1bb76eb0834b3277c" prot="private" static="no" mutable="no">
+        <type>MergedManifestCache</type>
+        <definition>MergedManifestCache iceberg::ManifestMergeManager::merged_manifests_</definition>
+        <argsstring></argsstring>
+        <name>merged_manifests_</name>
+        <qualifiedname>iceberg::ManifestMergeManager::merged_manifests_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_merge_manager.h" line="153" column="23" bodyfile="iceberg/manifest/manifest_merge_manager.h" bodystart="153" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classiceberg_1_1ManifestMergeManager_1ad1ea84d65bf0f1f280751e7bc70eac55" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1ManifestMergeManager" kindref="compound">ManifestMergeManager</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::unique_ptr&lt; ManifestMergeManager &gt; &gt; iceberg::ManifestMergeManager::Make</definition>
+        <argsstring>(ManifestContent content, int64_t target_size_bytes, int32_t min_count_to_merge, bool merge_enabled, std::shared_ptr&lt; FileIO &gt; file_io, SnapshotIdSupplier snapshot_id_supplier, std::function&lt; Status(const std::string &amp;)&gt; delete_file={})</argsstring>
+        <name>Make</name>
+        <qualifiedname>iceberg::ManifestMergeManager::Make</qualifiedname>
+        <param>
+          <type><ref refid="manifest__list_8h_1a06efcb6319f35c7b0af2f629a9e7ae05" kindref="member">ManifestContent</ref></type>
+          <declname>content</declname>
+        </param>
+        <param>
+          <type>int64_t</type>
+          <declname>target_size_bytes</declname>
+        </param>
+        <param>
+          <type>int32_t</type>
+          <declname>min_count_to_merge</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>merge_enabled</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref> &gt;</type>
+          <declname>file_io</declname>
+        </param>
+        <param>
+          <type>SnapshotIdSupplier</type>
+          <declname>snapshot_id_supplier</declname>
+        </param>
+        <param>
+          <type>std::function&lt; Status(const std::string &amp;)&gt;</type>
+          <declname>delete_file</declname>
+          <defval>{}</defval>
+        </param>
+        <briefdescription>
+<para>Construct a merge manager with the given configuration. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>content</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Manifest content this manager accepts </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>target_size_bytes</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Target output manifest size in bytes </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>min_count_to_merge</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Minimum number of manifests before any merging occurs </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>merge_enabled</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Whether merging is enabled at all </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>file_io</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>File IO used to open manifests for reading </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>snapshot_id_supplier</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Supplies the snapshot id being committed </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>delete_file</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Callback that deletes uncommitted merged manifest files </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_merge_manager.h" line="63" column="17" bodyfile="iceberg/manifest/manifest_merge_manager.cc" bodystart="69" bodyend="80"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1ManifestMergeManager_1a48fd9f3a16df724b1f0ef2f7ffe43ea3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::ManifestMergeManager::ManifestMergeManager</definition>
+        <argsstring>(const ManifestMergeManager &amp;)=delete</argsstring>
+        <name>ManifestMergeManager</name>
+        <qualifiedname>iceberg::ManifestMergeManager::ManifestMergeManager</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1ManifestMergeManager" kindref="compound">ManifestMergeManager</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_merge_manager.h" line="69" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestMergeManager_1aff044321809cec4a7c7a2426a102c735" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1ManifestMergeManager" kindref="compound">ManifestMergeManager</ref> &amp;</type>
+        <definition>ManifestMergeManager &amp; iceberg::ManifestMergeManager::operator=</definition>
+        <argsstring>(const ManifestMergeManager &amp;)=delete</argsstring>
+        <name>operator=</name>
+        <qualifiedname>iceberg::ManifestMergeManager::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1ManifestMergeManager" kindref="compound">ManifestMergeManager</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_merge_manager.h" line="70" column="24"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestMergeManager_1afe2069a5a0eb25d9ff3670cfa6de812f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::vector&lt; <ref refid="structiceberg_1_1ManifestFile" kindref="compound">ManifestFile</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::vector&lt; ManifestFile &gt; &gt; iceberg::ManifestMergeManager::MergeManifests</definition>
+        <argsstring>(const std::vector&lt; ManifestFile &gt; &amp;existing_manifests, const std::vector&lt; ManifestFile &gt; &amp;new_manifests, const TableMetadata &amp;metadata, const ManifestWriterFactory &amp;writer_factory)</argsstring>
+        <name>MergeManifests</name>
+        <qualifiedname>iceberg::ManifestMergeManager::MergeManifests</qualifiedname>
+        <param>
+          <type>const std::vector&lt; <ref refid="structiceberg_1_1ManifestFile" kindref="compound">ManifestFile</ref> &gt; &amp;</type>
+          <declname>existing_manifests</declname>
+        </param>
+        <param>
+          <type>const std::vector&lt; <ref refid="structiceberg_1_1ManifestFile" kindref="compound">ManifestFile</ref> &gt; &amp;</type>
+          <declname>new_manifests</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structiceberg_1_1TableMetadata" kindref="compound">TableMetadata</ref> &amp;</type>
+          <declname>metadata</declname>
+        </param>
+        <param>
+          <type>const <ref refid="manifest__writer_8h_1a0fcb4cda5197f4d8c18772a445455cc2" kindref="member">ManifestWriterFactory</ref> &amp;</type>
+          <declname>writer_factory</declname>
+        </param>
+        <briefdescription>
+<para>Merge existing and new manifests according to configured thresholds. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Manifests are grouped by partition_spec_id. Within each group, a greedy bin-packing algorithm combines manifests up to target_size_bytes. The bin that contains the newest manifest is protected by min_count_to_merge: if it has fewer than that many items it is passed through unchanged.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>existing_manifests</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Manifests already in the base snapshot </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>new_manifests</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Newly written manifests to incorporate </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>metadata</parametername>
+</parameternamelist>
+<parameterdescription>
+<para><ref refid="classiceberg_1_1Table" kindref="compound">Table</ref> metadata (provides specs and schema for readers) </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>writer_factory</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Factory to create new <ref refid="classiceberg_1_1ManifestWriter" kindref="compound">ManifestWriter</ref> instances </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The merged manifest list, or an error </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_merge_manager.h" line="84" column="10" bodyfile="iceberg/manifest/manifest_merge_manager.cc" bodystart="82" bodyend="124"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestMergeManager_1a6fb5b97a4d1ff5bb8eeea6aac79b7073" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>int32_t</type>
+        <definition>int32_t iceberg::ManifestMergeManager::ReplacedManifestsCount</definition>
+        <argsstring>() const</argsstring>
+        <name>ReplacedManifestsCount</name>
+        <qualifiedname>iceberg::ManifestMergeManager::ReplacedManifestsCount</qualifiedname>
+        <briefdescription>
+<para>Returns the number of manifests replaced by cached merged outputs. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_merge_manager.h" line="90" column="11" bodyfile="iceberg/manifest/manifest_merge_manager.h" bodystart="90" bodyend="90"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestMergeManager_1ace2b8cc78703c5f3990df0465ebdf448" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::ManifestMergeManager::CleanUncommitted</definition>
+        <argsstring>(const std::unordered_set&lt; std::string &gt; &amp;committed)</argsstring>
+        <name>CleanUncommitted</name>
+        <qualifiedname>iceberg::ManifestMergeManager::CleanUncommitted</qualifiedname>
+        <param>
+          <type>const std::unordered_set&lt; std::string &gt; &amp;</type>
+          <declname>committed</declname>
+        </param>
+        <briefdescription>
+<para>Delete cached merged manifests whose paths were not committed and roll back replaced-manifest accounting. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_merge_manager.h" line="94" column="10" bodyfile="iceberg/manifest/manifest_merge_manager.cc" bodystart="288" bodyend="299"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classiceberg_1_1ManifestMergeManager_1a6a45b91604d452314ac660f82241574c" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::ManifestMergeManager::ManifestMergeManager</definition>
+        <argsstring>(ManifestContent content, int64_t target_size_bytes, int32_t min_count_to_merge, bool merge_enabled, std::shared_ptr&lt; FileIO &gt; file_io, SnapshotIdSupplier snapshot_id_supplier, std::function&lt; Status(const std::string &amp;)&gt; delete_file)</argsstring>
+        <name>ManifestMergeManager</name>
+        <qualifiedname>iceberg::ManifestMergeManager::ManifestMergeManager</qualifiedname>
+        <param>
+          <type><ref refid="manifest__list_8h_1a06efcb6319f35c7b0af2f629a9e7ae05" kindref="member">ManifestContent</ref></type>
+          <declname>content</declname>
+        </param>
+        <param>
+          <type>int64_t</type>
+          <declname>target_size_bytes</declname>
+        </param>
+        <param>
+          <type>int32_t</type>
+          <declname>min_count_to_merge</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>merge_enabled</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref> &gt;</type>
+          <declname>file_io</declname>
+        </param>
+        <param>
+          <type>SnapshotIdSupplier</type>
+          <declname>snapshot_id_supplier</declname>
+        </param>
+        <param>
+          <type>std::function&lt; Status(const std::string &amp;)&gt;</type>
+          <declname>delete_file</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_merge_manager.h" line="97" column="3" bodyfile="iceberg/manifest/manifest_merge_manager.cc" bodystart="48" bodyend="67"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestMergeManager_1afe83e7bcc7aa29aec16a53fa9ca54013" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::vector&lt; <ref refid="structiceberg_1_1ManifestFile" kindref="compound">ManifestFile</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::vector&lt; ManifestFile &gt; &gt; iceberg::ManifestMergeManager::MergeGroup</definition>
+        <argsstring>(const std::vector&lt; const ManifestFile * &gt; &amp;group, const ManifestFile *first, const TableMetadata &amp;metadata, const ManifestWriterFactory &amp;writer_factory)</argsstring>
+        <name>MergeGroup</name>
+        <qualifiedname>iceberg::ManifestMergeManager::MergeGroup</qualifiedname>
+        <param>
+          <type>const std::vector&lt; const <ref refid="structiceberg_1_1ManifestFile" kindref="compound">ManifestFile</ref> * &gt; &amp;</type>
+          <declname>group</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structiceberg_1_1ManifestFile" kindref="compound">ManifestFile</ref> *</type>
+          <declname>first</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structiceberg_1_1TableMetadata" kindref="compound">TableMetadata</ref> &amp;</type>
+          <declname>metadata</declname>
+        </param>
+        <param>
+          <type>const <ref refid="manifest__writer_8h_1a0fcb4cda5197f4d8c18772a445455cc2" kindref="member">ManifestWriterFactory</ref> &amp;</type>
+          <declname>writer_factory</declname>
+        </param>
+        <briefdescription>
+<para>Merge a group of manifests sharing the same spec_id. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>first</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The overall first (newest) manifest across all groups, used to apply the min_count_to_merge threshold on the bin that contains it. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_merge_manager.h" line="130" column="10" bodyfile="iceberg/manifest/manifest_merge_manager.cc" bodystart="126" bodyend="190"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestMergeManager_1ac850eef561ad3f46294d4cde4fe1fe69" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; <ref refid="structiceberg_1_1ManifestFile" kindref="compound">ManifestFile</ref> &gt;</type>
+        <definition>Result&lt; ManifestFile &gt; iceberg::ManifestMergeManager::FlushBin</definition>
+        <argsstring>(const std::vector&lt; const ManifestFile * &gt; &amp;bin, const TableMetadata &amp;metadata, const ManifestWriterFactory &amp;writer_factory)</argsstring>
+        <name>FlushBin</name>
+        <qualifiedname>iceberg::ManifestMergeManager::FlushBin</qualifiedname>
+        <param>
+          <type>const std::vector&lt; const <ref refid="structiceberg_1_1ManifestFile" kindref="compound">ManifestFile</ref> * &gt; &amp;</type>
+          <declname>bin</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structiceberg_1_1TableMetadata" kindref="compound">TableMetadata</ref> &amp;</type>
+          <declname>metadata</declname>
+        </param>
+        <param>
+          <type>const <ref refid="manifest__writer_8h_1a0fcb4cda5197f4d8c18772a445455cc2" kindref="member">ManifestWriterFactory</ref> &amp;</type>
+          <declname>writer_factory</declname>
+        </param>
+        <briefdescription>
+<para>Write a merged manifest from all manifests in a bin. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Entries are written snapshot-aware:<itemizedlist>
+<listitem><para>ADDED from snapshot_id → WriteAddedEntry (preserve status)</para>
+</listitem><listitem><para>DELETED from snapshot_id → WriteDeletedEntry (preserve tombstone)</para>
+</listitem><listitem><para>DELETED from older snapshots → dropped (stale tombstones are not carried forward)</para>
+</listitem><listitem><para>All other entries → WriteExistingEntry </para>
+</listitem></itemizedlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_merge_manager.h" line="141" column="10" bodyfile="iceberg/manifest/manifest_merge_manager.cc" bodystart="192" bodyend="230"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Merges small manifests into larger ones using greedy bin-packing. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>Manifests are grouped by partition_spec_id before merging; manifests with different spec IDs are never merged together. Within a group, manifests are accumulated into bins until a bin would exceed target_size_bytes, at which point the bin is flushed (written) and a new one started. Manifests already larger than target_size_bytes pass through unchanged.</para>
+<para><simplesect kind="note"><para>This class is non-copyable and non-movable. </para>
+</simplesect>
+</para>
+    </detaileddescription>
+    <location file="iceberg/manifest/manifest_merge_manager.h" line="50" column="1" bodyfile="iceberg/manifest/manifest_merge_manager.h" bodystart="50" bodyend="154"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1ManifestMergeManager_1ace2b8cc78703c5f3990df0465ebdf448" prot="public" virt="non-virtual"><scope>iceberg::ManifestMergeManager</scope><name>CleanUncommitted</name></member>
+      <member refid="classiceberg_1_1ManifestMergeManager_1a372b7a202979487907eb68fb0bfd68ab" prot="private" virt="non-virtual"><scope>iceberg::ManifestMergeManager</scope><name>delete_file_</name></member>
+      <member refid="classiceberg_1_1ManifestMergeManager_1a2fad3007c79b48686b78769ef4d7545e" prot="private" virt="non-virtual"><scope>iceberg::ManifestMergeManager</scope><name>file_io_</name></member>
+      <member refid="classiceberg_1_1ManifestMergeManager_1ac850eef561ad3f46294d4cde4fe1fe69" prot="private" virt="non-virtual"><scope>iceberg::ManifestMergeManager</scope><name>FlushBin</name></member>
+      <member refid="classiceberg_1_1ManifestMergeManager_1ad1ea84d65bf0f1f280751e7bc70eac55" prot="public" virt="non-virtual"><scope>iceberg::ManifestMergeManager</scope><name>Make</name></member>
+      <member refid="classiceberg_1_1ManifestMergeManager_1ac5908876a39dbce2998261fa5c7aa190" prot="private" virt="non-virtual"><scope>iceberg::ManifestMergeManager</scope><name>manifest_content_</name></member>
+      <member refid="classiceberg_1_1ManifestMergeManager_1a48fd9f3a16df724b1f0ef2f7ffe43ea3" prot="public" virt="non-virtual"><scope>iceberg::ManifestMergeManager</scope><name>ManifestMergeManager</name></member>
+      <member refid="classiceberg_1_1ManifestMergeManager_1a6a45b91604d452314ac660f82241574c" prot="private" virt="non-virtual"><scope>iceberg::ManifestMergeManager</scope><name>ManifestMergeManager</name></member>
+      <member refid="classiceberg_1_1ManifestMergeManager_1a42863d1b1f0605700923eabb00ae2cf4" prot="private" virt="non-virtual"><scope>iceberg::ManifestMergeManager</scope><name>merge_enabled_</name></member>
+      <member refid="classiceberg_1_1ManifestMergeManager_1ae847b3312b0dc7f1bb76eb0834b3277c" prot="private" virt="non-virtual"><scope>iceberg::ManifestMergeManager</scope><name>merged_manifests_</name></member>
+      <member refid="classiceberg_1_1ManifestMergeManager_1afe83e7bcc7aa29aec16a53fa9ca54013" prot="private" virt="non-virtual"><scope>iceberg::ManifestMergeManager</scope><name>MergeGroup</name></member>
+      <member refid="classiceberg_1_1ManifestMergeManager_1afe2069a5a0eb25d9ff3670cfa6de812f" prot="public" virt="non-virtual"><scope>iceberg::ManifestMergeManager</scope><name>MergeManifests</name></member>
+      <member refid="classiceberg_1_1ManifestMergeManager_1a9fcd0106d5a31821283c4feded03d165" prot="private" virt="non-virtual"><scope>iceberg::ManifestMergeManager</scope><name>min_count_to_merge_</name></member>
+      <member refid="classiceberg_1_1ManifestMergeManager_1aff044321809cec4a7c7a2426a102c735" prot="public" virt="non-virtual"><scope>iceberg::ManifestMergeManager</scope><name>operator=</name></member>
+      <member refid="classiceberg_1_1ManifestMergeManager_1a6c1699f9dc1c307437d7919d87b3e839" prot="private" virt="non-virtual"><scope>iceberg::ManifestMergeManager</scope><name>replaced_manifests_count_</name></member>
+      <member refid="classiceberg_1_1ManifestMergeManager_1a6fb5b97a4d1ff5bb8eeea6aac79b7073" prot="public" virt="non-virtual"><scope>iceberg::ManifestMergeManager</scope><name>ReplacedManifestsCount</name></member>
+      <member refid="classiceberg_1_1ManifestMergeManager_1a962f985951cffdb5c5005f57e24ba317" prot="private" virt="non-virtual"><scope>iceberg::ManifestMergeManager</scope><name>snapshot_id_supplier_</name></member>
+      <member refid="classiceberg_1_1ManifestMergeManager_1a09606f80eb1dda59b4b3c86e132efc43" prot="public" virt="non-virtual"><scope>iceberg::ManifestMergeManager</scope><name>SnapshotIdSupplier</name></member>
+      <member refid="classiceberg_1_1ManifestMergeManager_1ac988c1a43f655b015ee1a0bd40ae5576" prot="private" virt="non-virtual"><scope>iceberg::ManifestMergeManager</scope><name>target_size_bytes_</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

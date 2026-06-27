@@ -1,0 +1,80 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1retry_1_1RetryPolicy" kind="struct" language="C++" prot="protected">
+    <compoundname>iceberg::retry::RetryPolicy</compoundname>
+    <templateparamlist>
+      <param>
+        <type>RetryPolicyMode</type>
+        <declname>Mode</declname>
+        <defname>Mode</defname>
+      </param>
+      <param>
+        <type>ErrorKind...</type>
+        <declname>Kinds</declname>
+        <defname>Kinds</defname>
+      </param>
+    </templateparamlist>
+    <sectiondef kind="public-static-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1retry_1_1RetryPolicy_1a011b5e13fa79c08ea69458b05ac86d18" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr RetryPolicyMode</type>
+        <definition>constexpr RetryPolicyMode iceberg::retry::RetryPolicy&lt; Mode, Kinds &gt;::kMode</definition>
+        <argsstring></argsstring>
+        <name>kMode</name>
+        <qualifiedname>iceberg::retry::RetryPolicy::kMode</qualifiedname>
+        <initializer>= Mode</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/retry_util.h" line="97" column="36" bodyfile="iceberg/util/retry_util.h" bodystart="97" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1retry_1_1RetryPolicy_1af122a377d6b4308a1caadf61cc2980f9" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr bool</type>
+        <definition>constexpr bool iceberg::retry::RetryPolicy&lt; Mode, Kinds &gt;::kEnabled</definition>
+        <argsstring></argsstring>
+        <name>kEnabled</name>
+        <qualifiedname>iceberg::retry::RetryPolicy::kEnabled</qualifiedname>
+        <initializer>= Mode != RetryPolicyMode::kNoRetry</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/retry_util.h" line="98" column="25" bodyfile="iceberg/util/retry_util.h" bodystart="98" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="structiceberg_1_1retry_1_1RetryPolicy_1a7b74f9ce8b1a48511c0f68bf8cf49353" prot="public" static="yes" constexpr="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>constexpr bool</type>
+        <definition>static constexpr bool iceberg::retry::RetryPolicy&lt; Mode, Kinds &gt;::ShouldRetry</definition>
+        <argsstring>(ErrorKind kind)</argsstring>
+        <name>ShouldRetry</name>
+        <qualifiedname>iceberg::retry::RetryPolicy::ShouldRetry</qualifiedname>
+        <param>
+          <type>ErrorKind</type>
+          <declname>kind</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/retry_util.h" line="100" column="25" bodyfile="iceberg/util/retry_util.h" bodystart="100" bodyend="108"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/util/retry_util.h" line="91" column="1" bodyfile="iceberg/util/retry_util.h" bodystart="91" bodyend="109"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1retry_1_1RetryPolicy_1af122a377d6b4308a1caadf61cc2980f9" prot="public" virt="non-virtual"><scope>iceberg::retry::RetryPolicy</scope><name>kEnabled</name></member>
+      <member refid="structiceberg_1_1retry_1_1RetryPolicy_1a011b5e13fa79c08ea69458b05ac86d18" prot="public" virt="non-virtual"><scope>iceberg::retry::RetryPolicy</scope><name>kMode</name></member>
+      <member refid="structiceberg_1_1retry_1_1RetryPolicy_1a7b74f9ce8b1a48511c0f68bf8cf49353" prot="public" virt="non-virtual"><scope>iceberg::retry::RetryPolicy</scope><name>ShouldRetry</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

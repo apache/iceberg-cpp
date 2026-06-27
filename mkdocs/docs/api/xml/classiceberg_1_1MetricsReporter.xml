@@ -1,0 +1,133 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1MetricsReporter" kind="class" language="C++" prot="public" abstract="yes">
+    <compoundname>iceberg::MetricsReporter</compoundname>
+    <derivedcompoundref refid="classiceberg_1_1CollectingMetricsReporter" prot="public" virt="non-virtual">iceberg::CollectingMetricsReporter</derivedcompoundref>
+    <derivedcompoundref refid="classiceberg_1_1CompositeMetricsReporter" prot="public" virt="non-virtual">iceberg::CompositeMetricsReporter</derivedcompoundref>
+    <derivedcompoundref refid="classiceberg_1_1FailingMetricsReporter" prot="public" virt="non-virtual">iceberg::FailingMetricsReporter</derivedcompoundref>
+    <derivedcompoundref refid="classiceberg_1_1InitializingReporter" prot="public" virt="non-virtual">iceberg::InitializingReporter</derivedcompoundref>
+    <derivedcompoundref refid="classiceberg_1_1ThrowingMetricsReporter" prot="public" virt="non-virtual">iceberg::ThrowingMetricsReporter</derivedcompoundref>
+    <includes refid="metrics__reporter_8h" local="no">metrics_reporter.h</includes>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1MetricsReporter_1a67e7d83391a15f8c28b608ca2949cef1" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type></type>
+        <definition>virtual iceberg::MetricsReporter::~MetricsReporter</definition>
+        <argsstring>()=default</argsstring>
+        <name>~MetricsReporter</name>
+        <qualifiedname>iceberg::MetricsReporter::~MetricsReporter</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/metrics_reporter.h" line="84" column="11"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1MetricsReporter_1a4a61bb9e321d19b3cbf3364c849e08f7" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>Status</type>
+        <definition>virtual Status iceberg::MetricsReporter::Initialize</definition>
+        <argsstring>(const std::unordered_map&lt; std::string, std::string &gt; &amp;properties)</argsstring>
+        <name>Initialize</name>
+        <qualifiedname>iceberg::MetricsReporter::Initialize</qualifiedname>
+        <reimplementedby refid="classiceberg_1_1InitializingReporter_1a4f9d55944b23e2c5b3ab13c16382414d">Initialize</reimplementedby>
+        <param>
+          <type>const std::unordered_map&lt; std::string, std::string &gt; &amp;</type>
+          <declname>properties</declname>
+        </param>
+        <briefdescription>
+<para>Initialize the reporter with catalog properties after construction. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Called by <ref refid="classiceberg_1_1MetricsReporters_1a4246661863289079c323014fd4317d47" kindref="member">MetricsReporters::Load()</ref> before the first <ref refid="classiceberg_1_1MetricsReporter_1ada754787bbf4f5625b4739ee489296c7" kindref="member">Report()</ref> invocation. The default implementation is a no-op. Override to perform property-based setup (e.g., configure endpoints, credentials, sampling rates). </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/metrics_reporter.h" line="91" column="18" bodyfile="iceberg/metrics/metrics_reporter.h" bodystart="91" bodyend="94"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1MetricsReporter_1ada754787bbf4f5625b4739ee489296c7" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type>Status</type>
+        <definition>virtual Status iceberg::MetricsReporter::Report</definition>
+        <argsstring>(const MetricsReport &amp;report)=0</argsstring>
+        <name>Report</name>
+        <qualifiedname>iceberg::MetricsReporter::Report</qualifiedname>
+        <reimplementedby refid="classiceberg_1_1FailingMetricsReporter_1a4aec49eabd58686c218a4d2341721d41">Report</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1ThrowingMetricsReporter_1aba73ec536ac2cd8d56b8c524bc482042">Report</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1InitializingReporter_1afb8bbb5e6a6554ad7464a73063a07bc9">Report</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1CompositeMetricsReporter_1adc3c44f92b0a28b28b620d373d26861f">Report</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1CollectingMetricsReporter_1a7f0d9e55d14f65d21d433ece4b2a0d95">Report</reimplementedby>
+        <param>
+          <type>const MetricsReport &amp;</type>
+          <declname>report</declname>
+        </param>
+        <briefdescription>
+<para>Report a metrics report. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Implementations should handle the report according to their purpose (e.g., logging, sending to a metrics service, etc.).</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>report</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The metrics report to process. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/metrics_reporter.h" line="102" column="18"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Interface for reporting metrics from Iceberg operations. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>Implementations of this interface can be used to collect and report metrics about scan and commit operations. Common implementations include logging reporters, metrics collectors, and the noop reporter for testing.</para>
+<para>Implementations must not throw. Return an error Status instead. </para>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>iceberg::CollectingMetricsReporter</label>
+        <link refid="classiceberg_1_1CollectingMetricsReporter"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>iceberg::CompositeMetricsReporter</label>
+        <link refid="classiceberg_1_1CompositeMetricsReporter"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>iceberg::FailingMetricsReporter</label>
+        <link refid="classiceberg_1_1FailingMetricsReporter"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>iceberg::InitializingReporter</label>
+        <link refid="classiceberg_1_1InitializingReporter"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::MetricsReporter</label>
+        <link refid="classiceberg_1_1MetricsReporter"/>
+      </node>
+      <node id="6">
+        <label>iceberg::ThrowingMetricsReporter</label>
+        <link refid="classiceberg_1_1ThrowingMetricsReporter"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <location file="iceberg/metrics/metrics_reporter.h" line="82" column="1" bodyfile="iceberg/metrics/metrics_reporter.h" bodystart="82" bodyend="103"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1MetricsReporter_1a4a61bb9e321d19b3cbf3364c849e08f7" prot="public" virt="virtual"><scope>iceberg::MetricsReporter</scope><name>Initialize</name></member>
+      <member refid="classiceberg_1_1MetricsReporter_1ada754787bbf4f5625b4739ee489296c7" prot="public" virt="pure-virtual"><scope>iceberg::MetricsReporter</scope><name>Report</name></member>
+      <member refid="classiceberg_1_1MetricsReporter_1a67e7d83391a15f8c28b608ca2949cef1" prot="public" virt="virtual"><scope>iceberg::MetricsReporter</scope><name>~MetricsReporter</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

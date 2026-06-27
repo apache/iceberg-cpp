@@ -1,0 +1,152 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1Counter" kind="class" language="C++" prot="public" abstract="yes">
+    <compoundname>iceberg::Counter</compoundname>
+    <derivedcompoundref refid="classiceberg_1_1DefaultCounter" prot="public" virt="non-virtual">iceberg::DefaultCounter</derivedcompoundref>
+    <includes refid="counter_8h" local="no">counter.h</includes>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1Counter_1a4a9d9d353ad2e9e51ac8fd2132c8a7e9" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type></type>
+        <definition>virtual iceberg::Counter::~Counter</definition>
+        <argsstring>()=default</argsstring>
+        <name>~Counter</name>
+        <qualifiedname>iceberg::Counter::~Counter</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/counter.h" line="69" column="11"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Counter_1a0965723bf9e3f7b4009bc4a7bd89018b" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>void</type>
+        <definition>virtual void iceberg::Counter::Increment</definition>
+        <argsstring>()</argsstring>
+        <name>Increment</name>
+        <qualifiedname>iceberg::Counter::Increment</qualifiedname>
+        <reimplementedby refid="classiceberg_1_1DefaultCounter_1a0965723bf9e3f7b4009bc4a7bd89018b">Increment</reimplementedby>
+        <briefdescription>
+<para>Increment the counter by 1. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/counter.h" line="72" column="16" bodyfile="iceberg/metrics/counter.h" bodystart="72" bodyend="72"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Counter_1aad8a97ad01443e996ed96a1a9c3a5f5e" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type>void</type>
+        <definition>virtual void iceberg::Counter::Increment</definition>
+        <argsstring>(int64_t amount)=0</argsstring>
+        <name>Increment</name>
+        <qualifiedname>iceberg::Counter::Increment</qualifiedname>
+        <reimplementedby refid="classiceberg_1_1DefaultCounter_1ae97b2a6181277ee88b02c24a9df22617">Increment</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1DefaultCounter_1aad8a97ad01443e996ed96a1a9c3a5f5e">Increment</reimplementedby>
+        <param>
+          <type>int64_t</type>
+          <declname>amount</declname>
+        </param>
+        <briefdescription>
+<para>Increment the counter by the given amount. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/counter.h" line="75" column="16"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Counter_1aa4eba5ccee954626fc99ffd160231544" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
+        <type>int64_t</type>
+        <definition>virtual int64_t iceberg::Counter::value</definition>
+        <argsstring>() const =0</argsstring>
+        <name>value</name>
+        <qualifiedname>iceberg::Counter::value</qualifiedname>
+        <reimplementedby refid="classiceberg_1_1DefaultCounter_1ac68e8d544e1d509bf78073b6417db888">value</reimplementedby>
+        <briefdescription>
+<para>Return the current count. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/counter.h" line="78" column="19"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Counter_1af8acff891a14876b873ea95a6cb28416" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
+        <type>CounterUnit</type>
+        <definition>virtual CounterUnit iceberg::Counter::unit</definition>
+        <argsstring>() const</argsstring>
+        <name>unit</name>
+        <qualifiedname>iceberg::Counter::unit</qualifiedname>
+        <reimplementedby refid="classiceberg_1_1DefaultCounter_1ad3683916f690d75bc3bb55d1c52808fc">unit</reimplementedby>
+        <briefdescription>
+<para>Return the unit for this counter. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/counter.h" line="81" column="23" bodyfile="iceberg/metrics/counter.h" bodystart="81" bodyend="81"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Counter_1a4cbbb6328f3e3a62a91dd3584b5bce93" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
+        <type>bool</type>
+        <definition>virtual bool iceberg::Counter::IsNoop</definition>
+        <argsstring>() const</argsstring>
+        <name>IsNoop</name>
+        <qualifiedname>iceberg::Counter::IsNoop</qualifiedname>
+        <briefdescription>
+<para>Return true if this counter is a no-op. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/counter.h" line="84" column="16" bodyfile="iceberg/metrics/counter.h" bodystart="84" bodyend="84"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classiceberg_1_1Counter_1afba8453cb332babd091c49185f0c0b29" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Counter" kindref="compound">Counter</ref> &gt;</type>
+        <definition>std::shared_ptr&lt; Counter &gt; iceberg::Counter::Noop</definition>
+        <argsstring>()</argsstring>
+        <name>Noop</name>
+        <qualifiedname>iceberg::Counter::Noop</qualifiedname>
+        <briefdescription>
+<para>Return a shared no-op counter singleton. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/counter.h" line="87" column="26" bodyfile="iceberg/metrics/counter.cc" bodystart="39" bodyend="42"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Abstract counter for tracking event totals. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>iceberg::Counter</label>
+        <link refid="classiceberg_1_1Counter"/>
+      </node>
+      <node id="2">
+        <label>iceberg::DefaultCounter</label>
+        <link refid="classiceberg_1_1DefaultCounter"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <location file="iceberg/metrics/counter.h" line="67" column="1" bodyfile="iceberg/metrics/counter.h" bodystart="67" bodyend="88"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1Counter_1a0965723bf9e3f7b4009bc4a7bd89018b" prot="public" virt="virtual"><scope>iceberg::Counter</scope><name>Increment</name></member>
+      <member refid="classiceberg_1_1Counter_1aad8a97ad01443e996ed96a1a9c3a5f5e" prot="public" virt="pure-virtual"><scope>iceberg::Counter</scope><name>Increment</name></member>
+      <member refid="classiceberg_1_1Counter_1a4cbbb6328f3e3a62a91dd3584b5bce93" prot="public" virt="virtual"><scope>iceberg::Counter</scope><name>IsNoop</name></member>
+      <member refid="classiceberg_1_1Counter_1afba8453cb332babd091c49185f0c0b29" prot="public" virt="non-virtual"><scope>iceberg::Counter</scope><name>Noop</name></member>
+      <member refid="classiceberg_1_1Counter_1af8acff891a14876b873ea95a6cb28416" prot="public" virt="virtual"><scope>iceberg::Counter</scope><name>unit</name></member>
+      <member refid="classiceberg_1_1Counter_1aa4eba5ccee954626fc99ffd160231544" prot="public" virt="pure-virtual"><scope>iceberg::Counter</scope><name>value</name></member>
+      <member refid="classiceberg_1_1Counter_1a4a9d9d353ad2e9e51ac8fd2132c8a7e9" prot="public" virt="virtual"><scope>iceberg::Counter</scope><name>~Counter</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

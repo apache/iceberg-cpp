@@ -1,0 +1,111 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1SnapshotRef_1_1Branch" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::SnapshotRef::Branch</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1SnapshotRef_1_1Branch_1a4e263cc1792d5e41e495fc1d0d22c48a" prot="public" static="no" mutable="no">
+        <type>std::optional&lt; int32_t &gt;</type>
+        <definition>std::optional&lt;int32_t&gt; iceberg::SnapshotRef::Branch::min_snapshots_to_keep</definition>
+        <argsstring></argsstring>
+        <name>min_snapshots_to_keep</name>
+        <qualifiedname>iceberg::SnapshotRef::Branch::min_snapshots_to_keep</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>A positive number for the minimum number of snapshots to keep in a branch while expiring snapshots. Defaults to table property history.expire.min-snapshots-to-keep. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/snapshot.h" line="75" column="19" bodyfile="iceberg/snapshot.h" bodystart="75" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1SnapshotRef_1_1Branch_1a51b4eb07baf51b45ae89bc533092db3f" prot="public" static="no" mutable="no">
+        <type>std::optional&lt; int64_t &gt;</type>
+        <definition>std::optional&lt;int64_t&gt; iceberg::SnapshotRef::Branch::max_snapshot_age_ms</definition>
+        <argsstring></argsstring>
+        <name>max_snapshot_age_ms</name>
+        <qualifiedname>iceberg::SnapshotRef::Branch::max_snapshot_age_ms</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>A positive number for the max age of snapshots to keep when expiring, including the latest snapshot. Defaults to table property history.expire.max-snapshot-age-ms. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/snapshot.h" line="79" column="19" bodyfile="iceberg/snapshot.h" bodystart="79" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1SnapshotRef_1_1Branch_1a66bddbcaaf9655ed5c4528ecab20d57e" prot="public" static="no" mutable="no">
+        <type>std::optional&lt; int64_t &gt;</type>
+        <definition>std::optional&lt;int64_t&gt; iceberg::SnapshotRef::Branch::max_ref_age_ms</definition>
+        <argsstring></argsstring>
+        <name>max_ref_age_ms</name>
+        <qualifiedname>iceberg::SnapshotRef::Branch::max_ref_age_ms</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>For snapshot references except the main branch, a positive number for the max age of the snapshot reference to keep while expiring snapshots. Defaults to table property history.expire.max-ref-age-ms. The main branch never expires. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/snapshot.h" line="83" column="19" bodyfile="iceberg/snapshot.h" bodystart="83" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="friend">
+      <memberdef kind="friend" id="structiceberg_1_1SnapshotRef_1_1Branch_1a72566c422b25279bd143b8b39006e506" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool operator==</definition>
+        <argsstring>(const Branch &amp;lhs, const Branch &amp;rhs)</argsstring>
+        <name>operator==</name>
+        <qualifiedname>iceberg::SnapshotRef::Branch::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1SnapshotRef_1_1Branch" kindref="compound">Branch</ref> &amp;</type>
+          <declname>lhs</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structiceberg_1_1SnapshotRef_1_1Branch" kindref="compound">Branch</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+<para>Compare two branches for equality. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/snapshot.h" line="86" column="17" bodyfile="iceberg/snapshot.h" bodystart="86" bodyend="88"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="structiceberg_1_1SnapshotRef_1_1Branch_1a7c8c8e89d543b983024ac17d7c020b3d" prot="private" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::SnapshotRef::Branch::Equals</definition>
+        <argsstring>(const Branch &amp;other) const</argsstring>
+        <name>Equals</name>
+        <qualifiedname>iceberg::SnapshotRef::Branch::Equals</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1SnapshotRef_1_1Branch" kindref="compound">Branch</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+<para>Compare two branches for equality. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/snapshot.h" line="92" column="10" bodyfile="iceberg/snapshot.cc" bodystart="53" bodyend="57"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/snapshot.h" line="71" column="3" bodyfile="iceberg/snapshot.h" bodystart="71" bodyend="93"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1SnapshotRef_1_1Branch_1a7c8c8e89d543b983024ac17d7c020b3d" prot="private" virt="non-virtual"><scope>iceberg::SnapshotRef::Branch</scope><name>Equals</name></member>
+      <member refid="structiceberg_1_1SnapshotRef_1_1Branch_1a66bddbcaaf9655ed5c4528ecab20d57e" prot="public" virt="non-virtual"><scope>iceberg::SnapshotRef::Branch</scope><name>max_ref_age_ms</name></member>
+      <member refid="structiceberg_1_1SnapshotRef_1_1Branch_1a51b4eb07baf51b45ae89bc533092db3f" prot="public" virt="non-virtual"><scope>iceberg::SnapshotRef::Branch</scope><name>max_snapshot_age_ms</name></member>
+      <member refid="structiceberg_1_1SnapshotRef_1_1Branch_1a4e263cc1792d5e41e495fc1d0d22c48a" prot="public" virt="non-virtual"><scope>iceberg::SnapshotRef::Branch</scope><name>min_snapshots_to_keep</name></member>
+      <member refid="structiceberg_1_1SnapshotRef_1_1Branch_1a72566c422b25279bd143b8b39006e506" prot="public" virt="non-virtual"><scope>iceberg::SnapshotRef::Branch</scope><name>operator==</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

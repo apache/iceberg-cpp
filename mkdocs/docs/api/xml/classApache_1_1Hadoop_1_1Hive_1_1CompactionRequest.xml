@@ -1,0 +1,648 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1CompactionRequest" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::CompactionRequest</compoundname>
+    <basecompoundref prot="public" virt="virtual">apache::thrift::TBase</basecompoundref>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1CompactionRequest_1a49d1a789178a2e5e30c7b13a60baddf7" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::CompactionRequest::dbname</definition>
+        <argsstring></argsstring>
+        <name>dbname</name>
+        <qualifiedname>Apache::Hadoop::Hive::CompactionRequest::dbname</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8151" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="8151" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1CompactionRequest_1a2650c143a1caa7385517e5fc0d477bfe" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::CompactionRequest::tablename</definition>
+        <argsstring></argsstring>
+        <name>tablename</name>
+        <qualifiedname>Apache::Hadoop::Hive::CompactionRequest::tablename</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8152" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="8152" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1CompactionRequest_1a6cec72fbe091b3d704ec64f08a51d413" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::CompactionRequest::partitionname</definition>
+        <argsstring></argsstring>
+        <name>partitionname</name>
+        <qualifiedname>Apache::Hadoop::Hive::CompactionRequest::partitionname</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8153" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="8153" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1CompactionRequest_1ac29ee21ec49420bd9a2aa08a37177e4f" prot="public" static="no" mutable="no">
+        <type>CompactionType::type</type>
+        <definition>CompactionType::type Apache::Hadoop::Hive::CompactionRequest::type</definition>
+        <argsstring></argsstring>
+        <name>type</name>
+        <qualifiedname>Apache::Hadoop::Hive::CompactionRequest::type</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="see"><para><ref refid="structApache_1_1Hadoop_1_1Hive_1_1CompactionType" kindref="compound">CompactionType</ref> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8158" column="24" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="8158" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1CompactionRequest_1a1643adf2633e0dd1db2317962ae966d8" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::CompactionRequest::runas</definition>
+        <argsstring></argsstring>
+        <name>runas</name>
+        <qualifiedname>Apache::Hadoop::Hive::CompactionRequest::runas</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8159" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="8159" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1CompactionRequest_1a267cfa347a1082eb3bf66ad50f0b8832" prot="public" static="no" mutable="no">
+        <type>std::map&lt; std::string, std::string &gt;</type>
+        <definition>std::map&lt;std::string, std::string&gt; Apache::Hadoop::Hive::CompactionRequest::properties</definition>
+        <argsstring></argsstring>
+        <name>properties</name>
+        <qualifiedname>Apache::Hadoop::Hive::CompactionRequest::properties</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8160" column="13" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="8160" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1CompactionRequest_1a7f12e0668674a057f8e738e202aadba7" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::CompactionRequest::initiatorId</definition>
+        <argsstring></argsstring>
+        <name>initiatorId</name>
+        <qualifiedname>Apache::Hadoop::Hive::CompactionRequest::initiatorId</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8161" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="8161" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1CompactionRequest_1ad743d22b24087eef530019d3c89bc5ac" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::CompactionRequest::initiatorVersion</definition>
+        <argsstring></argsstring>
+        <name>initiatorVersion</name>
+        <qualifiedname>Apache::Hadoop::Hive::CompactionRequest::initiatorVersion</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8162" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="8162" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1CompactionRequest_1a305348f09a3c37a3f51cbb80558ef639" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::CompactionRequest::poolName</definition>
+        <argsstring></argsstring>
+        <name>poolName</name>
+        <qualifiedname>Apache::Hadoop::Hive::CompactionRequest::poolName</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8163" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="8163" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1CompactionRequest_1a3d2099bb2e06e29e862a26d70e0362c2" prot="public" static="no" mutable="no">
+        <type>int32_t</type>
+        <definition>int32_t Apache::Hadoop::Hive::CompactionRequest::numberOfBuckets</definition>
+        <argsstring></argsstring>
+        <name>numberOfBuckets</name>
+        <qualifiedname>Apache::Hadoop::Hive::CompactionRequest::numberOfBuckets</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8164" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="8164" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1CompactionRequest_1a226bc8c6ad69144907c693ce0217f343" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::CompactionRequest::orderByClause</definition>
+        <argsstring></argsstring>
+        <name>orderByClause</name>
+        <qualifiedname>Apache::Hadoop::Hive::CompactionRequest::orderByClause</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8165" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="8165" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1CompactionRequest_1a3b139558ed91f09a9db0f0912fde0132" prot="public" static="no" mutable="no">
+        <type><ref refid="structApache_1_1Hadoop_1_1Hive_1_1__CompactionRequest____isset" kindref="compound">_CompactionRequest__isset</ref></type>
+        <definition>_CompactionRequest__isset Apache::Hadoop::Hive::CompactionRequest::__isset</definition>
+        <argsstring></argsstring>
+        <name>__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::CompactionRequest::__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8167" column="29" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="8167" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CompactionRequest_1a586ec0b69f59f46a2f4f4ff88b5cba29" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::CompactionRequest::CompactionRequest</definition>
+        <argsstring>(const CompactionRequest &amp;)</argsstring>
+        <name>CompactionRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::CompactionRequest::CompactionRequest</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionRequest" kindref="compound">CompactionRequest</ref> &amp;</type>
+          <defname>other1034</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8146" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="31467" bodyend="31480"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CompactionRequest_1aceb85465ca0b498b69361a881da4efd3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionRequest" kindref="compound">CompactionRequest</ref> &amp;</type>
+        <definition>CompactionRequest &amp; Apache::Hadoop::Hive::CompactionRequest::operator=</definition>
+        <argsstring>(const CompactionRequest &amp;)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::CompactionRequest::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionRequest" kindref="compound">CompactionRequest</ref> &amp;</type>
+          <defname>other1035</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8147" column="21" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="31481" bodyend="31495"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CompactionRequest_1a0b110ba9e859d2db283980b8086b03c6" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::CompactionRequest::CompactionRequest</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>CompactionRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::CompactionRequest::CompactionRequest</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8148" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="31119" bodyend="31130"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CompactionRequest_1a716dd115ff661c2106384ea90cc71ab0" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::CompactionRequest::~CompactionRequest</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~CompactionRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::CompactionRequest::~CompactionRequest</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8150" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="31116" bodyend="31117"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CompactionRequest_1af5b6da4e03492b57a74d8fa5ea656c82" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::CompactionRequest::__set_dbname</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_dbname</name>
+        <qualifiedname>Apache::Hadoop::Hive::CompactionRequest::__set_dbname</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8169" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="31132" bodyend="31134"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CompactionRequest_1abbcf33e27e32ca8ff7b2f90a9fc56d8a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::CompactionRequest::__set_tablename</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_tablename</name>
+        <qualifiedname>Apache::Hadoop::Hive::CompactionRequest::__set_tablename</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8171" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="31136" bodyend="31138"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CompactionRequest_1a1f9de1f759add88a1c9bae041bda93ed" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::CompactionRequest::__set_partitionname</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_partitionname</name>
+        <qualifiedname>Apache::Hadoop::Hive::CompactionRequest::__set_partitionname</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8173" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="31140" bodyend="31143"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CompactionRequest_1afe23373790a32a3e064102696fabfa65" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::CompactionRequest::__set_type</definition>
+        <argsstring>(const CompactionType::type val)</argsstring>
+        <name>__set_type</name>
+        <qualifiedname>Apache::Hadoop::Hive::CompactionRequest::__set_type</qualifiedname>
+        <param>
+          <type>const CompactionType::type</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8175" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="31145" bodyend="31147"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CompactionRequest_1af3a9999478ed6ce3c2da0d76bab8276c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::CompactionRequest::__set_runas</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_runas</name>
+        <qualifiedname>Apache::Hadoop::Hive::CompactionRequest::__set_runas</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8177" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="31149" bodyend="31152"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CompactionRequest_1a6337bd8086154ecf665a6dc393c5f1a4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::CompactionRequest::__set_properties</definition>
+        <argsstring>(const std::map&lt; std::string, std::string &gt; &amp;val)</argsstring>
+        <name>__set_properties</name>
+        <qualifiedname>Apache::Hadoop::Hive::CompactionRequest::__set_properties</qualifiedname>
+        <param>
+          <type>const std::map&lt; std::string, std::string &gt; &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8179" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="31154" bodyend="31157"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CompactionRequest_1a206e50c11a7d72b0c171ebff3903965c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::CompactionRequest::__set_initiatorId</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_initiatorId</name>
+        <qualifiedname>Apache::Hadoop::Hive::CompactionRequest::__set_initiatorId</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8181" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="31159" bodyend="31162"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CompactionRequest_1a1ae9f0ccb03b724ae1ae787c7eca4255" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::CompactionRequest::__set_initiatorVersion</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_initiatorVersion</name>
+        <qualifiedname>Apache::Hadoop::Hive::CompactionRequest::__set_initiatorVersion</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8183" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="31164" bodyend="31167"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CompactionRequest_1a0b76136b4ca31ebe13bab2b243cb6b72" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::CompactionRequest::__set_poolName</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_poolName</name>
+        <qualifiedname>Apache::Hadoop::Hive::CompactionRequest::__set_poolName</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8185" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="31169" bodyend="31172"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CompactionRequest_1a907e7e7c2db3c1eb26f456b29ebb88f5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::CompactionRequest::__set_numberOfBuckets</definition>
+        <argsstring>(const int32_t val)</argsstring>
+        <name>__set_numberOfBuckets</name>
+        <qualifiedname>Apache::Hadoop::Hive::CompactionRequest::__set_numberOfBuckets</qualifiedname>
+        <param>
+          <type>const int32_t</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8187" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="31174" bodyend="31177"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CompactionRequest_1aa28489a6461b70073430475a3eb95878" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::CompactionRequest::__set_orderByClause</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_orderByClause</name>
+        <qualifiedname>Apache::Hadoop::Hive::CompactionRequest::__set_orderByClause</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8189" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="31179" bodyend="31182"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CompactionRequest_1a25593c244efc6a851d99ed37e149e4e6" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::CompactionRequest::operator==</definition>
+        <argsstring>(const CompactionRequest &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::CompactionRequest::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionRequest" kindref="compound">CompactionRequest</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8191" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="31424" bodyend="31465"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CompactionRequest_1ababb296ae5d187d773d215f0766bfc93" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::CompactionRequest::operator!=</definition>
+        <argsstring>(const CompactionRequest &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::CompactionRequest::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionRequest" kindref="compound">CompactionRequest</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8192" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="8192" bodyend="8194"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CompactionRequest_1a30391c9f31d7370914b00925359aaca4" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::CompactionRequest::operator&lt;</definition>
+        <argsstring>(const CompactionRequest &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::CompactionRequest::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionRequest" kindref="compound">CompactionRequest</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8196" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CompactionRequest_1a67e27a4b60a8921bcb0d806d1a4da1aa" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::CompactionRequest::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot) override</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::CompactionRequest::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8198" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="31190" bodyend="31335"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CompactionRequest_1a7e57bbb496f645b941eedd9a50b88af9" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::CompactionRequest::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const override</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::CompactionRequest::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8199" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="31337" bodyend="31406"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CompactionRequest_1a6e3dd71ccd7bd06e90ca2b36ed42cac5" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::CompactionRequest::printTo</definition>
+        <argsstring>(std::ostream &amp;out) const</argsstring>
+        <name>printTo</name>
+        <qualifiedname>Apache::Hadoop::Hive::CompactionRequest::printTo</qualifiedname>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8201" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="31496" bodyend="31511"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::CompactionRequest</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionRequest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::CompactionRequest</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionRequest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>dbname</edgelabel>
+          <edgelabel>initiatorId</edgelabel>
+          <edgelabel>initiatorVersion</edgelabel>
+          <edgelabel>orderByClause</edgelabel>
+          <edgelabel>partitionname</edgelabel>
+          <edgelabel>poolName</edgelabel>
+          <edgelabel>runas</edgelabel>
+          <edgelabel>tablename</edgelabel>
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>properties</edgelabel>
+        </childnode>
+        <childnode refid="6" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="6">
+        <label>Apache::Hadoop::Hive::_CompactionRequest__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__CompactionRequest____isset"/>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+      <node id="5">
+        <label>std::map&lt; std::string, std::string &gt;</label>
+        <childnode refid="3" relation="usage">
+          <edgelabel>elements</edgelabel>
+          <edgelabel>keys</edgelabel>
+        </childnode>
+      </node>
+      <node id="4">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="3">
+        <label>std::string</label>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8143" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="8143" bodyend="8202"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionRequest_1a3b139558ed91f09a9db0f0912fde0132" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CompactionRequest</scope><name>__isset</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionRequest_1af5b6da4e03492b57a74d8fa5ea656c82" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CompactionRequest</scope><name>__set_dbname</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionRequest_1a206e50c11a7d72b0c171ebff3903965c" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CompactionRequest</scope><name>__set_initiatorId</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionRequest_1a1ae9f0ccb03b724ae1ae787c7eca4255" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CompactionRequest</scope><name>__set_initiatorVersion</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionRequest_1a907e7e7c2db3c1eb26f456b29ebb88f5" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CompactionRequest</scope><name>__set_numberOfBuckets</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionRequest_1aa28489a6461b70073430475a3eb95878" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CompactionRequest</scope><name>__set_orderByClause</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionRequest_1a1f9de1f759add88a1c9bae041bda93ed" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CompactionRequest</scope><name>__set_partitionname</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionRequest_1a0b76136b4ca31ebe13bab2b243cb6b72" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CompactionRequest</scope><name>__set_poolName</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionRequest_1a6337bd8086154ecf665a6dc393c5f1a4" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CompactionRequest</scope><name>__set_properties</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionRequest_1af3a9999478ed6ce3c2da0d76bab8276c" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CompactionRequest</scope><name>__set_runas</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionRequest_1abbcf33e27e32ca8ff7b2f90a9fc56d8a" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CompactionRequest</scope><name>__set_tablename</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionRequest_1afe23373790a32a3e064102696fabfa65" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CompactionRequest</scope><name>__set_type</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionRequest_1a586ec0b69f59f46a2f4f4ff88b5cba29" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CompactionRequest</scope><name>CompactionRequest</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionRequest_1a0b110ba9e859d2db283980b8086b03c6" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CompactionRequest</scope><name>CompactionRequest</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionRequest_1a49d1a789178a2e5e30c7b13a60baddf7" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CompactionRequest</scope><name>dbname</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionRequest_1a7f12e0668674a057f8e738e202aadba7" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CompactionRequest</scope><name>initiatorId</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionRequest_1ad743d22b24087eef530019d3c89bc5ac" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CompactionRequest</scope><name>initiatorVersion</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionRequest_1a3d2099bb2e06e29e862a26d70e0362c2" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CompactionRequest</scope><name>numberOfBuckets</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionRequest_1ababb296ae5d187d773d215f0766bfc93" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CompactionRequest</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionRequest_1a30391c9f31d7370914b00925359aaca4" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CompactionRequest</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionRequest_1aceb85465ca0b498b69361a881da4efd3" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CompactionRequest</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionRequest_1a25593c244efc6a851d99ed37e149e4e6" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CompactionRequest</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionRequest_1a226bc8c6ad69144907c693ce0217f343" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CompactionRequest</scope><name>orderByClause</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionRequest_1a6cec72fbe091b3d704ec64f08a51d413" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CompactionRequest</scope><name>partitionname</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionRequest_1a305348f09a3c37a3f51cbb80558ef639" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CompactionRequest</scope><name>poolName</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionRequest_1a6e3dd71ccd7bd06e90ca2b36ed42cac5" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::CompactionRequest</scope><name>printTo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionRequest_1a267cfa347a1082eb3bf66ad50f0b8832" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CompactionRequest</scope><name>properties</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionRequest_1a67e27a4b60a8921bcb0d806d1a4da1aa" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CompactionRequest</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionRequest_1a1643adf2633e0dd1db2317962ae966d8" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CompactionRequest</scope><name>runas</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionRequest_1a2650c143a1caa7385517e5fc0d477bfe" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CompactionRequest</scope><name>tablename</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionRequest_1ac29ee21ec49420bd9a2aa08a37177e4f" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CompactionRequest</scope><name>type</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionRequest_1a7e57bbb496f645b941eedd9a50b88af9" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CompactionRequest</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionRequest_1a716dd115ff661c2106384ea90cc71ab0" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::CompactionRequest</scope><name>~CompactionRequest</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

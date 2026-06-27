@@ -1,0 +1,144 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structApache_1_1Hadoop_1_1Hive_1_1__ForeignKeysRequest____isset" kind="struct" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::_ForeignKeysRequest__isset</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__ForeignKeysRequest____isset_1a1d6b0d55f5d029f625cc07d86bd53399" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_ForeignKeysRequest__isset::parent_db_name</definition>
+        <argsstring></argsstring>
+        <name>parent_db_name</name>
+        <qualifiedname>Apache::Hadoop::Hive::_ForeignKeysRequest__isset::parent_db_name</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="4764" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="4764" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__ForeignKeysRequest____isset_1a0c7581292c9d2141081cf7bb2bb79781" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_ForeignKeysRequest__isset::parent_tbl_name</definition>
+        <argsstring></argsstring>
+        <name>parent_tbl_name</name>
+        <qualifiedname>Apache::Hadoop::Hive::_ForeignKeysRequest__isset::parent_tbl_name</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="4765" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="4765" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__ForeignKeysRequest____isset_1a6089b9863a47174598b79259d77050c6" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_ForeignKeysRequest__isset::foreign_db_name</definition>
+        <argsstring></argsstring>
+        <name>foreign_db_name</name>
+        <qualifiedname>Apache::Hadoop::Hive::_ForeignKeysRequest__isset::foreign_db_name</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="4766" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="4766" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__ForeignKeysRequest____isset_1ad70a0b655acca0d484b149c7f0ff217d" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_ForeignKeysRequest__isset::foreign_tbl_name</definition>
+        <argsstring></argsstring>
+        <name>foreign_tbl_name</name>
+        <qualifiedname>Apache::Hadoop::Hive::_ForeignKeysRequest__isset::foreign_tbl_name</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="4767" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="4767" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__ForeignKeysRequest____isset_1adad38cbc4d403ed29aa1eb9fbecc39cc" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_ForeignKeysRequest__isset::catName</definition>
+        <argsstring></argsstring>
+        <name>catName</name>
+        <qualifiedname>Apache::Hadoop::Hive::_ForeignKeysRequest__isset::catName</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="4768" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="4768" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__ForeignKeysRequest____isset_1a1bce3971ab11efe82de4e558e9b9a47a" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_ForeignKeysRequest__isset::validWriteIdList</definition>
+        <argsstring></argsstring>
+        <name>validWriteIdList</name>
+        <qualifiedname>Apache::Hadoop::Hive::_ForeignKeysRequest__isset::validWriteIdList</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="4769" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="4769" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__ForeignKeysRequest____isset_1aade20626301d16759abbef768787ec2f" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_ForeignKeysRequest__isset::tableId</definition>
+        <argsstring></argsstring>
+        <name>tableId</name>
+        <qualifiedname>Apache::Hadoop::Hive::_ForeignKeysRequest__isset::tableId</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="4770" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="4770" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structApache_1_1Hadoop_1_1Hive_1_1__ForeignKeysRequest____isset_1af271f6d5a446e59cf830e819ca4376eb" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::_ForeignKeysRequest__isset::_ForeignKeysRequest__isset</definition>
+        <argsstring>()</argsstring>
+        <name>_ForeignKeysRequest__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::_ForeignKeysRequest__isset::_ForeignKeysRequest__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="4763" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="4763" bodyend="4763"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="4762" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="4762" bodyend="4771"/>
+    <listofallmembers>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__ForeignKeysRequest____isset_1af271f6d5a446e59cf830e819ca4376eb" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_ForeignKeysRequest__isset</scope><name>_ForeignKeysRequest__isset</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__ForeignKeysRequest____isset_1adad38cbc4d403ed29aa1eb9fbecc39cc" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_ForeignKeysRequest__isset</scope><name>catName</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__ForeignKeysRequest____isset_1a6089b9863a47174598b79259d77050c6" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_ForeignKeysRequest__isset</scope><name>foreign_db_name</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__ForeignKeysRequest____isset_1ad70a0b655acca0d484b149c7f0ff217d" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_ForeignKeysRequest__isset</scope><name>foreign_tbl_name</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__ForeignKeysRequest____isset_1a1d6b0d55f5d029f625cc07d86bd53399" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_ForeignKeysRequest__isset</scope><name>parent_db_name</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__ForeignKeysRequest____isset_1a0c7581292c9d2141081cf7bb2bb79781" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_ForeignKeysRequest__isset</scope><name>parent_tbl_name</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__ForeignKeysRequest____isset_1aade20626301d16759abbef768787ec2f" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_ForeignKeysRequest__isset</scope><name>tableId</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__ForeignKeysRequest____isset_1a1bce3971ab11efe82de4e558e9b9a47a" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_ForeignKeysRequest__isset</scope><name>validWriteIdList</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

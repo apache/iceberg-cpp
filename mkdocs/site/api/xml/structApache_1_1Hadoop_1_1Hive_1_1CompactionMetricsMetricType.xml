@@ -1,0 +1,55 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structApache_1_1Hadoop_1_1Hive_1_1CompactionMetricsMetricType" kind="struct" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::CompactionMetricsMetricType</compoundname>
+    <sectiondef kind="public-type">
+      <memberdef kind="enum" id="structApache_1_1Hadoop_1_1Hive_1_1CompactionMetricsMetricType_1ac5abaf83c0db714d995b013f1b9064fe" prot="public" static="no" strong="no">
+        <type></type>
+        <name>type</name>
+        <qualifiedname>Apache::Hadoop::Hive::CompactionMetricsMetricType::type</qualifiedname>
+        <enumvalue id="structApache_1_1Hadoop_1_1Hive_1_1CompactionMetricsMetricType_1ac5abaf83c0db714d995b013f1b9064fea6a5d01571e26166370f4be2565209751" prot="public">
+          <name>NUM_OBSOLETE_DELTAS</name>
+          <initializer>= 0</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="structApache_1_1Hadoop_1_1Hive_1_1CompactionMetricsMetricType_1ac5abaf83c0db714d995b013f1b9064fea6d1a3ee98abb0b371abf7f268174c948" prot="public">
+          <name>NUM_DELTAS</name>
+          <initializer>= 1</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="structApache_1_1Hadoop_1_1Hive_1_1CompactionMetricsMetricType_1ac5abaf83c0db714d995b013f1b9064fea855a329552958998428d684efef0917f" prot="public">
+          <name>NUM_SMALL_DELTAS</name>
+          <initializer>= 2</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="330" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="330" bodyend="334"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="329" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="329" bodyend="335"/>
+    <listofallmembers>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1CompactionMetricsMetricType_1ac5abaf83c0db714d995b013f1b9064fea6d1a3ee98abb0b371abf7f268174c948" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CompactionMetricsMetricType</scope><name>NUM_DELTAS</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1CompactionMetricsMetricType_1ac5abaf83c0db714d995b013f1b9064fea6a5d01571e26166370f4be2565209751" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CompactionMetricsMetricType</scope><name>NUM_OBSOLETE_DELTAS</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1CompactionMetricsMetricType_1ac5abaf83c0db714d995b013f1b9064fea855a329552958998428d684efef0917f" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CompactionMetricsMetricType</scope><name>NUM_SMALL_DELTAS</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1CompactionMetricsMetricType_1ac5abaf83c0db714d995b013f1b9064fe" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CompactionMetricsMetricType</scope><name>type</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

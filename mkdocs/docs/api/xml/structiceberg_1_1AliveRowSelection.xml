@@ -1,0 +1,78 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1AliveRowSelection" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::AliveRowSelection</compoundname>
+    <includes refid="delete__filter_8h" local="no">delete_filter.h</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1AliveRowSelection_1af535de088def48fc0d6bebca84faade4" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; int32_t &gt;</type>
+        <definition>std::vector&lt;int32_t&gt; iceberg::AliveRowSelection::indices</definition>
+        <argsstring></argsstring>
+        <name>indices</name>
+        <qualifiedname>iceberg::AliveRowSelection::indices</qualifiedname>
+        <briefdescription>
+<para>Zero-based row indices within the batch that are alive (not deleted). </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/delete_filter.h" line="48" column="15" bodyfile="iceberg/data/delete_filter.h" bodystart="48" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structiceberg_1_1AliveRowSelection_1a1cf7563058501670f7e0f26834a5e173" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>int64_t</type>
+        <definition>int64_t iceberg::AliveRowSelection::alive_count</definition>
+        <argsstring>() const</argsstring>
+        <name>alive_count</name>
+        <qualifiedname>iceberg::AliveRowSelection::alive_count</qualifiedname>
+        <briefdescription>
+<para>Number of alive rows (convenience accessor to avoid size_t casts). </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/delete_filter.h" line="51" column="11" bodyfile="iceberg/data/delete_filter.h" bodystart="51" bodyend="51"/>
+      </memberdef>
+      <memberdef kind="function" id="structiceberg_1_1AliveRowSelection_1a428712cf2931de2a85b9884ef6860fba" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::AliveRowSelection::empty</definition>
+        <argsstring>() const</argsstring>
+        <name>empty</name>
+        <qualifiedname>iceberg::AliveRowSelection::empty</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/delete_filter.h" line="53" column="8" bodyfile="iceberg/data/delete_filter.h" bodystart="53" bodyend="53"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Result of ComputeAliveRows: indices of rows not matched by any delete. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::AliveRowSelection</label>
+        <link refid="structiceberg_1_1AliveRowSelection"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>indices</edgelabel>
+        </childnode>
+      </node>
+      <node id="2">
+        <label>std::vector&lt; int32_t &gt;</label>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/data/delete_filter.h" line="46" column="1" bodyfile="iceberg/data/delete_filter.h" bodystart="46" bodyend="54"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1AliveRowSelection_1a1cf7563058501670f7e0f26834a5e173" prot="public" virt="non-virtual"><scope>iceberg::AliveRowSelection</scope><name>alive_count</name></member>
+      <member refid="structiceberg_1_1AliveRowSelection_1a428712cf2931de2a85b9884ef6860fba" prot="public" virt="non-virtual"><scope>iceberg::AliveRowSelection</scope><name>empty</name></member>
+      <member refid="structiceberg_1_1AliveRowSelection_1af535de088def48fc0d6bebca84faade4" prot="public" virt="non-virtual"><scope>iceberg::AliveRowSelection</scope><name>indices</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,577 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1GetTablesRequest" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::GetTablesRequest</compoundname>
+    <basecompoundref prot="public" virt="virtual">apache::thrift::TBase</basecompoundref>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1GetTablesRequest_1aea782b1923f068267ee897a5d89c7b20" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::GetTablesRequest::dbName</definition>
+        <argsstring></argsstring>
+        <name>dbName</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetTablesRequest::dbName</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10338" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="10338" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1GetTablesRequest_1a9ba2ef0d07080b1d44a894df0b013c01" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; std::string &gt;</type>
+        <definition>std::vector&lt;std::string&gt; Apache::Hadoop::Hive::GetTablesRequest::tblNames</definition>
+        <argsstring></argsstring>
+        <name>tblNames</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetTablesRequest::tblNames</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10339" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="10339" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1GetTablesRequest_1ac793a9ea93fad4221955cb4c28542750" prot="public" static="no" mutable="no">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1ClientCapabilities" kindref="compound">ClientCapabilities</ref></type>
+        <definition>ClientCapabilities Apache::Hadoop::Hive::GetTablesRequest::capabilities</definition>
+        <argsstring></argsstring>
+        <name>capabilities</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetTablesRequest::capabilities</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10340" column="22" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="10340" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1GetTablesRequest_1a5a61a7014efa3279859a90e8ba3cf142" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::GetTablesRequest::catName</definition>
+        <argsstring></argsstring>
+        <name>catName</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetTablesRequest::catName</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10341" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="10341" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1GetTablesRequest_1a58f48a55a633080aa8fa08c6e505623e" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; std::string &gt;</type>
+        <definition>std::vector&lt;std::string&gt; Apache::Hadoop::Hive::GetTablesRequest::processorCapabilities</definition>
+        <argsstring></argsstring>
+        <name>processorCapabilities</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetTablesRequest::processorCapabilities</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10342" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="10342" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1GetTablesRequest_1a032be2ea0a3199409afe2612fe970c07" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::GetTablesRequest::processorIdentifier</definition>
+        <argsstring></argsstring>
+        <name>processorIdentifier</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetTablesRequest::processorIdentifier</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10343" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="10343" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1GetTablesRequest_1abb775d6da0f0ba5a65d8b927ea43c54f" prot="public" static="no" mutable="no">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1GetProjectionsSpec" kindref="compound">GetProjectionsSpec</ref></type>
+        <definition>GetProjectionsSpec Apache::Hadoop::Hive::GetTablesRequest::projectionSpec</definition>
+        <argsstring></argsstring>
+        <name>projectionSpec</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetTablesRequest::projectionSpec</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10344" column="22" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="10344" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1GetTablesRequest_1a01913b9618011b40d0e3c72b2a592259" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::GetTablesRequest::tablesPattern</definition>
+        <argsstring></argsstring>
+        <name>tablesPattern</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetTablesRequest::tablesPattern</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10345" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="10345" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1GetTablesRequest_1aca61df91667626b480c95b6707f05dcb" prot="public" static="no" mutable="no">
+        <type><ref refid="structApache_1_1Hadoop_1_1Hive_1_1__GetTablesRequest____isset" kindref="compound">_GetTablesRequest__isset</ref></type>
+        <definition>_GetTablesRequest__isset Apache::Hadoop::Hive::GetTablesRequest::__isset</definition>
+        <argsstring></argsstring>
+        <name>__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetTablesRequest::__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10347" column="28" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="10347" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetTablesRequest_1ac0f655f1aea52ab59cb0919f070acf19" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::GetTablesRequest::GetTablesRequest</definition>
+        <argsstring>(const GetTablesRequest &amp;)</argsstring>
+        <name>GetTablesRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetTablesRequest::GetTablesRequest</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1GetTablesRequest" kindref="compound">GetTablesRequest</ref> &amp;</type>
+          <defname>other1345</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10333" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="40931" bodyend="40941"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetTablesRequest_1af5a0890e8cc57a3a815415ca73c1b9fd" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1GetTablesRequest" kindref="compound">GetTablesRequest</ref> &amp;</type>
+        <definition>GetTablesRequest &amp; Apache::Hadoop::Hive::GetTablesRequest::operator=</definition>
+        <argsstring>(const GetTablesRequest &amp;)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetTablesRequest::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1GetTablesRequest" kindref="compound">GetTablesRequest</ref> &amp;</type>
+          <defname>other1346</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10334" column="20" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="40942" bodyend="40953"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetTablesRequest_1ad4660c5fee293a6ce144d33f90231b02" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::GetTablesRequest::GetTablesRequest</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>GetTablesRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetTablesRequest::GetTablesRequest</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10335" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="40642" bodyend="40647"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetTablesRequest_1a30f2417c1740af8828509d8f37af73e0" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::GetTablesRequest::~GetTablesRequest</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~GetTablesRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetTablesRequest::~GetTablesRequest</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10337" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="40639" bodyend="40640"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetTablesRequest_1a63a9aec2fd4611563759809d92552915" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::GetTablesRequest::__set_dbName</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_dbName</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetTablesRequest::__set_dbName</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10349" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="40649" bodyend="40651"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetTablesRequest_1abc10b31d2bdbe24d0bc4907e90fe7f38" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::GetTablesRequest::__set_tblNames</definition>
+        <argsstring>(const std::vector&lt; std::string &gt; &amp;val)</argsstring>
+        <name>__set_tblNames</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetTablesRequest::__set_tblNames</qualifiedname>
+        <param>
+          <type>const std::vector&lt; std::string &gt; &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10351" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="40653" bodyend="40656"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetTablesRequest_1a2bdc2d74e1103f5bc1e7c5b9301d4b12" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::GetTablesRequest::__set_capabilities</definition>
+        <argsstring>(const ClientCapabilities &amp;val)</argsstring>
+        <name>__set_capabilities</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetTablesRequest::__set_capabilities</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ClientCapabilities" kindref="compound">ClientCapabilities</ref> &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10353" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="40658" bodyend="40661"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetTablesRequest_1a607988d2a761ed87e90c10558d471cfe" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::GetTablesRequest::__set_catName</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_catName</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetTablesRequest::__set_catName</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10355" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="40663" bodyend="40666"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetTablesRequest_1a699523a348f2bf98b66776011adfd127" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::GetTablesRequest::__set_processorCapabilities</definition>
+        <argsstring>(const std::vector&lt; std::string &gt; &amp;val)</argsstring>
+        <name>__set_processorCapabilities</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetTablesRequest::__set_processorCapabilities</qualifiedname>
+        <param>
+          <type>const std::vector&lt; std::string &gt; &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10357" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="40668" bodyend="40671"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetTablesRequest_1a76b4f7e0acb3c05978cc728fffb29884" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::GetTablesRequest::__set_processorIdentifier</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_processorIdentifier</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetTablesRequest::__set_processorIdentifier</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10359" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="40673" bodyend="40676"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetTablesRequest_1a89b93a93ca3fcb8be3b841fff01ebf86" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::GetTablesRequest::__set_projectionSpec</definition>
+        <argsstring>(const GetProjectionsSpec &amp;val)</argsstring>
+        <name>__set_projectionSpec</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetTablesRequest::__set_projectionSpec</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1GetProjectionsSpec" kindref="compound">GetProjectionsSpec</ref> &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10361" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="40678" bodyend="40681"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetTablesRequest_1a088ee02d3beedf57c45c613203f74a47" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::GetTablesRequest::__set_tablesPattern</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_tablesPattern</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetTablesRequest::__set_tablesPattern</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10363" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="40683" bodyend="40686"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetTablesRequest_1ae55ad8880030bcc669419a878f0dec3d" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::GetTablesRequest::operator==</definition>
+        <argsstring>(const GetTablesRequest &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetTablesRequest::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1GetTablesRequest" kindref="compound">GetTablesRequest</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10365" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="40896" bodyend="40929"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetTablesRequest_1ad765534aff8087eb71d235cd8b157f62" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::GetTablesRequest::operator!=</definition>
+        <argsstring>(const GetTablesRequest &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetTablesRequest::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1GetTablesRequest" kindref="compound">GetTablesRequest</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10366" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="10366" bodyend="10368"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetTablesRequest_1aaf2a027ba8f2b942784274d370b2286b" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::GetTablesRequest::operator&lt;</definition>
+        <argsstring>(const GetTablesRequest &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetTablesRequest::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1GetTablesRequest" kindref="compound">GetTablesRequest</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10370" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetTablesRequest_1a555c51aaff32942c0f10ac81560e1d88" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::GetTablesRequest::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot) override</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetTablesRequest::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10372" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="40694" bodyend="40816"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetTablesRequest_1ad3ee5c3975cdb87831a17271456d2773" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::GetTablesRequest::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const override</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetTablesRequest::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10373" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="40818" bodyend="40881"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetTablesRequest_1aaca6080eaf39983e4ae8f511e42e8970" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::GetTablesRequest::printTo</definition>
+        <argsstring>(std::ostream &amp;out) const</argsstring>
+        <name>printTo</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetTablesRequest::printTo</qualifiedname>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10375" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="40954" bodyend="40966"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::GetTablesRequest</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1GetTablesRequest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="6">
+        <label>Apache::Hadoop::Hive::ClientCapabilities</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1ClientCapabilities"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="7" relation="usage">
+          <edgelabel>values</edgelabel>
+        </childnode>
+      </node>
+      <node id="8">
+        <label>Apache::Hadoop::Hive::GetProjectionsSpec</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1GetProjectionsSpec"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>fieldList</edgelabel>
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>excludeParamKeyPattern</edgelabel>
+          <edgelabel>includeParamKeyPattern</edgelabel>
+        </childnode>
+        <childnode refid="9" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::GetTablesRequest</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1GetTablesRequest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>catName</edgelabel>
+          <edgelabel>dbName</edgelabel>
+          <edgelabel>processorIdentifier</edgelabel>
+          <edgelabel>tablesPattern</edgelabel>
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>processorCapabilities</edgelabel>
+          <edgelabel>tblNames</edgelabel>
+        </childnode>
+        <childnode refid="6" relation="usage">
+          <edgelabel>capabilities</edgelabel>
+        </childnode>
+        <childnode refid="8" relation="usage">
+          <edgelabel>projectionSpec</edgelabel>
+        </childnode>
+        <childnode refid="10" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="9">
+        <label>Apache::Hadoop::Hive::_GetProjectionsSpec__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__GetProjectionsSpec____isset"/>
+      </node>
+      <node id="10">
+        <label>Apache::Hadoop::Hive::_GetTablesRequest__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__GetTablesRequest____isset"/>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+      <node id="4">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="3">
+        <label>std::string</label>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="7">
+        <label>std::vector&lt; ClientCapability::type &gt;</label>
+      </node>
+      <node id="5">
+        <label>std::vector&lt; std::string &gt;</label>
+        <childnode refid="3" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10330" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="10330" bodyend="10376"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetTablesRequest_1aca61df91667626b480c95b6707f05dcb" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetTablesRequest</scope><name>__isset</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetTablesRequest_1a2bdc2d74e1103f5bc1e7c5b9301d4b12" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetTablesRequest</scope><name>__set_capabilities</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetTablesRequest_1a607988d2a761ed87e90c10558d471cfe" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetTablesRequest</scope><name>__set_catName</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetTablesRequest_1a63a9aec2fd4611563759809d92552915" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetTablesRequest</scope><name>__set_dbName</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetTablesRequest_1a699523a348f2bf98b66776011adfd127" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetTablesRequest</scope><name>__set_processorCapabilities</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetTablesRequest_1a76b4f7e0acb3c05978cc728fffb29884" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetTablesRequest</scope><name>__set_processorIdentifier</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetTablesRequest_1a89b93a93ca3fcb8be3b841fff01ebf86" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetTablesRequest</scope><name>__set_projectionSpec</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetTablesRequest_1a088ee02d3beedf57c45c613203f74a47" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetTablesRequest</scope><name>__set_tablesPattern</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetTablesRequest_1abc10b31d2bdbe24d0bc4907e90fe7f38" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetTablesRequest</scope><name>__set_tblNames</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetTablesRequest_1ac793a9ea93fad4221955cb4c28542750" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetTablesRequest</scope><name>capabilities</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetTablesRequest_1a5a61a7014efa3279859a90e8ba3cf142" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetTablesRequest</scope><name>catName</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetTablesRequest_1aea782b1923f068267ee897a5d89c7b20" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetTablesRequest</scope><name>dbName</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetTablesRequest_1ac0f655f1aea52ab59cb0919f070acf19" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetTablesRequest</scope><name>GetTablesRequest</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetTablesRequest_1ad4660c5fee293a6ce144d33f90231b02" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetTablesRequest</scope><name>GetTablesRequest</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetTablesRequest_1ad765534aff8087eb71d235cd8b157f62" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetTablesRequest</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetTablesRequest_1aaf2a027ba8f2b942784274d370b2286b" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetTablesRequest</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetTablesRequest_1af5a0890e8cc57a3a815415ca73c1b9fd" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetTablesRequest</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetTablesRequest_1ae55ad8880030bcc669419a878f0dec3d" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetTablesRequest</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetTablesRequest_1aaca6080eaf39983e4ae8f511e42e8970" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::GetTablesRequest</scope><name>printTo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetTablesRequest_1a58f48a55a633080aa8fa08c6e505623e" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetTablesRequest</scope><name>processorCapabilities</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetTablesRequest_1a032be2ea0a3199409afe2612fe970c07" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetTablesRequest</scope><name>processorIdentifier</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetTablesRequest_1abb775d6da0f0ba5a65d8b927ea43c54f" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetTablesRequest</scope><name>projectionSpec</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetTablesRequest_1a555c51aaff32942c0f10ac81560e1d88" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetTablesRequest</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetTablesRequest_1a01913b9618011b40d0e3c72b2a592259" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetTablesRequest</scope><name>tablesPattern</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetTablesRequest_1a9ba2ef0d07080b1d44a894df0b013c01" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetTablesRequest</scope><name>tblNames</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetTablesRequest_1ad3ee5c3975cdb87831a17271456d2773" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetTablesRequest</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetTablesRequest_1a30f2417c1740af8828509d8f37af73e0" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::GetTablesRequest</scope><name>~GetTablesRequest</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

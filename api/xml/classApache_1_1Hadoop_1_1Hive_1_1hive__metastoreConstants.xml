@@ -1,0 +1,719 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1hive__metastoreConstants" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::hive_metastoreConstants</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1hive__metastoreConstants_1a596c360c69d11efbc5daec1d696d494e" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::hive_metastoreConstants::DDL_TIME</definition>
+        <argsstring></argsstring>
+        <name>DDL_TIME</name>
+        <qualifiedname>Apache::Hadoop::Hive::hive_metastoreConstants::DDL_TIME</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_constants.h" line="18" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_constants.h" bodystart="18" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1hive__metastoreConstants_1a862bf9ac21b76711a130968f5f1428a6" prot="public" static="no" mutable="no">
+        <type>int8_t</type>
+        <definition>int8_t Apache::Hadoop::Hive::hive_metastoreConstants::ACCESSTYPE_NONE</definition>
+        <argsstring></argsstring>
+        <name>ACCESSTYPE_NONE</name>
+        <qualifiedname>Apache::Hadoop::Hive::hive_metastoreConstants::ACCESSTYPE_NONE</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_constants.h" line="19" column="10" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_constants.h" bodystart="19" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1hive__metastoreConstants_1a29461b4b2d8055b26ae52f1f64c007a5" prot="public" static="no" mutable="no">
+        <type>int8_t</type>
+        <definition>int8_t Apache::Hadoop::Hive::hive_metastoreConstants::ACCESSTYPE_READONLY</definition>
+        <argsstring></argsstring>
+        <name>ACCESSTYPE_READONLY</name>
+        <qualifiedname>Apache::Hadoop::Hive::hive_metastoreConstants::ACCESSTYPE_READONLY</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_constants.h" line="20" column="10" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_constants.h" bodystart="20" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1hive__metastoreConstants_1a48b53a6eed7b1cb5da98808f753fd904" prot="public" static="no" mutable="no">
+        <type>int8_t</type>
+        <definition>int8_t Apache::Hadoop::Hive::hive_metastoreConstants::ACCESSTYPE_WRITEONLY</definition>
+        <argsstring></argsstring>
+        <name>ACCESSTYPE_WRITEONLY</name>
+        <qualifiedname>Apache::Hadoop::Hive::hive_metastoreConstants::ACCESSTYPE_WRITEONLY</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_constants.h" line="21" column="10" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_constants.h" bodystart="21" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1hive__metastoreConstants_1a23e0f73e7be6a43e0f28ccc301c319f3" prot="public" static="no" mutable="no">
+        <type>int8_t</type>
+        <definition>int8_t Apache::Hadoop::Hive::hive_metastoreConstants::ACCESSTYPE_READWRITE</definition>
+        <argsstring></argsstring>
+        <name>ACCESSTYPE_READWRITE</name>
+        <qualifiedname>Apache::Hadoop::Hive::hive_metastoreConstants::ACCESSTYPE_READWRITE</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_constants.h" line="22" column="10" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_constants.h" bodystart="22" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1hive__metastoreConstants_1a842e7dfccfe2b91367e36ac03d4c01f9" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::hive_metastoreConstants::HIVE_FILTER_FIELD_OWNER</definition>
+        <argsstring></argsstring>
+        <name>HIVE_FILTER_FIELD_OWNER</name>
+        <qualifiedname>Apache::Hadoop::Hive::hive_metastoreConstants::HIVE_FILTER_FIELD_OWNER</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_constants.h" line="23" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_constants.h" bodystart="23" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1hive__metastoreConstants_1a01be5078949dbf3e86586858677c0aad" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::hive_metastoreConstants::HIVE_FILTER_FIELD_PARAMS</definition>
+        <argsstring></argsstring>
+        <name>HIVE_FILTER_FIELD_PARAMS</name>
+        <qualifiedname>Apache::Hadoop::Hive::hive_metastoreConstants::HIVE_FILTER_FIELD_PARAMS</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_constants.h" line="24" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_constants.h" bodystart="24" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1hive__metastoreConstants_1a9003dc03be7890284c15326f7bf8d003" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::hive_metastoreConstants::HIVE_FILTER_FIELD_LAST_ACCESS</definition>
+        <argsstring></argsstring>
+        <name>HIVE_FILTER_FIELD_LAST_ACCESS</name>
+        <qualifiedname>Apache::Hadoop::Hive::hive_metastoreConstants::HIVE_FILTER_FIELD_LAST_ACCESS</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_constants.h" line="25" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_constants.h" bodystart="25" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1hive__metastoreConstants_1a07390389fcf9da93cf3a56b0795922e3" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::hive_metastoreConstants::HIVE_FILTER_FIELD_TABLE_NAME</definition>
+        <argsstring></argsstring>
+        <name>HIVE_FILTER_FIELD_TABLE_NAME</name>
+        <qualifiedname>Apache::Hadoop::Hive::hive_metastoreConstants::HIVE_FILTER_FIELD_TABLE_NAME</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_constants.h" line="26" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_constants.h" bodystart="26" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1hive__metastoreConstants_1a1e1d4b99a683caf1d8fbfcb967de7eb0" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::hive_metastoreConstants::HIVE_FILTER_FIELD_TABLE_TYPE</definition>
+        <argsstring></argsstring>
+        <name>HIVE_FILTER_FIELD_TABLE_TYPE</name>
+        <qualifiedname>Apache::Hadoop::Hive::hive_metastoreConstants::HIVE_FILTER_FIELD_TABLE_TYPE</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_constants.h" line="27" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_constants.h" bodystart="27" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1hive__metastoreConstants_1a63c0a7e8ce5a78da1fb911cc21b0cd04" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::hive_metastoreConstants::IS_ARCHIVED</definition>
+        <argsstring></argsstring>
+        <name>IS_ARCHIVED</name>
+        <qualifiedname>Apache::Hadoop::Hive::hive_metastoreConstants::IS_ARCHIVED</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_constants.h" line="28" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_constants.h" bodystart="28" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1hive__metastoreConstants_1a74bd0d4e4ae3eed41acfa971b65957a8" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::hive_metastoreConstants::ORIGINAL_LOCATION</definition>
+        <argsstring></argsstring>
+        <name>ORIGINAL_LOCATION</name>
+        <qualifiedname>Apache::Hadoop::Hive::hive_metastoreConstants::ORIGINAL_LOCATION</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_constants.h" line="29" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_constants.h" bodystart="29" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1hive__metastoreConstants_1ae79c2de4034f9f27d5f9aa1f707bc215" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::hive_metastoreConstants::IS_IMMUTABLE</definition>
+        <argsstring></argsstring>
+        <name>IS_IMMUTABLE</name>
+        <qualifiedname>Apache::Hadoop::Hive::hive_metastoreConstants::IS_IMMUTABLE</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_constants.h" line="30" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_constants.h" bodystart="30" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1hive__metastoreConstants_1a87956930ac3a4f78a89179400e11cf28" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::hive_metastoreConstants::META_TABLE_COLUMNS</definition>
+        <argsstring></argsstring>
+        <name>META_TABLE_COLUMNS</name>
+        <qualifiedname>Apache::Hadoop::Hive::hive_metastoreConstants::META_TABLE_COLUMNS</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_constants.h" line="31" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_constants.h" bodystart="31" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1hive__metastoreConstants_1a6915233a27c8c301598a05b19b12c72d" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::hive_metastoreConstants::META_TABLE_COLUMN_TYPES</definition>
+        <argsstring></argsstring>
+        <name>META_TABLE_COLUMN_TYPES</name>
+        <qualifiedname>Apache::Hadoop::Hive::hive_metastoreConstants::META_TABLE_COLUMN_TYPES</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_constants.h" line="32" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_constants.h" bodystart="32" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1hive__metastoreConstants_1ae40021c25c4f34ec298385b051f88fef" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::hive_metastoreConstants::BUCKET_FIELD_NAME</definition>
+        <argsstring></argsstring>
+        <name>BUCKET_FIELD_NAME</name>
+        <qualifiedname>Apache::Hadoop::Hive::hive_metastoreConstants::BUCKET_FIELD_NAME</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_constants.h" line="33" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_constants.h" bodystart="33" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1hive__metastoreConstants_1a85d14b031872514614ad72516c95cae8" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::hive_metastoreConstants::BUCKET_COUNT</definition>
+        <argsstring></argsstring>
+        <name>BUCKET_COUNT</name>
+        <qualifiedname>Apache::Hadoop::Hive::hive_metastoreConstants::BUCKET_COUNT</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_constants.h" line="34" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_constants.h" bodystart="34" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1hive__metastoreConstants_1a46d444063f24673ddb086dd301cd2100" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::hive_metastoreConstants::FIELD_TO_DIMENSION</definition>
+        <argsstring></argsstring>
+        <name>FIELD_TO_DIMENSION</name>
+        <qualifiedname>Apache::Hadoop::Hive::hive_metastoreConstants::FIELD_TO_DIMENSION</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_constants.h" line="35" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_constants.h" bodystart="35" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1hive__metastoreConstants_1acdf72fd89e024da6a9d00c58ffff2f44" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::hive_metastoreConstants::IF_PURGE</definition>
+        <argsstring></argsstring>
+        <name>IF_PURGE</name>
+        <qualifiedname>Apache::Hadoop::Hive::hive_metastoreConstants::IF_PURGE</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_constants.h" line="36" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_constants.h" bodystart="36" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1hive__metastoreConstants_1ab54b80960b14279513a17e141731b465" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::hive_metastoreConstants::META_TABLE_NAME</definition>
+        <argsstring></argsstring>
+        <name>META_TABLE_NAME</name>
+        <qualifiedname>Apache::Hadoop::Hive::hive_metastoreConstants::META_TABLE_NAME</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_constants.h" line="37" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_constants.h" bodystart="37" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1hive__metastoreConstants_1a13116c62e78181eb71cb6d12bc852b1d" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::hive_metastoreConstants::META_TABLE_DB</definition>
+        <argsstring></argsstring>
+        <name>META_TABLE_DB</name>
+        <qualifiedname>Apache::Hadoop::Hive::hive_metastoreConstants::META_TABLE_DB</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_constants.h" line="38" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_constants.h" bodystart="38" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1hive__metastoreConstants_1a7bdc784a29ac58582a77485e94a98fb1" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::hive_metastoreConstants::META_TABLE_LOCATION</definition>
+        <argsstring></argsstring>
+        <name>META_TABLE_LOCATION</name>
+        <qualifiedname>Apache::Hadoop::Hive::hive_metastoreConstants::META_TABLE_LOCATION</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_constants.h" line="39" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_constants.h" bodystart="39" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1hive__metastoreConstants_1aaf07aa3f806de41d0b3126cd9347ae72" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::hive_metastoreConstants::META_TABLE_SERDE</definition>
+        <argsstring></argsstring>
+        <name>META_TABLE_SERDE</name>
+        <qualifiedname>Apache::Hadoop::Hive::hive_metastoreConstants::META_TABLE_SERDE</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_constants.h" line="40" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_constants.h" bodystart="40" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1hive__metastoreConstants_1aacdc5ab98bc4087745eb4c84f1ea8a96" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::hive_metastoreConstants::META_TABLE_PARTITION_COLUMNS</definition>
+        <argsstring></argsstring>
+        <name>META_TABLE_PARTITION_COLUMNS</name>
+        <qualifiedname>Apache::Hadoop::Hive::hive_metastoreConstants::META_TABLE_PARTITION_COLUMNS</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_constants.h" line="41" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_constants.h" bodystart="41" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1hive__metastoreConstants_1a9b864d8478791485310cc8fcdc4e92f7" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::hive_metastoreConstants::META_TABLE_PARTITION_COLUMN_TYPES</definition>
+        <argsstring></argsstring>
+        <name>META_TABLE_PARTITION_COLUMN_TYPES</name>
+        <qualifiedname>Apache::Hadoop::Hive::hive_metastoreConstants::META_TABLE_PARTITION_COLUMN_TYPES</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_constants.h" line="42" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_constants.h" bodystart="42" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1hive__metastoreConstants_1ac988eefcd2b6c24e3223b4cd0daeb1da" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::hive_metastoreConstants::FILE_INPUT_FORMAT</definition>
+        <argsstring></argsstring>
+        <name>FILE_INPUT_FORMAT</name>
+        <qualifiedname>Apache::Hadoop::Hive::hive_metastoreConstants::FILE_INPUT_FORMAT</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_constants.h" line="43" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_constants.h" bodystart="43" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1hive__metastoreConstants_1a3714299924d463d45736b118d2bb6916" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::hive_metastoreConstants::FILE_OUTPUT_FORMAT</definition>
+        <argsstring></argsstring>
+        <name>FILE_OUTPUT_FORMAT</name>
+        <qualifiedname>Apache::Hadoop::Hive::hive_metastoreConstants::FILE_OUTPUT_FORMAT</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_constants.h" line="44" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_constants.h" bodystart="44" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1hive__metastoreConstants_1adaf482506d1672ef4368857fb7875d7c" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::hive_metastoreConstants::META_TABLE_STORAGE</definition>
+        <argsstring></argsstring>
+        <name>META_TABLE_STORAGE</name>
+        <qualifiedname>Apache::Hadoop::Hive::hive_metastoreConstants::META_TABLE_STORAGE</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_constants.h" line="45" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_constants.h" bodystart="45" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1hive__metastoreConstants_1a2343b27210a6ce7f6d605bc7d65c82b7" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::hive_metastoreConstants::TABLE_IS_TRANSACTIONAL</definition>
+        <argsstring></argsstring>
+        <name>TABLE_IS_TRANSACTIONAL</name>
+        <qualifiedname>Apache::Hadoop::Hive::hive_metastoreConstants::TABLE_IS_TRANSACTIONAL</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_constants.h" line="46" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_constants.h" bodystart="46" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1hive__metastoreConstants_1af8c90edda910eaeb5869c25cf7e526a9" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::hive_metastoreConstants::NO_AUTO_COMPACT</definition>
+        <argsstring></argsstring>
+        <name>NO_AUTO_COMPACT</name>
+        <qualifiedname>Apache::Hadoop::Hive::hive_metastoreConstants::NO_AUTO_COMPACT</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_constants.h" line="47" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_constants.h" bodystart="47" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1hive__metastoreConstants_1ae9817cb44e5845c4b70c5793fe325611" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::hive_metastoreConstants::TABLE_TRANSACTIONAL_PROPERTIES</definition>
+        <argsstring></argsstring>
+        <name>TABLE_TRANSACTIONAL_PROPERTIES</name>
+        <qualifiedname>Apache::Hadoop::Hive::hive_metastoreConstants::TABLE_TRANSACTIONAL_PROPERTIES</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_constants.h" line="48" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_constants.h" bodystart="48" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1hive__metastoreConstants_1a6215a15d7eec590892779f4504a72a4e" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::hive_metastoreConstants::TABLE_BUCKETING_VERSION</definition>
+        <argsstring></argsstring>
+        <name>TABLE_BUCKETING_VERSION</name>
+        <qualifiedname>Apache::Hadoop::Hive::hive_metastoreConstants::TABLE_BUCKETING_VERSION</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_constants.h" line="49" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_constants.h" bodystart="49" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1hive__metastoreConstants_1a695da87ff771e70db010a5ae9ba84100" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::hive_metastoreConstants::DRUID_CONFIG_PREFIX</definition>
+        <argsstring></argsstring>
+        <name>DRUID_CONFIG_PREFIX</name>
+        <qualifiedname>Apache::Hadoop::Hive::hive_metastoreConstants::DRUID_CONFIG_PREFIX</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_constants.h" line="50" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_constants.h" bodystart="50" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1hive__metastoreConstants_1a544c4bfaacd08c30674715e80edfc806" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::hive_metastoreConstants::JDBC_CONFIG_PREFIX</definition>
+        <argsstring></argsstring>
+        <name>JDBC_CONFIG_PREFIX</name>
+        <qualifiedname>Apache::Hadoop::Hive::hive_metastoreConstants::JDBC_CONFIG_PREFIX</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_constants.h" line="51" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_constants.h" bodystart="51" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1hive__metastoreConstants_1aba4c8782f766eb5ec1d71177827fd60b" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::hive_metastoreConstants::TABLE_IS_CTAS</definition>
+        <argsstring></argsstring>
+        <name>TABLE_IS_CTAS</name>
+        <qualifiedname>Apache::Hadoop::Hive::hive_metastoreConstants::TABLE_IS_CTAS</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_constants.h" line="52" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_constants.h" bodystart="52" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1hive__metastoreConstants_1a2a3256c6ea5c5003710468ad343bf162" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::hive_metastoreConstants::TABLE_IS_CTLT</definition>
+        <argsstring></argsstring>
+        <name>TABLE_IS_CTLT</name>
+        <qualifiedname>Apache::Hadoop::Hive::hive_metastoreConstants::TABLE_IS_CTLT</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_constants.h" line="53" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_constants.h" bodystart="53" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1hive__metastoreConstants_1a1ed53ec48babd91b025939f3ab71df5f" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::hive_metastoreConstants::PARTITION_TRANSFORM_SPEC</definition>
+        <argsstring></argsstring>
+        <name>PARTITION_TRANSFORM_SPEC</name>
+        <qualifiedname>Apache::Hadoop::Hive::hive_metastoreConstants::PARTITION_TRANSFORM_SPEC</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_constants.h" line="54" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_constants.h" bodystart="54" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1hive__metastoreConstants_1a0267cd6bea0b90b2fbb161a10db7226b" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::hive_metastoreConstants::NO_CLEANUP</definition>
+        <argsstring></argsstring>
+        <name>NO_CLEANUP</name>
+        <qualifiedname>Apache::Hadoop::Hive::hive_metastoreConstants::NO_CLEANUP</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_constants.h" line="55" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_constants.h" bodystart="55" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1hive__metastoreConstants_1a841b2a204dc6a989f2e10229219c0335" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::hive_metastoreConstants::CTAS_LEGACY_CONFIG</definition>
+        <argsstring></argsstring>
+        <name>CTAS_LEGACY_CONFIG</name>
+        <qualifiedname>Apache::Hadoop::Hive::hive_metastoreConstants::CTAS_LEGACY_CONFIG</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_constants.h" line="56" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_constants.h" bodystart="56" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1hive__metastoreConstants_1a4484484fe3326723af95a158dd7b1d3c" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::hive_metastoreConstants::DEFAULT_TABLE_TYPE</definition>
+        <argsstring></argsstring>
+        <name>DEFAULT_TABLE_TYPE</name>
+        <qualifiedname>Apache::Hadoop::Hive::hive_metastoreConstants::DEFAULT_TABLE_TYPE</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_constants.h" line="57" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_constants.h" bodystart="57" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1hive__metastoreConstants_1a41e03a024b985c39cd04af0f305593b3" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::hive_metastoreConstants::TXN_ID</definition>
+        <argsstring></argsstring>
+        <name>TXN_ID</name>
+        <qualifiedname>Apache::Hadoop::Hive::hive_metastoreConstants::TXN_ID</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_constants.h" line="58" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_constants.h" bodystart="58" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1hive__metastoreConstants_1ac2705e3a9731cc7d25297b6137aa92ea" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::hive_metastoreConstants::WRITE_ID</definition>
+        <argsstring></argsstring>
+        <name>WRITE_ID</name>
+        <qualifiedname>Apache::Hadoop::Hive::hive_metastoreConstants::WRITE_ID</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_constants.h" line="59" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_constants.h" bodystart="59" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1hive__metastoreConstants_1aaefdebe112828a005e1776125725d2ec" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::hive_metastoreConstants::EXPECTED_PARAMETER_KEY</definition>
+        <argsstring></argsstring>
+        <name>EXPECTED_PARAMETER_KEY</name>
+        <qualifiedname>Apache::Hadoop::Hive::hive_metastoreConstants::EXPECTED_PARAMETER_KEY</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_constants.h" line="60" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_constants.h" bodystart="60" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1hive__metastoreConstants_1a910e3c4e40c01674bb3af013b0abcb72" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::hive_metastoreConstants::EXPECTED_PARAMETER_VALUE</definition>
+        <argsstring></argsstring>
+        <name>EXPECTED_PARAMETER_VALUE</name>
+        <qualifiedname>Apache::Hadoop::Hive::hive_metastoreConstants::EXPECTED_PARAMETER_VALUE</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_constants.h" line="61" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_constants.h" bodystart="61" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1hive__metastoreConstants_1a0ca131c50b7ff5be8426976a0a0f1345" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::hive_metastoreConstants::hive_metastoreConstants</definition>
+        <argsstring>()</argsstring>
+        <name>hive_metastoreConstants</name>
+        <qualifiedname>Apache::Hadoop::Hive::hive_metastoreConstants::hive_metastoreConstants</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_constants.h" line="16" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_constants.cpp" bodystart="13" bodyend="102"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::hive_metastoreConstants</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1hive__metastoreConstants"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>BUCKET_COUNT</edgelabel>
+          <edgelabel>BUCKET_FIELD_NAME</edgelabel>
+          <edgelabel>CTAS_LEGACY_CONFIG</edgelabel>
+          <edgelabel>DDL_TIME</edgelabel>
+          <edgelabel>DEFAULT_TABLE_TYPE</edgelabel>
+          <edgelabel>DRUID_CONFIG_PREFIX</edgelabel>
+          <edgelabel>EXPECTED_PARAMETER_KEY</edgelabel>
+          <edgelabel>EXPECTED_PARAMETER_VALUE</edgelabel>
+          <edgelabel>FIELD_TO_DIMENSION</edgelabel>
+          <edgelabel>FILE_INPUT_FORMAT</edgelabel>
+          <edgelabel>...</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="2">
+        <label>std::string</label>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_constants.h" line="14" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_constants.h" bodystart="14" bodyend="62"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1hive__metastoreConstants_1a862bf9ac21b76711a130968f5f1428a6" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::hive_metastoreConstants</scope><name>ACCESSTYPE_NONE</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1hive__metastoreConstants_1a29461b4b2d8055b26ae52f1f64c007a5" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::hive_metastoreConstants</scope><name>ACCESSTYPE_READONLY</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1hive__metastoreConstants_1a23e0f73e7be6a43e0f28ccc301c319f3" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::hive_metastoreConstants</scope><name>ACCESSTYPE_READWRITE</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1hive__metastoreConstants_1a48b53a6eed7b1cb5da98808f753fd904" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::hive_metastoreConstants</scope><name>ACCESSTYPE_WRITEONLY</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1hive__metastoreConstants_1a85d14b031872514614ad72516c95cae8" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::hive_metastoreConstants</scope><name>BUCKET_COUNT</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1hive__metastoreConstants_1ae40021c25c4f34ec298385b051f88fef" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::hive_metastoreConstants</scope><name>BUCKET_FIELD_NAME</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1hive__metastoreConstants_1a841b2a204dc6a989f2e10229219c0335" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::hive_metastoreConstants</scope><name>CTAS_LEGACY_CONFIG</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1hive__metastoreConstants_1a596c360c69d11efbc5daec1d696d494e" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::hive_metastoreConstants</scope><name>DDL_TIME</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1hive__metastoreConstants_1a4484484fe3326723af95a158dd7b1d3c" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::hive_metastoreConstants</scope><name>DEFAULT_TABLE_TYPE</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1hive__metastoreConstants_1a695da87ff771e70db010a5ae9ba84100" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::hive_metastoreConstants</scope><name>DRUID_CONFIG_PREFIX</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1hive__metastoreConstants_1aaefdebe112828a005e1776125725d2ec" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::hive_metastoreConstants</scope><name>EXPECTED_PARAMETER_KEY</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1hive__metastoreConstants_1a910e3c4e40c01674bb3af013b0abcb72" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::hive_metastoreConstants</scope><name>EXPECTED_PARAMETER_VALUE</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1hive__metastoreConstants_1a46d444063f24673ddb086dd301cd2100" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::hive_metastoreConstants</scope><name>FIELD_TO_DIMENSION</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1hive__metastoreConstants_1ac988eefcd2b6c24e3223b4cd0daeb1da" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::hive_metastoreConstants</scope><name>FILE_INPUT_FORMAT</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1hive__metastoreConstants_1a3714299924d463d45736b118d2bb6916" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::hive_metastoreConstants</scope><name>FILE_OUTPUT_FORMAT</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1hive__metastoreConstants_1a9003dc03be7890284c15326f7bf8d003" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::hive_metastoreConstants</scope><name>HIVE_FILTER_FIELD_LAST_ACCESS</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1hive__metastoreConstants_1a842e7dfccfe2b91367e36ac03d4c01f9" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::hive_metastoreConstants</scope><name>HIVE_FILTER_FIELD_OWNER</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1hive__metastoreConstants_1a01be5078949dbf3e86586858677c0aad" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::hive_metastoreConstants</scope><name>HIVE_FILTER_FIELD_PARAMS</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1hive__metastoreConstants_1a07390389fcf9da93cf3a56b0795922e3" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::hive_metastoreConstants</scope><name>HIVE_FILTER_FIELD_TABLE_NAME</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1hive__metastoreConstants_1a1e1d4b99a683caf1d8fbfcb967de7eb0" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::hive_metastoreConstants</scope><name>HIVE_FILTER_FIELD_TABLE_TYPE</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1hive__metastoreConstants_1a0ca131c50b7ff5be8426976a0a0f1345" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::hive_metastoreConstants</scope><name>hive_metastoreConstants</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1hive__metastoreConstants_1acdf72fd89e024da6a9d00c58ffff2f44" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::hive_metastoreConstants</scope><name>IF_PURGE</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1hive__metastoreConstants_1a63c0a7e8ce5a78da1fb911cc21b0cd04" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::hive_metastoreConstants</scope><name>IS_ARCHIVED</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1hive__metastoreConstants_1ae79c2de4034f9f27d5f9aa1f707bc215" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::hive_metastoreConstants</scope><name>IS_IMMUTABLE</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1hive__metastoreConstants_1a544c4bfaacd08c30674715e80edfc806" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::hive_metastoreConstants</scope><name>JDBC_CONFIG_PREFIX</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1hive__metastoreConstants_1a6915233a27c8c301598a05b19b12c72d" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::hive_metastoreConstants</scope><name>META_TABLE_COLUMN_TYPES</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1hive__metastoreConstants_1a87956930ac3a4f78a89179400e11cf28" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::hive_metastoreConstants</scope><name>META_TABLE_COLUMNS</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1hive__metastoreConstants_1a13116c62e78181eb71cb6d12bc852b1d" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::hive_metastoreConstants</scope><name>META_TABLE_DB</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1hive__metastoreConstants_1a7bdc784a29ac58582a77485e94a98fb1" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::hive_metastoreConstants</scope><name>META_TABLE_LOCATION</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1hive__metastoreConstants_1ab54b80960b14279513a17e141731b465" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::hive_metastoreConstants</scope><name>META_TABLE_NAME</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1hive__metastoreConstants_1a9b864d8478791485310cc8fcdc4e92f7" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::hive_metastoreConstants</scope><name>META_TABLE_PARTITION_COLUMN_TYPES</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1hive__metastoreConstants_1aacdc5ab98bc4087745eb4c84f1ea8a96" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::hive_metastoreConstants</scope><name>META_TABLE_PARTITION_COLUMNS</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1hive__metastoreConstants_1aaf07aa3f806de41d0b3126cd9347ae72" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::hive_metastoreConstants</scope><name>META_TABLE_SERDE</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1hive__metastoreConstants_1adaf482506d1672ef4368857fb7875d7c" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::hive_metastoreConstants</scope><name>META_TABLE_STORAGE</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1hive__metastoreConstants_1af8c90edda910eaeb5869c25cf7e526a9" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::hive_metastoreConstants</scope><name>NO_AUTO_COMPACT</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1hive__metastoreConstants_1a0267cd6bea0b90b2fbb161a10db7226b" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::hive_metastoreConstants</scope><name>NO_CLEANUP</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1hive__metastoreConstants_1a74bd0d4e4ae3eed41acfa971b65957a8" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::hive_metastoreConstants</scope><name>ORIGINAL_LOCATION</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1hive__metastoreConstants_1a1ed53ec48babd91b025939f3ab71df5f" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::hive_metastoreConstants</scope><name>PARTITION_TRANSFORM_SPEC</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1hive__metastoreConstants_1a6215a15d7eec590892779f4504a72a4e" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::hive_metastoreConstants</scope><name>TABLE_BUCKETING_VERSION</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1hive__metastoreConstants_1aba4c8782f766eb5ec1d71177827fd60b" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::hive_metastoreConstants</scope><name>TABLE_IS_CTAS</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1hive__metastoreConstants_1a2a3256c6ea5c5003710468ad343bf162" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::hive_metastoreConstants</scope><name>TABLE_IS_CTLT</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1hive__metastoreConstants_1a2343b27210a6ce7f6d605bc7d65c82b7" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::hive_metastoreConstants</scope><name>TABLE_IS_TRANSACTIONAL</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1hive__metastoreConstants_1ae9817cb44e5845c4b70c5793fe325611" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::hive_metastoreConstants</scope><name>TABLE_TRANSACTIONAL_PROPERTIES</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1hive__metastoreConstants_1a41e03a024b985c39cd04af0f305593b3" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::hive_metastoreConstants</scope><name>TXN_ID</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1hive__metastoreConstants_1ac2705e3a9731cc7d25297b6137aa92ea" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::hive_metastoreConstants</scope><name>WRITE_ID</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

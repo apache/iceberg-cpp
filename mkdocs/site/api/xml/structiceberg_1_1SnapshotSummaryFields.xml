@@ -1,0 +1,727 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1SnapshotSummaryFields" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::SnapshotSummaryFields</compoundname>
+    <includes refid="snapshot_8h" local="no">snapshot.h</includes>
+    <sectiondef kind="public-static-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1SnapshotSummaryFields_1ada7f5effa8afb4169e68ed2639bd4fde" prot="public" static="yes" mutable="no">
+        <type>const std::string</type>
+        <definition>const std::string iceberg::SnapshotSummaryFields::kOperation</definition>
+        <argsstring></argsstring>
+        <name>kOperation</name>
+        <qualifiedname>iceberg::SnapshotSummaryFields::kOperation</qualifiedname>
+        <initializer>= &quot;operation&quot;</initializer>
+        <briefdescription>
+<para>The operation field key. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/snapshot.h" line="164" column="35" bodyfile="iceberg/snapshot.h" bodystart="164" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1SnapshotSummaryFields_1a2b56093fd8bb220fdb55834b1a23e61b" prot="public" static="yes" mutable="no">
+        <type>const std::string</type>
+        <definition>const std::string iceberg::SnapshotSummaryFields::kFirstRowId</definition>
+        <argsstring></argsstring>
+        <name>kFirstRowId</name>
+        <qualifiedname>iceberg::SnapshotSummaryFields::kFirstRowId</qualifiedname>
+        <initializer>= &quot;first-row-id&quot;</initializer>
+        <briefdescription>
+<para>The first row id field key. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/snapshot.h" line="166" column="35" bodyfile="iceberg/snapshot.h" bodystart="166" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1SnapshotSummaryFields_1a4e4fac2b70ad11701e6e8800c6508833" prot="public" static="yes" mutable="no">
+        <type>const std::string</type>
+        <definition>const std::string iceberg::SnapshotSummaryFields::kAddedRows</definition>
+        <argsstring></argsstring>
+        <name>kAddedRows</name>
+        <qualifiedname>iceberg::SnapshotSummaryFields::kAddedRows</qualifiedname>
+        <initializer>= &quot;added-rows&quot;</initializer>
+        <briefdescription>
+<para>The added rows field key. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/snapshot.h" line="168" column="35" bodyfile="iceberg/snapshot.h" bodystart="168" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1SnapshotSummaryFields_1a3f3613d6bdd73558894d946e23bd81e1" prot="public" static="yes" mutable="no">
+        <type>const std::string</type>
+        <definition>const std::string iceberg::SnapshotSummaryFields::kAddedDataFiles</definition>
+        <argsstring></argsstring>
+        <name>kAddedDataFiles</name>
+        <qualifiedname>iceberg::SnapshotSummaryFields::kAddedDataFiles</qualifiedname>
+        <initializer>= &quot;added-data-files&quot;</initializer>
+        <briefdescription>
+<para><ref refid="structiceberg_1_1Metrics" kindref="compound">Metrics</ref>, see <ulink url="https://iceberg.apache.org/spec/#metrics">https://iceberg.apache.org/spec/#metrics</ulink>. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Number of data files added in the snapshot </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/snapshot.h" line="173" column="35" bodyfile="iceberg/snapshot.h" bodystart="173" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1SnapshotSummaryFields_1aa801b5416617926fbfc8b09cbcb10cb0" prot="public" static="yes" mutable="no">
+        <type>const std::string</type>
+        <definition>const std::string iceberg::SnapshotSummaryFields::kDeletedDataFiles</definition>
+        <argsstring></argsstring>
+        <name>kDeletedDataFiles</name>
+        <qualifiedname>iceberg::SnapshotSummaryFields::kDeletedDataFiles</qualifiedname>
+        <initializer>= &quot;deleted-data-files&quot;</initializer>
+        <briefdescription>
+<para>Number of data files deleted in the snapshot. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/snapshot.h" line="175" column="35" bodyfile="iceberg/snapshot.h" bodystart="175" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1SnapshotSummaryFields_1ad314de2d955f77cd7d14ddccb6370134" prot="public" static="yes" mutable="no">
+        <type>const std::string</type>
+        <definition>const std::string iceberg::SnapshotSummaryFields::kTotalDataFiles</definition>
+        <argsstring></argsstring>
+        <name>kTotalDataFiles</name>
+        <qualifiedname>iceberg::SnapshotSummaryFields::kTotalDataFiles</qualifiedname>
+        <initializer>= &quot;total-data-files&quot;</initializer>
+        <briefdescription>
+<para>Total number of live data files in the snapshot. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/snapshot.h" line="177" column="35" bodyfile="iceberg/snapshot.h" bodystart="177" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1SnapshotSummaryFields_1afde83a76d056e4f089d86157895beb80" prot="public" static="yes" mutable="no">
+        <type>const std::string</type>
+        <definition>const std::string iceberg::SnapshotSummaryFields::kAddedDeleteFiles</definition>
+        <argsstring></argsstring>
+        <name>kAddedDeleteFiles</name>
+        <qualifiedname>iceberg::SnapshotSummaryFields::kAddedDeleteFiles</qualifiedname>
+        <initializer>= &quot;added-delete-files&quot;</initializer>
+        <briefdescription>
+<para>Number of positional/equality delete files and deletion vectors added in the snapshot. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/snapshot.h" line="180" column="35" bodyfile="iceberg/snapshot.h" bodystart="180" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1SnapshotSummaryFields_1a4c932bf17d7418013939fdd7b802f123" prot="public" static="yes" mutable="no">
+        <type>const std::string</type>
+        <definition>const std::string iceberg::SnapshotSummaryFields::kAddedEqDeleteFiles</definition>
+        <argsstring></argsstring>
+        <name>kAddedEqDeleteFiles</name>
+        <qualifiedname>iceberg::SnapshotSummaryFields::kAddedEqDeleteFiles</qualifiedname>
+        <initializer>= &quot;added-equality-delete-files&quot;</initializer>
+        <briefdescription>
+<para>Number of equality delete files added in the snapshot. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/snapshot.h" line="182" column="35" bodyfile="iceberg/snapshot.h" bodystart="182" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1SnapshotSummaryFields_1a94fa76aad9462ef4f9e3e069c2a24645" prot="public" static="yes" mutable="no">
+        <type>const std::string</type>
+        <definition>const std::string iceberg::SnapshotSummaryFields::kRemovedEqDeleteFiles</definition>
+        <argsstring></argsstring>
+        <name>kRemovedEqDeleteFiles</name>
+        <qualifiedname>iceberg::SnapshotSummaryFields::kRemovedEqDeleteFiles</qualifiedname>
+        <initializer>= &quot;removed-equality-delete-files&quot;</initializer>
+        <briefdescription>
+<para>Number of equality delete files removed in the snapshot. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/snapshot.h" line="184" column="35" bodyfile="iceberg/snapshot.h" bodystart="184" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1SnapshotSummaryFields_1a9a996f8d2334fa3734da67fe02914038" prot="public" static="yes" mutable="no">
+        <type>const std::string</type>
+        <definition>const std::string iceberg::SnapshotSummaryFields::kAddedPosDeleteFiles</definition>
+        <argsstring></argsstring>
+        <name>kAddedPosDeleteFiles</name>
+        <qualifiedname>iceberg::SnapshotSummaryFields::kAddedPosDeleteFiles</qualifiedname>
+        <initializer>= &quot;added-position-delete-files&quot;</initializer>
+        <briefdescription>
+<para>Number of position delete files added in the snapshot. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/snapshot.h" line="186" column="35" bodyfile="iceberg/snapshot.h" bodystart="186" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1SnapshotSummaryFields_1afdde47b2cffe3f60e169b754bbfe439c" prot="public" static="yes" mutable="no">
+        <type>const std::string</type>
+        <definition>const std::string iceberg::SnapshotSummaryFields::kRemovedPosDeleteFiles</definition>
+        <argsstring></argsstring>
+        <name>kRemovedPosDeleteFiles</name>
+        <qualifiedname>iceberg::SnapshotSummaryFields::kRemovedPosDeleteFiles</qualifiedname>
+        <initializer>=
+      &quot;removed-position-delete-files&quot;</initializer>
+        <briefdescription>
+<para>Number of position delete files removed in the snapshot. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/snapshot.h" line="188" column="35" bodyfile="iceberg/snapshot.h" bodystart="188" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1SnapshotSummaryFields_1a5080e87bce473ae588c774f534e2001a" prot="public" static="yes" mutable="no">
+        <type>const std::string</type>
+        <definition>const std::string iceberg::SnapshotSummaryFields::kAddedDVs</definition>
+        <argsstring></argsstring>
+        <name>kAddedDVs</name>
+        <qualifiedname>iceberg::SnapshotSummaryFields::kAddedDVs</qualifiedname>
+        <initializer>= &quot;added-dvs&quot;</initializer>
+        <briefdescription>
+<para>Number of deletion vectors added in the snapshot. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/snapshot.h" line="191" column="35" bodyfile="iceberg/snapshot.h" bodystart="191" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1SnapshotSummaryFields_1a303e5e4d65a75816ee5c883e146bc4e5" prot="public" static="yes" mutable="no">
+        <type>const std::string</type>
+        <definition>const std::string iceberg::SnapshotSummaryFields::kRemovedDVs</definition>
+        <argsstring></argsstring>
+        <name>kRemovedDVs</name>
+        <qualifiedname>iceberg::SnapshotSummaryFields::kRemovedDVs</qualifiedname>
+        <initializer>= &quot;removed-dvs&quot;</initializer>
+        <briefdescription>
+<para>Number of deletion vectors removed in the snapshot. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/snapshot.h" line="193" column="35" bodyfile="iceberg/snapshot.h" bodystart="193" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1SnapshotSummaryFields_1a9d24f8c6cbc618551b06cbb442fc3648" prot="public" static="yes" mutable="no">
+        <type>const std::string</type>
+        <definition>const std::string iceberg::SnapshotSummaryFields::kRemovedDeleteFiles</definition>
+        <argsstring></argsstring>
+        <name>kRemovedDeleteFiles</name>
+        <qualifiedname>iceberg::SnapshotSummaryFields::kRemovedDeleteFiles</qualifiedname>
+        <initializer>= &quot;removed-delete-files&quot;</initializer>
+        <briefdescription>
+<para>Number of positional/equality delete files and deletion vectors removed in the snapshot. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/snapshot.h" line="196" column="35" bodyfile="iceberg/snapshot.h" bodystart="196" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1SnapshotSummaryFields_1a65fbe108a5aa316dad4977e789e4e71f" prot="public" static="yes" mutable="no">
+        <type>const std::string</type>
+        <definition>const std::string iceberg::SnapshotSummaryFields::kTotalDeleteFiles</definition>
+        <argsstring></argsstring>
+        <name>kTotalDeleteFiles</name>
+        <qualifiedname>iceberg::SnapshotSummaryFields::kTotalDeleteFiles</qualifiedname>
+        <initializer>= &quot;total-delete-files&quot;</initializer>
+        <briefdescription>
+<para>Total number of live positional/equality delete files and deletion vectors in the snapshot. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/snapshot.h" line="199" column="35" bodyfile="iceberg/snapshot.h" bodystart="199" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1SnapshotSummaryFields_1ade62cef67f66999addb7dd3651c0a690" prot="public" static="yes" mutable="no">
+        <type>const std::string</type>
+        <definition>const std::string iceberg::SnapshotSummaryFields::kAddedRecords</definition>
+        <argsstring></argsstring>
+        <name>kAddedRecords</name>
+        <qualifiedname>iceberg::SnapshotSummaryFields::kAddedRecords</qualifiedname>
+        <initializer>= &quot;added-records&quot;</initializer>
+        <briefdescription>
+<para>Number of records added in the snapshot. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/snapshot.h" line="201" column="35" bodyfile="iceberg/snapshot.h" bodystart="201" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1SnapshotSummaryFields_1ac33705014c833f33714170c7f14ccae6" prot="public" static="yes" mutable="no">
+        <type>const std::string</type>
+        <definition>const std::string iceberg::SnapshotSummaryFields::kDeletedRecords</definition>
+        <argsstring></argsstring>
+        <name>kDeletedRecords</name>
+        <qualifiedname>iceberg::SnapshotSummaryFields::kDeletedRecords</qualifiedname>
+        <initializer>= &quot;deleted-records&quot;</initializer>
+        <briefdescription>
+<para>Number of records deleted in the snapshot. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/snapshot.h" line="203" column="35" bodyfile="iceberg/snapshot.h" bodystart="203" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1SnapshotSummaryFields_1a80def77f8cc4f4383fb384334cd8cd27" prot="public" static="yes" mutable="no">
+        <type>const std::string</type>
+        <definition>const std::string iceberg::SnapshotSummaryFields::kTotalRecords</definition>
+        <argsstring></argsstring>
+        <name>kTotalRecords</name>
+        <qualifiedname>iceberg::SnapshotSummaryFields::kTotalRecords</qualifiedname>
+        <initializer>= &quot;total-records&quot;</initializer>
+        <briefdescription>
+<para>Total number of records in the snapshot. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/snapshot.h" line="205" column="35" bodyfile="iceberg/snapshot.h" bodystart="205" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1SnapshotSummaryFields_1a61fab448650bbf4705de2961589bf71f" prot="public" static="yes" mutable="no">
+        <type>const std::string</type>
+        <definition>const std::string iceberg::SnapshotSummaryFields::kAddedFileSize</definition>
+        <argsstring></argsstring>
+        <name>kAddedFileSize</name>
+        <qualifiedname>iceberg::SnapshotSummaryFields::kAddedFileSize</qualifiedname>
+        <initializer>= &quot;added-files-size&quot;</initializer>
+        <briefdescription>
+<para>The size of files added in the snapshot. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/snapshot.h" line="207" column="35" bodyfile="iceberg/snapshot.h" bodystart="207" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1SnapshotSummaryFields_1accb9819bc2282a67974f8cb9c3c0082c" prot="public" static="yes" mutable="no">
+        <type>const std::string</type>
+        <definition>const std::string iceberg::SnapshotSummaryFields::kRemovedFileSize</definition>
+        <argsstring></argsstring>
+        <name>kRemovedFileSize</name>
+        <qualifiedname>iceberg::SnapshotSummaryFields::kRemovedFileSize</qualifiedname>
+        <initializer>= &quot;removed-files-size&quot;</initializer>
+        <briefdescription>
+<para>The size of files removed in the snapshot. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/snapshot.h" line="209" column="35" bodyfile="iceberg/snapshot.h" bodystart="209" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1SnapshotSummaryFields_1a5d0e0fdd138a86f767d89498e251cf00" prot="public" static="yes" mutable="no">
+        <type>const std::string</type>
+        <definition>const std::string iceberg::SnapshotSummaryFields::kTotalFileSize</definition>
+        <argsstring></argsstring>
+        <name>kTotalFileSize</name>
+        <qualifiedname>iceberg::SnapshotSummaryFields::kTotalFileSize</qualifiedname>
+        <initializer>= &quot;total-files-size&quot;</initializer>
+        <briefdescription>
+<para>Total size of live files in the snapshot. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/snapshot.h" line="211" column="35" bodyfile="iceberg/snapshot.h" bodystart="211" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1SnapshotSummaryFields_1a380bd771050985107b9eedf47ada2971" prot="public" static="yes" mutable="no">
+        <type>const std::string</type>
+        <definition>const std::string iceberg::SnapshotSummaryFields::kAddedPosDeletes</definition>
+        <argsstring></argsstring>
+        <name>kAddedPosDeletes</name>
+        <qualifiedname>iceberg::SnapshotSummaryFields::kAddedPosDeletes</qualifiedname>
+        <initializer>= &quot;added-position-deletes&quot;</initializer>
+        <briefdescription>
+<para>Number of position delete records added in the snapshot. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/snapshot.h" line="213" column="35" bodyfile="iceberg/snapshot.h" bodystart="213" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1SnapshotSummaryFields_1a7ea7416ee086d74d4ccb7259d17f55ab" prot="public" static="yes" mutable="no">
+        <type>const std::string</type>
+        <definition>const std::string iceberg::SnapshotSummaryFields::kRemovedPosDeletes</definition>
+        <argsstring></argsstring>
+        <name>kRemovedPosDeletes</name>
+        <qualifiedname>iceberg::SnapshotSummaryFields::kRemovedPosDeletes</qualifiedname>
+        <initializer>= &quot;removed-position-deletes&quot;</initializer>
+        <briefdescription>
+<para>Number of position delete records removed in the snapshot. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/snapshot.h" line="215" column="35" bodyfile="iceberg/snapshot.h" bodystart="215" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1SnapshotSummaryFields_1a13125d9c90d79c55a71fc93b48d6f8a3" prot="public" static="yes" mutable="no">
+        <type>const std::string</type>
+        <definition>const std::string iceberg::SnapshotSummaryFields::kTotalPosDeletes</definition>
+        <argsstring></argsstring>
+        <name>kTotalPosDeletes</name>
+        <qualifiedname>iceberg::SnapshotSummaryFields::kTotalPosDeletes</qualifiedname>
+        <initializer>= &quot;total-position-deletes&quot;</initializer>
+        <briefdescription>
+<para>Total number of position delete records in the snapshot. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/snapshot.h" line="217" column="35" bodyfile="iceberg/snapshot.h" bodystart="217" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1SnapshotSummaryFields_1a98f4256862a48cea377ecc2da11d48d3" prot="public" static="yes" mutable="no">
+        <type>const std::string</type>
+        <definition>const std::string iceberg::SnapshotSummaryFields::kAddedEqDeletes</definition>
+        <argsstring></argsstring>
+        <name>kAddedEqDeletes</name>
+        <qualifiedname>iceberg::SnapshotSummaryFields::kAddedEqDeletes</qualifiedname>
+        <initializer>= &quot;added-equality-deletes&quot;</initializer>
+        <briefdescription>
+<para>Number of equality delete records added in the snapshot. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/snapshot.h" line="219" column="35" bodyfile="iceberg/snapshot.h" bodystart="219" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1SnapshotSummaryFields_1adf57b3f74d94d4061040647dcb40de0a" prot="public" static="yes" mutable="no">
+        <type>const std::string</type>
+        <definition>const std::string iceberg::SnapshotSummaryFields::kRemovedEqDeletes</definition>
+        <argsstring></argsstring>
+        <name>kRemovedEqDeletes</name>
+        <qualifiedname>iceberg::SnapshotSummaryFields::kRemovedEqDeletes</qualifiedname>
+        <initializer>= &quot;removed-equality-deletes&quot;</initializer>
+        <briefdescription>
+<para>Number of equality delete records removed in the snapshot. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/snapshot.h" line="221" column="35" bodyfile="iceberg/snapshot.h" bodystart="221" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1SnapshotSummaryFields_1a12a98242c22498ab0a06257d817342c8" prot="public" static="yes" mutable="no">
+        <type>const std::string</type>
+        <definition>const std::string iceberg::SnapshotSummaryFields::kTotalEqDeletes</definition>
+        <argsstring></argsstring>
+        <name>kTotalEqDeletes</name>
+        <qualifiedname>iceberg::SnapshotSummaryFields::kTotalEqDeletes</qualifiedname>
+        <initializer>= &quot;total-equality-deletes&quot;</initializer>
+        <briefdescription>
+<para>Total number of equality delete records in the snapshot. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/snapshot.h" line="223" column="35" bodyfile="iceberg/snapshot.h" bodystart="223" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1SnapshotSummaryFields_1aedd02877d175b0dfa88e9e5219ffd395" prot="public" static="yes" mutable="no">
+        <type>const std::string</type>
+        <definition>const std::string iceberg::SnapshotSummaryFields::kDeletedDuplicatedFiles</definition>
+        <argsstring></argsstring>
+        <name>kDeletedDuplicatedFiles</name>
+        <qualifiedname>iceberg::SnapshotSummaryFields::kDeletedDuplicatedFiles</qualifiedname>
+        <initializer>= &quot;deleted-duplicate-files&quot;</initializer>
+        <briefdescription>
+<para>Number of duplicate files deleted (duplicates are files recorded more than once in the manifest) </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/snapshot.h" line="226" column="35" bodyfile="iceberg/snapshot.h" bodystart="226" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1SnapshotSummaryFields_1a3ec7042a3a98ef42acf4585f3188445a" prot="public" static="yes" mutable="no">
+        <type>const std::string</type>
+        <definition>const std::string iceberg::SnapshotSummaryFields::kChangedPartitionCountProp</definition>
+        <argsstring></argsstring>
+        <name>kChangedPartitionCountProp</name>
+        <qualifiedname>iceberg::SnapshotSummaryFields::kChangedPartitionCountProp</qualifiedname>
+        <initializer>= &quot;changed-partition-count&quot;</initializer>
+        <briefdescription>
+<para>Number of partitions with files added or removed in the snapshot. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/snapshot.h" line="228" column="35" bodyfile="iceberg/snapshot.h" bodystart="228" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1SnapshotSummaryFields_1a5a1161c5b716f77c7de652fbc7953e81" prot="public" static="yes" mutable="no">
+        <type>const std::string</type>
+        <definition>const std::string iceberg::SnapshotSummaryFields::kManifestsCreated</definition>
+        <argsstring></argsstring>
+        <name>kManifestsCreated</name>
+        <qualifiedname>iceberg::SnapshotSummaryFields::kManifestsCreated</qualifiedname>
+        <initializer>= &quot;manifests-created&quot;</initializer>
+        <briefdescription>
+<para>Number of manifest files created in the snapshot. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/snapshot.h" line="230" column="35" bodyfile="iceberg/snapshot.h" bodystart="230" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1SnapshotSummaryFields_1ab525d5ecc8f2e18307a2f3bac04e4b7e" prot="public" static="yes" mutable="no">
+        <type>const std::string</type>
+        <definition>const std::string iceberg::SnapshotSummaryFields::kManifestsKept</definition>
+        <argsstring></argsstring>
+        <name>kManifestsKept</name>
+        <qualifiedname>iceberg::SnapshotSummaryFields::kManifestsKept</qualifiedname>
+        <initializer>= &quot;manifests-kept&quot;</initializer>
+        <briefdescription>
+<para>Number of manifest files kept in the snapshot. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/snapshot.h" line="232" column="35" bodyfile="iceberg/snapshot.h" bodystart="232" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1SnapshotSummaryFields_1ac64b1239d07fa9f2973980b67e0bd0c2" prot="public" static="yes" mutable="no">
+        <type>const std::string</type>
+        <definition>const std::string iceberg::SnapshotSummaryFields::kManifestsReplaced</definition>
+        <argsstring></argsstring>
+        <name>kManifestsReplaced</name>
+        <qualifiedname>iceberg::SnapshotSummaryFields::kManifestsReplaced</qualifiedname>
+        <initializer>= &quot;manifests-replaced&quot;</initializer>
+        <briefdescription>
+<para>Number of manifest files replaced in the snapshot. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/snapshot.h" line="234" column="35" bodyfile="iceberg/snapshot.h" bodystart="234" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1SnapshotSummaryFields_1a1887f72168261587466ae196542f483d" prot="public" static="yes" mutable="no">
+        <type>const std::string</type>
+        <definition>const std::string iceberg::SnapshotSummaryFields::kEntriesProcessed</definition>
+        <argsstring></argsstring>
+        <name>kEntriesProcessed</name>
+        <qualifiedname>iceberg::SnapshotSummaryFields::kEntriesProcessed</qualifiedname>
+        <initializer>= &quot;entries-processed&quot;</initializer>
+        <briefdescription>
+<para>Number of manifest entries processed in the snapshot. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/snapshot.h" line="236" column="35" bodyfile="iceberg/snapshot.h" bodystart="236" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1SnapshotSummaryFields_1af3e791ce37cdfa4db991281e1c517c48" prot="public" static="yes" mutable="no">
+        <type>const std::string</type>
+        <definition>const std::string iceberg::SnapshotSummaryFields::kChangedPartitionPrefix</definition>
+        <argsstring></argsstring>
+        <name>kChangedPartitionPrefix</name>
+        <qualifiedname>iceberg::SnapshotSummaryFields::kChangedPartitionPrefix</qualifiedname>
+        <initializer>= &quot;partitions.&quot;</initializer>
+        <briefdescription>
+<para>Partition summaries prefix. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/snapshot.h" line="238" column="35" bodyfile="iceberg/snapshot.h" bodystart="238" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1SnapshotSummaryFields_1ad878f008f1103bfe646a9a794f607bd3" prot="public" static="yes" mutable="no">
+        <type>const std::string</type>
+        <definition>const std::string iceberg::SnapshotSummaryFields::kPartitionSummaryProp</definition>
+        <argsstring></argsstring>
+        <name>kPartitionSummaryProp</name>
+        <qualifiedname>iceberg::SnapshotSummaryFields::kPartitionSummaryProp</qualifiedname>
+        <initializer>= &quot;partition-summaries-included&quot;</initializer>
+        <briefdescription>
+<para>Whether partition summaries are included. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/snapshot.h" line="240" column="35" bodyfile="iceberg/snapshot.h" bodystart="240" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1SnapshotSummaryFields_1afc7f6deb2bb4a1bf4b502dccd25966e0" prot="public" static="yes" mutable="no">
+        <type>const std::string</type>
+        <definition>const std::string iceberg::SnapshotSummaryFields::kWAPId</definition>
+        <argsstring></argsstring>
+        <name>kWAPId</name>
+        <qualifiedname>iceberg::SnapshotSummaryFields::kWAPId</qualifiedname>
+        <initializer>= &quot;wap.id&quot;</initializer>
+        <briefdescription>
+<para>Other Fields, see <ulink url="https://iceberg.apache.org/spec/#other-fields">https://iceberg.apache.org/spec/#other-fields</ulink>. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>The Write-Audit-Publish id of a staged snapshot </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/snapshot.h" line="245" column="35" bodyfile="iceberg/snapshot.h" bodystart="245" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1SnapshotSummaryFields_1af9a33f3042070032e8c3e1c8547f51a0" prot="public" static="yes" mutable="no">
+        <type>const std::string</type>
+        <definition>const std::string iceberg::SnapshotSummaryFields::kPublishedWAPId</definition>
+        <argsstring></argsstring>
+        <name>kPublishedWAPId</name>
+        <qualifiedname>iceberg::SnapshotSummaryFields::kPublishedWAPId</qualifiedname>
+        <initializer>= &quot;published-wap-id&quot;</initializer>
+        <briefdescription>
+<para>The Write-Audit-Publish id of a snapshot already been published. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/snapshot.h" line="247" column="35" bodyfile="iceberg/snapshot.h" bodystart="247" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1SnapshotSummaryFields_1a39d6322a77f82167dba5cc97c6c44bc1" prot="public" static="yes" mutable="no">
+        <type>const std::string</type>
+        <definition>const std::string iceberg::SnapshotSummaryFields::kSourceSnapshotId</definition>
+        <argsstring></argsstring>
+        <name>kSourceSnapshotId</name>
+        <qualifiedname>iceberg::SnapshotSummaryFields::kSourceSnapshotId</qualifiedname>
+        <initializer>= &quot;source-snapshot-id&quot;</initializer>
+        <briefdescription>
+<para>The original id of a cherry-picked snapshot. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/snapshot.h" line="249" column="35" bodyfile="iceberg/snapshot.h" bodystart="249" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1SnapshotSummaryFields_1a33984769c91862036640e65730d608f4" prot="public" static="yes" mutable="no">
+        <type>const std::string</type>
+        <definition>const std::string iceberg::SnapshotSummaryFields::kEngineName</definition>
+        <argsstring></argsstring>
+        <name>kEngineName</name>
+        <qualifiedname>iceberg::SnapshotSummaryFields::kEngineName</qualifiedname>
+        <initializer>= &quot;engine-name&quot;</initializer>
+        <briefdescription>
+<para>Name of the engine that created the snapshot. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/snapshot.h" line="251" column="35" bodyfile="iceberg/snapshot.h" bodystart="251" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1SnapshotSummaryFields_1a7d43f0413e29fcd04c72b2b268505035" prot="public" static="yes" mutable="no">
+        <type>const std::string</type>
+        <definition>const std::string iceberg::SnapshotSummaryFields::kEngineVersion</definition>
+        <argsstring></argsstring>
+        <name>kEngineVersion</name>
+        <qualifiedname>iceberg::SnapshotSummaryFields::kEngineVersion</qualifiedname>
+        <initializer>= &quot;engine-version&quot;</initializer>
+        <briefdescription>
+<para>Version of the engine that created the snapshot. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/snapshot.h" line="253" column="35" bodyfile="iceberg/snapshot.h" bodystart="253" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Optional <ref refid="structiceberg_1_1Snapshot" kindref="compound">Snapshot</ref> Summary Fields. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::SnapshotSummaryFields</label>
+        <link refid="structiceberg_1_1SnapshotSummaryFields"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>kAddedDVs</edgelabel>
+          <edgelabel>kAddedDataFiles</edgelabel>
+          <edgelabel>kAddedDeleteFiles</edgelabel>
+          <edgelabel>kAddedEqDeleteFiles</edgelabel>
+          <edgelabel>kAddedEqDeletes</edgelabel>
+          <edgelabel>kAddedFileSize</edgelabel>
+          <edgelabel>kAddedPosDeleteFiles</edgelabel>
+          <edgelabel>kAddedPosDeletes</edgelabel>
+          <edgelabel>kAddedRecords</edgelabel>
+          <edgelabel>kAddedRows</edgelabel>
+          <edgelabel>...</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="2">
+        <label>std::string</label>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/snapshot.h" line="162" column="1" bodyfile="iceberg/snapshot.h" bodystart="162" bodyend="254"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1SnapshotSummaryFields_1a3f3613d6bdd73558894d946e23bd81e1" prot="public" virt="non-virtual"><scope>iceberg::SnapshotSummaryFields</scope><name>kAddedDataFiles</name></member>
+      <member refid="structiceberg_1_1SnapshotSummaryFields_1afde83a76d056e4f089d86157895beb80" prot="public" virt="non-virtual"><scope>iceberg::SnapshotSummaryFields</scope><name>kAddedDeleteFiles</name></member>
+      <member refid="structiceberg_1_1SnapshotSummaryFields_1a5080e87bce473ae588c774f534e2001a" prot="public" virt="non-virtual"><scope>iceberg::SnapshotSummaryFields</scope><name>kAddedDVs</name></member>
+      <member refid="structiceberg_1_1SnapshotSummaryFields_1a4c932bf17d7418013939fdd7b802f123" prot="public" virt="non-virtual"><scope>iceberg::SnapshotSummaryFields</scope><name>kAddedEqDeleteFiles</name></member>
+      <member refid="structiceberg_1_1SnapshotSummaryFields_1a98f4256862a48cea377ecc2da11d48d3" prot="public" virt="non-virtual"><scope>iceberg::SnapshotSummaryFields</scope><name>kAddedEqDeletes</name></member>
+      <member refid="structiceberg_1_1SnapshotSummaryFields_1a61fab448650bbf4705de2961589bf71f" prot="public" virt="non-virtual"><scope>iceberg::SnapshotSummaryFields</scope><name>kAddedFileSize</name></member>
+      <member refid="structiceberg_1_1SnapshotSummaryFields_1a9a996f8d2334fa3734da67fe02914038" prot="public" virt="non-virtual"><scope>iceberg::SnapshotSummaryFields</scope><name>kAddedPosDeleteFiles</name></member>
+      <member refid="structiceberg_1_1SnapshotSummaryFields_1a380bd771050985107b9eedf47ada2971" prot="public" virt="non-virtual"><scope>iceberg::SnapshotSummaryFields</scope><name>kAddedPosDeletes</name></member>
+      <member refid="structiceberg_1_1SnapshotSummaryFields_1ade62cef67f66999addb7dd3651c0a690" prot="public" virt="non-virtual"><scope>iceberg::SnapshotSummaryFields</scope><name>kAddedRecords</name></member>
+      <member refid="structiceberg_1_1SnapshotSummaryFields_1a4e4fac2b70ad11701e6e8800c6508833" prot="public" virt="non-virtual"><scope>iceberg::SnapshotSummaryFields</scope><name>kAddedRows</name></member>
+      <member refid="structiceberg_1_1SnapshotSummaryFields_1a3ec7042a3a98ef42acf4585f3188445a" prot="public" virt="non-virtual"><scope>iceberg::SnapshotSummaryFields</scope><name>kChangedPartitionCountProp</name></member>
+      <member refid="structiceberg_1_1SnapshotSummaryFields_1af3e791ce37cdfa4db991281e1c517c48" prot="public" virt="non-virtual"><scope>iceberg::SnapshotSummaryFields</scope><name>kChangedPartitionPrefix</name></member>
+      <member refid="structiceberg_1_1SnapshotSummaryFields_1aa801b5416617926fbfc8b09cbcb10cb0" prot="public" virt="non-virtual"><scope>iceberg::SnapshotSummaryFields</scope><name>kDeletedDataFiles</name></member>
+      <member refid="structiceberg_1_1SnapshotSummaryFields_1aedd02877d175b0dfa88e9e5219ffd395" prot="public" virt="non-virtual"><scope>iceberg::SnapshotSummaryFields</scope><name>kDeletedDuplicatedFiles</name></member>
+      <member refid="structiceberg_1_1SnapshotSummaryFields_1ac33705014c833f33714170c7f14ccae6" prot="public" virt="non-virtual"><scope>iceberg::SnapshotSummaryFields</scope><name>kDeletedRecords</name></member>
+      <member refid="structiceberg_1_1SnapshotSummaryFields_1a33984769c91862036640e65730d608f4" prot="public" virt="non-virtual"><scope>iceberg::SnapshotSummaryFields</scope><name>kEngineName</name></member>
+      <member refid="structiceberg_1_1SnapshotSummaryFields_1a7d43f0413e29fcd04c72b2b268505035" prot="public" virt="non-virtual"><scope>iceberg::SnapshotSummaryFields</scope><name>kEngineVersion</name></member>
+      <member refid="structiceberg_1_1SnapshotSummaryFields_1a1887f72168261587466ae196542f483d" prot="public" virt="non-virtual"><scope>iceberg::SnapshotSummaryFields</scope><name>kEntriesProcessed</name></member>
+      <member refid="structiceberg_1_1SnapshotSummaryFields_1a2b56093fd8bb220fdb55834b1a23e61b" prot="public" virt="non-virtual"><scope>iceberg::SnapshotSummaryFields</scope><name>kFirstRowId</name></member>
+      <member refid="structiceberg_1_1SnapshotSummaryFields_1a5a1161c5b716f77c7de652fbc7953e81" prot="public" virt="non-virtual"><scope>iceberg::SnapshotSummaryFields</scope><name>kManifestsCreated</name></member>
+      <member refid="structiceberg_1_1SnapshotSummaryFields_1ab525d5ecc8f2e18307a2f3bac04e4b7e" prot="public" virt="non-virtual"><scope>iceberg::SnapshotSummaryFields</scope><name>kManifestsKept</name></member>
+      <member refid="structiceberg_1_1SnapshotSummaryFields_1ac64b1239d07fa9f2973980b67e0bd0c2" prot="public" virt="non-virtual"><scope>iceberg::SnapshotSummaryFields</scope><name>kManifestsReplaced</name></member>
+      <member refid="structiceberg_1_1SnapshotSummaryFields_1ada7f5effa8afb4169e68ed2639bd4fde" prot="public" virt="non-virtual"><scope>iceberg::SnapshotSummaryFields</scope><name>kOperation</name></member>
+      <member refid="structiceberg_1_1SnapshotSummaryFields_1ad878f008f1103bfe646a9a794f607bd3" prot="public" virt="non-virtual"><scope>iceberg::SnapshotSummaryFields</scope><name>kPartitionSummaryProp</name></member>
+      <member refid="structiceberg_1_1SnapshotSummaryFields_1af9a33f3042070032e8c3e1c8547f51a0" prot="public" virt="non-virtual"><scope>iceberg::SnapshotSummaryFields</scope><name>kPublishedWAPId</name></member>
+      <member refid="structiceberg_1_1SnapshotSummaryFields_1a9d24f8c6cbc618551b06cbb442fc3648" prot="public" virt="non-virtual"><scope>iceberg::SnapshotSummaryFields</scope><name>kRemovedDeleteFiles</name></member>
+      <member refid="structiceberg_1_1SnapshotSummaryFields_1a303e5e4d65a75816ee5c883e146bc4e5" prot="public" virt="non-virtual"><scope>iceberg::SnapshotSummaryFields</scope><name>kRemovedDVs</name></member>
+      <member refid="structiceberg_1_1SnapshotSummaryFields_1a94fa76aad9462ef4f9e3e069c2a24645" prot="public" virt="non-virtual"><scope>iceberg::SnapshotSummaryFields</scope><name>kRemovedEqDeleteFiles</name></member>
+      <member refid="structiceberg_1_1SnapshotSummaryFields_1adf57b3f74d94d4061040647dcb40de0a" prot="public" virt="non-virtual"><scope>iceberg::SnapshotSummaryFields</scope><name>kRemovedEqDeletes</name></member>
+      <member refid="structiceberg_1_1SnapshotSummaryFields_1accb9819bc2282a67974f8cb9c3c0082c" prot="public" virt="non-virtual"><scope>iceberg::SnapshotSummaryFields</scope><name>kRemovedFileSize</name></member>
+      <member refid="structiceberg_1_1SnapshotSummaryFields_1afdde47b2cffe3f60e169b754bbfe439c" prot="public" virt="non-virtual"><scope>iceberg::SnapshotSummaryFields</scope><name>kRemovedPosDeleteFiles</name></member>
+      <member refid="structiceberg_1_1SnapshotSummaryFields_1a7ea7416ee086d74d4ccb7259d17f55ab" prot="public" virt="non-virtual"><scope>iceberg::SnapshotSummaryFields</scope><name>kRemovedPosDeletes</name></member>
+      <member refid="structiceberg_1_1SnapshotSummaryFields_1a39d6322a77f82167dba5cc97c6c44bc1" prot="public" virt="non-virtual"><scope>iceberg::SnapshotSummaryFields</scope><name>kSourceSnapshotId</name></member>
+      <member refid="structiceberg_1_1SnapshotSummaryFields_1ad314de2d955f77cd7d14ddccb6370134" prot="public" virt="non-virtual"><scope>iceberg::SnapshotSummaryFields</scope><name>kTotalDataFiles</name></member>
+      <member refid="structiceberg_1_1SnapshotSummaryFields_1a65fbe108a5aa316dad4977e789e4e71f" prot="public" virt="non-virtual"><scope>iceberg::SnapshotSummaryFields</scope><name>kTotalDeleteFiles</name></member>
+      <member refid="structiceberg_1_1SnapshotSummaryFields_1a12a98242c22498ab0a06257d817342c8" prot="public" virt="non-virtual"><scope>iceberg::SnapshotSummaryFields</scope><name>kTotalEqDeletes</name></member>
+      <member refid="structiceberg_1_1SnapshotSummaryFields_1a5d0e0fdd138a86f767d89498e251cf00" prot="public" virt="non-virtual"><scope>iceberg::SnapshotSummaryFields</scope><name>kTotalFileSize</name></member>
+      <member refid="structiceberg_1_1SnapshotSummaryFields_1a13125d9c90d79c55a71fc93b48d6f8a3" prot="public" virt="non-virtual"><scope>iceberg::SnapshotSummaryFields</scope><name>kTotalPosDeletes</name></member>
+      <member refid="structiceberg_1_1SnapshotSummaryFields_1a80def77f8cc4f4383fb384334cd8cd27" prot="public" virt="non-virtual"><scope>iceberg::SnapshotSummaryFields</scope><name>kTotalRecords</name></member>
+      <member refid="structiceberg_1_1SnapshotSummaryFields_1afc7f6deb2bb4a1bf4b502dccd25966e0" prot="public" virt="non-virtual"><scope>iceberg::SnapshotSummaryFields</scope><name>kWAPId</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

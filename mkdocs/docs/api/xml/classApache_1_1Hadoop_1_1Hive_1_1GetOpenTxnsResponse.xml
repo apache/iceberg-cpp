@@ -1,0 +1,396 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1GetOpenTxnsResponse" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::GetOpenTxnsResponse</compoundname>
+    <basecompoundref prot="public" virt="virtual">apache::thrift::TBase</basecompoundref>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1GetOpenTxnsResponse_1a5dcaed16c243c1690f7e19f203d61ad3" prot="public" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t Apache::Hadoop::Hive::GetOpenTxnsResponse::txn_high_water_mark</definition>
+        <argsstring></argsstring>
+        <name>txn_high_water_mark</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetOpenTxnsResponse::txn_high_water_mark</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6712" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="6712" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1GetOpenTxnsResponse_1a5985b60ae607168e8786ecd887cb550a" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; int64_t &gt;</type>
+        <definition>std::vector&lt;int64_t&gt; Apache::Hadoop::Hive::GetOpenTxnsResponse::open_txns</definition>
+        <argsstring></argsstring>
+        <name>open_txns</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetOpenTxnsResponse::open_txns</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6713" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="6713" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1GetOpenTxnsResponse_1a4583306860ddedeb12780271454d5266" prot="public" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t Apache::Hadoop::Hive::GetOpenTxnsResponse::min_open_txn</definition>
+        <argsstring></argsstring>
+        <name>min_open_txn</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetOpenTxnsResponse::min_open_txn</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6714" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="6714" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1GetOpenTxnsResponse_1a2021d93f98e0fef1379f8ff5bf7e3ddd" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::GetOpenTxnsResponse::abortedBits</definition>
+        <argsstring></argsstring>
+        <name>abortedBits</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetOpenTxnsResponse::abortedBits</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6715" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="6715" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1GetOpenTxnsResponse_1a629b187143e4fd7dfbbfc263f995b1e3" prot="public" static="no" mutable="no">
+        <type><ref refid="structApache_1_1Hadoop_1_1Hive_1_1__GetOpenTxnsResponse____isset" kindref="compound">_GetOpenTxnsResponse__isset</ref></type>
+        <definition>_GetOpenTxnsResponse__isset Apache::Hadoop::Hive::GetOpenTxnsResponse::__isset</definition>
+        <argsstring></argsstring>
+        <name>__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetOpenTxnsResponse::__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6717" column="31" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="6717" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetOpenTxnsResponse_1adab05f9add8788bca7e9efb8cabb135f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::GetOpenTxnsResponse::GetOpenTxnsResponse</definition>
+        <argsstring>(const GetOpenTxnsResponse &amp;)</argsstring>
+        <name>GetOpenTxnsResponse</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetOpenTxnsResponse::GetOpenTxnsResponse</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1GetOpenTxnsResponse" kindref="compound">GetOpenTxnsResponse</ref> &amp;</type>
+          <defname>other854</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6707" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="25134" bodyend="25140"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetOpenTxnsResponse_1ab4dd98453fd4576e605f40557b46056e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1GetOpenTxnsResponse" kindref="compound">GetOpenTxnsResponse</ref> &amp;</type>
+        <definition>GetOpenTxnsResponse &amp; Apache::Hadoop::Hive::GetOpenTxnsResponse::operator=</definition>
+        <argsstring>(const GetOpenTxnsResponse &amp;)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetOpenTxnsResponse::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1GetOpenTxnsResponse" kindref="compound">GetOpenTxnsResponse</ref> &amp;</type>
+          <defname>other855</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6708" column="23" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="25141" bodyend="25148"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetOpenTxnsResponse_1a14a3cb0e8cc6bacb5fb5fedf92a872f0" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::GetOpenTxnsResponse::GetOpenTxnsResponse</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>GetOpenTxnsResponse</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetOpenTxnsResponse::GetOpenTxnsResponse</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6709" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="24960" bodyend="24964"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetOpenTxnsResponse_1a548dee937a1908088548ff019c8bf788" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::GetOpenTxnsResponse::~GetOpenTxnsResponse</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~GetOpenTxnsResponse</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetOpenTxnsResponse::~GetOpenTxnsResponse</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6711" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="24957" bodyend="24958"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetOpenTxnsResponse_1a5de70b9f43060e3a2e11f008c2302de2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::GetOpenTxnsResponse::__set_txn_high_water_mark</definition>
+        <argsstring>(const int64_t val)</argsstring>
+        <name>__set_txn_high_water_mark</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetOpenTxnsResponse::__set_txn_high_water_mark</qualifiedname>
+        <param>
+          <type>const int64_t</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6719" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="24966" bodyend="24968"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetOpenTxnsResponse_1a0ac7b844f130c08819dd4c93d048bf37" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::GetOpenTxnsResponse::__set_open_txns</definition>
+        <argsstring>(const std::vector&lt; int64_t &gt; &amp;val)</argsstring>
+        <name>__set_open_txns</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetOpenTxnsResponse::__set_open_txns</qualifiedname>
+        <param>
+          <type>const std::vector&lt; int64_t &gt; &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6721" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="24970" bodyend="24972"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetOpenTxnsResponse_1a0a10b42e901adff7f11e6fa6f530ba26" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::GetOpenTxnsResponse::__set_min_open_txn</definition>
+        <argsstring>(const int64_t val)</argsstring>
+        <name>__set_min_open_txn</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetOpenTxnsResponse::__set_min_open_txn</qualifiedname>
+        <param>
+          <type>const int64_t</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6723" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="24974" bodyend="24977"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetOpenTxnsResponse_1ab20211b545f739fb235fdd6902e789e6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::GetOpenTxnsResponse::__set_abortedBits</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_abortedBits</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetOpenTxnsResponse::__set_abortedBits</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6725" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="24979" bodyend="24981"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetOpenTxnsResponse_1a279ad2f7b3d8cbf41fd82ab8acbe6c41" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::GetOpenTxnsResponse::operator==</definition>
+        <argsstring>(const GetOpenTxnsResponse &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetOpenTxnsResponse::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1GetOpenTxnsResponse" kindref="compound">GetOpenTxnsResponse</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6727" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="25119" bodyend="25132"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetOpenTxnsResponse_1a567a1bfa624b072e833b7663ed0c6846" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::GetOpenTxnsResponse::operator!=</definition>
+        <argsstring>(const GetOpenTxnsResponse &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetOpenTxnsResponse::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1GetOpenTxnsResponse" kindref="compound">GetOpenTxnsResponse</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6728" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="6728" bodyend="6730"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetOpenTxnsResponse_1a9b505e7d6aa5302704cf4e4271f69a65" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::GetOpenTxnsResponse::operator&lt;</definition>
+        <argsstring>(const GetOpenTxnsResponse &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetOpenTxnsResponse::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1GetOpenTxnsResponse" kindref="compound">GetOpenTxnsResponse</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6732" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetOpenTxnsResponse_1a55946caac92d225a8478aeb840007b9c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::GetOpenTxnsResponse::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot) override</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetOpenTxnsResponse::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6734" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="24989" bodyend="25073"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetOpenTxnsResponse_1a0b4e4755fad34bf21433772aa0048c3c" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::GetOpenTxnsResponse::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const override</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetOpenTxnsResponse::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6735" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="25075" bodyend="25108"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetOpenTxnsResponse_1ad8c07be804f0cbc56c579b79d780c2bd" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::GetOpenTxnsResponse::printTo</definition>
+        <argsstring>(std::ostream &amp;out) const</argsstring>
+        <name>printTo</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetOpenTxnsResponse::printTo</qualifiedname>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6737" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="25149" bodyend="25157"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::GetOpenTxnsResponse</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1GetOpenTxnsResponse"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::GetOpenTxnsResponse</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1GetOpenTxnsResponse"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>open_txns</edgelabel>
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>abortedBits</edgelabel>
+        </childnode>
+        <childnode refid="6" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="6">
+        <label>Apache::Hadoop::Hive::_GetOpenTxnsResponse__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__GetOpenTxnsResponse____isset"/>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+      <node id="5">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="4">
+        <label>std::string</label>
+        <childnode refid="5" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::vector&lt; int64_t &gt;</label>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6704" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="6704" bodyend="6738"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetOpenTxnsResponse_1a629b187143e4fd7dfbbfc263f995b1e3" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetOpenTxnsResponse</scope><name>__isset</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetOpenTxnsResponse_1ab20211b545f739fb235fdd6902e789e6" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetOpenTxnsResponse</scope><name>__set_abortedBits</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetOpenTxnsResponse_1a0a10b42e901adff7f11e6fa6f530ba26" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetOpenTxnsResponse</scope><name>__set_min_open_txn</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetOpenTxnsResponse_1a0ac7b844f130c08819dd4c93d048bf37" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetOpenTxnsResponse</scope><name>__set_open_txns</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetOpenTxnsResponse_1a5de70b9f43060e3a2e11f008c2302de2" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetOpenTxnsResponse</scope><name>__set_txn_high_water_mark</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetOpenTxnsResponse_1a2021d93f98e0fef1379f8ff5bf7e3ddd" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetOpenTxnsResponse</scope><name>abortedBits</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetOpenTxnsResponse_1adab05f9add8788bca7e9efb8cabb135f" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetOpenTxnsResponse</scope><name>GetOpenTxnsResponse</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetOpenTxnsResponse_1a14a3cb0e8cc6bacb5fb5fedf92a872f0" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetOpenTxnsResponse</scope><name>GetOpenTxnsResponse</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetOpenTxnsResponse_1a4583306860ddedeb12780271454d5266" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetOpenTxnsResponse</scope><name>min_open_txn</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetOpenTxnsResponse_1a5985b60ae607168e8786ecd887cb550a" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetOpenTxnsResponse</scope><name>open_txns</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetOpenTxnsResponse_1a567a1bfa624b072e833b7663ed0c6846" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetOpenTxnsResponse</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetOpenTxnsResponse_1a9b505e7d6aa5302704cf4e4271f69a65" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetOpenTxnsResponse</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetOpenTxnsResponse_1ab4dd98453fd4576e605f40557b46056e" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetOpenTxnsResponse</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetOpenTxnsResponse_1a279ad2f7b3d8cbf41fd82ab8acbe6c41" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetOpenTxnsResponse</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetOpenTxnsResponse_1ad8c07be804f0cbc56c579b79d780c2bd" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::GetOpenTxnsResponse</scope><name>printTo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetOpenTxnsResponse_1a55946caac92d225a8478aeb840007b9c" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetOpenTxnsResponse</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetOpenTxnsResponse_1a5dcaed16c243c1690f7e19f203d61ad3" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetOpenTxnsResponse</scope><name>txn_high_water_mark</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetOpenTxnsResponse_1a0b4e4755fad34bf21433772aa0048c3c" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetOpenTxnsResponse</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetOpenTxnsResponse_1a548dee937a1908088548ff019c8bf788" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::GetOpenTxnsResponse</scope><name>~GetOpenTxnsResponse</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

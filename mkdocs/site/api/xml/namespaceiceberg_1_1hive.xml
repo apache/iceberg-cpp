@@ -1,0 +1,43 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="namespaceiceberg_1_1hive" kind="namespace" language="C++">
+    <compoundname>iceberg::hive</compoundname>
+    <innerclass refid="classiceberg_1_1hive_1_1HiveCatalog" prot="public">iceberg::hive::HiveCatalog</innerclass>
+    <innerclass refid="classiceberg_1_1hive_1_1HiveCatalogProperties" prot="public">iceberg::hive::HiveCatalogProperties</innerclass>
+    <sectiondef kind="enum">
+      <memberdef kind="enum" id="hive__catalog__properties_8h_1a3960254acbead9ea013f258192c6cb9e" prot="public" static="no" strong="yes">
+        <type>uint8_t</type>
+        <name>HiveThriftTransport</name>
+        <qualifiedname>iceberg::hive::HiveThriftTransport</qualifiedname>
+        <enumvalue id="hive__catalog__properties_8h_1a3960254acbead9ea013f258192c6cb9ea94f5a611048af894e9e9af74df4fbdda" prot="public">
+          <name>kBuffered</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="hive__catalog__properties_8h_1a3960254acbead9ea013f258192c6cb9ea9eb83276e892923810fd9d66de231995" prot="public">
+          <name>kFramed</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <briefdescription>
+<para>Thrift framing mode used to connect to the Hive Metastore. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Most HMS deployments default to TBufferedTransport. TFramedTransport is required by HMS instances that have been configured to use framed transport (for example, certain Hive 3.x setups with SASL enabled). </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/hive_catalog_properties.h" line="39" column="1" bodyfile="iceberg/catalog/hive/hive_catalog_properties.h" bodystart="39" bodyend="39"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/hive_catalog.cc" line="27" column="1"/>
+  </compounddef>
+</doxygen>

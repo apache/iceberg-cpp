@@ -1,0 +1,82 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structApache_1_1Hadoop_1_1Hive_1_1HiveObjectType" kind="struct" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::HiveObjectType</compoundname>
+    <sectiondef kind="public-type">
+      <memberdef kind="enum" id="structApache_1_1Hadoop_1_1Hive_1_1HiveObjectType_1ad809eecba514ea4998930d69e3707597" prot="public" static="no" strong="no">
+        <type></type>
+        <name>type</name>
+        <qualifiedname>Apache::Hadoop::Hive::HiveObjectType::type</qualifiedname>
+        <enumvalue id="structApache_1_1Hadoop_1_1Hive_1_1HiveObjectType_1ad809eecba514ea4998930d69e3707597a0c2a4122665388334a5337c989670a70" prot="public">
+          <name>GLOBAL</name>
+          <initializer>= 1</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="structApache_1_1Hadoop_1_1Hive_1_1HiveObjectType_1ad809eecba514ea4998930d69e3707597a91c4bffb24f5c659ae8b15994a435147" prot="public">
+          <name>DATABASE</name>
+          <initializer>= 2</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="structApache_1_1Hadoop_1_1Hive_1_1HiveObjectType_1ad809eecba514ea4998930d69e3707597a080dcb69c6db53f5cdc362aff059e63d" prot="public">
+          <name>TABLE</name>
+          <initializer>= 3</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="structApache_1_1Hadoop_1_1Hive_1_1HiveObjectType_1ad809eecba514ea4998930d69e3707597ad8a1160e2e6b22b9b97541f918b90f06" prot="public">
+          <name>PARTITION</name>
+          <initializer>= 4</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="structApache_1_1Hadoop_1_1Hive_1_1HiveObjectType_1ad809eecba514ea4998930d69e3707597af0b2a688ef84a0503c3ad09a63802f2f" prot="public">
+          <name>COLUMN</name>
+          <initializer>= 5</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="structApache_1_1Hadoop_1_1Hive_1_1HiveObjectType_1ad809eecba514ea4998930d69e3707597ace165ea4665b21ccc5dee06d7eb8cc0c" prot="public">
+          <name>DATACONNECTOR</name>
+          <initializer>= 6</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="26" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="26" bodyend="33"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="25" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="25" bodyend="34"/>
+    <listofallmembers>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1HiveObjectType_1ad809eecba514ea4998930d69e3707597af0b2a688ef84a0503c3ad09a63802f2f" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::HiveObjectType</scope><name>COLUMN</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1HiveObjectType_1ad809eecba514ea4998930d69e3707597a91c4bffb24f5c659ae8b15994a435147" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::HiveObjectType</scope><name>DATABASE</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1HiveObjectType_1ad809eecba514ea4998930d69e3707597ace165ea4665b21ccc5dee06d7eb8cc0c" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::HiveObjectType</scope><name>DATACONNECTOR</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1HiveObjectType_1ad809eecba514ea4998930d69e3707597a0c2a4122665388334a5337c989670a70" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::HiveObjectType</scope><name>GLOBAL</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1HiveObjectType_1ad809eecba514ea4998930d69e3707597ad8a1160e2e6b22b9b97541f918b90f06" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::HiveObjectType</scope><name>PARTITION</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1HiveObjectType_1ad809eecba514ea4998930d69e3707597a080dcb69c6db53f5cdc362aff059e63d" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::HiveObjectType</scope><name>TABLE</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1HiveObjectType_1ad809eecba514ea4998930d69e3707597" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::HiveObjectType</scope><name>type</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

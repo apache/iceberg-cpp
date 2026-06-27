@@ -1,0 +1,78 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structPlanTableScanRequestValidationParam" kind="struct" language="C++" prot="public">
+    <compoundname>PlanTableScanRequestValidationParam</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structPlanTableScanRequestValidationParam_1aa1cdea1b73d5cf763fc4b7398b45e4fb" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string PlanTableScanRequestValidationParam::test_name</definition>
+        <argsstring></argsstring>
+        <name>test_name</name>
+        <qualifiedname>PlanTableScanRequestValidationParam::test_name</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/rest_json_serde_test.cc" line="1828" column="15" bodyfile="iceberg/test/rest_json_serde_test.cc" bodystart="1828" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structPlanTableScanRequestValidationParam_1a7301626a4dc643250badf2333fe66680" prot="public" static="no" mutable="no">
+        <type>PlanTableScanRequest</type>
+        <definition>PlanTableScanRequest PlanTableScanRequestValidationParam::request</definition>
+        <argsstring></argsstring>
+        <name>request</name>
+        <qualifiedname>PlanTableScanRequestValidationParam::request</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/rest_json_serde_test.cc" line="1829" column="24" bodyfile="iceberg/test/rest_json_serde_test.cc" bodystart="1829" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structPlanTableScanRequestValidationParam_1ab81636641dc5742ce1c119469768fad3" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string PlanTableScanRequestValidationParam::expected_error_msg</definition>
+        <argsstring></argsstring>
+        <name>expected_error_msg</name>
+        <qualifiedname>PlanTableScanRequestValidationParam::expected_error_msg</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/rest_json_serde_test.cc" line="1830" column="15" bodyfile="iceberg/test/rest_json_serde_test.cc" bodystart="1830" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>PlanTableScanRequestValidationParam</label>
+        <link refid="structPlanTableScanRequestValidationParam"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>expected_error_msg</edgelabel>
+          <edgelabel>test_name</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="2">
+        <label>std::string</label>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/test/rest_json_serde_test.cc" line="1827" column="1" bodyfile="iceberg/test/rest_json_serde_test.cc" bodystart="1827" bodyend="1831"/>
+    <listofallmembers>
+      <member refid="structPlanTableScanRequestValidationParam_1ab81636641dc5742ce1c119469768fad3" prot="public" virt="non-virtual"><scope>PlanTableScanRequestValidationParam</scope><name>expected_error_msg</name></member>
+      <member refid="structPlanTableScanRequestValidationParam_1a7301626a4dc643250badf2333fe66680" prot="public" virt="non-virtual"><scope>PlanTableScanRequestValidationParam</scope><name>request</name></member>
+      <member refid="structPlanTableScanRequestValidationParam_1aa1cdea1b73d5cf763fc4b7398b45e4fb" prot="public" virt="non-virtual"><scope>PlanTableScanRequestValidationParam</scope><name>test_name</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

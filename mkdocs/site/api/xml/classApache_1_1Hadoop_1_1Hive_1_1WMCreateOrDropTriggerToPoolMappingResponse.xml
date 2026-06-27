@@ -1,0 +1,218 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1WMCreateOrDropTriggerToPoolMappingResponse" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::WMCreateOrDropTriggerToPoolMappingResponse</compoundname>
+    <basecompoundref prot="public" virt="virtual">apache::thrift::TBase</basecompoundref>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMCreateOrDropTriggerToPoolMappingResponse_1aaf307b40ebb930913032abbccfba1e9a" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::WMCreateOrDropTriggerToPoolMappingResponse::WMCreateOrDropTriggerToPoolMappingResponse</definition>
+        <argsstring>(const WMCreateOrDropTriggerToPoolMappingResponse &amp;) noexcept</argsstring>
+        <name>WMCreateOrDropTriggerToPoolMappingResponse</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMCreateOrDropTriggerToPoolMappingResponse::WMCreateOrDropTriggerToPoolMappingResponse</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1WMCreateOrDropTriggerToPoolMappingResponse" kindref="compound">WMCreateOrDropTriggerToPoolMappingResponse</ref> &amp;</type>
+          <defname>other1532</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12480" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="48850" bodyend="48852"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMCreateOrDropTriggerToPoolMappingResponse_1aa16c6b95e43fd27057bd546a724040a1" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1WMCreateOrDropTriggerToPoolMappingResponse" kindref="compound">WMCreateOrDropTriggerToPoolMappingResponse</ref> &amp;</type>
+        <definition>WMCreateOrDropTriggerToPoolMappingResponse &amp; Apache::Hadoop::Hive::WMCreateOrDropTriggerToPoolMappingResponse::operator=</definition>
+        <argsstring>(const WMCreateOrDropTriggerToPoolMappingResponse &amp;) noexcept</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMCreateOrDropTriggerToPoolMappingResponse::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1WMCreateOrDropTriggerToPoolMappingResponse" kindref="compound">WMCreateOrDropTriggerToPoolMappingResponse</ref> &amp;</type>
+          <defname>other1533</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12481" column="46" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="48853" bodyend="48856"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMCreateOrDropTriggerToPoolMappingResponse_1aba8910c2ddc8ce2fd5e32ff9a73ef396" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::WMCreateOrDropTriggerToPoolMappingResponse::WMCreateOrDropTriggerToPoolMappingResponse</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>WMCreateOrDropTriggerToPoolMappingResponse</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMCreateOrDropTriggerToPoolMappingResponse::WMCreateOrDropTriggerToPoolMappingResponse</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12482" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="48792" bodyend="48793"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMCreateOrDropTriggerToPoolMappingResponse_1ad576262d2e26b505b0b6e483fbffd5ea" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::WMCreateOrDropTriggerToPoolMappingResponse::~WMCreateOrDropTriggerToPoolMappingResponse</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~WMCreateOrDropTriggerToPoolMappingResponse</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMCreateOrDropTriggerToPoolMappingResponse::~WMCreateOrDropTriggerToPoolMappingResponse</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12484" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="48789" bodyend="48790"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMCreateOrDropTriggerToPoolMappingResponse_1a7e28b0a0e0a1a694e88543d6a63c3b5d" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::WMCreateOrDropTriggerToPoolMappingResponse::operator==</definition>
+        <argsstring>(const WMCreateOrDropTriggerToPoolMappingResponse &amp;) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMCreateOrDropTriggerToPoolMappingResponse::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1WMCreateOrDropTriggerToPoolMappingResponse" kindref="compound">WMCreateOrDropTriggerToPoolMappingResponse</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12486" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="48845" bodyend="48848"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMCreateOrDropTriggerToPoolMappingResponse_1a9388806b1bcac65ab74c1a5e5dd9ccd9" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::WMCreateOrDropTriggerToPoolMappingResponse::operator!=</definition>
+        <argsstring>(const WMCreateOrDropTriggerToPoolMappingResponse &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMCreateOrDropTriggerToPoolMappingResponse::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1WMCreateOrDropTriggerToPoolMappingResponse" kindref="compound">WMCreateOrDropTriggerToPoolMappingResponse</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12487" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="12487" bodyend="12489"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMCreateOrDropTriggerToPoolMappingResponse_1a7c0794d492a032b968dde7b2ebba6704" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::WMCreateOrDropTriggerToPoolMappingResponse::operator&lt;</definition>
+        <argsstring>(const WMCreateOrDropTriggerToPoolMappingResponse &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMCreateOrDropTriggerToPoolMappingResponse::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1WMCreateOrDropTriggerToPoolMappingResponse" kindref="compound">WMCreateOrDropTriggerToPoolMappingResponse</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12491" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMCreateOrDropTriggerToPoolMappingResponse_1a7336a55a65d9aac3bf8a2b47afd989c2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::WMCreateOrDropTriggerToPoolMappingResponse::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot) override</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMCreateOrDropTriggerToPoolMappingResponse::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12493" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="48801" bodyend="48827"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMCreateOrDropTriggerToPoolMappingResponse_1a5e73c4b9fddcd1c6e2445c0b5deb4c2a" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::WMCreateOrDropTriggerToPoolMappingResponse::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const override</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMCreateOrDropTriggerToPoolMappingResponse::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12494" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="48829" bodyend="48837"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMCreateOrDropTriggerToPoolMappingResponse_1a49b2ef39bdc446a4f9b5e0c2d316190b" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::WMCreateOrDropTriggerToPoolMappingResponse::printTo</definition>
+        <argsstring>(std::ostream &amp;out) const</argsstring>
+        <name>printTo</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMCreateOrDropTriggerToPoolMappingResponse::printTo</qualifiedname>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12496" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="48857" bodyend="48861"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::WMCreateOrDropTriggerToPoolMappingResponse</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1WMCreateOrDropTriggerToPoolMappingResponse"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::WMCreateOrDropTriggerToPoolMappingResponse</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1WMCreateOrDropTriggerToPoolMappingResponse"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12477" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="12477" bodyend="12497"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMCreateOrDropTriggerToPoolMappingResponse_1a9388806b1bcac65ab74c1a5e5dd9ccd9" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMCreateOrDropTriggerToPoolMappingResponse</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMCreateOrDropTriggerToPoolMappingResponse_1a7c0794d492a032b968dde7b2ebba6704" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMCreateOrDropTriggerToPoolMappingResponse</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMCreateOrDropTriggerToPoolMappingResponse_1aa16c6b95e43fd27057bd546a724040a1" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMCreateOrDropTriggerToPoolMappingResponse</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMCreateOrDropTriggerToPoolMappingResponse_1a7e28b0a0e0a1a694e88543d6a63c3b5d" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMCreateOrDropTriggerToPoolMappingResponse</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMCreateOrDropTriggerToPoolMappingResponse_1a49b2ef39bdc446a4f9b5e0c2d316190b" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::WMCreateOrDropTriggerToPoolMappingResponse</scope><name>printTo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMCreateOrDropTriggerToPoolMappingResponse_1a7336a55a65d9aac3bf8a2b47afd989c2" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMCreateOrDropTriggerToPoolMappingResponse</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMCreateOrDropTriggerToPoolMappingResponse_1aaf307b40ebb930913032abbccfba1e9a" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMCreateOrDropTriggerToPoolMappingResponse</scope><name>WMCreateOrDropTriggerToPoolMappingResponse</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMCreateOrDropTriggerToPoolMappingResponse_1aba8910c2ddc8ce2fd5e32ff9a73ef396" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMCreateOrDropTriggerToPoolMappingResponse</scope><name>WMCreateOrDropTriggerToPoolMappingResponse</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMCreateOrDropTriggerToPoolMappingResponse_1a5e73c4b9fddcd1c6e2445c0b5deb4c2a" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMCreateOrDropTriggerToPoolMappingResponse</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMCreateOrDropTriggerToPoolMappingResponse_1ad576262d2e26b505b0b6e483fbffd5ea" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::WMCreateOrDropTriggerToPoolMappingResponse</scope><name>~WMCreateOrDropTriggerToPoolMappingResponse</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

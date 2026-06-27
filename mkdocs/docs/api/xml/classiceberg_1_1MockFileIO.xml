@@ -1,0 +1,389 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1MockFileIO" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::MockFileIO</compoundname>
+    <basecompoundref refid="classiceberg_1_1FileIO" prot="public" virt="non-virtual">iceberg::FileIO</basecompoundref>
+    <innerclass refid="classiceberg_1_1MockFileIO_1_1InMemoryInputFile" prot="private">iceberg::MockFileIO::InMemoryInputFile</innerclass>
+    <innerclass refid="classiceberg_1_1MockFileIO_1_1InMemoryInputStream" prot="private">iceberg::MockFileIO::InMemoryInputStream</innerclass>
+    <innerclass refid="classiceberg_1_1MockFileIO_1_1InMemoryOutputFile" prot="private">iceberg::MockFileIO::InMemoryOutputFile</innerclass>
+    <innerclass refid="classiceberg_1_1MockFileIO_1_1InMemoryOutputStream" prot="private">iceberg::MockFileIO::InMemoryOutputStream</innerclass>
+    <sectiondef kind="private-type">
+      <memberdef kind="typedef" id="classiceberg_1_1MockFileIO_1aed7988c227d8b4fd5b9aeed47028ecf0" prot="private" static="no">
+        <type>std::unordered_map&lt; std::string, std::shared_ptr&lt; std::vector&lt; std::byte &gt; &gt; &gt;</type>
+        <definition>using iceberg::MockFileIO::FileMap =  std::unordered_map&lt;std::string, std::shared_ptr&lt;std::vector&lt;std::byte&gt; &gt;&gt;</definition>
+        <argsstring></argsstring>
+        <name>FileMap</name>
+        <qualifiedname>iceberg::MockFileIO::FileMap</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/mock_io.h" line="102" column="3" bodyfile="iceberg/test/mock_io.h" bodystart="103" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1MockFileIO_1ab6ec0d564edc4026e405b4335b35bbec" prot="private" static="no" mutable="no">
+        <type>std::shared_ptr&lt; FileMap &gt;</type>
+        <definition>std::shared_ptr&lt;FileMap&gt; iceberg::MockFileIO::files_</definition>
+        <argsstring></argsstring>
+        <name>files_</name>
+        <qualifiedname>iceberg::MockFileIO::files_</qualifiedname>
+        <initializer>= std::make_shared&lt;FileMap&gt;()</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/mock_io.h" line="256" column="19" bodyfile="iceberg/test/mock_io.h" bodystart="256" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1MockFileIO_1aba76e703b7f52be5f7b1410698109dd4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::MockFileIO::MockFileIO</definition>
+        <argsstring>()=default</argsstring>
+        <name>MockFileIO</name>
+        <qualifiedname>iceberg::MockFileIO::MockFileIO</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/mock_io.h" line="46" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1MockFileIO_1a1aba189ce66742008efa855c4797bca1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::MockFileIO::~MockFileIO</definition>
+        <argsstring>() override=default</argsstring>
+        <name>~MockFileIO</name>
+        <qualifiedname>iceberg::MockFileIO::~MockFileIO</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/mock_io.h" line="47" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1MockFileIO_1a46b84ef68bc0190ea04689a7adf60148" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>Result&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1InputFile" kindref="compound">InputFile</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::unique_ptr&lt; InputFile &gt; &gt; iceberg::MockFileIO::NewInputFile</definition>
+        <argsstring>(std::string file_location) override</argsstring>
+        <name>NewInputFile</name>
+        <qualifiedname>iceberg::MockFileIO::NewInputFile</qualifiedname>
+        <reimplements refid="classiceberg_1_1FileIO_1a7382a497499449305bbc7ac710b4518e">NewInputFile</reimplements>
+        <param>
+          <type>std::string</type>
+          <declname>file_location</declname>
+        </param>
+        <briefdescription>
+<para>Create an input file handle for the given location. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/mock_io.h" line="49" column="10" bodyfile="iceberg/test/mock_io.h" bodystart="49" bodyend="56"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1MockFileIO_1abed4b1f9e828848fe936fd552ff36e3a" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>Result&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1InputFile" kindref="compound">InputFile</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::unique_ptr&lt; InputFile &gt; &gt; iceberg::MockFileIO::NewInputFile</definition>
+        <argsstring>(std::string file_location, size_t length) override</argsstring>
+        <name>NewInputFile</name>
+        <qualifiedname>iceberg::MockFileIO::NewInputFile</qualifiedname>
+        <reimplements refid="classiceberg_1_1FileIO_1ac3de646d00ec6e4be1f7a6e7513fe4a9">NewInputFile</reimplements>
+        <param>
+          <type>std::string</type>
+          <declname>file_location</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>length</declname>
+        </param>
+        <briefdescription>
+<para>Create an input file handle for the given location with a known length. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>The length is a caller-provided content length hint. Implementations may use it to avoid an extra metadata lookup. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/mock_io.h" line="58" column="10" bodyfile="iceberg/test/mock_io.h" bodystart="58" bodyend="69"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1MockFileIO_1a88e7729cd8b7b2bdbe27bc65177fab43" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>Result&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1OutputFile" kindref="compound">OutputFile</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::unique_ptr&lt; OutputFile &gt; &gt; iceberg::MockFileIO::NewOutputFile</definition>
+        <argsstring>(std::string file_location) override</argsstring>
+        <name>NewOutputFile</name>
+        <qualifiedname>iceberg::MockFileIO::NewOutputFile</qualifiedname>
+        <reimplements refid="classiceberg_1_1FileIO_1a0c817d2a00f3ab2bccfd6ece3827ddee">NewOutputFile</reimplements>
+        <param>
+          <type>std::string</type>
+          <declname>file_location</declname>
+        </param>
+        <briefdescription>
+<para>Create an output file handle for the given location. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/mock_io.h" line="71" column="10" bodyfile="iceberg/test/mock_io.h" bodystart="71" bodyend="73"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1MockFileIO_1a78588d87bf8195785b7ff8217d2f2562" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::MockFileIO::AddFile</definition>
+        <argsstring>(std::string file_location, std::span&lt; const std::byte &gt; data)</argsstring>
+        <name>AddFile</name>
+        <qualifiedname>iceberg::MockFileIO::AddFile</qualifiedname>
+        <param>
+          <type>std::string</type>
+          <declname>file_location</declname>
+        </param>
+        <param>
+          <type>std::span&lt; const std::byte &gt;</type>
+          <declname>data</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/mock_io.h" line="75" column="8" bodyfile="iceberg/test/mock_io.h" bodystart="75" bodyend="79"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1MockFileIO_1aeb677422ac9ef858d5191b72845dcf8e" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::MockFileIO::AddFile</definition>
+        <argsstring>(std::string file_location, std::string_view data)</argsstring>
+        <name>AddFile</name>
+        <qualifiedname>iceberg::MockFileIO::AddFile</qualifiedname>
+        <param>
+          <type>std::string</type>
+          <declname>file_location</declname>
+        </param>
+        <param>
+          <type>std::string_view</type>
+          <declname>data</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/mock_io.h" line="81" column="8" bodyfile="iceberg/test/mock_io.h" bodystart="81" bodyend="84"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1MockFileIO_1a189d2a0b49ad2db48957b7b2fdf5fd23" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::vector&lt; std::byte &gt; &amp;</type>
+        <definition>std::vector&lt; std::byte &gt; &amp; iceberg::MockFileIO::FileData</definition>
+        <argsstring>(const std::string &amp;file_location)</argsstring>
+        <name>FileData</name>
+        <qualifiedname>iceberg::MockFileIO::FileData</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>file_location</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/mock_io.h" line="86" column="15" bodyfile="iceberg/test/mock_io.h" bodystart="86" bodyend="88"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1MockFileIO_1a60d1dc868255dd49c9926ec25b212d46" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>const std::vector&lt; std::byte &gt; &amp;</type>
+        <definition>const std::vector&lt; std::byte &gt; &amp; iceberg::MockFileIO::FileData</definition>
+        <argsstring>(const std::string &amp;file_location) const</argsstring>
+        <name>FileData</name>
+        <qualifiedname>iceberg::MockFileIO::FileData</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>file_location</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/mock_io.h" line="90" column="21" bodyfile="iceberg/test/mock_io.h" bodystart="90" bodyend="92"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1MockFileIO_1ad823533e085d3b8079bc5939b1701e32" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::MockFileIO::MOCK_METHOD</definition>
+        <argsstring>((Result&lt; std::string &gt;), ReadFile,(const std::string &amp;, std::optional&lt; size_t &gt;),(override))</argsstring>
+        <name>MOCK_METHOD</name>
+        <qualifiedname>iceberg::MockFileIO::MOCK_METHOD</qualifiedname>
+        <param>
+          <type>(Result&lt; std::string &gt;)</type>
+        </param>
+        <param>
+          <type><ref refid="classiceberg_1_1FileIO_1a110b0f784b0e25f51a72ac925799543c" kindref="member">ReadFile</ref></type>
+        </param>
+        <param>
+          <type>(const std::string &amp;, std::optional&lt; size_t &gt;)</type>
+        </param>
+        <param>
+          <type>(override)</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/mock_io.h" line="94" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1MockFileIO_1a3a353c20a354aed6a50f21b4d2fa4c5b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::MockFileIO::MOCK_METHOD</definition>
+        <argsstring>(Status, WriteFile,(const std::string &amp;, std::string_view),(override))</argsstring>
+        <name>MOCK_METHOD</name>
+        <qualifiedname>iceberg::MockFileIO::MOCK_METHOD</qualifiedname>
+        <param>
+          <type>Status</type>
+        </param>
+        <param>
+          <type><ref refid="classiceberg_1_1FileIO_1a4c4d440121e666052c1f55194209c375" kindref="member">WriteFile</ref></type>
+        </param>
+        <param>
+          <type>(const std::string &amp;, std::string_view)</type>
+        </param>
+        <param>
+          <type>(override)</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/mock_io.h" line="97" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1MockFileIO_1a9e090871948ef97f0068140a1966627e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::MockFileIO::MOCK_METHOD</definition>
+        <argsstring>(Status, DeleteFile,(const std::string &amp;),(override))</argsstring>
+        <name>MOCK_METHOD</name>
+        <qualifiedname>iceberg::MockFileIO::MOCK_METHOD</qualifiedname>
+        <param>
+          <type>Status</type>
+        </param>
+        <param>
+          <type><ref refid="classiceberg_1_1FileIO_1ace7c9ec329017d5a99082739e8578937" kindref="member">DeleteFile</ref></type>
+        </param>
+        <param>
+          <type>(const std::string &amp;)</type>
+        </param>
+        <param>
+          <type>(override)</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/mock_io.h" line="99" column="3"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classiceberg_1_1MockFileIO_1a63b0c4f3b9b71e07e2073cb723975255" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::shared_ptr&lt; std::vector&lt; std::byte &gt; &gt;</type>
+        <definition>std::shared_ptr&lt; std::vector&lt; std::byte &gt; &gt; iceberg::MockFileIO::FindFile</definition>
+        <argsstring>(const std::string &amp;file_location) const</argsstring>
+        <name>FindFile</name>
+        <qualifiedname>iceberg::MockFileIO::FindFile</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>file_location</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/mock_io.h" line="238" column="19" bodyfile="iceberg/test/mock_io.h" bodystart="238" bodyend="245"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1MockFileIO_1ada408ffc0694c6384ef392e13a78094a" prot="private" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::shared_ptr&lt; std::vector&lt; std::byte &gt; &gt;</type>
+        <definition>std::shared_ptr&lt; std::vector&lt; std::byte &gt; &gt; iceberg::MockFileIO::GetOrCreateFile</definition>
+        <argsstring>(const std::string &amp;file_location)</argsstring>
+        <name>GetOrCreateFile</name>
+        <qualifiedname>iceberg::MockFileIO::GetOrCreateFile</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>file_location</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/mock_io.h" line="247" column="19" bodyfile="iceberg/test/mock_io.h" bodystart="247" bodyend="254"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>iceberg::FileIO</label>
+        <link refid="classiceberg_1_1FileIO"/>
+      </node>
+      <node id="1">
+        <label>iceberg::MockFileIO</label>
+        <link refid="classiceberg_1_1MockFileIO"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="2">
+        <label>iceberg::FileIO</label>
+        <link refid="classiceberg_1_1FileIO"/>
+      </node>
+      <node id="1">
+        <label>iceberg::MockFileIO</label>
+        <link refid="classiceberg_1_1MockFileIO"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/test/mock_io.h" line="44" column="1" bodyfile="iceberg/test/mock_io.h" bodystart="44" bodyend="257"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1MockFileIO_1a78588d87bf8195785b7ff8217d2f2562" prot="public" virt="non-virtual"><scope>iceberg::MockFileIO</scope><name>AddFile</name></member>
+      <member refid="classiceberg_1_1MockFileIO_1aeb677422ac9ef858d5191b72845dcf8e" prot="public" virt="non-virtual"><scope>iceberg::MockFileIO</scope><name>AddFile</name></member>
+      <member refid="classiceberg_1_1FileIO_1a4164a9a6aa9d34dd736eb512e20d7207" prot="public" virt="virtual"><scope>iceberg::MockFileIO</scope><name>AsSupportsStorageCredentials</name></member>
+      <member refid="classiceberg_1_1FileIO_1ace7c9ec329017d5a99082739e8578937" prot="public" virt="virtual"><scope>iceberg::MockFileIO</scope><name>DeleteFile</name></member>
+      <member refid="classiceberg_1_1FileIO_1a9ccdf5ba641c816a1ec6f020d9c027a5" prot="public" virt="virtual"><scope>iceberg::MockFileIO</scope><name>DeleteFiles</name></member>
+      <member refid="classiceberg_1_1MockFileIO_1a189d2a0b49ad2db48957b7b2fdf5fd23" prot="public" virt="non-virtual"><scope>iceberg::MockFileIO</scope><name>FileData</name></member>
+      <member refid="classiceberg_1_1MockFileIO_1a60d1dc868255dd49c9926ec25b212d46" prot="public" virt="non-virtual"><scope>iceberg::MockFileIO</scope><name>FileData</name></member>
+      <member refid="classiceberg_1_1FileIO_1a4c7135a7de2494ad9b4ad6aacd65bf45" prot="public" virt="non-virtual"><scope>iceberg::MockFileIO</scope><name>FileIO</name></member>
+      <member refid="classiceberg_1_1MockFileIO_1aed7988c227d8b4fd5b9aeed47028ecf0" prot="private" virt="non-virtual"><scope>iceberg::MockFileIO</scope><name>FileMap</name></member>
+      <member refid="classiceberg_1_1MockFileIO_1ab6ec0d564edc4026e405b4335b35bbec" prot="private" virt="non-virtual"><scope>iceberg::MockFileIO</scope><name>files_</name></member>
+      <member refid="classiceberg_1_1MockFileIO_1a63b0c4f3b9b71e07e2073cb723975255" prot="private" virt="non-virtual"><scope>iceberg::MockFileIO</scope><name>FindFile</name></member>
+      <member refid="classiceberg_1_1MockFileIO_1ada408ffc0694c6384ef392e13a78094a" prot="private" virt="non-virtual"><scope>iceberg::MockFileIO</scope><name>GetOrCreateFile</name></member>
+      <member refid="classiceberg_1_1MockFileIO_1ad823533e085d3b8079bc5939b1701e32" prot="public" virt="non-virtual"><scope>iceberg::MockFileIO</scope><name>MOCK_METHOD</name></member>
+      <member refid="classiceberg_1_1MockFileIO_1a3a353c20a354aed6a50f21b4d2fa4c5b" prot="public" virt="non-virtual"><scope>iceberg::MockFileIO</scope><name>MOCK_METHOD</name></member>
+      <member refid="classiceberg_1_1MockFileIO_1a9e090871948ef97f0068140a1966627e" prot="public" virt="non-virtual"><scope>iceberg::MockFileIO</scope><name>MOCK_METHOD</name></member>
+      <member refid="classiceberg_1_1MockFileIO_1aba76e703b7f52be5f7b1410698109dd4" prot="public" virt="non-virtual"><scope>iceberg::MockFileIO</scope><name>MockFileIO</name></member>
+      <member refid="classiceberg_1_1MockFileIO_1a46b84ef68bc0190ea04689a7adf60148" prot="public" virt="virtual"><scope>iceberg::MockFileIO</scope><name>NewInputFile</name></member>
+      <member refid="classiceberg_1_1MockFileIO_1abed4b1f9e828848fe936fd552ff36e3a" prot="public" virt="virtual"><scope>iceberg::MockFileIO</scope><name>NewInputFile</name></member>
+      <member refid="classiceberg_1_1MockFileIO_1a88e7729cd8b7b2bdbe27bc65177fab43" prot="public" virt="virtual"><scope>iceberg::MockFileIO</scope><name>NewOutputFile</name></member>
+      <member refid="classiceberg_1_1FileIO_1a110b0f784b0e25f51a72ac925799543c" prot="public" virt="virtual"><scope>iceberg::MockFileIO</scope><name>ReadFile</name></member>
+      <member refid="classiceberg_1_1FileIO_1a4c4d440121e666052c1f55194209c375" prot="public" virt="virtual"><scope>iceberg::MockFileIO</scope><name>WriteFile</name></member>
+      <member refid="classiceberg_1_1FileIO_1af3d6e79fa37cfcd2c0a8face664a70ec" prot="public" virt="virtual"><scope>iceberg::MockFileIO</scope><name>~FileIO</name></member>
+      <member refid="classiceberg_1_1MockFileIO_1a1aba189ce66742008efa855c4797bca1" prot="public" virt="non-virtual"><scope>iceberg::MockFileIO</scope><name>~MockFileIO</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

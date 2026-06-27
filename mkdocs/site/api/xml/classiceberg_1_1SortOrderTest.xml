@@ -1,0 +1,288 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1SortOrderTest" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::SortOrderTest</compoundname>
+    <basecompoundref prot="public" virt="non-virtual">testing::Test</basecompoundref>
+    <sectiondef kind="protected-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1SortOrderTest_1ab0e95984ee0cfdffa39b588827de26ef" prot="protected" static="no" mutable="no">
+        <type>std::unique_ptr&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &gt;</type>
+        <definition>std::unique_ptr&lt;Schema&gt; iceberg::SortOrderTest::schema_</definition>
+        <argsstring></argsstring>
+        <name>schema_</name>
+        <qualifiedname>iceberg::SortOrderTest::schema_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/sort_order_test.cc" line="54" column="19" bodyfile="iceberg/test/sort_order_test.cc" bodystart="54" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1SortOrderTest_1a84de1a8af106ecf71c48de94297bb3dd" prot="protected" static="no" mutable="no">
+        <type>std::unique_ptr&lt; <ref refid="classiceberg_1_1SchemaField" kindref="compound">SchemaField</ref> &gt;</type>
+        <definition>std::unique_ptr&lt;SchemaField&gt; iceberg::SortOrderTest::field1_</definition>
+        <argsstring></argsstring>
+        <name>field1_</name>
+        <qualifiedname>iceberg::SortOrderTest::field1_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/sort_order_test.cc" line="55" column="19" bodyfile="iceberg/test/sort_order_test.cc" bodystart="55" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1SortOrderTest_1a3a464680a429696ec9df3c061f06a0ee" prot="protected" static="no" mutable="no">
+        <type>std::unique_ptr&lt; <ref refid="classiceberg_1_1SchemaField" kindref="compound">SchemaField</ref> &gt;</type>
+        <definition>std::unique_ptr&lt;SchemaField&gt; iceberg::SortOrderTest::field2_</definition>
+        <argsstring></argsstring>
+        <name>field2_</name>
+        <qualifiedname>iceberg::SortOrderTest::field2_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/sort_order_test.cc" line="56" column="19" bodyfile="iceberg/test/sort_order_test.cc" bodystart="56" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1SortOrderTest_1adface5d2a285116a35cb7b129419f9fe" prot="protected" static="no" mutable="no">
+        <type>std::unique_ptr&lt; <ref refid="classiceberg_1_1SchemaField" kindref="compound">SchemaField</ref> &gt;</type>
+        <definition>std::unique_ptr&lt;SchemaField&gt; iceberg::SortOrderTest::field3_</definition>
+        <argsstring></argsstring>
+        <name>field3_</name>
+        <qualifiedname>iceberg::SortOrderTest::field3_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/sort_order_test.cc" line="57" column="19" bodyfile="iceberg/test/sort_order_test.cc" bodystart="57" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1SortOrderTest_1aefe8d7a0962b1b931ed1136cf628a283" prot="protected" static="no" mutable="no">
+        <type>std::unique_ptr&lt; <ref refid="classiceberg_1_1SchemaField" kindref="compound">SchemaField</ref> &gt;</type>
+        <definition>std::unique_ptr&lt;SchemaField&gt; iceberg::SortOrderTest::field4_</definition>
+        <argsstring></argsstring>
+        <name>field4_</name>
+        <qualifiedname>iceberg::SortOrderTest::field4_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/sort_order_test.cc" line="58" column="19" bodyfile="iceberg/test/sort_order_test.cc" bodystart="58" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1SortOrderTest_1a8b39003ed7a4b3cf3b7d1ccde4ad8910" prot="protected" static="no" mutable="no">
+        <type>std::unique_ptr&lt; <ref refid="classiceberg_1_1SortField" kindref="compound">SortField</ref> &gt;</type>
+        <definition>std::unique_ptr&lt;SortField&gt; iceberg::SortOrderTest::sort_field1_</definition>
+        <argsstring></argsstring>
+        <name>sort_field1_</name>
+        <qualifiedname>iceberg::SortOrderTest::sort_field1_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/sort_order_test.cc" line="60" column="19" bodyfile="iceberg/test/sort_order_test.cc" bodystart="60" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1SortOrderTest_1a9ffd854cadf9dfb4b12f0034ff41122e" prot="protected" static="no" mutable="no">
+        <type>std::unique_ptr&lt; <ref refid="classiceberg_1_1SortField" kindref="compound">SortField</ref> &gt;</type>
+        <definition>std::unique_ptr&lt;SortField&gt; iceberg::SortOrderTest::sort_field2_</definition>
+        <argsstring></argsstring>
+        <name>sort_field2_</name>
+        <qualifiedname>iceberg::SortOrderTest::sort_field2_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/sort_order_test.cc" line="61" column="19" bodyfile="iceberg/test/sort_order_test.cc" bodystart="61" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1SortOrderTest_1a42e7bf41c39bea9953856972f84b9692" prot="protected" static="no" mutable="no">
+        <type>std::unique_ptr&lt; <ref refid="classiceberg_1_1SortField" kindref="compound">SortField</ref> &gt;</type>
+        <definition>std::unique_ptr&lt;SortField&gt; iceberg::SortOrderTest::sort_field3_</definition>
+        <argsstring></argsstring>
+        <name>sort_field3_</name>
+        <qualifiedname>iceberg::SortOrderTest::sort_field3_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/sort_order_test.cc" line="62" column="19" bodyfile="iceberg/test/sort_order_test.cc" bodystart="62" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="protected-func">
+      <memberdef kind="function" id="classiceberg_1_1SortOrderTest_1a1ee9d6e6e44ccd87ce789faa789a7ec8" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::SortOrderTest::SetUp</definition>
+        <argsstring>() override</argsstring>
+        <name>SetUp</name>
+        <qualifiedname>iceberg::SortOrderTest::SetUp</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/sort_order_test.cc" line="37" column="8" bodyfile="iceberg/test/sort_order_test.cc" bodystart="37" bodyend="52"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>iceberg::SortOrderTest</label>
+        <link refid="classiceberg_1_1SortOrderTest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>testing::Test</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="11">
+        <label>iceberg::Lazy&lt; InitFieldById &gt;</label>
+        <link refid="classiceberg_1_1Lazy"/>
+      </node>
+      <node id="13">
+        <label>iceberg::Lazy&lt; InitFieldByLowerCaseName &gt;</label>
+        <link refid="classiceberg_1_1Lazy"/>
+      </node>
+      <node id="12">
+        <label>iceberg::Lazy&lt; InitFieldByName &gt;</label>
+        <link refid="classiceberg_1_1Lazy"/>
+      </node>
+      <node id="6">
+        <label>iceberg::NestedType</label>
+        <link refid="classiceberg_1_1NestedType"/>
+        <childnode refid="7" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>iceberg::Schema</label>
+        <link refid="classiceberg_1_1Schema"/>
+        <childnode refid="5" relation="public-inheritance">
+        </childnode>
+        <childnode refid="14" relation="usage">
+          <edgelabel>kAllColumns</edgelabel>
+        </childnode>
+      </node>
+      <node id="10">
+        <label>iceberg::SchemaField</label>
+        <link refid="classiceberg_1_1SchemaField"/>
+        <childnode refid="8" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="18">
+        <label>iceberg::SortField</label>
+        <link refid="classiceberg_1_1SortField"/>
+        <childnode refid="8" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::SortOrderTest</label>
+        <link refid="classiceberg_1_1SortOrderTest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>schema_</edgelabel>
+        </childnode>
+        <childnode refid="16" relation="usage">
+          <edgelabel>field1_</edgelabel>
+          <edgelabel>field2_</edgelabel>
+          <edgelabel>field3_</edgelabel>
+          <edgelabel>field4_</edgelabel>
+        </childnode>
+        <childnode refid="17" relation="usage">
+          <edgelabel>sort_field1_</edgelabel>
+          <edgelabel>sort_field2_</edgelabel>
+          <edgelabel>sort_field3_</edgelabel>
+        </childnode>
+      </node>
+      <node id="5">
+        <label>iceberg::StructType</label>
+        <link refid="classiceberg_1_1StructType"/>
+        <childnode refid="6" relation="public-inheritance">
+        </childnode>
+        <childnode refid="9" relation="usage">
+          <edgelabel>fields_</edgelabel>
+        </childnode>
+        <childnode refid="11" relation="usage">
+          <edgelabel>field_by_id_</edgelabel>
+        </childnode>
+        <childnode refid="12" relation="usage">
+          <edgelabel>field_by_name_</edgelabel>
+        </childnode>
+        <childnode refid="13" relation="usage">
+          <edgelabel>field_by_lowercase_name_</edgelabel>
+        </childnode>
+      </node>
+      <node id="7">
+        <label>iceberg::Type</label>
+        <link refid="classiceberg_1_1Type"/>
+        <childnode refid="8" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="8">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+      <node id="15">
+        <label>std::basic_string_view&lt; Char &gt;</label>
+      </node>
+      <node id="14">
+        <label>std::string_view</label>
+        <childnode refid="15" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>testing::Test</label>
+      </node>
+      <node id="3">
+        <label>std::unique_ptr&lt; iceberg::Schema &gt;</label>
+        <childnode refid="4" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="16">
+        <label>std::unique_ptr&lt; iceberg::SchemaField &gt;</label>
+        <childnode refid="10" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="17">
+        <label>std::unique_ptr&lt; iceberg::SortField &gt;</label>
+        <childnode refid="18" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="9">
+        <label>std::vector&lt; iceberg::SchemaField &gt;</label>
+        <childnode refid="10" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/test/sort_order_test.cc" line="35" column="1" bodyfile="iceberg/test/sort_order_test.cc" bodystart="35" bodyend="63"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1SortOrderTest_1a84de1a8af106ecf71c48de94297bb3dd" prot="protected" virt="non-virtual"><scope>iceberg::SortOrderTest</scope><name>field1_</name></member>
+      <member refid="classiceberg_1_1SortOrderTest_1a3a464680a429696ec9df3c061f06a0ee" prot="protected" virt="non-virtual"><scope>iceberg::SortOrderTest</scope><name>field2_</name></member>
+      <member refid="classiceberg_1_1SortOrderTest_1adface5d2a285116a35cb7b129419f9fe" prot="protected" virt="non-virtual"><scope>iceberg::SortOrderTest</scope><name>field3_</name></member>
+      <member refid="classiceberg_1_1SortOrderTest_1aefe8d7a0962b1b931ed1136cf628a283" prot="protected" virt="non-virtual"><scope>iceberg::SortOrderTest</scope><name>field4_</name></member>
+      <member refid="classiceberg_1_1SortOrderTest_1ab0e95984ee0cfdffa39b588827de26ef" prot="protected" virt="non-virtual"><scope>iceberg::SortOrderTest</scope><name>schema_</name></member>
+      <member refid="classiceberg_1_1SortOrderTest_1a1ee9d6e6e44ccd87ce789faa789a7ec8" prot="protected" virt="non-virtual"><scope>iceberg::SortOrderTest</scope><name>SetUp</name></member>
+      <member refid="classiceberg_1_1SortOrderTest_1a8b39003ed7a4b3cf3b7d1ccde4ad8910" prot="protected" virt="non-virtual"><scope>iceberg::SortOrderTest</scope><name>sort_field1_</name></member>
+      <member refid="classiceberg_1_1SortOrderTest_1a9ffd854cadf9dfb4b12f0034ff41122e" prot="protected" virt="non-virtual"><scope>iceberg::SortOrderTest</scope><name>sort_field2_</name></member>
+      <member refid="classiceberg_1_1SortOrderTest_1a42e7bf41c39bea9953856972f84b9692" prot="protected" virt="non-virtual"><scope>iceberg::SortOrderTest</scope><name>sort_field3_</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

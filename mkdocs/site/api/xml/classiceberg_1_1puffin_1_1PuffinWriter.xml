@@ -1,0 +1,453 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1puffin_1_1PuffinWriter" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::puffin::PuffinWriter</compoundname>
+    <includes refid="puffin__writer_8h" local="no">puffin_writer.h</includes>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1puffin_1_1PuffinWriter_1abdce3606ace3525166709cc8d3c2d88d" prot="private" static="no" mutable="no">
+        <type>std::unique_ptr&lt; <ref refid="classiceberg_1_1PositionOutputStream" kindref="compound">PositionOutputStream</ref> &gt;</type>
+        <definition>std::unique_ptr&lt;PositionOutputStream&gt; iceberg::puffin::PuffinWriter::stream_</definition>
+        <argsstring></argsstring>
+        <name>stream_</name>
+        <qualifiedname>iceberg::puffin::PuffinWriter::stream_</qualifiedname>
+        <briefdescription>
+<para>Output stream. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/puffin/puffin_writer.h" line="86" column="19" bodyfile="iceberg/puffin/puffin_writer.h" bodystart="86" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1puffin_1_1PuffinWriter_1ae53fd3e4f1ff6a27658042736b0b312b" prot="private" static="no" mutable="no">
+        <type>std::unordered_map&lt; std::string, std::string &gt;</type>
+        <definition>std::unordered_map&lt;std::string, std::string&gt; iceberg::puffin::PuffinWriter::properties_</definition>
+        <argsstring></argsstring>
+        <name>properties_</name>
+        <qualifiedname>iceberg::puffin::PuffinWriter::properties_</qualifiedname>
+        <briefdescription>
+<para>File-level properties to include in the footer. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/puffin/puffin_writer.h" line="88" column="22" bodyfile="iceberg/puffin/puffin_writer.h" bodystart="88" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1puffin_1_1PuffinWriter_1a5644894289a2c2d4a55037d69111101c" prot="private" static="no" mutable="no">
+        <type>const <ref refid="file__metadata_8h_1a370ebcb6e23ad5d7640b3f2a612b06cc" kindref="member">PuffinCompressionCodec</ref></type>
+        <definition>const PuffinCompressionCodec iceberg::puffin::PuffinWriter::default_codec_</definition>
+        <argsstring></argsstring>
+        <name>default_codec_</name>
+        <qualifiedname>iceberg::puffin::PuffinWriter::default_codec_</qualifiedname>
+        <briefdescription>
+<para>Default compression codec for blobs without explicit compression. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/puffin/puffin_writer.h" line="90" column="32" bodyfile="iceberg/puffin/puffin_writer.h" bodystart="90" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1puffin_1_1PuffinWriter_1ab42ea2951866044dbe88859546316719" prot="private" static="no" mutable="no">
+        <type>const bool</type>
+        <definition>const bool iceberg::puffin::PuffinWriter::compress_footer_</definition>
+        <argsstring></argsstring>
+        <name>compress_footer_</name>
+        <qualifiedname>iceberg::puffin::PuffinWriter::compress_footer_</qualifiedname>
+        <briefdescription>
+<para>Whether to compress the footer payload. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/puffin/puffin_writer.h" line="92" column="14" bodyfile="iceberg/puffin/puffin_writer.h" bodystart="92" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1puffin_1_1PuffinWriter_1a55943cb6805e61f0a2adf80a5838f2ca" prot="private" static="no" mutable="no">
+        <type>std::vector&lt; <ref refid="structiceberg_1_1puffin_1_1BlobMetadata" kindref="compound">BlobMetadata</ref> &gt;</type>
+        <definition>std::vector&lt;BlobMetadata&gt; iceberg::puffin::PuffinWriter::written_blobs_metadata_</definition>
+        <argsstring></argsstring>
+        <name>written_blobs_metadata_</name>
+        <qualifiedname>iceberg::puffin::PuffinWriter::written_blobs_metadata_</qualifiedname>
+        <briefdescription>
+<para>Metadata for all blobs written so far. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/puffin/puffin_writer.h" line="94" column="15" bodyfile="iceberg/puffin/puffin_writer.h" bodystart="94" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1puffin_1_1PuffinWriter_1a4691da56b315815496cdcb70172b66dc" prot="private" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool iceberg::puffin::PuffinWriter::header_written_</definition>
+        <argsstring></argsstring>
+        <name>header_written_</name>
+        <qualifiedname>iceberg::puffin::PuffinWriter::header_written_</qualifiedname>
+        <initializer>= false</initializer>
+        <briefdescription>
+<para>Whether the header magic has been written. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/puffin/puffin_writer.h" line="96" column="8" bodyfile="iceberg/puffin/puffin_writer.h" bodystart="96" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1puffin_1_1PuffinWriter_1a068f9b3f0f229d64e7fe049b6825ba46" prot="private" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool iceberg::puffin::PuffinWriter::footer_written_</definition>
+        <argsstring></argsstring>
+        <name>footer_written_</name>
+        <qualifiedname>iceberg::puffin::PuffinWriter::footer_written_</qualifiedname>
+        <initializer>= false</initializer>
+        <briefdescription>
+<para>Whether the footer has been written. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/puffin/puffin_writer.h" line="98" column="8" bodyfile="iceberg/puffin/puffin_writer.h" bodystart="98" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1puffin_1_1PuffinWriter_1a59b955e48a0c995b2b0f174bcec7e88f" prot="private" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool iceberg::puffin::PuffinWriter::finished_</definition>
+        <argsstring></argsstring>
+        <name>finished_</name>
+        <qualifiedname>iceberg::puffin::PuffinWriter::finished_</qualifiedname>
+        <initializer>= false</initializer>
+        <briefdescription>
+<para>Whether <ref refid="classiceberg_1_1puffin_1_1PuffinWriter_1a675b3c9e99a5f8fcb041d9d7d5a97783" kindref="member">Finish()</ref> has succeeded. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/puffin/puffin_writer.h" line="100" column="8" bodyfile="iceberg/puffin/puffin_writer.h" bodystart="100" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1puffin_1_1PuffinWriter_1af49b004212b216aef7bb805ee92e4c6f" prot="private" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t iceberg::puffin::PuffinWriter::footer_size_</definition>
+        <argsstring></argsstring>
+        <name>footer_size_</name>
+        <qualifiedname>iceberg::puffin::PuffinWriter::footer_size_</qualifiedname>
+        <initializer>= -1</initializer>
+        <briefdescription>
+<para>Footer size, set after the footer is written. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/puffin/puffin_writer.h" line="102" column="11" bodyfile="iceberg/puffin/puffin_writer.h" bodystart="102" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1puffin_1_1PuffinWriter_1aef0e6f75e9841747d7b6120b530bc019" prot="private" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t iceberg::puffin::PuffinWriter::file_size_</definition>
+        <argsstring></argsstring>
+        <name>file_size_</name>
+        <qualifiedname>iceberg::puffin::PuffinWriter::file_size_</qualifiedname>
+        <initializer>= -1</initializer>
+        <briefdescription>
+<para>Total file size, set after <ref refid="classiceberg_1_1puffin_1_1PuffinWriter_1a675b3c9e99a5f8fcb041d9d7d5a97783" kindref="member">Finish()</ref>. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/puffin/puffin_writer.h" line="104" column="11" bodyfile="iceberg/puffin/puffin_writer.h" bodystart="104" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classiceberg_1_1puffin_1_1PuffinWriter_1a60c27e242ee30b1c515991532adb79e3" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1puffin_1_1PuffinWriter" kindref="compound">PuffinWriter</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::unique_ptr&lt; PuffinWriter &gt; &gt; iceberg::puffin::PuffinWriter::Make</definition>
+        <argsstring>(std::unique_ptr&lt; OutputFile &gt; output_file, std::unordered_map&lt; std::string, std::string &gt; properties={}, PuffinCompressionCodec default_codec=PuffinCompressionCodec::kNone, bool compress_footer=false)</argsstring>
+        <name>Make</name>
+        <qualifiedname>iceberg::puffin::PuffinWriter::Make</qualifiedname>
+        <param>
+          <type>std::unique_ptr&lt; <ref refid="classiceberg_1_1OutputFile" kindref="compound">OutputFile</ref> &gt;</type>
+          <declname>output_file</declname>
+        </param>
+        <param>
+          <type>std::unordered_map&lt; std::string, std::string &gt;</type>
+          <declname>properties</declname>
+          <defval>{}</defval>
+        </param>
+        <param>
+          <type><ref refid="file__metadata_8h_1a370ebcb6e23ad5d7640b3f2a612b06cc" kindref="member">PuffinCompressionCodec</ref></type>
+          <declname>default_codec</declname>
+          <defval>PuffinCompressionCodec::kNone</defval>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>compress_footer</declname>
+          <defval>false</defval>
+        </param>
+        <briefdescription>
+<para>Create a <ref refid="classiceberg_1_1puffin_1_1PuffinWriter" kindref="compound">PuffinWriter</ref> for the given output file. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>output_file</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The output file to write to. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>properties</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>File-level properties to include in the footer. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>default_codec</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Default compression codec for blobs. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>compress_footer</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Whether to compress the footer payload. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/puffin/puffin_writer.h" line="50" column="17" bodyfile="iceberg/puffin/puffin_writer.cc" bodystart="43" bodyend="51"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1puffin_1_1PuffinWriter_1a505391f4bc8db6727f51a83b79eef821" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::puffin::PuffinWriter::~PuffinWriter</definition>
+        <argsstring>()</argsstring>
+        <name>~PuffinWriter</name>
+        <qualifiedname>iceberg::puffin::PuffinWriter::~PuffinWriter</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/puffin/puffin_writer.h" line="56" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1puffin_1_1PuffinWriter_1a8a9c0ca5a24ffe879971f7e1d0af311c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; <ref refid="structiceberg_1_1puffin_1_1BlobMetadata" kindref="compound">BlobMetadata</ref> &gt;</type>
+        <definition>Result&lt; BlobMetadata &gt; iceberg::puffin::PuffinWriter::Write</definition>
+        <argsstring>(const Blob &amp;blob)</argsstring>
+        <name>Write</name>
+        <qualifiedname>iceberg::puffin::PuffinWriter::Write</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1puffin_1_1Blob" kindref="compound">Blob</ref> &amp;</type>
+          <declname>blob</declname>
+        </param>
+        <briefdescription>
+<para>Write a blob and return its metadata. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/puffin/puffin_writer.h" line="59" column="10" bodyfile="iceberg/puffin/puffin_writer.cc" bodystart="70" bodyend="101"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1puffin_1_1PuffinWriter_1a675b3c9e99a5f8fcb041d9d7d5a97783" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::puffin::PuffinWriter::Finish</definition>
+        <argsstring>()</argsstring>
+        <name>Finish</name>
+        <qualifiedname>iceberg::puffin::PuffinWriter::Finish</qualifiedname>
+        <briefdescription>
+<para>Finalize the file by writing the footer and closing the stream. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/puffin/puffin_writer.h" line="62" column="10" bodyfile="iceberg/puffin/puffin_writer.cc" bodystart="103" bodyend="161"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1puffin_1_1PuffinWriter_1acc033e081ca49e0fe607da2ecbdd9bf8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::puffin::PuffinWriter::Close</definition>
+        <argsstring>()</argsstring>
+        <name>Close</name>
+        <qualifiedname>iceberg::puffin::PuffinWriter::Close</qualifiedname>
+        <briefdescription>
+<para>Close the writer, finalizing the file if needed. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/puffin/puffin_writer.h" line="65" column="10" bodyfile="iceberg/puffin/puffin_writer.cc" bodystart="163" bodyend="168"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1puffin_1_1PuffinWriter_1ae9787f62b3fe12744bf4c3af0b455cc2" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>const std::vector&lt; <ref refid="structiceberg_1_1puffin_1_1BlobMetadata" kindref="compound">BlobMetadata</ref> &gt; &amp;</type>
+        <definition>const std::vector&lt; BlobMetadata &gt; &amp; iceberg::puffin::PuffinWriter::written_blobs_metadata</definition>
+        <argsstring>() const</argsstring>
+        <name>written_blobs_metadata</name>
+        <qualifiedname>iceberg::puffin::PuffinWriter::written_blobs_metadata</qualifiedname>
+        <briefdescription>
+<para>Get metadata for all blobs written so far. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/puffin/puffin_writer.h" line="68" column="21" bodyfile="iceberg/puffin/puffin_writer.cc" bodystart="170" bodyend="172"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1puffin_1_1PuffinWriter_1a103d9ce689b354957b6f505bdd086f2d" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; int64_t &gt;</type>
+        <definition>Result&lt; int64_t &gt; iceberg::puffin::PuffinWriter::FooterSize</definition>
+        <argsstring>() const</argsstring>
+        <name>FooterSize</name>
+        <qualifiedname>iceberg::puffin::PuffinWriter::FooterSize</qualifiedname>
+        <briefdescription>
+<para>Get the footer size. Returns error if the footer has not been written. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/puffin/puffin_writer.h" line="71" column="10" bodyfile="iceberg/puffin/puffin_writer.cc" bodystart="174" bodyend="177"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1puffin_1_1PuffinWriter_1aa23fdf8456023da0bf4b1042b1883b42" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; int64_t &gt;</type>
+        <definition>Result&lt; int64_t &gt; iceberg::puffin::PuffinWriter::FileSize</definition>
+        <argsstring>() const</argsstring>
+        <name>FileSize</name>
+        <qualifiedname>iceberg::puffin::PuffinWriter::FileSize</qualifiedname>
+        <briefdescription>
+<para>Get the total file size. Returns error if <ref refid="classiceberg_1_1puffin_1_1PuffinWriter_1a675b3c9e99a5f8fcb041d9d7d5a97783" kindref="member">Finish()</ref> has not succeeded. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/puffin/puffin_writer.h" line="74" column="10" bodyfile="iceberg/puffin/puffin_writer.cc" bodystart="179" bodyend="182"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classiceberg_1_1puffin_1_1PuffinWriter_1a5d914f8c31eb25d61d5176fd71751a8e" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::puffin::PuffinWriter::PuffinWriter</definition>
+        <argsstring>(std::unique_ptr&lt; PositionOutputStream &gt; stream, std::unordered_map&lt; std::string, std::string &gt; properties, PuffinCompressionCodec default_codec, bool compress_footer)</argsstring>
+        <name>PuffinWriter</name>
+        <qualifiedname>iceberg::puffin::PuffinWriter::PuffinWriter</qualifiedname>
+        <param>
+          <type>std::unique_ptr&lt; <ref refid="classiceberg_1_1PositionOutputStream" kindref="compound">PositionOutputStream</ref> &gt;</type>
+          <declname>stream</declname>
+        </param>
+        <param>
+          <type>std::unordered_map&lt; std::string, std::string &gt;</type>
+          <declname>properties</declname>
+        </param>
+        <param>
+          <type><ref refid="file__metadata_8h_1a370ebcb6e23ad5d7640b3f2a612b06cc" kindref="member">PuffinCompressionCodec</ref></type>
+          <declname>default_codec</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>compress_footer</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/puffin/puffin_writer.h" line="77" column="3" bodyfile="iceberg/puffin/puffin_writer.cc" bodystart="33" bodyend="39"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1puffin_1_1PuffinWriter_1ae0d5003c4e9d6e82801e60526e3b9cec" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::puffin::PuffinWriter::WriteBytes</definition>
+        <argsstring>(std::span&lt; const std::byte &gt; data)</argsstring>
+        <name>WriteBytes</name>
+        <qualifiedname>iceberg::puffin::PuffinWriter::WriteBytes</qualifiedname>
+        <param>
+          <type>std::span&lt; const std::byte &gt;</type>
+          <declname>data</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/puffin/puffin_writer.h" line="81" column="10" bodyfile="iceberg/puffin/puffin_writer.cc" bodystart="53" bodyend="55"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1puffin_1_1PuffinWriter_1ac7ac796cb809d2c2012536c7d758005d" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::puffin::PuffinWriter::WriteHeader</definition>
+        <argsstring>()</argsstring>
+        <name>WriteHeader</name>
+        <qualifiedname>iceberg::puffin::PuffinWriter::WriteHeader</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/puffin/puffin_writer.h" line="82" column="10" bodyfile="iceberg/puffin/puffin_writer.cc" bodystart="63" bodyend="68"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1puffin_1_1PuffinWriter_1a93fb89ee37bda8e9d9198668cf0e4f51" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::puffin::PuffinWriter::WriteMagic</definition>
+        <argsstring>()</argsstring>
+        <name>WriteMagic</name>
+        <qualifiedname>iceberg::puffin::PuffinWriter::WriteMagic</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/puffin/puffin_writer.h" line="83" column="10" bodyfile="iceberg/puffin/puffin_writer.cc" bodystart="57" bodyend="61"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para><ref refid="classiceberg_1_1Writer" kindref="compound">Writer</ref> for Puffin files. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>Writes blobs and footer to an <ref refid="classiceberg_1_1OutputFile" kindref="compound">OutputFile</ref> stream. </para>
+    </detaileddescription>
+    <location file="iceberg/puffin/puffin_writer.h" line="43" column="1" bodyfile="iceberg/puffin/puffin_writer.h" bodystart="43" bodyend="105"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1puffin_1_1PuffinWriter_1acc033e081ca49e0fe607da2ecbdd9bf8" prot="public" virt="non-virtual"><scope>iceberg::puffin::PuffinWriter</scope><name>Close</name></member>
+      <member refid="classiceberg_1_1puffin_1_1PuffinWriter_1ab42ea2951866044dbe88859546316719" prot="private" virt="non-virtual"><scope>iceberg::puffin::PuffinWriter</scope><name>compress_footer_</name></member>
+      <member refid="classiceberg_1_1puffin_1_1PuffinWriter_1a5644894289a2c2d4a55037d69111101c" prot="private" virt="non-virtual"><scope>iceberg::puffin::PuffinWriter</scope><name>default_codec_</name></member>
+      <member refid="classiceberg_1_1puffin_1_1PuffinWriter_1aef0e6f75e9841747d7b6120b530bc019" prot="private" virt="non-virtual"><scope>iceberg::puffin::PuffinWriter</scope><name>file_size_</name></member>
+      <member refid="classiceberg_1_1puffin_1_1PuffinWriter_1aa23fdf8456023da0bf4b1042b1883b42" prot="public" virt="non-virtual"><scope>iceberg::puffin::PuffinWriter</scope><name>FileSize</name></member>
+      <member refid="classiceberg_1_1puffin_1_1PuffinWriter_1a675b3c9e99a5f8fcb041d9d7d5a97783" prot="public" virt="non-virtual"><scope>iceberg::puffin::PuffinWriter</scope><name>Finish</name></member>
+      <member refid="classiceberg_1_1puffin_1_1PuffinWriter_1a59b955e48a0c995b2b0f174bcec7e88f" prot="private" virt="non-virtual"><scope>iceberg::puffin::PuffinWriter</scope><name>finished_</name></member>
+      <member refid="classiceberg_1_1puffin_1_1PuffinWriter_1af49b004212b216aef7bb805ee92e4c6f" prot="private" virt="non-virtual"><scope>iceberg::puffin::PuffinWriter</scope><name>footer_size_</name></member>
+      <member refid="classiceberg_1_1puffin_1_1PuffinWriter_1a068f9b3f0f229d64e7fe049b6825ba46" prot="private" virt="non-virtual"><scope>iceberg::puffin::PuffinWriter</scope><name>footer_written_</name></member>
+      <member refid="classiceberg_1_1puffin_1_1PuffinWriter_1a103d9ce689b354957b6f505bdd086f2d" prot="public" virt="non-virtual"><scope>iceberg::puffin::PuffinWriter</scope><name>FooterSize</name></member>
+      <member refid="classiceberg_1_1puffin_1_1PuffinWriter_1a4691da56b315815496cdcb70172b66dc" prot="private" virt="non-virtual"><scope>iceberg::puffin::PuffinWriter</scope><name>header_written_</name></member>
+      <member refid="classiceberg_1_1puffin_1_1PuffinWriter_1a60c27e242ee30b1c515991532adb79e3" prot="public" virt="non-virtual"><scope>iceberg::puffin::PuffinWriter</scope><name>Make</name></member>
+      <member refid="classiceberg_1_1puffin_1_1PuffinWriter_1ae53fd3e4f1ff6a27658042736b0b312b" prot="private" virt="non-virtual"><scope>iceberg::puffin::PuffinWriter</scope><name>properties_</name></member>
+      <member refid="classiceberg_1_1puffin_1_1PuffinWriter_1a5d914f8c31eb25d61d5176fd71751a8e" prot="private" virt="non-virtual"><scope>iceberg::puffin::PuffinWriter</scope><name>PuffinWriter</name></member>
+      <member refid="classiceberg_1_1puffin_1_1PuffinWriter_1abdce3606ace3525166709cc8d3c2d88d" prot="private" virt="non-virtual"><scope>iceberg::puffin::PuffinWriter</scope><name>stream_</name></member>
+      <member refid="classiceberg_1_1puffin_1_1PuffinWriter_1a8a9c0ca5a24ffe879971f7e1d0af311c" prot="public" virt="non-virtual"><scope>iceberg::puffin::PuffinWriter</scope><name>Write</name></member>
+      <member refid="classiceberg_1_1puffin_1_1PuffinWriter_1ae0d5003c4e9d6e82801e60526e3b9cec" prot="private" virt="non-virtual"><scope>iceberg::puffin::PuffinWriter</scope><name>WriteBytes</name></member>
+      <member refid="classiceberg_1_1puffin_1_1PuffinWriter_1ac7ac796cb809d2c2012536c7d758005d" prot="private" virt="non-virtual"><scope>iceberg::puffin::PuffinWriter</scope><name>WriteHeader</name></member>
+      <member refid="classiceberg_1_1puffin_1_1PuffinWriter_1a93fb89ee37bda8e9d9198668cf0e4f51" prot="private" virt="non-virtual"><scope>iceberg::puffin::PuffinWriter</scope><name>WriteMagic</name></member>
+      <member refid="classiceberg_1_1puffin_1_1PuffinWriter_1ae9787f62b3fe12744bf4c3af0b455cc2" prot="public" virt="non-virtual"><scope>iceberg::puffin::PuffinWriter</scope><name>written_blobs_metadata</name></member>
+      <member refid="classiceberg_1_1puffin_1_1PuffinWriter_1a55943cb6805e61f0a2adf80a5838f2ca" prot="private" virt="non-virtual"><scope>iceberg::puffin::PuffinWriter</scope><name>written_blobs_metadata_</name></member>
+      <member refid="classiceberg_1_1puffin_1_1PuffinWriter_1a505391f4bc8db6727f51a83b79eef821" prot="public" virt="non-virtual"><scope>iceberg::puffin::PuffinWriter</scope><name>~PuffinWriter</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

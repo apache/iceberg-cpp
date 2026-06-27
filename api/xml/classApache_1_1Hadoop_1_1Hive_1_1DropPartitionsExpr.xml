@@ -1,0 +1,322 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1DropPartitionsExpr" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::DropPartitionsExpr</compoundname>
+    <basecompoundref prot="public" virt="virtual">apache::thrift::TBase</basecompoundref>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1DropPartitionsExpr_1a86b095fbcad550ec9d96f2448dfbc6ab" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::DropPartitionsExpr::expr</definition>
+        <argsstring></argsstring>
+        <name>expr</name>
+        <qualifiedname>Apache::Hadoop::Hive::DropPartitionsExpr::expr</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="5967" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="5967" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1DropPartitionsExpr_1ad1c7aaf8b6d5d6113965f2c53715e923" prot="public" static="no" mutable="no">
+        <type>int32_t</type>
+        <definition>int32_t Apache::Hadoop::Hive::DropPartitionsExpr::partArchiveLevel</definition>
+        <argsstring></argsstring>
+        <name>partArchiveLevel</name>
+        <qualifiedname>Apache::Hadoop::Hive::DropPartitionsExpr::partArchiveLevel</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="5968" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="5968" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1DropPartitionsExpr_1ad5abfc32585c544ce73980e2cbd2a08e" prot="public" static="no" mutable="no">
+        <type><ref refid="structApache_1_1Hadoop_1_1Hive_1_1__DropPartitionsExpr____isset" kindref="compound">_DropPartitionsExpr__isset</ref></type>
+        <definition>_DropPartitionsExpr__isset Apache::Hadoop::Hive::DropPartitionsExpr::__isset</definition>
+        <argsstring></argsstring>
+        <name>__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::DropPartitionsExpr::__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="5970" column="30" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="5970" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1DropPartitionsExpr_1abd16fd8c7c418c5bb85115a07d85afa3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::DropPartitionsExpr::DropPartitionsExpr</definition>
+        <argsstring>(const DropPartitionsExpr &amp;)</argsstring>
+        <name>DropPartitionsExpr</name>
+        <qualifiedname>Apache::Hadoop::Hive::DropPartitionsExpr::DropPartitionsExpr</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1DropPartitionsExpr" kindref="compound">DropPartitionsExpr</ref> &amp;</type>
+          <defname>other735</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="5962" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="21683" bodyend="21687"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1DropPartitionsExpr_1ad65f40114fd4ab86615160f402fc29ae" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1DropPartitionsExpr" kindref="compound">DropPartitionsExpr</ref> &amp;</type>
+        <definition>DropPartitionsExpr &amp; Apache::Hadoop::Hive::DropPartitionsExpr::operator=</definition>
+        <argsstring>(const DropPartitionsExpr &amp;)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::DropPartitionsExpr::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1DropPartitionsExpr" kindref="compound">DropPartitionsExpr</ref> &amp;</type>
+          <defname>other736</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="5963" column="22" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="21688" bodyend="21693"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1DropPartitionsExpr_1a5d835987b3d2f0033c446236eacab223" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::DropPartitionsExpr::DropPartitionsExpr</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>DropPartitionsExpr</name>
+        <qualifiedname>Apache::Hadoop::Hive::DropPartitionsExpr::DropPartitionsExpr</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="5964" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="21574" bodyend="21577"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1DropPartitionsExpr_1a01313af947c3751ae6bba52d0d1076ef" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::DropPartitionsExpr::~DropPartitionsExpr</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~DropPartitionsExpr</name>
+        <qualifiedname>Apache::Hadoop::Hive::DropPartitionsExpr::~DropPartitionsExpr</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="5966" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="21571" bodyend="21572"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1DropPartitionsExpr_1a5fc76313d5771382febc38147c8a4ea2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::DropPartitionsExpr::__set_expr</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_expr</name>
+        <qualifiedname>Apache::Hadoop::Hive::DropPartitionsExpr::__set_expr</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="5972" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="21579" bodyend="21581"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1DropPartitionsExpr_1ac6dfac0eedba972145a76cedb56538db" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::DropPartitionsExpr::__set_partArchiveLevel</definition>
+        <argsstring>(const int32_t val)</argsstring>
+        <name>__set_partArchiveLevel</name>
+        <qualifiedname>Apache::Hadoop::Hive::DropPartitionsExpr::__set_partArchiveLevel</qualifiedname>
+        <param>
+          <type>const int32_t</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="5974" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="21583" bodyend="21586"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1DropPartitionsExpr_1a24e3db82f717b4d1b322f29e955d593a" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::DropPartitionsExpr::operator==</definition>
+        <argsstring>(const DropPartitionsExpr &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::DropPartitionsExpr::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1DropPartitionsExpr" kindref="compound">DropPartitionsExpr</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="5976" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="21672" bodyend="21681"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1DropPartitionsExpr_1acefa8a8b9b3a5fae2b92506d1404d508" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::DropPartitionsExpr::operator!=</definition>
+        <argsstring>(const DropPartitionsExpr &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::DropPartitionsExpr::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1DropPartitionsExpr" kindref="compound">DropPartitionsExpr</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="5977" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="5977" bodyend="5979"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1DropPartitionsExpr_1a56678e4342a093c2fecfab09f297ea7b" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::DropPartitionsExpr::operator&lt;</definition>
+        <argsstring>(const DropPartitionsExpr &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::DropPartitionsExpr::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1DropPartitionsExpr" kindref="compound">DropPartitionsExpr</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="5981" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1DropPartitionsExpr_1a8dcaa039939a85d663c3a7793417adc7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::DropPartitionsExpr::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot) override</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::DropPartitionsExpr::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="5983" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="21594" bodyend="21644"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1DropPartitionsExpr_1aaa82fdd3db065503fef9010e8e2c022f" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::DropPartitionsExpr::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const override</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::DropPartitionsExpr::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="5984" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="21646" bodyend="21663"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1DropPartitionsExpr_1a23599e4386eb09d4e47ed5cfd6c0be55" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::DropPartitionsExpr::printTo</definition>
+        <argsstring>(std::ostream &amp;out) const</argsstring>
+        <name>printTo</name>
+        <qualifiedname>Apache::Hadoop::Hive::DropPartitionsExpr::printTo</qualifiedname>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="5986" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="21694" bodyend="21700"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::DropPartitionsExpr</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1DropPartitionsExpr"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::DropPartitionsExpr</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1DropPartitionsExpr"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>expr</edgelabel>
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="5">
+        <label>Apache::Hadoop::Hive::_DropPartitionsExpr__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__DropPartitionsExpr____isset"/>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+      <node id="4">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="3">
+        <label>std::string</label>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="5959" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="5959" bodyend="5987"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1DropPartitionsExpr_1ad5abfc32585c544ce73980e2cbd2a08e" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::DropPartitionsExpr</scope><name>__isset</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1DropPartitionsExpr_1a5fc76313d5771382febc38147c8a4ea2" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::DropPartitionsExpr</scope><name>__set_expr</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1DropPartitionsExpr_1ac6dfac0eedba972145a76cedb56538db" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::DropPartitionsExpr</scope><name>__set_partArchiveLevel</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1DropPartitionsExpr_1abd16fd8c7c418c5bb85115a07d85afa3" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::DropPartitionsExpr</scope><name>DropPartitionsExpr</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1DropPartitionsExpr_1a5d835987b3d2f0033c446236eacab223" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::DropPartitionsExpr</scope><name>DropPartitionsExpr</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1DropPartitionsExpr_1a86b095fbcad550ec9d96f2448dfbc6ab" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::DropPartitionsExpr</scope><name>expr</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1DropPartitionsExpr_1acefa8a8b9b3a5fae2b92506d1404d508" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::DropPartitionsExpr</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1DropPartitionsExpr_1a56678e4342a093c2fecfab09f297ea7b" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::DropPartitionsExpr</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1DropPartitionsExpr_1ad65f40114fd4ab86615160f402fc29ae" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::DropPartitionsExpr</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1DropPartitionsExpr_1a24e3db82f717b4d1b322f29e955d593a" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::DropPartitionsExpr</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1DropPartitionsExpr_1ad1c7aaf8b6d5d6113965f2c53715e923" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::DropPartitionsExpr</scope><name>partArchiveLevel</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1DropPartitionsExpr_1a23599e4386eb09d4e47ed5cfd6c0be55" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::DropPartitionsExpr</scope><name>printTo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1DropPartitionsExpr_1a8dcaa039939a85d663c3a7793417adc7" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::DropPartitionsExpr</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1DropPartitionsExpr_1aaa82fdd3db065503fef9010e8e2c022f" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::DropPartitionsExpr</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1DropPartitionsExpr_1a01313af947c3751ae6bba52d0d1076ef" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::DropPartitionsExpr</scope><name>~DropPartitionsExpr</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

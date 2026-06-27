@@ -1,0 +1,64 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structApache_1_1Hadoop_1_1Hive_1_1__CacheFileMetadataRequest____isset" kind="struct" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::_CacheFileMetadataRequest__isset</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__CacheFileMetadataRequest____isset_1a47851d7683c1e732ebeb8f4f2aa97bc2" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_CacheFileMetadataRequest__isset::partName</definition>
+        <argsstring></argsstring>
+        <name>partName</name>
+        <qualifiedname>Apache::Hadoop::Hive::_CacheFileMetadataRequest__isset::partName</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10056" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="10056" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__CacheFileMetadataRequest____isset_1a9d07475b81ba7243fa3d8fbbd88deccb" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_CacheFileMetadataRequest__isset::isAllParts</definition>
+        <argsstring></argsstring>
+        <name>isAllParts</name>
+        <qualifiedname>Apache::Hadoop::Hive::_CacheFileMetadataRequest__isset::isAllParts</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10057" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="10057" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structApache_1_1Hadoop_1_1Hive_1_1__CacheFileMetadataRequest____isset_1a4bba8b76ed3e77d24c53d27adb6310e7" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::_CacheFileMetadataRequest__isset::_CacheFileMetadataRequest__isset</definition>
+        <argsstring>()</argsstring>
+        <name>_CacheFileMetadataRequest__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::_CacheFileMetadataRequest__isset::_CacheFileMetadataRequest__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10055" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="10055" bodyend="10055"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10054" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="10054" bodyend="10058"/>
+    <listofallmembers>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__CacheFileMetadataRequest____isset_1a4bba8b76ed3e77d24c53d27adb6310e7" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_CacheFileMetadataRequest__isset</scope><name>_CacheFileMetadataRequest__isset</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__CacheFileMetadataRequest____isset_1a9d07475b81ba7243fa3d8fbbd88deccb" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_CacheFileMetadataRequest__isset</scope><name>isAllParts</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__CacheFileMetadataRequest____isset_1a47851d7683c1e732ebeb8f4f2aa97bc2" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_CacheFileMetadataRequest__isset</scope><name>partName</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

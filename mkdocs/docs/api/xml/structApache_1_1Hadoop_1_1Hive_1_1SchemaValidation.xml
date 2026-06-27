@@ -1,0 +1,46 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structApache_1_1Hadoop_1_1Hive_1_1SchemaValidation" kind="struct" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::SchemaValidation</compoundname>
+    <sectiondef kind="public-type">
+      <memberdef kind="enum" id="structApache_1_1Hadoop_1_1Hive_1_1SchemaValidation_1a3b3f27db00d025befd7cd69f18cd4716" prot="public" static="no" strong="no">
+        <type></type>
+        <name>type</name>
+        <qualifiedname>Apache::Hadoop::Hive::SchemaValidation::type</qualifiedname>
+        <enumvalue id="structApache_1_1Hadoop_1_1Hive_1_1SchemaValidation_1a3b3f27db00d025befd7cd69f18cd4716ae291806a4122bd1ac00563448566743f" prot="public">
+          <name>LATEST</name>
+          <initializer>= 1</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="structApache_1_1Hadoop_1_1Hive_1_1SchemaValidation_1a3b3f27db00d025befd7cd69f18cd4716a4f1cbb0ec55f4360380fad4f0ce7c051" prot="public">
+          <name>ALL</name>
+          <initializer>= 2</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="227" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="227" bodyend="230"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="226" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="226" bodyend="231"/>
+    <listofallmembers>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1SchemaValidation_1a3b3f27db00d025befd7cd69f18cd4716a4f1cbb0ec55f4360380fad4f0ce7c051" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::SchemaValidation</scope><name>ALL</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1SchemaValidation_1a3b3f27db00d025befd7cd69f18cd4716ae291806a4122bd1ac00563448566743f" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::SchemaValidation</scope><name>LATEST</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1SchemaValidation_1a3b3f27db00d025befd7cd69f18cd4716" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::SchemaValidation</scope><name>type</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,128 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structApache_1_1Hadoop_1_1Hive_1_1__AddPackageRequest____isset" kind="struct" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::_AddPackageRequest__isset</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__AddPackageRequest____isset_1aee28d37f34ca4be88047b78382f2bb84" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_AddPackageRequest__isset::catName</definition>
+        <argsstring></argsstring>
+        <name>catName</name>
+        <qualifiedname>Apache::Hadoop::Hive::_AddPackageRequest__isset::catName</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15000" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="15000" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__AddPackageRequest____isset_1af3428c8b343aca3fa5ba2979dde41cdf" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_AddPackageRequest__isset::dbName</definition>
+        <argsstring></argsstring>
+        <name>dbName</name>
+        <qualifiedname>Apache::Hadoop::Hive::_AddPackageRequest__isset::dbName</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15001" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="15001" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__AddPackageRequest____isset_1a6731f1995f8f4a3f657de5cad34fd144" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_AddPackageRequest__isset::packageName</definition>
+        <argsstring></argsstring>
+        <name>packageName</name>
+        <qualifiedname>Apache::Hadoop::Hive::_AddPackageRequest__isset::packageName</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15002" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="15002" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__AddPackageRequest____isset_1a96543473c1f588fdf0baae4796feb31e" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_AddPackageRequest__isset::ownerName</definition>
+        <argsstring></argsstring>
+        <name>ownerName</name>
+        <qualifiedname>Apache::Hadoop::Hive::_AddPackageRequest__isset::ownerName</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15003" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="15003" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__AddPackageRequest____isset_1a73f44b070ab9e5e784c9f3d4e9da8a0d" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_AddPackageRequest__isset::header</definition>
+        <argsstring></argsstring>
+        <name>header</name>
+        <qualifiedname>Apache::Hadoop::Hive::_AddPackageRequest__isset::header</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15004" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="15004" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__AddPackageRequest____isset_1a5cb97c3b86902f34c1704442743accaf" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_AddPackageRequest__isset::body</definition>
+        <argsstring></argsstring>
+        <name>body</name>
+        <qualifiedname>Apache::Hadoop::Hive::_AddPackageRequest__isset::body</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15005" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="15005" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structApache_1_1Hadoop_1_1Hive_1_1__AddPackageRequest____isset_1aff97c208f5e1118f34b5a4d2e4984880" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::_AddPackageRequest__isset::_AddPackageRequest__isset</definition>
+        <argsstring>()</argsstring>
+        <name>_AddPackageRequest__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::_AddPackageRequest__isset::_AddPackageRequest__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14999" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="14999" bodyend="14999"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14998" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="14998" bodyend="15006"/>
+    <listofallmembers>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__AddPackageRequest____isset_1aff97c208f5e1118f34b5a4d2e4984880" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_AddPackageRequest__isset</scope><name>_AddPackageRequest__isset</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__AddPackageRequest____isset_1a5cb97c3b86902f34c1704442743accaf" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_AddPackageRequest__isset</scope><name>body</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__AddPackageRequest____isset_1aee28d37f34ca4be88047b78382f2bb84" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_AddPackageRequest__isset</scope><name>catName</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__AddPackageRequest____isset_1af3428c8b343aca3fa5ba2979dde41cdf" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_AddPackageRequest__isset</scope><name>dbName</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__AddPackageRequest____isset_1a73f44b070ab9e5e784c9f3d4e9da8a0d" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_AddPackageRequest__isset</scope><name>header</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__AddPackageRequest____isset_1a96543473c1f588fdf0baae4796feb31e" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_AddPackageRequest__isset</scope><name>ownerName</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__AddPackageRequest____isset_1a6731f1995f8f4a3f657de5cad34fd144" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_AddPackageRequest__isset</scope><name>packageName</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

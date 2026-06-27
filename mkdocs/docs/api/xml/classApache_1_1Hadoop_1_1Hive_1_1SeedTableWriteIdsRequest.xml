@@ -1,0 +1,335 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1SeedTableWriteIdsRequest" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::SeedTableWriteIdsRequest</compoundname>
+    <basecompoundref prot="public" virt="virtual">apache::thrift::TBase</basecompoundref>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1SeedTableWriteIdsRequest_1ae2adc25a30b0b9f10cf391db4a69d352" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::SeedTableWriteIdsRequest::dbName</definition>
+        <argsstring></argsstring>
+        <name>dbName</name>
+        <qualifiedname>Apache::Hadoop::Hive::SeedTableWriteIdsRequest::dbName</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7530" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="7530" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1SeedTableWriteIdsRequest_1a6a015ac60c5af737971d86c8e70e4c03" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::SeedTableWriteIdsRequest::tableName</definition>
+        <argsstring></argsstring>
+        <name>tableName</name>
+        <qualifiedname>Apache::Hadoop::Hive::SeedTableWriteIdsRequest::tableName</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7531" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="7531" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1SeedTableWriteIdsRequest_1a8a2398b99fedeed89e2ecd7343de5f5f" prot="public" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t Apache::Hadoop::Hive::SeedTableWriteIdsRequest::seedWriteId</definition>
+        <argsstring></argsstring>
+        <name>seedWriteId</name>
+        <qualifiedname>Apache::Hadoop::Hive::SeedTableWriteIdsRequest::seedWriteId</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7532" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="7532" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1SeedTableWriteIdsRequest_1a254af989c2eb335e11ad1b9adfa38211" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::SeedTableWriteIdsRequest::SeedTableWriteIdsRequest</definition>
+        <argsstring>(const SeedTableWriteIdsRequest &amp;)</argsstring>
+        <name>SeedTableWriteIdsRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::SeedTableWriteIdsRequest::SeedTableWriteIdsRequest</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1SeedTableWriteIdsRequest" kindref="compound">SeedTableWriteIdsRequest</ref> &amp;</type>
+          <defname>other967</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7525" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="28692" bodyend="28696"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1SeedTableWriteIdsRequest_1a37fdb643403a633b07ec43f67021bed4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1SeedTableWriteIdsRequest" kindref="compound">SeedTableWriteIdsRequest</ref> &amp;</type>
+        <definition>SeedTableWriteIdsRequest &amp; Apache::Hadoop::Hive::SeedTableWriteIdsRequest::operator=</definition>
+        <argsstring>(const SeedTableWriteIdsRequest &amp;)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::SeedTableWriteIdsRequest::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1SeedTableWriteIdsRequest" kindref="compound">SeedTableWriteIdsRequest</ref> &amp;</type>
+          <defname>other968</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7526" column="28" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="28697" bodyend="28702"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1SeedTableWriteIdsRequest_1a78f43385c09cef3dca2e54a50a59cc6f" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::SeedTableWriteIdsRequest::SeedTableWriteIdsRequest</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>SeedTableWriteIdsRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::SeedTableWriteIdsRequest::SeedTableWriteIdsRequest</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7527" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="28562" bodyend="28566"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1SeedTableWriteIdsRequest_1a3710514b8aa0350b013c395c3706e12d" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::SeedTableWriteIdsRequest::~SeedTableWriteIdsRequest</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~SeedTableWriteIdsRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::SeedTableWriteIdsRequest::~SeedTableWriteIdsRequest</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7529" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="28559" bodyend="28560"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1SeedTableWriteIdsRequest_1a07ffbbd40bd5f9bd580e870cd518d767" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::SeedTableWriteIdsRequest::__set_dbName</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_dbName</name>
+        <qualifiedname>Apache::Hadoop::Hive::SeedTableWriteIdsRequest::__set_dbName</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7534" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="28568" bodyend="28570"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1SeedTableWriteIdsRequest_1a027ed9465effeee72faa482785320686" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::SeedTableWriteIdsRequest::__set_tableName</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_tableName</name>
+        <qualifiedname>Apache::Hadoop::Hive::SeedTableWriteIdsRequest::__set_tableName</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7536" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="28572" bodyend="28574"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1SeedTableWriteIdsRequest_1a1adbbaeffc3e2ddf52c344ccaf6e7fc5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::SeedTableWriteIdsRequest::__set_seedWriteId</definition>
+        <argsstring>(const int64_t val)</argsstring>
+        <name>__set_seedWriteId</name>
+        <qualifiedname>Apache::Hadoop::Hive::SeedTableWriteIdsRequest::__set_seedWriteId</qualifiedname>
+        <param>
+          <type>const int64_t</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7538" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="28576" bodyend="28578"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1SeedTableWriteIdsRequest_1a3a69890b50523fd1cceaef73060cee5f" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::SeedTableWriteIdsRequest::operator==</definition>
+        <argsstring>(const SeedTableWriteIdsRequest &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::SeedTableWriteIdsRequest::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1SeedTableWriteIdsRequest" kindref="compound">SeedTableWriteIdsRequest</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7540" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="28681" bodyend="28690"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1SeedTableWriteIdsRequest_1a7728d8e263ffbad388179d17ff9b69d6" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::SeedTableWriteIdsRequest::operator!=</definition>
+        <argsstring>(const SeedTableWriteIdsRequest &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::SeedTableWriteIdsRequest::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1SeedTableWriteIdsRequest" kindref="compound">SeedTableWriteIdsRequest</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7541" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="7541" bodyend="7543"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1SeedTableWriteIdsRequest_1a0df26ef6df5c386d4c0683e645ef6c31" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::SeedTableWriteIdsRequest::operator&lt;</definition>
+        <argsstring>(const SeedTableWriteIdsRequest &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::SeedTableWriteIdsRequest::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1SeedTableWriteIdsRequest" kindref="compound">SeedTableWriteIdsRequest</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7545" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1SeedTableWriteIdsRequest_1ab5bfb5361c39a4d0b3dbb83804108772" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::SeedTableWriteIdsRequest::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot) override</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::SeedTableWriteIdsRequest::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7547" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="28586" bodyend="28650"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1SeedTableWriteIdsRequest_1af043eb0d9bbe3a174d7b30a3c6a10097" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::SeedTableWriteIdsRequest::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const override</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::SeedTableWriteIdsRequest::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7548" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="28652" bodyend="28672"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1SeedTableWriteIdsRequest_1acb5196ec754fc709cfcac5f7e7e9b51c" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::SeedTableWriteIdsRequest::printTo</definition>
+        <argsstring>(std::ostream &amp;out) const</argsstring>
+        <name>printTo</name>
+        <qualifiedname>Apache::Hadoop::Hive::SeedTableWriteIdsRequest::printTo</qualifiedname>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7550" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="28703" bodyend="28710"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::SeedTableWriteIdsRequest</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1SeedTableWriteIdsRequest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::SeedTableWriteIdsRequest</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1SeedTableWriteIdsRequest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>dbName</edgelabel>
+          <edgelabel>tableName</edgelabel>
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+      <node id="4">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="3">
+        <label>std::string</label>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7522" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="7522" bodyend="7551"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1SeedTableWriteIdsRequest_1a07ffbbd40bd5f9bd580e870cd518d767" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::SeedTableWriteIdsRequest</scope><name>__set_dbName</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1SeedTableWriteIdsRequest_1a1adbbaeffc3e2ddf52c344ccaf6e7fc5" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::SeedTableWriteIdsRequest</scope><name>__set_seedWriteId</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1SeedTableWriteIdsRequest_1a027ed9465effeee72faa482785320686" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::SeedTableWriteIdsRequest</scope><name>__set_tableName</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1SeedTableWriteIdsRequest_1ae2adc25a30b0b9f10cf391db4a69d352" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::SeedTableWriteIdsRequest</scope><name>dbName</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1SeedTableWriteIdsRequest_1a7728d8e263ffbad388179d17ff9b69d6" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::SeedTableWriteIdsRequest</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1SeedTableWriteIdsRequest_1a0df26ef6df5c386d4c0683e645ef6c31" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::SeedTableWriteIdsRequest</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1SeedTableWriteIdsRequest_1a37fdb643403a633b07ec43f67021bed4" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::SeedTableWriteIdsRequest</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1SeedTableWriteIdsRequest_1a3a69890b50523fd1cceaef73060cee5f" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::SeedTableWriteIdsRequest</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1SeedTableWriteIdsRequest_1acb5196ec754fc709cfcac5f7e7e9b51c" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::SeedTableWriteIdsRequest</scope><name>printTo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1SeedTableWriteIdsRequest_1ab5bfb5361c39a4d0b3dbb83804108772" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::SeedTableWriteIdsRequest</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1SeedTableWriteIdsRequest_1a254af989c2eb335e11ad1b9adfa38211" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::SeedTableWriteIdsRequest</scope><name>SeedTableWriteIdsRequest</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1SeedTableWriteIdsRequest_1a78f43385c09cef3dca2e54a50a59cc6f" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::SeedTableWriteIdsRequest</scope><name>SeedTableWriteIdsRequest</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1SeedTableWriteIdsRequest_1a8a2398b99fedeed89e2ecd7343de5f5f" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::SeedTableWriteIdsRequest</scope><name>seedWriteId</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1SeedTableWriteIdsRequest_1a6a015ac60c5af737971d86c8e70e4c03" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::SeedTableWriteIdsRequest</scope><name>tableName</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1SeedTableWriteIdsRequest_1af043eb0d9bbe3a174d7b30a3c6a10097" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::SeedTableWriteIdsRequest</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1SeedTableWriteIdsRequest_1a3710514b8aa0350b013c395c3706e12d" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::SeedTableWriteIdsRequest</scope><name>~SeedTableWriteIdsRequest</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

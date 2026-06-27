@@ -1,0 +1,64 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structApache_1_1Hadoop_1_1Hive_1_1LockState" kind="struct" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::LockState</compoundname>
+    <sectiondef kind="public-type">
+      <memberdef kind="enum" id="structApache_1_1Hadoop_1_1Hive_1_1LockState_1aedf7252d663672baa7116ac9960dc526" prot="public" static="no" strong="no">
+        <type></type>
+        <name>type</name>
+        <qualifiedname>Apache::Hadoop::Hive::LockState::type</qualifiedname>
+        <enumvalue id="structApache_1_1Hadoop_1_1Hive_1_1LockState_1aedf7252d663672baa7116ac9960dc526a784e83cd273d76bf85abc55cbd983d00" prot="public">
+          <name>ACQUIRED</name>
+          <initializer>= 1</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="structApache_1_1Hadoop_1_1Hive_1_1LockState_1aedf7252d663672baa7116ac9960dc526a5513c4e8f9c7a31d2bb0d11b37f8e27a" prot="public">
+          <name>WAITING</name>
+          <initializer>= 2</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="structApache_1_1Hadoop_1_1Hive_1_1LockState_1aedf7252d663672baa7116ac9960dc526a0010f6ec043ceffac1c4ab28a6d7402b" prot="public">
+          <name>ABORT</name>
+          <initializer>= 3</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="structApache_1_1Hadoop_1_1Hive_1_1LockState_1aedf7252d663672baa7116ac9960dc526a858ff6e8a50c43b5cb17417977ba8091" prot="public">
+          <name>NOT_ACQUIRED</name>
+          <initializer>= 4</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="97" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="97" bodyend="102"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="96" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="96" bodyend="103"/>
+    <listofallmembers>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1LockState_1aedf7252d663672baa7116ac9960dc526a0010f6ec043ceffac1c4ab28a6d7402b" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::LockState</scope><name>ABORT</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1LockState_1aedf7252d663672baa7116ac9960dc526a784e83cd273d76bf85abc55cbd983d00" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::LockState</scope><name>ACQUIRED</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1LockState_1aedf7252d663672baa7116ac9960dc526a858ff6e8a50c43b5cb17417977ba8091" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::LockState</scope><name>NOT_ACQUIRED</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1LockState_1aedf7252d663672baa7116ac9960dc526" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::LockState</scope><name>type</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1LockState_1aedf7252d663672baa7116ac9960dc526a5513c4e8f9c7a31d2bb0d11b37f8e27a" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::LockState</scope><name>WAITING</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

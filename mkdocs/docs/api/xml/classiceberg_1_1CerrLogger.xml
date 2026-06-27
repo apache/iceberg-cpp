@@ -1,0 +1,196 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1CerrLogger" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::CerrLogger</compoundname>
+    <basecompoundref refid="classiceberg_1_1Logger" prot="public" virt="non-virtual">iceberg::Logger</basecompoundref>
+    <includes refid="cerr__logger_8h" local="no">cerr_logger.h</includes>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1CerrLogger_1acb086dc889602517b55cef6311af0f48" prot="private" static="no" mutable="no">
+        <type>std::atomic&lt; <ref refid="log__level_8h_1ab9922ae0d07dc85678a1a86c872e387b" kindref="member">LogLevel</ref> &gt;</type>
+        <definition>std::atomic&lt;LogLevel&gt; iceberg::CerrLogger::level_</definition>
+        <argsstring></argsstring>
+        <name>level_</name>
+        <qualifiedname>iceberg::CerrLogger::level_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/logging/cerr_logger.h" line="57" column="15" bodyfile="iceberg/logging/cerr_logger.h" bodystart="57" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1CerrLogger_1a90f215f38970f3b9bef5e17c1a87d481" prot="private" static="no" mutable="no">
+        <type>std::mutex</type>
+        <definition>std::mutex iceberg::CerrLogger::mutex_</definition>
+        <argsstring></argsstring>
+        <name>mutex_</name>
+        <qualifiedname>iceberg::CerrLogger::mutex_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/logging/cerr_logger.h" line="58" column="14" bodyfile="iceberg/logging/cerr_logger.h" bodystart="58" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1CerrLogger_1a3631336a39bf39b7df7587d8193e02fb" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::CerrLogger::CerrLogger</definition>
+        <argsstring>(LogLevel level=LogLevel::kInfo)</argsstring>
+        <name>CerrLogger</name>
+        <qualifiedname>iceberg::CerrLogger::CerrLogger</qualifiedname>
+        <param>
+          <type><ref refid="log__level_8h_1ab9922ae0d07dc85678a1a86c872e387b" kindref="member">LogLevel</ref></type>
+          <declname>level</declname>
+          <defval>LogLevel::kInfo</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/logging/cerr_logger.h" line="42" column="12" bodyfile="iceberg/logging/cerr_logger.h" bodystart="42" bodyend="42"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1CerrLogger_1a558618170d6e63857d529f7679742472" prot="public" static="no" const="yes" explicit="no" inline="yes" noexcept="yes" virt="virtual">
+        <type>bool</type>
+        <definition>bool iceberg::CerrLogger::ShouldLog</definition>
+        <argsstring>(LogLevel level) const noexcept override</argsstring>
+        <name>ShouldLog</name>
+        <qualifiedname>iceberg::CerrLogger::ShouldLog</qualifiedname>
+        <reimplements refid="classiceberg_1_1Logger_1ae94e42dfc0fe122f056c54049f6b751f">ShouldLog</reimplements>
+        <param>
+          <type><ref refid="log__level_8h_1ab9922ae0d07dc85678a1a86c872e387b" kindref="member">LogLevel</ref></type>
+          <declname>level</declname>
+        </param>
+        <briefdescription>
+<para>Cheap check whether a record at <computeroutput>level</computeroutput> would be emitted. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/logging/cerr_logger.h" line="44" column="8" bodyfile="iceberg/logging/cerr_logger.h" bodystart="44" bodyend="46"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1CerrLogger_1a990162c7376b0511aa6522fe64bf5a8c" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type>void</type>
+        <definition>void iceberg::CerrLogger::Log</definition>
+        <argsstring>(LogMessage &amp;&amp;message) noexcept override</argsstring>
+        <name>Log</name>
+        <qualifiedname>iceberg::CerrLogger::Log</qualifiedname>
+        <reimplements refid="classiceberg_1_1Logger_1a2cea7121351c84e8fe25a4fb2a1e52a3">Log</reimplements>
+        <param>
+          <type><ref refid="structiceberg_1_1LogMessage" kindref="compound">LogMessage</ref> &amp;&amp;</type>
+          <declname>message</declname>
+        </param>
+        <briefdescription>
+<para>Emit one (already-formatted) record, taking ownership. Must not throw. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/logging/cerr_logger.h" line="47" column="8" bodyfile="iceberg/logging/cerr_logger.cc" bodystart="53" bodyend="67"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1CerrLogger_1aa53823148c9833d542e1a391acaa0496" prot="public" static="no" const="no" explicit="no" inline="yes" noexcept="yes" virt="virtual">
+        <type>void</type>
+        <definition>void iceberg::CerrLogger::SetLevel</definition>
+        <argsstring>(LogLevel level) noexcept override</argsstring>
+        <name>SetLevel</name>
+        <qualifiedname>iceberg::CerrLogger::SetLevel</qualifiedname>
+        <reimplements refid="classiceberg_1_1Logger_1a929efd366d31507b1d0fb0f20cc981ac">SetLevel</reimplements>
+        <param>
+          <type><ref refid="log__level_8h_1ab9922ae0d07dc85678a1a86c872e387b" kindref="member">LogLevel</ref></type>
+          <declname>level</declname>
+        </param>
+        <briefdescription>
+<para>Set the minimum level this logger emits. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/logging/cerr_logger.h" line="48" column="8" bodyfile="iceberg/logging/cerr_logger.h" bodystart="48" bodyend="50"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1CerrLogger_1a6f5492fa7db6c8420b615f4d53440476" prot="public" static="no" const="yes" explicit="no" inline="yes" noexcept="yes" virt="virtual">
+        <type><ref refid="log__level_8h_1ab9922ae0d07dc85678a1a86c872e387b" kindref="member">LogLevel</ref></type>
+        <definition>LogLevel iceberg::CerrLogger::level</definition>
+        <argsstring>() const noexcept override</argsstring>
+        <name>level</name>
+        <qualifiedname>iceberg::CerrLogger::level</qualifiedname>
+        <reimplements refid="classiceberg_1_1Logger_1a8d7d6a59ecbb0a1ba0ca79cbbb079540">level</reimplements>
+        <briefdescription>
+<para>Return the minimum level this logger emits. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/logging/cerr_logger.h" line="51" column="12" bodyfile="iceberg/logging/cerr_logger.h" bodystart="51" bodyend="53"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1CerrLogger_1a40deb0defa4c4fd1aaeba3a3980466a3" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type>void</type>
+        <definition>void iceberg::CerrLogger::Flush</definition>
+        <argsstring>() noexcept override</argsstring>
+        <name>Flush</name>
+        <qualifiedname>iceberg::CerrLogger::Flush</qualifiedname>
+        <reimplements refid="classiceberg_1_1Logger_1a2a1b632c1d153e90cf3faef8a29e6419">Flush</reimplements>
+        <briefdescription>
+<para>Flush any buffered output. Must not throw; best-effort on the fatal path. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/logging/cerr_logger.h" line="54" column="8" bodyfile="iceberg/logging/cerr_logger.cc" bodystart="69" bodyend="75"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para><ref refid="classiceberg_1_1Logger" kindref="compound">Logger</ref> that writes one line per record to std::cerr. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>Line layout: <computeroutput>YYYY-MM-DDThh:mm:ss.mmmZ LEVEL [tid] [<ulink url="file:line">file:line</ulink>] message</computeroutput>. The minimum level is held in a lock-free atomic; a mutex serializes the whole-line write so concurrent records never interleave. Pure standard library <ndash/> always compiled, regardless of ICEBERG_SPDLOG. </para>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>iceberg::CerrLogger</label>
+        <link refid="classiceberg_1_1CerrLogger"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::Logger</label>
+        <link refid="classiceberg_1_1Logger"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::CerrLogger</label>
+        <link refid="classiceberg_1_1CerrLogger"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::Logger</label>
+        <link refid="classiceberg_1_1Logger"/>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/logging/cerr_logger.h" line="40" column="1" bodyfile="iceberg/logging/cerr_logger.h" bodystart="40" bodyend="59"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1CerrLogger_1a3631336a39bf39b7df7587d8193e02fb" prot="public" virt="non-virtual"><scope>iceberg::CerrLogger</scope><name>CerrLogger</name></member>
+      <member refid="classiceberg_1_1CerrLogger_1a40deb0defa4c4fd1aaeba3a3980466a3" prot="public" virt="virtual"><scope>iceberg::CerrLogger</scope><name>Flush</name></member>
+      <member refid="classiceberg_1_1Logger_1afb2309f921f8ebb7aa88ada353f37877" prot="public" virt="virtual"><scope>iceberg::CerrLogger</scope><name>Initialize</name></member>
+      <member refid="classiceberg_1_1Logger_1af869669496ecfff9c7de9b737bdbb404" prot="public" virt="virtual"><scope>iceberg::CerrLogger</scope><name>IsNoop</name></member>
+      <member refid="classiceberg_1_1CerrLogger_1a6f5492fa7db6c8420b615f4d53440476" prot="public" virt="virtual"><scope>iceberg::CerrLogger</scope><name>level</name></member>
+      <member refid="classiceberg_1_1CerrLogger_1acb086dc889602517b55cef6311af0f48" prot="private" virt="non-virtual"><scope>iceberg::CerrLogger</scope><name>level_</name></member>
+      <member refid="classiceberg_1_1CerrLogger_1a990162c7376b0511aa6522fe64bf5a8c" prot="public" virt="virtual"><scope>iceberg::CerrLogger</scope><name>Log</name></member>
+      <member refid="classiceberg_1_1CerrLogger_1a90f215f38970f3b9bef5e17c1a87d481" prot="private" virt="non-virtual"><scope>iceberg::CerrLogger</scope><name>mutex_</name></member>
+      <member refid="classiceberg_1_1Logger_1ac1cf661da575bc318994d4663eef0019" prot="public" virt="non-virtual"><scope>iceberg::CerrLogger</scope><name>Noop</name></member>
+      <member refid="classiceberg_1_1CerrLogger_1aa53823148c9833d542e1a391acaa0496" prot="public" virt="virtual"><scope>iceberg::CerrLogger</scope><name>SetLevel</name></member>
+      <member refid="classiceberg_1_1CerrLogger_1a558618170d6e63857d529f7679742472" prot="public" virt="virtual"><scope>iceberg::CerrLogger</scope><name>ShouldLog</name></member>
+      <member refid="classiceberg_1_1Logger_1aadc6a4775fd35424936102100cc0ba2b" prot="public" virt="virtual"><scope>iceberg::CerrLogger</scope><name>~Logger</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

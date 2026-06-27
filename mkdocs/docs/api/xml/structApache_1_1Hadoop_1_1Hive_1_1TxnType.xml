@@ -1,0 +1,91 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structApache_1_1Hadoop_1_1Hive_1_1TxnType" kind="struct" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::TxnType</compoundname>
+    <sectiondef kind="public-type">
+      <memberdef kind="enum" id="structApache_1_1Hadoop_1_1Hive_1_1TxnType_1a67c9c55a86a27626c15cd883116b02f5" prot="public" static="no" strong="no">
+        <type></type>
+        <name>type</name>
+        <qualifiedname>Apache::Hadoop::Hive::TxnType::type</qualifiedname>
+        <enumvalue id="structApache_1_1Hadoop_1_1Hive_1_1TxnType_1a67c9c55a86a27626c15cd883116b02f5a1b867c4af2e4929c38cf56e9874bbdbe" prot="public">
+          <name>DEFAULT</name>
+          <initializer>= 0</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="structApache_1_1Hadoop_1_1Hive_1_1TxnType_1a67c9c55a86a27626c15cd883116b02f5a5b7015336da0164dfb20a96ad9009800" prot="public">
+          <name>REPL_CREATED</name>
+          <initializer>= 1</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="structApache_1_1Hadoop_1_1Hive_1_1TxnType_1a67c9c55a86a27626c15cd883116b02f5a2c004b87b489b5721866a8c09b780a96" prot="public">
+          <name>READ_ONLY</name>
+          <initializer>= 2</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="structApache_1_1Hadoop_1_1Hive_1_1TxnType_1a67c9c55a86a27626c15cd883116b02f5a3ad55c20aa40754722293c67f4c6edad" prot="public">
+          <name>COMPACTION</name>
+          <initializer>= 3</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="structApache_1_1Hadoop_1_1Hive_1_1TxnType_1a67c9c55a86a27626c15cd883116b02f5aa227ecc986296cc6f8ad63bd04ec7dba" prot="public">
+          <name>MATER_VIEW_REBUILD</name>
+          <initializer>= 4</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="structApache_1_1Hadoop_1_1Hive_1_1TxnType_1a67c9c55a86a27626c15cd883116b02f5a1d0545a8cf64dd50304cef69c4563f01" prot="public">
+          <name>SOFT_DELETE</name>
+          <initializer>= 5</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="structApache_1_1Hadoop_1_1Hive_1_1TxnType_1a67c9c55a86a27626c15cd883116b02f5a6480dc869b3c707ce2a3d6859527e586" prot="public">
+          <name>REBALANCE_COMPACTION</name>
+          <initializer>= 6</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="298" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="298" bodyend="306"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="297" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="297" bodyend="307"/>
+    <listofallmembers>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1TxnType_1a67c9c55a86a27626c15cd883116b02f5a3ad55c20aa40754722293c67f4c6edad" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::TxnType</scope><name>COMPACTION</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1TxnType_1a67c9c55a86a27626c15cd883116b02f5a1b867c4af2e4929c38cf56e9874bbdbe" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::TxnType</scope><name>DEFAULT</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1TxnType_1a67c9c55a86a27626c15cd883116b02f5aa227ecc986296cc6f8ad63bd04ec7dba" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::TxnType</scope><name>MATER_VIEW_REBUILD</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1TxnType_1a67c9c55a86a27626c15cd883116b02f5a2c004b87b489b5721866a8c09b780a96" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::TxnType</scope><name>READ_ONLY</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1TxnType_1a67c9c55a86a27626c15cd883116b02f5a6480dc869b3c707ce2a3d6859527e586" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::TxnType</scope><name>REBALANCE_COMPACTION</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1TxnType_1a67c9c55a86a27626c15cd883116b02f5a5b7015336da0164dfb20a96ad9009800" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::TxnType</scope><name>REPL_CREATED</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1TxnType_1a67c9c55a86a27626c15cd883116b02f5a1d0545a8cf64dd50304cef69c4563f01" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::TxnType</scope><name>SOFT_DELETE</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1TxnType_1a67c9c55a86a27626c15cd883116b02f5" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::TxnType</scope><name>type</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

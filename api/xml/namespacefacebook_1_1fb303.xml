@@ -1,0 +1,553 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="namespacefacebook_1_1fb303" kind="namespace" language="C++">
+    <compoundname>facebook::fb303</compoundname>
+    <innerclass refid="structfacebook_1_1fb303_1_1__FacebookService__aliveSince__presult____isset" prot="public">facebook::fb303::_FacebookService_aliveSince_presult__isset</innerclass>
+    <innerclass refid="structfacebook_1_1fb303_1_1__FacebookService__aliveSince__result____isset" prot="public">facebook::fb303::_FacebookService_aliveSince_result__isset</innerclass>
+    <innerclass refid="structfacebook_1_1fb303_1_1__FacebookService__getCounter__args____isset" prot="public">facebook::fb303::_FacebookService_getCounter_args__isset</innerclass>
+    <innerclass refid="structfacebook_1_1fb303_1_1__FacebookService__getCounter__presult____isset" prot="public">facebook::fb303::_FacebookService_getCounter_presult__isset</innerclass>
+    <innerclass refid="structfacebook_1_1fb303_1_1__FacebookService__getCounter__result____isset" prot="public">facebook::fb303::_FacebookService_getCounter_result__isset</innerclass>
+    <innerclass refid="structfacebook_1_1fb303_1_1__FacebookService__getCounters__presult____isset" prot="public">facebook::fb303::_FacebookService_getCounters_presult__isset</innerclass>
+    <innerclass refid="structfacebook_1_1fb303_1_1__FacebookService__getCounters__result____isset" prot="public">facebook::fb303::_FacebookService_getCounters_result__isset</innerclass>
+    <innerclass refid="structfacebook_1_1fb303_1_1__FacebookService__getCpuProfile__args____isset" prot="public">facebook::fb303::_FacebookService_getCpuProfile_args__isset</innerclass>
+    <innerclass refid="structfacebook_1_1fb303_1_1__FacebookService__getCpuProfile__presult____isset" prot="public">facebook::fb303::_FacebookService_getCpuProfile_presult__isset</innerclass>
+    <innerclass refid="structfacebook_1_1fb303_1_1__FacebookService__getCpuProfile__result____isset" prot="public">facebook::fb303::_FacebookService_getCpuProfile_result__isset</innerclass>
+    <innerclass refid="structfacebook_1_1fb303_1_1__FacebookService__getName__presult____isset" prot="public">facebook::fb303::_FacebookService_getName_presult__isset</innerclass>
+    <innerclass refid="structfacebook_1_1fb303_1_1__FacebookService__getName__result____isset" prot="public">facebook::fb303::_FacebookService_getName_result__isset</innerclass>
+    <innerclass refid="structfacebook_1_1fb303_1_1__FacebookService__getOption__args____isset" prot="public">facebook::fb303::_FacebookService_getOption_args__isset</innerclass>
+    <innerclass refid="structfacebook_1_1fb303_1_1__FacebookService__getOption__presult____isset" prot="public">facebook::fb303::_FacebookService_getOption_presult__isset</innerclass>
+    <innerclass refid="structfacebook_1_1fb303_1_1__FacebookService__getOption__result____isset" prot="public">facebook::fb303::_FacebookService_getOption_result__isset</innerclass>
+    <innerclass refid="structfacebook_1_1fb303_1_1__FacebookService__getOptions__presult____isset" prot="public">facebook::fb303::_FacebookService_getOptions_presult__isset</innerclass>
+    <innerclass refid="structfacebook_1_1fb303_1_1__FacebookService__getOptions__result____isset" prot="public">facebook::fb303::_FacebookService_getOptions_result__isset</innerclass>
+    <innerclass refid="structfacebook_1_1fb303_1_1__FacebookService__getStatus__presult____isset" prot="public">facebook::fb303::_FacebookService_getStatus_presult__isset</innerclass>
+    <innerclass refid="structfacebook_1_1fb303_1_1__FacebookService__getStatus__result____isset" prot="public">facebook::fb303::_FacebookService_getStatus_result__isset</innerclass>
+    <innerclass refid="structfacebook_1_1fb303_1_1__FacebookService__getStatusDetails__presult____isset" prot="public">facebook::fb303::_FacebookService_getStatusDetails_presult__isset</innerclass>
+    <innerclass refid="structfacebook_1_1fb303_1_1__FacebookService__getStatusDetails__result____isset" prot="public">facebook::fb303::_FacebookService_getStatusDetails_result__isset</innerclass>
+    <innerclass refid="structfacebook_1_1fb303_1_1__FacebookService__getVersion__presult____isset" prot="public">facebook::fb303::_FacebookService_getVersion_presult__isset</innerclass>
+    <innerclass refid="structfacebook_1_1fb303_1_1__FacebookService__getVersion__result____isset" prot="public">facebook::fb303::_FacebookService_getVersion_result__isset</innerclass>
+    <innerclass refid="structfacebook_1_1fb303_1_1__FacebookService__setOption__args____isset" prot="public">facebook::fb303::_FacebookService_setOption_args__isset</innerclass>
+    <innerclass refid="classfacebook_1_1fb303_1_1FacebookService__aliveSince__args" prot="public">facebook::fb303::FacebookService_aliveSince_args</innerclass>
+    <innerclass refid="classfacebook_1_1fb303_1_1FacebookService__aliveSince__pargs" prot="public">facebook::fb303::FacebookService_aliveSince_pargs</innerclass>
+    <innerclass refid="classfacebook_1_1fb303_1_1FacebookService__aliveSince__presult" prot="public">facebook::fb303::FacebookService_aliveSince_presult</innerclass>
+    <innerclass refid="classfacebook_1_1fb303_1_1FacebookService__aliveSince__result" prot="public">facebook::fb303::FacebookService_aliveSince_result</innerclass>
+    <innerclass refid="classfacebook_1_1fb303_1_1FacebookService__getCounter__args" prot="public">facebook::fb303::FacebookService_getCounter_args</innerclass>
+    <innerclass refid="classfacebook_1_1fb303_1_1FacebookService__getCounter__pargs" prot="public">facebook::fb303::FacebookService_getCounter_pargs</innerclass>
+    <innerclass refid="classfacebook_1_1fb303_1_1FacebookService__getCounter__presult" prot="public">facebook::fb303::FacebookService_getCounter_presult</innerclass>
+    <innerclass refid="classfacebook_1_1fb303_1_1FacebookService__getCounter__result" prot="public">facebook::fb303::FacebookService_getCounter_result</innerclass>
+    <innerclass refid="classfacebook_1_1fb303_1_1FacebookService__getCounters__args" prot="public">facebook::fb303::FacebookService_getCounters_args</innerclass>
+    <innerclass refid="classfacebook_1_1fb303_1_1FacebookService__getCounters__pargs" prot="public">facebook::fb303::FacebookService_getCounters_pargs</innerclass>
+    <innerclass refid="classfacebook_1_1fb303_1_1FacebookService__getCounters__presult" prot="public">facebook::fb303::FacebookService_getCounters_presult</innerclass>
+    <innerclass refid="classfacebook_1_1fb303_1_1FacebookService__getCounters__result" prot="public">facebook::fb303::FacebookService_getCounters_result</innerclass>
+    <innerclass refid="classfacebook_1_1fb303_1_1FacebookService__getCpuProfile__args" prot="public">facebook::fb303::FacebookService_getCpuProfile_args</innerclass>
+    <innerclass refid="classfacebook_1_1fb303_1_1FacebookService__getCpuProfile__pargs" prot="public">facebook::fb303::FacebookService_getCpuProfile_pargs</innerclass>
+    <innerclass refid="classfacebook_1_1fb303_1_1FacebookService__getCpuProfile__presult" prot="public">facebook::fb303::FacebookService_getCpuProfile_presult</innerclass>
+    <innerclass refid="classfacebook_1_1fb303_1_1FacebookService__getCpuProfile__result" prot="public">facebook::fb303::FacebookService_getCpuProfile_result</innerclass>
+    <innerclass refid="classfacebook_1_1fb303_1_1FacebookService__getName__args" prot="public">facebook::fb303::FacebookService_getName_args</innerclass>
+    <innerclass refid="classfacebook_1_1fb303_1_1FacebookService__getName__pargs" prot="public">facebook::fb303::FacebookService_getName_pargs</innerclass>
+    <innerclass refid="classfacebook_1_1fb303_1_1FacebookService__getName__presult" prot="public">facebook::fb303::FacebookService_getName_presult</innerclass>
+    <innerclass refid="classfacebook_1_1fb303_1_1FacebookService__getName__result" prot="public">facebook::fb303::FacebookService_getName_result</innerclass>
+    <innerclass refid="classfacebook_1_1fb303_1_1FacebookService__getOption__args" prot="public">facebook::fb303::FacebookService_getOption_args</innerclass>
+    <innerclass refid="classfacebook_1_1fb303_1_1FacebookService__getOption__pargs" prot="public">facebook::fb303::FacebookService_getOption_pargs</innerclass>
+    <innerclass refid="classfacebook_1_1fb303_1_1FacebookService__getOption__presult" prot="public">facebook::fb303::FacebookService_getOption_presult</innerclass>
+    <innerclass refid="classfacebook_1_1fb303_1_1FacebookService__getOption__result" prot="public">facebook::fb303::FacebookService_getOption_result</innerclass>
+    <innerclass refid="classfacebook_1_1fb303_1_1FacebookService__getOptions__args" prot="public">facebook::fb303::FacebookService_getOptions_args</innerclass>
+    <innerclass refid="classfacebook_1_1fb303_1_1FacebookService__getOptions__pargs" prot="public">facebook::fb303::FacebookService_getOptions_pargs</innerclass>
+    <innerclass refid="classfacebook_1_1fb303_1_1FacebookService__getOptions__presult" prot="public">facebook::fb303::FacebookService_getOptions_presult</innerclass>
+    <innerclass refid="classfacebook_1_1fb303_1_1FacebookService__getOptions__result" prot="public">facebook::fb303::FacebookService_getOptions_result</innerclass>
+    <innerclass refid="classfacebook_1_1fb303_1_1FacebookService__getStatus__args" prot="public">facebook::fb303::FacebookService_getStatus_args</innerclass>
+    <innerclass refid="classfacebook_1_1fb303_1_1FacebookService__getStatus__pargs" prot="public">facebook::fb303::FacebookService_getStatus_pargs</innerclass>
+    <innerclass refid="classfacebook_1_1fb303_1_1FacebookService__getStatus__presult" prot="public">facebook::fb303::FacebookService_getStatus_presult</innerclass>
+    <innerclass refid="classfacebook_1_1fb303_1_1FacebookService__getStatus__result" prot="public">facebook::fb303::FacebookService_getStatus_result</innerclass>
+    <innerclass refid="classfacebook_1_1fb303_1_1FacebookService__getStatusDetails__args" prot="public">facebook::fb303::FacebookService_getStatusDetails_args</innerclass>
+    <innerclass refid="classfacebook_1_1fb303_1_1FacebookService__getStatusDetails__pargs" prot="public">facebook::fb303::FacebookService_getStatusDetails_pargs</innerclass>
+    <innerclass refid="classfacebook_1_1fb303_1_1FacebookService__getStatusDetails__presult" prot="public">facebook::fb303::FacebookService_getStatusDetails_presult</innerclass>
+    <innerclass refid="classfacebook_1_1fb303_1_1FacebookService__getStatusDetails__result" prot="public">facebook::fb303::FacebookService_getStatusDetails_result</innerclass>
+    <innerclass refid="classfacebook_1_1fb303_1_1FacebookService__getVersion__args" prot="public">facebook::fb303::FacebookService_getVersion_args</innerclass>
+    <innerclass refid="classfacebook_1_1fb303_1_1FacebookService__getVersion__pargs" prot="public">facebook::fb303::FacebookService_getVersion_pargs</innerclass>
+    <innerclass refid="classfacebook_1_1fb303_1_1FacebookService__getVersion__presult" prot="public">facebook::fb303::FacebookService_getVersion_presult</innerclass>
+    <innerclass refid="classfacebook_1_1fb303_1_1FacebookService__getVersion__result" prot="public">facebook::fb303::FacebookService_getVersion_result</innerclass>
+    <innerclass refid="classfacebook_1_1fb303_1_1FacebookService__reinitialize__args" prot="public">facebook::fb303::FacebookService_reinitialize_args</innerclass>
+    <innerclass refid="classfacebook_1_1fb303_1_1FacebookService__reinitialize__pargs" prot="public">facebook::fb303::FacebookService_reinitialize_pargs</innerclass>
+    <innerclass refid="classfacebook_1_1fb303_1_1FacebookService__setOption__args" prot="public">facebook::fb303::FacebookService_setOption_args</innerclass>
+    <innerclass refid="classfacebook_1_1fb303_1_1FacebookService__setOption__pargs" prot="public">facebook::fb303::FacebookService_setOption_pargs</innerclass>
+    <innerclass refid="classfacebook_1_1fb303_1_1FacebookService__setOption__presult" prot="public">facebook::fb303::FacebookService_setOption_presult</innerclass>
+    <innerclass refid="classfacebook_1_1fb303_1_1FacebookService__setOption__result" prot="public">facebook::fb303::FacebookService_setOption_result</innerclass>
+    <innerclass refid="classfacebook_1_1fb303_1_1FacebookService__shutdown__args" prot="public">facebook::fb303::FacebookService_shutdown_args</innerclass>
+    <innerclass refid="classfacebook_1_1fb303_1_1FacebookService__shutdown__pargs" prot="public">facebook::fb303::FacebookService_shutdown_pargs</innerclass>
+    <innerclass refid="classfacebook_1_1fb303_1_1FacebookServiceClient" prot="public">facebook::fb303::FacebookServiceClient</innerclass>
+    <innerclass refid="classfacebook_1_1fb303_1_1FacebookServiceConcurrentClient" prot="public">facebook::fb303::FacebookServiceConcurrentClient</innerclass>
+    <innerclass refid="classfacebook_1_1fb303_1_1FacebookServiceIf" prot="public">facebook::fb303::FacebookServiceIf</innerclass>
+    <innerclass refid="classfacebook_1_1fb303_1_1FacebookServiceIfFactory" prot="public">facebook::fb303::FacebookServiceIfFactory</innerclass>
+    <innerclass refid="classfacebook_1_1fb303_1_1FacebookServiceIfSingletonFactory" prot="public">facebook::fb303::FacebookServiceIfSingletonFactory</innerclass>
+    <innerclass refid="classfacebook_1_1fb303_1_1FacebookServiceMultiface" prot="public">facebook::fb303::FacebookServiceMultiface</innerclass>
+    <innerclass refid="classfacebook_1_1fb303_1_1FacebookServiceNull" prot="public">facebook::fb303::FacebookServiceNull</innerclass>
+    <innerclass refid="classfacebook_1_1fb303_1_1FacebookServiceProcessor" prot="public">facebook::fb303::FacebookServiceProcessor</innerclass>
+    <innerclass refid="classfacebook_1_1fb303_1_1FacebookServiceProcessorFactory" prot="public">facebook::fb303::FacebookServiceProcessorFactory</innerclass>
+    <innerclass refid="structfacebook_1_1fb303_1_1fb__status" prot="public">facebook::fb303::fb_status</innerclass>
+    <sectiondef kind="typedef">
+      <memberdef kind="typedef" id="FacebookService_8h_1aae0e0af813def8fef5f10f01f8aca056" prot="public" static="no">
+        <type>struct <ref refid="structfacebook_1_1fb303_1_1__FacebookService__getName__result____isset" kindref="compound">facebook::fb303::_FacebookService_getName_result__isset</ref></type>
+        <definition>typedef struct facebook::fb303::_FacebookService_getName_result__isset facebook::fb303::_FacebookService_getName_result__isset</definition>
+        <argsstring></argsstring>
+        <name>_FacebookService_getName_result__isset</name>
+        <qualifiedname>facebook::fb303::_FacebookService_getName_result__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="213" column="40"/>
+      </memberdef>
+      <memberdef kind="typedef" id="FacebookService_8h_1afbbe5fb65da77305c4ef17e319f495be" prot="public" static="no">
+        <type>struct <ref refid="structfacebook_1_1fb303_1_1__FacebookService__getName__presult____isset" kindref="compound">facebook::fb303::_FacebookService_getName_presult__isset</ref></type>
+        <definition>typedef struct facebook::fb303::_FacebookService_getName_presult__isset facebook::fb303::_FacebookService_getName_presult__isset</definition>
+        <argsstring></argsstring>
+        <name>_FacebookService_getName_presult__isset</name>
+        <qualifiedname>facebook::fb303::_FacebookService_getName_presult__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="244" column="41"/>
+      </memberdef>
+      <memberdef kind="typedef" id="FacebookService_8h_1a6ca3e29f6609da185183a70bab67b226" prot="public" static="no">
+        <type>struct <ref refid="structfacebook_1_1fb303_1_1__FacebookService__getVersion__result____isset" kindref="compound">facebook::fb303::_FacebookService_getVersion_result__isset</ref></type>
+        <definition>typedef struct facebook::fb303::_FacebookService_getVersion_result__isset facebook::fb303::_FacebookService_getVersion_result__isset</definition>
+        <argsstring></argsstring>
+        <name>_FacebookService_getVersion_result__isset</name>
+        <qualifiedname>facebook::fb303::_FacebookService_getVersion_result__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="295" column="43"/>
+      </memberdef>
+      <memberdef kind="typedef" id="FacebookService_8h_1a9667240acca80b0ddbdc95058f5af72f" prot="public" static="no">
+        <type>struct <ref refid="structfacebook_1_1fb303_1_1__FacebookService__getVersion__presult____isset" kindref="compound">facebook::fb303::_FacebookService_getVersion_presult__isset</ref></type>
+        <definition>typedef struct facebook::fb303::_FacebookService_getVersion_presult__isset facebook::fb303::_FacebookService_getVersion_presult__isset</definition>
+        <argsstring></argsstring>
+        <name>_FacebookService_getVersion_presult__isset</name>
+        <qualifiedname>facebook::fb303::_FacebookService_getVersion_presult__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="326" column="44"/>
+      </memberdef>
+      <memberdef kind="typedef" id="FacebookService_8h_1aff47274e4bccaef19672b1d0ac5b5b38" prot="public" static="no">
+        <type>struct <ref refid="structfacebook_1_1fb303_1_1__FacebookService__getStatus__result____isset" kindref="compound">facebook::fb303::_FacebookService_getStatus_result__isset</ref></type>
+        <definition>typedef struct facebook::fb303::_FacebookService_getStatus_result__isset facebook::fb303::_FacebookService_getStatus_result__isset</definition>
+        <argsstring></argsstring>
+        <name>_FacebookService_getStatus_result__isset</name>
+        <qualifiedname>facebook::fb303::_FacebookService_getStatus_result__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="377" column="42"/>
+      </memberdef>
+      <memberdef kind="typedef" id="FacebookService_8h_1a325902eeb9d0cfd17ecd1eeb8e97ecb0" prot="public" static="no">
+        <type>struct <ref refid="structfacebook_1_1fb303_1_1__FacebookService__getStatus__presult____isset" kindref="compound">facebook::fb303::_FacebookService_getStatus_presult__isset</ref></type>
+        <definition>typedef struct facebook::fb303::_FacebookService_getStatus_presult__isset facebook::fb303::_FacebookService_getStatus_presult__isset</definition>
+        <argsstring></argsstring>
+        <name>_FacebookService_getStatus_presult__isset</name>
+        <qualifiedname>facebook::fb303::_FacebookService_getStatus_presult__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="412" column="43"/>
+      </memberdef>
+      <memberdef kind="typedef" id="FacebookService_8h_1ad6976c23a862d6af76f6c6c1f378e299" prot="public" static="no">
+        <type>struct <ref refid="structfacebook_1_1fb303_1_1__FacebookService__getStatusDetails__result____isset" kindref="compound">facebook::fb303::_FacebookService_getStatusDetails_result__isset</ref></type>
+        <definition>typedef struct facebook::fb303::_FacebookService_getStatusDetails_result__isset facebook::fb303::_FacebookService_getStatusDetails_result__isset</definition>
+        <argsstring></argsstring>
+        <name>_FacebookService_getStatusDetails_result__isset</name>
+        <qualifiedname>facebook::fb303::_FacebookService_getStatusDetails_result__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="467" column="49"/>
+      </memberdef>
+      <memberdef kind="typedef" id="FacebookService_8h_1a8b9c65a1aabc30247aa5854f56c9788d" prot="public" static="no">
+        <type>struct <ref refid="structfacebook_1_1fb303_1_1__FacebookService__getStatusDetails__presult____isset" kindref="compound">facebook::fb303::_FacebookService_getStatusDetails_presult__isset</ref></type>
+        <definition>typedef struct facebook::fb303::_FacebookService_getStatusDetails_presult__isset facebook::fb303::_FacebookService_getStatusDetails_presult__isset</definition>
+        <argsstring></argsstring>
+        <name>_FacebookService_getStatusDetails_presult__isset</name>
+        <qualifiedname>facebook::fb303::_FacebookService_getStatusDetails_presult__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="498" column="50"/>
+      </memberdef>
+      <memberdef kind="typedef" id="FacebookService_8h_1a942d8adce2dbe2e6f22f5e168f74051e" prot="public" static="no">
+        <type>struct <ref refid="structfacebook_1_1fb303_1_1__FacebookService__getCounters__result____isset" kindref="compound">facebook::fb303::_FacebookService_getCounters_result__isset</ref></type>
+        <definition>typedef struct facebook::fb303::_FacebookService_getCounters_result__isset facebook::fb303::_FacebookService_getCounters_result__isset</definition>
+        <argsstring></argsstring>
+        <name>_FacebookService_getCounters_result__isset</name>
+        <qualifiedname>facebook::fb303::_FacebookService_getCounters_result__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="549" column="44"/>
+      </memberdef>
+      <memberdef kind="typedef" id="FacebookService_8h_1a65d994fdc5a8118795768310d991dc89" prot="public" static="no">
+        <type>struct <ref refid="structfacebook_1_1fb303_1_1__FacebookService__getCounters__presult____isset" kindref="compound">facebook::fb303::_FacebookService_getCounters_presult__isset</ref></type>
+        <definition>typedef struct facebook::fb303::_FacebookService_getCounters_presult__isset facebook::fb303::_FacebookService_getCounters_presult__isset</definition>
+        <argsstring></argsstring>
+        <name>_FacebookService_getCounters_presult__isset</name>
+        <qualifiedname>facebook::fb303::_FacebookService_getCounters_presult__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="580" column="45"/>
+      </memberdef>
+      <memberdef kind="typedef" id="FacebookService_8h_1a8a7962b4b70bb672188e7495cf94c932" prot="public" static="no">
+        <type>struct <ref refid="structfacebook_1_1fb303_1_1__FacebookService__getCounter__args____isset" kindref="compound">facebook::fb303::_FacebookService_getCounter_args__isset</ref></type>
+        <definition>typedef struct facebook::fb303::_FacebookService_getCounter_args__isset facebook::fb303::_FacebookService_getCounter_args__isset</definition>
+        <argsstring></argsstring>
+        <name>_FacebookService_getCounter_args__isset</name>
+        <qualifiedname>facebook::fb303::_FacebookService_getCounter_args__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="598" column="41"/>
+      </memberdef>
+      <memberdef kind="typedef" id="FacebookService_8h_1a60996c1c3d0f367c7dd44c6575472212" prot="public" static="no">
+        <type>struct <ref refid="structfacebook_1_1fb303_1_1__FacebookService__getCounter__result____isset" kindref="compound">facebook::fb303::_FacebookService_getCounter_result__isset</ref></type>
+        <definition>typedef struct facebook::fb303::_FacebookService_getCounter_result__isset facebook::fb303::_FacebookService_getCounter_result__isset</definition>
+        <argsstring></argsstring>
+        <name>_FacebookService_getCounter_result__isset</name>
+        <qualifiedname>facebook::fb303::_FacebookService_getCounter_result__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="641" column="43"/>
+      </memberdef>
+      <memberdef kind="typedef" id="FacebookService_8h_1ad8ae96a11b66ab828264b2fc0f80f81a" prot="public" static="no">
+        <type>struct <ref refid="structfacebook_1_1fb303_1_1__FacebookService__getCounter__presult____isset" kindref="compound">facebook::fb303::_FacebookService_getCounter_presult__isset</ref></type>
+        <definition>typedef struct facebook::fb303::_FacebookService_getCounter_presult__isset facebook::fb303::_FacebookService_getCounter_presult__isset</definition>
+        <argsstring></argsstring>
+        <name>_FacebookService_getCounter_presult__isset</name>
+        <qualifiedname>facebook::fb303::_FacebookService_getCounter_presult__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="672" column="44"/>
+      </memberdef>
+      <memberdef kind="typedef" id="FacebookService_8h_1ad8475b501c58b1ae37345175a3b622b6" prot="public" static="no">
+        <type>struct <ref refid="structfacebook_1_1fb303_1_1__FacebookService__setOption__args____isset" kindref="compound">facebook::fb303::_FacebookService_setOption_args__isset</ref></type>
+        <definition>typedef struct facebook::fb303::_FacebookService_setOption_args__isset facebook::fb303::_FacebookService_setOption_args__isset</definition>
+        <argsstring></argsstring>
+        <name>_FacebookService_setOption_args__isset</name>
+        <qualifiedname>facebook::fb303::_FacebookService_setOption_args__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="691" column="40"/>
+      </memberdef>
+      <memberdef kind="typedef" id="FacebookService_8h_1a3406a29d48e5f6f6300acc50182b051b" prot="public" static="no">
+        <type>struct <ref refid="structfacebook_1_1fb303_1_1__FacebookService__getOption__args____isset" kindref="compound">facebook::fb303::_FacebookService_getOption_args__isset</ref></type>
+        <definition>typedef struct facebook::fb303::_FacebookService_getOption_args__isset facebook::fb303::_FacebookService_getOption_args__isset</definition>
+        <argsstring></argsstring>
+        <name>_FacebookService_getOption_args__isset</name>
+        <qualifiedname>facebook::fb303::_FacebookService_getOption_args__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="771" column="40"/>
+      </memberdef>
+      <memberdef kind="typedef" id="FacebookService_8h_1a923d7e7a2355acb62bb990208c2de05d" prot="public" static="no">
+        <type>struct <ref refid="structfacebook_1_1fb303_1_1__FacebookService__getOption__result____isset" kindref="compound">facebook::fb303::_FacebookService_getOption_result__isset</ref></type>
+        <definition>typedef struct facebook::fb303::_FacebookService_getOption_result__isset facebook::fb303::_FacebookService_getOption_result__isset</definition>
+        <argsstring></argsstring>
+        <name>_FacebookService_getOption_result__isset</name>
+        <qualifiedname>facebook::fb303::_FacebookService_getOption_result__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="814" column="42"/>
+      </memberdef>
+      <memberdef kind="typedef" id="FacebookService_8h_1a89132b4c40ca69e7a0afff97586c76b3" prot="public" static="no">
+        <type>struct <ref refid="structfacebook_1_1fb303_1_1__FacebookService__getOption__presult____isset" kindref="compound">facebook::fb303::_FacebookService_getOption_presult__isset</ref></type>
+        <definition>typedef struct facebook::fb303::_FacebookService_getOption_presult__isset facebook::fb303::_FacebookService_getOption_presult__isset</definition>
+        <argsstring></argsstring>
+        <name>_FacebookService_getOption_presult__isset</name>
+        <qualifiedname>facebook::fb303::_FacebookService_getOption_presult__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="845" column="43"/>
+      </memberdef>
+      <memberdef kind="typedef" id="FacebookService_8h_1a95c0ec8166f1612e4e2ae0a28e0a9eb9" prot="public" static="no">
+        <type>struct <ref refid="structfacebook_1_1fb303_1_1__FacebookService__getOptions__result____isset" kindref="compound">facebook::fb303::_FacebookService_getOptions_result__isset</ref></type>
+        <definition>typedef struct facebook::fb303::_FacebookService_getOptions_result__isset facebook::fb303::_FacebookService_getOptions_result__isset</definition>
+        <argsstring></argsstring>
+        <name>_FacebookService_getOptions_result__isset</name>
+        <qualifiedname>facebook::fb303::_FacebookService_getOptions_result__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="896" column="43"/>
+      </memberdef>
+      <memberdef kind="typedef" id="FacebookService_8h_1a4ae1d203dc4f6dc57e8a3df9ddb0835f" prot="public" static="no">
+        <type>struct <ref refid="structfacebook_1_1fb303_1_1__FacebookService__getOptions__presult____isset" kindref="compound">facebook::fb303::_FacebookService_getOptions_presult__isset</ref></type>
+        <definition>typedef struct facebook::fb303::_FacebookService_getOptions_presult__isset facebook::fb303::_FacebookService_getOptions_presult__isset</definition>
+        <argsstring></argsstring>
+        <name>_FacebookService_getOptions_presult__isset</name>
+        <qualifiedname>facebook::fb303::_FacebookService_getOptions_presult__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="927" column="44"/>
+      </memberdef>
+      <memberdef kind="typedef" id="FacebookService_8h_1af910285c51bc44a13f9080797556f753" prot="public" static="no">
+        <type>struct <ref refid="structfacebook_1_1fb303_1_1__FacebookService__getCpuProfile__args____isset" kindref="compound">facebook::fb303::_FacebookService_getCpuProfile_args__isset</ref></type>
+        <definition>typedef struct facebook::fb303::_FacebookService_getCpuProfile_args__isset facebook::fb303::_FacebookService_getCpuProfile_args__isset</definition>
+        <argsstring></argsstring>
+        <name>_FacebookService_getCpuProfile_args__isset</name>
+        <qualifiedname>facebook::fb303::_FacebookService_getCpuProfile_args__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="945" column="44"/>
+      </memberdef>
+      <memberdef kind="typedef" id="FacebookService_8h_1a3fe1dca3c6a5dccc7371f6b4eceeaec9" prot="public" static="no">
+        <type>struct <ref refid="structfacebook_1_1fb303_1_1__FacebookService__getCpuProfile__result____isset" kindref="compound">facebook::fb303::_FacebookService_getCpuProfile_result__isset</ref></type>
+        <definition>typedef struct facebook::fb303::_FacebookService_getCpuProfile_result__isset facebook::fb303::_FacebookService_getCpuProfile_result__isset</definition>
+        <argsstring></argsstring>
+        <name>_FacebookService_getCpuProfile_result__isset</name>
+        <qualifiedname>facebook::fb303::_FacebookService_getCpuProfile_result__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="988" column="46"/>
+      </memberdef>
+      <memberdef kind="typedef" id="FacebookService_8h_1ab68caa00b603fd68fd8d06512c9734e3" prot="public" static="no">
+        <type>struct <ref refid="structfacebook_1_1fb303_1_1__FacebookService__getCpuProfile__presult____isset" kindref="compound">facebook::fb303::_FacebookService_getCpuProfile_presult__isset</ref></type>
+        <definition>typedef struct facebook::fb303::_FacebookService_getCpuProfile_presult__isset facebook::fb303::_FacebookService_getCpuProfile_presult__isset</definition>
+        <argsstring></argsstring>
+        <name>_FacebookService_getCpuProfile_presult__isset</name>
+        <qualifiedname>facebook::fb303::_FacebookService_getCpuProfile_presult__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="1019" column="47"/>
+      </memberdef>
+      <memberdef kind="typedef" id="FacebookService_8h_1a629175f23b10f50a036305aaa22272ff" prot="public" static="no">
+        <type>struct <ref refid="structfacebook_1_1fb303_1_1__FacebookService__aliveSince__result____isset" kindref="compound">facebook::fb303::_FacebookService_aliveSince_result__isset</ref></type>
+        <definition>typedef struct facebook::fb303::_FacebookService_aliveSince_result__isset facebook::fb303::_FacebookService_aliveSince_result__isset</definition>
+        <argsstring></argsstring>
+        <name>_FacebookService_aliveSince_result__isset</name>
+        <qualifiedname>facebook::fb303::_FacebookService_aliveSince_result__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="1070" column="43"/>
+      </memberdef>
+      <memberdef kind="typedef" id="FacebookService_8h_1a74526e4f145feb2dc9df0df9873a78a1" prot="public" static="no">
+        <type>struct <ref refid="structfacebook_1_1fb303_1_1__FacebookService__aliveSince__presult____isset" kindref="compound">facebook::fb303::_FacebookService_aliveSince_presult__isset</ref></type>
+        <definition>typedef struct facebook::fb303::_FacebookService_aliveSince_presult__isset facebook::fb303::_FacebookService_aliveSince_presult__isset</definition>
+        <argsstring></argsstring>
+        <name>_FacebookService_aliveSince_presult__isset</name>
+        <qualifiedname>facebook::fb303::_FacebookService_aliveSince_presult__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="1101" column="44"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="var">
+      <memberdef kind="variable" id="fb303__types_8cpp_1afefe6a97a10393d0dcb4bfef778ccce9" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int facebook::fb303::_kfb_statusValues[]</definition>
+        <argsstring>[]</argsstring>
+        <name>_kfb_statusValues</name>
+        <qualifiedname>facebook::fb303::_kfb_statusValues</qualifiedname>
+        <initializer>= {
+  fb_status::DEAD,
+  fb_status::STARTING,
+  fb_status::ALIVE,
+  fb_status::STOPPING,
+  fb_status::STOPPED,
+  fb_status::WARNING
+}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/fb303_types.cpp" line="16" column="5" bodyfile="iceberg/catalog/hive/gen-cpp/fb303_types.cpp" bodystart="16" bodyend="23"/>
+      </memberdef>
+      <memberdef kind="variable" id="fb303__types_8cpp_1a9fa919a1292eede7fa4918b4b7a0578c" prot="public" static="no" mutable="no">
+        <type>const char *</type>
+        <definition>const char* facebook::fb303::_kfb_statusNames[]</definition>
+        <argsstring>[]</argsstring>
+        <name>_kfb_statusNames</name>
+        <qualifiedname>facebook::fb303::_kfb_statusNames</qualifiedname>
+        <initializer>= {
+  &quot;DEAD&quot;,
+  &quot;STARTING&quot;,
+  &quot;ALIVE&quot;,
+  &quot;STOPPING&quot;,
+  &quot;STOPPED&quot;,
+  &quot;WARNING&quot;
+}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/fb303_types.cpp" line="24" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/fb303_types.cpp" bodystart="24" bodyend="31"/>
+      </memberdef>
+      <memberdef kind="variable" id="fb303__types_8h_1ac92d92f5d69a3999f9e0464f140b4b1a" prot="public" static="no" extern="yes" mutable="no">
+        <type>const std::map&lt; int, const char * &gt;</type>
+        <definition>const std::map&lt;int, const char*&gt; facebook::fb303::_fb_status_VALUES_TO_NAMES</definition>
+        <argsstring></argsstring>
+        <name>_fb_status_VALUES_TO_NAMES</name>
+        <qualifiedname>facebook::fb303::_fb_status_VALUES_TO_NAMES</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/fb303_types.h" line="38" column="23" declfile="iceberg/catalog/hive/gen-cpp/fb303_types.h" declline="38" declcolumn="23"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="func">
+      <memberdef kind="function" id="fb303__types_8cpp_1ae36971d0c9ac05d0730434de8f51b624" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>const std::map&lt; int, const char * &gt;</type>
+        <definition>const std::map&lt; int, const char * &gt; facebook::fb303::_fb_status_VALUES_TO_NAMES</definition>
+        <argsstring>(::apache::thrift::TEnumIterator(6, _kfb_statusValues, _kfb_statusNames), ::apache::thrift::TEnumIterator(-1, nullptr, nullptr))</argsstring>
+        <name>_fb_status_VALUES_TO_NAMES</name>
+        <qualifiedname>facebook::fb303::_fb_status_VALUES_TO_NAMES</qualifiedname>
+        <param>
+          <type>::apache::thrift::TEnumIterator(6, _kfb_statusValues, _kfb_statusNames)</type>
+        </param>
+        <param>
+          <type>::apache::thrift::TEnumIterator(-1, nullptr, nullptr)</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/fb303_types.cpp" line="32" column="16" declfile="iceberg/catalog/hive/gen-cpp/fb303_types.cpp" declline="32" declcolumn="16"/>
+      </memberdef>
+      <memberdef kind="function" id="fb303__types_8cpp_1a16d41633560aae4eab008f9ed090ddb5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::ostream &amp;</type>
+        <definition>std::ostream &amp; facebook::fb303::operator&lt;&lt;</definition>
+        <argsstring>(std::ostream &amp;out, const fb_status::type &amp;val)</argsstring>
+        <name>operator&lt;&lt;</name>
+        <qualifiedname>facebook::fb303::operator&lt;&lt;</qualifiedname>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>out</declname>
+        </param>
+        <param>
+          <type>const fb_status::type &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/fb303_types.cpp" line="34" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/fb303_types.cpp" bodystart="34" bodyend="42" declfile="iceberg/catalog/hive/gen-cpp/fb303_types.h" declline="40" declcolumn="1"/>
+      </memberdef>
+      <memberdef kind="function" id="fb303__types_8cpp_1ab86c4ed6883ae8299847f86e57c936d5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::string</type>
+        <definition>std::string facebook::fb303::to_string</definition>
+        <argsstring>(const fb_status::type &amp;val)</argsstring>
+        <name>to_string</name>
+        <qualifiedname>facebook::fb303::to_string</qualifiedname>
+        <param>
+          <type>const fb_status::type &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/fb303_types.cpp" line="44" column="13" bodyfile="iceberg/catalog/hive/gen-cpp/fb303_types.cpp" bodystart="44" bodyend="51" declfile="iceberg/catalog/hive/gen-cpp/fb303_types.h" declline="42" declcolumn="13"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/FacebookService.cpp" line="9" column="18"/>
+  </compounddef>
+</doxygen>

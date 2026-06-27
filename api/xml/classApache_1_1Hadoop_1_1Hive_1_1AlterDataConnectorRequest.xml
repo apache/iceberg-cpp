@@ -1,0 +1,333 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1AlterDataConnectorRequest" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::AlterDataConnectorRequest</compoundname>
+    <basecompoundref prot="public" virt="virtual">apache::thrift::TBase</basecompoundref>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1AlterDataConnectorRequest_1a29ce0948c91056e67a5d0698069e9fe5" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::AlterDataConnectorRequest::connectorName</definition>
+        <argsstring></argsstring>
+        <name>connectorName</name>
+        <qualifiedname>Apache::Hadoop::Hive::AlterDataConnectorRequest::connectorName</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13289" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="13289" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1AlterDataConnectorRequest_1a0196fb5b23e64117724ce3f9a728f622" prot="public" static="no" mutable="no">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1DataConnector" kindref="compound">DataConnector</ref></type>
+        <definition>DataConnector Apache::Hadoop::Hive::AlterDataConnectorRequest::newConnector</definition>
+        <argsstring></argsstring>
+        <name>newConnector</name>
+        <qualifiedname>Apache::Hadoop::Hive::AlterDataConnectorRequest::newConnector</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13290" column="17" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="13290" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AlterDataConnectorRequest_1aca85fd21149c6605cf8e617641042b99" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::AlterDataConnectorRequest::AlterDataConnectorRequest</definition>
+        <argsstring>(const AlterDataConnectorRequest &amp;)</argsstring>
+        <name>AlterDataConnectorRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::AlterDataConnectorRequest::AlterDataConnectorRequest</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1AlterDataConnectorRequest" kindref="compound">AlterDataConnectorRequest</ref> &amp;</type>
+          <defname>other1635</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13284" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="52076" bodyend="52079"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AlterDataConnectorRequest_1ac4a1d35ce035fcaff8f0a852b7e92784" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1AlterDataConnectorRequest" kindref="compound">AlterDataConnectorRequest</ref> &amp;</type>
+        <definition>AlterDataConnectorRequest &amp; Apache::Hadoop::Hive::AlterDataConnectorRequest::operator=</definition>
+        <argsstring>(const AlterDataConnectorRequest &amp;)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::AlterDataConnectorRequest::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1AlterDataConnectorRequest" kindref="compound">AlterDataConnectorRequest</ref> &amp;</type>
+          <defname>other1636</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13285" column="29" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="52080" bodyend="52084"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AlterDataConnectorRequest_1a04e7e830ab53d0917dac6928836a8218" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::AlterDataConnectorRequest::AlterDataConnectorRequest</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>AlterDataConnectorRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::AlterDataConnectorRequest::AlterDataConnectorRequest</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13286" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="51970" bodyend="51972"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AlterDataConnectorRequest_1a41a714b1de044869c99b6fb1e1996934" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::AlterDataConnectorRequest::~AlterDataConnectorRequest</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~AlterDataConnectorRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::AlterDataConnectorRequest::~AlterDataConnectorRequest</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13288" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="51967" bodyend="51968"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AlterDataConnectorRequest_1a1822518175d57129c8999550ff0c5fe7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::AlterDataConnectorRequest::__set_connectorName</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_connectorName</name>
+        <qualifiedname>Apache::Hadoop::Hive::AlterDataConnectorRequest::__set_connectorName</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13292" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="51974" bodyend="51976"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AlterDataConnectorRequest_1a547dc2b069172b0f81e5a4d61f8995dc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::AlterDataConnectorRequest::__set_newConnector</definition>
+        <argsstring>(const DataConnector &amp;val)</argsstring>
+        <name>__set_newConnector</name>
+        <qualifiedname>Apache::Hadoop::Hive::AlterDataConnectorRequest::__set_newConnector</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1DataConnector" kindref="compound">DataConnector</ref> &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13294" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="51978" bodyend="51980"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AlterDataConnectorRequest_1a245d793dcb11787b3a78619b3bfdfe5d" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::AlterDataConnectorRequest::operator==</definition>
+        <argsstring>(const AlterDataConnectorRequest &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::AlterDataConnectorRequest::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1AlterDataConnectorRequest" kindref="compound">AlterDataConnectorRequest</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13296" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="52067" bodyend="52074"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AlterDataConnectorRequest_1a94ddc42cd729efa5860d5bf15e70acf9" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::AlterDataConnectorRequest::operator!=</definition>
+        <argsstring>(const AlterDataConnectorRequest &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::AlterDataConnectorRequest::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1AlterDataConnectorRequest" kindref="compound">AlterDataConnectorRequest</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13297" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="13297" bodyend="13299"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AlterDataConnectorRequest_1a5bfb2b33a7c671026e69d5e95222baeb" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::AlterDataConnectorRequest::operator&lt;</definition>
+        <argsstring>(const AlterDataConnectorRequest &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::AlterDataConnectorRequest::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1AlterDataConnectorRequest" kindref="compound">AlterDataConnectorRequest</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13301" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AlterDataConnectorRequest_1aa9910fb57a46099ff9cfc7afb5e98ee3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::AlterDataConnectorRequest::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot) override</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::AlterDataConnectorRequest::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13303" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="51988" bodyend="52041"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AlterDataConnectorRequest_1ae5fec6d7093af117227e22705f751fc9" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::AlterDataConnectorRequest::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const override</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::AlterDataConnectorRequest::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13304" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="52043" bodyend="52059"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AlterDataConnectorRequest_1a2f7c67b67ab780ea9a40fcb445667a09" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::AlterDataConnectorRequest::printTo</definition>
+        <argsstring>(std::ostream &amp;out) const</argsstring>
+        <name>printTo</name>
+        <qualifiedname>Apache::Hadoop::Hive::AlterDataConnectorRequest::printTo</qualifiedname>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13306" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="52085" bodyend="52091"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::AlterDataConnectorRequest</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1AlterDataConnectorRequest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::AlterDataConnectorRequest</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1AlterDataConnectorRequest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>connectorName</edgelabel>
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>newConnector</edgelabel>
+        </childnode>
+      </node>
+      <node id="5">
+        <label>Apache::Hadoop::Hive::DataConnector</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1DataConnector"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>description</edgelabel>
+          <edgelabel>name</edgelabel>
+          <edgelabel>ownerName</edgelabel>
+          <edgelabel>type</edgelabel>
+          <edgelabel>url</edgelabel>
+        </childnode>
+        <childnode refid="6" relation="usage">
+          <edgelabel>parameters</edgelabel>
+        </childnode>
+        <childnode refid="7" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="7">
+        <label>Apache::Hadoop::Hive::_DataConnector__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__DataConnector____isset"/>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+      <node id="6">
+        <label>std::map&lt; std::string, std::string &gt;</label>
+        <childnode refid="3" relation="usage">
+          <edgelabel>elements</edgelabel>
+          <edgelabel>keys</edgelabel>
+        </childnode>
+      </node>
+      <node id="4">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="3">
+        <label>std::string</label>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13281" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="13281" bodyend="13307"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AlterDataConnectorRequest_1a1822518175d57129c8999550ff0c5fe7" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AlterDataConnectorRequest</scope><name>__set_connectorName</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AlterDataConnectorRequest_1a547dc2b069172b0f81e5a4d61f8995dc" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AlterDataConnectorRequest</scope><name>__set_newConnector</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AlterDataConnectorRequest_1aca85fd21149c6605cf8e617641042b99" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AlterDataConnectorRequest</scope><name>AlterDataConnectorRequest</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AlterDataConnectorRequest_1a04e7e830ab53d0917dac6928836a8218" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AlterDataConnectorRequest</scope><name>AlterDataConnectorRequest</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AlterDataConnectorRequest_1a29ce0948c91056e67a5d0698069e9fe5" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AlterDataConnectorRequest</scope><name>connectorName</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AlterDataConnectorRequest_1a0196fb5b23e64117724ce3f9a728f622" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AlterDataConnectorRequest</scope><name>newConnector</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AlterDataConnectorRequest_1a94ddc42cd729efa5860d5bf15e70acf9" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AlterDataConnectorRequest</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AlterDataConnectorRequest_1a5bfb2b33a7c671026e69d5e95222baeb" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AlterDataConnectorRequest</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AlterDataConnectorRequest_1ac4a1d35ce035fcaff8f0a852b7e92784" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AlterDataConnectorRequest</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AlterDataConnectorRequest_1a245d793dcb11787b3a78619b3bfdfe5d" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AlterDataConnectorRequest</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AlterDataConnectorRequest_1a2f7c67b67ab780ea9a40fcb445667a09" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::AlterDataConnectorRequest</scope><name>printTo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AlterDataConnectorRequest_1aa9910fb57a46099ff9cfc7afb5e98ee3" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AlterDataConnectorRequest</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AlterDataConnectorRequest_1ae5fec6d7093af117227e22705f751fc9" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AlterDataConnectorRequest</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AlterDataConnectorRequest_1a41a714b1de044869c99b6fb1e1996934" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::AlterDataConnectorRequest</scope><name>~AlterDataConnectorRequest</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

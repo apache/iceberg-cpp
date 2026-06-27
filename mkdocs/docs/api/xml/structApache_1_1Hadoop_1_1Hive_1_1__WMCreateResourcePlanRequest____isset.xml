@@ -1,0 +1,64 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structApache_1_1Hadoop_1_1Hive_1_1__WMCreateResourcePlanRequest____isset" kind="struct" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::_WMCreateResourcePlanRequest__isset</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__WMCreateResourcePlanRequest____isset_1a7b4c4a1f04905785769251b27650d87f" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_WMCreateResourcePlanRequest__isset::resourcePlan</definition>
+        <argsstring></argsstring>
+        <name>resourcePlan</name>
+        <qualifiedname>Apache::Hadoop::Hive::_WMCreateResourcePlanRequest__isset::resourcePlan</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11296" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="11296" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__WMCreateResourcePlanRequest____isset_1a025cdbd288b2ae6ed253615000da5c96" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_WMCreateResourcePlanRequest__isset::copyFrom</definition>
+        <argsstring></argsstring>
+        <name>copyFrom</name>
+        <qualifiedname>Apache::Hadoop::Hive::_WMCreateResourcePlanRequest__isset::copyFrom</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11297" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="11297" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structApache_1_1Hadoop_1_1Hive_1_1__WMCreateResourcePlanRequest____isset_1a1a43a83b2a6ea1e51cb6ec352d86f13e" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::_WMCreateResourcePlanRequest__isset::_WMCreateResourcePlanRequest__isset</definition>
+        <argsstring>()</argsstring>
+        <name>_WMCreateResourcePlanRequest__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::_WMCreateResourcePlanRequest__isset::_WMCreateResourcePlanRequest__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11295" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="11295" bodyend="11295"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11294" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="11294" bodyend="11298"/>
+    <listofallmembers>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__WMCreateResourcePlanRequest____isset_1a1a43a83b2a6ea1e51cb6ec352d86f13e" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_WMCreateResourcePlanRequest__isset</scope><name>_WMCreateResourcePlanRequest__isset</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__WMCreateResourcePlanRequest____isset_1a025cdbd288b2ae6ed253615000da5c96" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_WMCreateResourcePlanRequest__isset</scope><name>copyFrom</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__WMCreateResourcePlanRequest____isset_1a7b4c4a1f04905785769251b27650d87f" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_WMCreateResourcePlanRequest__isset</scope><name>resourcePlan</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

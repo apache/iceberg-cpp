@@ -1,0 +1,329 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1WMValidateResourcePlanResponse" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::WMValidateResourcePlanResponse</compoundname>
+    <basecompoundref prot="public" virt="virtual">apache::thrift::TBase</basecompoundref>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1WMValidateResourcePlanResponse_1a0616980e32ee71460acedb37f594024a" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; std::string &gt;</type>
+        <definition>std::vector&lt;std::string&gt; Apache::Hadoop::Hive::WMValidateResourcePlanResponse::errors</definition>
+        <argsstring></argsstring>
+        <name>errors</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMValidateResourcePlanResponse::errors</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11727" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="11727" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1WMValidateResourcePlanResponse_1a379eae4431a9fac99e8eb31ea55cde62" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; std::string &gt;</type>
+        <definition>std::vector&lt;std::string&gt; Apache::Hadoop::Hive::WMValidateResourcePlanResponse::warnings</definition>
+        <argsstring></argsstring>
+        <name>warnings</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMValidateResourcePlanResponse::warnings</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11728" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="11728" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1WMValidateResourcePlanResponse_1a549958744d8cd71e54765fa7791aaa13" prot="public" static="no" mutable="no">
+        <type><ref refid="structApache_1_1Hadoop_1_1Hive_1_1__WMValidateResourcePlanResponse____isset" kindref="compound">_WMValidateResourcePlanResponse__isset</ref></type>
+        <definition>_WMValidateResourcePlanResponse__isset Apache::Hadoop::Hive::WMValidateResourcePlanResponse::__isset</definition>
+        <argsstring></argsstring>
+        <name>__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMValidateResourcePlanResponse::__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11730" column="42" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="11730" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMValidateResourcePlanResponse_1aca27407279ca3d4e949e266523ccc52b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::WMValidateResourcePlanResponse::WMValidateResourcePlanResponse</definition>
+        <argsstring>(const WMValidateResourcePlanResponse &amp;)</argsstring>
+        <name>WMValidateResourcePlanResponse</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMValidateResourcePlanResponse::WMValidateResourcePlanResponse</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1WMValidateResourcePlanResponse" kindref="compound">WMValidateResourcePlanResponse</ref> &amp;</type>
+          <defname>other1482</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11722" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="46485" bodyend="46489"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMValidateResourcePlanResponse_1ae19a5f2d3a2757e8c68c1279c5426eef" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1WMValidateResourcePlanResponse" kindref="compound">WMValidateResourcePlanResponse</ref> &amp;</type>
+        <definition>WMValidateResourcePlanResponse &amp; Apache::Hadoop::Hive::WMValidateResourcePlanResponse::operator=</definition>
+        <argsstring>(const WMValidateResourcePlanResponse &amp;)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMValidateResourcePlanResponse::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1WMValidateResourcePlanResponse" kindref="compound">WMValidateResourcePlanResponse</ref> &amp;</type>
+          <defname>other1483</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11723" column="34" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="46490" bodyend="46495"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMValidateResourcePlanResponse_1a95577de7713183542bd2b718ed3b77ef" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::WMValidateResourcePlanResponse::WMValidateResourcePlanResponse</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>WMValidateResourcePlanResponse</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMValidateResourcePlanResponse::WMValidateResourcePlanResponse</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11724" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="46337" bodyend="46338"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMValidateResourcePlanResponse_1a0f2c79ad1e355072b6ef37e816125fcd" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::WMValidateResourcePlanResponse::~WMValidateResourcePlanResponse</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~WMValidateResourcePlanResponse</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMValidateResourcePlanResponse::~WMValidateResourcePlanResponse</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11726" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="46334" bodyend="46335"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMValidateResourcePlanResponse_1a3247385fdf6056715df25c916fe00d2f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::WMValidateResourcePlanResponse::__set_errors</definition>
+        <argsstring>(const std::vector&lt; std::string &gt; &amp;val)</argsstring>
+        <name>__set_errors</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMValidateResourcePlanResponse::__set_errors</qualifiedname>
+        <param>
+          <type>const std::vector&lt; std::string &gt; &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11732" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="46340" bodyend="46343"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMValidateResourcePlanResponse_1a5a00719f3f53349b66e7df491f299abf" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::WMValidateResourcePlanResponse::__set_warnings</definition>
+        <argsstring>(const std::vector&lt; std::string &gt; &amp;val)</argsstring>
+        <name>__set_warnings</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMValidateResourcePlanResponse::__set_warnings</qualifiedname>
+        <param>
+          <type>const std::vector&lt; std::string &gt; &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11734" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="46345" bodyend="46348"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMValidateResourcePlanResponse_1a4676694f18c6a5558f27c49a4893d243" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::WMValidateResourcePlanResponse::operator==</definition>
+        <argsstring>(const WMValidateResourcePlanResponse &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMValidateResourcePlanResponse::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1WMValidateResourcePlanResponse" kindref="compound">WMValidateResourcePlanResponse</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11736" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="46472" bodyend="46483"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMValidateResourcePlanResponse_1a53d2161852faa39b112f8a9a150d9844" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::WMValidateResourcePlanResponse::operator!=</definition>
+        <argsstring>(const WMValidateResourcePlanResponse &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMValidateResourcePlanResponse::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1WMValidateResourcePlanResponse" kindref="compound">WMValidateResourcePlanResponse</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11737" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="11737" bodyend="11739"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMValidateResourcePlanResponse_1a1086c2b6f9d5e69f450e02a5e266707c" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::WMValidateResourcePlanResponse::operator&lt;</definition>
+        <argsstring>(const WMValidateResourcePlanResponse &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMValidateResourcePlanResponse::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1WMValidateResourcePlanResponse" kindref="compound">WMValidateResourcePlanResponse</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11741" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMValidateResourcePlanResponse_1aac47cd84b11f751cf6deee9c8b2114a8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::WMValidateResourcePlanResponse::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot) override</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMValidateResourcePlanResponse::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11743" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="46356" bodyend="46427"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMValidateResourcePlanResponse_1a65cd6bfc2b99521c65d88684cba770cd" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::WMValidateResourcePlanResponse::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const override</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMValidateResourcePlanResponse::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11744" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="46429" bodyend="46463"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMValidateResourcePlanResponse_1aac5b6bccfb8edab87be0d8d3761d3b24" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::WMValidateResourcePlanResponse::printTo</definition>
+        <argsstring>(std::ostream &amp;out) const</argsstring>
+        <name>printTo</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMValidateResourcePlanResponse::printTo</qualifiedname>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11746" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="46496" bodyend="46502"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::WMValidateResourcePlanResponse</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1WMValidateResourcePlanResponse"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::WMValidateResourcePlanResponse</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1WMValidateResourcePlanResponse"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>errors</edgelabel>
+          <edgelabel>warnings</edgelabel>
+        </childnode>
+        <childnode refid="6" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="6">
+        <label>Apache::Hadoop::Hive::_WMValidateResourcePlanResponse__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__WMValidateResourcePlanResponse____isset"/>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+      <node id="5">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="4">
+        <label>std::string</label>
+        <childnode refid="5" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::vector&lt; std::string &gt;</label>
+        <childnode refid="4" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11719" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="11719" bodyend="11747"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMValidateResourcePlanResponse_1a549958744d8cd71e54765fa7791aaa13" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMValidateResourcePlanResponse</scope><name>__isset</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMValidateResourcePlanResponse_1a3247385fdf6056715df25c916fe00d2f" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMValidateResourcePlanResponse</scope><name>__set_errors</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMValidateResourcePlanResponse_1a5a00719f3f53349b66e7df491f299abf" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMValidateResourcePlanResponse</scope><name>__set_warnings</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMValidateResourcePlanResponse_1a0616980e32ee71460acedb37f594024a" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMValidateResourcePlanResponse</scope><name>errors</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMValidateResourcePlanResponse_1a53d2161852faa39b112f8a9a150d9844" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMValidateResourcePlanResponse</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMValidateResourcePlanResponse_1a1086c2b6f9d5e69f450e02a5e266707c" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMValidateResourcePlanResponse</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMValidateResourcePlanResponse_1ae19a5f2d3a2757e8c68c1279c5426eef" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMValidateResourcePlanResponse</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMValidateResourcePlanResponse_1a4676694f18c6a5558f27c49a4893d243" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMValidateResourcePlanResponse</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMValidateResourcePlanResponse_1aac5b6bccfb8edab87be0d8d3761d3b24" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::WMValidateResourcePlanResponse</scope><name>printTo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMValidateResourcePlanResponse_1aac47cd84b11f751cf6deee9c8b2114a8" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMValidateResourcePlanResponse</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMValidateResourcePlanResponse_1a379eae4431a9fac99e8eb31ea55cde62" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMValidateResourcePlanResponse</scope><name>warnings</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMValidateResourcePlanResponse_1aca27407279ca3d4e949e266523ccc52b" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMValidateResourcePlanResponse</scope><name>WMValidateResourcePlanResponse</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMValidateResourcePlanResponse_1a95577de7713183542bd2b718ed3b77ef" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMValidateResourcePlanResponse</scope><name>WMValidateResourcePlanResponse</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMValidateResourcePlanResponse_1a65cd6bfc2b99521c65d88684cba770cd" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMValidateResourcePlanResponse</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMValidateResourcePlanResponse_1a0f2c79ad1e355072b6ef37e816125fcd" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::WMValidateResourcePlanResponse</scope><name>~WMValidateResourcePlanResponse</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,186 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="namespaceiceberg_1_1test" kind="namespace" language="C++">
+    <compoundname>iceberg::test</compoundname>
+    <innerclass refid="classiceberg_1_1test_1_1FakeRetryEnvironment" prot="public">iceberg::test::FakeRetryEnvironment</innerclass>
+    <innerclass refid="classiceberg_1_1test_1_1MetricsTestBase" prot="public">iceberg::test::MetricsTestBase</innerclass>
+    <innerclass refid="classiceberg_1_1test_1_1ParquetMetricsTest" prot="public">iceberg::test::ParquetMetricsTest</innerclass>
+    <innerclass refid="classiceberg_1_1test_1_1StdFileIO" prot="public">iceberg::test::StdFileIO</innerclass>
+    <innerclass refid="classiceberg_1_1test_1_1StdInputFile" prot="public">iceberg::test::StdInputFile</innerclass>
+    <innerclass refid="classiceberg_1_1test_1_1StdOutputFile" prot="public">iceberg::test::StdOutputFile</innerclass>
+    <innerclass refid="classiceberg_1_1test_1_1StdPositionOutputStream" prot="public">iceberg::test::StdPositionOutputStream</innerclass>
+    <innerclass refid="classiceberg_1_1test_1_1StdSeekableInputStream" prot="public">iceberg::test::StdSeekableInputStream</innerclass>
+    <innerclass refid="classiceberg_1_1test_1_1ThreadExecutor" prot="public">iceberg::test::ThreadExecutor</innerclass>
+    <innernamespace refid="namespaceiceberg_1_1test_1_1detail">iceberg::test::detail</innernamespace>
+    <sectiondef kind="typedef">
+      <memberdef kind="typedef" id="retry_8h_1ab424101f14f51a92dae189f4b36f8949" prot="public" static="no">
+        <type>retry::OnlyRetryOn&lt; ErrorKind::kCommitFailed &gt;</type>
+        <definition>using iceberg::test::CommitFailedRetry = typedef retry::OnlyRetryOn&lt;ErrorKind::kCommitFailed&gt;</definition>
+        <argsstring></argsstring>
+        <name>CommitFailedRetry</name>
+        <qualifiedname>iceberg::test::CommitFailedRetry</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/retry.h" line="31" column="1" bodyfile="iceberg/test/retry.h" bodystart="31" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="retry_8h_1ae81dc645a992e6f5424eab34b6f59da7" prot="public" static="no">
+        <type>retry::OnlyRetryOn&lt; ErrorKind::kIOError, ErrorKind::kServiceUnavailable, ErrorKind::kInternalServerError &gt;</type>
+        <definition>using iceberg::test::TransientIORetry = typedef retry::OnlyRetryOn&lt;ErrorKind::kIOError, ErrorKind::kServiceUnavailable, ErrorKind::kInternalServerError&gt;</definition>
+        <argsstring></argsstring>
+        <name>TransientIORetry</name>
+        <qualifiedname>iceberg::test::TransientIORetry</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/retry.h" line="33" column="1" bodyfile="iceberg/test/retry.h" bodystart="35" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="func">
+      <memberdef kind="function" id="metrics__test__base_8cc_1afbf78f39bddd36c58eb8775fe8d2555c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>template void</type>
+        <definition>template void iceberg::test::MetricsTestBase::AssertBounds&lt; std::string &gt;</definition>
+        <argsstring>(int, std::shared_ptr&lt; PrimitiveType &gt;, std::optional&lt; std::string &gt;, std::optional&lt; std::string &gt;, const Metrics &amp;)</argsstring>
+        <name>MetricsTestBase::AssertBounds&lt; std::string &gt;</name>
+        <qualifiedname>iceberg::test::AssertBounds&lt; std::string &gt;</qualifiedname>
+        <param>
+          <type>int</type>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1PrimitiveType" kindref="compound">PrimitiveType</ref> &gt;</type>
+        </param>
+        <param>
+          <type>std::optional&lt; std::string &gt;</type>
+        </param>
+        <param>
+          <type>std::optional&lt; std::string &gt;</type>
+        </param>
+        <param>
+          <type>const <ref refid="structiceberg_1_1Metrics" kindref="compound">Metrics</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/metrics_test_base.cc" line="148" column="10" declfile="iceberg/test/metrics_test_base.cc" declline="148" declcolumn="10"/>
+      </memberdef>
+      <memberdef kind="function" id="metrics__test__base_8cc_1a2af3694752dd10d34a47aee792870eff" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>template void</type>
+        <definition>template void iceberg::test::MetricsTestBase::AssertBounds&lt; std::vector&lt; uint8_t &gt; &gt;</definition>
+        <argsstring>(int, std::shared_ptr&lt; PrimitiveType &gt;, std::optional&lt; std::vector&lt; uint8_t &gt; &gt;, std::optional&lt; std::vector&lt; uint8_t &gt; &gt;, const Metrics &amp;)</argsstring>
+        <name>MetricsTestBase::AssertBounds&lt; std::vector&lt; uint8_t &gt; &gt;</name>
+        <qualifiedname>iceberg::test::AssertBounds&lt; std::vector&lt; uint8_t &gt; &gt;</qualifiedname>
+        <param>
+          <type>int</type>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1PrimitiveType" kindref="compound">PrimitiveType</ref> &gt;</type>
+        </param>
+        <param>
+          <type>std::optional&lt; std::vector&lt; uint8_t &gt; &gt;</type>
+        </param>
+        <param>
+          <type>std::optional&lt; std::vector&lt; uint8_t &gt; &gt;</type>
+        </param>
+        <param>
+          <type>const <ref refid="structiceberg_1_1Metrics" kindref="compound">Metrics</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/metrics_test_base.cc" line="153" column="10" declfile="iceberg/test/metrics_test_base.cc" declline="153" declcolumn="10"/>
+      </memberdef>
+      <memberdef kind="function" id="metrics__test__base_8cc_1a2846ca91aae8976c097e011c966451e7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::shared_ptr&lt;::arrow::Schema &gt; &gt;</type>
+        <definition>Result&lt; std::shared_ptr&lt;::arrow::Schema &gt; &gt; iceberg::test::ToArrowSchema</definition>
+        <argsstring>(std::shared_ptr&lt; Schema &gt; schema)</argsstring>
+        <name>ToArrowSchema</name>
+        <qualifiedname>iceberg::test::ToArrowSchema</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &gt;</type>
+          <declname>schema</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/metrics_test_base.cc" line="211" column="8" bodyfile="iceberg/test/metrics_test_base.cc" bodystart="211" bodyend="217"/>
+      </memberdef>
+      <memberdef kind="function" id="parquet__metrics__test_8cc_1a1c9cc45ffc5cc933872667e3d0588563" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::test::DEFINE_METRICS_TESTS</definition>
+        <argsstring>(ParquetMetricsTest)</argsstring>
+        <name>DEFINE_METRICS_TESTS</name>
+        <qualifiedname>iceberg::test::DEFINE_METRICS_TESTS</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1test_1_1ParquetMetricsTest" kindref="compound">ParquetMetricsTest</ref></type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/parquet_metrics_test.cc" line="116" column="1" declfile="iceberg/test/parquet_metrics_test.cc" declline="116" declcolumn="1"/>
+      </memberdef>
+      <memberdef kind="function" id="parquet__metrics__test_8cc_1ae655556563f10505c150e87c767c95ee" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::test::TEST_F</definition>
+        <argsstring>(ParquetMetricsTest, FieldMetricsOverrideFooterStats)</argsstring>
+        <name>TEST_F</name>
+        <qualifiedname>iceberg::test::TEST_F</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1test_1_1ParquetMetricsTest" kindref="compound">ParquetMetricsTest</ref></type>
+        </param>
+        <param>
+          <type>FieldMetricsOverrideFooterStats</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/parquet_metrics_test.cc" line="118" column="1" bodyfile="iceberg/test/parquet_metrics_test.cc" bodystart="118" bodyend="154"/>
+      </memberdef>
+      <memberdef kind="function" id="parquet__metrics__test_8cc_1a68186f93d1d5e92060dde0e94acd9bc4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::test::TEST_F</definition>
+        <argsstring>(ParquetMetricsTest, UnrepresentableTruncatedUpperBoundIsOmitted)</argsstring>
+        <name>TEST_F</name>
+        <qualifiedname>iceberg::test::TEST_F</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1test_1_1ParquetMetricsTest" kindref="compound">ParquetMetricsTest</ref></type>
+        </param>
+        <param>
+          <type>UnrepresentableTruncatedUpperBoundIsOmitted</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/parquet_metrics_test.cc" line="156" column="1" bodyfile="iceberg/test/parquet_metrics_test.cc" bodystart="156" bodyend="178"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/test/executor.h" line="30" column="1"/>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,22 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="dir_4aea391aa76be1e17f70eee11ac750ff" kind="dir">
+    <compoundname>iceberg/catalog/sql</compoundname>
+    <innerfile refid="catalog__store_8h">catalog_store.h</innerfile>
+    <innerfile refid="catalog__store__mysql_8cc">catalog_store_mysql.cc</innerfile>
+    <innerfile refid="catalog__store__postgresql_8cc">catalog_store_postgresql.cc</innerfile>
+    <innerfile refid="catalog__store__sqlite3_8cc">catalog_store_sqlite3.cc</innerfile>
+    <innerfile refid="catalog__store__sqlpp23__internal_8h">catalog_store_sqlpp23_internal.h</innerfile>
+    <innerfile refid="connection__uri_8cc">connection_uri.cc</innerfile>
+    <innerfile refid="connection__uri__internal_8h">connection_uri_internal.h</innerfile>
+    <innerfile refid="iceberg__sql__catalog__export_8h">iceberg_sql_catalog_export.h</innerfile>
+    <innerfile refid="sql__catalog_8cc">sql_catalog.cc</innerfile>
+    <innerfile refid="sql__catalog_8h">sql_catalog.h</innerfile>
+    <innerfile refid="sql__catalog__tables__internal_8h">sql_catalog_tables_internal.h</innerfile>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/sql/"/>
+  </compounddef>
+</doxygen>

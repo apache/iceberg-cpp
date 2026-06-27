@@ -1,0 +1,48 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structApache_1_1Hadoop_1_1Hive_1_1__DropPartitionsResult____isset" kind="struct" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::_DropPartitionsResult__isset</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__DropPartitionsResult____isset_1a22ed2941e1bd35873887ead4ab043313" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_DropPartitionsResult__isset::partitions</definition>
+        <argsstring></argsstring>
+        <name>partitions</name>
+        <qualifiedname>Apache::Hadoop::Hive::_DropPartitionsResult__isset::partitions</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="5920" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="5920" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structApache_1_1Hadoop_1_1Hive_1_1__DropPartitionsResult____isset_1a6815609e4fa5b8b452ee1e49a250be0e" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::_DropPartitionsResult__isset::_DropPartitionsResult__isset</definition>
+        <argsstring>()</argsstring>
+        <name>_DropPartitionsResult__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::_DropPartitionsResult__isset::_DropPartitionsResult__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="5919" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="5919" bodyend="5919"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="5918" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="5918" bodyend="5921"/>
+    <listofallmembers>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__DropPartitionsResult____isset_1a6815609e4fa5b8b452ee1e49a250be0e" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_DropPartitionsResult__isset</scope><name>_DropPartitionsResult__isset</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__DropPartitionsResult____isset_1a22ed2941e1bd35873887ead4ab043313" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_DropPartitionsResult__isset</scope><name>partitions</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

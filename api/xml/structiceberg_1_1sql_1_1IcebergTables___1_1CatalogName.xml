@@ -1,0 +1,68 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1sql_1_1IcebergTables___1_1CatalogName" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::sql::IcebergTables_::CatalogName</compoundname>
+    <sectiondef kind="public-type">
+      <memberdef kind="typedef" id="structiceberg_1_1sql_1_1IcebergTables___1_1CatalogName_1a964101ceb34bdbf24a7e3d7940ce848f" prot="public" static="no">
+        <type>::sqlpp::text</type>
+        <definition>using iceberg::sql::IcebergTables_::CatalogName::data_type =  ::sqlpp::text</definition>
+        <argsstring></argsstring>
+        <name>data_type</name>
+        <qualifiedname>iceberg::sql::IcebergTables_::CatalogName::data_type</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/sql_catalog_tables_internal.h" line="49" column="5" bodyfile="iceberg/catalog/sql/sql_catalog_tables_internal.h" bodystart="49" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="structiceberg_1_1sql_1_1IcebergTables___1_1CatalogName_1ad317b7ef918962bc29f00254e75dbb51" prot="public" static="no">
+        <type>std::false_type</type>
+        <definition>using iceberg::sql::IcebergTables_::CatalogName::has_default =  std::false_type</definition>
+        <argsstring></argsstring>
+        <name>has_default</name>
+        <qualifiedname>iceberg::sql::IcebergTables_::CatalogName::has_default</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/sql_catalog_tables_internal.h" line="50" column="5" bodyfile="iceberg/catalog/sql/sql_catalog_tables_internal.h" bodystart="50" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structiceberg_1_1sql_1_1IcebergTables___1_1CatalogName_1a60c703d68d355b3b8d1439c4a7453f2f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::sql::IcebergTables_::CatalogName::SQLPP_CREATE_NAME_TAG_FOR_SQL_AND_CPP</definition>
+        <argsstring>(catalog_name, catalogName)</argsstring>
+        <name>SQLPP_CREATE_NAME_TAG_FOR_SQL_AND_CPP</name>
+        <qualifiedname>iceberg::sql::IcebergTables_::CatalogName::SQLPP_CREATE_NAME_TAG_FOR_SQL_AND_CPP</qualifiedname>
+        <param>
+          <type>catalog_name</type>
+        </param>
+        <param>
+          <type>catalogName</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/sql_catalog_tables_internal.h" line="48" column="5"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/sql/sql_catalog_tables_internal.h" line="47" column="3" bodyfile="iceberg/catalog/sql/sql_catalog_tables_internal.h" bodystart="47" bodyend="51"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1sql_1_1IcebergTables___1_1CatalogName_1a964101ceb34bdbf24a7e3d7940ce848f" prot="public" virt="non-virtual"><scope>iceberg::sql::IcebergTables_::CatalogName</scope><name>data_type</name></member>
+      <member refid="structiceberg_1_1sql_1_1IcebergTables___1_1CatalogName_1ad317b7ef918962bc29f00254e75dbb51" prot="public" virt="non-virtual"><scope>iceberg::sql::IcebergTables_::CatalogName</scope><name>has_default</name></member>
+      <member refid="structiceberg_1_1sql_1_1IcebergTables___1_1CatalogName_1a60c703d68d355b3b8d1439c4a7453f2f" prot="public" virt="non-virtual"><scope>iceberg::sql::IcebergTables_::CatalogName</scope><name>SQLPP_CREATE_NAME_TAG_FOR_SQL_AND_CPP</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

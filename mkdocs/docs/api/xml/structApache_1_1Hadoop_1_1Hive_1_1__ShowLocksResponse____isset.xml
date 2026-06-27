@@ -1,0 +1,48 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structApache_1_1Hadoop_1_1Hive_1_1__ShowLocksResponse____isset" kind="struct" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::_ShowLocksResponse__isset</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__ShowLocksResponse____isset_1a7f8aa3706273991ae88a01d0693ac766" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_ShowLocksResponse__isset::locks</definition>
+        <argsstring></argsstring>
+        <name>locks</name>
+        <qualifiedname>Apache::Hadoop::Hive::_ShowLocksResponse__isset::locks</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7991" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="7991" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structApache_1_1Hadoop_1_1Hive_1_1__ShowLocksResponse____isset_1ad78c40a768b275627e45728937113195" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::_ShowLocksResponse__isset::_ShowLocksResponse__isset</definition>
+        <argsstring>()</argsstring>
+        <name>_ShowLocksResponse__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::_ShowLocksResponse__isset::_ShowLocksResponse__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7990" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="7990" bodyend="7990"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7989" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="7989" bodyend="7992"/>
+    <listofallmembers>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__ShowLocksResponse____isset_1ad78c40a768b275627e45728937113195" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_ShowLocksResponse__isset</scope><name>_ShowLocksResponse__isset</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__ShowLocksResponse____isset_1a7f8aa3706273991ae88a01d0693ac766" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_ShowLocksResponse__isset</scope><name>locks</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

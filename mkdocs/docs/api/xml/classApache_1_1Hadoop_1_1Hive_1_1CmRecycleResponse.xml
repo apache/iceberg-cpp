@@ -1,0 +1,218 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1CmRecycleResponse" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::CmRecycleResponse</compoundname>
+    <basecompoundref prot="public" virt="virtual">apache::thrift::TBase</basecompoundref>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CmRecycleResponse_1aa1ce597eb9c5a7decb912a8545ee4c8a" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::CmRecycleResponse::CmRecycleResponse</definition>
+        <argsstring>(const CmRecycleResponse &amp;) noexcept</argsstring>
+        <name>CmRecycleResponse</name>
+        <qualifiedname>Apache::Hadoop::Hive::CmRecycleResponse::CmRecycleResponse</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1CmRecycleResponse" kindref="compound">CmRecycleResponse</ref> &amp;</type>
+          <defname>other1393</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10747" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="42648" bodyend="42650"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CmRecycleResponse_1a04072ecd07c9dcfb2355276ebde43b95" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1CmRecycleResponse" kindref="compound">CmRecycleResponse</ref> &amp;</type>
+        <definition>CmRecycleResponse &amp; Apache::Hadoop::Hive::CmRecycleResponse::operator=</definition>
+        <argsstring>(const CmRecycleResponse &amp;) noexcept</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::CmRecycleResponse::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1CmRecycleResponse" kindref="compound">CmRecycleResponse</ref> &amp;</type>
+          <defname>other1394</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10748" column="21" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="42651" bodyend="42654"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CmRecycleResponse_1a6dc4f9832e60887e69a0901ccf719e20" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::CmRecycleResponse::CmRecycleResponse</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>CmRecycleResponse</name>
+        <qualifiedname>Apache::Hadoop::Hive::CmRecycleResponse::CmRecycleResponse</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10749" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="42590" bodyend="42591"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CmRecycleResponse_1af64b445f6dcc0323887df4daeaccb873" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::CmRecycleResponse::~CmRecycleResponse</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~CmRecycleResponse</name>
+        <qualifiedname>Apache::Hadoop::Hive::CmRecycleResponse::~CmRecycleResponse</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10751" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="42587" bodyend="42588"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CmRecycleResponse_1a9adf77fb1d1dc3e8a0b28f7417b54135" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::CmRecycleResponse::operator==</definition>
+        <argsstring>(const CmRecycleResponse &amp;) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::CmRecycleResponse::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1CmRecycleResponse" kindref="compound">CmRecycleResponse</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10753" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="42643" bodyend="42646"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CmRecycleResponse_1a5997c9866a9368b1490aafb86c647cf7" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::CmRecycleResponse::operator!=</definition>
+        <argsstring>(const CmRecycleResponse &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::CmRecycleResponse::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1CmRecycleResponse" kindref="compound">CmRecycleResponse</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10754" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="10754" bodyend="10756"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CmRecycleResponse_1a4deaee214b3de1dd73f976ad012e4e23" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::CmRecycleResponse::operator&lt;</definition>
+        <argsstring>(const CmRecycleResponse &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::CmRecycleResponse::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1CmRecycleResponse" kindref="compound">CmRecycleResponse</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10758" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CmRecycleResponse_1ac630bc3537c061778b0d4d0cc8017667" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::CmRecycleResponse::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot) override</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::CmRecycleResponse::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10760" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="42599" bodyend="42625"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CmRecycleResponse_1aa5f6bd768645648cf8854a78655d4bd2" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::CmRecycleResponse::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const override</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::CmRecycleResponse::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10761" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="42627" bodyend="42635"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CmRecycleResponse_1a32e4b99fb0616bcdca6e1a6d5cad989b" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::CmRecycleResponse::printTo</definition>
+        <argsstring>(std::ostream &amp;out) const</argsstring>
+        <name>printTo</name>
+        <qualifiedname>Apache::Hadoop::Hive::CmRecycleResponse::printTo</qualifiedname>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10763" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="42655" bodyend="42659"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::CmRecycleResponse</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1CmRecycleResponse"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::CmRecycleResponse</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1CmRecycleResponse"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10744" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="10744" bodyend="10764"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CmRecycleResponse_1aa1ce597eb9c5a7decb912a8545ee4c8a" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CmRecycleResponse</scope><name>CmRecycleResponse</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CmRecycleResponse_1a6dc4f9832e60887e69a0901ccf719e20" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CmRecycleResponse</scope><name>CmRecycleResponse</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CmRecycleResponse_1a5997c9866a9368b1490aafb86c647cf7" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CmRecycleResponse</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CmRecycleResponse_1a4deaee214b3de1dd73f976ad012e4e23" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CmRecycleResponse</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CmRecycleResponse_1a04072ecd07c9dcfb2355276ebde43b95" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CmRecycleResponse</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CmRecycleResponse_1a9adf77fb1d1dc3e8a0b28f7417b54135" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CmRecycleResponse</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CmRecycleResponse_1a32e4b99fb0616bcdca6e1a6d5cad989b" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::CmRecycleResponse</scope><name>printTo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CmRecycleResponse_1ac630bc3537c061778b0d4d0cc8017667" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CmRecycleResponse</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CmRecycleResponse_1aa5f6bd768645648cf8854a78655d4bd2" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CmRecycleResponse</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CmRecycleResponse_1af64b445f6dcc0323887df4daeaccb873" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::CmRecycleResponse</scope><name>~CmRecycleResponse</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

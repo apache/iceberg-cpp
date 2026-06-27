@@ -1,0 +1,352 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structApache_1_1Hadoop_1_1Hive_1_1__ShowCompactResponseElement____isset" kind="struct" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::_ShowCompactResponseElement__isset</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__ShowCompactResponseElement____isset_1aec1b9d40a8ea308ca7bfedf98532effa" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_ShowCompactResponseElement__isset::partitionname</definition>
+        <argsstring></argsstring>
+        <name>partitionname</name>
+        <qualifiedname>Apache::Hadoop::Hive::_ShowCompactResponseElement__isset::partitionname</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8614" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="8614" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__ShowCompactResponseElement____isset_1aa31e1025d0cc7d022869605c343c7101" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_ShowCompactResponseElement__isset::workerid</definition>
+        <argsstring></argsstring>
+        <name>workerid</name>
+        <qualifiedname>Apache::Hadoop::Hive::_ShowCompactResponseElement__isset::workerid</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8615" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="8615" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__ShowCompactResponseElement____isset_1a11f3a54675a539a0944df72b99463a98" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_ShowCompactResponseElement__isset::start</definition>
+        <argsstring></argsstring>
+        <name>start</name>
+        <qualifiedname>Apache::Hadoop::Hive::_ShowCompactResponseElement__isset::start</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8616" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="8616" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__ShowCompactResponseElement____isset_1aab6ead30597752d1c0789c8ca4c93466" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_ShowCompactResponseElement__isset::runAs</definition>
+        <argsstring></argsstring>
+        <name>runAs</name>
+        <qualifiedname>Apache::Hadoop::Hive::_ShowCompactResponseElement__isset::runAs</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8617" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="8617" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__ShowCompactResponseElement____isset_1add52ea7daa00023dc3dcf23ad042dd82" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_ShowCompactResponseElement__isset::hightestTxnId</definition>
+        <argsstring></argsstring>
+        <name>hightestTxnId</name>
+        <qualifiedname>Apache::Hadoop::Hive::_ShowCompactResponseElement__isset::hightestTxnId</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8618" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="8618" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__ShowCompactResponseElement____isset_1a9531c29ae4dccf5671faab6419f6e2ef" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_ShowCompactResponseElement__isset::metaInfo</definition>
+        <argsstring></argsstring>
+        <name>metaInfo</name>
+        <qualifiedname>Apache::Hadoop::Hive::_ShowCompactResponseElement__isset::metaInfo</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8619" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="8619" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__ShowCompactResponseElement____isset_1a0e7d9d27ccdc40302f388d435d20b242" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_ShowCompactResponseElement__isset::endTime</definition>
+        <argsstring></argsstring>
+        <name>endTime</name>
+        <qualifiedname>Apache::Hadoop::Hive::_ShowCompactResponseElement__isset::endTime</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8620" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="8620" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__ShowCompactResponseElement____isset_1a5604f3decccaed44ad77db17ea6c4af3" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_ShowCompactResponseElement__isset::hadoopJobId</definition>
+        <argsstring></argsstring>
+        <name>hadoopJobId</name>
+        <qualifiedname>Apache::Hadoop::Hive::_ShowCompactResponseElement__isset::hadoopJobId</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8621" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="8621" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__ShowCompactResponseElement____isset_1a08e2a39c66a95fac548bff11f1b0948f" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_ShowCompactResponseElement__isset::id</definition>
+        <argsstring></argsstring>
+        <name>id</name>
+        <qualifiedname>Apache::Hadoop::Hive::_ShowCompactResponseElement__isset::id</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8622" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="8622" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__ShowCompactResponseElement____isset_1a5a08e501a92ca943b35f47259e52cc9a" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_ShowCompactResponseElement__isset::errorMessage</definition>
+        <argsstring></argsstring>
+        <name>errorMessage</name>
+        <qualifiedname>Apache::Hadoop::Hive::_ShowCompactResponseElement__isset::errorMessage</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8623" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="8623" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__ShowCompactResponseElement____isset_1a63983a307c9c22460b89a3ee608add1c" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_ShowCompactResponseElement__isset::enqueueTime</definition>
+        <argsstring></argsstring>
+        <name>enqueueTime</name>
+        <qualifiedname>Apache::Hadoop::Hive::_ShowCompactResponseElement__isset::enqueueTime</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8624" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="8624" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__ShowCompactResponseElement____isset_1a70243a98fdb58c278250ee6c48da2ef0" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_ShowCompactResponseElement__isset::workerVersion</definition>
+        <argsstring></argsstring>
+        <name>workerVersion</name>
+        <qualifiedname>Apache::Hadoop::Hive::_ShowCompactResponseElement__isset::workerVersion</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8625" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="8625" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__ShowCompactResponseElement____isset_1ab5df2b5f61b6b8a7f7bbe46aa91e654f" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_ShowCompactResponseElement__isset::initiatorId</definition>
+        <argsstring></argsstring>
+        <name>initiatorId</name>
+        <qualifiedname>Apache::Hadoop::Hive::_ShowCompactResponseElement__isset::initiatorId</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8626" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="8626" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__ShowCompactResponseElement____isset_1ab2d9f77c96b9f49940fd03e652f883bc" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_ShowCompactResponseElement__isset::initiatorVersion</definition>
+        <argsstring></argsstring>
+        <name>initiatorVersion</name>
+        <qualifiedname>Apache::Hadoop::Hive::_ShowCompactResponseElement__isset::initiatorVersion</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8627" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="8627" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__ShowCompactResponseElement____isset_1a99c098febc29d95d8c25fb0fa0712a30" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_ShowCompactResponseElement__isset::cleanerStart</definition>
+        <argsstring></argsstring>
+        <name>cleanerStart</name>
+        <qualifiedname>Apache::Hadoop::Hive::_ShowCompactResponseElement__isset::cleanerStart</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8628" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="8628" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__ShowCompactResponseElement____isset_1af21e8e40381f5900d372b14e5209b4e0" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_ShowCompactResponseElement__isset::poolName</definition>
+        <argsstring></argsstring>
+        <name>poolName</name>
+        <qualifiedname>Apache::Hadoop::Hive::_ShowCompactResponseElement__isset::poolName</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8629" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="8629" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__ShowCompactResponseElement____isset_1a24d8baf8a68fbbdf39179f0ad80ce203" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_ShowCompactResponseElement__isset::nextTxnId</definition>
+        <argsstring></argsstring>
+        <name>nextTxnId</name>
+        <qualifiedname>Apache::Hadoop::Hive::_ShowCompactResponseElement__isset::nextTxnId</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8630" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="8630" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__ShowCompactResponseElement____isset_1a278bb860d0b6fd3998179902be4a8462" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_ShowCompactResponseElement__isset::txnId</definition>
+        <argsstring></argsstring>
+        <name>txnId</name>
+        <qualifiedname>Apache::Hadoop::Hive::_ShowCompactResponseElement__isset::txnId</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8631" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="8631" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__ShowCompactResponseElement____isset_1a8466a78fc8c94e7b824296c61cfb8179" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_ShowCompactResponseElement__isset::commitTime</definition>
+        <argsstring></argsstring>
+        <name>commitTime</name>
+        <qualifiedname>Apache::Hadoop::Hive::_ShowCompactResponseElement__isset::commitTime</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8632" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="8632" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__ShowCompactResponseElement____isset_1a52e871d55f4cd23e41d2015d3d7ba985" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_ShowCompactResponseElement__isset::hightestWriteId</definition>
+        <argsstring></argsstring>
+        <name>hightestWriteId</name>
+        <qualifiedname>Apache::Hadoop::Hive::_ShowCompactResponseElement__isset::hightestWriteId</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8633" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="8633" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structApache_1_1Hadoop_1_1Hive_1_1__ShowCompactResponseElement____isset_1ad052427314f936d02e760be82974d1f9" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::_ShowCompactResponseElement__isset::_ShowCompactResponseElement__isset</definition>
+        <argsstring>()</argsstring>
+        <name>_ShowCompactResponseElement__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::_ShowCompactResponseElement__isset::_ShowCompactResponseElement__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8613" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="8613" bodyend="8613"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8612" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="8612" bodyend="8634"/>
+    <listofallmembers>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__ShowCompactResponseElement____isset_1ad052427314f936d02e760be82974d1f9" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_ShowCompactResponseElement__isset</scope><name>_ShowCompactResponseElement__isset</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__ShowCompactResponseElement____isset_1a99c098febc29d95d8c25fb0fa0712a30" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_ShowCompactResponseElement__isset</scope><name>cleanerStart</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__ShowCompactResponseElement____isset_1a8466a78fc8c94e7b824296c61cfb8179" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_ShowCompactResponseElement__isset</scope><name>commitTime</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__ShowCompactResponseElement____isset_1a0e7d9d27ccdc40302f388d435d20b242" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_ShowCompactResponseElement__isset</scope><name>endTime</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__ShowCompactResponseElement____isset_1a63983a307c9c22460b89a3ee608add1c" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_ShowCompactResponseElement__isset</scope><name>enqueueTime</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__ShowCompactResponseElement____isset_1a5a08e501a92ca943b35f47259e52cc9a" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_ShowCompactResponseElement__isset</scope><name>errorMessage</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__ShowCompactResponseElement____isset_1a5604f3decccaed44ad77db17ea6c4af3" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_ShowCompactResponseElement__isset</scope><name>hadoopJobId</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__ShowCompactResponseElement____isset_1add52ea7daa00023dc3dcf23ad042dd82" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_ShowCompactResponseElement__isset</scope><name>hightestTxnId</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__ShowCompactResponseElement____isset_1a52e871d55f4cd23e41d2015d3d7ba985" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_ShowCompactResponseElement__isset</scope><name>hightestWriteId</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__ShowCompactResponseElement____isset_1a08e2a39c66a95fac548bff11f1b0948f" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_ShowCompactResponseElement__isset</scope><name>id</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__ShowCompactResponseElement____isset_1ab5df2b5f61b6b8a7f7bbe46aa91e654f" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_ShowCompactResponseElement__isset</scope><name>initiatorId</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__ShowCompactResponseElement____isset_1ab2d9f77c96b9f49940fd03e652f883bc" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_ShowCompactResponseElement__isset</scope><name>initiatorVersion</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__ShowCompactResponseElement____isset_1a9531c29ae4dccf5671faab6419f6e2ef" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_ShowCompactResponseElement__isset</scope><name>metaInfo</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__ShowCompactResponseElement____isset_1a24d8baf8a68fbbdf39179f0ad80ce203" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_ShowCompactResponseElement__isset</scope><name>nextTxnId</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__ShowCompactResponseElement____isset_1aec1b9d40a8ea308ca7bfedf98532effa" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_ShowCompactResponseElement__isset</scope><name>partitionname</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__ShowCompactResponseElement____isset_1af21e8e40381f5900d372b14e5209b4e0" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_ShowCompactResponseElement__isset</scope><name>poolName</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__ShowCompactResponseElement____isset_1aab6ead30597752d1c0789c8ca4c93466" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_ShowCompactResponseElement__isset</scope><name>runAs</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__ShowCompactResponseElement____isset_1a11f3a54675a539a0944df72b99463a98" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_ShowCompactResponseElement__isset</scope><name>start</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__ShowCompactResponseElement____isset_1a278bb860d0b6fd3998179902be4a8462" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_ShowCompactResponseElement__isset</scope><name>txnId</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__ShowCompactResponseElement____isset_1aa31e1025d0cc7d022869605c343c7101" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_ShowCompactResponseElement__isset</scope><name>workerid</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__ShowCompactResponseElement____isset_1a70243a98fdb58c278250ee6c48da2ef0" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_ShowCompactResponseElement__isset</scope><name>workerVersion</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

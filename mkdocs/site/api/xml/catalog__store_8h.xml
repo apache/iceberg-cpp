@@ -1,0 +1,240 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="catalog__store_8h" kind="file" language="C++">
+    <compoundname>catalog_store.h</compoundname>
+    <includes local="no">cstdint</includes>
+    <includes local="no">functional</includes>
+    <includes local="no">memory</includes>
+    <includes local="no">optional</includes>
+    <includes local="no">string</includes>
+    <includes local="no">string_view</includes>
+    <includes local="no">unordered_map</includes>
+    <includes local="no">vector</includes>
+    <includes refid="iceberg__sql__catalog__export_8h" local="yes">iceberg/catalog/sql/iceberg_sql_catalog_export.h</includes>
+    <includes refid="result_8h" local="yes">iceberg/result.h</includes>
+    <includedby refid="catalog__store__mysql_8cc" local="yes">iceberg/catalog/sql/catalog_store_mysql.cc</includedby>
+    <includedby refid="catalog__store__postgresql_8cc" local="yes">iceberg/catalog/sql/catalog_store_postgresql.cc</includedby>
+    <includedby refid="catalog__store__sqlite3_8cc" local="yes">iceberg/catalog/sql/catalog_store_sqlite3.cc</includedby>
+    <includedby refid="catalog__store__sqlpp23__internal_8h" local="yes">iceberg/catalog/sql/catalog_store_sqlpp23_internal.h</includedby>
+    <includedby refid="sql__catalog_8h" local="yes">iceberg/catalog/sql/sql_catalog.h</includedby>
+    <includedby refid="sql__catalog__test_8cc" local="yes">iceberg/test/sql_catalog_test.cc</includedby>
+    <incdepgraph>
+      <node id="1">
+        <label>iceberg/catalog/sql/catalog_store.h</label>
+        <link refid="catalog__store_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+      </node>
+      <node id="10">
+        <label>iceberg/catalog/sql/iceberg_sql_catalog_export.h</label>
+        <link refid="iceberg__sql__catalog__export_8h_source"/>
+      </node>
+      <node id="16">
+        <label>iceberg/iceberg_export.h</label>
+        <link refid="iceberg__export_8h_source"/>
+      </node>
+      <node id="11">
+        <label>iceberg/result.h</label>
+        <link refid="result_8h_source"/>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+      </node>
+      <node id="12">
+        <label>concepts</label>
+      </node>
+      <node id="2">
+        <label>cstdint</label>
+      </node>
+      <node id="13">
+        <label>expected</label>
+      </node>
+      <node id="14">
+        <label>format</label>
+      </node>
+      <node id="3">
+        <label>functional</label>
+      </node>
+      <node id="4">
+        <label>memory</label>
+      </node>
+      <node id="5">
+        <label>optional</label>
+      </node>
+      <node id="6">
+        <label>string</label>
+      </node>
+      <node id="7">
+        <label>string_view</label>
+      </node>
+      <node id="15">
+        <label>type_traits</label>
+      </node>
+      <node id="8">
+        <label>unordered_map</label>
+      </node>
+      <node id="9">
+        <label>vector</label>
+      </node>
+    </incdepgraph>
+    <invincdepgraph>
+      <node id="1">
+        <label>iceberg/catalog/sql/catalog_store.h</label>
+        <link refid="catalog__store_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg/catalog/sql/catalog_store_sqlpp23_internal.h</label>
+        <link refid="catalog__store__sqlpp23__internal_8h"/>
+      </node>
+      <node id="3">
+        <label>iceberg/catalog/sql/sql_catalog.h</label>
+        <link refid="sql__catalog_8h"/>
+      </node>
+    </invincdepgraph>
+    <innerclass refid="structiceberg_1_1sql_1_1NamespaceProperty" prot="public">iceberg::sql::NamespaceProperty</innerclass>
+    <innerclass refid="structiceberg_1_1sql_1_1CatalogStoreOptions" prot="public">iceberg::sql::CatalogStoreOptions</innerclass>
+    <innerclass refid="classiceberg_1_1sql_1_1CatalogStore" prot="public">iceberg::sql::CatalogStore</innerclass>
+    <innernamespace refid="namespaceiceberg">iceberg</innernamespace>
+    <innernamespace refid="namespaceiceberg_1_1sql">iceberg::sql</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para>Storage abstraction for the SQL catalog.</para>
+<para><computeroutput>CatalogStore</computeroutput> persists SQL catalog rows. <computeroutput>SqlCatalog</computeroutput> owns Iceberg catalog semantics and uses this interface for database-specific row operations. </para>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="comment">/*</highlight></codeline>
+<codeline lineno="2"><highlight class="comment"><sp/>*<sp/>Licensed<sp/>to<sp/>the<sp/>Apache<sp/>Software<sp/>Foundation<sp/>(ASF)<sp/>under<sp/>one</highlight></codeline>
+<codeline lineno="3"><highlight class="comment"><sp/>*<sp/>or<sp/>more<sp/>contributor<sp/>license<sp/>agreements.<sp/><sp/>See<sp/>the<sp/>NOTICE<sp/>file</highlight></codeline>
+<codeline lineno="4"><highlight class="comment"><sp/>*<sp/>distributed<sp/>with<sp/>this<sp/>work<sp/>for<sp/>additional<sp/>information</highlight></codeline>
+<codeline lineno="5"><highlight class="comment"><sp/>*<sp/>regarding<sp/>copyright<sp/>ownership.<sp/><sp/>The<sp/>ASF<sp/>licenses<sp/>this<sp/>file</highlight></codeline>
+<codeline lineno="6"><highlight class="comment"><sp/>*<sp/>to<sp/>you<sp/>under<sp/>the<sp/>Apache<sp/>License,<sp/>Version<sp/>2.0<sp/>(the</highlight></codeline>
+<codeline lineno="7"><highlight class="comment"><sp/>*<sp/>&quot;License&quot;);<sp/>you<sp/>may<sp/>not<sp/>use<sp/>this<sp/>file<sp/>except<sp/>in<sp/>compliance</highlight></codeline>
+<codeline lineno="8"><highlight class="comment"><sp/>*<sp/>with<sp/>the<sp/>License.<sp/><sp/>You<sp/>may<sp/>obtain<sp/>a<sp/>copy<sp/>of<sp/>the<sp/>License<sp/>at</highlight></codeline>
+<codeline lineno="9"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="10"><highlight class="comment"><sp/>*<sp/><sp/><sp/>http://www.apache.org/licenses/LICENSE-2.0</highlight></codeline>
+<codeline lineno="11"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="12"><highlight class="comment"><sp/>*<sp/>Unless<sp/>required<sp/>by<sp/>applicable<sp/>law<sp/>or<sp/>agreed<sp/>to<sp/>in<sp/>writing,</highlight></codeline>
+<codeline lineno="13"><highlight class="comment"><sp/>*<sp/>software<sp/>distributed<sp/>under<sp/>the<sp/>License<sp/>is<sp/>distributed<sp/>on<sp/>an</highlight></codeline>
+<codeline lineno="14"><highlight class="comment"><sp/>*<sp/>&quot;AS<sp/>IS&quot;<sp/>BASIS,<sp/>WITHOUT<sp/>WARRANTIES<sp/>OR<sp/>CONDITIONS<sp/>OF<sp/>ANY</highlight></codeline>
+<codeline lineno="15"><highlight class="comment"><sp/>*<sp/>KIND,<sp/>either<sp/>express<sp/>or<sp/>implied.<sp/><sp/>See<sp/>the<sp/>License<sp/>for<sp/>the</highlight></codeline>
+<codeline lineno="16"><highlight class="comment"><sp/>*<sp/>specific<sp/>language<sp/>governing<sp/>permissions<sp/>and<sp/>limitations</highlight></codeline>
+<codeline lineno="17"><highlight class="comment"><sp/>*<sp/>under<sp/>the<sp/>License.</highlight></codeline>
+<codeline lineno="18"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="19"><highlight class="normal"></highlight></codeline>
+<codeline lineno="20"><highlight class="normal"></highlight><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="21"><highlight class="normal"></highlight></codeline>
+<codeline lineno="28"><highlight class="normal"></highlight></codeline>
+<codeline lineno="29"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;cstdint&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="30"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;functional&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="31"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;memory&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="32"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;optional&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="33"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;string&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="34"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;string_view&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="35"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;unordered_map&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="36"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;vector&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="37"><highlight class="normal"></highlight></codeline>
+<codeline lineno="38"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;iceberg/catalog/sql/iceberg_sql_catalog_export.h&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="39"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;iceberg/result.h&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="40"><highlight class="normal"></highlight></codeline>
+<codeline lineno="41"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">iceberg::sql<sp/>{</highlight></codeline>
+<codeline lineno="42"><highlight class="normal"></highlight></codeline>
+<codeline lineno="44" refid="structiceberg_1_1sql_1_1NamespaceProperty" refkind="compound"><highlight class="keyword">struct<sp/></highlight><highlight class="normal">ICEBERG_SQL_CATALOG_EXPORT<sp/><ref refid="structiceberg_1_1sql_1_1NamespaceProperty" kindref="compound">NamespaceProperty</ref><sp/>{</highlight></codeline>
+<codeline lineno="46" refid="structiceberg_1_1sql_1_1NamespaceProperty_1a4863c14bf493372de7d3a4281ee96ad3" refkind="member"><highlight class="normal"><sp/><sp/>std::string<sp/><ref refid="structiceberg_1_1sql_1_1NamespaceProperty_1a4863c14bf493372de7d3a4281ee96ad3" kindref="member">key</ref>;</highlight></codeline>
+<codeline lineno="48" refid="structiceberg_1_1sql_1_1NamespaceProperty_1a2d37c4e3b9d9e67b263bb0533385c791" refkind="member"><highlight class="normal"><sp/><sp/>std::optional&lt;std::string&gt;<sp/><ref refid="structiceberg_1_1sql_1_1NamespaceProperty_1a2d37c4e3b9d9e67b263bb0533385c791" kindref="member">value</ref>;</highlight></codeline>
+<codeline lineno="49"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="50"><highlight class="normal"></highlight></codeline>
+<codeline lineno="52" refid="structiceberg_1_1sql_1_1CatalogStoreOptions" refkind="compound"><highlight class="keyword">struct<sp/></highlight><highlight class="normal">ICEBERG_SQL_CATALOG_EXPORT<sp/><ref refid="structiceberg_1_1sql_1_1CatalogStoreOptions" kindref="compound">CatalogStoreOptions</ref><sp/>{</highlight></codeline>
+<codeline lineno="54" refid="structiceberg_1_1sql_1_1CatalogStoreOptions_1ab66d5b70a3b23d82a0d8dae1689cfe9e" refkind="member"><highlight class="normal"><sp/><sp/>std::string<sp/><ref refid="structiceberg_1_1sql_1_1CatalogStoreOptions_1ab66d5b70a3b23d82a0d8dae1689cfe9e" kindref="member">catalog_name</ref>;</highlight></codeline>
+<codeline lineno="56" refid="structiceberg_1_1sql_1_1CatalogStoreOptions_1a1b359f23e89662800bc7669800cd202c" refkind="member"><highlight class="normal"><sp/><sp/>std::string<sp/><ref refid="structiceberg_1_1sql_1_1CatalogStoreOptions_1a1b359f23e89662800bc7669800cd202c" kindref="member">uri</ref>;</highlight></codeline>
+<codeline lineno="58" refid="structiceberg_1_1sql_1_1CatalogStoreOptions_1aba95408bbd47d76c72f5878d97330c0b" refkind="member"><highlight class="normal"><sp/><sp/>int32_t<sp/>max_connections<sp/>=<sp/>1;</highlight></codeline>
+<codeline lineno="60" refid="structiceberg_1_1sql_1_1CatalogStoreOptions_1ab678411ded511db3f4d3fc34ad146e8b" refkind="member"><highlight class="normal"><sp/><sp/>std::unordered_map&lt;std::string,<sp/>std::string&gt;<sp/><ref refid="structiceberg_1_1sql_1_1CatalogStoreOptions_1ab678411ded511db3f4d3fc34ad146e8b" kindref="member">properties</ref>;</highlight></codeline>
+<codeline lineno="61"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="62"><highlight class="normal"></highlight></codeline>
+<codeline lineno="72" refid="classiceberg_1_1sql_1_1CatalogStore" refkind="compound"><highlight class="keyword">class<sp/></highlight><highlight class="normal">ICEBERG_SQL_CATALOG_EXPORT<sp/><ref refid="classiceberg_1_1sql_1_1CatalogStore" kindref="compound">CatalogStore</ref><sp/>{</highlight></codeline>
+<codeline lineno="73"><highlight class="normal"><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="74"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1sql_1_1CatalogStore" kindref="compound">~CatalogStore</ref>()<sp/>=<sp/></highlight><highlight class="keywordflow">default</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="75"><highlight class="normal"></highlight></codeline>
+<codeline lineno="79" refid="classiceberg_1_1sql_1_1CatalogStore_1ae56f64bd20de171ac60a6b5540f4f7a9" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/>Status<sp/><ref refid="classiceberg_1_1sql_1_1CatalogStore_1ae56f64bd20de171ac60a6b5540f4f7a9" kindref="member">Initialize</ref>()<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="80"><highlight class="normal"></highlight></codeline>
+<codeline lineno="84" refid="classiceberg_1_1sql_1_1CatalogStore_1aef850caa1650a3bf7b3942089ac56727" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/>Result&lt;std::vector&lt;std::string&gt;&gt;<sp/><ref refid="classiceberg_1_1sql_1_1CatalogStore_1aef850caa1650a3bf7b3942089ac56727" kindref="member">ListNamespaceNames</ref>()<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="85"><highlight class="normal"></highlight></codeline>
+<codeline lineno="90" refid="classiceberg_1_1sql_1_1CatalogStore_1a6a9fbcc42c6934308313ddf7577fcb88" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/>Result&lt;std::vector&lt;NamespaceProperty&gt;&gt;<sp/><ref refid="classiceberg_1_1sql_1_1CatalogStore_1a6a9fbcc42c6934308313ddf7577fcb88" kindref="member">GetNamespaceProperties</ref>(</highlight></codeline>
+<codeline lineno="91"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>std::string_view<sp/>ns)<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="92"><highlight class="normal"></highlight></codeline>
+<codeline lineno="102" refid="classiceberg_1_1sql_1_1CatalogStore_1a85ade7cc91c5f1db1ea9b5ab4f993ab7" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/>Status<sp/><ref refid="classiceberg_1_1sql_1_1CatalogStore_1a85ade7cc91c5f1db1ea9b5ab4f993ab7" kindref="member">InsertNamespaceProperty</ref>(std::string_view<sp/>ns,<sp/>std::string_view<sp/>key,</highlight></codeline>
+<codeline lineno="103"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::optional&lt;std::string_view&gt;<sp/>value)<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="104"><highlight class="normal"></highlight></codeline>
+<codeline lineno="110" refid="classiceberg_1_1sql_1_1CatalogStore_1a6093a2b131cf6553f26167813357c83b" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/>Status<sp/><ref refid="classiceberg_1_1sql_1_1CatalogStore_1a6093a2b131cf6553f26167813357c83b" kindref="member">DeleteNamespaceProperty</ref>(std::string_view<sp/>ns,<sp/>std::string_view<sp/>key)<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="111"><highlight class="normal"></highlight></codeline>
+<codeline lineno="116" refid="classiceberg_1_1sql_1_1CatalogStore_1a7f898b5381a60b8caca41f97a2eedddb" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/>Result&lt;int64_t&gt;<sp/><ref refid="classiceberg_1_1sql_1_1CatalogStore_1a7f898b5381a60b8caca41f97a2eedddb" kindref="member">DeleteNamespace</ref>(std::string_view<sp/>ns)<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="117"><highlight class="normal"></highlight></codeline>
+<codeline lineno="122" refid="classiceberg_1_1sql_1_1CatalogStore_1ab0cfe85e5003d43edb4ff05c7b53acbd" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/>Result&lt;std::vector&lt;std::string&gt;&gt;<sp/><ref refid="classiceberg_1_1sql_1_1CatalogStore_1ab0cfe85e5003d43edb4ff05c7b53acbd" kindref="member">ListTableNames</ref>(std::string_view<sp/>ns)<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="123"><highlight class="normal"></highlight></codeline>
+<codeline lineno="129" refid="classiceberg_1_1sql_1_1CatalogStore_1a8efafbd14e65aab9f3f876ca1843cda6" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/>Result&lt;bool&gt;<sp/><ref refid="classiceberg_1_1sql_1_1CatalogStore_1a8efafbd14e65aab9f3f876ca1843cda6" kindref="member">TableExists</ref>(std::string_view<sp/>ns,<sp/>std::string_view<sp/>name)<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="130"><highlight class="normal"></highlight></codeline>
+<codeline lineno="137" refid="classiceberg_1_1sql_1_1CatalogStore_1a047c2b1353469bfdda8739b846fbde46" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/>Result&lt;std::optional&lt;std::string&gt;&gt;<sp/><ref refid="classiceberg_1_1sql_1_1CatalogStore_1a047c2b1353469bfdda8739b846fbde46" kindref="member">GetTableMetadataLocation</ref>(</highlight></codeline>
+<codeline lineno="138"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>std::string_view<sp/>ns,<sp/>std::string_view<sp/>name)<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="139"><highlight class="normal"></highlight></codeline>
+<codeline lineno="149" refid="classiceberg_1_1sql_1_1CatalogStore_1a393d3119d8b17efa36f7021189fd02e4" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/>Status<sp/><ref refid="classiceberg_1_1sql_1_1CatalogStore_1a393d3119d8b17efa36f7021189fd02e4" kindref="member">InsertTable</ref>(std::string_view<sp/>ns,<sp/>std::string_view<sp/>name,</highlight></codeline>
+<codeline lineno="150"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::string_view<sp/>metadata_location)<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="151"><highlight class="normal"></highlight></codeline>
+<codeline lineno="163" refid="classiceberg_1_1sql_1_1CatalogStore_1a56167796110713ca46b7b6980b7e6949" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/>Result&lt;int64_t&gt;<sp/><ref refid="classiceberg_1_1sql_1_1CatalogStore_1a56167796110713ca46b7b6980b7e6949" kindref="member">UpdateTableMetadataLocation</ref>(</highlight></codeline>
+<codeline lineno="164"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>std::string_view<sp/>ns,<sp/>std::string_view<sp/>name,<sp/>std::string_view<sp/>new_location,</highlight></codeline>
+<codeline lineno="165"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>std::string_view<sp/>new_previous_location,</highlight></codeline>
+<codeline lineno="166"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>std::string_view<sp/>expected_current_location)<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="167"><highlight class="normal"></highlight></codeline>
+<codeline lineno="173" refid="classiceberg_1_1sql_1_1CatalogStore_1a1371ff43f19636a8ff2a287e330eeb11" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/>Result&lt;int64_t&gt;<sp/><ref refid="classiceberg_1_1sql_1_1CatalogStore_1a1371ff43f19636a8ff2a287e330eeb11" kindref="member">DeleteTable</ref>(std::string_view<sp/>ns,<sp/>std::string_view<sp/>name)<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="174"><highlight class="normal"></highlight></codeline>
+<codeline lineno="185" refid="classiceberg_1_1sql_1_1CatalogStore_1a1756e757adccb1f7315e5645c3496516" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/>Result&lt;int64_t&gt;<sp/><ref refid="classiceberg_1_1sql_1_1CatalogStore_1a1756e757adccb1f7315e5645c3496516" kindref="member">RenameTable</ref>(std::string_view<sp/>from_ns,</highlight></codeline>
+<codeline lineno="186"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::string_view<sp/>from_name,<sp/>std::string_view<sp/>to_ns,</highlight></codeline>
+<codeline lineno="187"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::string_view<sp/>to_name)<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="188"><highlight class="normal"></highlight></codeline>
+<codeline lineno="198" refid="classiceberg_1_1sql_1_1CatalogStore_1aa8662070d94c72e3671367a726f7427e" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/>Status<sp/><ref refid="classiceberg_1_1sql_1_1CatalogStore_1aa8662070d94c72e3671367a726f7427e" kindref="member">RunInTransaction</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::function&lt;Status()&gt;&amp;<sp/>body)<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="199"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="200"><highlight class="normal"></highlight></codeline>
+<codeline lineno="208"><highlight class="normal">ICEBERG_SQL_CATALOG_EXPORT<sp/>Result&lt;std::shared_ptr&lt;CatalogStore&gt;&gt;<sp/><ref refid="catalog__store_8h_1a9c77ec40070cf6ce15a251de1ebf93f3" kindref="member">MakeSqliteCatalogStore</ref>(</highlight></codeline>
+<codeline lineno="209"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structiceberg_1_1sql_1_1CatalogStoreOptions" kindref="compound">CatalogStoreOptions</ref>&amp;<sp/>options);</highlight></codeline>
+<codeline lineno="210"><highlight class="normal"></highlight></codeline>
+<codeline lineno="219"><highlight class="normal">ICEBERG_SQL_CATALOG_EXPORT<sp/>Result&lt;std::shared_ptr&lt;CatalogStore&gt;&gt;</highlight></codeline>
+<codeline lineno="220"><highlight class="normal"><ref refid="catalog__store_8h_1a734ac3032d44682ac5517f35f64bd909" kindref="member">MakePostgreSqlCatalogStore</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structiceberg_1_1sql_1_1CatalogStoreOptions" kindref="compound">CatalogStoreOptions</ref>&amp;<sp/>options);</highlight></codeline>
+<codeline lineno="221"><highlight class="normal"></highlight></codeline>
+<codeline lineno="230"><highlight class="normal">ICEBERG_SQL_CATALOG_EXPORT<sp/>Result&lt;std::shared_ptr&lt;CatalogStore&gt;&gt;<sp/><ref refid="catalog__store_8h_1a2f1cda8fe4de0b0b6254d9b3595f4654" kindref="member">MakeMySqlCatalogStore</ref>(</highlight></codeline>
+<codeline lineno="231"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structiceberg_1_1sql_1_1CatalogStoreOptions" kindref="compound">CatalogStoreOptions</ref>&amp;<sp/>options);</highlight></codeline>
+<codeline lineno="232"><highlight class="normal"></highlight></codeline>
+<codeline lineno="233"><highlight class="normal">}<sp/><sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>iceberg::sql</highlight><highlight class="normal"></highlight></codeline>
+    </programlisting>
+    <location file="iceberg/catalog/sql/catalog_store.h"/>
+  </compounddef>
+</doxygen>

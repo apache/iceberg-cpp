@@ -1,0 +1,1031 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classfacebook_1_1fb303_1_1FacebookServiceConcurrentClient" kind="class" language="C++" prot="public">
+    <compoundname>facebook::fb303::FacebookServiceConcurrentClient</compoundname>
+    <basecompoundref refid="classfacebook_1_1fb303_1_1FacebookServiceIf" prot="public" virt="virtual">facebook::fb303::FacebookServiceIf</basecompoundref>
+    <derivedcompoundref refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastoreConcurrentClient" prot="public" virt="non-virtual">Apache::Hadoop::Hive::ThriftHiveMetastoreConcurrentClient</derivedcompoundref>
+    <sectiondef kind="protected-attrib">
+      <memberdef kind="variable" id="classfacebook_1_1fb303_1_1FacebookServiceConcurrentClient_1a1bd203043b24481e64bae92d8974f34d" prot="protected" static="no" mutable="no">
+        <type>std::shared_ptr&lt; ::apache::thrift::protocol::TProtocol &gt;</type>
+        <definition>std::shared_ptr&lt; ::apache::thrift::protocol::TProtocol&gt; facebook::fb303::FacebookServiceConcurrentClient::piprot_</definition>
+        <argsstring></argsstring>
+        <name>piprot_</name>
+        <qualifiedname>facebook::fb303::FacebookServiceConcurrentClient::piprot_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="1660" column="19" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.h" bodystart="1660" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classfacebook_1_1fb303_1_1FacebookServiceConcurrentClient_1acb9924e7db934bc7b14a5e8109a6b585" prot="protected" static="no" mutable="no">
+        <type>std::shared_ptr&lt; ::apache::thrift::protocol::TProtocol &gt;</type>
+        <definition>std::shared_ptr&lt; ::apache::thrift::protocol::TProtocol&gt; facebook::fb303::FacebookServiceConcurrentClient::poprot_</definition>
+        <argsstring></argsstring>
+        <name>poprot_</name>
+        <qualifiedname>facebook::fb303::FacebookServiceConcurrentClient::poprot_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="1661" column="19" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.h" bodystart="1661" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classfacebook_1_1fb303_1_1FacebookServiceConcurrentClient_1a34949cd4bdf5ffd37d32827d9eaeaf31" prot="protected" static="no" mutable="no">
+        <type>::apache::thrift::protocol::TProtocol *</type>
+        <definition>::apache::thrift::protocol::TProtocol* facebook::fb303::FacebookServiceConcurrentClient::iprot_</definition>
+        <argsstring></argsstring>
+        <name>iprot_</name>
+        <qualifiedname>facebook::fb303::FacebookServiceConcurrentClient::iprot_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="1662" column="41" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.h" bodystart="1662" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classfacebook_1_1fb303_1_1FacebookServiceConcurrentClient_1af17b1307230e5a4a1303de9c1e96bd1e" prot="protected" static="no" mutable="no">
+        <type>::apache::thrift::protocol::TProtocol *</type>
+        <definition>::apache::thrift::protocol::TProtocol* facebook::fb303::FacebookServiceConcurrentClient::oprot_</definition>
+        <argsstring></argsstring>
+        <name>oprot_</name>
+        <qualifiedname>facebook::fb303::FacebookServiceConcurrentClient::oprot_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="1663" column="41" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.h" bodystart="1663" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classfacebook_1_1fb303_1_1FacebookServiceConcurrentClient_1aa0ae699a23761317d8a4c3bdd900efe5" prot="protected" static="no" mutable="no">
+        <type>std::shared_ptr&lt; ::apache::thrift::async::TConcurrentClientSyncInfo &gt;</type>
+        <definition>std::shared_ptr&lt; ::apache::thrift::async::TConcurrentClientSyncInfo&gt; facebook::fb303::FacebookServiceConcurrentClient::sync_</definition>
+        <argsstring></argsstring>
+        <name>sync_</name>
+        <qualifiedname>facebook::fb303::FacebookServiceConcurrentClient::sync_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="1664" column="19" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.h" bodystart="1664" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookServiceConcurrentClient_1ab2b7eac244fb3aaa4771e6a56af18eb1" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>facebook::fb303::FacebookServiceConcurrentClient::FacebookServiceConcurrentClient</definition>
+        <argsstring>(std::shared_ptr&lt; ::apache::thrift::protocol::TProtocol &gt; prot, std::shared_ptr&lt; ::apache::thrift::async::TConcurrentClientSyncInfo &gt; sync)</argsstring>
+        <name>FacebookServiceConcurrentClient</name>
+        <qualifiedname>facebook::fb303::FacebookServiceConcurrentClient::FacebookServiceConcurrentClient</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; ::apache::thrift::protocol::TProtocol &gt;</type>
+          <declname>prot</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; ::apache::thrift::async::TConcurrentClientSyncInfo &gt;</type>
+          <declname>sync</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="1547" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.h" bodystart="1547" bodyend="1550"/>
+      </memberdef>
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookServiceConcurrentClient_1ad1becf0bf2087d734f3ae77310d1505d" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>facebook::fb303::FacebookServiceConcurrentClient::FacebookServiceConcurrentClient</definition>
+        <argsstring>(std::shared_ptr&lt; ::apache::thrift::protocol::TProtocol &gt; iprot, std::shared_ptr&lt; ::apache::thrift::protocol::TProtocol &gt; oprot, std::shared_ptr&lt; ::apache::thrift::async::TConcurrentClientSyncInfo &gt; sync)</argsstring>
+        <name>FacebookServiceConcurrentClient</name>
+        <qualifiedname>facebook::fb303::FacebookServiceConcurrentClient::FacebookServiceConcurrentClient</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; ::apache::thrift::protocol::TProtocol &gt;</type>
+          <declname>iprot</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; ::apache::thrift::protocol::TProtocol &gt;</type>
+          <declname>oprot</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; ::apache::thrift::async::TConcurrentClientSyncInfo &gt;</type>
+          <declname>sync</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="1551" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.h" bodystart="1551" bodyend="1554"/>
+      </memberdef>
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookServiceConcurrentClient_1aefc2007ad13d62d8e367aa447251af67" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::shared_ptr&lt; ::apache::thrift::protocol::TProtocol &gt;</type>
+        <definition>std::shared_ptr&lt; ::apache::thrift::protocol::TProtocol &gt; facebook::fb303::FacebookServiceConcurrentClient::getInputProtocol</definition>
+        <argsstring>()</argsstring>
+        <name>getInputProtocol</name>
+        <qualifiedname>facebook::fb303::FacebookServiceConcurrentClient::getInputProtocol</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="1566" column="19" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.h" bodystart="1566" bodyend="1568"/>
+      </memberdef>
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookServiceConcurrentClient_1aeafb932008c2c6592ee8156ee9d188bc" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::shared_ptr&lt; ::apache::thrift::protocol::TProtocol &gt;</type>
+        <definition>std::shared_ptr&lt; ::apache::thrift::protocol::TProtocol &gt; facebook::fb303::FacebookServiceConcurrentClient::getOutputProtocol</definition>
+        <argsstring>()</argsstring>
+        <name>getOutputProtocol</name>
+        <qualifiedname>facebook::fb303::FacebookServiceConcurrentClient::getOutputProtocol</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="1569" column="19" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.h" bodystart="1569" bodyend="1571"/>
+      </memberdef>
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookServiceConcurrentClient_1ad3ff645695b825447c46839e0da9e6fb" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void facebook::fb303::FacebookServiceConcurrentClient::getName</definition>
+        <argsstring>(std::string &amp;_return) override</argsstring>
+        <name>getName</name>
+        <qualifiedname>facebook::fb303::FacebookServiceConcurrentClient::getName</qualifiedname>
+        <reimplements refid="classfacebook_1_1fb303_1_1FacebookServiceIf_1ab852f1096d980ecb8f5c5264314aae96">getName</reimplements>
+        <param>
+          <type>std::string &amp;</type>
+          <declname>_return</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Returns a descriptive name of the service </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="1575" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.cpp" bodystart="3521" bodyend="3525"/>
+      </memberdef>
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookServiceConcurrentClient_1a87472e99aa3c8dddf05dfc4fd3035316" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int32_t</type>
+        <definition>int32_t facebook::fb303::FacebookServiceConcurrentClient::send_getName</definition>
+        <argsstring>()</argsstring>
+        <name>send_getName</name>
+        <qualifiedname>facebook::fb303::FacebookServiceConcurrentClient::send_getName</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="1576" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.cpp" bodystart="3527" bodyend="3542"/>
+      </memberdef>
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookServiceConcurrentClient_1ad72a18332816fac95643ab77b99ecfb2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void facebook::fb303::FacebookServiceConcurrentClient::recv_getName</definition>
+        <argsstring>(std::string &amp;_return, const int32_t seqid)</argsstring>
+        <name>recv_getName</name>
+        <qualifiedname>facebook::fb303::FacebookServiceConcurrentClient::recv_getName</qualifiedname>
+        <param>
+          <type>std::string &amp;</type>
+          <declname>_return</declname>
+        </param>
+        <param>
+          <type>const int32_t</type>
+          <declname>seqid</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="1577" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.cpp" bodystart="3544" bodyend="3602"/>
+      </memberdef>
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookServiceConcurrentClient_1a267c4dd7611be5945dfd6f5e56259eb4" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void facebook::fb303::FacebookServiceConcurrentClient::getVersion</definition>
+        <argsstring>(std::string &amp;_return) override</argsstring>
+        <name>getVersion</name>
+        <qualifiedname>facebook::fb303::FacebookServiceConcurrentClient::getVersion</qualifiedname>
+        <reimplements refid="classfacebook_1_1fb303_1_1FacebookServiceIf_1ae94f6c907c518f703d099f4e61978555">getVersion</reimplements>
+        <param>
+          <type>std::string &amp;</type>
+          <declname>_return</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Returns the version of the service </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="1581" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.cpp" bodystart="3604" bodyend="3608"/>
+      </memberdef>
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookServiceConcurrentClient_1a5f01129eaa2fe2334dba543550cd23e7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int32_t</type>
+        <definition>int32_t facebook::fb303::FacebookServiceConcurrentClient::send_getVersion</definition>
+        <argsstring>()</argsstring>
+        <name>send_getVersion</name>
+        <qualifiedname>facebook::fb303::FacebookServiceConcurrentClient::send_getVersion</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="1582" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.cpp" bodystart="3610" bodyend="3625"/>
+      </memberdef>
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookServiceConcurrentClient_1adfa299bb0bc3c602887c042e965b466d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void facebook::fb303::FacebookServiceConcurrentClient::recv_getVersion</definition>
+        <argsstring>(std::string &amp;_return, const int32_t seqid)</argsstring>
+        <name>recv_getVersion</name>
+        <qualifiedname>facebook::fb303::FacebookServiceConcurrentClient::recv_getVersion</qualifiedname>
+        <param>
+          <type>std::string &amp;</type>
+          <declname>_return</declname>
+        </param>
+        <param>
+          <type>const int32_t</type>
+          <declname>seqid</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="1583" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.cpp" bodystart="3627" bodyend="3685"/>
+      </memberdef>
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookServiceConcurrentClient_1ae56557b9e7e6f3326a98405ed4a8e4e4" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>fb_status::type</type>
+        <definition>fb_status::type facebook::fb303::FacebookServiceConcurrentClient::getStatus</definition>
+        <argsstring>() override</argsstring>
+        <name>getStatus</name>
+        <qualifiedname>facebook::fb303::FacebookServiceConcurrentClient::getStatus</qualifiedname>
+        <reimplements refid="classfacebook_1_1fb303_1_1FacebookServiceIf_1a5a79713d79dc1dc9a9d788a7058aba3f">getStatus</reimplements>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Gets the status of this service </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="1587" column="19" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.cpp" bodystart="3687" bodyend="3691"/>
+      </memberdef>
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookServiceConcurrentClient_1a2505d74d847ca77e9c250045f7f10b65" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int32_t</type>
+        <definition>int32_t facebook::fb303::FacebookServiceConcurrentClient::send_getStatus</definition>
+        <argsstring>()</argsstring>
+        <name>send_getStatus</name>
+        <qualifiedname>facebook::fb303::FacebookServiceConcurrentClient::send_getStatus</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="1588" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.cpp" bodystart="3693" bodyend="3708"/>
+      </memberdef>
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookServiceConcurrentClient_1ae36f7814134b9518cd48baa853610243" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>fb_status::type</type>
+        <definition>fb_status::type facebook::fb303::FacebookServiceConcurrentClient::recv_getStatus</definition>
+        <argsstring>(const int32_t seqid)</argsstring>
+        <name>recv_getStatus</name>
+        <qualifiedname>facebook::fb303::FacebookServiceConcurrentClient::recv_getStatus</qualifiedname>
+        <param>
+          <type>const int32_t</type>
+          <declname>seqid</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="1589" column="19" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.cpp" bodystart="3710" bodyend="3768"/>
+      </memberdef>
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookServiceConcurrentClient_1a37b94a180d30084fb604025bab2846d3" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void facebook::fb303::FacebookServiceConcurrentClient::getStatusDetails</definition>
+        <argsstring>(std::string &amp;_return) override</argsstring>
+        <name>getStatusDetails</name>
+        <qualifiedname>facebook::fb303::FacebookServiceConcurrentClient::getStatusDetails</qualifiedname>
+        <reimplements refid="classfacebook_1_1fb303_1_1FacebookServiceIf_1adf81c416ff893e42358439b9de88cb35">getStatusDetails</reimplements>
+        <param>
+          <type>std::string &amp;</type>
+          <declname>_return</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>User friendly description of status, such as why the service is in the dead or warning state, or what is being started or stopped. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="1594" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.cpp" bodystart="3770" bodyend="3774"/>
+      </memberdef>
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookServiceConcurrentClient_1a12f4692cff9b40492ceca0d2a067f094" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int32_t</type>
+        <definition>int32_t facebook::fb303::FacebookServiceConcurrentClient::send_getStatusDetails</definition>
+        <argsstring>()</argsstring>
+        <name>send_getStatusDetails</name>
+        <qualifiedname>facebook::fb303::FacebookServiceConcurrentClient::send_getStatusDetails</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="1595" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.cpp" bodystart="3776" bodyend="3791"/>
+      </memberdef>
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookServiceConcurrentClient_1a65435ff030710207000f23f9dae7271f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void facebook::fb303::FacebookServiceConcurrentClient::recv_getStatusDetails</definition>
+        <argsstring>(std::string &amp;_return, const int32_t seqid)</argsstring>
+        <name>recv_getStatusDetails</name>
+        <qualifiedname>facebook::fb303::FacebookServiceConcurrentClient::recv_getStatusDetails</qualifiedname>
+        <param>
+          <type>std::string &amp;</type>
+          <declname>_return</declname>
+        </param>
+        <param>
+          <type>const int32_t</type>
+          <declname>seqid</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="1596" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.cpp" bodystart="3793" bodyend="3851"/>
+      </memberdef>
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookServiceConcurrentClient_1a2958846ff8bb2988188251ec3dd48080" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void facebook::fb303::FacebookServiceConcurrentClient::getCounters</definition>
+        <argsstring>(std::map&lt; std::string, int64_t &gt; &amp;_return) override</argsstring>
+        <name>getCounters</name>
+        <qualifiedname>facebook::fb303::FacebookServiceConcurrentClient::getCounters</qualifiedname>
+        <reimplements refid="classfacebook_1_1fb303_1_1FacebookServiceIf_1a0b334a85913adbe8c2639037c72db917">getCounters</reimplements>
+        <param>
+          <type>std::map&lt; std::string, int64_t &gt; &amp;</type>
+          <declname>_return</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Gets the counters for this service </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="1600" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.cpp" bodystart="3853" bodyend="3857"/>
+      </memberdef>
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookServiceConcurrentClient_1a5878ad96de41fea19beddaef55284573" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int32_t</type>
+        <definition>int32_t facebook::fb303::FacebookServiceConcurrentClient::send_getCounters</definition>
+        <argsstring>()</argsstring>
+        <name>send_getCounters</name>
+        <qualifiedname>facebook::fb303::FacebookServiceConcurrentClient::send_getCounters</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="1601" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.cpp" bodystart="3859" bodyend="3874"/>
+      </memberdef>
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookServiceConcurrentClient_1a4f1c357ace10c625f43e1c1a314a0396" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void facebook::fb303::FacebookServiceConcurrentClient::recv_getCounters</definition>
+        <argsstring>(std::map&lt; std::string, int64_t &gt; &amp;_return, const int32_t seqid)</argsstring>
+        <name>recv_getCounters</name>
+        <qualifiedname>facebook::fb303::FacebookServiceConcurrentClient::recv_getCounters</qualifiedname>
+        <param>
+          <type>std::map&lt; std::string, int64_t &gt; &amp;</type>
+          <declname>_return</declname>
+        </param>
+        <param>
+          <type>const int32_t</type>
+          <declname>seqid</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="1602" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.cpp" bodystart="3876" bodyend="3934"/>
+      </memberdef>
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookServiceConcurrentClient_1a5c104d8bedb93b113f9cecd3bf36e3de" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>int64_t</type>
+        <definition>int64_t facebook::fb303::FacebookServiceConcurrentClient::getCounter</definition>
+        <argsstring>(const std::string &amp;key) override</argsstring>
+        <name>getCounter</name>
+        <qualifiedname>facebook::fb303::FacebookServiceConcurrentClient::getCounter</qualifiedname>
+        <reimplements refid="classfacebook_1_1fb303_1_1FacebookServiceIf_1a03b67e6e05a9c6a7d20998bd69ab3b65">getCounter</reimplements>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>key</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Gets the value of a single counter</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>key</parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="1608" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.cpp" bodystart="3936" bodyend="3940"/>
+      </memberdef>
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookServiceConcurrentClient_1a463901c32963c2cd7182082b89a10f93" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int32_t</type>
+        <definition>int32_t facebook::fb303::FacebookServiceConcurrentClient::send_getCounter</definition>
+        <argsstring>(const std::string &amp;key)</argsstring>
+        <name>send_getCounter</name>
+        <qualifiedname>facebook::fb303::FacebookServiceConcurrentClient::send_getCounter</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>key</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="1609" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.cpp" bodystart="3942" bodyend="3958"/>
+      </memberdef>
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookServiceConcurrentClient_1ab3e0634d1ff532cbbe6990320dd884f8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int64_t</type>
+        <definition>int64_t facebook::fb303::FacebookServiceConcurrentClient::recv_getCounter</definition>
+        <argsstring>(const int32_t seqid)</argsstring>
+        <name>recv_getCounter</name>
+        <qualifiedname>facebook::fb303::FacebookServiceConcurrentClient::recv_getCounter</qualifiedname>
+        <param>
+          <type>const int32_t</type>
+          <declname>seqid</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="1610" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.cpp" bodystart="3960" bodyend="4018"/>
+      </memberdef>
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookServiceConcurrentClient_1a6c1b147f5d75f3d43c04c2611949b9d8" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void facebook::fb303::FacebookServiceConcurrentClient::setOption</definition>
+        <argsstring>(const std::string &amp;key, const std::string &amp;value) override</argsstring>
+        <name>setOption</name>
+        <qualifiedname>facebook::fb303::FacebookServiceConcurrentClient::setOption</qualifiedname>
+        <reimplements refid="classfacebook_1_1fb303_1_1FacebookServiceIf_1acd5e168313e87d2ba254e65b53827cf6">setOption</reimplements>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>key</declname>
+        </param>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>value</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Sets an option</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>key</parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>value</parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="1617" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.cpp" bodystart="4020" bodyend="4024"/>
+      </memberdef>
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookServiceConcurrentClient_1abec4a3776998eb38ccc677ecf9e774e4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int32_t</type>
+        <definition>int32_t facebook::fb303::FacebookServiceConcurrentClient::send_setOption</definition>
+        <argsstring>(const std::string &amp;key, const std::string &amp;value)</argsstring>
+        <name>send_setOption</name>
+        <qualifiedname>facebook::fb303::FacebookServiceConcurrentClient::send_setOption</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>key</declname>
+        </param>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>value</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="1618" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.cpp" bodystart="4026" bodyend="4043"/>
+      </memberdef>
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookServiceConcurrentClient_1ac7ab717d63051dc0b7c8dd494bc7efec" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void facebook::fb303::FacebookServiceConcurrentClient::recv_setOption</definition>
+        <argsstring>(const int32_t seqid)</argsstring>
+        <name>recv_setOption</name>
+        <qualifiedname>facebook::fb303::FacebookServiceConcurrentClient::recv_setOption</qualifiedname>
+        <param>
+          <type>const int32_t</type>
+          <declname>seqid</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="1619" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.cpp" bodystart="4045" bodyend="4097"/>
+      </memberdef>
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookServiceConcurrentClient_1a17a3d05e82bd138d849f4a9bfb67b0a7" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void facebook::fb303::FacebookServiceConcurrentClient::getOption</definition>
+        <argsstring>(std::string &amp;_return, const std::string &amp;key) override</argsstring>
+        <name>getOption</name>
+        <qualifiedname>facebook::fb303::FacebookServiceConcurrentClient::getOption</qualifiedname>
+        <reimplements refid="classfacebook_1_1fb303_1_1FacebookServiceIf_1af909ac5fba5ce59b7ab0dd0502c61c89">getOption</reimplements>
+        <param>
+          <type>std::string &amp;</type>
+          <declname>_return</declname>
+        </param>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>key</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Gets an option</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>key</parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="1625" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.cpp" bodystart="4099" bodyend="4103"/>
+      </memberdef>
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookServiceConcurrentClient_1a4a5211b6fc8ed92735c2a2bf2dcd68db" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int32_t</type>
+        <definition>int32_t facebook::fb303::FacebookServiceConcurrentClient::send_getOption</definition>
+        <argsstring>(const std::string &amp;key)</argsstring>
+        <name>send_getOption</name>
+        <qualifiedname>facebook::fb303::FacebookServiceConcurrentClient::send_getOption</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>key</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="1626" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.cpp" bodystart="4105" bodyend="4121"/>
+      </memberdef>
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookServiceConcurrentClient_1a491372650083810e78fb81bb90b5cdf9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void facebook::fb303::FacebookServiceConcurrentClient::recv_getOption</definition>
+        <argsstring>(std::string &amp;_return, const int32_t seqid)</argsstring>
+        <name>recv_getOption</name>
+        <qualifiedname>facebook::fb303::FacebookServiceConcurrentClient::recv_getOption</qualifiedname>
+        <param>
+          <type>std::string &amp;</type>
+          <declname>_return</declname>
+        </param>
+        <param>
+          <type>const int32_t</type>
+          <declname>seqid</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="1627" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.cpp" bodystart="4123" bodyend="4181"/>
+      </memberdef>
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookServiceConcurrentClient_1ab10db693b8bff578666b54cc275f2cde" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void facebook::fb303::FacebookServiceConcurrentClient::getOptions</definition>
+        <argsstring>(std::map&lt; std::string, std::string &gt; &amp;_return) override</argsstring>
+        <name>getOptions</name>
+        <qualifiedname>facebook::fb303::FacebookServiceConcurrentClient::getOptions</qualifiedname>
+        <reimplements refid="classfacebook_1_1fb303_1_1FacebookServiceIf_1a8dcbc98fed9ba494f33c1b48ff4176f3">getOptions</reimplements>
+        <param>
+          <type>std::map&lt; std::string, std::string &gt; &amp;</type>
+          <declname>_return</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Gets all options </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="1631" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.cpp" bodystart="4183" bodyend="4187"/>
+      </memberdef>
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookServiceConcurrentClient_1aa99d3e0f9379f6827b329eb1c1625543" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int32_t</type>
+        <definition>int32_t facebook::fb303::FacebookServiceConcurrentClient::send_getOptions</definition>
+        <argsstring>()</argsstring>
+        <name>send_getOptions</name>
+        <qualifiedname>facebook::fb303::FacebookServiceConcurrentClient::send_getOptions</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="1632" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.cpp" bodystart="4189" bodyend="4204"/>
+      </memberdef>
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookServiceConcurrentClient_1a99960cf33da39ca287bb46fd0789618f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void facebook::fb303::FacebookServiceConcurrentClient::recv_getOptions</definition>
+        <argsstring>(std::map&lt; std::string, std::string &gt; &amp;_return, const int32_t seqid)</argsstring>
+        <name>recv_getOptions</name>
+        <qualifiedname>facebook::fb303::FacebookServiceConcurrentClient::recv_getOptions</qualifiedname>
+        <param>
+          <type>std::map&lt; std::string, std::string &gt; &amp;</type>
+          <declname>_return</declname>
+        </param>
+        <param>
+          <type>const int32_t</type>
+          <declname>seqid</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="1633" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.cpp" bodystart="4206" bodyend="4264"/>
+      </memberdef>
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookServiceConcurrentClient_1a0ec5ef3f7158136bde68dffc28e31f3f" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void facebook::fb303::FacebookServiceConcurrentClient::getCpuProfile</definition>
+        <argsstring>(std::string &amp;_return, const int32_t profileDurationInSec) override</argsstring>
+        <name>getCpuProfile</name>
+        <qualifiedname>facebook::fb303::FacebookServiceConcurrentClient::getCpuProfile</qualifiedname>
+        <reimplements refid="classfacebook_1_1fb303_1_1FacebookServiceIf_1a82e29aa3ad637e00b69cbea4ad5579eb">getCpuProfile</reimplements>
+        <param>
+          <type>std::string &amp;</type>
+          <declname>_return</declname>
+        </param>
+        <param>
+          <type>const int32_t</type>
+          <declname>profileDurationInSec</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Returns a CPU profile over the given time interval (client and server must agree on the profile format).</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>profileDurationInSec</parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="1640" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.cpp" bodystart="4266" bodyend="4270"/>
+      </memberdef>
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookServiceConcurrentClient_1aca34380b9f6436d877af1ba2930c5a69" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int32_t</type>
+        <definition>int32_t facebook::fb303::FacebookServiceConcurrentClient::send_getCpuProfile</definition>
+        <argsstring>(const int32_t profileDurationInSec)</argsstring>
+        <name>send_getCpuProfile</name>
+        <qualifiedname>facebook::fb303::FacebookServiceConcurrentClient::send_getCpuProfile</qualifiedname>
+        <param>
+          <type>const int32_t</type>
+          <declname>profileDurationInSec</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="1641" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.cpp" bodystart="4272" bodyend="4288"/>
+      </memberdef>
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookServiceConcurrentClient_1a2e43705e4b1516db7587da408806ce35" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void facebook::fb303::FacebookServiceConcurrentClient::recv_getCpuProfile</definition>
+        <argsstring>(std::string &amp;_return, const int32_t seqid)</argsstring>
+        <name>recv_getCpuProfile</name>
+        <qualifiedname>facebook::fb303::FacebookServiceConcurrentClient::recv_getCpuProfile</qualifiedname>
+        <param>
+          <type>std::string &amp;</type>
+          <declname>_return</declname>
+        </param>
+        <param>
+          <type>const int32_t</type>
+          <declname>seqid</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="1642" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.cpp" bodystart="4290" bodyend="4348"/>
+      </memberdef>
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookServiceConcurrentClient_1a7a0bc06f588f651c7a1e193328c2138c" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>int64_t</type>
+        <definition>int64_t facebook::fb303::FacebookServiceConcurrentClient::aliveSince</definition>
+        <argsstring>() override</argsstring>
+        <name>aliveSince</name>
+        <qualifiedname>facebook::fb303::FacebookServiceConcurrentClient::aliveSince</qualifiedname>
+        <reimplements refid="classfacebook_1_1fb303_1_1FacebookServiceIf_1a48e66d93de7f68de0b7abf49d0dce2d2">aliveSince</reimplements>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Returns the unix time that the server has been running since </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="1646" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.cpp" bodystart="4350" bodyend="4354"/>
+      </memberdef>
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookServiceConcurrentClient_1ac92b18817871e01011535fc833cf5a3a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int32_t</type>
+        <definition>int32_t facebook::fb303::FacebookServiceConcurrentClient::send_aliveSince</definition>
+        <argsstring>()</argsstring>
+        <name>send_aliveSince</name>
+        <qualifiedname>facebook::fb303::FacebookServiceConcurrentClient::send_aliveSince</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="1647" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.cpp" bodystart="4356" bodyend="4371"/>
+      </memberdef>
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookServiceConcurrentClient_1a4854990c2b63343bfacf3208165a21bd" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int64_t</type>
+        <definition>int64_t facebook::fb303::FacebookServiceConcurrentClient::recv_aliveSince</definition>
+        <argsstring>(const int32_t seqid)</argsstring>
+        <name>recv_aliveSince</name>
+        <qualifiedname>facebook::fb303::FacebookServiceConcurrentClient::recv_aliveSince</qualifiedname>
+        <param>
+          <type>const int32_t</type>
+          <declname>seqid</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="1648" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.cpp" bodystart="4373" bodyend="4431"/>
+      </memberdef>
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookServiceConcurrentClient_1a581da2c6af729ab65555d01614b9199a" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void facebook::fb303::FacebookServiceConcurrentClient::reinitialize</definition>
+        <argsstring>() override</argsstring>
+        <name>reinitialize</name>
+        <qualifiedname>facebook::fb303::FacebookServiceConcurrentClient::reinitialize</qualifiedname>
+        <reimplements refid="classfacebook_1_1fb303_1_1FacebookServiceIf_1a4be22595bd9f01befd8c1f494ce2a8bb">reinitialize</reimplements>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Tell the server to reload its configuration, reopen log files, etc </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="1652" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.cpp" bodystart="4433" bodyend="4436"/>
+      </memberdef>
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookServiceConcurrentClient_1ae5c65a09a5a952941abdda9253580e4f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void facebook::fb303::FacebookServiceConcurrentClient::send_reinitialize</definition>
+        <argsstring>()</argsstring>
+        <name>send_reinitialize</name>
+        <qualifiedname>facebook::fb303::FacebookServiceConcurrentClient::send_reinitialize</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="1653" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.cpp" bodystart="4438" bodyend="4452"/>
+      </memberdef>
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookServiceConcurrentClient_1aef6540efc27d2a43f54b39037295aa4c" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void facebook::fb303::FacebookServiceConcurrentClient::shutdown</definition>
+        <argsstring>() override</argsstring>
+        <name>shutdown</name>
+        <qualifiedname>facebook::fb303::FacebookServiceConcurrentClient::shutdown</qualifiedname>
+        <reimplements refid="classfacebook_1_1fb303_1_1FacebookServiceIf_1a8b4200726d05c4d5592418ccbc05825f">shutdown</reimplements>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Suggest a shutdown to the server </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="1657" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.cpp" bodystart="4454" bodyend="4457"/>
+      </memberdef>
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookServiceConcurrentClient_1a40f0fc746d3b0027447e371287186124" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void facebook::fb303::FacebookServiceConcurrentClient::send_shutdown</definition>
+        <argsstring>()</argsstring>
+        <name>send_shutdown</name>
+        <qualifiedname>facebook::fb303::FacebookServiceConcurrentClient::send_shutdown</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="1658" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.cpp" bodystart="4459" bodyend="4473"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookServiceConcurrentClient_1a9b89ea2fc1e5c59748f74218de3cbe94" prot="private" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void facebook::fb303::FacebookServiceConcurrentClient::setProtocol</definition>
+        <argsstring>(std::shared_ptr&lt; ::apache::thrift::protocol::TProtocol &gt; prot)</argsstring>
+        <name>setProtocol</name>
+        <qualifiedname>facebook::fb303::FacebookServiceConcurrentClient::setProtocol</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; ::apache::thrift::protocol::TProtocol &gt;</type>
+          <declname>prot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="1556" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.h" bodystart="1556" bodyend="1558"/>
+      </memberdef>
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookServiceConcurrentClient_1a7736a18f8929027671115615c8202b66" prot="private" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void facebook::fb303::FacebookServiceConcurrentClient::setProtocol</definition>
+        <argsstring>(std::shared_ptr&lt; ::apache::thrift::protocol::TProtocol &gt; iprot, std::shared_ptr&lt; ::apache::thrift::protocol::TProtocol &gt; oprot)</argsstring>
+        <name>setProtocol</name>
+        <qualifiedname>facebook::fb303::FacebookServiceConcurrentClient::setProtocol</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; ::apache::thrift::protocol::TProtocol &gt;</type>
+          <declname>iprot</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; ::apache::thrift::protocol::TProtocol &gt;</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="1559" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.h" bodystart="1559" bodyend="1564"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="3">
+        <label>Apache::Hadoop::Hive::ThriftHiveMetastoreConcurrentClient</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastoreConcurrentClient"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>facebook::fb303::FacebookServiceConcurrentClient</label>
+        <link refid="classfacebook_1_1fb303_1_1FacebookServiceConcurrentClient"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>facebook::fb303::FacebookServiceIf</label>
+        <link refid="classfacebook_1_1fb303_1_1FacebookServiceIf"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>facebook::fb303::FacebookServiceConcurrentClient</label>
+        <link refid="classfacebook_1_1fb303_1_1FacebookServiceConcurrentClient"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>piprot_</edgelabel>
+          <edgelabel>poprot_</edgelabel>
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>sync_</edgelabel>
+        </childnode>
+      </node>
+      <node id="2">
+        <label>facebook::fb303::FacebookServiceIf</label>
+        <link refid="classfacebook_1_1fb303_1_1FacebookServiceIf"/>
+      </node>
+      <node id="4">
+        <label>std::shared_ptr&lt; ::apache::thrift::async::TConcurrentClientSyncInfo &gt;</label>
+      </node>
+      <node id="3">
+        <label>std::shared_ptr&lt; ::apache::thrift::protocol::TProtocol &gt;</label>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="1545" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.h" bodystart="1545" bodyend="1665"/>
+    <listofallmembers>
+      <member refid="classfacebook_1_1fb303_1_1FacebookServiceConcurrentClient_1a7a0bc06f588f651c7a1e193328c2138c" prot="public" virt="virtual"><scope>facebook::fb303::FacebookServiceConcurrentClient</scope><name>aliveSince</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookServiceConcurrentClient_1ab2b7eac244fb3aaa4771e6a56af18eb1" prot="public" virt="non-virtual"><scope>facebook::fb303::FacebookServiceConcurrentClient</scope><name>FacebookServiceConcurrentClient</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookServiceConcurrentClient_1ad1becf0bf2087d734f3ae77310d1505d" prot="public" virt="non-virtual"><scope>facebook::fb303::FacebookServiceConcurrentClient</scope><name>FacebookServiceConcurrentClient</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookServiceConcurrentClient_1a5c104d8bedb93b113f9cecd3bf36e3de" prot="public" virt="virtual"><scope>facebook::fb303::FacebookServiceConcurrentClient</scope><name>getCounter</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookServiceConcurrentClient_1a2958846ff8bb2988188251ec3dd48080" prot="public" virt="virtual"><scope>facebook::fb303::FacebookServiceConcurrentClient</scope><name>getCounters</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookServiceConcurrentClient_1a0ec5ef3f7158136bde68dffc28e31f3f" prot="public" virt="virtual"><scope>facebook::fb303::FacebookServiceConcurrentClient</scope><name>getCpuProfile</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookServiceConcurrentClient_1aefc2007ad13d62d8e367aa447251af67" prot="public" virt="non-virtual"><scope>facebook::fb303::FacebookServiceConcurrentClient</scope><name>getInputProtocol</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookServiceConcurrentClient_1ad3ff645695b825447c46839e0da9e6fb" prot="public" virt="virtual"><scope>facebook::fb303::FacebookServiceConcurrentClient</scope><name>getName</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookServiceConcurrentClient_1a17a3d05e82bd138d849f4a9bfb67b0a7" prot="public" virt="virtual"><scope>facebook::fb303::FacebookServiceConcurrentClient</scope><name>getOption</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookServiceConcurrentClient_1ab10db693b8bff578666b54cc275f2cde" prot="public" virt="virtual"><scope>facebook::fb303::FacebookServiceConcurrentClient</scope><name>getOptions</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookServiceConcurrentClient_1aeafb932008c2c6592ee8156ee9d188bc" prot="public" virt="non-virtual"><scope>facebook::fb303::FacebookServiceConcurrentClient</scope><name>getOutputProtocol</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookServiceConcurrentClient_1ae56557b9e7e6f3326a98405ed4a8e4e4" prot="public" virt="virtual"><scope>facebook::fb303::FacebookServiceConcurrentClient</scope><name>getStatus</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookServiceConcurrentClient_1a37b94a180d30084fb604025bab2846d3" prot="public" virt="virtual"><scope>facebook::fb303::FacebookServiceConcurrentClient</scope><name>getStatusDetails</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookServiceConcurrentClient_1a267c4dd7611be5945dfd6f5e56259eb4" prot="public" virt="virtual"><scope>facebook::fb303::FacebookServiceConcurrentClient</scope><name>getVersion</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookServiceConcurrentClient_1a34949cd4bdf5ffd37d32827d9eaeaf31" prot="protected" virt="non-virtual"><scope>facebook::fb303::FacebookServiceConcurrentClient</scope><name>iprot_</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookServiceConcurrentClient_1af17b1307230e5a4a1303de9c1e96bd1e" prot="protected" virt="non-virtual"><scope>facebook::fb303::FacebookServiceConcurrentClient</scope><name>oprot_</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookServiceConcurrentClient_1a1bd203043b24481e64bae92d8974f34d" prot="protected" virt="non-virtual"><scope>facebook::fb303::FacebookServiceConcurrentClient</scope><name>piprot_</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookServiceConcurrentClient_1acb9924e7db934bc7b14a5e8109a6b585" prot="protected" virt="non-virtual"><scope>facebook::fb303::FacebookServiceConcurrentClient</scope><name>poprot_</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookServiceConcurrentClient_1a4854990c2b63343bfacf3208165a21bd" prot="public" virt="non-virtual"><scope>facebook::fb303::FacebookServiceConcurrentClient</scope><name>recv_aliveSince</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookServiceConcurrentClient_1ab3e0634d1ff532cbbe6990320dd884f8" prot="public" virt="non-virtual"><scope>facebook::fb303::FacebookServiceConcurrentClient</scope><name>recv_getCounter</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookServiceConcurrentClient_1a4f1c357ace10c625f43e1c1a314a0396" prot="public" virt="non-virtual"><scope>facebook::fb303::FacebookServiceConcurrentClient</scope><name>recv_getCounters</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookServiceConcurrentClient_1a2e43705e4b1516db7587da408806ce35" prot="public" virt="non-virtual"><scope>facebook::fb303::FacebookServiceConcurrentClient</scope><name>recv_getCpuProfile</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookServiceConcurrentClient_1ad72a18332816fac95643ab77b99ecfb2" prot="public" virt="non-virtual"><scope>facebook::fb303::FacebookServiceConcurrentClient</scope><name>recv_getName</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookServiceConcurrentClient_1a491372650083810e78fb81bb90b5cdf9" prot="public" virt="non-virtual"><scope>facebook::fb303::FacebookServiceConcurrentClient</scope><name>recv_getOption</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookServiceConcurrentClient_1a99960cf33da39ca287bb46fd0789618f" prot="public" virt="non-virtual"><scope>facebook::fb303::FacebookServiceConcurrentClient</scope><name>recv_getOptions</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookServiceConcurrentClient_1ae36f7814134b9518cd48baa853610243" prot="public" virt="non-virtual"><scope>facebook::fb303::FacebookServiceConcurrentClient</scope><name>recv_getStatus</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookServiceConcurrentClient_1a65435ff030710207000f23f9dae7271f" prot="public" virt="non-virtual"><scope>facebook::fb303::FacebookServiceConcurrentClient</scope><name>recv_getStatusDetails</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookServiceConcurrentClient_1adfa299bb0bc3c602887c042e965b466d" prot="public" virt="non-virtual"><scope>facebook::fb303::FacebookServiceConcurrentClient</scope><name>recv_getVersion</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookServiceConcurrentClient_1ac7ab717d63051dc0b7c8dd494bc7efec" prot="public" virt="non-virtual"><scope>facebook::fb303::FacebookServiceConcurrentClient</scope><name>recv_setOption</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookServiceConcurrentClient_1a581da2c6af729ab65555d01614b9199a" prot="public" virt="virtual"><scope>facebook::fb303::FacebookServiceConcurrentClient</scope><name>reinitialize</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookServiceConcurrentClient_1ac92b18817871e01011535fc833cf5a3a" prot="public" virt="non-virtual"><scope>facebook::fb303::FacebookServiceConcurrentClient</scope><name>send_aliveSince</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookServiceConcurrentClient_1a463901c32963c2cd7182082b89a10f93" prot="public" virt="non-virtual"><scope>facebook::fb303::FacebookServiceConcurrentClient</scope><name>send_getCounter</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookServiceConcurrentClient_1a5878ad96de41fea19beddaef55284573" prot="public" virt="non-virtual"><scope>facebook::fb303::FacebookServiceConcurrentClient</scope><name>send_getCounters</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookServiceConcurrentClient_1aca34380b9f6436d877af1ba2930c5a69" prot="public" virt="non-virtual"><scope>facebook::fb303::FacebookServiceConcurrentClient</scope><name>send_getCpuProfile</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookServiceConcurrentClient_1a87472e99aa3c8dddf05dfc4fd3035316" prot="public" virt="non-virtual"><scope>facebook::fb303::FacebookServiceConcurrentClient</scope><name>send_getName</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookServiceConcurrentClient_1a4a5211b6fc8ed92735c2a2bf2dcd68db" prot="public" virt="non-virtual"><scope>facebook::fb303::FacebookServiceConcurrentClient</scope><name>send_getOption</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookServiceConcurrentClient_1aa99d3e0f9379f6827b329eb1c1625543" prot="public" virt="non-virtual"><scope>facebook::fb303::FacebookServiceConcurrentClient</scope><name>send_getOptions</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookServiceConcurrentClient_1a2505d74d847ca77e9c250045f7f10b65" prot="public" virt="non-virtual"><scope>facebook::fb303::FacebookServiceConcurrentClient</scope><name>send_getStatus</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookServiceConcurrentClient_1a12f4692cff9b40492ceca0d2a067f094" prot="public" virt="non-virtual"><scope>facebook::fb303::FacebookServiceConcurrentClient</scope><name>send_getStatusDetails</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookServiceConcurrentClient_1a5f01129eaa2fe2334dba543550cd23e7" prot="public" virt="non-virtual"><scope>facebook::fb303::FacebookServiceConcurrentClient</scope><name>send_getVersion</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookServiceConcurrentClient_1ae5c65a09a5a952941abdda9253580e4f" prot="public" virt="non-virtual"><scope>facebook::fb303::FacebookServiceConcurrentClient</scope><name>send_reinitialize</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookServiceConcurrentClient_1abec4a3776998eb38ccc677ecf9e774e4" prot="public" virt="non-virtual"><scope>facebook::fb303::FacebookServiceConcurrentClient</scope><name>send_setOption</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookServiceConcurrentClient_1a40f0fc746d3b0027447e371287186124" prot="public" virt="non-virtual"><scope>facebook::fb303::FacebookServiceConcurrentClient</scope><name>send_shutdown</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookServiceConcurrentClient_1a6c1b147f5d75f3d43c04c2611949b9d8" prot="public" virt="virtual"><scope>facebook::fb303::FacebookServiceConcurrentClient</scope><name>setOption</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookServiceConcurrentClient_1a9b89ea2fc1e5c59748f74218de3cbe94" prot="private" virt="non-virtual"><scope>facebook::fb303::FacebookServiceConcurrentClient</scope><name>setProtocol</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookServiceConcurrentClient_1a7736a18f8929027671115615c8202b66" prot="private" virt="non-virtual"><scope>facebook::fb303::FacebookServiceConcurrentClient</scope><name>setProtocol</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookServiceConcurrentClient_1aef6540efc27d2a43f54b39037295aa4c" prot="public" virt="virtual"><scope>facebook::fb303::FacebookServiceConcurrentClient</scope><name>shutdown</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookServiceConcurrentClient_1aa0ae699a23761317d8a4c3bdd900efe5" prot="protected" virt="non-virtual"><scope>facebook::fb303::FacebookServiceConcurrentClient</scope><name>sync_</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookServiceIf_1a97000e6d358c611b0fb8558dbdacb846" prot="public" virt="virtual"><scope>facebook::fb303::FacebookServiceConcurrentClient</scope><name>~FacebookServiceIf</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

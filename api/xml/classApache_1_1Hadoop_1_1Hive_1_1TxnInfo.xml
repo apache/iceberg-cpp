@@ -1,0 +1,566 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1TxnInfo" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::TxnInfo</compoundname>
+    <basecompoundref prot="public" virt="virtual">apache::thrift::TBase</basecompoundref>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1TxnInfo_1a833320fc6e977c05c2c1dc7c6c49fcb7" prot="public" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t Apache::Hadoop::Hive::TxnInfo::id</definition>
+        <argsstring></argsstring>
+        <name>id</name>
+        <qualifiedname>Apache::Hadoop::Hive::TxnInfo::id</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6615" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="6615" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1TxnInfo_1a7313739616f2181608867b2ff793c002" prot="public" static="no" mutable="no">
+        <type>TxnState::type</type>
+        <definition>TxnState::type Apache::Hadoop::Hive::TxnInfo::state</definition>
+        <argsstring></argsstring>
+        <name>state</name>
+        <qualifiedname>Apache::Hadoop::Hive::TxnInfo::state</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="see"><para><ref refid="structApache_1_1Hadoop_1_1Hive_1_1TxnState" kindref="compound">TxnState</ref> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6620" column="18" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="6620" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1TxnInfo_1a6a399aa4cdec074f2260b5fca068cbdf" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::TxnInfo::user</definition>
+        <argsstring></argsstring>
+        <name>user</name>
+        <qualifiedname>Apache::Hadoop::Hive::TxnInfo::user</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6621" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="6621" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1TxnInfo_1af8640705bcea822ea193564f5486ae3c" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::TxnInfo::hostname</definition>
+        <argsstring></argsstring>
+        <name>hostname</name>
+        <qualifiedname>Apache::Hadoop::Hive::TxnInfo::hostname</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6622" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="6622" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1TxnInfo_1a76c410f767b61037ec2724b1529a32e1" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::TxnInfo::agentInfo</definition>
+        <argsstring></argsstring>
+        <name>agentInfo</name>
+        <qualifiedname>Apache::Hadoop::Hive::TxnInfo::agentInfo</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6623" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="6623" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1TxnInfo_1a52f0473d32f6e1ae5c7489cf2fac349f" prot="public" static="no" mutable="no">
+        <type>int32_t</type>
+        <definition>int32_t Apache::Hadoop::Hive::TxnInfo::heartbeatCount</definition>
+        <argsstring></argsstring>
+        <name>heartbeatCount</name>
+        <qualifiedname>Apache::Hadoop::Hive::TxnInfo::heartbeatCount</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6624" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="6624" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1TxnInfo_1a2fcc5015fac652b6b03c17688cf4a7be" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::TxnInfo::metaInfo</definition>
+        <argsstring></argsstring>
+        <name>metaInfo</name>
+        <qualifiedname>Apache::Hadoop::Hive::TxnInfo::metaInfo</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6625" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="6625" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1TxnInfo_1a84f6e6a76ee2fb022816662e8fe2d77b" prot="public" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t Apache::Hadoop::Hive::TxnInfo::startedTime</definition>
+        <argsstring></argsstring>
+        <name>startedTime</name>
+        <qualifiedname>Apache::Hadoop::Hive::TxnInfo::startedTime</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6626" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="6626" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1TxnInfo_1a8700426dbd5c758fd2aba3bb499868a0" prot="public" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t Apache::Hadoop::Hive::TxnInfo::lastHeartbeatTime</definition>
+        <argsstring></argsstring>
+        <name>lastHeartbeatTime</name>
+        <qualifiedname>Apache::Hadoop::Hive::TxnInfo::lastHeartbeatTime</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6627" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="6627" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1TxnInfo_1a780194b7d7e8176ef52b874af3886a4a" prot="public" static="no" mutable="no">
+        <type><ref refid="structApache_1_1Hadoop_1_1Hive_1_1__TxnInfo____isset" kindref="compound">_TxnInfo__isset</ref></type>
+        <definition>_TxnInfo__isset Apache::Hadoop::Hive::TxnInfo::__isset</definition>
+        <argsstring></argsstring>
+        <name>__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::TxnInfo::__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6629" column="19" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="6629" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1TxnInfo_1a363dcf307a9b6050a5487fe0b9ca68bb" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::TxnInfo::TxnInfo</definition>
+        <argsstring>(const TxnInfo &amp;)</argsstring>
+        <name>TxnInfo</name>
+        <qualifiedname>Apache::Hadoop::Hive::TxnInfo::TxnInfo</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1TxnInfo" kindref="compound">TxnInfo</ref> &amp;</type>
+          <defname>other838</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6610" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="24769" bodyend="24780"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1TxnInfo_1a4bee32871b09db782e9e346c7babd7ff" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1TxnInfo" kindref="compound">TxnInfo</ref> &amp;</type>
+        <definition>TxnInfo &amp; Apache::Hadoop::Hive::TxnInfo::operator=</definition>
+        <argsstring>(const TxnInfo &amp;)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::TxnInfo::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1TxnInfo" kindref="compound">TxnInfo</ref> &amp;</type>
+          <defname>other839</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6611" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="24781" bodyend="24793"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1TxnInfo_1a94b2f0bdfa115de616df24312ae334f6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::TxnInfo::TxnInfo</definition>
+        <argsstring>()</argsstring>
+        <name>TxnInfo</name>
+        <qualifiedname>Apache::Hadoop::Hive::TxnInfo::TxnInfo</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6612" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="24494" bodyend="24503"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1TxnInfo_1a67377b33d77ead01adcad84ba2910f3a" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::TxnInfo::~TxnInfo</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~TxnInfo</name>
+        <qualifiedname>Apache::Hadoop::Hive::TxnInfo::~TxnInfo</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6614" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="24491" bodyend="24492"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1TxnInfo_1a07d3253722cb801785348e9981d433a6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::TxnInfo::__set_id</definition>
+        <argsstring>(const int64_t val)</argsstring>
+        <name>__set_id</name>
+        <qualifiedname>Apache::Hadoop::Hive::TxnInfo::__set_id</qualifiedname>
+        <param>
+          <type>const int64_t</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6631" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="24505" bodyend="24507"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1TxnInfo_1ad19761a7b0d0bee4db9b4dd1129751a6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::TxnInfo::__set_state</definition>
+        <argsstring>(const TxnState::type val)</argsstring>
+        <name>__set_state</name>
+        <qualifiedname>Apache::Hadoop::Hive::TxnInfo::__set_state</qualifiedname>
+        <param>
+          <type>const TxnState::type</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6633" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="24509" bodyend="24511"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1TxnInfo_1aaafe578bf1ca08578f99ede86a25bb1f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::TxnInfo::__set_user</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_user</name>
+        <qualifiedname>Apache::Hadoop::Hive::TxnInfo::__set_user</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6635" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="24513" bodyend="24515"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1TxnInfo_1aa2b62f770df42138b75dc1c71e980db3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::TxnInfo::__set_hostname</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_hostname</name>
+        <qualifiedname>Apache::Hadoop::Hive::TxnInfo::__set_hostname</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6637" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="24517" bodyend="24519"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1TxnInfo_1a49789905cf7ed59e0eb6d83fafd46d25" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::TxnInfo::__set_agentInfo</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_agentInfo</name>
+        <qualifiedname>Apache::Hadoop::Hive::TxnInfo::__set_agentInfo</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6639" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="24521" bodyend="24524"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1TxnInfo_1ade5c5675dfb0282d591b338815a6d090" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::TxnInfo::__set_heartbeatCount</definition>
+        <argsstring>(const int32_t val)</argsstring>
+        <name>__set_heartbeatCount</name>
+        <qualifiedname>Apache::Hadoop::Hive::TxnInfo::__set_heartbeatCount</qualifiedname>
+        <param>
+          <type>const int32_t</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6641" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="24526" bodyend="24529"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1TxnInfo_1aea1bb81af6e1de2b52105a615682677c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::TxnInfo::__set_metaInfo</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_metaInfo</name>
+        <qualifiedname>Apache::Hadoop::Hive::TxnInfo::__set_metaInfo</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6643" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="24531" bodyend="24534"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1TxnInfo_1adcfaefea71bec0906d819150ab7af869" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::TxnInfo::__set_startedTime</definition>
+        <argsstring>(const int64_t val)</argsstring>
+        <name>__set_startedTime</name>
+        <qualifiedname>Apache::Hadoop::Hive::TxnInfo::__set_startedTime</qualifiedname>
+        <param>
+          <type>const int64_t</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6645" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="24536" bodyend="24539"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1TxnInfo_1a8283de0b72c55e38a228eab2115e3287" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::TxnInfo::__set_lastHeartbeatTime</definition>
+        <argsstring>(const int64_t val)</argsstring>
+        <name>__set_lastHeartbeatTime</name>
+        <qualifiedname>Apache::Hadoop::Hive::TxnInfo::__set_lastHeartbeatTime</qualifiedname>
+        <param>
+          <type>const int64_t</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6647" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="24541" bodyend="24544"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1TxnInfo_1a905ac3284bf50c0dab85a78a274dd78d" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::TxnInfo::operator==</definition>
+        <argsstring>(const TxnInfo &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::TxnInfo::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1TxnInfo" kindref="compound">TxnInfo</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6649" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="24736" bodyend="24767"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1TxnInfo_1a04aa557fc8b8f5aff001325335324f40" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::TxnInfo::operator!=</definition>
+        <argsstring>(const TxnInfo &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::TxnInfo::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1TxnInfo" kindref="compound">TxnInfo</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6650" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="6650" bodyend="6652"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1TxnInfo_1a64d9ae596037972586999068b14f6afe" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::TxnInfo::operator&lt;</definition>
+        <argsstring>(const TxnInfo &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::TxnInfo::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1TxnInfo" kindref="compound">TxnInfo</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6654" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1TxnInfo_1ae47f801052912c5e092144011d0de546" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::TxnInfo::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot) override</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::TxnInfo::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6656" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="24552" bodyend="24669"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1TxnInfo_1ae0c406ea077d5fbe5f345c9b8b926737" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::TxnInfo::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const override</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::TxnInfo::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6657" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="24671" bodyend="24720"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1TxnInfo_1a787d61de47ab4ccd86f9c523d05aafe1" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::TxnInfo::printTo</definition>
+        <argsstring>(std::ostream &amp;out) const</argsstring>
+        <name>printTo</name>
+        <qualifiedname>Apache::Hadoop::Hive::TxnInfo::printTo</qualifiedname>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6659" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="24794" bodyend="24807"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::TxnInfo</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1TxnInfo"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::TxnInfo</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1TxnInfo"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>agentInfo</edgelabel>
+          <edgelabel>hostname</edgelabel>
+          <edgelabel>metaInfo</edgelabel>
+          <edgelabel>user</edgelabel>
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="5">
+        <label>Apache::Hadoop::Hive::_TxnInfo__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__TxnInfo____isset"/>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+      <node id="4">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="3">
+        <label>std::string</label>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6607" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="6607" bodyend="6660"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1TxnInfo_1a780194b7d7e8176ef52b874af3886a4a" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::TxnInfo</scope><name>__isset</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1TxnInfo_1a49789905cf7ed59e0eb6d83fafd46d25" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::TxnInfo</scope><name>__set_agentInfo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1TxnInfo_1ade5c5675dfb0282d591b338815a6d090" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::TxnInfo</scope><name>__set_heartbeatCount</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1TxnInfo_1aa2b62f770df42138b75dc1c71e980db3" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::TxnInfo</scope><name>__set_hostname</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1TxnInfo_1a07d3253722cb801785348e9981d433a6" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::TxnInfo</scope><name>__set_id</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1TxnInfo_1a8283de0b72c55e38a228eab2115e3287" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::TxnInfo</scope><name>__set_lastHeartbeatTime</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1TxnInfo_1aea1bb81af6e1de2b52105a615682677c" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::TxnInfo</scope><name>__set_metaInfo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1TxnInfo_1adcfaefea71bec0906d819150ab7af869" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::TxnInfo</scope><name>__set_startedTime</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1TxnInfo_1ad19761a7b0d0bee4db9b4dd1129751a6" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::TxnInfo</scope><name>__set_state</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1TxnInfo_1aaafe578bf1ca08578f99ede86a25bb1f" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::TxnInfo</scope><name>__set_user</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1TxnInfo_1a76c410f767b61037ec2724b1529a32e1" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::TxnInfo</scope><name>agentInfo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1TxnInfo_1a52f0473d32f6e1ae5c7489cf2fac349f" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::TxnInfo</scope><name>heartbeatCount</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1TxnInfo_1af8640705bcea822ea193564f5486ae3c" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::TxnInfo</scope><name>hostname</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1TxnInfo_1a833320fc6e977c05c2c1dc7c6c49fcb7" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::TxnInfo</scope><name>id</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1TxnInfo_1a8700426dbd5c758fd2aba3bb499868a0" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::TxnInfo</scope><name>lastHeartbeatTime</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1TxnInfo_1a2fcc5015fac652b6b03c17688cf4a7be" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::TxnInfo</scope><name>metaInfo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1TxnInfo_1a04aa557fc8b8f5aff001325335324f40" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::TxnInfo</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1TxnInfo_1a64d9ae596037972586999068b14f6afe" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::TxnInfo</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1TxnInfo_1a4bee32871b09db782e9e346c7babd7ff" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::TxnInfo</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1TxnInfo_1a905ac3284bf50c0dab85a78a274dd78d" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::TxnInfo</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1TxnInfo_1a787d61de47ab4ccd86f9c523d05aafe1" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::TxnInfo</scope><name>printTo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1TxnInfo_1ae47f801052912c5e092144011d0de546" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::TxnInfo</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1TxnInfo_1a84f6e6a76ee2fb022816662e8fe2d77b" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::TxnInfo</scope><name>startedTime</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1TxnInfo_1a7313739616f2181608867b2ff793c002" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::TxnInfo</scope><name>state</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1TxnInfo_1a363dcf307a9b6050a5487fe0b9ca68bb" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::TxnInfo</scope><name>TxnInfo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1TxnInfo_1a94b2f0bdfa115de616df24312ae334f6" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::TxnInfo</scope><name>TxnInfo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1TxnInfo_1a6a399aa4cdec074f2260b5fca068cbdf" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::TxnInfo</scope><name>user</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1TxnInfo_1ae0c406ea077d5fbe5f345c9b8b926737" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::TxnInfo</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1TxnInfo_1a67377b33d77ead01adcad84ba2910f3a" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::TxnInfo</scope><name>~TxnInfo</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

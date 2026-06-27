@@ -1,0 +1,64 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structApache_1_1Hadoop_1_1Hive_1_1__PartitionSpecWithSharedSD____isset" kind="struct" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::_PartitionSpecWithSharedSD__isset</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__PartitionSpecWithSharedSD____isset_1a3d72b2a4b2d24e67982285b6f38f36c8" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_PartitionSpecWithSharedSD__isset::partitions</definition>
+        <argsstring></argsstring>
+        <name>partitions</name>
+        <qualifiedname>Apache::Hadoop::Hive::_PartitionSpecWithSharedSD__isset::partitions</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="4381" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="4381" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__PartitionSpecWithSharedSD____isset_1ab4a30f080ec69471f0ea217472e2e324" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_PartitionSpecWithSharedSD__isset::sd</definition>
+        <argsstring></argsstring>
+        <name>sd</name>
+        <qualifiedname>Apache::Hadoop::Hive::_PartitionSpecWithSharedSD__isset::sd</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="4382" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="4382" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structApache_1_1Hadoop_1_1Hive_1_1__PartitionSpecWithSharedSD____isset_1ae109d5c946b2e2ef2cb9d2dcaa48008a" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::_PartitionSpecWithSharedSD__isset::_PartitionSpecWithSharedSD__isset</definition>
+        <argsstring>()</argsstring>
+        <name>_PartitionSpecWithSharedSD__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::_PartitionSpecWithSharedSD__isset::_PartitionSpecWithSharedSD__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="4380" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="4380" bodyend="4380"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="4379" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="4379" bodyend="4383"/>
+    <listofallmembers>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__PartitionSpecWithSharedSD____isset_1ae109d5c946b2e2ef2cb9d2dcaa48008a" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_PartitionSpecWithSharedSD__isset</scope><name>_PartitionSpecWithSharedSD__isset</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__PartitionSpecWithSharedSD____isset_1a3d72b2a4b2d24e67982285b6f38f36c8" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_PartitionSpecWithSharedSD__isset</scope><name>partitions</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__PartitionSpecWithSharedSD____isset_1ab4a30f080ec69471f0ea217472e2e324" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_PartitionSpecWithSharedSD__isset</scope><name>sd</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

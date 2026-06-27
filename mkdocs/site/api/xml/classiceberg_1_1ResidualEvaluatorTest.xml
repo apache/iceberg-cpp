@@ -1,0 +1,119 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1ResidualEvaluatorTest" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::ResidualEvaluatorTest</compoundname>
+    <basecompoundref prot="public" virt="non-virtual">testing::Test</basecompoundref>
+    <sectiondef kind="protected-func">
+      <memberdef kind="function" id="classiceberg_1_1ResidualEvaluatorTest_1aef504c1ed5151b55a6b6dcd36d4c3107" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::ResidualEvaluatorTest::SetUp</definition>
+        <argsstring>() override</argsstring>
+        <name>SetUp</name>
+        <qualifiedname>iceberg::ResidualEvaluatorTest::SetUp</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/residual_evaluator_test.cc" line="43" column="8" bodyfile="iceberg/test/residual_evaluator_test.cc" bodystart="43" bodyend="43"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ResidualEvaluatorTest_1a03354f4a90669afeec9ff9ff347094f9" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::ResidualEvaluatorTest::AssertResidualOp</definition>
+        <argsstring>(const std::shared_ptr&lt; PartitionSpec &gt; &amp;spec, const std::shared_ptr&lt; Schema &gt; &amp;schema, const std::shared_ptr&lt; Expression &gt; &amp;pred, const Literal &amp;partition_value, Expression::Operation expected_op)</argsstring>
+        <name>AssertResidualOp</name>
+        <qualifiedname>iceberg::ResidualEvaluatorTest::AssertResidualOp</qualifiedname>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1PartitionSpec" kindref="compound">PartitionSpec</ref> &gt; &amp;</type>
+          <declname>spec</declname>
+        </param>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &gt; &amp;</type>
+          <declname>schema</declname>
+        </param>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1Expression" kindref="compound">Expression</ref> &gt; &amp;</type>
+          <declname>pred</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &amp;</type>
+          <declname>partition_value</declname>
+        </param>
+        <param>
+          <type><ref refid="classiceberg_1_1Expression_1a433076bdc34ce0b6d359313c6c7b8a9c" kindref="member">Expression::Operation</ref></type>
+          <declname>expected_op</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/residual_evaluator_test.cc" line="46" column="8" bodyfile="iceberg/test/residual_evaluator_test.cc" bodystart="46" bodyend="56"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ResidualEvaluatorTest_1ad7990d9f48e1cc8f802a16126e056a97" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::ResidualEvaluatorTest::AssertResidualPredicate</definition>
+        <argsstring>(const std::shared_ptr&lt; PartitionSpec &gt; &amp;spec, const std::shared_ptr&lt; Schema &gt; &amp;schema, const std::shared_ptr&lt; Expression &gt; &amp;pred, const Literal &amp;partition_value)</argsstring>
+        <name>AssertResidualPredicate</name>
+        <qualifiedname>iceberg::ResidualEvaluatorTest::AssertResidualPredicate</qualifiedname>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1PartitionSpec" kindref="compound">PartitionSpec</ref> &gt; &amp;</type>
+          <declname>spec</declname>
+        </param>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &gt; &amp;</type>
+          <declname>schema</declname>
+        </param>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1Expression" kindref="compound">Expression</ref> &gt; &amp;</type>
+          <declname>pred</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &amp;</type>
+          <declname>partition_value</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/residual_evaluator_test.cc" line="59" column="8" bodyfile="iceberg/test/residual_evaluator_test.cc" bodystart="59" bodyend="87"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>iceberg::ResidualEvaluatorTest</label>
+        <link refid="classiceberg_1_1ResidualEvaluatorTest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>testing::Test</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::ResidualEvaluatorTest</label>
+        <link refid="classiceberg_1_1ResidualEvaluatorTest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>testing::Test</label>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/test/residual_evaluator_test.cc" line="41" column="1" bodyfile="iceberg/test/residual_evaluator_test.cc" bodystart="41" bodyend="88"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1ResidualEvaluatorTest_1a03354f4a90669afeec9ff9ff347094f9" prot="protected" virt="non-virtual"><scope>iceberg::ResidualEvaluatorTest</scope><name>AssertResidualOp</name></member>
+      <member refid="classiceberg_1_1ResidualEvaluatorTest_1ad7990d9f48e1cc8f802a16126e056a97" prot="protected" virt="non-virtual"><scope>iceberg::ResidualEvaluatorTest</scope><name>AssertResidualPredicate</name></member>
+      <member refid="classiceberg_1_1ResidualEvaluatorTest_1aef504c1ed5151b55a6b6dcd36d4c3107" prot="protected" virt="non-virtual"><scope>iceberg::ResidualEvaluatorTest</scope><name>SetUp</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

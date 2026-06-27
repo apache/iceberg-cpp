@@ -1,0 +1,537 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1LockComponent" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::LockComponent</compoundname>
+    <basecompoundref prot="public" virt="virtual">apache::thrift::TBase</basecompoundref>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1LockComponent_1a2e7f4a184b064f202474b529c1f8d957" prot="public" static="no" mutable="no">
+        <type>LockType::type</type>
+        <definition>LockType::type Apache::Hadoop::Hive::LockComponent::type</definition>
+        <argsstring></argsstring>
+        <name>type</name>
+        <qualifiedname>Apache::Hadoop::Hive::LockComponent::type</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="see"><para><ref refid="structApache_1_1Hadoop_1_1Hive_1_1LockType" kindref="compound">LockType</ref> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7608" column="18" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="7608" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1LockComponent_1ae6f7badcdee6bb52e84f3290e6ace1e5" prot="public" static="no" mutable="no">
+        <type>LockLevel::type</type>
+        <definition>LockLevel::type Apache::Hadoop::Hive::LockComponent::level</definition>
+        <argsstring></argsstring>
+        <name>level</name>
+        <qualifiedname>Apache::Hadoop::Hive::LockComponent::level</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="see"><para><ref refid="structApache_1_1Hadoop_1_1Hive_1_1LockLevel" kindref="compound">LockLevel</ref> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7613" column="19" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="7613" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1LockComponent_1ae21c2c3ae0206f3410dd9e45109035de" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::LockComponent::dbname</definition>
+        <argsstring></argsstring>
+        <name>dbname</name>
+        <qualifiedname>Apache::Hadoop::Hive::LockComponent::dbname</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7614" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="7614" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1LockComponent_1a096bc4e9383e3dcec11205afc96be3ee" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::LockComponent::tablename</definition>
+        <argsstring></argsstring>
+        <name>tablename</name>
+        <qualifiedname>Apache::Hadoop::Hive::LockComponent::tablename</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7615" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="7615" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1LockComponent_1a5267d0651fceac5ba034f34027400908" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::LockComponent::partitionname</definition>
+        <argsstring></argsstring>
+        <name>partitionname</name>
+        <qualifiedname>Apache::Hadoop::Hive::LockComponent::partitionname</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7616" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="7616" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1LockComponent_1a74597460f844e12d9c56f93c70bc38da" prot="public" static="no" mutable="no">
+        <type>DataOperationType::type</type>
+        <definition>DataOperationType::type Apache::Hadoop::Hive::LockComponent::operationType</definition>
+        <argsstring></argsstring>
+        <name>operationType</name>
+        <qualifiedname>Apache::Hadoop::Hive::LockComponent::operationType</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="see"><para><ref refid="structApache_1_1Hadoop_1_1Hive_1_1DataOperationType" kindref="compound">DataOperationType</ref> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7621" column="27" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="7621" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1LockComponent_1ac1d31519de322964151ce3c4bfd59258" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::LockComponent::isTransactional</definition>
+        <argsstring></argsstring>
+        <name>isTransactional</name>
+        <qualifiedname>Apache::Hadoop::Hive::LockComponent::isTransactional</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7622" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="7622" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1LockComponent_1a19c749c65e49d73211f1845040e23331" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::LockComponent::isDynamicPartitionWrite</definition>
+        <argsstring></argsstring>
+        <name>isDynamicPartitionWrite</name>
+        <qualifiedname>Apache::Hadoop::Hive::LockComponent::isDynamicPartitionWrite</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7623" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="7623" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1LockComponent_1ae0bf041f23a24b08a0cb3a5765ad796e" prot="public" static="no" mutable="no">
+        <type><ref refid="structApache_1_1Hadoop_1_1Hive_1_1__LockComponent____isset" kindref="compound">_LockComponent__isset</ref></type>
+        <definition>_LockComponent__isset Apache::Hadoop::Hive::LockComponent::__isset</definition>
+        <argsstring></argsstring>
+        <name>__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::LockComponent::__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7625" column="25" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="7625" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1LockComponent_1a464ff4acd1bdf1518a7d45a3bcaaedc2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::LockComponent::LockComponent</definition>
+        <argsstring>(const LockComponent &amp;)</argsstring>
+        <name>LockComponent</name>
+        <qualifiedname>Apache::Hadoop::Hive::LockComponent::LockComponent</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1LockComponent" kindref="compound">LockComponent</ref> &amp;</type>
+          <defname>other974</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7599" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="29075" bodyend="29085"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1LockComponent_1a7230421d00bca05b60201f2c22bfe730" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1LockComponent" kindref="compound">LockComponent</ref> &amp;</type>
+        <definition>LockComponent &amp; Apache::Hadoop::Hive::LockComponent::operator=</definition>
+        <argsstring>(const LockComponent &amp;)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::LockComponent::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1LockComponent" kindref="compound">LockComponent</ref> &amp;</type>
+          <defname>other975</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7600" column="17" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="29086" bodyend="29097"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1LockComponent_1a998897cafe97132ba04fd4fe8f3551c4" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::LockComponent::LockComponent</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>LockComponent</name>
+        <qualifiedname>Apache::Hadoop::Hive::LockComponent::LockComponent</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7601" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="28818" bodyend="28827"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1LockComponent_1a33f36f4cb4ddf985120c5618e8937192" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::LockComponent::~LockComponent</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~LockComponent</name>
+        <qualifiedname>Apache::Hadoop::Hive::LockComponent::~LockComponent</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7603" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="28815" bodyend="28816"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1LockComponent_1a16ae5357e8bdbb076365a1265c8e5d71" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::LockComponent::__set_type</definition>
+        <argsstring>(const LockType::type val)</argsstring>
+        <name>__set_type</name>
+        <qualifiedname>Apache::Hadoop::Hive::LockComponent::__set_type</qualifiedname>
+        <param>
+          <type>const LockType::type</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7627" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="28829" bodyend="28831"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1LockComponent_1a72bb7e6c484962647deb75e117ae172d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::LockComponent::__set_level</definition>
+        <argsstring>(const LockLevel::type val)</argsstring>
+        <name>__set_level</name>
+        <qualifiedname>Apache::Hadoop::Hive::LockComponent::__set_level</qualifiedname>
+        <param>
+          <type>const LockLevel::type</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7629" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="28833" bodyend="28835"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1LockComponent_1a406edd259e443f25c247a9a2ccd38bf1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::LockComponent::__set_dbname</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_dbname</name>
+        <qualifiedname>Apache::Hadoop::Hive::LockComponent::__set_dbname</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7631" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="28837" bodyend="28839"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1LockComponent_1a395b05d071a8878201bd7c73f4af5c57" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::LockComponent::__set_tablename</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_tablename</name>
+        <qualifiedname>Apache::Hadoop::Hive::LockComponent::__set_tablename</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7633" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="28841" bodyend="28844"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1LockComponent_1a770d61fca4152503f5f78a2478061223" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::LockComponent::__set_partitionname</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_partitionname</name>
+        <qualifiedname>Apache::Hadoop::Hive::LockComponent::__set_partitionname</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7635" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="28846" bodyend="28849"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1LockComponent_1a11efb3216080e20908e3395878b42316" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::LockComponent::__set_operationType</definition>
+        <argsstring>(const DataOperationType::type val)</argsstring>
+        <name>__set_operationType</name>
+        <qualifiedname>Apache::Hadoop::Hive::LockComponent::__set_operationType</qualifiedname>
+        <param>
+          <type>const DataOperationType::type</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7637" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="28851" bodyend="28854"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1LockComponent_1ae24c73fe33ca50ae39268cdea52fba41" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::LockComponent::__set_isTransactional</definition>
+        <argsstring>(const bool val)</argsstring>
+        <name>__set_isTransactional</name>
+        <qualifiedname>Apache::Hadoop::Hive::LockComponent::__set_isTransactional</qualifiedname>
+        <param>
+          <type>const bool</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7639" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="28856" bodyend="28859"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1LockComponent_1a04888efa7594d28d40200d41039646fb" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::LockComponent::__set_isDynamicPartitionWrite</definition>
+        <argsstring>(const bool val)</argsstring>
+        <name>__set_isDynamicPartitionWrite</name>
+        <qualifiedname>Apache::Hadoop::Hive::LockComponent::__set_isDynamicPartitionWrite</qualifiedname>
+        <param>
+          <type>const bool</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7641" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="28861" bodyend="28864"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1LockComponent_1abb32fc4ed8be2292af4156d564d05c52" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::LockComponent::operator==</definition>
+        <argsstring>(const LockComponent &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::LockComponent::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1LockComponent" kindref="compound">LockComponent</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7643" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="29044" bodyend="29073"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1LockComponent_1aade61c5bb1a2c0a343622a4c25f7337c" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::LockComponent::operator!=</definition>
+        <argsstring>(const LockComponent &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::LockComponent::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1LockComponent" kindref="compound">LockComponent</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7644" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="7644" bodyend="7646"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1LockComponent_1a838701d14937bf57d0eb1a2e792afe43" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::LockComponent::operator&lt;</definition>
+        <argsstring>(const LockComponent &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::LockComponent::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1LockComponent" kindref="compound">LockComponent</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7648" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1LockComponent_1a03b5ef8458b0f87f1d56de5af8982a75" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::LockComponent::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot) override</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::LockComponent::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7650" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="28872" bodyend="28982"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1LockComponent_1af819cb00548a4436bea74893a7837cea" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::LockComponent::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const override</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::LockComponent::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7651" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="28984" bodyend="29029"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1LockComponent_1a09925db29314a2c7d204105f1f7f2e94" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::LockComponent::printTo</definition>
+        <argsstring>(std::ostream &amp;out) const</argsstring>
+        <name>printTo</name>
+        <qualifiedname>Apache::Hadoop::Hive::LockComponent::printTo</qualifiedname>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7653" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="29098" bodyend="29110"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::LockComponent</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1LockComponent"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::LockComponent</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1LockComponent"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>dbname</edgelabel>
+          <edgelabel>partitionname</edgelabel>
+          <edgelabel>tablename</edgelabel>
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="5">
+        <label>Apache::Hadoop::Hive::_LockComponent__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__LockComponent____isset"/>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+      <node id="4">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="3">
+        <label>std::string</label>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7596" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="7596" bodyend="7654"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1LockComponent_1ae0bf041f23a24b08a0cb3a5765ad796e" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::LockComponent</scope><name>__isset</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1LockComponent_1a406edd259e443f25c247a9a2ccd38bf1" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::LockComponent</scope><name>__set_dbname</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1LockComponent_1a04888efa7594d28d40200d41039646fb" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::LockComponent</scope><name>__set_isDynamicPartitionWrite</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1LockComponent_1ae24c73fe33ca50ae39268cdea52fba41" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::LockComponent</scope><name>__set_isTransactional</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1LockComponent_1a72bb7e6c484962647deb75e117ae172d" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::LockComponent</scope><name>__set_level</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1LockComponent_1a11efb3216080e20908e3395878b42316" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::LockComponent</scope><name>__set_operationType</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1LockComponent_1a770d61fca4152503f5f78a2478061223" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::LockComponent</scope><name>__set_partitionname</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1LockComponent_1a395b05d071a8878201bd7c73f4af5c57" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::LockComponent</scope><name>__set_tablename</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1LockComponent_1a16ae5357e8bdbb076365a1265c8e5d71" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::LockComponent</scope><name>__set_type</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1LockComponent_1ae21c2c3ae0206f3410dd9e45109035de" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::LockComponent</scope><name>dbname</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1LockComponent_1a19c749c65e49d73211f1845040e23331" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::LockComponent</scope><name>isDynamicPartitionWrite</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1LockComponent_1ac1d31519de322964151ce3c4bfd59258" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::LockComponent</scope><name>isTransactional</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1LockComponent_1ae6f7badcdee6bb52e84f3290e6ace1e5" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::LockComponent</scope><name>level</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1LockComponent_1a464ff4acd1bdf1518a7d45a3bcaaedc2" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::LockComponent</scope><name>LockComponent</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1LockComponent_1a998897cafe97132ba04fd4fe8f3551c4" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::LockComponent</scope><name>LockComponent</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1LockComponent_1a74597460f844e12d9c56f93c70bc38da" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::LockComponent</scope><name>operationType</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1LockComponent_1aade61c5bb1a2c0a343622a4c25f7337c" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::LockComponent</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1LockComponent_1a838701d14937bf57d0eb1a2e792afe43" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::LockComponent</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1LockComponent_1a7230421d00bca05b60201f2c22bfe730" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::LockComponent</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1LockComponent_1abb32fc4ed8be2292af4156d564d05c52" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::LockComponent</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1LockComponent_1a5267d0651fceac5ba034f34027400908" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::LockComponent</scope><name>partitionname</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1LockComponent_1a09925db29314a2c7d204105f1f7f2e94" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::LockComponent</scope><name>printTo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1LockComponent_1a03b5ef8458b0f87f1d56de5af8982a75" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::LockComponent</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1LockComponent_1a096bc4e9383e3dcec11205afc96be3ee" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::LockComponent</scope><name>tablename</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1LockComponent_1a2e7f4a184b064f202474b529c1f8d957" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::LockComponent</scope><name>type</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1LockComponent_1af819cb00548a4436bea74893a7837cea" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::LockComponent</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1LockComponent_1a33f36f4cb4ddf985120c5618e8937192" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::LockComponent</scope><name>~LockComponent</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

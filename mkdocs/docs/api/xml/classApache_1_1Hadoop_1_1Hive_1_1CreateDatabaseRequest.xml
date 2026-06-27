@@ -1,0 +1,772 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1CreateDatabaseRequest" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::CreateDatabaseRequest</compoundname>
+    <basecompoundref prot="public" virt="virtual">apache::thrift::TBase</basecompoundref>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1CreateDatabaseRequest_1a29dd763b9f199048f2f08fdbdd468f66" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::CreateDatabaseRequest::databaseName</definition>
+        <argsstring></argsstring>
+        <name>databaseName</name>
+        <qualifiedname>Apache::Hadoop::Hive::CreateDatabaseRequest::databaseName</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13153" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="13153" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1CreateDatabaseRequest_1a89426131b5731cf3001eed37b6b90b21" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::CreateDatabaseRequest::description</definition>
+        <argsstring></argsstring>
+        <name>description</name>
+        <qualifiedname>Apache::Hadoop::Hive::CreateDatabaseRequest::description</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13154" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="13154" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1CreateDatabaseRequest_1ae083a28f00b3377f98dfc83b3f8f354d" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::CreateDatabaseRequest::locationUri</definition>
+        <argsstring></argsstring>
+        <name>locationUri</name>
+        <qualifiedname>Apache::Hadoop::Hive::CreateDatabaseRequest::locationUri</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13155" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="13155" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1CreateDatabaseRequest_1add710f9b61a09897188f61a80376f849" prot="public" static="no" mutable="no">
+        <type>std::map&lt; std::string, std::string &gt;</type>
+        <definition>std::map&lt;std::string, std::string&gt; Apache::Hadoop::Hive::CreateDatabaseRequest::parameters</definition>
+        <argsstring></argsstring>
+        <name>parameters</name>
+        <qualifiedname>Apache::Hadoop::Hive::CreateDatabaseRequest::parameters</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13156" column="13" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="13156" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1CreateDatabaseRequest_1a616c8f8bc879e50ec354b26a15e6836a" prot="public" static="no" mutable="no">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1PrincipalPrivilegeSet" kindref="compound">PrincipalPrivilegeSet</ref></type>
+        <definition>PrincipalPrivilegeSet Apache::Hadoop::Hive::CreateDatabaseRequest::privileges</definition>
+        <argsstring></argsstring>
+        <name>privileges</name>
+        <qualifiedname>Apache::Hadoop::Hive::CreateDatabaseRequest::privileges</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13157" column="25" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="13157" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1CreateDatabaseRequest_1a9590737ac5bbff5bacd2b2c78e28049a" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::CreateDatabaseRequest::ownerName</definition>
+        <argsstring></argsstring>
+        <name>ownerName</name>
+        <qualifiedname>Apache::Hadoop::Hive::CreateDatabaseRequest::ownerName</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13158" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="13158" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1CreateDatabaseRequest_1ac96fa7b2d25d5c613fd19efcd14bb3db" prot="public" static="no" mutable="no">
+        <type>PrincipalType::type</type>
+        <definition>PrincipalType::type Apache::Hadoop::Hive::CreateDatabaseRequest::ownerType</definition>
+        <argsstring></argsstring>
+        <name>ownerType</name>
+        <qualifiedname>Apache::Hadoop::Hive::CreateDatabaseRequest::ownerType</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="see"><para><ref refid="structApache_1_1Hadoop_1_1Hive_1_1PrincipalType" kindref="compound">PrincipalType</ref> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13163" column="23" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="13163" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1CreateDatabaseRequest_1afa56eac0be5d844ccdecdc137f887ea0" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::CreateDatabaseRequest::catalogName</definition>
+        <argsstring></argsstring>
+        <name>catalogName</name>
+        <qualifiedname>Apache::Hadoop::Hive::CreateDatabaseRequest::catalogName</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13164" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="13164" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1CreateDatabaseRequest_1a26bd30bf9511a7251abff849e41bb9a0" prot="public" static="no" mutable="no">
+        <type>int32_t</type>
+        <definition>int32_t Apache::Hadoop::Hive::CreateDatabaseRequest::createTime</definition>
+        <argsstring></argsstring>
+        <name>createTime</name>
+        <qualifiedname>Apache::Hadoop::Hive::CreateDatabaseRequest::createTime</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13165" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="13165" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1CreateDatabaseRequest_1a866de1a003a84bf51c93810d26dc14b0" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::CreateDatabaseRequest::managedLocationUri</definition>
+        <argsstring></argsstring>
+        <name>managedLocationUri</name>
+        <qualifiedname>Apache::Hadoop::Hive::CreateDatabaseRequest::managedLocationUri</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13166" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="13166" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1CreateDatabaseRequest_1adcfbc6b205c20d0a7a127a4a31b0cf32" prot="public" static="no" mutable="no">
+        <type>DatabaseType::type</type>
+        <definition>DatabaseType::type Apache::Hadoop::Hive::CreateDatabaseRequest::type</definition>
+        <argsstring></argsstring>
+        <name>type</name>
+        <qualifiedname>Apache::Hadoop::Hive::CreateDatabaseRequest::type</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="see"><para><ref refid="structApache_1_1Hadoop_1_1Hive_1_1DatabaseType" kindref="compound">DatabaseType</ref> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13171" column="22" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="13171" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1CreateDatabaseRequest_1a3de3c66203737947e6fe72734d589bb9" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::CreateDatabaseRequest::dataConnectorName</definition>
+        <argsstring></argsstring>
+        <name>dataConnectorName</name>
+        <qualifiedname>Apache::Hadoop::Hive::CreateDatabaseRequest::dataConnectorName</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13172" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="13172" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1CreateDatabaseRequest_1adb65fc4c42f42f40332c44a79c50ba00" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::CreateDatabaseRequest::remote_dbname</definition>
+        <argsstring></argsstring>
+        <name>remote_dbname</name>
+        <qualifiedname>Apache::Hadoop::Hive::CreateDatabaseRequest::remote_dbname</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13173" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="13173" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1CreateDatabaseRequest_1a19ca9930718168ea6c902cebc05f3fce" prot="public" static="no" mutable="no">
+        <type><ref refid="structApache_1_1Hadoop_1_1Hive_1_1__CreateDatabaseRequest____isset" kindref="compound">_CreateDatabaseRequest__isset</ref></type>
+        <definition>_CreateDatabaseRequest__isset Apache::Hadoop::Hive::CreateDatabaseRequest::__isset</definition>
+        <argsstring></argsstring>
+        <name>__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::CreateDatabaseRequest::__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13175" column="33" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="13175" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CreateDatabaseRequest_1ac0079e7628e78f489de17b2de84094b2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::CreateDatabaseRequest::CreateDatabaseRequest</definition>
+        <argsstring>(const CreateDatabaseRequest &amp;)</argsstring>
+        <name>CreateDatabaseRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::CreateDatabaseRequest::CreateDatabaseRequest</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1CreateDatabaseRequest" kindref="compound">CreateDatabaseRequest</ref> &amp;</type>
+          <defname>other1629</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13148" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="51711" bodyend="51726"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CreateDatabaseRequest_1a8676409f174dedbb9605384b221ff5df" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1CreateDatabaseRequest" kindref="compound">CreateDatabaseRequest</ref> &amp;</type>
+        <definition>CreateDatabaseRequest &amp; Apache::Hadoop::Hive::CreateDatabaseRequest::operator=</definition>
+        <argsstring>(const CreateDatabaseRequest &amp;)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::CreateDatabaseRequest::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1CreateDatabaseRequest" kindref="compound">CreateDatabaseRequest</ref> &amp;</type>
+          <defname>other1630</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13149" column="25" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="51727" bodyend="51743"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CreateDatabaseRequest_1a743a6dd4459c8f2db2ccb379ad2cbb8e" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::CreateDatabaseRequest::CreateDatabaseRequest</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>CreateDatabaseRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::CreateDatabaseRequest::CreateDatabaseRequest</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13150" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="51312" bodyend="51324"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CreateDatabaseRequest_1a071aef0bdea7df4a2dc4231529ee4aa3" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::CreateDatabaseRequest::~CreateDatabaseRequest</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~CreateDatabaseRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::CreateDatabaseRequest::~CreateDatabaseRequest</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13152" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="51309" bodyend="51310"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CreateDatabaseRequest_1ae048fee8618193711aedc0f05c48e966" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::CreateDatabaseRequest::__set_databaseName</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_databaseName</name>
+        <qualifiedname>Apache::Hadoop::Hive::CreateDatabaseRequest::__set_databaseName</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13177" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="51326" bodyend="51328"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CreateDatabaseRequest_1a8634bce82bf6a809b313a39656acaf40" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::CreateDatabaseRequest::__set_description</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_description</name>
+        <qualifiedname>Apache::Hadoop::Hive::CreateDatabaseRequest::__set_description</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13179" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="51330" bodyend="51333"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CreateDatabaseRequest_1a38eab74240a1b977ff9442f9900e25c7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::CreateDatabaseRequest::__set_locationUri</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_locationUri</name>
+        <qualifiedname>Apache::Hadoop::Hive::CreateDatabaseRequest::__set_locationUri</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13181" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="51335" bodyend="51338"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CreateDatabaseRequest_1acf32965d7006f185194e27f8f622b126" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::CreateDatabaseRequest::__set_parameters</definition>
+        <argsstring>(const std::map&lt; std::string, std::string &gt; &amp;val)</argsstring>
+        <name>__set_parameters</name>
+        <qualifiedname>Apache::Hadoop::Hive::CreateDatabaseRequest::__set_parameters</qualifiedname>
+        <param>
+          <type>const std::map&lt; std::string, std::string &gt; &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13183" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="51340" bodyend="51343"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CreateDatabaseRequest_1ae705d4733b2c0ac63ea4d8df14dbce0e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::CreateDatabaseRequest::__set_privileges</definition>
+        <argsstring>(const PrincipalPrivilegeSet &amp;val)</argsstring>
+        <name>__set_privileges</name>
+        <qualifiedname>Apache::Hadoop::Hive::CreateDatabaseRequest::__set_privileges</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1PrincipalPrivilegeSet" kindref="compound">PrincipalPrivilegeSet</ref> &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13185" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="51345" bodyend="51348"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CreateDatabaseRequest_1a727f043d0798e1bac7d40646f0a8a591" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::CreateDatabaseRequest::__set_ownerName</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_ownerName</name>
+        <qualifiedname>Apache::Hadoop::Hive::CreateDatabaseRequest::__set_ownerName</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13187" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="51350" bodyend="51353"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CreateDatabaseRequest_1a62cd3d9261fdb87c1a24b930229a9a89" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::CreateDatabaseRequest::__set_ownerType</definition>
+        <argsstring>(const PrincipalType::type val)</argsstring>
+        <name>__set_ownerType</name>
+        <qualifiedname>Apache::Hadoop::Hive::CreateDatabaseRequest::__set_ownerType</qualifiedname>
+        <param>
+          <type>const PrincipalType::type</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13189" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="51355" bodyend="51358"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CreateDatabaseRequest_1a2367b5a08baad115638a0bb8f2498ec2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::CreateDatabaseRequest::__set_catalogName</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_catalogName</name>
+        <qualifiedname>Apache::Hadoop::Hive::CreateDatabaseRequest::__set_catalogName</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13191" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="51360" bodyend="51363"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CreateDatabaseRequest_1a67e7779738f6e09aef77bb7e7e34a642" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::CreateDatabaseRequest::__set_createTime</definition>
+        <argsstring>(const int32_t val)</argsstring>
+        <name>__set_createTime</name>
+        <qualifiedname>Apache::Hadoop::Hive::CreateDatabaseRequest::__set_createTime</qualifiedname>
+        <param>
+          <type>const int32_t</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13193" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="51365" bodyend="51368"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CreateDatabaseRequest_1aca8197000f6a9f69e11f4c64c43fecb1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::CreateDatabaseRequest::__set_managedLocationUri</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_managedLocationUri</name>
+        <qualifiedname>Apache::Hadoop::Hive::CreateDatabaseRequest::__set_managedLocationUri</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13195" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="51370" bodyend="51373"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CreateDatabaseRequest_1a24c40e448ef2bd8b47c092ebb384e896" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::CreateDatabaseRequest::__set_type</definition>
+        <argsstring>(const DatabaseType::type val)</argsstring>
+        <name>__set_type</name>
+        <qualifiedname>Apache::Hadoop::Hive::CreateDatabaseRequest::__set_type</qualifiedname>
+        <param>
+          <type>const DatabaseType::type</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13197" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="51375" bodyend="51378"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CreateDatabaseRequest_1a7b415e4449bfc14213b110680e89a97e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::CreateDatabaseRequest::__set_dataConnectorName</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_dataConnectorName</name>
+        <qualifiedname>Apache::Hadoop::Hive::CreateDatabaseRequest::__set_dataConnectorName</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13199" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="51380" bodyend="51383"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CreateDatabaseRequest_1a7dd615dc3d9f66578fb8044b03449fb9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::CreateDatabaseRequest::__set_remote_dbname</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_remote_dbname</name>
+        <qualifiedname>Apache::Hadoop::Hive::CreateDatabaseRequest::__set_remote_dbname</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13201" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="51385" bodyend="51388"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CreateDatabaseRequest_1ae1372cd74c7acccd4c72cc07588618dd" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::CreateDatabaseRequest::operator==</definition>
+        <argsstring>(const CreateDatabaseRequest &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::CreateDatabaseRequest::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1CreateDatabaseRequest" kindref="compound">CreateDatabaseRequest</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13203" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="51656" bodyend="51709"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CreateDatabaseRequest_1ac3a72a438a2ec0c309a367917ed94abe" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::CreateDatabaseRequest::operator!=</definition>
+        <argsstring>(const CreateDatabaseRequest &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::CreateDatabaseRequest::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1CreateDatabaseRequest" kindref="compound">CreateDatabaseRequest</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13204" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="13204" bodyend="13206"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CreateDatabaseRequest_1a75ebabf450757a615261540b91e73ed5" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::CreateDatabaseRequest::operator&lt;</definition>
+        <argsstring>(const CreateDatabaseRequest &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::CreateDatabaseRequest::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1CreateDatabaseRequest" kindref="compound">CreateDatabaseRequest</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13208" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CreateDatabaseRequest_1abbb0e49a6cb0fd69f035ae7166a18fd9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::CreateDatabaseRequest::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot) override</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::CreateDatabaseRequest::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13210" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="51396" bodyend="51553"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CreateDatabaseRequest_1ac8d9101678d45fdeec6af532e75de405" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::CreateDatabaseRequest::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const override</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::CreateDatabaseRequest::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13211" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="51555" bodyend="51636"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CreateDatabaseRequest_1a30b73d6eb98013669da2d5e0def0a339" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::CreateDatabaseRequest::printTo</definition>
+        <argsstring>(std::ostream &amp;out) const</argsstring>
+        <name>printTo</name>
+        <qualifiedname>Apache::Hadoop::Hive::CreateDatabaseRequest::printTo</qualifiedname>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13213" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="51744" bodyend="51761"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::CreateDatabaseRequest</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1CreateDatabaseRequest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::CreateDatabaseRequest</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1CreateDatabaseRequest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>catalogName</edgelabel>
+          <edgelabel>dataConnectorName</edgelabel>
+          <edgelabel>databaseName</edgelabel>
+          <edgelabel>description</edgelabel>
+          <edgelabel>locationUri</edgelabel>
+          <edgelabel>managedLocationUri</edgelabel>
+          <edgelabel>ownerName</edgelabel>
+          <edgelabel>remote_dbname</edgelabel>
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>parameters</edgelabel>
+        </childnode>
+        <childnode refid="6" relation="usage">
+          <edgelabel>privileges</edgelabel>
+        </childnode>
+        <childnode refid="12" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="6">
+        <label>Apache::Hadoop::Hive::PrincipalPrivilegeSet</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1PrincipalPrivilegeSet"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="7" relation="usage">
+          <edgelabel>groupPrivileges</edgelabel>
+          <edgelabel>rolePrivileges</edgelabel>
+          <edgelabel>userPrivileges</edgelabel>
+        </childnode>
+        <childnode refid="11" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="9">
+        <label>Apache::Hadoop::Hive::PrivilegeGrantInfo</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1PrivilegeGrantInfo"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>grantor</edgelabel>
+          <edgelabel>privilege</edgelabel>
+        </childnode>
+        <childnode refid="10" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="12">
+        <label>Apache::Hadoop::Hive::_CreateDatabaseRequest__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__CreateDatabaseRequest____isset"/>
+      </node>
+      <node id="11">
+        <label>Apache::Hadoop::Hive::_PrincipalPrivilegeSet__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__PrincipalPrivilegeSet____isset"/>
+      </node>
+      <node id="10">
+        <label>Apache::Hadoop::Hive::_PrivilegeGrantInfo__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__PrivilegeGrantInfo____isset"/>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+      <node id="5">
+        <label>std::map&lt; std::string, std::string &gt;</label>
+        <childnode refid="3" relation="usage">
+          <edgelabel>elements</edgelabel>
+          <edgelabel>keys</edgelabel>
+        </childnode>
+      </node>
+      <node id="7">
+        <label>std::map&lt; std::string, std::vector&lt; Apache::Hadoop::Hive::PrivilegeGrantInfo &gt; &gt;</label>
+        <childnode refid="3" relation="usage">
+          <edgelabel>keys</edgelabel>
+        </childnode>
+        <childnode refid="8" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="4">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="3">
+        <label>std::string</label>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="8">
+        <label>std::vector&lt; Apache::Hadoop::Hive::PrivilegeGrantInfo &gt;</label>
+        <childnode refid="9" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13145" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="13145" bodyend="13214"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CreateDatabaseRequest_1a19ca9930718168ea6c902cebc05f3fce" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CreateDatabaseRequest</scope><name>__isset</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CreateDatabaseRequest_1a2367b5a08baad115638a0bb8f2498ec2" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CreateDatabaseRequest</scope><name>__set_catalogName</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CreateDatabaseRequest_1a67e7779738f6e09aef77bb7e7e34a642" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CreateDatabaseRequest</scope><name>__set_createTime</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CreateDatabaseRequest_1ae048fee8618193711aedc0f05c48e966" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CreateDatabaseRequest</scope><name>__set_databaseName</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CreateDatabaseRequest_1a7b415e4449bfc14213b110680e89a97e" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CreateDatabaseRequest</scope><name>__set_dataConnectorName</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CreateDatabaseRequest_1a8634bce82bf6a809b313a39656acaf40" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CreateDatabaseRequest</scope><name>__set_description</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CreateDatabaseRequest_1a38eab74240a1b977ff9442f9900e25c7" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CreateDatabaseRequest</scope><name>__set_locationUri</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CreateDatabaseRequest_1aca8197000f6a9f69e11f4c64c43fecb1" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CreateDatabaseRequest</scope><name>__set_managedLocationUri</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CreateDatabaseRequest_1a727f043d0798e1bac7d40646f0a8a591" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CreateDatabaseRequest</scope><name>__set_ownerName</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CreateDatabaseRequest_1a62cd3d9261fdb87c1a24b930229a9a89" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CreateDatabaseRequest</scope><name>__set_ownerType</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CreateDatabaseRequest_1acf32965d7006f185194e27f8f622b126" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CreateDatabaseRequest</scope><name>__set_parameters</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CreateDatabaseRequest_1ae705d4733b2c0ac63ea4d8df14dbce0e" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CreateDatabaseRequest</scope><name>__set_privileges</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CreateDatabaseRequest_1a7dd615dc3d9f66578fb8044b03449fb9" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CreateDatabaseRequest</scope><name>__set_remote_dbname</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CreateDatabaseRequest_1a24c40e448ef2bd8b47c092ebb384e896" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CreateDatabaseRequest</scope><name>__set_type</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CreateDatabaseRequest_1afa56eac0be5d844ccdecdc137f887ea0" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CreateDatabaseRequest</scope><name>catalogName</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CreateDatabaseRequest_1ac0079e7628e78f489de17b2de84094b2" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CreateDatabaseRequest</scope><name>CreateDatabaseRequest</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CreateDatabaseRequest_1a743a6dd4459c8f2db2ccb379ad2cbb8e" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CreateDatabaseRequest</scope><name>CreateDatabaseRequest</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CreateDatabaseRequest_1a26bd30bf9511a7251abff849e41bb9a0" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CreateDatabaseRequest</scope><name>createTime</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CreateDatabaseRequest_1a29dd763b9f199048f2f08fdbdd468f66" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CreateDatabaseRequest</scope><name>databaseName</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CreateDatabaseRequest_1a3de3c66203737947e6fe72734d589bb9" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CreateDatabaseRequest</scope><name>dataConnectorName</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CreateDatabaseRequest_1a89426131b5731cf3001eed37b6b90b21" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CreateDatabaseRequest</scope><name>description</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CreateDatabaseRequest_1ae083a28f00b3377f98dfc83b3f8f354d" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CreateDatabaseRequest</scope><name>locationUri</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CreateDatabaseRequest_1a866de1a003a84bf51c93810d26dc14b0" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CreateDatabaseRequest</scope><name>managedLocationUri</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CreateDatabaseRequest_1ac3a72a438a2ec0c309a367917ed94abe" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CreateDatabaseRequest</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CreateDatabaseRequest_1a75ebabf450757a615261540b91e73ed5" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CreateDatabaseRequest</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CreateDatabaseRequest_1a8676409f174dedbb9605384b221ff5df" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CreateDatabaseRequest</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CreateDatabaseRequest_1ae1372cd74c7acccd4c72cc07588618dd" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CreateDatabaseRequest</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CreateDatabaseRequest_1a9590737ac5bbff5bacd2b2c78e28049a" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CreateDatabaseRequest</scope><name>ownerName</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CreateDatabaseRequest_1ac96fa7b2d25d5c613fd19efcd14bb3db" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CreateDatabaseRequest</scope><name>ownerType</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CreateDatabaseRequest_1add710f9b61a09897188f61a80376f849" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CreateDatabaseRequest</scope><name>parameters</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CreateDatabaseRequest_1a30b73d6eb98013669da2d5e0def0a339" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::CreateDatabaseRequest</scope><name>printTo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CreateDatabaseRequest_1a616c8f8bc879e50ec354b26a15e6836a" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CreateDatabaseRequest</scope><name>privileges</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CreateDatabaseRequest_1abbb0e49a6cb0fd69f035ae7166a18fd9" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CreateDatabaseRequest</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CreateDatabaseRequest_1adb65fc4c42f42f40332c44a79c50ba00" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CreateDatabaseRequest</scope><name>remote_dbname</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CreateDatabaseRequest_1adcfbc6b205c20d0a7a127a4a31b0cf32" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CreateDatabaseRequest</scope><name>type</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CreateDatabaseRequest_1ac8d9101678d45fdeec6af532e75de405" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CreateDatabaseRequest</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CreateDatabaseRequest_1a071aef0bdea7df4a2dc4231529ee4aa3" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::CreateDatabaseRequest</scope><name>~CreateDatabaseRequest</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>
