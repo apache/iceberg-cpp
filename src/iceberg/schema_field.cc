@@ -31,6 +31,31 @@
 
 namespace iceberg {
 
+namespace {
+
+// Normalizes a default value to the field type. A cross-type default (e.g. an int
+// literal on a long field) is accepted, so it is cast to the field type up front;
+// otherwise projection, JSON round-trip and equality would observe a literal whose type
+// differs from the field. A value that already matches the field type is returned as-is
+// (no needless copy), and a value that cannot be cast is left unchanged so Validate()
+// can report it.
+std::shared_ptr<const Literal> NormalizeDefault(std::shared_ptr<const Literal> value,
+                                                const std::shared_ptr<Type>& field_type) {
+  if (value == nullptr || field_type == nullptr || !field_type->is_primitive()) {
+    return value;
+  }
+  if (*value->type() == *field_type) {
+    return value;
+  }
+  auto cast = value->CastTo(internal::checked_pointer_cast<PrimitiveType>(field_type));
+  if (!cast.has_value() || cast->IsAboveMax() || cast->IsBelowMin()) {
+    return value;
+  }
+  return std::make_shared<const Literal>(std::move(cast).value());
+}
+
+}  // namespace
+
 SchemaField::SchemaField(int32_t field_id, std::string_view name,
                          std::shared_ptr<Type> type, bool optional, std::string_view doc,
                          std::shared_ptr<const Literal> initial_default,
@@ -40,8 +65,8 @@ SchemaField::SchemaField(int32_t field_id, std::string_view name,
       type_(std::move(type)),
       optional_(optional),
       doc_(doc),
-      initial_default_(std::move(initial_default)),
-      write_default_(std::move(write_default)) {}
+      initial_default_(NormalizeDefault(std::move(initial_default), type_)),
+      write_default_(NormalizeDefault(std::move(write_default), type_)) {}
 
 SchemaField SchemaField::MakeOptional(int32_t field_id, std::string_view name,
                                       std::shared_ptr<Type> type, std::string_view doc) {

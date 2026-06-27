@@ -177,6 +177,11 @@ TEST(SchemaTest, ValidateCastsDefaultToFieldType) {
       std::make_shared<const iceberg::Literal>(iceberg::Literal::Int(34)))});
   EXPECT_THAT(widened.Validate(iceberg::TableMetadata::kSupportedTableFormatVersion),
               iceberg::IsOk());
+  // The stored default is normalized to the field type (long), not kept as the narrower
+  // int literal, so projection/serialization/equality all observe a long.
+  const auto& widened_field = widened.fields()[0];
+  ASSERT_TRUE(widened_field.initial_default().has_value());
+  EXPECT_EQ(widened_field.initial_default()->get(), iceberg::Literal::Long(34));
 
   // A default outside the field type's range is rejected (CastTo returns an
   // above-max/below-min sentinel).
