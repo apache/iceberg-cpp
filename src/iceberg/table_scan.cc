@@ -400,9 +400,8 @@ Status TableScanBuilder<ScanType>::ResolveColumnStatsSelection() {
   const auto& schema = schema_ref.get();
   for (const auto& column_name : *requested_column_stats_) {
     ICEBERG_ASSIGN_OR_RAISE(auto field, schema->FindFieldByName(column_name));
-    if (field.has_value()) {
-      context_.columns_to_keep_stats.insert(field.value().get().field_id());
-    }
+    ICEBERG_CHECK(field.has_value(), "Cannot find stats column: {}", column_name);
+    context_.columns_to_keep_stats.insert(field.value().get().field_id());
   }
 
   return {};
