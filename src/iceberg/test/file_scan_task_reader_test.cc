@@ -38,6 +38,7 @@
 #include "iceberg/arrow/arrow_register.h"
 #include "iceberg/arrow_c_data_guard_internal.h"
 #include "iceberg/arrow_c_data_util_internal.h"
+#include "iceberg/data/deletion_vector_writer.h"
 #include "iceberg/data/equality_delete_writer.h"
 #include "iceberg/data/position_delete_writer.h"
 #include "iceberg/file_format.h"
@@ -298,6 +299,24 @@ class FileScanTaskReaderTest : public TempFileTestBase {
     return metadata.data_files[0];
   }
 
+  Result<std::shared_ptr<DataFile>> MakeDeletionVectorFile(
+      const std::string& path, const std::vector<int64_t>& positions,
+      const std::string& data_path) {
+    DeletionVectorWriterOptions options{
+        .path = path,
+        .io = file_io_,
+        .spec = partition_spec_,
+        .partition = PartitionValues{},
+    };
+    ICEBERG_ASSIGN_OR_RAISE(auto writer, DeletionVectorWriter::Make(std::move(options)));
+    for (int64_t pos : positions) {
+      ICEBERG_RETURN_UNEXPECTED(writer->Delete(data_path, pos));
+    }
+    ICEBERG_RETURN_UNEXPECTED(writer->Close());
+    ICEBERG_ASSIGN_OR_RAISE(auto metadata, writer->Metadata());
+    return metadata.data_files[0];
+  }
+
   void VerifyStream(struct ArrowArrayStream* stream, std::string_view expected_json) {
     auto record_batch_reader = ::arrow::ImportRecordBatchReader(stream).ValueOrDie();
 
@@ -386,6 +405,30 @@ TEST_F(FileScanTaskReaderTest, OpenWithPositionDeletesFiltersRowsAndPrunesPos) {
       auto pos_delete, MakePositionDeleteFile(CreateNewTempFilePathWithSuffix(".parquet"),
                                               {1}, data_file->file_path));
   FileScanTask task(data_file, {pos_delete});
+
+  FileScanTaskReader::Options options{
+      .io = file_io_,
+      .table_schema = table_schema_,
+      .schemas = {table_schema_},
+      .projected_schema = projected_schema_,
+  };
+  ICEBERG_UNWRAP_OR_FAIL(auto reader, FileScanTaskReader::Make(std::move(options)));
+  auto stream_result = reader->Open(task);
+  ASSERT_THAT(stream_result, IsOk());
+  auto stream = std::move(stream_result.value());
+
+  ASSERT_NO_FATAL_FAILURE(VerifyStream(&stream, R"([[1, "Foo"], [3, "Baz"]])"));
+}
+
+TEST_F(FileScanTaskReaderTest, OpenWithDeletionVectorFiltersRows) {
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto data_file,
+      MakeDataFile(table_schema_,
+                   R"([[1, "Foo", "blue"], [2, "Bar", "red"], [3, "Baz", "green"]])"));
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto dv, MakeDeletionVectorFile(CreateNewTempFilePathWithSuffix(".puffin"), {1},
+                                      data_file->file_path));
+  FileScanTask task(data_file, {dv});
 
   FileScanTaskReader::Options options{
       .io = file_io_,
