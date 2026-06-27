@@ -19,24 +19,30 @@
 
 #pragma once
 
-#include <string_view>
+#include <string>
+#include <unordered_map>
 
 #include "iceberg/iceberg_export.h"
+#include "iceberg/result.h"
 
 namespace iceberg {
 
-class ICEBERG_EXPORT LocationUtil {
- public:
-  static std::string_view StripTrailingSlash(std::string_view path) {
-    if (path.empty()) {
-      return "";
-    }
+/// \brief A storage credential vended for a storage location prefix.
+struct ICEBERG_EXPORT StorageCredential {
+  std::string prefix;
+  std::unordered_map<std::string, std::string> config;
 
-    while (path.ends_with("/") && !path.ends_with("://")) {
-      path.remove_suffix(1);
+  Status Validate() const {
+    if (prefix.empty()) {
+      return ValidationFailed("Invalid storage credential: prefix must be non-empty");
     }
-    return path;
+    if (config.empty()) {
+      return ValidationFailed("Invalid storage credential: config must be non-empty");
+    }
+    return {};
   }
+
+  bool operator==(const StorageCredential& other) const = default;
 };
 
 }  // namespace iceberg

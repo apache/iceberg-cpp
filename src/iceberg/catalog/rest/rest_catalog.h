@@ -31,6 +31,7 @@
 #include "iceberg/catalog/session_catalog.h"
 #include "iceberg/catalog/session_context.h"
 #include "iceberg/result.h"
+#include "iceberg/storage_credential.h"
 
 /// \file iceberg/catalog/rest/rest_catalog.h
 /// RestCatalog implementation for Iceberg REST API.

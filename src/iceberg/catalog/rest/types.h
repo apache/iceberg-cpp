@@ -30,6 +30,7 @@
 #include "iceberg/catalog/rest/endpoint.h"
 #include "iceberg/catalog/rest/iceberg_rest_export.h"
 #include "iceberg/result.h"
+#include "iceberg/storage_credential.h"
 #include "iceberg/table_identifier.h"
 #include "iceberg/type_fwd.h"
 #include "iceberg/util/macros.h"
@@ -179,28 +180,6 @@ struct ICEBERG_REST_EXPORT CreateTableRequest {
 
 /// \brief An opaque token that allows clients to make use of pagination for list APIs.
 using PageToken = std::string;
-
-/// \brief A short-lived credential vended by a REST catalog for a storage
-/// location ``prefix`` (clients pick the longest matching prefix); ``config``
-/// holds backend properties such as ``"s3.access-key-id"`` (Iceberg REST spec).
-struct ICEBERG_REST_EXPORT StorageCredential {
-  std::string prefix;
-  std::unordered_map<std::string, std::string> config;
-
-  /// \brief Validates the StorageCredential. The REST spec requires both a
-  /// prefix and config; non-empty matches Java `Credential.validate()`.
-  Status Validate() const {
-    if (prefix.empty()) {
-      return ValidationFailed("Invalid storage credential: prefix must be non-empty");
-    }
-    if (config.empty()) {
-      return ValidationFailed("Invalid storage credential: config must be non-empty");
-    }
-    return {};
-  }
-
-  bool operator==(const StorageCredential& other) const = default;
-};
 
 /// \brief Result body for table create/load/register APIs.
 struct ICEBERG_REST_EXPORT LoadTableResult {
@@ -358,7 +337,7 @@ struct ICEBERG_REST_EXPORT PlanTableScanResponse {
   PlanStatus plan_status = PlanStatus::kCompleted;
   std::string plan_id;
   std::optional<ErrorResponse> error;
-  // TODO(sandeepg): Add credentials.
+  // TODO(sandeepg): Add storage credentials and bind scan FileIO to them.
 
   Status Validate() const;
 
@@ -373,7 +352,7 @@ struct ICEBERG_REST_EXPORT FetchPlanningResultResponse {
   std::vector<std::shared_ptr<DataFile>> delete_files;
   PlanStatus plan_status = PlanStatus::kCompleted;
   std::optional<ErrorResponse> error;
-  // TODO(sandeepg): Add credentials.
+  // TODO(sandeepg): Add storage credentials and bind scan FileIO to them.
 
   Status Validate() const;
 

@@ -28,7 +28,6 @@ struct ErrorResponse;
 struct CommitTableResponse;
 struct LoadTableResult;
 struct OAuthTokenResponse;
-struct StorageCredential;
 
 class Endpoint;
 class ErrorHandler;

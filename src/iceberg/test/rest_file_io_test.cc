@@ -29,7 +29,6 @@
 #include "iceberg/catalog/rest/types.h"
 #include "iceberg/file_io_registry.h"
 #include "iceberg/test/matchers.h"
-#include "iceberg/util/location_util.h"
 
 namespace iceberg::rest {
 
@@ -48,6 +47,24 @@ class MockFileIO : public FileIO {
   }
 
   Status DeleteFile(const std::string& /*file_location*/) override { return {}; }
+};
+
+std::vector<StorageCredential> captured_storage_credentials;
+std::unordered_map<std::string, std::string> captured_file_io_properties;
+
+class MockCredentialedFileIO : public MockFileIO, public SupportsStorageCredentials {
+ public:
+  Status SetStorageCredentials(
+      const std::vector<StorageCredential>& credentials) override {
+    captured_storage_credentials = credentials;
+    return {};
+  }
+
+  const std::vector<StorageCredential>& credentials() const override {
+    return captured_storage_credentials;
+  }
+
+  SupportsStorageCredentials* AsSupportsStorageCredentials() override { return this; }
 };
 
 }  // namespace
@@ -153,46 +170,78 @@ TEST(RestFileIOTest, MakeCatalogFileIOSkipsCheckWhenWarehouseAbsent) {
   ASSERT_THAT(result, IsOk());
 }
 
-TEST(RestFileIOTest, CanonicalizeS3SchemeTreatsS3CompatibleSchemesAsS3) {
-  // s3a/s3n/oss canonicalize to s3:// so a vended `s3` credential prefix-matches
-  // them uniformly (DLF vends `s3` for oss:// locations).
-  EXPECT_EQ(LocationUtil::CanonicalizeS3Scheme("oss://bucket/db/t"), "s3://bucket/db/t");
-  EXPECT_EQ(LocationUtil::CanonicalizeS3Scheme("s3a://bucket/x"), "s3://bucket/x");
-  EXPECT_EQ(LocationUtil::CanonicalizeS3Scheme("s3n://bucket/x"), "s3://bucket/x");
-  // Already-canonical and non-S3 / scheme-less locations are unchanged.
-  EXPECT_EQ(LocationUtil::CanonicalizeS3Scheme("s3://bucket/x"), "s3://bucket/x");
-  EXPECT_EQ(LocationUtil::CanonicalizeS3Scheme("gs://bucket"), "gs://bucket");
-  EXPECT_EQ(LocationUtil::CanonicalizeS3Scheme("/local/path"), "/local/path");
+TEST(RestFileIOTest, TableFileIOMergesConfigAndCredentials) {
+  const std::string custom_impl = "com.mycompany.CredentialedFileIO";
+  captured_file_io_properties.clear();
+  captured_storage_credentials.clear();
+  FileIORegistry::Register(
+      custom_impl,
+      [](const std::unordered_map<std::string, std::string>& properties)
+          -> Result<std::unique_ptr<FileIO>> {
+        captured_file_io_properties = properties;
+        return std::make_unique<MockCredentialedFileIO>();
+      });
+
+  auto result = MakeTableFileIO(
+      {{"warehouse", "s3://catalog/warehouse"},
+       {"catalog-only", "catalog"},
+       {"shared", "catalog"}},
+      {{"io-impl", custom_impl}, {"table-only", "table"}, {"shared", "table"}},
+      {{.prefix = "s3://bucket/table",
+        .config = {{"shared", "credential"}, {"credential-only", "value"}}}});
+  ASSERT_THAT(result, IsOk());
+  auto* credentialed = result.value()->AsSupportsStorageCredentials();
+  ASSERT_NE(credentialed, nullptr);
+
+  EXPECT_THAT(
+      captured_file_io_properties,
+      ::testing::UnorderedElementsAre(
+          ::testing::Pair("warehouse", "s3://catalog/warehouse"),
+          ::testing::Pair("catalog-only", "catalog"),
+          ::testing::Pair("io-impl", custom_impl), ::testing::Pair("table-only", "table"),
+          ::testing::Pair("shared", "table")));
+  ASSERT_EQ(captured_storage_credentials.size(), 1);
+  EXPECT_EQ(captured_storage_credentials[0].prefix, "s3://bucket/table");
+  EXPECT_THAT(captured_storage_credentials[0].config,
+              ::testing::UnorderedElementsAre(::testing::Pair("credential-only", "value"),
+                                              ::testing::Pair("shared", "credential")));
+  EXPECT_EQ(credentialed->credentials(), captured_storage_credentials);
 }
 
-TEST(RestFileIOTest, PathHasPrefixMatchesAtPathBoundary) {
-  // Must match only at a path boundary, so a `s3://bucket/db/t1` credential does
-  // not capture a sibling table under `s3://bucket/db/t1x/...`.
-  EXPECT_TRUE(LocationUtil::PathHasPrefix("s3://bucket/db/t1/data/f.parquet",
-                                          "s3://bucket/db/t1"));
-  EXPECT_TRUE(LocationUtil::PathHasPrefix("s3://bucket/db/t1", "s3://bucket/db/t1"));
-  EXPECT_FALSE(LocationUtil::PathHasPrefix("s3://bucket/db/t1x/data/f.parquet",
-                                           "s3://bucket/db/t1"));
-  EXPECT_FALSE(LocationUtil::PathHasPrefix("s3://bucket-other/x", "s3://bucket"));
+TEST(RestFileIOTest, TableImplOverridesWarehouseScheme) {
+  captured_file_io_properties.clear();
+  FileIORegistry::Register(
+      std::string(FileIORegistry::kArrowS3FileIO),
+      [](const std::unordered_map<std::string, std::string>& properties)
+          -> Result<std::unique_ptr<FileIO>> {
+        captured_file_io_properties = properties;
+        return std::make_unique<MockFileIO>();
+      });
 
-  // A bare-scheme credential (DLF vends `s3`) matches any authority/path.
-  EXPECT_TRUE(LocationUtil::PathHasPrefix("s3://bucket/db/t/f", "s3"));
-  EXPECT_TRUE(LocationUtil::PathHasPrefix(
-      LocationUtil::CanonicalizeS3Scheme("oss://bucket/db/t/f"), "s3"));
-  EXPECT_FALSE(LocationUtil::PathHasPrefix("gs://bucket/x", "s3"));
+  auto result =
+      MakeTableFileIO({{"warehouse", "/tmp/catalog-warehouse"}},
+                      {{"io-impl", std::string(FileIORegistry::kArrowS3FileIO)}},
+                      /*storage_credentials=*/{});
+  ASSERT_THAT(result, IsOk());
+  EXPECT_THAT(
+      captured_file_io_properties,
+      ::testing::UnorderedElementsAre(
+          ::testing::Pair("warehouse", "/tmp/catalog-warehouse"),
+          ::testing::Pair("io-impl", std::string(FileIORegistry::kArrowS3FileIO))));
 }
 
-TEST(RestFileIOTest, HasOnlyNonS3StorageCredentials) {
-  // Only GCS/ADLS prefixes -> unsupported, fail fast.
-  EXPECT_TRUE(HasOnlyNonS3StorageCredentials(
-      {{.prefix = "gs://bucket", .config = {{"k", "v"}}},
-       {.prefix = "abfs://c@a.dfs.core.windows.net", .config = {{"k", "v"}}}}));
-  // At least one S3 credential present -> not unsupported (may fall back).
-  EXPECT_FALSE(HasOnlyNonS3StorageCredentials(
-      {{.prefix = "gs://bucket", .config = {{"k", "v"}}},
-       {.prefix = "s3://bucket", .config = {{"s3.access-key-id", "a"}}}}));
-  // No credentials at all -> not "only non-S3".
-  EXPECT_FALSE(HasOnlyNonS3StorageCredentials({}));
+TEST(RestFileIOTest, TableFileIORejectsCredentials) {
+  const std::string custom_impl = "com.mycompany.PlainFileIO";
+  FileIORegistry::Register(
+      custom_impl,
+      [](const std::unordered_map<std::string, std::string>& /*properties*/)
+          -> Result<std::unique_ptr<FileIO>> { return std::make_unique<MockFileIO>(); });
+
+  auto result = MakeTableFileIO(
+      {{"warehouse", "s3://catalog/warehouse"}}, {{"io-impl", custom_impl}},
+      {{.prefix = "s3://bucket/table", .config = {{"k", "v"}}}});
+  EXPECT_THAT(result, IsError(ErrorKind::kNotSupported));
+  EXPECT_THAT(result, HasErrorMessage("does not support vended storage credentials"));
 }
 
 }  // namespace iceberg::rest

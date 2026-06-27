@@ -23,9 +23,6 @@
 #include <memory>
 #include <optional>
 #include <string>
-#include <string_view>
-#include <unordered_map>
-#include <utility>
 #include <vector>
 
 #include <arrow/filesystem/type_fwd.h>
@@ -55,8 +52,7 @@ OpenArrowOutputStream(const std::shared_ptr<FileIO>& io, const std::string& path
                       bool overwrite = true);
 
 /// \brief A concrete implementation of FileIO for Arrow file system.
-class ICEBERG_BUNDLE_EXPORT ArrowFileSystemFileIO : public FileIO,
-                                                    public SupportsStorageCredentials {
+class ICEBERG_BUNDLE_EXPORT ArrowFileSystemFileIO : public FileIO {
  public:
   explicit ArrowFileSystemFileIO(std::shared_ptr<::arrow::fs::FileSystem> arrow_fs)
       : arrow_fs_(std::move(arrow_fs)) {}
@@ -85,12 +81,6 @@ class ICEBERG_BUNDLE_EXPORT ArrowFileSystemFileIO : public FileIO,
   /// \brief Delete files at the given locations.
   Status DeleteFiles(const std::vector<std::string>& file_locations) override;
 
-  /// \brief Build one S3 file system per credential prefix for per-path routing.
-  Status SetStorageCredentials(
-      const std::vector<
-          std::pair<std::string, std::unordered_map<std::string, std::string>>>&
-          properties_by_prefix) override;
-
   /// \brief Get the Arrow file system.
   const std::shared_ptr<::arrow::fs::FileSystem>& fs() const { return arrow_fs_; }
 
@@ -102,18 +92,10 @@ class ICEBERG_BUNDLE_EXPORT ArrowFileSystemFileIO : public FileIO,
   friend Result<std::shared_ptr<::arrow::io::OutputStream>> OpenArrowOutputStream(
       const std::shared_ptr<FileIO>& io, const std::string& path, bool overwrite);
 
-  /// \brief Pick the file system for `location` (longest matching prefix, else
-  /// the default).
-  const std::shared_ptr<::arrow::fs::FileSystem>& FileSystemForPath(
-      std::string_view location) const;
-
-  /// \brief Resolve a file location to a filesystem path using `fs`.
-  Result<std::string> ResolvePath(const std::shared_ptr<::arrow::fs::FileSystem>& fs,
-                                  const std::string& file_location);
+  /// \brief Resolve a file location to a filesystem path.
+  Result<std::string> ResolvePath(const std::string& file_location);
 
   std::shared_ptr<::arrow::fs::FileSystem> arrow_fs_;
-  std::vector<std::pair<std::string, std::shared_ptr<::arrow::fs::FileSystem>>>
-      fs_by_prefix_;
 };
 
 }  // namespace iceberg::arrow

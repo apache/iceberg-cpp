@@ -26,14 +26,15 @@
 #include <span>
 #include <string>
 #include <string_view>
-#include <unordered_map>
-#include <utility>
 #include <vector>
 
 #include "iceberg/iceberg_export.h"
 #include "iceberg/result.h"
+#include "iceberg/storage_credential.h"
 
 namespace iceberg {
+
+class SupportsStorageCredentials;
 
 /// \brief Seekable byte stream for reading file contents.
 class ICEBERG_EXPORT SeekableInputStream {
@@ -173,21 +174,24 @@ class ICEBERG_EXPORT FileIO {
   /// \param file_locations The locations of the files to delete.
   /// \return void if all deletes succeed, or an error code if any delete fails.
   virtual Status DeleteFiles(const std::vector<std::string>& file_locations);
+
+  /// \brief Return storage-credential support when implemented by this FileIO.
+  virtual SupportsStorageCredentials* AsSupportsStorageCredentials() { return nullptr; }
 };
 
 /// \brief Mix-in for FileIO implementations that route object paths to
 /// per-prefix file systems built from vended storage credentials, letting the
-/// catalog stay decoupled from the concrete (Arrow/S3) implementation.
+/// catalog stay decoupled from concrete storage implementations.
 class ICEBERG_EXPORT SupportsStorageCredentials {
  public:
   virtual ~SupportsStorageCredentials() = default;
 
-  /// \brief Install per-prefix file systems. `properties_by_prefix` maps a
-  /// canonicalized prefix to its fully merged properties.
+  /// \brief Install vended storage credentials.
   virtual Status SetStorageCredentials(
-      const std::vector<
-          std::pair<std::string, std::unordered_map<std::string, std::string>>>&
-          properties_by_prefix) = 0;
+      const std::vector<StorageCredential>& storage_credentials) = 0;
+
+  /// \brief Return currently installed storage credentials.
+  virtual const std::vector<StorageCredential>& credentials() const = 0;
 };
 
 }  // namespace iceberg

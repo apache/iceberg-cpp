@@ -18,10 +18,13 @@
  */
 
 #include <cstdlib>
+#include <memory>
 #include <optional>
 #include <string>
 #include <string_view>
+#include <unordered_map>
 #include <utility>
+#include <vector>
 
 #include <arrow/filesystem/filesystem.h>
 #if ICEBERG_S3_ENABLED
@@ -31,16 +34,16 @@
 #include "iceberg/arrow/arrow_io_internal.h"
 #include "iceberg/arrow/arrow_io_util.h"
 #include "iceberg/arrow/arrow_status_internal.h"
-#include "iceberg/arrow/s3/arrow_s3_internal.h"
 #include "iceberg/arrow/s3/s3_properties.h"
 #include "iceberg/util/macros.h"
 #include "iceberg/util/string_util.h"
 
 namespace iceberg::arrow {
 
+#if ICEBERG_S3_ENABLED
+
 namespace {
 
-#if ICEBERG_S3_ENABLED
 const std::string* FindProperty(
     const std::unordered_map<std::string, std::string>& properties,
     std::string_view key) {
@@ -87,11 +90,12 @@ std::string SplitEndpointScheme(std::string_view endpoint,
   return std::string(endpoint);
 }
 
-#endif
+bool IsS3FileIOCredentialPrefix(std::string_view prefix) {
+  return prefix == "s3" || prefix.starts_with("s3://") || prefix.starts_with("s3a://") ||
+         prefix.starts_with("s3n://");
+}
 
 }  // namespace
-
-#if ICEBERG_S3_ENABLED
 
 /// \brief Configure S3Options from a properties map.
 ///
@@ -119,17 +123,12 @@ Result<::arrow::fs::S3Options> ConfigureS3Options(
   }
 
   // Configure region
-  // Prefer the standard `client.region`; fall back to legacy `s3.region`.
-  const auto* region = FindProperty(properties, S3Properties::kClientRegion);
-  if (region == nullptr) {
-    region = FindProperty(properties, S3Properties::kRegion);
-  }
-  if (region != nullptr) {
+  if (const auto* region = FindProperty(properties, S3Properties::kClientRegion);
+      region != nullptr) {
     options.region = *region;
   }
 
-  // Configure endpoint (for MinIO, LocalStack, OSS, etc.) from `s3.endpoint` or
-  // the AWS standard env vars.
+  // Configure endpoint (for MinIO, LocalStack, etc.)
   if (const auto* endpoint = FindProperty(properties, S3Properties::kEndpoint);
       endpoint != nullptr) {
     options.endpoint_override = SplitEndpointScheme(*endpoint, options);
@@ -171,9 +170,9 @@ Result<::arrow::fs::S3Options> ConfigureS3Options(
 
   return options;
 }
-#endif
 
-#if ICEBERG_S3_ENABLED
+namespace {
+
 Result<std::shared_ptr<::arrow::fs::FileSystem>> BuildArrowS3FileSystem(
     const std::unordered_map<std::string, std::string>& properties) {
   ICEBERG_RETURN_UNEXPECTED(EnsureS3Initialized());
@@ -181,27 +180,150 @@ Result<std::shared_ptr<::arrow::fs::FileSystem>> BuildArrowS3FileSystem(
   ICEBERG_ARROW_ASSIGN_OR_RETURN(auto fs, ::arrow::fs::S3FileSystem::Make(options));
   return std::shared_ptr<::arrow::fs::FileSystem>(std::move(fs));
 }
-#endif
+
+std::string CanonicalizeS3Scheme(std::string_view location) {
+  for (std::string_view scheme : {"s3a://", "s3n://", "oss://"}) {
+    if (location.starts_with(scheme)) {
+      return std::string("s3://").append(location.substr(scheme.size()));
+    }
+  }
+  return std::string(location);
+}
+
+class ArrowS3FileIO final : public FileIO, public SupportsStorageCredentials {
+ public:
+  ArrowS3FileIO(std::shared_ptr<::arrow::fs::FileSystem> arrow_fs,
+                std::unordered_map<std::string, std::string> default_properties)
+      : default_file_io_(std::move(arrow_fs)),
+        default_properties_(std::move(default_properties)) {}
+
+  Result<std::unique_ptr<InputFile>> NewInputFile(std::string file_location) override;
+
+  Result<std::unique_ptr<InputFile>> NewInputFile(std::string file_location,
+                                                  size_t length) override;
+
+  Result<std::unique_ptr<OutputFile>> NewOutputFile(std::string file_location) override;
+
+  Status DeleteFile(const std::string& file_location) override;
+
+  Status DeleteFiles(const std::vector<std::string>& file_locations) override;
+
+  Status SetStorageCredentials(
+      const std::vector<StorageCredential>& storage_credentials) override;
+
+  const std::vector<StorageCredential>& credentials() const override {
+    return storage_credentials_;
+  }
+
+  SupportsStorageCredentials* AsSupportsStorageCredentials() override { return this; }
+
+ private:
+  ArrowFileSystemFileIO& FileIOForPath(std::string_view location);
+
+  ArrowFileSystemFileIO default_file_io_;
+  std::unordered_map<std::string, std::string> default_properties_;
+  std::vector<StorageCredential> storage_credentials_;
+  std::vector<std::pair<std::string, std::unique_ptr<ArrowFileSystemFileIO>>>
+      file_io_by_prefix_;
+};
+
+Status ArrowS3FileIO::SetStorageCredentials(
+    const std::vector<StorageCredential>& storage_credentials) {
+  std::vector<std::pair<std::string, std::unique_ptr<ArrowFileSystemFileIO>>>
+      file_io_by_prefix;
+  file_io_by_prefix.reserve(storage_credentials.size());
+  // TODO(gangwu): Refresh vended credentials via credentials.uri before tokens expire.
+  for (const auto& credential : storage_credentials) {
+    ICEBERG_RETURN_UNEXPECTED(credential.Validate());
+    if (!IsS3FileIOCredentialPrefix(credential.prefix)) {
+      return NotSupported(
+          "Storage credential prefix '{}' is unsupported by Arrow S3 FileIO",
+          credential.prefix);
+    }
+    auto properties = default_properties_;
+    for (const auto& [key, value] : credential.config) {
+      properties[key] = value;
+    }
+    ICEBERG_ASSIGN_OR_RAISE(auto fs, BuildArrowS3FileSystem(properties));
+    file_io_by_prefix.emplace_back(
+        CanonicalizeS3Scheme(credential.prefix),
+        std::make_unique<ArrowFileSystemFileIO>(std::move(fs)));
+  }
+  file_io_by_prefix_ = std::move(file_io_by_prefix);
+  storage_credentials_ = storage_credentials;
+  return {};
+}
+
+ArrowFileSystemFileIO& ArrowS3FileIO::FileIOForPath(std::string_view location) {
+  if (file_io_by_prefix_.empty()) {
+    return default_file_io_;
+  }
+  const std::string canonical = CanonicalizeS3Scheme(location);
+  ArrowFileSystemFileIO* best = &default_file_io_;
+  size_t best_len = 0;
+  for (const auto& [prefix, file_io] : file_io_by_prefix_) {
+    if (prefix.size() > best_len && canonical.starts_with(prefix)) {
+      best = file_io.get();
+      best_len = prefix.size();
+    }
+  }
+  return *best;
+}
+
+Result<std::unique_ptr<InputFile>> ArrowS3FileIO::NewInputFile(
+    std::string file_location) {
+  return FileIOForPath(file_location).NewInputFile(std::move(file_location));
+}
+
+Result<std::unique_ptr<InputFile>> ArrowS3FileIO::NewInputFile(std::string file_location,
+                                                               size_t length) {
+  return FileIOForPath(file_location).NewInputFile(std::move(file_location), length);
+}
+
+Result<std::unique_ptr<OutputFile>> ArrowS3FileIO::NewOutputFile(
+    std::string file_location) {
+  return FileIOForPath(file_location).NewOutputFile(std::move(file_location));
+}
+
+Status ArrowS3FileIO::DeleteFile(const std::string& file_location) {
+  return FileIOForPath(file_location).DeleteFile(file_location);
+}
+
+Status ArrowS3FileIO::DeleteFiles(const std::vector<std::string>& file_locations) {
+  std::unordered_map<ArrowFileSystemFileIO*, std::vector<std::string>> locations_by_io;
+  for (const auto& file_location : file_locations) {
+    locations_by_io[&FileIOForPath(file_location)].push_back(file_location);
+  }
+  for (auto& [file_io, locations] : locations_by_io) {
+    ICEBERG_RETURN_UNEXPECTED(file_io->DeleteFiles(locations));
+  }
+  return {};
+}
+
+}  // namespace
 
 Result<std::unique_ptr<FileIO>> MakeS3FileIO(
     const std::unordered_map<std::string, std::string>& properties) {
-#if ICEBERG_S3_ENABLED
   // Uses default credentials if properties are empty.
   ICEBERG_ASSIGN_OR_RAISE(auto fs, BuildArrowS3FileSystem(properties));
-  return std::make_unique<ArrowFileSystemFileIO>(std::move(fs));
-#else
-  return NotSupported("Arrow S3 support is not enabled");
-#endif
+  return std::make_unique<ArrowS3FileIO>(std::move(fs), properties);
 }
 
 Status FinalizeS3() {
-#if ICEBERG_S3_ENABLED
   auto status = ::arrow::fs::FinalizeS3();
   ICEBERG_ARROW_RETURN_NOT_OK(status);
   return {};
-#else
-  return NotSupported("Arrow S3 support is not enabled");
-#endif
 }
+
+#else
+
+Result<std::unique_ptr<FileIO>> MakeS3FileIO(
+    [[maybe_unused]] const std::unordered_map<std::string, std::string>& properties) {
+  return NotSupported("Arrow S3 support is not enabled");
+}
+
+Status FinalizeS3() { return NotSupported("Arrow S3 support is not enabled"); }
+
+#endif
 
 }  // namespace iceberg::arrow

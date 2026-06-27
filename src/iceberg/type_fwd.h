@@ -201,6 +201,7 @@ class PartitionSummary;
 /// \brief File I/O.
 struct ReaderOptions;
 struct WriterOptions;
+struct StorageCredential;
 class FileIO;
 class Reader;
 class Writer;

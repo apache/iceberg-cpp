@@ -20,7 +20,6 @@
 #include "iceberg/catalog/rest/rest_catalog.h"
 
 #include <memory>
-#include <ranges>
 #include <string_view>
 #include <tuple>
 #include <unordered_map>
@@ -30,7 +29,6 @@
 #include <nlohmann/json.hpp>
 
 #include "iceberg/catalog/rest/auth/auth_managers.h"
-#include "iceberg/catalog/rest/auth/auth_properties.h"
 #include "iceberg/catalog/rest/auth/auth_session.h"
 #include "iceberg/catalog/rest/catalog_properties.h"
 #include "iceberg/catalog/rest/constant.h"
@@ -122,41 +120,6 @@ Result<bool> CaptureNoSuchTable(const auto& status) {
 
 Result<bool> CaptureNoSuchNamespace(const auto& status) {
   return CaptureNoSuchObject(status, ErrorKind::kNoSuchNamespace);
-}
-
-Status ValidateNoFileIOConfig(
-    const std::unordered_map<std::string, std::string>& table_config) {
-  static const std::unordered_set<std::string_view> kTableConfigHandledByAuthKeys = {
-      auth::AuthProperties::kAuthType,
-      auth::AuthProperties::kBasicUsername,
-      auth::AuthProperties::kBasicPassword,
-      auth::AuthProperties::kSigV4Enabled,
-      auth::AuthProperties::kSigV4DelegateAuthType,
-      auth::AuthProperties::kSigV4SigningRegion,
-      auth::AuthProperties::kSigV4SigningName,
-      auth::AuthProperties::kSigV4AccessKeyId,
-      auth::AuthProperties::kSigV4SecretAccessKey,
-      auth::AuthProperties::kSigV4SessionToken,
-      auth::AuthProperties::kToken.key(),
-      auth::AuthProperties::kCredential.key(),
-      auth::AuthProperties::kScope.key(),
-      auth::AuthProperties::kOAuth2ServerUri.key(),
-      auth::AuthProperties::kKeepRefreshed.key(),
-      auth::AuthProperties::kExchangeEnabled.key(),
-      auth::AuthProperties::kAudience.key(),
-      auth::AuthProperties::kResource.key(),
-  };
-
-  for (const auto& [key, _] : table_config) {
-    if (!kTableConfigHandledByAuthKeys.contains(key)) {
-      // Fail closed because unknown table config may be FileIO/storage config.
-      // TODO(gangwu): Build table-specific FileIO when REST storage
-      // credentials and table-level storage config are supported.
-      return NotImplemented(
-          "Table-specific FileIO is not implemented for table config key '{}'", key);
-    }
-  }
-  return {};
 }
 
 Status CheckBoundTable(const TableIdentifier& requested, const TableIdentifier& bound) {
@@ -526,25 +489,10 @@ Result<std::shared_ptr<FileIO>> RestCatalog::TableFileIO(
     const SessionContext& /*context*/,
     const std::unordered_map<std::string, std::string>& table_config,
     const std::vector<StorageCredential>& storage_credentials) const {
-  if (!storage_credentials.empty()) {
-    // Only non-S3 (GCS/ADLS) credentials vended, which we can't honor; fail fast.
-    if (HasOnlyNonS3StorageCredentials(storage_credentials)) {
-      auto prefixes =
-          storage_credentials | std::views::transform(&StorageCredential::prefix);
-      return NotSupported(
-          "Vended storage credentials {} are unsupported (only S3-family "
-          "credentials are supported)",
-          FormatRange(prefixes, ", ", "[", "]"));
-    }
-    // Build a FileIO that routes each path to its vended credential. TODO: STS
-    // refresh via credentials.uri is not yet supported.
-    ICEBERG_ASSIGN_OR_RAISE(auto io,
-                            MakeS3FileIOFromCredentials(config_.configs(), table_config,
-                                                        storage_credentials));
-    return std::shared_ptr<FileIO>(std::move(io));
+  if (!table_config.empty() || !storage_credentials.empty()) {
+    return MakeTableFileIO(config_.configs(), table_config, storage_credentials);
   }
 
-  ICEBERG_RETURN_UNEXPECTED(ValidateNoFileIOConfig(table_config));
   return file_io_;
 }
 
@@ -764,8 +712,7 @@ Result<std::shared_ptr<Table>> RestCatalog::UpdateTable(
   ICEBERG_ASSIGN_OR_RAISE(
       auto table_session,
       TableAuthSession(identifier, table_config, std::move(contextual_session)));
-  // No table was loaded here, so there is no per-table FileIO to reuse; use the
-  // catalog FileIO (table_config carries no credentials).
+  // Top-level updates have no loaded table FileIO to reuse.
   return MakeTableFromCommitResponse(identifier, std::move(response), context,
                                      table_config, std::move(table_session), file_io_);
 }
@@ -916,11 +863,7 @@ Result<std::shared_ptr<Table>> RestCatalog::MakeTableFromCommitResponse(
     const SessionContext& context,
     const std::unordered_map<std::string, std::string>& table_config,
     std::shared_ptr<auth::AuthSession> table_session, std::shared_ptr<FileIO> table_io) {
-  // Reuse the FileIO bound at load: CommitTableResponse carries no config or
-  // storage credentials, so rebuilding it would drop the vended credentials
-  // (mirrors Java RESTSessionCatalog#tableFileIO).
-  // TODO(gangwu): rebuild the FileIO if the commit response ever grows config
-  // or storage credentials.
+  // Reuse the bound FileIO because commit responses carry no config or credentials.
   auto table_catalog = std::make_shared<TableScopedCatalog>(
       shared_from_this(), context, identifier, table_config, table_session, table_io);
   return Table::Make(identifier, std::move(response.metadata),

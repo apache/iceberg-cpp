@@ -47,15 +47,8 @@ ICEBERG_REST_EXPORT std::string_view BuiltinFileIOName(BuiltinFileIOKind kind);
 ICEBERG_REST_EXPORT Result<std::unique_ptr<FileIO>> MakeCatalogFileIO(
     const RestCatalogProperties& config);
 
-/// \brief True if `credentials` is non-empty but has no S3-family credential
-/// (prefix starting with "s3") — only unsupported schemes (GCS/ADLS) were vended.
-ICEBERG_REST_EXPORT bool HasOnlyNonS3StorageCredentials(
-    const std::vector<StorageCredential>& credentials);
-
-/// \brief Build an S3 FileIO that routes each object path to a per-prefix file
-/// system, one per S3-family vended credential (config merged catalog < table <
-/// credential). Non-S3 credentials are ignored.
-ICEBERG_REST_EXPORT Result<std::unique_ptr<FileIO>> MakeS3FileIOFromCredentials(
+/// \brief Build the configured table FileIO and apply storage credentials if present.
+ICEBERG_REST_EXPORT Result<std::unique_ptr<FileIO>> MakeTableFileIO(
     const std::unordered_map<std::string, std::string>& catalog_config,
     const std::unordered_map<std::string, std::string>& table_config,
     const std::vector<StorageCredential>& storage_credentials);
