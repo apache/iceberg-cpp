@@ -72,11 +72,14 @@ class ICEBERG_EXPORT StringUtils {
     return ToLower(lhs) == ToLower(rhs);
   }
 
+  /// \brief Case-insensitive prefix test, comparing the ToLower forms of both inputs.
+  ///
+  /// Inherits ToLower's Unicode simple-mapping behavior. The whole strings are
+  /// lower-cased rather than byte-slicing str to prefix.size(), because ToLower can
+  /// change a string's byte length (e.g. "İ" (U+0130) is two bytes but maps to "i"),
+  /// so a byte slice could split a code point or reject a valid match.
   static bool StartsWithIgnoreCase(std::string_view str, std::string_view prefix) {
-    if (str.size() < prefix.size()) {
-      return false;
-    }
-    return EqualsIgnoreCase(str.substr(0, prefix.size()), prefix);
+    return ToLower(str).starts_with(ToLower(prefix));
   }
 
   /// \brief Count the number of code points in a UTF-8 string.
