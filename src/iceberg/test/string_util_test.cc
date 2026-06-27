@@ -86,4 +86,25 @@ TEST(StringUtilsTest, EqualsIgnoreCase) {
   ASSERT_FALSE(StringUtils::EqualsIgnoreCase("caf\xC3\xA9", "cafe"));
 }
 
+TEST(StringUtilsTest, StartsWithIgnoreCase) {
+  ASSERT_TRUE(StringUtils::StartsWithIgnoreCase("AbCdef", "abc"));
+  ASSERT_TRUE(StringUtils::StartsWithIgnoreCase("abc", "ABC"));
+  ASSERT_FALSE(StringUtils::StartsWithIgnoreCase("abc", "abd"));
+  // Empty prefix always matches; a prefix longer than the string does not.
+  ASSERT_TRUE(StringUtils::StartsWithIgnoreCase("abc", ""));
+  ASSERT_FALSE(StringUtils::StartsWithIgnoreCase("ab", "abcd"));
+  // Regression (#760): lower-casing can change byte length, so the prefix must not be
+  // matched by byte-slicing. "İ" (U+0130 = 0xC4 0xB0) lower-cases to "i", so "İx"
+  // starts with "i" ...
+  ASSERT_TRUE(StringUtils::StartsWithIgnoreCase("\xC4\xB0x", "i"));
+  // ... and "i" starts with "İ" (both lower-case to "i"), which the old byte-length
+  // guard wrongly rejected.
+  ASSERT_TRUE(StringUtils::StartsWithIgnoreCase("i", "\xC4\xB0"));
+  // A matching Unicode prefix: "CAFÉbar" starts with "café".
+  ASSERT_TRUE(
+      StringUtils::StartsWithIgnoreCase("CAF\xC3\x89"
+                                        "bar",
+                                        "caf\xC3\xA9"));
+}
+
 }  // namespace iceberg
