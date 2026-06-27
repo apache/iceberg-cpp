@@ -64,6 +64,17 @@ class ICEBERG_EXPORT SchemaField : public iceberg::util::Formattable {
   static SchemaField MakeRequired(int32_t field_id, std::string_view name,
                                   std::shared_ptr<Type> type, std::string_view doc = {});
 
+  /// \brief Construct a field, normalizing the default values to the field type.
+  ///
+  /// Unlike the constructor (which stores the defaults verbatim), this casts a default
+  /// whose literal type differs from the field type to the field type — e.g. an int
+  /// default on a long field — matching the spec/Java cast behavior. Returns an error if
+  /// a default cannot be cast to the field type or falls outside its range.
+  static Result<SchemaField> Make(
+      int32_t field_id, std::string_view name, std::shared_ptr<Type> type, bool optional,
+      std::string_view doc = {}, std::shared_ptr<const Literal> initial_default = nullptr,
+      std::shared_ptr<const Literal> write_default = nullptr);
+
   /// \brief Get the field ID.
   [[nodiscard]] int32_t field_id() const;
 

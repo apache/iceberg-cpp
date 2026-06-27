@@ -158,38 +158,39 @@ TEST(SchemaTest, ValidateDoesNotVersionGateWriteDefault) {
 }
 
 TEST(SchemaTest, ValidateRejectsMismatchedDefaultValue) {
+  // The constructor stores defaults verbatim (normalization happens in
+  // SchemaField::Make), so a stored default whose type differs from the field type is
+  // rejected by Validate.
   iceberg::Schema schema({iceberg::SchemaField(
       1, "id", iceberg::int32(), false, /*doc=*/{}, /*initial_default=*/nullptr,
       std::make_shared<const iceberg::Literal>(iceberg::Literal::String("oops")))});
 
-  // The default literal is cast to the field type; an uncastable type surfaces the
-  // original cast error.
   auto status = schema.Validate(iceberg::TableMetadata::kSupportedTableFormatVersion);
-  ASSERT_THAT(status, iceberg::IsError(iceberg::ErrorKind::kNotSupported));
-  EXPECT_THAT(status, iceberg::HasErrorMessage("Cast from String"));
+  ASSERT_THAT(status, iceberg::IsError(iceberg::ErrorKind::kInvalidSchema));
+  EXPECT_THAT(status, iceberg::HasErrorMessage("write-default"));
 }
 
-TEST(SchemaTest, ValidateCastsDefaultToFieldType) {
-  // Matching Java, the default literal is cast to the field type rather than required to
-  // match exactly: an int default on a long field is accepted (int -> long).
-  iceberg::Schema widened({iceberg::SchemaField(
-      1, "id", iceberg::int64(), false, /*doc=*/{},
-      std::make_shared<const iceberg::Literal>(iceberg::Literal::Int(34)))});
-  EXPECT_THAT(widened.Validate(iceberg::TableMetadata::kSupportedTableFormatVersion),
-              iceberg::IsOk());
-  // The stored default is normalized to the field type (long), not kept as the narrower
-  // int literal, so projection/serialization/equality all observe a long.
-  const auto& widened_field = widened.fields()[0];
-  ASSERT_TRUE(widened_field.initial_default().has_value());
-  EXPECT_EQ(widened_field.initial_default()->get(), iceberg::Literal::Long(34));
+TEST(SchemaTest, MakeNormalizesDefaultToFieldType) {
+  // Make casts a cross-type default to the field type (int -> long) and stores the
+  // normalized value, so projection/serialization/equality all observe a long.
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto field, iceberg::SchemaField::Make(1, "id", iceberg::int64(), false, /*doc=*/{},
+                                             std::make_shared<const iceberg::Literal>(
+                                                 iceberg::Literal::Int(34))));
+  ASSERT_TRUE(field.initial_default().has_value());
+  EXPECT_EQ(field.initial_default()->get(), iceberg::Literal::Long(34));
 
-  // A default outside the field type's range is rejected (CastTo returns an
-  // above-max/below-min sentinel).
-  iceberg::Schema out_of_range({iceberg::SchemaField(
-      1, "id", iceberg::int32(), false, /*doc=*/{},
-      std::make_shared<const iceberg::Literal>(iceberg::Literal::Long(5'000'000'000)))});
-  EXPECT_THAT(out_of_range.Validate(iceberg::TableMetadata::kSupportedTableFormatVersion),
+  // A default outside the field type's range is rejected by Make.
+  EXPECT_THAT(iceberg::SchemaField::Make(1, "id", iceberg::int32(), false, /*doc=*/{},
+                                         std::make_shared<const iceberg::Literal>(
+                                             iceberg::Literal::Long(5'000'000'000))),
               iceberg::IsError(iceberg::ErrorKind::kInvalidSchema));
+
+  // A default whose type cannot be cast to the field type surfaces the cast error.
+  EXPECT_THAT(iceberg::SchemaField::Make(1, "id", iceberg::int32(), false, /*doc=*/{},
+                                         std::make_shared<const iceberg::Literal>(
+                                             iceberg::Literal::String("oops"))),
+              iceberg::IsError(iceberg::ErrorKind::kNotSupported));
 }
 
 TEST(SchemaTest, ReassignIdsPreservesDefaultValues) {
