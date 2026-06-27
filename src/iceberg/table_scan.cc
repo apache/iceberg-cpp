@@ -253,9 +253,8 @@ TableScanBuilder<ScanType>& TableScanBuilder<ScanType>::IncludeColumnStats(
   const auto& schema = schema_ref.get();
   for (const auto& column_name : requested_columns) {
     ICEBERG_BUILDER_ASSIGN_OR_RETURN(auto field, schema->FindFieldByName(column_name));
-    if (field.has_value()) {
-      context_.columns_to_keep_stats.insert(field.value().get().field_id());
-    }
+    ICEBERG_BUILDER_CHECK(field.has_value(), "Cannot find stats column: {}", column_name);
+    context_.columns_to_keep_stats.insert(field.value().get().field_id());
   }
 
   return *this;

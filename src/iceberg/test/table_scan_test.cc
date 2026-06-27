@@ -231,6 +231,16 @@ TEST_P(TableScanTest, UseRefPreservesInt64SnapshotIds) {
   EXPECT_EQ(snapshot->snapshot_id, kLargeSnapshotId);
 }
 
+TEST_P(TableScanTest, IncludeColumnStatsRejectsMissingColumn) {
+  ICEBERG_UNWRAP_OR_FAIL(auto builder,
+                         DataTableScanBuilder::Make(table_metadata_, file_io_));
+  builder->IncludeColumnStats({"missing"});
+
+  EXPECT_THAT(builder->Build(),
+              ::testing::AllOf(IsError(ErrorKind::kValidationFailed),
+                               HasErrorMessage("Cannot find stats column: missing")));
+}
+
 TEST_P(TableScanTest, TableScanBuilderValidationErrors) {
   // Test negative min rows
   ICEBERG_UNWRAP_OR_FAIL(auto builder,
