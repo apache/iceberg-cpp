@@ -134,9 +134,7 @@ class ICEBERG_EXPORT SchemaField : public iceberg::util::Formattable {
   std::shared_ptr<Type> type_;
   bool optional_;
   std::string doc_;
-  // Default values are owned by this field and never mutated after being set; copies
-  // of the field share the same payload (reference-counted) instead of deep-copying,
-  // like `type_` above. Sharing is unobservable because the payload is immutable.
+  // Immutable default values, shared (not deep-copied) across field copies, like `type_`.
   std::shared_ptr<const Literal> initial_default_;
   std::shared_ptr<const Literal> write_default_;
 };
