@@ -249,7 +249,6 @@ TableScanBuilder<ScanType>& TableScanBuilder<ScanType>::IncludeColumnStats(
     const std::vector<std::string>& requested_columns) {
   context_.return_column_stats = true;
   requested_column_stats_ = requested_columns;
-  ICEBERG_BUILDER_RETURN_IF_ERROR(ResolveColumnStatsSelection());
 
   return *this;
 }
@@ -288,7 +287,6 @@ TableScanBuilder<ScanType>& TableScanBuilder<ScanType>::UseSnapshot(int64_t snap
                         context_.snapshot_id.value());
   ICEBERG_BUILDER_ASSIGN_OR_RETURN(std::ignore, metadata_->SnapshotById(snapshot_id));
   context_.snapshot_id = snapshot_id;
-  InvalidateSnapshotSchema();
   return *this;
 }
 
@@ -296,7 +294,6 @@ template <typename ScanType>
 TableScanBuilder<ScanType>& TableScanBuilder<ScanType>::UseRef(const std::string& ref) {
   if (ref == SnapshotRef::kMainBranch) {
     context_.snapshot_id.reset();
-    InvalidateSnapshotSchema();
     return *this;
   }
 
@@ -309,7 +306,6 @@ TableScanBuilder<ScanType>& TableScanBuilder<ScanType>::UseRef(const std::string
   const int64_t snapshot_id = iter->second->snapshot_id;
   ICEBERG_BUILDER_ASSIGN_OR_RETURN(std::ignore, metadata_->SnapshotById(snapshot_id));
   context_.snapshot_id = snapshot_id;
-  InvalidateSnapshotSchema();
 
   return *this;
 }
@@ -334,7 +330,6 @@ TableScanBuilder<ScanType>& TableScanBuilder<ScanType>::FromSnapshot(
   }
   this->context_.from_snapshot_id = from_snapshot_id;
   this->context_.from_snapshot_id_inclusive = inclusive;
-  InvalidateSnapshotSchema();
   return *this;
 }
 
@@ -357,7 +352,6 @@ TableScanBuilder<ScanType>& TableScanBuilder<ScanType>::ToSnapshot(int64_t to_sn
 {
   ICEBERG_BUILDER_ASSIGN_OR_RETURN(std::ignore, metadata_->SnapshotById(to_snapshot_id));
   context_.to_snapshot_id = to_snapshot_id;
-  InvalidateSnapshotSchema();
   return *this;
 }
 
@@ -384,13 +378,7 @@ TableScanBuilder<ScanType>& TableScanBuilder<ScanType>::UseBranch(
   ICEBERG_BUILDER_CHECK(iter->second->type() == SnapshotRefType::kBranch,
                         "Ref {} is not a branch", branch);
   context_.branch = branch;
-  InvalidateSnapshotSchema();
   return *this;
-}
-
-template <typename ScanType>
-void TableScanBuilder<ScanType>::InvalidateSnapshotSchema() {
-  snapshot_schema_ = nullptr;
 }
 
 template <typename ScanType>

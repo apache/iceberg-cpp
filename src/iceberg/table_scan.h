@@ -384,7 +384,6 @@ class ICEBERG_TEMPLATE_CLASS_EXPORT TableScanBuilder : public ErrorCollector {
 
   // Return the schema bound to the specified snapshot.
   Result<std::reference_wrapper<const std::shared_ptr<Schema>>> ResolveSnapshotSchema();
-  void InvalidateSnapshotSchema();
   Status ResolveColumnStatsSelection();
 
   std::shared_ptr<TableMetadata> metadata_;
