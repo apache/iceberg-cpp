@@ -23,10 +23,12 @@
 #include <gtest/gtest.h>
 #include <nlohmann/json.hpp>
 
+#include "iceberg/expression/literal.h"
 #include "iceberg/json_serde_internal.h"
 #include "iceberg/name_mapping.h"
 #include "iceberg/partition_spec.h"
 #include "iceberg/schema.h"
+#include "iceberg/schema_field.h"
 #include "iceberg/snapshot.h"
 #include "iceberg/sort_field.h"
 #include "iceberg/sort_order.h"
@@ -35,10 +37,12 @@
 #include "iceberg/table_update.h"
 #include "iceberg/test/matchers.h"
 #include "iceberg/transform.h"
+#include "iceberg/type.h"
 #include "iceberg/util/base64.h"
 #include "iceberg/util/formatter.h"  // IWYU pragma: keep
 #include "iceberg/util/macros.h"     // IWYU pragma: keep
 #include "iceberg/util/timepoint.h"
+#include "iceberg/util/uuid.h"
 
 namespace iceberg {
 
@@ -72,6 +76,11 @@ Result<std::unique_ptr<NameMapping>> FromJsonHelper(const nlohmann::json& json) 
   return NameMappingFromJson(json);
 }
 
+template <>
+Result<std::unique_ptr<SchemaField>> FromJsonHelper(const nlohmann::json& json) {
+  return FieldFromJson(json);
+}
+
 // Helper function to reduce duplication in testing
 template <typename T>
 void TestJsonConversion(const T& obj, const nlohmann::json& expected_json) {
@@ -84,7 +93,101 @@ void TestJsonConversion(const T& obj, const nlohmann::json& expected_json) {
   EXPECT_EQ(obj, *obj_ex.value()) << "Deserialized object mismatch.";
 }
 
+// ToJson(SchemaField) returns Result, so it cannot use the shared
+// TestJsonConversion helper. Unwrap the serialized json before comparing and
+// round-tripping.
+void TestSchemaFieldJsonConversion(const SchemaField& field,
+                                   const nlohmann::json& expected_json) {
+  ICEBERG_UNWRAP_OR_FAIL(auto json, ToJson(field));
+  EXPECT_EQ(expected_json, json) << "JSON conversion mismatch.";
+
+  auto obj_ex = FieldFromJson(expected_json);
+  EXPECT_TRUE(obj_ex.has_value()) << "Failed to deserialize JSON.";
+  EXPECT_EQ(field, *obj_ex.value()) << "Deserialized object mismatch.";
+}
+
 }  // namespace
+
+// Pins the wire format produced by ToJson(SchemaField) / FieldFromJson for
+// `initial-default` and `write-default`, including the absence of the keys when a
+// field carries no defaults.
+TEST(JsonInternalTest, SchemaFieldDefaultValues) {
+  // Both defaults present.
+  SchemaField with_both(/*field_id=*/1, "id", int32(), /*optional=*/false, /*doc=*/{},
+                        std::make_shared<const Literal>(Literal::Int(42)),
+                        std::make_shared<const Literal>(Literal::Int(7)));
+  TestSchemaFieldJsonConversion(
+      with_both,
+      R"({"id":1,"name":"id","required":true,"type":"int","initial-default":42,"write-default":7})"_json);
+
+  // Only an initial-default; write-default must not appear in the JSON.
+  SchemaField initial_only(/*field_id=*/2, "name", string(), /*optional=*/true,
+                           /*doc=*/{},
+                           std::make_shared<const Literal>(Literal::String("n/a")),
+                           /*write_default=*/nullptr);
+  TestSchemaFieldJsonConversion(
+      initial_only,
+      R"({"id":2,"name":"name","required":false,"type":"string","initial-default":"n/a"})"_json);
+
+  // No defaults; neither key may appear.
+  SchemaField no_defaults(/*field_id=*/3, "plain", int32(), /*optional=*/false);
+  TestSchemaFieldJsonConversion(
+      no_defaults, R"({"id":3,"name":"plain","required":true,"type":"int"})"_json);
+}
+
+// Round-trips a field carrying both defaults through ToJson -> FieldFromJson for
+// every primitive type, exercising the per-type single-value serialization the
+// default path reuses (date/timestamp/decimal/uuid/binary have non-trivial wire
+// encodings).
+TEST(JsonInternalTest, SchemaFieldDefaultValuesRoundTripAllTypes) {
+  ICEBERG_UNWRAP_OR_FAIL(auto uuid_value,
+                         Uuid::FromString("f79c3e09-677c-4bbd-a479-3f349cb785e7"));
+  std::vector<std::pair<std::shared_ptr<Type>, Literal>> cases;
+  cases.emplace_back(boolean(), Literal::Boolean(true));
+  cases.emplace_back(int32(), Literal::Int(-7));
+  cases.emplace_back(int64(), Literal::Long(1234567890123LL));
+  cases.emplace_back(float32(), Literal::Float(1.5f));
+  cases.emplace_back(float64(), Literal::Double(2.5));
+  cases.emplace_back(date(), Literal::Date(19738));
+  cases.emplace_back(time(), Literal::Time(43200000000LL));
+  cases.emplace_back(timestamp(), Literal::Timestamp(1719446400000000LL));
+  cases.emplace_back(timestamp_tz(), Literal::TimestampTz(1719446400000000LL));
+  cases.emplace_back(timestamp_ns(), Literal::TimestampNs(1719446400000000123LL));
+  cases.emplace_back(timestamptz_ns(), Literal::TimestampTzNs(1719446400000000123LL));
+  cases.emplace_back(string(), Literal::String("hello"));
+  cases.emplace_back(decimal(9, 2), Literal::Decimal(12345, 9, 2));
+  cases.emplace_back(fixed(3), Literal::Fixed({0x01, 0x02, 0x03}));
+  cases.emplace_back(binary(), Literal::Binary({0xDE, 0xAD, 0xBE, 0xEF}));
+  cases.emplace_back(uuid(), Literal::UUID(uuid_value));
+
+  int32_t field_id = 1;
+  for (const auto& [type, literal] : cases) {
+    SchemaField field(field_id++, "f", type, /*optional=*/false, /*doc=*/{},
+                      std::make_shared<const Literal>(literal),
+                      std::make_shared<const Literal>(literal));
+    ICEBERG_UNWRAP_OR_FAIL(auto json, ToJson(field));
+    ICEBERG_UNWRAP_OR_FAIL(auto parsed, FieldFromJson(json));
+    EXPECT_EQ(field, *parsed) << "round-trip mismatch for type " << type->ToString()
+                              << ", json=" << json.dump();
+  }
+}
+
+// The spec only permits UTC offsets for timestamptz / timestamptz_ns default values.
+// A non-UTC offset (which the shared parser would silently normalize) must be rejected,
+// while the UTC form is accepted.
+TEST(JsonInternalTest, SchemaFieldRejectsNonUtcTimestamptzDefault) {
+  auto non_utc = nlohmann::json::parse(
+      R"({"id":1,"name":"ts","required":true,"type":"timestamptz","initial-default":"2024-06-27T05:00:00+05:00"})");
+  EXPECT_FALSE(FieldFromJson(non_utc).has_value());
+
+  auto non_utc_ns = nlohmann::json::parse(
+      R"({"id":1,"name":"ts","required":true,"type":"timestamptz_ns","write-default":"2024-06-27T05:00:00-08:00"})");
+  EXPECT_FALSE(FieldFromJson(non_utc_ns).has_value());
+
+  auto utc = nlohmann::json::parse(
+      R"({"id":1,"name":"ts","required":true,"type":"timestamptz","initial-default":"2024-06-27T00:00:00+00:00"})");
+  EXPECT_TRUE(FieldFromJson(utc).has_value());
+}
 
 TEST(JsonInternalTest, SortField) {
   auto identity_transform = Transform::Identity();

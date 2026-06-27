@@ -21,19 +21,27 @@
 
 #include <format>
 #include <string_view>
+#include <utility>
 
+#include "iceberg/expression/literal.h"
 #include "iceberg/type.h"
+#include "iceberg/util/checked_cast.h"
 #include "iceberg/util/formatter.h"  // IWYU pragma: keep
+#include "iceberg/util/macros.h"
 
 namespace iceberg {
 
 SchemaField::SchemaField(int32_t field_id, std::string_view name,
-                         std::shared_ptr<Type> type, bool optional, std::string_view doc)
+                         std::shared_ptr<Type> type, bool optional, std::string_view doc,
+                         std::shared_ptr<const Literal> initial_default,
+                         std::shared_ptr<const Literal> write_default)
     : field_id_(field_id),
       name_(name),
       type_(std::move(type)),
       optional_(optional),
-      doc_(doc) {}
+      doc_(doc),
+      initial_default_(std::move(initial_default)),
+      write_default_(std::move(write_default)) {}
 
 SchemaField SchemaField::MakeOptional(int32_t field_id, std::string_view name,
                                       std::shared_ptr<Type> type, std::string_view doc) {
@@ -55,12 +63,75 @@ bool SchemaField::optional() const { return optional_; }
 
 std::string_view SchemaField::doc() const { return doc_; }
 
+std::optional<std::reference_wrapper<const Literal>> SchemaField::initial_default()
+    const {
+  if (initial_default_ == nullptr) {
+    return std::nullopt;
+  }
+  return std::cref(*initial_default_);
+}
+
+std::optional<std::reference_wrapper<const Literal>> SchemaField::write_default() const {
+  if (write_default_ == nullptr) {
+    return std::nullopt;
+  }
+  return std::cref(*write_default_);
+}
+
+const std::shared_ptr<const Literal>& SchemaField::initial_default_ptr() const {
+  return initial_default_;
+}
+
+const std::shared_ptr<const Literal>& SchemaField::write_default_ptr() const {
+  return write_default_;
+}
+
+namespace {
+
+Status ValidateDefault(const SchemaField& field, const Literal& value,
+                       std::string_view kind) {
+  if (value.IsNull() || value.IsAboveMax() || value.IsBelowMin()) {
+    return InvalidSchema("Invalid {} value for {}: must be a non-null value", kind,
+                         field.name());
+  }
+  // Defaults are only supported on primitive fields. The spec also permits JSON
+  // single-value defaults for struct/list/map (e.g. an empty struct `{}` whose
+  // sub-field defaults live in field metadata); that matches the current Java model's
+  // gap and is left as a follow-up.
+  if (field.type() == nullptr || !field.type()->is_primitive()) {
+    return InvalidSchema(
+        "Invalid {} value for {}: default values are only supported for primitive types",
+        kind, field.name());
+  }
+  // Match Java (Types.NestedField), which casts the default literal to the field type
+  // instead of requiring an exact type match (e.g. an int default on a long field, or
+  // a string default on a date/timestamp/uuid field). Reject only defaults that cannot
+  // be cast to the field type or fall outside its range (CastTo signals out-of-range as
+  // an above-max/below-min sentinel).
+  auto field_type = internal::checked_pointer_cast<PrimitiveType>(field.type());
+  ICEBERG_ASSIGN_OR_RAISE(auto cast, value.CastTo(field_type));
+  if (cast.IsAboveMax() || cast.IsBelowMin()) {
+    return InvalidSchema("{} of field {} ({}) is out of range for {}", kind, field.name(),
+                         *value.type(), *field.type());
+  }
+  return {};
+}
+
+}  // namespace
+
 Status SchemaField::Validate() const {
   if (name_.empty()) [[unlikely]] {
     return InvalidSchema("SchemaField cannot have empty name");
   }
   if (type_ == nullptr) [[unlikely]] {
     return InvalidSchema("SchemaField cannot have null type");
+  }
+  if (initial_default_ != nullptr) {
+    ICEBERG_RETURN_UNEXPECTED(
+        ValidateDefault(*this, *initial_default_, "initial-default"));
+  }
+  if (write_default_ != nullptr) {
+    ICEBERG_RETURN_UNEXPECTED(ValidateDefault(*this, *write_default_, "write-default"));
   }
   return {};
 }
@@ -72,9 +143,23 @@ std::string SchemaField::ToString() const {
   return result;
 }
 
+namespace {
+
+bool DefaultEquals(const std::shared_ptr<const Literal>& lhs,
+                   const std::shared_ptr<const Literal>& rhs) {
+  if (lhs == nullptr || rhs == nullptr) {
+    return lhs == rhs;
+  }
+  return *lhs == *rhs;
+}
+
+}  // namespace
+
 bool SchemaField::Equals(const SchemaField& other) const {
   return field_id_ == other.field_id_ && name_ == other.name_ && *type_ == *other.type_ &&
-         optional_ == other.optional_;
+         optional_ == other.optional_ &&
+         DefaultEquals(initial_default_, other.initial_default_) &&
+         DefaultEquals(write_default_, other.write_default_);
 }
 
 }  // namespace iceberg
