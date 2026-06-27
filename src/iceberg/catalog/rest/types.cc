@@ -86,7 +86,8 @@ bool CreateTableRequest::operator==(const CreateTableRequest& other) const {
 }
 
 bool LoadTableResult::operator==(const LoadTableResult& other) const {
-  if (metadata_location != other.metadata_location || config != other.config) {
+  if (metadata_location != other.metadata_location || config != other.config ||
+      storage_credentials != other.storage_credentials) {
     return false;
   }
 

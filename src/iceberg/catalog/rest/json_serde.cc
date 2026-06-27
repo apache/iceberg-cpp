@@ -71,6 +71,8 @@ constexpr std::string_view kSource = "source";
 constexpr std::string_view kDestination = "destination";
 constexpr std::string_view kMetadata = "metadata";
 constexpr std::string_view kConfig = "config";
+constexpr std::string_view kStorageCredentials = "storage-credentials";
+constexpr std::string_view kPrefix = "prefix";
 constexpr std::string_view kIdentifiers = "identifiers";
 constexpr std::string_view kOverrides = "overrides";
 constexpr std::string_view kDefaults = "defaults";
@@ -132,6 +134,23 @@ constexpr std::string_view kDeleteFileReferences = "delete-file-references";
 constexpr std::string_view kResidualFilter = "residual-filter";
 constexpr std::string_view kMapKeys = "keys";
 constexpr std::string_view kMapValues = "values";
+
+Result<nlohmann::json> StorageCredentialToJson(const StorageCredential& credential) {
+  ICEBERG_RETURN_UNEXPECTED(credential.Validate());
+  nlohmann::json json;
+  json[kPrefix] = credential.prefix;
+  json[kConfig] = credential.config;
+  return json;
+}
+
+Result<StorageCredential> StorageCredentialFromJson(const nlohmann::json& json) {
+  StorageCredential credential;
+  ICEBERG_ASSIGN_OR_RAISE(credential.prefix, GetJsonValue<std::string>(json, kPrefix));
+  ICEBERG_ASSIGN_OR_RAISE(credential.config,
+                          GetJsonValue<decltype(credential.config)>(json, kConfig));
+  ICEBERG_RETURN_UNEXPECTED(credential.Validate());
+  return credential;
+}
 
 template <typename Value>
 Result<std::map<int32_t, Value>> KeyValueMapFromJson(const nlohmann::json& json,
@@ -695,6 +714,14 @@ Result<nlohmann::json> ToJson(const LoadTableResult& result) {
   SetOptionalStringField(json, kMetadataLocation, result.metadata_location);
   ICEBERG_ASSIGN_OR_RAISE(json[kMetadata], ToJson(*result.metadata));
   SetContainerField(json, kConfig, result.config);
+  if (!result.storage_credentials.empty()) {
+    nlohmann::json creds = nlohmann::json::array();
+    for (const auto& cred : result.storage_credentials) {
+      ICEBERG_ASSIGN_OR_RAISE(auto entry, StorageCredentialToJson(cred));
+      creds.push_back(std::move(entry));
+    }
+    json[kStorageCredentials] = std::move(creds);
+  }
   return json;
 }
 
@@ -707,6 +734,15 @@ Result<LoadTableResult> LoadTableResultFromJson(const nlohmann::json& json) {
   ICEBERG_ASSIGN_OR_RAISE(result.metadata, TableMetadataFromJson(metadata_json));
   ICEBERG_ASSIGN_OR_RAISE(result.config,
                           GetJsonValueOrDefault<decltype(result.config)>(json, kConfig));
+  if (auto it = json.find(kStorageCredentials); it != json.end() && !it->is_null()) {
+    if (!it->is_array()) {
+      return JsonParseError("Cannot parse storage credentials from non-array");
+    }
+    for (const auto& entry : *it) {
+      ICEBERG_ASSIGN_OR_RAISE(auto cred, StorageCredentialFromJson(entry));
+      result.storage_credentials.push_back(std::move(cred));
+    }
+  }
   ICEBERG_RETURN_UNEXPECTED(result.Validate());
   return result;
 }

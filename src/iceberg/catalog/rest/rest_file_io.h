@@ -22,9 +22,12 @@
 #include <cstdint>
 #include <memory>
 #include <string_view>
+#include <unordered_map>
+#include <vector>
 
 #include "iceberg/catalog/rest/catalog_properties.h"
 #include "iceberg/catalog/rest/iceberg_rest_export.h"
+#include "iceberg/catalog/rest/types.h"
 #include "iceberg/file_io.h"
 #include "iceberg/file_io_registry.h"
 #include "iceberg/result.h"
@@ -43,5 +46,11 @@ ICEBERG_REST_EXPORT std::string_view BuiltinFileIOName(BuiltinFileIOKind kind);
 
 ICEBERG_REST_EXPORT Result<std::unique_ptr<FileIO>> MakeCatalogFileIO(
     const RestCatalogProperties& config);
+
+/// \brief Build the configured table FileIO and apply storage credentials if present.
+ICEBERG_REST_EXPORT Result<std::unique_ptr<FileIO>> MakeTableFileIO(
+    const std::unordered_map<std::string, std::string>& catalog_config,
+    const std::unordered_map<std::string, std::string>& table_config,
+    const std::vector<StorageCredential>& storage_credentials);
 
 }  // namespace iceberg::rest

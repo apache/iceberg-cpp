@@ -283,6 +283,7 @@ install_headers(
         'sort_field.h',
         'sort_order.h',
         'statistics_file.h',
+        'storage_credential.h',
         'table.h',
         'table_identifier.h',
         'table_metadata.h',

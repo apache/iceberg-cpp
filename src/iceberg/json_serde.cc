@@ -1054,8 +1054,8 @@ Result<nlohmann::json> ToJson(const TableMetadata& table_metadata) {
 
   // write the current schema ID and schema list
   json[kCurrentSchemaId] = table_metadata.current_schema_id;
-  // Schemas can carry fallible default-value serialization, so the shared ToJsonList
-  // helper (which assumes infallible ToJson) is not used here.
+  // ToJson(Schema) is fallible, so the shared ToJsonList helper (which assumes an
+  // infallible ToJson) cannot be used here; build the array with an explicit loop.
   nlohmann::json schemas_json = nlohmann::json::array();
   for (const auto& schema : table_metadata.schemas) {
     ICEBERG_ASSIGN_OR_RAISE(auto schema_json, ToJson(*schema));
