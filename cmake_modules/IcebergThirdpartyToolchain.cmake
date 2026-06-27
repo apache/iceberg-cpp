@@ -433,6 +433,62 @@ function(resolve_croaring_dependency)
 endfunction()
 
 # ----------------------------------------------------------------------
+# utf8proc
+
+function(resolve_utf8proc_dependency)
+  prepare_fetchcontent()
+
+  if(DEFINED ENV{ICEBERG_UTF8PROC_URL})
+    set(UTF8PROC_URL "$ENV{ICEBERG_UTF8PROC_URL}")
+  else()
+    set(UTF8PROC_URL
+        "https://github.com/JuliaStrings/utf8proc/archive/refs/tags/v2.10.0.tar.gz")
+  endif()
+
+  fetchcontent_declare(utf8proc
+                       ${FC_DECLARE_COMMON_OPTIONS}
+                       URL ${UTF8PROC_URL}
+                           FIND_PACKAGE_ARGS
+                           NAMES
+                           utf8proc
+                           CONFIG)
+  fetchcontent_makeavailable(utf8proc)
+
+  if(utf8proc_SOURCE_DIR)
+    if(NOT TARGET utf8proc::utf8proc)
+      add_library(utf8proc::utf8proc INTERFACE IMPORTED)
+      target_link_libraries(utf8proc::utf8proc INTERFACE utf8proc)
+      target_include_directories(utf8proc::utf8proc INTERFACE ${utf8proc_SOURCE_DIR})
+    endif()
+
+    set(UTF8PROC_VENDORED TRUE)
+    # utf8proc's CMake puts a raw build-tree path in INTERFACE_INCLUDE_DIRECTORIES, which
+    # install(EXPORT) rejects. Wrap it in BUILD_INTERFACE so the export is valid; utf8proc
+    # is a private dependency, so installed consumers never need its headers.
+    set_target_properties(utf8proc
+                          PROPERTIES OUTPUT_NAME "iceberg_vendored_utf8proc"
+                                     POSITION_INDEPENDENT_CODE ON
+                                     INTERFACE_INCLUDE_DIRECTORIES
+                                     "$<BUILD_INTERFACE:${utf8proc_SOURCE_DIR}>")
+    install(TARGETS utf8proc
+            EXPORT iceberg_targets
+            RUNTIME DESTINATION "${ICEBERG_INSTALL_BINDIR}"
+            ARCHIVE DESTINATION "${ICEBERG_INSTALL_LIBDIR}"
+            LIBRARY DESTINATION "${ICEBERG_INSTALL_LIBDIR}")
+  else()
+    set(UTF8PROC_VENDORED FALSE)
+    list(APPEND ICEBERG_SYSTEM_DEPENDENCIES utf8proc)
+  endif()
+
+  set(ICEBERG_SYSTEM_DEPENDENCIES
+      ${ICEBERG_SYSTEM_DEPENDENCIES}
+      PARENT_SCOPE)
+  set(UTF8PROC_VENDORED
+      ${UTF8PROC_VENDORED}
+      PARENT_SCOPE)
+endfunction()
+
+# ----------------------------------------------------------------------
 # nlohmann-json
 
 function(resolve_nlohmann_json_dependency)
@@ -730,6 +786,7 @@ endfunction()
 resolve_zlib_dependency()
 resolve_nanoarrow_dependency()
 resolve_croaring_dependency()
+resolve_utf8proc_dependency()
 resolve_nlohmann_json_dependency()
 resolve_spdlog_dependency()
 
