@@ -45,6 +45,7 @@ set(ICEBERG_SOURCES
     file_writer.cc
     inspect/history_table.cc
     inspect/metadata_table.cc
+    inspect/row_builder_internal.cc
     inspect/snapshots_table.cc
     inheritable_metadata.cc
     json_serde.cc
