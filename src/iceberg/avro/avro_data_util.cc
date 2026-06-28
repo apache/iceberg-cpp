@@ -35,6 +35,7 @@
 #include "iceberg/avro/avro_schema_util_internal.h"
 #include "iceberg/metadata_columns.h"
 #include "iceberg/schema.h"
+#include "iceberg/schema_internal.h"
 #include "iceberg/schema_util.h"
 #include "iceberg/util/checked_cast.h"
 #include "iceberg/util/macros.h"
@@ -620,7 +621,9 @@ Status ExtractDatumFromArray(const ::arrow::Array& array, int64_t index,
     }
 
     case ::arrow::Type::EXTENSION: {
-      if (array.type()->name() == "arrow.uuid") {
+      const auto& extension_type =
+          internal::checked_cast<const ::arrow::ExtensionType&>(*array.type());
+      if (extension_type.extension_name() == kArrowUuidExtensionName) {
         const auto& extension_array =
             internal::checked_cast<const ::arrow::ExtensionArray&>(array);
         const auto& fixed_array =
@@ -632,7 +635,8 @@ Status ExtractDatumFromArray(const ::arrow::Array& array, int64_t index,
         return {};
       }
 
-      return NotSupported("Unsupported Arrow extension type: {}", array.type()->name());
+      return NotSupported("Unsupported Arrow extension type: {}",
+                          extension_type.extension_name());
     }
 
     case ::arrow::Type::STRUCT: {

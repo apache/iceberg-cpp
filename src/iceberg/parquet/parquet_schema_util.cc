@@ -28,6 +28,7 @@
 #include "iceberg/metadata_columns.h"
 #include "iceberg/parquet/parquet_schema_util_internal.h"
 #include "iceberg/result.h"
+#include "iceberg/schema_internal.h"
 #include "iceberg/schema_util_internal.h"
 #include "iceberg/util/checked_cast.h"
 #include "iceberg/util/formatter.h"  // IWYU pragma: keep
@@ -222,7 +223,7 @@ Status ValidateParquetSchemaEvolution(
       if (arrow_type->id() == ::arrow::Type::EXTENSION) {
         const auto& extension_type =
             internal::checked_cast<const ::arrow::ExtensionType&>(*arrow_type);
-        if (extension_type.extension_name() == "arrow.uuid") {
+        if (extension_type.extension_name() == kArrowUuidExtensionName) {
           return {};
         }
       }

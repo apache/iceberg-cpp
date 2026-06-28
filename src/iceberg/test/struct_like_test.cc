@@ -17,6 +17,11 @@
  * under the License.
  */
 
+#include "iceberg/row/struct_like.h"
+
+#include <array>
+#include <utility>
+
 #include <arrow/c/bridge.h>
 #include <arrow/json/from_string.h>
 #include <arrow/type.h>
@@ -24,6 +29,7 @@
 #include <arrow/util/decimal.h>
 
 #include "iceberg/arrow_c_data_guard_internal.h"
+#include "iceberg/expression/literal.h"
 #include "iceberg/manifest/manifest_list.h"
 #include "iceberg/manifest/manifest_reader_internal.h"
 #include "iceberg/row/arrow_array_wrapper.h"
@@ -32,6 +38,7 @@
 #include "iceberg/schema_internal.h"
 #include "iceberg/test/matchers.h"
 #include "iceberg/type.h"
+#include "iceberg/util/uuid.h"
 
 namespace iceberg {
 
@@ -58,6 +65,27 @@ namespace iceberg {
     auto scalar = result.value();                                \
     ASSERT_TRUE(std::holds_alternative<std::monostate>(scalar)); \
   } while (0)
+
+namespace {
+
+class SingleFieldStructLike : public StructLike {
+ public:
+  explicit SingleFieldStructLike(Scalar value) : value_(std::move(value)) {}
+
+  Result<Scalar> GetField(size_t pos) const override {
+    if (pos != 0) {
+      return InvalidArgument("Field index {} out of range", pos);
+    }
+    return value_;
+  }
+
+  size_t num_fields() const override { return 1; }
+
+ private:
+  Scalar value_;
+};
+
+}  // namespace
 
 TEST(ManifestFileStructLike, BasicFields) {
   ManifestFile manifest_file{
@@ -97,6 +125,49 @@ TEST(ManifestFileStructLike, BasicFields) {
       struct_like.GetField(static_cast<size_t>(ManifestFileField::kAddedFilesCount)),
       int32_t, 10);
   EXPECT_THAT(struct_like.GetField(100), IsError(ErrorKind::kInvalidArgument));
+}
+
+TEST(LiteralToScalarTest, Uuid) {
+  ICEBERG_UNWRAP_OR_FAIL(auto uuid,
+                         Uuid::FromString("123e4567-e89b-12d3-a456-426614174000"));
+  auto literal = Literal::UUID(uuid);
+
+  ICEBERG_UNWRAP_OR_FAIL(auto scalar, LiteralToScalar(literal));
+  ASSERT_TRUE(std::holds_alternative<std::string_view>(scalar));
+
+  auto value = std::get<std::string_view>(scalar);
+  ASSERT_EQ(value.size(), Uuid::kLength);
+
+  const auto& expected_bytes = uuid.bytes();
+  for (size_t i = 0; i < expected_bytes.size(); ++i) {
+    EXPECT_EQ(static_cast<uint8_t>(static_cast<unsigned char>(value[i])),
+              expected_bytes[i]);
+  }
+}
+
+TEST(StructLikeAccessorTest, GetLiteralUuid) {
+  ICEBERG_UNWRAP_OR_FAIL(auto uuid,
+                         Uuid::FromString("123e4567-e89b-12d3-a456-426614174000"));
+  const auto& bytes = uuid.bytes();
+  std::string_view uuid_data(reinterpret_cast<const char*>(bytes.data()), bytes.size());
+  SingleFieldStructLike row(Scalar{uuid_data});
+  std::array<size_t, 1> path = {0};
+  StructLikeAccessor accessor(iceberg::uuid(), path);
+
+  ICEBERG_UNWRAP_OR_FAIL(auto literal, accessor.GetLiteral(row));
+  EXPECT_EQ(literal.type()->type_id(), TypeId::kUuid);
+  ASSERT_TRUE(std::holds_alternative<Uuid>(literal.value()));
+  EXPECT_EQ(std::get<Uuid>(literal.value()), uuid);
+}
+
+TEST(StructLikeAccessorTest, GetLiteralUuidRejectsWrongLength) {
+  SingleFieldStructLike row(Scalar{std::string_view("not-a-uuid")});
+  std::array<size_t, 1> path = {0};
+  StructLikeAccessor accessor(iceberg::uuid(), path);
+
+  auto result = accessor.GetLiteral(row);
+  EXPECT_THAT(result, IsError(ErrorKind::kInvalidArgument));
+  EXPECT_THAT(result, HasErrorMessage("UUID byte array must be exactly 16 bytes"));
 }
 
 TEST(ManifestFileStructLike, OptionalFields) {

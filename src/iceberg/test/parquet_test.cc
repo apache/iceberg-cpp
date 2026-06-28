@@ -17,13 +17,16 @@
  * under the License.
  */
 
+#include <array>
 #include <optional>
 #include <string>
 #include <utility>
 #include <vector>
 
 #include <arrow/array.h>
+#include <arrow/array/builder_binary.h>
 #include <arrow/c/bridge.h>
+#include <arrow/extension/uuid.h>
 #include <arrow/filesystem/filesystem.h>
 #include <arrow/json/from_string.h>
 #include <arrow/record_batch.h>
@@ -52,6 +55,7 @@
 #include "iceberg/type.h"
 #include "iceberg/util/checked_cast.h"
 #include "iceberg/util/macros.h"
+#include "iceberg/util/uuid.h"
 
 namespace iceberg::parquet {
 
@@ -149,6 +153,13 @@ std::optional<ParquetCodec> FirstUnavailableParquetCodec() {
   }
   return std::nullopt;
 }
+
+constexpr std::array<uint8_t, Uuid::kLength> kUuidBytes1 = {
+    0x12, 0x3e, 0x45, 0x67, 0xe8, 0x9b, 0x12, 0xd3,
+    0xa4, 0x56, 0x42, 0x66, 0x14, 0x17, 0x40, 0x00};
+constexpr std::array<uint8_t, Uuid::kLength> kUuidBytes2 = {
+    0xf7, 0x9c, 0x3e, 0x09, 0x67, 0x7c, 0x4b, 0xbd,
+    0xa4, 0x79, 0x3f, 0x34, 0x9c, 0xb7, 0x85, 0xe7};
 
 }  // namespace
 
@@ -769,6 +780,31 @@ TEST_F(ParquetReadWrite, SimpleTypeRoundTrip) {
   DoRoundtrip(array, schema, out);
 
   ASSERT_TRUE(out->Equals(*array));
+}
+
+TEST_F(ParquetReadWrite, UuidRoundTrip) {
+  auto schema = std::make_shared<Schema>(
+      std::vector<SchemaField>{SchemaField::MakeRequired(1, "uuid_col", uuid())});
+
+  ::arrow::FixedSizeBinaryBuilder uuid_storage_builder(
+      ::arrow::fixed_size_binary(Uuid::kLength));
+  ASSERT_TRUE(uuid_storage_builder.Append(kUuidBytes1.data()).ok());
+  ASSERT_TRUE(uuid_storage_builder.Append(kUuidBytes2.data()).ok());
+  auto uuid_storage = uuid_storage_builder.Finish().ValueOrDie();
+  auto uuid_array =
+      ::arrow::ExtensionType::WrapArray(::arrow::extension::uuid(), uuid_storage);
+  auto array =
+      ::arrow::StructArray::Make(
+          {uuid_array},
+          {::arrow::field("uuid_col", ::arrow::extension::uuid(), /*nullable=*/false)})
+          .ValueOrDie();
+
+  std::shared_ptr<::arrow::Array> out;
+  DoRoundtrip(array, schema, out);
+
+  ASSERT_TRUE(out->Equals(*array)) << "actual:\n"
+                                   << out->ToString() << "\nexpected:\n"
+                                   << array->ToString();
 }
 
 }  // namespace iceberg::parquet

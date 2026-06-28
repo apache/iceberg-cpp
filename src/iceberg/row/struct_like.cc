@@ -62,6 +62,12 @@ Result<Scalar> LiteralToScalar(const Literal& literal) {
       return Scalar{
           std::string_view(reinterpret_cast<const char*>(bytes.data()), bytes.size())};
     }
+    case TypeId::kUuid: {
+      const auto& uuid = std::get<Uuid>(literal.value());
+      const auto& bytes = uuid.bytes();
+      return Scalar{
+          std::string_view(reinterpret_cast<const char*>(bytes.data()), bytes.size())};
+    }
     case TypeId::kDecimal:
       return Scalar{std::get<Decimal>(literal.value())};
     default:
@@ -162,8 +168,14 @@ Result<Literal> StructLikeAccessor::GetLiteral(const StructLike& struct_like) co
       const auto& fixed_data = std::get<std::string_view>(scalar);
       return Literal::Fixed(std::vector<uint8_t>(fixed_data.cbegin(), fixed_data.cend()));
     }
-    case TypeId::kUuid:
-      // TODO(gangwu): Implement UUID type
+    case TypeId::kUuid: {
+      const auto& uuid_data = std::get<std::string_view>(scalar);
+      ICEBERG_ASSIGN_OR_RAISE(
+          auto uuid,
+          Uuid::FromBytes(std::span<const uint8_t>(
+              reinterpret_cast<const uint8_t*>(uuid_data.data()), uuid_data.size())));
+      return Literal::UUID(uuid);
+    }
     default:
       return NotSupported("Cannot convert scalar to literal of type {}",
                           type_->ToString());
