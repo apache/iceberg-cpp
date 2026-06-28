@@ -123,8 +123,8 @@ SchemaField ReassignField(const SchemaField& field, int32_t new_id,
           ReassignTypeIds(field.type(), get_id, ids_to_reassigned, ids_to_original),
           field.optional(),
           std::string(field.doc()),
-          field.initial_default_ptr(),
-          field.write_default_ptr()};
+          field.initial_default(),
+          field.write_default()};
 }
 
 std::vector<SchemaField> ReassignIds(std::vector<SchemaField> fields,
@@ -457,15 +457,15 @@ Status Schema::Validate(int32_t format_version) const {
     // data files are read (rows written before the column existed materialize this
     // value), so it requires the v3 reader contract. A write-default only affects
     // values written going forward and does not reinterpret existing data.
-    if (field.initial_default().has_value() &&
+    if (field.initial_default() != nullptr &&
         format_version < TableMetadata::kMinFormatVersionDefaultValues) {
       return InvalidSchema(
           "Invalid initial default for {}: non-null default ({}) is not supported "
           "until v{}",
-          field.name(), field.initial_default()->get(),
+          field.name(), *field.initial_default(),
           TableMetadata::kMinFormatVersionDefaultValues);
     }
-    if (field.initial_default().has_value() || field.write_default().has_value()) {
+    if (field.initial_default() != nullptr || field.write_default() != nullptr) {
       ICEBERG_RETURN_UNEXPECTED(field.Validate());
     }
   }

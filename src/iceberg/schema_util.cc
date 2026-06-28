@@ -172,10 +172,10 @@ Result<FieldProjection> ProjectNested(const Type& expected_type, const Type& sou
                                            iter->second.local_index, prune_source));
     } else if (MetadataColumns::IsMetadataColumn(field_id)) {
       child_projection.kind = FieldProjection::Kind::kMetadata;
-    } else if (expected_field.initial_default().has_value()) {
+    } else if (expected_field.initial_default() != nullptr) {
       // Rows written before the field existed assume its `initial-default` value.
       child_projection.kind = FieldProjection::Kind::kDefault;
-      child_projection.from = expected_field.initial_default()->get();
+      child_projection.from = *expected_field.initial_default();
     } else if (expected_field.optional()) {
       child_projection.kind = FieldProjection::Kind::kNull;
     } else {

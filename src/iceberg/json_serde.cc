@@ -327,12 +327,11 @@ Result<nlohmann::json> ToJson(const SchemaField& field) {
   if (!field.doc().empty()) {
     json[kDoc] = field.doc();
   }
-  if (field.initial_default().has_value()) {
-    ICEBERG_ASSIGN_OR_RAISE(json[kInitialDefault],
-                            ToJson(field.initial_default()->get()));
+  if (field.initial_default() != nullptr) {
+    ICEBERG_ASSIGN_OR_RAISE(json[kInitialDefault], ToJson(*field.initial_default()));
   }
-  if (field.write_default().has_value()) {
-    ICEBERG_ASSIGN_OR_RAISE(json[kWriteDefault], ToJson(field.write_default()->get()));
+  if (field.write_default() != nullptr) {
+    ICEBERG_ASSIGN_OR_RAISE(json[kWriteDefault], ToJson(*field.write_default()));
   }
   return json;
 }

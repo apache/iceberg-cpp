@@ -24,9 +24,7 @@
 /// type (e.g. a struct).
 
 #include <cstdint>
-#include <functional>
 #include <memory>
-#include <optional>
 #include <string>
 #include <string_view>
 
@@ -76,47 +74,29 @@ class ICEBERG_EXPORT SchemaField : public iceberg::util::Formattable {
       std::shared_ptr<const Literal> write_default = nullptr);
 
   /// \brief Get the field ID.
-  [[nodiscard]] int32_t field_id() const;
+  int32_t field_id() const;
 
   /// \brief Get the field name.
-  [[nodiscard]] std::string_view name() const;
+  std::string_view name() const;
 
   /// \brief Get the field type.
-  [[nodiscard]] const std::shared_ptr<Type>& type() const;
+  const std::shared_ptr<Type>& type() const;
 
   /// \brief Get whether the field is optional.
-  [[nodiscard]] bool optional() const;
+  bool optional() const;
 
   /// \brief Get the field documentation.
   std::string_view doc() const;
 
-  /// \brief Get the default value for this field used when reading rows written
-  /// before the field existed (v3 `initial-default`). Empty if absent.
-  ///
-  /// The returned reference is a non-owning view into a value owned by this field;
-  /// it remains valid for the lifetime of this SchemaField.
-  [[nodiscard]] std::optional<std::reference_wrapper<const Literal>> initial_default()
-      const;
+  /// \brief Get the owning pointer to the default value for this field used when reading
+  /// rows written before the field existed (v3 `initial-default`), or null if absent.
+  const std::shared_ptr<const Literal>& initial_default() const;
 
-  /// \brief Get the default value for this field used when a writer does not
-  /// supply a value (v3 `write-default`). Empty if absent.
-  ///
-  /// The returned reference is a non-owning view into a value owned by this field;
-  /// it remains valid for the lifetime of this SchemaField.
-  [[nodiscard]] std::optional<std::reference_wrapper<const Literal>> write_default()
-      const;
+  /// \brief Get the owning pointer to the default value for this field used when a writer
+  /// does not supply a value (v3 `write-default`), or null if absent.
+  const std::shared_ptr<const Literal>& write_default() const;
 
-  /// \brief Get the shared owning pointer to the `initial-default` value, or null if
-  /// absent. Prefer initial_default() for reading; this exists so a rebuilt field can
-  /// share the (immutable) value rather than copy it.
-  [[nodiscard]] const std::shared_ptr<const Literal>& initial_default_ptr() const;
-
-  /// \brief Get the shared owning pointer to the `write-default` value, or null if
-  /// absent. Prefer write_default() for reading; this exists so a rebuilt field can
-  /// share the (immutable) value rather than copy it.
-  [[nodiscard]] const std::shared_ptr<const Literal>& write_default_ptr() const;
-
-  [[nodiscard]] std::string ToString() const override;
+  std::string ToString() const override;
 
   Status Validate() const;
 
@@ -138,7 +118,7 @@ class ICEBERG_EXPORT SchemaField : public iceberg::util::Formattable {
 
  private:
   /// \brief Compare two fields for equality.
-  [[nodiscard]] bool Equals(const SchemaField& other) const;
+  bool Equals(const SchemaField& other) const;
 
   int32_t field_id_;
   std::string name_;

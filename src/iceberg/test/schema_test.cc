@@ -177,8 +177,8 @@ TEST(SchemaTest, MakeNormalizesDefaultToFieldType) {
       auto field, iceberg::SchemaField::Make(1, "id", iceberg::int64(), false, /*doc=*/{},
                                              std::make_shared<const iceberg::Literal>(
                                                  iceberg::Literal::Int(34))));
-  ASSERT_TRUE(field.initial_default().has_value());
-  EXPECT_EQ(field.initial_default()->get(), iceberg::Literal::Long(34));
+  ASSERT_NE(field.initial_default(), nullptr);
+  EXPECT_EQ(*field.initial_default(), iceberg::Literal::Long(34));
 
   // A default outside the field type's range is rejected by Make.
   EXPECT_THAT(iceberg::SchemaField::Make(1, "id", iceberg::int32(), false, /*doc=*/{},
@@ -209,10 +209,10 @@ TEST(SchemaTest, ReassignIdsPreservesDefaultValues) {
   ASSERT_EQ(schema.fields().size(), 1);
   const iceberg::SchemaField& field = schema.fields()[0];
   EXPECT_EQ(field.field_id(), 1001);
-  ASSERT_TRUE(field.initial_default().has_value());
-  EXPECT_EQ(field.initial_default()->get(), iceberg::Literal::Int(42));
-  ASSERT_TRUE(field.write_default().has_value());
-  EXPECT_EQ(field.write_default()->get(), iceberg::Literal::Int(7));
+  ASSERT_NE(field.initial_default(), nullptr);
+  EXPECT_EQ(*field.initial_default(), iceberg::Literal::Int(42));
+  ASSERT_NE(field.write_default(), nullptr);
+  EXPECT_EQ(*field.write_default(), iceberg::Literal::Int(7));
 }
 
 TEST(SchemaTest, ValidateRejectsInvalidUnknownFields) {

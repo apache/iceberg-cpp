@@ -203,15 +203,15 @@ TEST(SchemaJsonTest, FieldWithDefaultValuesRoundTrip) {
   ASSERT_EQ(schema->fields().size(), 2);
 
   const auto& field1 = schema->fields()[0];
-  ASSERT_TRUE(field1.initial_default().has_value());
-  ASSERT_EQ(field1.initial_default()->get(), Literal::Int(42));
-  ASSERT_TRUE(field1.write_default().has_value());
-  ASSERT_EQ(field1.write_default()->get(), Literal::Int(7));
+  ASSERT_NE(field1.initial_default(), nullptr);
+  ASSERT_EQ(*field1.initial_default(), Literal::Int(42));
+  ASSERT_NE(field1.write_default(), nullptr);
+  ASSERT_EQ(*field1.write_default(), Literal::Int(7));
 
   const auto& field2 = schema->fields()[1];
-  ASSERT_TRUE(field2.initial_default().has_value());
-  ASSERT_EQ(field2.initial_default()->get(), Literal::String("n/a"));
-  ASSERT_FALSE(field2.write_default().has_value());
+  ASSERT_NE(field2.initial_default(), nullptr);
+  ASSERT_EQ(*field2.initial_default(), Literal::String("n/a"));
+  ASSERT_EQ(field2.write_default(), nullptr);
 
   ICEBERG_UNWRAP_OR_FAIL(auto schema_json, ToJson(*schema));
   ASSERT_EQ(schema_json.dump(), json);
@@ -232,10 +232,10 @@ TEST(SchemaJsonTest, NestedFieldWithDefaultValuesRoundTrip) {
   ICEBERG_UNWRAP_OR_FAIL(auto schema, SchemaFromJson(nlohmann::json::parse(json)));
   const auto& person = schema->fields()[0];
   const auto& nested = dynamic_cast<const StructType&>(*person.type()).fields()[0];
-  ASSERT_TRUE(nested.initial_default().has_value());
-  ASSERT_EQ(nested.initial_default()->get(), Literal::Int(18));
-  ASSERT_TRUE(nested.write_default().has_value());
-  ASSERT_EQ(nested.write_default()->get(), Literal::Int(21));
+  ASSERT_NE(nested.initial_default(), nullptr);
+  ASSERT_EQ(*nested.initial_default(), Literal::Int(18));
+  ASSERT_NE(nested.write_default(), nullptr);
+  ASSERT_EQ(*nested.write_default(), Literal::Int(21));
 
   ICEBERG_UNWRAP_OR_FAIL(auto schema_json, ToJson(*schema));
   ASSERT_EQ(schema_json.dump(), json);
@@ -249,8 +249,8 @@ TEST(SchemaJsonTest, CrossTypeDefaultNormalizedRoundTrip) {
   ICEBERG_UNWRAP_OR_FAIL(
       auto field, SchemaField::Make(1, "id", int64(), /*optional=*/false, /*doc=*/{},
                                     std::make_shared<const Literal>(Literal::Int(34))));
-  ASSERT_TRUE(field.initial_default().has_value());
-  EXPECT_EQ(field.initial_default()->get(), Literal::Long(34));
+  ASSERT_NE(field.initial_default(), nullptr);
+  EXPECT_EQ(*field.initial_default(), Literal::Long(34));
 
   Schema original({std::move(field)});
   ICEBERG_UNWRAP_OR_FAIL(auto json, ToJson(original));

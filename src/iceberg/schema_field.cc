@@ -103,26 +103,11 @@ bool SchemaField::optional() const { return optional_; }
 
 std::string_view SchemaField::doc() const { return doc_; }
 
-std::optional<std::reference_wrapper<const Literal>> SchemaField::initial_default()
-    const {
-  if (initial_default_ == nullptr) {
-    return std::nullopt;
-  }
-  return std::cref(*initial_default_);
-}
-
-std::optional<std::reference_wrapper<const Literal>> SchemaField::write_default() const {
-  if (write_default_ == nullptr) {
-    return std::nullopt;
-  }
-  return std::cref(*write_default_);
-}
-
-const std::shared_ptr<const Literal>& SchemaField::initial_default_ptr() const {
+const std::shared_ptr<const Literal>& SchemaField::initial_default() const {
   return initial_default_;
 }
 
-const std::shared_ptr<const Literal>& SchemaField::write_default_ptr() const {
+const std::shared_ptr<const Literal>& SchemaField::write_default() const {
   return write_default_;
 }
 
