@@ -23,6 +23,7 @@
 #include <gtest/gtest.h>
 #include <nlohmann/json.hpp>
 
+#include "iceberg/expression/literal.h"
 #include "iceberg/json_serde_internal.h"
 #include "iceberg/partition_field.h"
 #include "iceberg/partition_spec.h"
@@ -443,6 +444,25 @@ TEST(MetadataSerdeTest, DeserializePartitionStatisticsFiles) {
   };
 
   ASSERT_EQ(*metadata, expected);
+}
+
+TEST(MetadataSerdeTest, V3DefaultValuesRoundTrip) {
+  // Full TableMetadata path: a v3 schema field's initial/write defaults parse correctly
+  // (the v3 gate in Schema::Validate is satisfied) and survive a ToJson/FromJson round
+  // trip. The fixture's field is `x: long` with initial-default 1 and write-default 1.
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto metadata, ReadTableMetadataFromResource("TableMetadataV3ValidMinimal.json"));
+  auto schema_result = metadata->Schema();
+  ASSERT_TRUE(schema_result.has_value());
+  const auto& field = schema_result.value()->fields()[0];
+  ASSERT_NE(field.initial_default(), nullptr);
+  EXPECT_EQ(*field.initial_default(), Literal::Long(1));
+  ASSERT_NE(field.write_default(), nullptr);
+  EXPECT_EQ(*field.write_default(), Literal::Long(1));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto json, ToJson(*metadata));
+  ICEBERG_UNWRAP_OR_FAIL(auto reparsed, TableMetadataFromJson(json));
+  EXPECT_EQ(*reparsed, *metadata);
 }
 
 TEST(MetadataSerdeTest, DeserializeUnsupportedVersion) {

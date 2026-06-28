@@ -342,13 +342,15 @@ Result<Literal> LiteralFromJson(const nlohmann::json& json, const Type* type) {
       return Literal::Long(json.get<int64_t>());
 
     case TypeId::kFloat:
-      if (!json.is_number_float()) [[unlikely]] {
+      // Accept an integer JSON token too (e.g. `1`), matching Java's lenient numeric
+      // parsing; otherwise a float default written as a bare integer fails to read.
+      if (!json.is_number()) [[unlikely]] {
         return JsonParseError("Cannot parse {} as a float value", SafeDumpJson(json));
       }
       return Literal::Float(json.get<float>());
 
     case TypeId::kDouble:
-      if (!json.is_number_float()) [[unlikely]] {
+      if (!json.is_number()) [[unlikely]] {
         return JsonParseError("Cannot parse {} as a double value", SafeDumpJson(json));
       }
       return Literal::Double(json.get<double>());

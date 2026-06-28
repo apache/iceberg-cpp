@@ -131,11 +131,27 @@ Status ValidateDefault(const SchemaField& field, const Literal& value,
     return InvalidSchema("Invalid {} value for {}: value is out of range", kind,
                          field.name());
   }
-  // Defaults are only supported on primitive fields. The spec also permits JSON
-  // single-value defaults for struct/list/map (e.g. an empty struct `{}` whose
-  // sub-field defaults live in field metadata); that matches the current Java model's
-  // gap and is left as a follow-up.
-  if (field.type() == nullptr || !field.type()->is_primitive()) {
+  if (field.type() == nullptr) {
+    return InvalidSchema("Invalid {} value for {}: field has no type", kind,
+                         field.name());
+  }
+  // The spec requires unknown/variant/geometry/geography columns to default to null, so a
+  // non-null default on them is invalid (a null default was already dropped as absence).
+  switch (field.type()->type_id()) {
+    case TypeId::kUnknown:
+    case TypeId::kVariant:
+    case TypeId::kGeometry:
+    case TypeId::kGeography:
+      return InvalidSchema("Invalid {} value for {}: {} fields must default to null",
+                           kind, field.name(), *field.type());
+    default:
+      break;
+  }
+  // Defaults are otherwise only supported on primitive fields. The spec also permits JSON
+  // single-value defaults for struct/list/map (e.g. an empty struct `{}` whose sub-field
+  // defaults live in field metadata); that matches the current Java model's gap and is
+  // left as a follow-up.
+  if (!field.type()->is_primitive()) {
     return InvalidSchema(
         "Invalid {} value for {}: default values are only supported for primitive types",
         kind, field.name());
