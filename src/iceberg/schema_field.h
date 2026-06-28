@@ -74,16 +74,16 @@ class ICEBERG_EXPORT SchemaField : public iceberg::util::Formattable {
       std::shared_ptr<const Literal> write_default = nullptr);
 
   /// \brief Get the field ID.
-  int32_t field_id() const;
+  [[nodiscard]] int32_t field_id() const;
 
   /// \brief Get the field name.
-  std::string_view name() const;
+  [[nodiscard]] std::string_view name() const;
 
   /// \brief Get the field type.
-  const std::shared_ptr<Type>& type() const;
+  [[nodiscard]] const std::shared_ptr<Type>& type() const;
 
   /// \brief Get whether the field is optional.
-  bool optional() const;
+  [[nodiscard]] bool optional() const;
 
   /// \brief Get the field documentation.
   std::string_view doc() const;
@@ -96,7 +96,7 @@ class ICEBERG_EXPORT SchemaField : public iceberg::util::Formattable {
   /// does not supply a value (v3 `write-default`), or null if absent.
   const std::shared_ptr<const Literal>& write_default() const;
 
-  std::string ToString() const override;
+  [[nodiscard]] std::string ToString() const override;
 
   Status Validate() const;
 
@@ -118,7 +118,7 @@ class ICEBERG_EXPORT SchemaField : public iceberg::util::Formattable {
 
  private:
   /// \brief Compare two fields for equality.
-  bool Equals(const SchemaField& other) const;
+  [[nodiscard]] bool Equals(const SchemaField& other) const;
 
   int32_t field_id_;
   std::string name_;
