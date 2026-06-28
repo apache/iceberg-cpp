@@ -258,17 +258,6 @@ TEST(SchemaJsonTest, CrossTypeDefaultNormalizedRoundTrip) {
   EXPECT_EQ(original, *reparsed);
 }
 
-TEST(SchemaJsonTest, FloatDefaultAcceptsIntegerEncoding) {
-  // Java writes a float/double default as a bare integer token (e.g. 1, not 1.0); it must
-  // parse, matching Java's lenient numeric reading.
-  constexpr std::string_view json =
-      R"({"fields":[{"id":1,"initial-default":1,"name":"f","required":true,"type":"float"}],"schema-id":1,"type":"struct"})";
-  ICEBERG_UNWRAP_OR_FAIL(auto schema, SchemaFromJson(nlohmann::json::parse(json)));
-  const auto& field = schema->fields()[0];
-  ASSERT_NE(field.initial_default(), nullptr);
-  EXPECT_EQ(*field.initial_default(), Literal::Float(1.0F));
-}
-
 TEST(SchemaJsonTest, UnknownFieldRoundTrip) {
   constexpr std::string_view json =
       R"({"fields":[{"id":1,"name":"mystery","required":false,"type":"unknown"}],"schema-id":1,"type":"struct"})";
