@@ -193,6 +193,23 @@ TEST(SchemaTest, MakeNormalizesDefaultToFieldType) {
               iceberg::IsError(iceberg::ErrorKind::kNotSupported));
 }
 
+TEST(SchemaTest, NullDefaultModeledAsAbsence) {
+  // A present-null default is modeled as the absence of a default (matching Java): it is
+  // dropped at construction, so the field has no stored default and compares equal to a
+  // field with no default, and it validates cleanly.
+  iceberg::SchemaField with_null(
+      1, "id", iceberg::int32(), /*optional=*/true, /*doc=*/{},
+      std::make_shared<const iceberg::Literal>(iceberg::Literal::Null(iceberg::int32())));
+  EXPECT_EQ(with_null.initial_default(), nullptr);
+
+  iceberg::SchemaField no_default(1, "id", iceberg::int32(), /*optional=*/true);
+  EXPECT_EQ(with_null, no_default);
+
+  iceberg::Schema schema({with_null});
+  EXPECT_THAT(schema.Validate(iceberg::TableMetadata::kSupportedTableFormatVersion),
+              iceberg::IsOk());
+}
+
 TEST(SchemaTest, ReassignIdsPreservesDefaultValues) {
   // Reassigning field IDs rebuilds each SchemaField, so the rebuild must carry the
   // default values over to the field with the new ID.

@@ -43,7 +43,8 @@ Result<std::shared_ptr<const Literal>> NormalizeDefault(
   if (value == nullptr || field_type == nullptr || !field_type->is_primitive()) {
     return value;
   }
-  if (*value->type() == *field_type) {
+  if (value->IsNull() || *value->type() == *field_type) {
+    // A null default is modeled as absence (dropped at construction), so do not cast it.
     return value;
   }
   ICEBERG_ASSIGN_OR_RAISE(
@@ -54,6 +55,15 @@ Result<std::shared_ptr<const Literal>> NormalizeDefault(
                          *value->type(), *field_type);
   }
   return std::make_shared<const Literal>(std::move(cast));
+}
+
+// A null default value is modeled as the absence of a default (matching Java), so it is
+// not stored.
+std::shared_ptr<const Literal> DropNullDefault(std::shared_ptr<const Literal> value) {
+  if (value != nullptr && value->IsNull()) {
+    return nullptr;
+  }
+  return value;
 }
 
 }  // namespace
@@ -67,8 +77,8 @@ SchemaField::SchemaField(int32_t field_id, std::string_view name,
       type_(std::move(type)),
       optional_(optional),
       doc_(doc),
-      initial_default_(std::move(initial_default)),
-      write_default_(std::move(write_default)) {}
+      initial_default_(DropNullDefault(std::move(initial_default))),
+      write_default_(DropNullDefault(std::move(write_default))) {}
 
 Result<SchemaField> SchemaField::Make(int32_t field_id, std::string_view name,
                                       std::shared_ptr<Type> type, bool optional,
@@ -115,8 +125,10 @@ namespace {
 
 Status ValidateDefault(const SchemaField& field, const Literal& value,
                        std::string_view kind) {
-  if (value.IsNull() || value.IsAboveMax() || value.IsBelowMin()) {
-    return InvalidSchema("Invalid {} value for {}: must be a non-null value", kind,
+  // A null default is modeled as absence and dropped at construction, so it never reaches
+  // here; only the out-of-range cast sentinels need rejecting.
+  if (value.IsAboveMax() || value.IsBelowMin()) {
+    return InvalidSchema("Invalid {} value for {}: value is out of range", kind,
                          field.name());
   }
   // Defaults are only supported on primitive fields. The spec also permits JSON
