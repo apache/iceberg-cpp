@@ -24,6 +24,7 @@ install_headers(
         'merging_snapshot_update.h',
         'overwrite_files.h',
         'pending_update.h',
+        'replace_partitions.h',
         'row_delta.h',
         'set_snapshot.h',
         'snapshot_manager.h',
