@@ -242,7 +242,7 @@ TEST(SchemaTest, ValidateRejectsDefaultOnNonPrimitiveAndMustBeNullTypes) {
   auto status =
       geo_default.Validate(iceberg::TableMetadata::kSupportedTableFormatVersion);
   ASSERT_THAT(status, iceberg::IsError(iceberg::ErrorKind::kInvalidSchema));
-  EXPECT_THAT(status, iceberg::HasErrorMessage("must default to null"));
+  EXPECT_THAT(status, iceberg::HasErrorMessage("cannot have a default value"));
 }
 
 TEST(SchemaTest, ReassignIdsPreservesDefaultValues) {

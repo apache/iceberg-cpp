@@ -142,7 +142,7 @@ Status ValidateDefault(const SchemaField& field, const Literal& value,
     case TypeId::kVariant:
     case TypeId::kGeometry:
     case TypeId::kGeography:
-      return InvalidSchema("Invalid {} value for {}: {} fields must default to null",
+      return InvalidSchema("Invalid {} value for {}: type {} cannot have a default value",
                            kind, field.name(), *field.type());
     default:
       break;
