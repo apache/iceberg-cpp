@@ -256,6 +256,73 @@ TEST(JsonInternalTest, Snapshot) {
   TestJsonConversion(snapshot, expected_json);
 }
 
+TEST(JsonInternalTest, SnapshotRowLineageSerializesTopLevelFields) {
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto snapshot,
+      Snapshot::Make(/*sequence_number=*/99, /*snapshot_id=*/1234567890,
+                     /*parent_snapshot_id=*/9876543210,
+                     TimePointMsFromUnixMs(1234567890123), DataOperation::kAppend,
+                     {{SnapshotSummaryFields::kAddedDataFiles, "50"}},
+                     /*schema_id=*/42, "/path/to/manifest_list",
+                     /*first_row_id=*/100, /*added_rows=*/25));
+
+  auto json = ToJson(*snapshot);
+  EXPECT_EQ(json["first-row-id"], 100);
+  EXPECT_EQ(json["added-rows"], 25);
+  EXPECT_FALSE(json["summary"].contains("first-row-id"));
+  EXPECT_FALSE(json["summary"].contains("added-rows"));
+}
+
+TEST(JsonInternalTest, SnapshotFromJsonReadsTopLevelRowLineageFields) {
+  nlohmann::json snapshot_json =
+      R"({"snapshot-id":1234567890,
+          "parent-snapshot-id":9876543210,
+          "sequence-number":99,
+          "timestamp-ms":1234567890123,
+          "manifest-list":"/path/to/manifest_list",
+          "summary":{
+            "operation":"append",
+            "added-data-files":"50"
+          },
+          "schema-id":42,
+          "first-row-id":100,
+          "added-rows":25})"_json;
+
+  ICEBERG_UNWRAP_OR_FAIL(auto snapshot, SnapshotFromJson(snapshot_json));
+  ICEBERG_UNWRAP_OR_FAIL(auto first_row_id, snapshot->FirstRowId());
+  ICEBERG_UNWRAP_OR_FAIL(auto added_rows, snapshot->AddedRows());
+  EXPECT_EQ(first_row_id, 100);
+  EXPECT_EQ(added_rows, 25);
+
+  auto json = ToJson(*snapshot);
+  EXPECT_EQ(json["first-row-id"], 100);
+  EXPECT_EQ(json["added-rows"], 25);
+  EXPECT_FALSE(json["summary"].contains("first-row-id"));
+  EXPECT_FALSE(json["summary"].contains("added-rows"));
+}
+
+TEST(JsonInternalTest, SnapshotFromJsonReadsLegacySummaryOnlyRowLineageFields) {
+  nlohmann::json snapshot_json =
+      R"({"snapshot-id":1234567890,
+          "parent-snapshot-id":9876543210,
+          "sequence-number":99,
+          "timestamp-ms":1234567890123,
+          "manifest-list":"/path/to/manifest_list",
+          "summary":{
+            "operation":"append",
+            "added-data-files":"50",
+            "first-row-id":"100",
+            "added-rows":"25"
+          },
+          "schema-id":42})"_json;
+
+  ICEBERG_UNWRAP_OR_FAIL(auto snapshot, SnapshotFromJson(snapshot_json));
+  ICEBERG_UNWRAP_OR_FAIL(auto first_row_id, snapshot->FirstRowId());
+  ICEBERG_UNWRAP_OR_FAIL(auto added_rows, snapshot->AddedRows());
+  EXPECT_EQ(first_row_id, 100);
+  EXPECT_EQ(added_rows, 25);
+}
+
 // FIXME: disable it for now since Iceberg Spark plugin generates
 // custom summary keys.
 TEST(JsonInternalTest, DISABLED_SnapshotFromJsonWithInvalidSummary) {
@@ -480,19 +547,21 @@ TEST(JsonInternalTest, TableUpdateSetDefaultSortOrder) {
 }
 
 TEST(JsonInternalTest, TableUpdateAddSnapshot) {
-  auto snapshot = std::make_shared<Snapshot>(
-      Snapshot{.snapshot_id = 123456789,
-               .parent_snapshot_id = 987654321,
-               .sequence_number = 5,
-               .timestamp_ms = TimePointMsFromUnixMs(1234567890000),
-               .manifest_list = "/path/to/manifest-list.avro",
-               .summary = {{SnapshotSummaryFields::kOperation, DataOperation::kAppend}},
-               .schema_id = 1});
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto snapshot_unique,
+      Snapshot::Make(/*sequence_number=*/5, /*snapshot_id=*/123456789,
+                     /*parent_snapshot_id=*/987654321,
+                     TimePointMsFromUnixMs(1234567890000), DataOperation::kAppend,
+                     /*summary=*/{}, /*schema_id=*/1, "/path/to/manifest-list.avro",
+                     /*first_row_id=*/100, /*added_rows=*/25));
+  std::shared_ptr<Snapshot> snapshot(std::move(snapshot_unique));
   table::AddSnapshot update(snapshot);
 
   ICEBERG_UNWRAP_OR_FAIL(auto json, ToJson(update));
   EXPECT_EQ(json["action"], "add-snapshot");
   EXPECT_TRUE(json.contains("snapshot"));
+  EXPECT_EQ(json["snapshot"]["first-row-id"], 100);
+  EXPECT_EQ(json["snapshot"]["added-rows"], 25);
 
   auto parsed = TableUpdateFromJson(json);
   ASSERT_THAT(parsed, IsOk());

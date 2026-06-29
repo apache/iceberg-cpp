@@ -102,6 +102,8 @@ constexpr std::string_view kSequenceNumber = "sequence-number";
 constexpr std::string_view kTimestampMs = "timestamp-ms";
 constexpr std::string_view kManifestList = "manifest-list";
 constexpr std::string_view kSummary = "summary";
+constexpr std::string_view kFirstRowId = "first-row-id";
+constexpr std::string_view kAddedRows = "added-rows";
 constexpr std::string_view kMinSnapshotsToKeep = "min-snapshots-to-keep";
 constexpr std::string_view kMaxSnapshotAgeMs = "max-snapshot-age-ms";
 constexpr std::string_view kMaxRefAgeMs = "max-ref-age-ms";
@@ -459,9 +461,21 @@ nlohmann::json ToJson(const Snapshot& snapshot) {
   json[kManifestList] = snapshot.manifest_list;
   // If there is an operation, write the summary map
   if (snapshot.Operation().has_value()) {
-    json[kSummary] = snapshot.summary;
+    nlohmann::json summary_json;
+    for (const auto& [key, value] : snapshot.summary) {
+      if (key == SnapshotSummaryFields::kFirstRowId ||
+          key == SnapshotSummaryFields::kAddedRows) {
+        continue;
+      }
+      summary_json[key] = value;
+    }
+    json[kSummary] = std::move(summary_json);
   }
   SetOptionalField(json, kSchemaId, snapshot.schema_id);
+  SetOptionalField(json, kFirstRowId, snapshot.first_row_id);
+  if (snapshot.first_row_id.has_value()) {
+    SetOptionalField(json, kAddedRows, snapshot.added_rows);
+  }
   return json;
 }
 
@@ -808,12 +822,54 @@ Result<std::unique_ptr<Snapshot>> SnapshotFromJson(const nlohmann::json& json) {
     }
   }
 
+  auto parse_summary_int64 =
+      [&summary](const std::string& key) -> Result<std::optional<int64_t>> {
+    auto it = summary.find(key);
+    if (it == summary.end()) {
+      return std::nullopt;
+    }
+    ICEBERG_ASSIGN_OR_RAISE(auto value, StringUtils::ParseNumber<int64_t>(it->second));
+    return value;
+  };
+
+  ICEBERG_ASSIGN_OR_RAISE(auto first_row_id,
+                          GetJsonValueOptional<int64_t>(json, kFirstRowId));
+  if (!first_row_id.has_value()) {
+    ICEBERG_ASSIGN_OR_RAISE(first_row_id,
+                            parse_summary_int64(SnapshotSummaryFields::kFirstRowId));
+  }
+
+  ICEBERG_ASSIGN_OR_RAISE(auto added_rows,
+                          GetJsonValueOptional<int64_t>(json, kAddedRows));
+  if (!added_rows.has_value()) {
+    ICEBERG_ASSIGN_OR_RAISE(added_rows,
+                            parse_summary_int64(SnapshotSummaryFields::kAddedRows));
+  }
+
+  summary.erase(SnapshotSummaryFields::kFirstRowId);
+  summary.erase(SnapshotSummaryFields::kAddedRows);
+
+  if (first_row_id.has_value() && first_row_id.value() < 0) {
+    return JsonParseError("Invalid first-row-id (cannot be negative): {}",
+                          first_row_id.value());
+  }
+  if (added_rows.has_value() && added_rows.value() < 0) {
+    return JsonParseError("Invalid added-rows (cannot be negative): {}",
+                          added_rows.value());
+  }
+  if (first_row_id.has_value() && !added_rows.has_value()) {
+    return JsonParseError("Invalid added-rows (required when first-row-id is set): null");
+  }
+  if (!first_row_id.has_value()) {
+    added_rows = std::nullopt;
+  }
+
   ICEBERG_ASSIGN_OR_RAISE(auto schema_id, GetJsonValueOptional<int32_t>(json, kSchemaId));
 
   return std::make_unique<Snapshot>(
       snapshot_id, parent_snapshot_id,
       sequence_number.value_or(TableMetadata::kInitialSequenceNumber), timestamp_ms,
-      manifest_list, std::move(summary), schema_id);
+      manifest_list, std::move(summary), schema_id, first_row_id, added_rows);
 }
 
 nlohmann::json ToJson(const BlobMetadata& blob_metadata) {
