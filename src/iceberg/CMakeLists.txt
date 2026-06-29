@@ -18,8 +18,9 @@
 set(ICEBERG_INCLUDES "$<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/src>"
                      "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/src>")
 set(ICEBERG_SOURCES
-    arrow_c_data_util.cc
     arrow_c_data_guard_internal.cc
+    arrow_c_data_util.cc
+    arrow_row_builder.cc
     catalog/memory/in_memory_catalog.cc
     catalog/session_catalog.cc
     catalog/session_context.cc
@@ -45,7 +46,6 @@ set(ICEBERG_SOURCES
     file_writer.cc
     inspect/history_table.cc
     inspect/metadata_table.cc
-    inspect/row_builder_internal.cc
     inspect/snapshots_table.cc
     inheritable_metadata.cc
     json_serde.cc

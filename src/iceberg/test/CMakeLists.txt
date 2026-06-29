@@ -184,11 +184,7 @@ if(ICEBERG_BUILD_BUNDLE)
 
   add_iceberg_test(catalog_test USE_BUNDLE SOURCES in_memory_catalog_test.cc)
 
-  add_iceberg_test(metadata_table_test
-                   USE_BUNDLE
-                   SOURCES
-                   metadata_table_test.cc
-                   row_builder_test.cc)
+  add_iceberg_test(metadata_table_test USE_BUNDLE SOURCES metadata_table_test.cc)
 
   add_iceberg_test(eval_expr_test
                    USE_BUNDLE
@@ -249,6 +245,7 @@ if(ICEBERG_BUILD_BUNDLE)
                    USE_BUNDLE
                    SOURCES
                    arrow_c_data_util_test.cc
+                   arrow_row_builder_test.cc
                    data_writer_test.cc
                    delete_filter_test.cc
                    delete_loader_test.cc

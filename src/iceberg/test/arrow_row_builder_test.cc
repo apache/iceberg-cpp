@@ -17,7 +17,7 @@
  * under the License.
  */
 
-/// \file row_builder_test.cc
+/// \file arrow_row_builder_test.cc
 /// Unit tests for ArrowRowBuilder and its typed append helpers.
 
 #include <memory>
@@ -28,7 +28,7 @@
 #include <arrow/record_batch.h>
 #include <gtest/gtest.h>
 
-#include "iceberg/inspect/row_builder_internal.h"
+#include "iceberg/arrow_row_builder_internal.h"
 #include "iceberg/schema.h"
 #include "iceberg/schema_field.h"
 #include "iceberg/schema_internal.h"
@@ -70,9 +70,7 @@ std::shared_ptr<::arrow::RecordBatch> FinishAndImport(ArrowRowBuilder builder,
 
 TEST(ArrowRowBuilderTest, BuildsRowsWithTypedValues) {
   auto schema = MakeTestSchema();
-  auto builder_result = ArrowRowBuilder::Make(*schema);
-  ASSERT_THAT(builder_result, IsOk());
-  auto builder = std::move(*builder_result);
+  ICEBERG_UNWRAP_OR_FAIL(auto builder, ArrowRowBuilder::Make(*schema));
 
   ASSERT_EQ(builder.num_columns(), 5);
 
@@ -122,9 +120,7 @@ TEST(ArrowRowBuilderTest, BuildsRowsWithTypedValues) {
 
 TEST(ArrowRowBuilderTest, AppendsNullForOptionalColumns) {
   auto schema = MakeTestSchema();
-  auto builder_result = ArrowRowBuilder::Make(*schema);
-  ASSERT_THAT(builder_result, IsOk());
-  auto builder = std::move(*builder_result);
+  ICEBERG_UNWRAP_OR_FAIL(auto builder, ArrowRowBuilder::Make(*schema));
 
   ASSERT_THAT(AppendInt(builder.column(0), 42), IsOk());
   ASSERT_THAT(AppendNull(builder.column(1)), IsOk());
@@ -147,9 +143,7 @@ TEST(ArrowRowBuilderTest, AppendsNullForOptionalColumns) {
 
 TEST(ArrowRowBuilderTest, AppendsMultiEntryStringMap) {
   auto schema = MakeTestSchema();
-  auto builder_result = ArrowRowBuilder::Make(*schema);
-  ASSERT_THAT(builder_result, IsOk());
-  auto builder = std::move(*builder_result);
+  ICEBERG_UNWRAP_OR_FAIL(auto builder, ArrowRowBuilder::Make(*schema));
 
   ASSERT_THAT(AppendInt(builder.column(0), 1), IsOk());
   ASSERT_THAT(AppendNull(builder.column(1)), IsOk());
@@ -166,19 +160,16 @@ TEST(ArrowRowBuilderTest, AppendsMultiEntryStringMap) {
 
 TEST(ArrowRowBuilderTest, EmptyBuilderProducesZeroRowBatch) {
   auto schema = MakeTestSchema();
-  auto builder_result = ArrowRowBuilder::Make(*schema);
-  ASSERT_THAT(builder_result, IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(auto builder, ArrowRowBuilder::Make(*schema));
 
-  auto batch = FinishAndImport(std::move(*builder_result), *schema);
+  auto batch = FinishAndImport(std::move(builder), *schema);
   EXPECT_EQ(batch->num_rows(), 0);
   EXPECT_EQ(batch->num_columns(), 5);
 }
 
 TEST(ArrowRowBuilderTest, ColumnIndexOutOfRangeReturnsNull) {
   auto schema = MakeTestSchema();
-  auto builder_result = ArrowRowBuilder::Make(*schema);
-  ASSERT_THAT(builder_result, IsOk());
-  auto builder = std::move(*builder_result);
+  ICEBERG_UNWRAP_OR_FAIL(auto builder, ArrowRowBuilder::Make(*schema));
 
   EXPECT_EQ(builder.num_columns(), 5);
   EXPECT_NE(builder.column(0), nullptr);

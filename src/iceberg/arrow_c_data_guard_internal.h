@@ -31,6 +31,12 @@ class ICEBERG_EXPORT ArrowArrayGuard {
   explicit ArrowArrayGuard(ArrowArray* array) : array_(array) {}
   ~ArrowArrayGuard();
 
+  /// \brief Release the guard without calling ArrowArrayRelease.
+  ///
+  /// Call this when ownership of the underlying ArrowArray has been
+  /// transferred elsewhere and the guard should not release it.
+  void Release() { array_ = nullptr; }
+
  private:
   ArrowArray* array_;
 };

@@ -19,18 +19,17 @@
 
 #pragma once
 
-/// \file iceberg/inspect/row_builder_internal.h
+/// \file iceberg/arrow_row_builder_internal.h
 /// Internal Arrow row-building utilities shared by metadata tables.
 ///
 /// Metadata tables (snapshots, history, manifests, ...) materialize in-memory
 /// structures into Arrow batches that conform to the table's Iceberg schema.
 /// `ArrowRowBuilder` wraps a nanoarrow `ArrowArray` initialized from such a
-/// schema and exposes per-column builders plus typed append helpers so each
+/// schema and exposes per-column access plus typed append helpers so each
 /// metadata table can emit rows without re-implementing the nanoarrow
 /// boilerplate.
 
 #include <cstdint>
-#include <memory>
 #include <string_view>
 #include <unordered_map>
 
@@ -41,7 +40,15 @@
 
 namespace iceberg {
 
-/// \brief Builds an Arrow struct array (a batch) for an arbitrary Iceberg schema.
+/// \brief Movable RAII builder that materializes rows into an Arrow struct array.
+///
+/// Handles the nanoarrow lifecycle: InitFromSchema → StartAppending →
+/// ... append values ... → FinishBuilding → Release.
+///
+/// Two constructors:
+/// - `Make(schema)` accepts an Iceberg Schema (typical for metadata tables).
+/// - `Make(arrow_schema)` accepts a raw ArrowSchema (for lower-level callers
+///   like position_delete_writer or manifest_adapter).
 ///
 /// Typical usage:
 /// \code
@@ -55,8 +62,14 @@ namespace iceberg {
 /// \endcode
 class ICEBERG_EXPORT ArrowRowBuilder {
  public:
-  /// \brief Create a row builder for the given Iceberg schema.
+  /// \brief Create a row builder from an Iceberg schema.
   static Result<ArrowRowBuilder> Make(const Schema& schema);
+
+  /// \brief Create a row builder from an ArrowSchema.
+  ///
+  /// The schema must outlive this call (the caller guards it). On failure the
+  /// partially-initialized array is released automatically.
+  static Result<ArrowRowBuilder> Make(const ArrowSchema* schema);
 
   ArrowRowBuilder(ArrowRowBuilder&& other) noexcept;
   ArrowRowBuilder& operator=(ArrowRowBuilder&& other) noexcept;
@@ -85,9 +98,8 @@ class ICEBERG_EXPORT ArrowRowBuilder {
   Result<ArrowArray> Finish() &&;
 
  private:
-  explicit ArrowRowBuilder(std::unique_ptr<ArrowArray>&& array) noexcept;
-
-  std::unique_ptr<ArrowArray> array_;
+  ArrowRowBuilder() = default;
+  ArrowArray array_{};
 };
 
 /// \brief Append a null to a nanoarrow array builder.

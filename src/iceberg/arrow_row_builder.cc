@@ -17,14 +17,13 @@
  * under the License.
  */
 
-#include "iceberg/inspect/row_builder_internal.h"
-
 #include <utility>
 
 #include <nanoarrow/nanoarrow.h>
 
 #include "iceberg/arrow/nanoarrow_status_internal.h"
 #include "iceberg/arrow_c_data_guard_internal.h"
+#include "iceberg/arrow_row_builder_internal.h"
 #include "iceberg/schema.h"
 #include "iceberg/schema_internal.h"
 
@@ -34,60 +33,64 @@ Result<ArrowRowBuilder> ArrowRowBuilder::Make(const Schema& schema) {
   ArrowSchema arrow_schema;
   ICEBERG_RETURN_UNEXPECTED(ToArrowSchema(schema, &arrow_schema));
   internal::ArrowSchemaGuard schema_guard(&arrow_schema);
-
-  auto array = std::make_unique<ArrowArray>();
-  ArrowError error;
-  ICEBERG_NANOARROW_RETURN_UNEXPECTED_WITH_ERROR(
-      ArrowArrayInitFromSchema(array.get(), &arrow_schema, &error), error);
-  ICEBERG_NANOARROW_RETURN_UNEXPECTED(ArrowArrayStartAppending(array.get()));
-
-  return ArrowRowBuilder(std::move(array));
+  return Make(&arrow_schema);
 }
 
-ArrowRowBuilder::ArrowRowBuilder(std::unique_ptr<ArrowArray>&& array) noexcept
-    : array_(std::move(array)) {}
+Result<ArrowRowBuilder> ArrowRowBuilder::Make(const ArrowSchema* schema) {
+  ArrowRowBuilder builder;
+  ArrowError error;
+  ICEBERG_NANOARROW_RETURN_UNEXPECTED_WITH_ERROR(
+      ArrowArrayInitFromSchema(&builder.array_, schema, &error), error);
+  // Guard the array in case StartAppending fails.
+  internal::ArrowArrayGuard guard(&builder.array_);
+  ICEBERG_NANOARROW_RETURN_UNEXPECTED(ArrowArrayStartAppending(&builder.array_));
+  // Ownership stays with the builder — disarm the guard.
+  guard.Release();
+  return builder;
+}
 
 ArrowRowBuilder::ArrowRowBuilder(ArrowRowBuilder&& other) noexcept
-    : array_(std::move(other.array_)) {}
+    : array_(other.array_) {
+  other.array_.release = nullptr;
+}
 
 ArrowRowBuilder& ArrowRowBuilder::operator=(ArrowRowBuilder&& other) noexcept {
   if (this != &other) {
-    if (array_ != nullptr && array_->release != nullptr) {
-      ArrowArrayRelease(array_.get());
+    if (array_.release != nullptr) {
+      ArrowArrayRelease(&array_);
     }
-    array_ = std::move(other.array_);
+    array_ = other.array_;
+    other.array_.release = nullptr;
   }
   return *this;
 }
 
 ArrowRowBuilder::~ArrowRowBuilder() {
-  if (array_ != nullptr && array_->release != nullptr) {
-    ArrowArrayRelease(array_.get());
+  if (array_.release != nullptr) {
+    ArrowArrayRelease(&array_);
   }
 }
 
-int64_t ArrowRowBuilder::num_columns() const {
-  return array_ == nullptr ? 0 : array_->n_children;
-}
+int64_t ArrowRowBuilder::num_columns() const { return array_.n_children; }
 
 ArrowArray* ArrowRowBuilder::column(int64_t index) {
-  if (array_ == nullptr || index < 0 || index >= array_->n_children) {
+  if (index < 0 || index >= array_.n_children) {
     return nullptr;
   }
-  return array_->children[index];
+  return array_.children[index];
 }
 
 Status ArrowRowBuilder::FinishRow() {
-  ICEBERG_NANOARROW_RETURN_UNEXPECTED(ArrowArrayFinishElement(array_.get()));
+  ICEBERG_NANOARROW_RETURN_UNEXPECTED(ArrowArrayFinishElement(&array_));
   return {};
 }
 
 Result<ArrowArray> ArrowRowBuilder::Finish() && {
   ArrowError error;
   ICEBERG_NANOARROW_RETURN_UNEXPECTED_WITH_ERROR(
-      ArrowArrayFinishBuildingDefault(array_.get(), &error), error);
-  ArrowArray result = *array_;
-  array_->release = nullptr;
+      ArrowArrayFinishBuildingDefault(&array_, &error), error);
+  ArrowArray result = array_;
+  array_.release = nullptr;
   return result;
 }
 
