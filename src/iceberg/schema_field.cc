@@ -25,37 +25,12 @@
 
 #include "iceberg/expression/literal.h"
 #include "iceberg/type.h"
-#include "iceberg/util/checked_cast.h"
 #include "iceberg/util/formatter.h"  // IWYU pragma: keep
 #include "iceberg/util/macros.h"
 
 namespace iceberg {
 
 namespace {
-
-// Normalizes a default value to the field type so the stored value always matches the
-// field. A cross-type default (e.g. an int literal on a long field) is cast to the field
-// type; a value that already matches the field type, or a null, is returned unchanged.
-// The cast error is propagated and an out-of-range value is rejected rather than
-// swallowed.
-Result<std::shared_ptr<const Literal>> NormalizeDefault(
-    std::shared_ptr<const Literal> value, const std::shared_ptr<Type>& field_type) {
-  if (value == nullptr || field_type == nullptr || !field_type->is_primitive()) {
-    return value;
-  }
-  if (value->IsNull() || *value->type() == *field_type) {
-    // A null default is modeled as absence (dropped at construction), so do not cast it.
-    return value;
-  }
-  ICEBERG_ASSIGN_OR_RAISE(
-      auto cast,
-      value->CastTo(internal::checked_pointer_cast<PrimitiveType>(field_type)));
-  if (cast.IsAboveMax() || cast.IsBelowMin()) {
-    return InvalidSchema("default value of type {} is out of range for {}",
-                         *value->type(), *field_type);
-  }
-  return std::make_shared<const Literal>(std::move(cast));
-}
 
 // A null default value is modeled as the absence of a default (matching Java), so it is
 // not stored.
@@ -79,19 +54,6 @@ SchemaField::SchemaField(int32_t field_id, std::string_view name,
       doc_(doc),
       initial_default_(DropNullDefault(std::move(initial_default))),
       write_default_(DropNullDefault(std::move(write_default))) {}
-
-Result<SchemaField> SchemaField::Make(int32_t field_id, std::string_view name,
-                                      std::shared_ptr<Type> type, bool optional,
-                                      std::string_view doc,
-                                      std::shared_ptr<const Literal> initial_default,
-                                      std::shared_ptr<const Literal> write_default) {
-  ICEBERG_ASSIGN_OR_RAISE(initial_default,
-                          NormalizeDefault(std::move(initial_default), type));
-  ICEBERG_ASSIGN_OR_RAISE(write_default,
-                          NormalizeDefault(std::move(write_default), type));
-  return SchemaField(field_id, name, std::move(type), optional, doc,
-                     std::move(initial_default), std::move(write_default));
-}
 
 SchemaField SchemaField::MakeOptional(int32_t field_id, std::string_view name,
                                       std::shared_ptr<Type> type, std::string_view doc) {
@@ -156,9 +118,8 @@ Status ValidateDefault(const SchemaField& field, const Literal& value,
         "Invalid {} value for {}: default values are only supported for primitive types",
         kind, field.name());
   }
-  // A default is normalized to the field type by SchemaField::Make (which casts a
-  // cross-type default and reports any cast error), so a stored default whose type does
-  // not match the field type is invalid here.
+  // Defaults are stored verbatim (no implicit cast), so a default whose literal type does
+  // not match the field type is invalid.
   if (*value.type() != *field.type()) {
     return InvalidSchema("{} of field {} has type {} but expected {}", kind, field.name(),
                          *value.type(), *field.type());

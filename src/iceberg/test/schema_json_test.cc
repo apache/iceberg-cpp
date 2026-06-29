@@ -241,23 +241,6 @@ TEST(SchemaJsonTest, NestedFieldWithDefaultValuesRoundTrip) {
   ASSERT_EQ(schema_json.dump(), json);
 }
 
-TEST(SchemaJsonTest, CrossTypeDefaultNormalizedRoundTrip) {
-  // A cross-type default (an int literal on a long field) built via SchemaField::Make is
-  // normalized to the field type, so it survives a ToJson/SchemaFromJson round-trip as an
-  // equal schema (an un-normalized int literal would compare unequal to the re-parsed
-  // long literal).
-  ICEBERG_UNWRAP_OR_FAIL(
-      auto field, SchemaField::Make(1, "id", int64(), /*optional=*/false, /*doc=*/{},
-                                    std::make_shared<const Literal>(Literal::Int(34))));
-  ASSERT_NE(field.initial_default(), nullptr);
-  EXPECT_EQ(*field.initial_default(), Literal::Long(34));
-
-  Schema original({std::move(field)});
-  ICEBERG_UNWRAP_OR_FAIL(auto json, ToJson(original));
-  ICEBERG_UNWRAP_OR_FAIL(auto reparsed, SchemaFromJson(json));
-  EXPECT_EQ(original, *reparsed);
-}
-
 TEST(SchemaJsonTest, UnknownFieldRoundTrip) {
   constexpr std::string_view json =
       R"({"fields":[{"id":1,"name":"mystery","required":false,"type":"unknown"}],"schema-id":1,"type":"struct"})";

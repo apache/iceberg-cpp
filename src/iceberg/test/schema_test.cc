@@ -158,8 +158,7 @@ TEST(SchemaTest, ValidateDoesNotVersionGateWriteDefault) {
 }
 
 TEST(SchemaTest, ValidateRejectsMismatchedDefaultValue) {
-  // The constructor stores defaults verbatim (normalization happens in
-  // SchemaField::Make), so a stored default whose type differs from the field type is
+  // Defaults are stored verbatim, so a default whose type differs from the field type is
   // rejected by Validate.
   iceberg::Schema schema({iceberg::SchemaField(
       1, "id", iceberg::int32(), false, /*doc=*/{}, /*initial_default=*/nullptr,
@@ -168,29 +167,6 @@ TEST(SchemaTest, ValidateRejectsMismatchedDefaultValue) {
   auto status = schema.Validate(iceberg::TableMetadata::kSupportedTableFormatVersion);
   ASSERT_THAT(status, iceberg::IsError(iceberg::ErrorKind::kInvalidSchema));
   EXPECT_THAT(status, iceberg::HasErrorMessage("write-default"));
-}
-
-TEST(SchemaTest, MakeNormalizesDefaultToFieldType) {
-  // Make casts a cross-type default to the field type (int -> long) and stores the
-  // normalized value, so projection/serialization/equality all observe a long.
-  ICEBERG_UNWRAP_OR_FAIL(
-      auto field, iceberg::SchemaField::Make(1, "id", iceberg::int64(), false, /*doc=*/{},
-                                             std::make_shared<const iceberg::Literal>(
-                                                 iceberg::Literal::Int(34))));
-  ASSERT_NE(field.initial_default(), nullptr);
-  EXPECT_EQ(*field.initial_default(), iceberg::Literal::Long(34));
-
-  // A default outside the field type's range is rejected by Make.
-  EXPECT_THAT(iceberg::SchemaField::Make(1, "id", iceberg::int32(), false, /*doc=*/{},
-                                         std::make_shared<const iceberg::Literal>(
-                                             iceberg::Literal::Long(5'000'000'000))),
-              iceberg::IsError(iceberg::ErrorKind::kInvalidSchema));
-
-  // A default whose type cannot be cast to the field type surfaces the cast error.
-  EXPECT_THAT(iceberg::SchemaField::Make(1, "id", iceberg::int32(), false, /*doc=*/{},
-                                         std::make_shared<const iceberg::Literal>(
-                                             iceberg::Literal::String("oops"))),
-              iceberg::IsError(iceberg::ErrorKind::kNotSupported));
 }
 
 TEST(SchemaTest, NullDefaultModeledAsAbsence) {
