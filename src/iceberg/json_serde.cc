@@ -461,15 +461,7 @@ nlohmann::json ToJson(const Snapshot& snapshot) {
   json[kManifestList] = snapshot.manifest_list;
   // If there is an operation, write the summary map
   if (snapshot.Operation().has_value()) {
-    nlohmann::json summary_json;
-    for (const auto& [key, value] : snapshot.summary) {
-      if (key == SnapshotSummaryFields::kFirstRowId ||
-          key == SnapshotSummaryFields::kAddedRows) {
-        continue;
-      }
-      summary_json[key] = value;
-    }
-    json[kSummary] = std::move(summary_json);
+    json[kSummary] = snapshot.summary;
   }
   SetOptionalField(json, kSchemaId, snapshot.schema_id);
   SetOptionalField(json, kFirstRowId, snapshot.first_row_id);
@@ -822,32 +814,10 @@ Result<std::unique_ptr<Snapshot>> SnapshotFromJson(const nlohmann::json& json) {
     }
   }
 
-  auto parse_summary_int64 =
-      [&summary](const std::string& key) -> Result<std::optional<int64_t>> {
-    auto it = summary.find(key);
-    if (it == summary.end()) {
-      return std::nullopt;
-    }
-    ICEBERG_ASSIGN_OR_RAISE(auto value, StringUtils::ParseNumber<int64_t>(it->second));
-    return value;
-  };
-
   ICEBERG_ASSIGN_OR_RAISE(auto first_row_id,
                           GetJsonValueOptional<int64_t>(json, kFirstRowId));
-  if (!first_row_id.has_value()) {
-    ICEBERG_ASSIGN_OR_RAISE(first_row_id,
-                            parse_summary_int64(SnapshotSummaryFields::kFirstRowId));
-  }
-
   ICEBERG_ASSIGN_OR_RAISE(auto added_rows,
                           GetJsonValueOptional<int64_t>(json, kAddedRows));
-  if (!added_rows.has_value()) {
-    ICEBERG_ASSIGN_OR_RAISE(added_rows,
-                            parse_summary_int64(SnapshotSummaryFields::kAddedRows));
-  }
-
-  summary.erase(SnapshotSummaryFields::kFirstRowId);
-  summary.erase(SnapshotSummaryFields::kAddedRows);
 
   if (first_row_id.has_value() && first_row_id.value() < 0) {
     return JsonParseError("Invalid first-row-id (cannot be negative): {}",

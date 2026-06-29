@@ -282,7 +282,9 @@ TEST(JsonInternalTest, SnapshotFromJsonReadsTopLevelRowLineageFields) {
           "manifest-list":"/path/to/manifest_list",
           "summary":{
             "operation":"append",
-            "added-data-files":"50"
+            "added-data-files":"50",
+            "first-row-id":"101",
+            "added-rows":"26"
           },
           "schema-id":42,
           "first-row-id":100,
@@ -297,30 +299,8 @@ TEST(JsonInternalTest, SnapshotFromJsonReadsTopLevelRowLineageFields) {
   auto json = ToJson(*snapshot);
   EXPECT_EQ(json["first-row-id"], 100);
   EXPECT_EQ(json["added-rows"], 25);
-  EXPECT_FALSE(json["summary"].contains("first-row-id"));
-  EXPECT_FALSE(json["summary"].contains("added-rows"));
-}
-
-TEST(JsonInternalTest, SnapshotFromJsonReadsLegacySummaryOnlyRowLineageFields) {
-  nlohmann::json snapshot_json =
-      R"({"snapshot-id":1234567890,
-          "parent-snapshot-id":9876543210,
-          "sequence-number":99,
-          "timestamp-ms":1234567890123,
-          "manifest-list":"/path/to/manifest_list",
-          "summary":{
-            "operation":"append",
-            "added-data-files":"50",
-            "first-row-id":"100",
-            "added-rows":"25"
-          },
-          "schema-id":42})"_json;
-
-  ICEBERG_UNWRAP_OR_FAIL(auto snapshot, SnapshotFromJson(snapshot_json));
-  ICEBERG_UNWRAP_OR_FAIL(auto first_row_id, snapshot->FirstRowId());
-  ICEBERG_UNWRAP_OR_FAIL(auto added_rows, snapshot->AddedRows());
-  EXPECT_EQ(first_row_id, 100);
-  EXPECT_EQ(added_rows, 25);
+  EXPECT_EQ(json["summary"]["first-row-id"], "101");
+  EXPECT_EQ(json["summary"]["added-rows"], "26");
 }
 
 // FIXME: disable it for now since Iceberg Spark plugin generates

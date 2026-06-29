@@ -161,31 +161,9 @@ std::optional<std::string_view> Snapshot::Operation() const {
   return std::nullopt;
 }
 
-Result<std::optional<int64_t>> Snapshot::FirstRowId() const {
-  if (first_row_id.has_value()) {
-    return first_row_id;
-  }
+Result<std::optional<int64_t>> Snapshot::FirstRowId() const { return first_row_id; }
 
-  auto it = summary.find(SnapshotSummaryFields::kFirstRowId);
-  if (it == summary.end()) {
-    return std::nullopt;
-  }
-
-  return StringUtils::ParseNumber<int64_t>(it->second);
-}
-
-Result<std::optional<int64_t>> Snapshot::AddedRows() const {
-  if (added_rows.has_value()) {
-    return added_rows;
-  }
-
-  auto it = summary.find(SnapshotSummaryFields::kAddedRows);
-  if (it == summary.end()) {
-    return std::nullopt;
-  }
-
-  return StringUtils::ParseNumber<int64_t>(it->second);
-}
+Result<std::optional<int64_t>> Snapshot::AddedRows() const { return added_rows; }
 
 bool Snapshot::Equals(const Snapshot& other) const {
   if (this == &other) {
