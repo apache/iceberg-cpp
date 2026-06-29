@@ -385,9 +385,9 @@ std::shared_ptr<StructType> AssignFreshIdVisitor::Visit(const StructType& type) 
   std::vector<SchemaField> fresh_fields;
   for (size_t i = 0; i < type.fields().size(); ++i) {
     const auto& field = type.fields()[i];
-    fresh_fields.emplace_back(fresh_ids[i], std::string(field.name()),
-                              Visit(field.type()), field.optional(),
-                              std::string(field.doc()));
+    fresh_fields.emplace_back(
+        fresh_ids[i], std::string(field.name()), Visit(field.type()), field.optional(),
+        std::string(field.doc()), field.initial_default(), field.write_default());
   }
   return std::make_shared<StructType>(std::move(fresh_fields));
 }
@@ -397,7 +397,8 @@ std::shared_ptr<ListType> AssignFreshIdVisitor::Visit(const ListType& type) cons
   int32_t fresh_id = next_id_();
   SchemaField fresh_elem_field(fresh_id, std::string(elem_field.name()),
                                Visit(elem_field.type()), elem_field.optional(),
-                               std::string(elem_field.doc()));
+                               std::string(elem_field.doc()),
+                               elem_field.initial_default(), elem_field.write_default());
   return std::make_shared<ListType>(std::move(fresh_elem_field));
 }
 
@@ -410,10 +411,12 @@ std::shared_ptr<MapType> AssignFreshIdVisitor::Visit(const MapType& type) const 
 
   SchemaField fresh_key_field(fresh_key_id, std::string(key_field.name()),
                               Visit(key_field.type()), key_field.optional(),
-                              std::string(key_field.doc()));
-  SchemaField fresh_value_field(fresh_value_id, std::string(value_field.name()),
-                                Visit(value_field.type()), value_field.optional(),
-                                std::string(value_field.doc()));
+                              std::string(key_field.doc()), key_field.initial_default(),
+                              key_field.write_default());
+  SchemaField fresh_value_field(
+      fresh_value_id, std::string(value_field.name()), Visit(value_field.type()),
+      value_field.optional(), std::string(value_field.doc()),
+      value_field.initial_default(), value_field.write_default());
   return std::make_shared<MapType>(std::move(fresh_key_field),
                                    std::move(fresh_value_field));
 }
