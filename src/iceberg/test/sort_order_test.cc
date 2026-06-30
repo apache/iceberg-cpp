@@ -225,6 +225,21 @@ TEST_F(SortOrderTest, MakeInvalidSortOrderTransformCannotApply) {
   EXPECT_THAT(sort_order, HasErrorMessage("Invalid source type"));
 }
 
+TEST_F(SortOrderTest, MakeInvalidParameterizedTransform) {
+  SortField bucket_field(1, Transform::Bucket(0), SortDirection::kAscending,
+                         NullOrder::kFirst);
+  auto bucket_order = SortOrder::Make(*schema_, 1, std::vector<SortField>{bucket_field});
+  EXPECT_THAT(bucket_order, IsError(ErrorKind::kInvalidArgument));
+  EXPECT_THAT(bucket_order, HasErrorMessage("Number of buckets must be positive"));
+
+  SortField truncate_field(2, Transform::Truncate(0), SortDirection::kAscending,
+                           NullOrder::kFirst);
+  auto truncate_order =
+      SortOrder::Make(*schema_, 1, std::vector<SortField>{truncate_field});
+  EXPECT_THAT(truncate_order, IsError(ErrorKind::kInvalidArgument));
+  EXPECT_THAT(truncate_order, HasErrorMessage("Width must be positive"));
+}
+
 TEST_F(SortOrderTest, MakeInvalidSortOrderNonPrimitiveField) {
   auto struct_field = std::make_unique<SchemaField>(
       4, "struct_field",
