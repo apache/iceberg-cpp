@@ -197,8 +197,15 @@ nanoarrow_dep = dependency('nanoarrow')
 nlohmann_json_dep = dependency('nlohmann_json')
 spdlog_dep = dependency('spdlog')
 zlib_dep = dependency('zlib')
+utf8proc_dep = dependency('libutf8proc')
 
-iceberg_deps = [nanoarrow_dep, nlohmann_json_dep, spdlog_dep, zlib_dep]
+iceberg_deps = [
+    nanoarrow_dep,
+    nlohmann_json_dep,
+    spdlog_dep,
+    zlib_dep,
+    utf8proc_dep,
+]
 
 iceberg_lib = library(
     'iceberg',

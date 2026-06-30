@@ -19,9 +19,40 @@
 
 #include "iceberg/util/string_util.h"
 
+#include <utf8proc.h>
+
+#include <array>
+
 #include "iceberg/util/macros.h"
 
 namespace iceberg {
+
+std::string StringUtils::ToLower(std::string_view str) {
+  std::string result;
+  result.reserve(str.size());
+
+  const auto* data = reinterpret_cast<const utf8proc_uint8_t*>(str.data());
+  const auto size = static_cast<utf8proc_ssize_t>(str.size());
+  utf8proc_ssize_t offset = 0;
+  while (offset < size) {
+    utf8proc_int32_t code_point = 0;
+    utf8proc_ssize_t consumed =
+        utf8proc_iterate(data + offset, size - offset, &code_point);
+    if (consumed < 0) {
+      // Invalid UTF-8: return the input unchanged rather than erroring.
+      return std::string(str);
+    }
+    // utf8proc has no string-level lower-case helper, so map and re-encode each code
+    // point individually. utf8proc_tolower is a simple 1:1 mapping (not casefolding).
+    const utf8proc_int32_t lowered = utf8proc_tolower(code_point);
+    std::array<utf8proc_uint8_t, 4> encoded{};
+    const utf8proc_ssize_t written = utf8proc_encode_char(lowered, encoded.data());
+    result.append(reinterpret_cast<const char*>(encoded.data()),
+                  static_cast<size_t>(written));
+    offset += consumed;
+  }
+  return result;
+}
 
 Result<std::vector<uint8_t>> StringUtils::HexStringToBytes(std::string_view hex) {
   if (hex.size() % 2 != 0) [[unlikely]] {

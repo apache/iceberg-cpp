@@ -20,7 +20,6 @@
 #pragma once
 
 #include <algorithm>
-#include <cctype>
 #include <cerrno>
 #include <charconv>
 #include <ranges>
@@ -41,29 +40,46 @@ concept FromChars = requires(const char* p, T& v) { std::from_chars(p, p, v); };
 
 class ICEBERG_EXPORT StringUtils {
  public:
-  // NOTE: These convert ASCII letters only; all other bytes, including non-ASCII
-  // (multibyte UTF-8) bytes, are passed through unchanged.
-  // See https://github.com/apache/iceberg-cpp/issues/613.
-  static std::string ToLower(std::string_view str) {
-    return str | std::ranges::views::transform(ToLowerAscii) |
-           std::ranges::to<std::string>();
-  }
+  /// \brief Lower-case a UTF-8 string using Unicode simple (1:1) case mapping.
+  ///
+  /// Intended for case-insensitive name matching, similar to Iceberg Java's
+  /// toLowerCase(Locale.ROOT). The mapping is locale-independent, matching the intent
+  /// of Locale.ROOT. It uses simple (1:1) case mapping rather than Java's full case
+  /// mapping, so results differ for a few code points; e.g. U+0130 (capital I with dot
+  /// above) maps to U+0069 ("i") here, but to U+0069 U+0307 ("i" + combining dot above)
+  /// in Java. For ASCII and the large majority of letters the two agree.
+  ///
+  /// Invalid UTF-8 input is returned unchanged.
+  /// See https://github.com/apache/iceberg-cpp/issues/613.
+  static std::string ToLower(std::string_view str);
 
+  /// \brief Upper-case the ASCII letters (a-z) in a string; all other bytes, including
+  /// multi-byte UTF-8 sequences, are left unchanged.
+  ///
+  /// Deliberately ASCII-only and, unlike ToLower, not Unicode-aware. It is only used to
+  /// normalize ASCII enum/codec strings (e.g. "gzip" -> "GZIP", "all" -> "ALL") for
+  /// case-insensitive comparison. A Unicode upper-case is intentionally not provided:
+  /// simple case mapping would be wrong for some letters (e.g. "ß" (U+00DF) would stay
+  /// unchanged instead of becoming "SS"), and no caller needs it.
   static std::string ToUpper(std::string_view str) {
     return str | std::ranges::views::transform(ToUpperAscii) |
            std::ranges::to<std::string>();
   }
 
+  /// \brief Case-insensitive equality; compares the ToLower forms of both operands and
+  /// therefore inherits ToLower's Unicode simple-mapping behavior.
   static bool EqualsIgnoreCase(std::string_view lhs, std::string_view rhs) {
-    return std::ranges::equal(
-        lhs, rhs, [](char lc, char rc) { return ToLowerAscii(lc) == ToLowerAscii(rc); });
+    return ToLower(lhs) == ToLower(rhs);
   }
 
+  /// \brief Case-insensitive prefix test, comparing the ToLower forms of both inputs.
+  ///
+  /// Inherits ToLower's Unicode simple-mapping behavior. The whole strings are
+  /// lower-cased rather than byte-slicing str to prefix.size(), because ToLower can
+  /// change a string's byte length (e.g. "İ" (U+0130) is two bytes but maps to "i"),
+  /// so a byte slice could split a code point or reject a valid match.
   static bool StartsWithIgnoreCase(std::string_view str, std::string_view prefix) {
-    if (str.size() < prefix.size()) {
-      return false;
-    }
-    return EqualsIgnoreCase(str.substr(0, prefix.size()), prefix);
+    return ToLower(str).starts_with(ToLower(prefix));
   }
 
   /// \brief Count the number of code points in a UTF-8 string.
@@ -134,14 +150,8 @@ class ICEBERG_EXPORT StringUtils {
   }
 
  private:
-  // ASCII-only case conversion using explicit range checks rather than
-  // std::tolower/std::toupper. This is independent of the current C locale and never
-  // touches non-ASCII (high-bit) bytes, so multibyte UTF-8 sequences are preserved. It
-  // also sidesteps the undefined behavior of passing a negative char to <cctype>.
-  static constexpr char ToLowerAscii(char c) noexcept {
-    return (c >= 'A' && c <= 'Z') ? static_cast<char>(c - 'A' + 'a') : c;
-  }
-
+  // Avoids std::toupper, which is locale-dependent and has undefined behavior for
+  // negative char values.
   static constexpr char ToUpperAscii(char c) noexcept {
     return (c >= 'a' && c <= 'z') ? static_cast<char>(c - 'a' + 'A') : c;
   }
