@@ -341,6 +341,9 @@ void FormatAndEmit(Logger& logger, LogLevel level, const std::source_location& l
   try {
     Emit(logger, level, loc, std::format(fmt, std::forward<Args>(args)...));
   } catch (const std::exception&) {
+    // The only throws here are std::format_error / std::bad_alloc -- same recovery
+    // for both (drop, emit a fixed marker). Catch std::exception, not (...), so a
+    // non-std unwind like abi::__forced_unwind (thread cancellation) propagates.
     EmitFormatError(logger, level, loc);
   }
 }
@@ -418,7 +421,9 @@ void Log(Logger& logger, LogLevel level,
 
 // Internal: fixed-severity emit with compile-time floor then the authoritative
 // Logger::ShouldLog (the single source of truth for runtime filtering), with
-// formatting only on the taken path, never throwing.
+// formatting only on the taken path, never throwing. The catch handles
+// std::exception (std::format_error / std::bad_alloc) -- not (...) -- so a non-std
+// unwind such as abi::__forced_unwind (thread cancellation) still propagates.
 #define ICEBERG_INTERNAL_LOG(level_, FMT_, ...)                                      \
   do {                                                                               \
     if constexpr ((level_) >= ICEBERG_LOG_ACTIVE_LEVEL) {                            \
