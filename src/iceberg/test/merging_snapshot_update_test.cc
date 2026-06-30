@@ -24,6 +24,7 @@
 #include <optional>
 #include <ranges>
 #include <string>
+#include <unordered_map>
 #include <unordered_set>
 #include <vector>
 
@@ -45,9 +46,12 @@
 #include "iceberg/table_properties.h"
 #include "iceberg/test/executor.h"
 #include "iceberg/test/matchers.h"
+#include "iceberg/test/retry.h"
 #include "iceberg/test/update_test_base.h"
 #include "iceberg/transaction.h"
 #include "iceberg/update/fast_append.h"
+#include "iceberg/update/merge_append.h"
+#include "iceberg/update/snapshot_manager.h"
 #include "iceberg/update/update_properties.h"
 #include "iceberg/util/macros.h"
 
@@ -276,6 +280,13 @@ class MergingSnapshotUpdateTest : public MinimalUpdateTestBase {
     return TestOverwriteUpdate::Make(TableName(), table_);
   }
 
+  void UpgradeTableToV3() {
+    ICEBERG_UNWRAP_OR_FAIL(auto props, table_->NewUpdateProperties());
+    props->Set(TableProperties::kFormatVersion.key(), "3");
+    EXPECT_THAT(props->Commit(), IsOk());
+    EXPECT_THAT(table_->Refresh(), IsOk());
+  }
+
   void SetTableFormatVersion(int8_t format_version) {
     table_->metadata()->format_version = format_version;
   }
@@ -309,6 +320,22 @@ class MergingSnapshotUpdateTest : public MinimalUpdateTestBase {
       result.insert(result.end(), entries.begin(), entries.end());
     }
     return result;
+  }
+
+  Result<std::unordered_map<std::string, std::optional<int64_t>>> DataFileFirstRowIds(
+      const std::shared_ptr<Snapshot>& snapshot, const TableMetadata& metadata) {
+    SnapshotCache snapshot_cache(snapshot.get());
+    ICEBERG_ASSIGN_OR_RAISE(auto manifest_range, snapshot_cache.DataManifests(file_io_));
+    std::vector<ManifestFile> manifests(manifest_range.begin(), manifest_range.end());
+    ICEBERG_ASSIGN_OR_RAISE(auto entries, ReadAllEntries(manifests, metadata));
+
+    std::unordered_map<std::string, std::optional<int64_t>> first_row_ids;
+    for (const auto& entry : entries) {
+      if (entry.data_file != nullptr) {
+        first_row_ids.emplace(entry.data_file->file_path, entry.data_file->first_row_id);
+      }
+    }
+    return first_row_ids;
   }
 
   // Write a manifest file containing the given data files.
@@ -448,10 +475,7 @@ TEST_F(MergingSnapshotUpdateTest, CommitNewDataFile) {
 }
 
 TEST_F(MergingSnapshotUpdateTest, CommitV3NewDataFileAssignsRowLineage) {
-  ICEBERG_UNWRAP_OR_FAIL(auto props, table_->NewUpdateProperties());
-  props->Set(TableProperties::kFormatVersion.key(), "3");
-  EXPECT_THAT(props->Commit(), IsOk());
-  EXPECT_THAT(table_->Refresh(), IsOk());
+  UpgradeTableToV3();
 
   ICEBERG_UNWRAP_OR_FAIL(auto op, NewMergeAppend());
   EXPECT_THAT(op->AddFile(file_a_), IsOk());
@@ -464,6 +488,110 @@ TEST_F(MergingSnapshotUpdateTest, CommitV3NewDataFileAssignsRowLineage) {
   EXPECT_EQ(first_row_id, std::make_optional<int64_t>(0));
   EXPECT_EQ(added_rows, std::make_optional<int64_t>(100));
   EXPECT_EQ(table_->metadata()->next_row_id, 100);
+}
+
+TEST_F(MergingSnapshotUpdateTest, V3MultiFileRowIds) {
+  UpgradeTableToV3();
+
+  ICEBERG_UNWRAP_OR_FAIL(auto op, NewMergeAppend());
+  EXPECT_THAT(op->AddFile(file_a_), IsOk());
+  EXPECT_THAT(op->AddFile(file_b_), IsOk());
+  EXPECT_THAT(op->Commit(), IsOk());
+
+  EXPECT_THAT(table_->Refresh(), IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(auto snapshot, table_->current_snapshot());
+  ICEBERG_UNWRAP_OR_FAIL(auto first_row_id, snapshot->FirstRowId());
+  ICEBERG_UNWRAP_OR_FAIL(auto added_rows, snapshot->AddedRows());
+  EXPECT_EQ(first_row_id, std::make_optional<int64_t>(0));
+  EXPECT_EQ(added_rows, std::make_optional<int64_t>(200));
+  EXPECT_EQ(table_->metadata()->next_row_id, 200);
+
+  ICEBERG_UNWRAP_OR_FAIL(auto first_row_ids,
+                         DataFileFirstRowIds(snapshot, *table_->metadata()));
+  EXPECT_EQ(first_row_ids.at(file_a_->file_path), std::make_optional<int64_t>(0));
+  EXPECT_EQ(first_row_ids.at(file_b_->file_path), std::make_optional<int64_t>(100));
+}
+
+TEST_F(MergingSnapshotUpdateTest, V3BranchRowIds) {
+  UpgradeTableToV3();
+  CommitFileA();
+
+  ICEBERG_UNWRAP_OR_FAIL(auto starting_snapshot, table_->current_snapshot());
+  const auto starting_snapshot_id = starting_snapshot->snapshot_id;
+  const auto starting_next_row_id = table_->metadata()->next_row_id;
+
+  ICEBERG_UNWRAP_OR_FAIL(auto manager, table_->NewSnapshotManager());
+  manager->CreateBranch("audit", starting_snapshot_id);
+  EXPECT_THAT(manager->Commit(), IsOk());
+  EXPECT_THAT(table_->Refresh(), IsOk());
+
+  ICEBERG_UNWRAP_OR_FAIL(auto op, NewMergeAppend());
+  op->SetTargetBranch("audit");
+  EXPECT_THAT(op->AddFile(file_b_), IsOk());
+  EXPECT_THAT(op->Commit(), IsOk());
+
+  EXPECT_THAT(table_->Refresh(), IsOk());
+  EXPECT_EQ(table_->metadata()->next_row_id,
+            starting_next_row_id + file_b_->record_count);
+  ICEBERG_UNWRAP_OR_FAIL(auto current_snapshot, table_->current_snapshot());
+  EXPECT_EQ(current_snapshot->snapshot_id, starting_snapshot_id);
+
+  auto ref_it = table_->metadata()->refs.find("audit");
+  ASSERT_NE(ref_it, table_->metadata()->refs.end());
+  ICEBERG_UNWRAP_OR_FAIL(auto branch_snapshot,
+                         table_->metadata()->SnapshotById(ref_it->second->snapshot_id));
+  ICEBERG_UNWRAP_OR_FAIL(auto first_row_id, branch_snapshot->FirstRowId());
+  ICEBERG_UNWRAP_OR_FAIL(auto added_rows, branch_snapshot->AddedRows());
+  EXPECT_EQ(first_row_id, std::make_optional(starting_next_row_id));
+  EXPECT_EQ(added_rows, std::make_optional(file_b_->record_count));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto first_row_ids,
+                         DataFileFirstRowIds(branch_snapshot, *table_->metadata()));
+  EXPECT_EQ(first_row_ids.at(file_a_->file_path), std::make_optional<int64_t>(0));
+  EXPECT_EQ(first_row_ids.at(file_b_->file_path),
+            std::make_optional(starting_next_row_id));
+}
+
+// A staged v3 append must reassign row IDs when a concurrent commit advances next_row_id.
+TEST_F(MergingSnapshotUpdateTest, V3RetryRowIds) {
+  UpgradeTableToV3();
+  test::FakeRetryEnvironment fake_retry;
+  ScopedRetryTestHooks retry_hooks(fake_retry.hooks());
+
+  // Stage file_a_ with first_row_id = 0, but do not commit the transaction yet.
+  ICEBERG_UNWRAP_OR_FAIL(auto txn, table_->NewTransaction());
+  ICEBERG_UNWRAP_OR_FAIL(auto append, txn->NewMergeAppend());
+  append->AppendFile(file_a_);
+  EXPECT_THAT(append->Commit(), IsOk());
+
+  ICEBERG_UNWRAP_OR_FAIL(auto staged_snapshot, txn->current().Snapshot());
+  ICEBERG_UNWRAP_OR_FAIL(auto staged_first_row_id, staged_snapshot->FirstRowId());
+  EXPECT_EQ(staged_first_row_id, std::make_optional<int64_t>(0));
+
+  // Commit file_b_ first, advancing table next_row_id and making file_a_'s row IDs stale.
+  ICEBERG_UNWRAP_OR_FAIL(auto concurrent, table_->NewMergeAppend());
+  concurrent->AppendFile(file_b_);
+  EXPECT_THAT(concurrent->Commit(), IsOk());
+  auto after_concurrent = ReloadMetadata();
+  EXPECT_EQ(after_concurrent->next_row_id, file_b_->record_count);
+
+  // The original transaction must retry and reassign file_a_ after file_b_'s row IDs.
+  ICEBERG_UNWRAP_OR_FAIL(auto committed_table, txn->Commit());
+  EXPECT_FALSE(fake_retry.sleep_durations().empty());
+  EXPECT_EQ(committed_table->metadata()->next_row_id,
+            file_b_->record_count + file_a_->record_count);
+
+  ICEBERG_UNWRAP_OR_FAIL(auto snapshot, committed_table->current_snapshot());
+  ICEBERG_UNWRAP_OR_FAIL(auto first_row_id, snapshot->FirstRowId());
+  ICEBERG_UNWRAP_OR_FAIL(auto added_rows, snapshot->AddedRows());
+  EXPECT_EQ(first_row_id, std::make_optional(file_b_->record_count));
+  EXPECT_EQ(added_rows, std::make_optional(file_a_->record_count));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto first_row_ids,
+                         DataFileFirstRowIds(snapshot, *committed_table->metadata()));
+  EXPECT_EQ(first_row_ids.at(file_b_->file_path), std::make_optional<int64_t>(0));
+  EXPECT_EQ(first_row_ids.at(file_a_->file_path),
+            std::make_optional(file_b_->record_count));
 }
 
 TEST_F(MergingSnapshotUpdateTest, CommitMultipleDataFiles) {

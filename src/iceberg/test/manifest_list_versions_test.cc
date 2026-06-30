@@ -328,6 +328,15 @@ TEST_F(TestManifestListVersions, TestV3WriteMixedRowIdAssignment) {
             std::make_optional(kSnapshotFirstRowId + kAddedRows + kExistingRows));
 }
 
+TEST_F(TestManifestListVersions, TestV3DeleteRowIdNull) {
+  const auto manifest_list_path =
+      WriteManifestList(/*format_version=*/3, kSnapshotFirstRowId, {kDeleteManifest});
+
+  auto manifest = ReadManifestList(manifest_list_path);
+  EXPECT_EQ(manifest.content, ManifestContent::kDeletes);
+  EXPECT_FALSE(manifest.first_row_id.has_value());
+}
+
 TEST_F(TestManifestListVersions, TestV1ForwardCompatibility) {
   std::string manifest_list_path =
       WriteManifestList(/*format_version=*/1, kSnapshotFirstRowId, {kTestManifest});

@@ -1071,12 +1071,13 @@ Status TableMetadataBuilder::Impl::AddSnapshot(std::shared_ptr<Snapshot> snapsho
                 "Attempting to add a snapshot before a sort order is added");
   ICEBERG_CHECK(!snapshots_by_id_.contains(snapshot->snapshot_id),
                 "Snapshot already exists for id: {}", snapshot->snapshot_id);
-  ICEBERG_CHECK(
-      metadata_.format_version == 1 ||
-          snapshot->sequence_number > metadata_.last_sequence_number ||
-          !snapshot->parent_snapshot_id.has_value(),
-      "Cannot add snapshot with sequence number {} older than last sequence number {}",
-      snapshot->sequence_number, metadata_.last_sequence_number);
+  if (metadata_.format_version != 1 &&
+      snapshot->sequence_number <= metadata_.last_sequence_number &&
+      snapshot->parent_snapshot_id.has_value()) {
+    return RetryableValidationFailed(
+        "Cannot add snapshot with sequence number {} older than last sequence number {}",
+        snapshot->sequence_number, metadata_.last_sequence_number);
+  }
 
   metadata_.last_sequence_number = snapshot->sequence_number;
   metadata_.snapshots.push_back(snapshot);
@@ -1087,10 +1088,11 @@ Status TableMetadataBuilder::Impl::AddSnapshot(std::shared_ptr<Snapshot> snapsho
     ICEBERG_ASSIGN_OR_RAISE(auto first_row_id, snapshot->FirstRowId());
     ICEBERG_CHECK(first_row_id.has_value(),
                   "Cannot add a snapshot: first-row-id is null");
-    ICEBERG_CHECK(
-        first_row_id.value() >= metadata_.next_row_id,
-        "Cannot add a snapshot, first-row-id is behind table next-row-id: {} < {}",
-        first_row_id.value(), metadata_.next_row_id);
+    if (first_row_id.value() < metadata_.next_row_id) {
+      return RetryableValidationFailed(
+          "Cannot add a snapshot, first-row-id is behind table next-row-id: {} < {}",
+          first_row_id.value(), metadata_.next_row_id);
+    }
 
     ICEBERG_ASSIGN_OR_RAISE(auto add_rows, snapshot->AddedRows());
     ICEBERG_CHECK(add_rows.has_value(), "Cannot add a snapshot: added-rows is null");

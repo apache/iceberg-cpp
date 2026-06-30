@@ -198,7 +198,8 @@ class RetryRunner : private detail::RetryRunnerBase {
 ICEBERG_EXPORT inline auto MakeCommitRetryRunner(int32_t num_retries, int32_t min_wait_ms,
                                                  int32_t max_wait_ms,
                                                  int32_t total_timeout_ms) {
-  return RetryRunner<retry::OnlyRetryOn<ErrorKind::kCommitFailed>>(
+  return RetryRunner<retry::OnlyRetryOn<ErrorKind::kCommitFailed,
+                                        ErrorKind::kRetryableValidationFailed>>(
       RetryConfig{.num_retries = num_retries,
                   .min_wait_ms = min_wait_ms,
                   .max_wait_ms = max_wait_ms,

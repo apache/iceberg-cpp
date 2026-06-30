@@ -61,6 +61,7 @@ enum class ErrorKind {
   kNotImplemented,
   kNotSupported,
   kRestError,
+  kRetryableValidationFailed,
   kServiceUnavailable,
   kTokenExpired,
   kUnknownError,
@@ -127,6 +128,7 @@ DEFINE_ERROR_FUNCTION(NotFound)
 DEFINE_ERROR_FUNCTION(NotImplemented)
 DEFINE_ERROR_FUNCTION(NotSupported)
 DEFINE_ERROR_FUNCTION(RestError)
+DEFINE_ERROR_FUNCTION(RetryableValidationFailed)
 DEFINE_ERROR_FUNCTION(ServiceUnavailable)
 DEFINE_ERROR_FUNCTION(TokenExpired)
 DEFINE_ERROR_FUNCTION(UnknownError)

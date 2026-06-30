@@ -485,6 +485,27 @@ TEST(RetryRunnerTest, MakeCommitRetryRunnerRetriesCommitFailed) {
   EXPECT_EQ(attempts, 3);
 }
 
+TEST(RetryRunnerTest, RetriesRetryableValidation) {
+  int call_count = 0;
+  int32_t attempts = 0;
+
+  auto result = MakeCommitRetryRunner(3, 1, 10, 5000)
+                    .Run(
+                        [&]() -> Result<int> {
+                          ++call_count;
+                          if (call_count <= 2) {
+                            return RetryableValidationFailed("stale");
+                          }
+                          return 99;
+                        },
+                        &attempts);
+
+  EXPECT_THAT(result, IsOk());
+  EXPECT_EQ(*result, 99);
+  EXPECT_EQ(call_count, 3);
+  EXPECT_EQ(attempts, 3);
+}
+
 TEST(RetryRunnerTest, OnlyRetryOnMultipleErrorKinds) {
   int call_count = 0;
   int32_t attempts = 0;

@@ -460,4 +460,74 @@ TEST(TableUpdateTest, SetSnapshotRefRejectsTagForMainBranch) {
   EXPECT_THAT(result, HasErrorMessage("Cannot set main to a tag, it must be a branch"));
 }
 
+TEST(TableUpdateTest, V3SnapshotRows) {
+  auto base = CreateBaseMetadata();
+  base->format_version = 3;
+  base->next_row_id = 5;
+  auto builder = TableMetadataBuilder::BuildFrom(base.get());
+
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto snapshot,
+      Snapshot::Make(/*sequence_number=*/1, /*snapshot_id=*/123,
+                     /*parent_snapshot_id=*/std::nullopt, TimePointMsFromUnixMs(2000000),
+                     DataOperation::kAppend,
+                     /*summary=*/{}, base->current_schema_id,
+                     "s3://bucket/manifest-list.avro",
+                     /*first_row_id=*/5,
+                     /*added_rows=*/7));
+  table::AddSnapshot update(std::shared_ptr<Snapshot>(std::move(snapshot)));
+  update.ApplyTo(*builder);
+
+  ICEBERG_UNWRAP_OR_FAIL(auto metadata, builder->Build());
+  EXPECT_EQ(metadata->next_row_id, 12);
+}
+
+TEST(TableUpdateTest, V3StaleRowId) {
+  auto base = CreateBaseMetadata();
+  base->format_version = 3;
+  base->next_row_id = 5;
+  auto builder = TableMetadataBuilder::BuildFrom(base.get());
+
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto snapshot,
+      Snapshot::Make(/*sequence_number=*/1, /*snapshot_id=*/123,
+                     /*parent_snapshot_id=*/std::nullopt, TimePointMsFromUnixMs(2000000),
+                     DataOperation::kAppend,
+                     /*summary=*/{}, base->current_schema_id,
+                     "s3://bucket/manifest-list.avro",
+                     /*first_row_id=*/4,
+                     /*added_rows=*/1));
+  table::AddSnapshot update(std::shared_ptr<Snapshot>(std::move(snapshot)));
+  update.ApplyTo(*builder);
+
+  auto result = builder->Build();
+  ASSERT_THAT(result, IsError(ErrorKind::kRetryableValidationFailed));
+  EXPECT_THAT(
+      result,
+      HasErrorMessage("Cannot add a snapshot, first-row-id is behind table next-row-id"));
+}
+
+TEST(TableUpdateTest, V3StaleSequence) {
+  auto base = CreateBaseMetadata();
+  base->format_version = 3;
+  base->last_sequence_number = 5;
+  auto builder = TableMetadataBuilder::BuildFrom(base.get());
+
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto snapshot,
+      Snapshot::Make(/*sequence_number=*/5, /*snapshot_id=*/123,
+                     /*parent_snapshot_id=*/1, TimePointMsFromUnixMs(2000000),
+                     DataOperation::kAppend,
+                     /*summary=*/{}, base->current_schema_id,
+                     "s3://bucket/manifest-list.avro",
+                     /*first_row_id=*/0,
+                     /*added_rows=*/1));
+  table::AddSnapshot update(std::shared_ptr<Snapshot>(std::move(snapshot)));
+  update.ApplyTo(*builder);
+
+  auto result = builder->Build();
+  ASSERT_THAT(result, IsError(ErrorKind::kRetryableValidationFailed));
+  EXPECT_THAT(result, HasErrorMessage("Cannot add snapshot with sequence number"));
+}
+
 }  // namespace iceberg

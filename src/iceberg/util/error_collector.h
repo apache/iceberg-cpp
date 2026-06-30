@@ -159,13 +159,19 @@ class ICEBERG_EXPORT ErrorCollector {
   /// in Build(), Apply(), or Commit() methods) to validate that no errors
   /// were accumulated during the builder method calls.
   ///
-  /// \return Status indicating success if no errors, or a ValidationFailed
-  ///         error with all accumulated error messages
+  /// \return Status indicating success if no errors, a RetryableValidationFailed if
+  ///         all accumulated errors are retryable validations, or a ValidationFailed
+  ///         error with all accumulated error messages otherwise
   [[nodiscard]] Status CheckErrors() const {
     if (!errors_.empty()) {
       std::string error_msg = "Validation failed due to the following errors:\n";
+      bool all_retryable = true;
       for (const auto& [kind, message] : errors_) {
+        all_retryable &= kind == ErrorKind::kRetryableValidationFailed;
         error_msg += "  - " + message + "\n";
+      }
+      if (all_retryable) {
+        return RetryableValidationFailed("{}", error_msg);
       }
       return ValidationFailed("{}", error_msg);
     }
