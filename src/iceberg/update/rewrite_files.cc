@@ -48,31 +48,49 @@ Result<std::unique_ptr<RewriteFiles>> RewriteFiles::Make(
 }
 
 RewriteFiles& RewriteFiles::DeleteDataFile(const std::shared_ptr<DataFile>& data_file) {
-  auto staged_file =
-      data_file == nullptr ? nullptr : std::make_shared<DataFile>(*data_file);
-  ICEBERG_BUILDER_RETURN_IF_ERROR(MergingSnapshotUpdate::DeleteDataFile(staged_file));
-  replaced_data_files_.insert(std::move(staged_file));
+  ICEBERG_BUILDER_CHECK(data_file != nullptr, "Invalid data file: null");
+  ICEBERG_BUILDER_CHECK(data_file->content == DataFile::Content::kData,
+                        "Invalid data file to delete: {} has delete-file content",
+                        data_file->file_path);
+  ICEBERG_BUILDER_RETURN_IF_ERROR(MergingSnapshotUpdate::DeleteDataFile(data_file));
+  replaced_data_files_.insert(std::make_shared<DataFile>(*data_file));
   return *this;
 }
 
 RewriteFiles& RewriteFiles::DeleteDeleteFile(
     const std::shared_ptr<DataFile>& delete_file) {
+  ICEBERG_BUILDER_CHECK(delete_file != nullptr, "Invalid delete file: null");
+  ICEBERG_BUILDER_CHECK(delete_file->content != DataFile::Content::kData,
+                        "Invalid delete file to delete: {} has data-file content",
+                        delete_file->file_path);
   ICEBERG_BUILDER_RETURN_IF_ERROR(MergingSnapshotUpdate::DeleteDeleteFile(delete_file));
   return *this;
 }
 
 RewriteFiles& RewriteFiles::AddDataFile(const std::shared_ptr<DataFile>& file) {
+  ICEBERG_BUILDER_CHECK(file != nullptr, "Invalid data file: null");
+  ICEBERG_BUILDER_CHECK(file->content == DataFile::Content::kData,
+                        "Invalid data file to add: {} has delete-file content",
+                        file->file_path);
   ICEBERG_BUILDER_RETURN_IF_ERROR(MergingSnapshotUpdate::AddDataFile(file));
   return *this;
 }
 
 RewriteFiles& RewriteFiles::AddDeleteFile(const std::shared_ptr<DataFile>& delete_file) {
+  ICEBERG_BUILDER_CHECK(delete_file != nullptr, "Invalid delete file: null");
+  ICEBERG_BUILDER_CHECK(delete_file->content != DataFile::Content::kData,
+                        "Invalid delete file to add: {} has data-file content",
+                        delete_file->file_path);
   ICEBERG_BUILDER_RETURN_IF_ERROR(MergingSnapshotUpdate::AddDeleteFile(delete_file));
   return *this;
 }
 
 RewriteFiles& RewriteFiles::AddDeleteFile(const std::shared_ptr<DataFile>& delete_file,
                                           int64_t data_sequence_number) {
+  ICEBERG_BUILDER_CHECK(delete_file != nullptr, "Invalid delete file: null");
+  ICEBERG_BUILDER_CHECK(delete_file->content != DataFile::Content::kData,
+                        "Invalid delete file to add: {} has data-file content",
+                        delete_file->file_path);
   ICEBERG_BUILDER_RETURN_IF_ERROR(
       MergingSnapshotUpdate::AddDeleteFile(delete_file, data_sequence_number));
   return *this;
@@ -120,11 +138,6 @@ RewriteFiles& RewriteFiles::ValidateFromSnapshot(int64_t snapshot_id) {
   return *this;
 }
 
-RewriteFiles& RewriteFiles::ToBranch(const std::string& branch) {
-  SetTargetBranch(branch);
-  return *this;
-}
-
 std::string RewriteFiles::operation() { return DataOperation::kReplace; }
 
 void RewriteFiles::ValidateReplacedAndAddedFiles() {
@@ -153,18 +166,12 @@ void RewriteFiles::ValidateReplacedAndAddedFiles() {
 
 Status RewriteFiles::Validate(const TableMetadata& current_metadata,
                               const std::shared_ptr<Snapshot>& snapshot) {
-  // Step 1: Validate the replaced and added files invariants
   ValidateReplacedAndAddedFiles();
   ICEBERG_RETURN_UNEXPECTED(CheckErrors());
 
-  // Step 2: If there are replaced data files, validate no new row-level deletes
-  // for those data files have been added concurrently
   if (!replaced_data_files_.empty()) {
-    // The instance method automatically determines ignore_equality_deletes
-    // based on whether SetDataSequenceNumber was called:
-    // - If data sequence number was set, equality deletes at higher sequence
-    //   numbers still correctly apply to the new files → ignore them.
-    // - If no sequence number was set, ALL new deletes are conflicts.
+    // If there are replaced data files, there cannot be any new row-level deletes
+    // for those data files.
     auto io = ctx_->table->io();
     ICEBERG_RETURN_UNEXPECTED(MergingSnapshotUpdate::ValidateNoNewDeletesForDataFiles(
         current_metadata, starting_snapshot_id_, replaced_data_files_, snapshot,

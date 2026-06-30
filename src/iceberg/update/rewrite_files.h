@@ -37,14 +37,14 @@ namespace iceberg {
 
 /// \brief API for replacing files in a table.
 ///
-/// This operation accumulates file additions and deletions, produces a new
-/// Snapshot of the changes, and commits that snapshot as the current.
+/// This API accumulates file additions and deletions, produces a new Snapshot
+/// of the changes, and commits that snapshot as the current.
 ///
 /// When committing, these changes will be applied to the latest table snapshot.
 /// Commit conflicts will be resolved by applying the changes to the new latest
 /// snapshot and reattempting the commit. If any of the deleted files are no
-/// longer in the latest snapshot when reattempting, the commit will throw a
-/// ValidationException.
+/// longer in the latest snapshot when reattempting, the commit will fail
+/// validation.
 ///
 /// Note that the new state of the table after each rewrite must be logically
 /// equivalent to the original table state.
@@ -63,7 +63,9 @@ class ICEBERG_EXPORT RewriteFiles : public MergingSnapshotUpdate {
   /// \brief Remove a data file from the current table state.
   ///
   /// This rewrite operation may change the size or layout of the data files.
-  /// The set of live data records must never change.
+  /// When applicable, it is also recommended to discard already deleted records
+  /// while rewriting data files. However, the set of live data records must
+  /// never change.
   ///
   /// \param data_file a rewritten data file
   /// \return this for method chaining
@@ -72,22 +74,31 @@ class ICEBERG_EXPORT RewriteFiles : public MergingSnapshotUpdate {
   /// \brief Remove a delete file from the table state.
   ///
   /// This rewrite operation may change the size or layout of the delete files.
-  /// The set of applicable delete records must never change.
+  /// When applicable, it is also recommended to discard delete records for files
+  /// that are no longer part of the table state. However, the set of applicable
+  /// delete records must never change.
   ///
   /// \param delete_file a rewritten delete file
   /// \return this for method chaining
   RewriteFiles& DeleteDeleteFile(const std::shared_ptr<DataFile>& delete_file);
 
-  /// \brief Add a new data file or delete file.
+  /// \brief Add a new data file.
   ///
-  /// This rewrite operation may change the size or layout of the files.
-  /// The set of live data records must never change.
+  /// This rewrite operation may change the size or layout of the data files.
+  /// When applicable, it is also recommended to discard already deleted records
+  /// while rewriting data files. However, the set of live data records must
+  /// never change.
   ///
-  /// \param file a new file (data or delete)
+  /// \param file a new data file
   /// \return this for method chaining
   RewriteFiles& AddDataFile(const std::shared_ptr<DataFile>& file);
 
   /// \brief Add a new delete file.
+  ///
+  /// This rewrite operation may change the size or layout of the delete files.
+  /// When applicable, it is also recommended to discard delete records for files
+  /// that are no longer part of the table state. However, the set of applicable
+  /// delete records must never change.
   ///
   /// \param delete_file a new delete file
   /// \return this for method chaining
@@ -95,9 +106,15 @@ class ICEBERG_EXPORT RewriteFiles : public MergingSnapshotUpdate {
 
   /// \brief Add a new delete file with the given data sequence number.
   ///
+  /// This rewrite operation may change the size or layout of the delete files.
+  /// When applicable, it is also recommended to discard delete records for files
+  /// that are no longer part of the table state. However, the set of applicable
+  /// delete records must never change.
+  ///
   /// To ensure equivalence in the set of applicable delete records, the
   /// sequence number of the delete file must be the max sequence number of
-  /// the delete files that it is replacing.
+  /// the delete files that it is replacing. Rewriting equality deletes that
+  /// belong to different sequence numbers is not allowed.
   ///
   /// \param delete_file a new delete file
   /// \param data_sequence_number data sequence number to append on the file
@@ -108,8 +125,8 @@ class ICEBERG_EXPORT RewriteFiles : public MergingSnapshotUpdate {
   /// \brief Configure the data sequence number for this rewrite operation.
   ///
   /// This data sequence number will be used for all new data files that are
-  /// added in this rewrite. This is helpful to avoid commit conflicts between
-  /// data compaction and adding equality deletes.
+  /// added in this rewrite. This method is helpful to avoid commit conflicts
+  /// between data compaction and adding equality deletes.
   ///
   /// \param sequence_number a data sequence number
   /// \return this for method chaining
@@ -119,8 +136,9 @@ class ICEBERG_EXPORT RewriteFiles : public MergingSnapshotUpdate {
   /// that contains the same data. The sequence number provided will be used for
   /// all the data files added.
   ///
-  /// \param files_to_delete files that will be replaced (deleted)
-  /// \param files_to_add files that will be added
+  /// \param files_to_delete files that will be replaced (deleted), cannot be
+  /// null or empty
+  /// \param files_to_add files that will be added, cannot be null or empty
   /// \param sequence_number sequence number to use for all data files added
   /// \return this for method chaining
   RewriteFiles& RewriteDataFiles(
@@ -151,12 +169,6 @@ class ICEBERG_EXPORT RewriteFiles : public MergingSnapshotUpdate {
   /// \param snapshot_id a snapshot ID
   /// \return this for method chaining
   RewriteFiles& ValidateFromSnapshot(int64_t snapshot_id);
-
-  /// \brief Perform operations on a particular branch.
-  ///
-  /// \param branch name of a SnapshotRef of type branch
-  /// \return this for method chaining
-  RewriteFiles& ToBranch(const std::string& branch);
 
   std::string operation() override;
 

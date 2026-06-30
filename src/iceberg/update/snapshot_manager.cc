@@ -93,7 +93,7 @@ SnapshotManager& SnapshotManager::CreateBranch(const std::string& name) {
   }
   ICEBERG_BUILDER_CHECK(!base.refs.contains(name), "Ref {} already exists", name);
   ICEBERG_BUILDER_ASSIGN_OR_RETURN(auto fast_append, transaction_->NewFastAppend());
-  ICEBERG_BUILDER_RETURN_IF_ERROR(fast_append->SetTargetBranch(name).Commit());
+  ICEBERG_BUILDER_RETURN_IF_ERROR(fast_append->ToBranch(name).Commit());
   return *this;
 }
 

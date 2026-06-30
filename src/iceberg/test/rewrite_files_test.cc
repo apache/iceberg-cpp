@@ -307,6 +307,44 @@ TEST_P(RewriteFilesFormatVersionTest, DeleteDataFileCopiesCallerFile) {
   EXPECT_THAT(result, HasErrorMessage("Missing required files to delete"));
 }
 
+TEST_P(RewriteFilesFormatVersionTest, AddDataFileRejectsDeleteFileContent) {
+  CommitFileA();
+
+  ICEBERG_UNWRAP_OR_FAIL(auto rw, NewRewriteFiles());
+  rw->DeleteDataFile(file_a_);
+  rw->AddDataFile(delete_file_a_);
+  auto result = rw->Commit();
+  EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
+  EXPECT_THAT(result, HasErrorMessage("Invalid data file to add"));
+}
+
+TEST_P(RewriteFilesFormatVersionTest, RewriteDeleteFilesCopiesCallerFiles) {
+  AssumeFormatVersionAtLeast(2);
+  CommitFileA();
+
+  {
+    ICEBERG_UNWRAP_OR_FAIL(auto row_delta, table_->NewRowDelta());
+    row_delta->AddDeletes(delete_file_a_);
+    EXPECT_THAT(row_delta->Commit(), IsOk());
+    EXPECT_THAT(table_->Refresh(), IsOk());
+  }
+
+  ICEBERG_UNWRAP_OR_FAIL(auto after_delta_snapshot, table_->current_snapshot());
+  auto old_delete = std::make_shared<DataFile>(*delete_file_a_);
+  auto new_delete = std::make_shared<DataFile>(*rewritten_delete_file_a_);
+
+  ICEBERG_UNWRAP_OR_FAIL(auto rw, NewRewriteFiles());
+  rw->ValidateFromSnapshot(after_delta_snapshot->snapshot_id);
+  rw->DeleteDeleteFile(old_delete);
+  rw->AddDeleteFile(new_delete);
+
+  old_delete->file_path = table_location_ + "/data/delete_a_mutated.parquet";
+  new_delete->content = DataFile::Content::kData;
+
+  EXPECT_THAT(rw->Commit(), IsOk());
+  EXPECT_THAT(table_->Refresh(), IsOk());
+}
+
 // Rewrite one of several data files, verifying only the target is affected.
 TEST_P(RewriteFilesFormatVersionTest, AddAndDeletePartialRewrite) {
   CommitFileA();

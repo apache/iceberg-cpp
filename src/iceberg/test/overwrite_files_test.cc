@@ -243,7 +243,7 @@ TEST_F(OverwriteFilesTest, TargetBranch) {
   CommitFileA();
 
   ICEBERG_UNWRAP_OR_FAIL(auto op, NewOverwrite());
-  op->SetTargetBranch("audit");
+  op->ToBranch("audit");
   op->AddFile(file_b_);
   EXPECT_THAT(op->Commit(), IsOk());
 

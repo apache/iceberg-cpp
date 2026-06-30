@@ -269,13 +269,13 @@ class MergeAppendTestBase : public UpdateTestBase {
   // both the main branch and a named branch without per-call boilerplate.
   Result<std::shared_ptr<MergeAppend>> NewBranchMergeAppend() {
     ICEBERG_ASSIGN_OR_RAISE(auto append, table_->NewMergeAppend());
-    append->SetTargetBranch(branch());
+    append->ToBranch(branch());
     return append;
   }
 
   Result<std::shared_ptr<FastAppend>> NewBranchFastAppend() {
     ICEBERG_ASSIGN_OR_RAISE(auto append, table_->NewFastAppend());
-    append->SetTargetBranch(branch());
+    append->ToBranch(branch());
     return append;
   }
 
@@ -1127,7 +1127,7 @@ TEST_P(MergeAppendTest, Failure) {
 
   ICEBERG_UNWRAP_OR_FAIL(auto txn, table_->NewTransaction());
   ICEBERG_UNWRAP_OR_FAIL(auto append, txn->NewMergeAppend());
-  append->SetTargetBranch(branch());
+  append->ToBranch(branch());
   append->AppendFile(file_b_);
   EXPECT_THAT(append->Commit(), IsOk());
 
@@ -1166,7 +1166,7 @@ TEST_P(MergeAppendTest, AppendManifestCleanup) {
 
   ICEBERG_UNWRAP_OR_FAIL(auto txn, table_->NewTransaction());
   ICEBERG_UNWRAP_OR_FAIL(auto append, txn->NewMergeAppend());
-  append->SetTargetBranch(branch());
+  append->ToBranch(branch());
   append->AppendManifest(manifest);
   EXPECT_THAT(append->Commit(), IsOk());
 
@@ -1215,7 +1215,7 @@ TEST_P(MergeAppendTest, Recovery) {
 
   ICEBERG_UNWRAP_OR_FAIL(auto txn, table_->NewTransaction());
   ICEBERG_UNWRAP_OR_FAIL(auto append, txn->NewMergeAppend());
-  append->SetTargetBranch(branch());
+  append->ToBranch(branch());
   append->AppendFile(file_b_);
   EXPECT_THAT(append->Commit(), IsOk());
 
@@ -1336,7 +1336,7 @@ TEST_P(MergeAppendTest, AppendManifestFailureWithSnapshotIdInheritance) {
 TEST_P(MergeAppendTest, TransactionNewMergeAppendCommits) {
   ICEBERG_UNWRAP_OR_FAIL(auto txn, table_->NewTransaction());
   ICEBERG_UNWRAP_OR_FAIL(auto append, txn->NewMergeAppend());
-  append->SetTargetBranch(branch());
+  append->ToBranch(branch());
   append->AppendFile(file_a_);
   EXPECT_THAT(append->Commit(), IsOk());
   ICEBERG_UNWRAP_OR_FAIL(auto committed_table, txn->Commit());

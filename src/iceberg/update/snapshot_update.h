@@ -96,7 +96,7 @@ class ICEBERG_EXPORT SnapshotUpdate : public PendingUpdate {
   ///
   /// \param branch The name of a SnapshotRef of type branch.
   /// \return This update for method chaining.
-  auto& SetTargetBranch(this auto& self, const std::string& branch) {
+  auto& ToBranch(this auto& self, const std::string& branch) {
     if (branch.empty()) [[unlikely]] {
       return self.AddError(ErrorKind::kInvalidArgument, "Branch name cannot be empty");
     }
