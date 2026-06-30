@@ -44,7 +44,7 @@ class ICEBERG_EXPORT CerrLogger : public Logger {
   bool ShouldLog(LogLevel level) const noexcept override {
     return level >= level_.load(std::memory_order_relaxed);
   }
-  void Log(LogMessage&& message) noexcept override;
+  void Log(const LogRecord& record) noexcept override;
   void SetLevel(LogLevel level) noexcept override {
     level_.store(level, std::memory_order_relaxed);
   }

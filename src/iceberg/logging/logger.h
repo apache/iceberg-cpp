@@ -29,8 +29,10 @@
 #include <concepts>
 #include <cstdlib>
 #include <format>
+#include <iterator>
 #include <memory>
 #include <source_location>
+#include <span>
 #include <string>
 #include <string_view>
 #include <type_traits>
@@ -54,13 +56,26 @@ struct ICEBERG_EXPORT LogAttribute {
   std::string value;
 };
 
-/// \brief A single log record handed to a Logger.
+/// \brief A non-owning view of one log record, as handed to Logger::Log().
 ///
-/// The formatted message is owned (moved in by the logging macros), so a sink
-/// may safely retain the record beyond the Log() call. The member set must not
-/// depend on the build's logging backend (the spdlog backend never appears here).
-/// Use LogMessage::Builder for a readable way to assemble one, especially with
-/// structured attributes.
+/// `message` and `attributes` are borrowed and valid ONLY for the duration of the
+/// Log() call -- they typically reference a reused per-thread format buffer. A sink
+/// that consumes the record synchronously (the in-tree CerrLogger/SpdLogger) uses
+/// them directly with no allocation; a sink that RETAINS the record (async, or the
+/// test CapturingLogger) must deep-copy into owned storage (e.g. a LogMessage).
+struct ICEBERG_EXPORT LogRecord {
+  LogLevel level = LogLevel::kOff;
+  std::string_view message;
+  std::source_location location = std::source_location::current();
+  std::span<const LogAttribute> attributes;
+};
+
+/// \brief An owned log record: the result of LogMessage::Builder and the type a
+/// retaining sink copies into. Converts implicitly to a (non-owning) LogRecord
+/// that views this object's storage, so `logger->Log(builder.Build())` works.
+///
+/// The member set must not depend on the build's logging backend (the spdlog
+/// backend never appears here).
 struct ICEBERG_EXPORT LogMessage {
   LogLevel level = LogLevel::kOff;
   std::string message;
@@ -68,6 +83,17 @@ struct ICEBERG_EXPORT LogMessage {
   std::vector<LogAttribute> attributes;
 
   class Builder;
+
+  /// \brief View this owned record as a LogRecord (no copy). The view is valid as
+  /// long as this LogMessage lives.
+  LogRecord AsRecord() const noexcept {
+    return LogRecord{.level = level,
+                     .message = message,
+                     .location = location,
+                     .attributes = attributes};
+  }
+  // NOLINTNEXTLINE(google-explicit-constructor): implicit so logger->Log(msg) works
+  operator LogRecord() const noexcept { return AsRecord(); }
 };
 
 /// \brief Fluent builder for LogMessage, the easy path to attach structured
@@ -165,8 +191,12 @@ class ICEBERG_EXPORT Logger {
   /// \brief Cheap check whether a record at \p level would be emitted.
   virtual bool ShouldLog(LogLevel level) const noexcept = 0;
 
-  /// \brief Emit one (already-formatted) record, taking ownership. Must not throw.
-  virtual void Log(LogMessage&& message) noexcept = 0;
+  /// \brief Emit one (already-formatted) record. Must not throw.
+  ///
+  /// The record's `message`/`attributes` are non-owning views valid only for this
+  /// call; a sink that retains the record must deep-copy them. An owned LogMessage
+  /// converts implicitly, so `logger->Log(builder.Build())` still works.
+  virtual void Log(const LogRecord& record) noexcept = 0;
 
   /// \brief Set the minimum level this logger emits.
   virtual void SetLevel(LogLevel level) noexcept = 0;
@@ -283,12 +313,22 @@ namespace internal {
 /// statement.
 ICEBERG_EXPORT const std::shared_ptr<Logger>& CurrentLogger() noexcept;
 
-/// \brief Build a LogMessage from the already-formatted text and dispatch it.
+/// \brief Wrap the already-formatted text in a LogRecord view and dispatch it.
 ///
-/// Declared ICEBERG_EXPORT because the logging macros expand into this call in
-/// consumer translation units.
+/// \p message is borrowed (typically the per-thread FormatBuffer) and must outlive
+/// the call. Declared ICEBERG_EXPORT because the logging macros expand into this
+/// call in consumer translation units.
 ICEBERG_EXPORT void Emit(Logger& logger, LogLevel level,
-                         const std::source_location& location, std::string&& message);
+                         const std::source_location& location, std::string_view message);
+
+/// \brief A reused per-thread scratch buffer for formatting a log line.
+///
+/// One std::string per thread, cleared (capacity retained) before each format, so
+/// repeated logging on a thread does no heap allocation after the buffer warms up.
+/// Holds no Logger references, so it is independent of the CurrentLogger teardown
+/// machinery. Not reentrant: a sink must not log from within Log() (already UB per
+/// the Logger no-reentrancy contract) or it would clobber a format in progress.
+ICEBERG_EXPORT std::string& FormatBuffer() noexcept;
 
 /// \brief Emit a fixed fallback record when formatting threw.
 ///
@@ -337,9 +377,14 @@ template <typename... Args>
 void FormatAndEmit(Logger& logger, LogLevel level, const std::source_location& loc,
                    std::format_string<Args...> fmt, Args&&... args) noexcept {
   if (!logger.ShouldLog(level)) return;
+  std::string& buf = FormatBuffer();
+  buf.clear();  // retains capacity -> no heap allocation after warmup
   try {
-    Emit(logger, level, loc, std::format(fmt, std::forward<Args>(args)...));
-  } catch (...) {
+    // format_to with a std::format_string keeps compile-time format checking; the
+    // result lives in the reused buffer and is passed to Emit as a view.
+    std::format_to(std::back_inserter(buf), fmt, std::forward<Args>(args)...);
+    Emit(logger, level, loc, buf);
+  } catch (const std::exception&) {
     EmitFormatError(logger, level, loc);
   }
 }
