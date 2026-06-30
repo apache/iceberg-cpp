@@ -984,6 +984,33 @@ TEST_P(AvroWriterTest, WriteUuidMapType) {
   ASSERT_NO_FATAL_FAILURE(WriteArrowArrayAndVerify(schema, array));
 }
 
+TEST_P(AvroWriterTest, WriteUuidMapKeyType) {
+  auto schema = std::make_shared<iceberg::Schema>(
+      std::vector<SchemaField>{SchemaField::MakeRequired(
+          1, "uuid_key_map",
+          std::make_shared<MapType>(
+              SchemaField::MakeRequired(2, MapType::kKeyName, iceberg::uuid()),
+              SchemaField::MakeRequired(3, MapType::kValueName, iceberg::string())))});
+
+  auto map_offsets = MakeInt32Array({0, 2, 3});
+  auto map_keys = MakeUuidArray({&kUuidBytes1, &kUuidBytes2, &kUuidBytes1});
+  auto map_items = MakeStringArray({"first", "second", "only"});
+  auto map_type =
+      ::arrow::map(::arrow::extension::uuid(),
+                   ::arrow::field(std::string(MapType::kValueName), ::arrow::utf8(),
+                                  /*nullable=*/false));
+  auto map_array =
+      ::arrow::MapArray::FromArrays(map_type, map_offsets, map_keys, map_items)
+          .ValueOrDie();
+
+  auto array =
+      ::arrow::StructArray::Make(
+          {map_array}, {::arrow::field("uuid_key_map", map_type, /*nullable=*/false)})
+          .ValueOrDie();
+
+  ASSERT_NO_FATAL_FAILURE(WriteArrowArrayAndVerify(schema, array));
+}
+
 TEST_P(AvroWriterTest, WriteTemporalTypes) {
   auto schema = std::make_shared<iceberg::Schema>(std::vector<SchemaField>{
       SchemaField::MakeRequired(1, "date_col", std::make_shared<DateType>()),
