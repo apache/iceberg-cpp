@@ -54,7 +54,6 @@ class RewriteFilesTest : public MinimalUpdateTestBase {
 
   void SetUp() override {
     MinimalUpdateTestBase::SetUp();
-    table_->metadata()->format_version = format_version();
 
     ICEBERG_UNWRAP_OR_FAIL(spec_, table_->spec());
     ICEBERG_UNWRAP_OR_FAIL(schema_, table_->schema());
@@ -70,18 +69,6 @@ class RewriteFilesTest : public MinimalUpdateTestBase {
         MakeDeleteFile("/data/delete_a_rewritten.parquet", /*partition_x=*/1L);
     eq_delete_file_ =
         MakeEqualityDeleteFile("/data/eq_delete_a.parquet", /*partition_x=*/1L);
-  }
-
-  virtual int8_t format_version() const {
-    return TableMetadata::kDefaultTableFormatVersion;
-  }
-
-  /// \brief Skip the current parameterization if format version is below the given
-  /// minimum.
-  void AssumeFormatVersionAtLeast(int8_t min_version) {
-    if (format_version() < min_version) {
-      GTEST_SKIP() << "Requires format version >= " << static_cast<int>(min_version);
-    }
   }
 
   std::shared_ptr<DataFile> MakeDataFile(const std::string& path, int64_t partition_x) {
@@ -319,7 +306,9 @@ TEST_P(RewriteFilesFormatVersionTest, AddDataFileRejectsDeleteFileContent) {
 }
 
 TEST_P(RewriteFilesFormatVersionTest, RewriteDeleteFilesCopiesCallerFiles) {
-  AssumeFormatVersionAtLeast(2);
+  if (format_version() < 2) {
+    GTEST_SKIP() << "Requires format version >= 2";
+  }
   CommitFileA();
 
   {
@@ -551,7 +540,9 @@ TEST_P(RewriteFilesFormatVersionTest, Recovery) {
 
 // Rewrite with an explicit data sequence number via SetDataSequenceNumber.
 TEST_P(RewriteFilesFormatVersionTest, DataSequenceNumber) {
-  AssumeFormatVersionAtLeast(2);
+  if (format_version() < 2) {
+    GTEST_SKIP() << "Requires format version >= 2";
+  }
   CommitFileA();
 
   ICEBERG_UNWRAP_OR_FAIL(auto rw, NewRewriteFiles());
@@ -568,7 +559,9 @@ TEST_P(RewriteFilesFormatVersionTest, DataSequenceNumber) {
 
 // Bulk rewrite with sequence number via the RewriteDataFiles convenience method.
 TEST_P(RewriteFilesFormatVersionTest, RewriteDataFiles) {
-  AssumeFormatVersionAtLeast(2);
+  if (format_version() < 2) {
+    GTEST_SKIP() << "Requires format version >= 2";
+  }
   CommitFileA();
 
   ICEBERG_UNWRAP_OR_FAIL(auto rw, NewRewriteFiles());
@@ -586,7 +579,9 @@ TEST_P(RewriteFilesFormatVersionTest, RewriteDataFiles) {
 
 // Deleting a file from an empty table fails with missing required files.
 TEST_P(RewriteFilesFormatVersionTest, EmptyTable) {
-  AssumeFormatVersionAtLeast(2);
+  if (format_version() < 2) {
+    GTEST_SKIP() << "Requires format version >= 2";
+  }
   ICEBERG_UNWRAP_OR_FAIL(auto rw, NewRewriteFiles());
   rw->DeleteDataFile(file_a_);
   rw->AddDataFile(rewritten_file_a_);
@@ -597,7 +592,9 @@ TEST_P(RewriteFilesFormatVersionTest, EmptyTable) {
 
 // Only adding files without any deletions must fail validation.
 TEST_P(RewriteFilesFormatVersionTest, DeleteOnly) {
-  AssumeFormatVersionAtLeast(2);
+  if (format_version() < 2) {
+    GTEST_SKIP() << "Requires format version >= 2";
+  }
   CommitFileA();
 
   ICEBERG_UNWRAP_OR_FAIL(auto rw, NewRewriteFiles());
@@ -608,7 +605,9 @@ TEST_P(RewriteFilesFormatVersionTest, DeleteOnly) {
 // Adding data files without deleting data, or adding delete files without deleting
 // delete files, must fail validation.
 TEST_P(RewriteFilesFormatVersionTest, AddOnly) {
-  AssumeFormatVersionAtLeast(2);
+  if (format_version() < 2) {
+    GTEST_SKIP() << "Requires format version >= 2";
+  }
   // Sub-case 1: adding data files without deleting any data files should fail
   {
     ICEBERG_UNWRAP_OR_FAIL(auto rw, NewRewriteFiles());
@@ -633,7 +632,9 @@ TEST_P(RewriteFilesFormatVersionTest, AddOnly) {
 // after the RowDelta commit so the delete being rewritten is not flagged as
 // a concurrent addition.
 TEST_P(RewriteFilesFormatVersionTest, RewriteDataAndDeleteFiles) {
-  AssumeFormatVersionAtLeast(2);
+  if (format_version() < 2) {
+    GTEST_SKIP() << "Requires format version >= 2";
+  }
   // Create data file via FastAppend
   CommitFileA();
 
@@ -705,7 +706,9 @@ TEST_P(RewriteFilesFormatVersionTest, RewriteDataAndDeleteFiles) {
 // Rewrite data files with an explicit old data sequence number, then verify
 // that the rewritten manifest entry carries the assigned sequence number.
 TEST_P(RewriteFilesFormatVersionTest, RewriteDataAndAssignOldSequenceNumber) {
-  AssumeFormatVersionAtLeast(2);
+  if (format_version() < 2) {
+    GTEST_SKIP() << "Requires format version >= 2";
+  }
   CommitFileA();
 
   constexpr int64_t kOldSequenceNumber = 1;
@@ -738,7 +741,9 @@ TEST_P(RewriteFilesFormatVersionTest, RewriteDataAndAssignOldSequenceNumber) {
 // Create equality deletes via RowDelta then rewrite them as position deletes
 // in a single RewriteFiles commit.
 TEST_P(RewriteFilesFormatVersionTest, ReplaceEqualityDeletesWithPositionDeletes) {
-  AssumeFormatVersionAtLeast(2);
+  if (format_version() < 2) {
+    GTEST_SKIP() << "Requires format version >= 2";
+  }
   CommitFileA();
 
   // Add an equality delete via RowDelta
@@ -794,7 +799,9 @@ TEST_P(RewriteFilesFormatVersionTest, ReplaceEqualityDeletesWithPositionDeletes)
 // then rewrite the data file while removing the delete file entirely (empty
 // delete add set).
 TEST_P(RewriteFilesFormatVersionTest, RemoveAllDeletes) {
-  AssumeFormatVersionAtLeast(2);
+  if (format_version() < 2) {
+    GTEST_SKIP() << "Requires format version >= 2";
+  }
   CommitFileA();
 
   // Add an equality delete via RowDelta
@@ -855,7 +862,9 @@ TEST_P(RewriteFilesFormatVersionTest, RemoveAllDeletes) {
 // Verify that RewriteFiles detects new delete files that were committed after
 // the validation snapshot boundary, preventing data loss.
 TEST_P(RewriteFilesFormatVersionTest, NewDeleteFile) {
-  AssumeFormatVersionAtLeast(2);
+  if (format_version() < 2) {
+    GTEST_SKIP() << "Requires format version >= 2";
+  }
   CommitFileA();
   ICEBERG_UNWRAP_OR_FAIL(auto starting_snapshot, table_->current_snapshot());
 
@@ -885,7 +894,9 @@ TEST_P(RewriteFilesFormatVersionTest, NewDeleteFile) {
 // delete files. Verify the commit fails with CommitFailed after exhausting
 // retries.
 TEST_P(RewriteFilesFormatVersionTest, FailureWhenRewriteBothDataAndDeleteFiles) {
-  AssumeFormatVersionAtLeast(2);
+  if (format_version() < 2) {
+    GTEST_SKIP() << "Requires format version >= 2";
+  }
   CommitFileA();
 
   // Create delete file via RowDelta first
@@ -929,7 +940,9 @@ TEST_P(RewriteFilesFormatVersionTest, FailureWhenRewriteBothDataAndDeleteFiles) 
 // Inject transient commit failures that stay within the retry budget when
 // rewriting both data and delete files, then verify success.
 TEST_P(RewriteFilesFormatVersionTest, RecoverWhenRewriteBothDataAndDeleteFiles) {
-  AssumeFormatVersionAtLeast(2);
+  if (format_version() < 2) {
+    GTEST_SKIP() << "Requires format version >= 2";
+  }
   CommitFileA();
 
   // Create delete file via RowDelta
