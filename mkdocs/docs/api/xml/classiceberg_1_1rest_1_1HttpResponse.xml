@@ -1,0 +1,206 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1rest_1_1HttpResponse" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::rest::HttpResponse</compoundname>
+    <includes refid="http__client_8h" local="no">http_client.h</includes>
+    <innerclass refid="classiceberg_1_1rest_1_1HttpResponse_1_1Impl" prot="public">iceberg::rest::HttpResponse::Impl</innerclass>
+    <sectiondef kind="friend">
+      <memberdef kind="friend" id="classiceberg_1_1rest_1_1HttpResponse_1af9fb1dee08b92179888741433b8357c4" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>class</type>
+        <definition>friend class HttpClient</definition>
+        <argsstring></argsstring>
+        <name>HttpClient</name>
+        <qualifiedname>iceberg::rest::HttpResponse::HttpClient</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1rest_1_1HttpClient" kindref="compound">HttpClient</ref></type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/http_client.h" line="65" column="16" bodyfile="iceberg/catalog/rest/http_client.h" bodystart="65" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1rest_1_1HttpResponse_1a66e7c7604b9f87a782f7072288f2a155" prot="private" static="no" mutable="no">
+        <type>std::unique_ptr&lt; <ref refid="classiceberg_1_1rest_1_1HttpResponse_1_1Impl" kindref="compound">Impl</ref> &gt;</type>
+        <definition>std::unique_ptr&lt;Impl&gt; iceberg::rest::HttpResponse::impl_</definition>
+        <argsstring></argsstring>
+        <name>impl_</name>
+        <qualifiedname>iceberg::rest::HttpResponse::impl_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/http_client.h" line="67" column="19" bodyfile="iceberg/catalog/rest/http_client.h" bodystart="67" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1HttpResponse_1ae31d45f4cd4bd81e47dee6bae8cbaed8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::rest::HttpResponse::HttpResponse</definition>
+        <argsstring>()</argsstring>
+        <name>HttpResponse</name>
+        <qualifiedname>iceberg::rest::HttpResponse::HttpResponse</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/http_client.h" line="47" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1HttpResponse_1ac06d7e30c6df2a05a2f3e5127d115559" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::rest::HttpResponse::~HttpResponse</definition>
+        <argsstring>()</argsstring>
+        <name>~HttpResponse</name>
+        <qualifiedname>iceberg::rest::HttpResponse::~HttpResponse</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/http_client.h" line="48" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1HttpResponse_1a4e1f5c34f455d59d6bdde499376f4484" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::rest::HttpResponse::HttpResponse</definition>
+        <argsstring>(const HttpResponse &amp;)=delete</argsstring>
+        <name>HttpResponse</name>
+        <qualifiedname>iceberg::rest::HttpResponse::HttpResponse</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1rest_1_1HttpResponse" kindref="compound">HttpResponse</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/http_client.h" line="50" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1HttpResponse_1af0882e30531122d007d2dd71f0482102" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1rest_1_1HttpResponse" kindref="compound">HttpResponse</ref> &amp;</type>
+        <definition>HttpResponse &amp; iceberg::rest::HttpResponse::operator=</definition>
+        <argsstring>(const HttpResponse &amp;)=delete</argsstring>
+        <name>operator=</name>
+        <qualifiedname>iceberg::rest::HttpResponse::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1rest_1_1HttpResponse" kindref="compound">HttpResponse</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/http_client.h" line="51" column="16"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1HttpResponse_1a1eb2330e2f67e63f9637acad1cadb785" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::rest::HttpResponse::HttpResponse</definition>
+        <argsstring>(HttpResponse &amp;&amp;) noexcept</argsstring>
+        <name>HttpResponse</name>
+        <qualifiedname>iceberg::rest::HttpResponse::HttpResponse</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1rest_1_1HttpResponse" kindref="compound">HttpResponse</ref> &amp;&amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/http_client.h" line="52" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1HttpResponse_1addc245e3541e8318435be5ea6fcd112a" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1rest_1_1HttpResponse" kindref="compound">HttpResponse</ref> &amp;</type>
+        <definition>HttpResponse &amp; iceberg::rest::HttpResponse::operator=</definition>
+        <argsstring>(HttpResponse &amp;&amp;) noexcept</argsstring>
+        <name>operator=</name>
+        <qualifiedname>iceberg::rest::HttpResponse::operator=</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1rest_1_1HttpResponse" kindref="compound">HttpResponse</ref> &amp;&amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/http_client.h" line="53" column="16"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1HttpResponse_1aaaffc2c61770f804efebfcea418ba71d" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>int32_t</type>
+        <definition>int32_t iceberg::rest::HttpResponse::status_code</definition>
+        <argsstring>() const</argsstring>
+        <name>status_code</name>
+        <qualifiedname>iceberg::rest::HttpResponse::status_code</qualifiedname>
+        <briefdescription>
+<para>Get the HTTP status code of the response. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/http_client.h" line="56" column="11" bodyfile="iceberg/catalog/rest/http_client.cc" bodystart="57" bodyend="57"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1HttpResponse_1a514d4d853a486243d2d5c4ecaf858418" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>std::string</type>
+        <definition>std::string iceberg::rest::HttpResponse::body</definition>
+        <argsstring>() const</argsstring>
+        <name>body</name>
+        <qualifiedname>iceberg::rest::HttpResponse::body</qualifiedname>
+        <briefdescription>
+<para>Get the body of the response as a string. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/http_client.h" line="59" column="15" bodyfile="iceberg/catalog/rest/http_client.cc" bodystart="59" bodyend="59"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1HttpResponse_1abafc2e167fdca3d7ae0b5bfe89fa51d4" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>std::unordered_map&lt; std::string, std::string &gt;</type>
+        <definition>std::unordered_map&lt; std::string, std::string &gt; iceberg::rest::HttpResponse::headers</definition>
+        <argsstring>() const</argsstring>
+        <name>headers</name>
+        <qualifiedname>iceberg::rest::HttpResponse::headers</qualifiedname>
+        <briefdescription>
+<para>Get the headers of the response as a map. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/http_client.h" line="62" column="22" bodyfile="iceberg/catalog/rest/http_client.cc" bodystart="61" bodyend="63"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>A simple wrapper for cpr::Response. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>This class encapsulates the details of the underlying cpr library&apos;s response, providing a consistent interface that is independent of the specific network library used. </para>
+    </detaileddescription>
+    <location file="iceberg/catalog/rest/http_client.h" line="45" column="1" bodyfile="iceberg/catalog/rest/http_client.h" bodystart="45" bodyend="68"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1rest_1_1HttpResponse_1a514d4d853a486243d2d5c4ecaf858418" prot="public" virt="non-virtual"><scope>iceberg::rest::HttpResponse</scope><name>body</name></member>
+      <member refid="classiceberg_1_1rest_1_1HttpResponse_1abafc2e167fdca3d7ae0b5bfe89fa51d4" prot="public" virt="non-virtual"><scope>iceberg::rest::HttpResponse</scope><name>headers</name></member>
+      <member refid="classiceberg_1_1rest_1_1HttpResponse_1af9fb1dee08b92179888741433b8357c4" prot="private" virt="non-virtual"><scope>iceberg::rest::HttpResponse</scope><name>HttpClient</name></member>
+      <member refid="classiceberg_1_1rest_1_1HttpResponse_1ae31d45f4cd4bd81e47dee6bae8cbaed8" prot="public" virt="non-virtual"><scope>iceberg::rest::HttpResponse</scope><name>HttpResponse</name></member>
+      <member refid="classiceberg_1_1rest_1_1HttpResponse_1a4e1f5c34f455d59d6bdde499376f4484" prot="public" virt="non-virtual"><scope>iceberg::rest::HttpResponse</scope><name>HttpResponse</name></member>
+      <member refid="classiceberg_1_1rest_1_1HttpResponse_1a1eb2330e2f67e63f9637acad1cadb785" prot="public" virt="non-virtual"><scope>iceberg::rest::HttpResponse</scope><name>HttpResponse</name></member>
+      <member refid="classiceberg_1_1rest_1_1HttpResponse_1a66e7c7604b9f87a782f7072288f2a155" prot="private" virt="non-virtual"><scope>iceberg::rest::HttpResponse</scope><name>impl_</name></member>
+      <member refid="classiceberg_1_1rest_1_1HttpResponse_1af0882e30531122d007d2dd71f0482102" prot="public" virt="non-virtual"><scope>iceberg::rest::HttpResponse</scope><name>operator=</name></member>
+      <member refid="classiceberg_1_1rest_1_1HttpResponse_1addc245e3541e8318435be5ea6fcd112a" prot="public" virt="non-virtual"><scope>iceberg::rest::HttpResponse</scope><name>operator=</name></member>
+      <member refid="classiceberg_1_1rest_1_1HttpResponse_1aaaffc2c61770f804efebfcea418ba71d" prot="public" virt="non-virtual"><scope>iceberg::rest::HttpResponse</scope><name>status_code</name></member>
+      <member refid="classiceberg_1_1rest_1_1HttpResponse_1ac06d7e30c6df2a05a2f3e5127d115559" prot="public" virt="non-virtual"><scope>iceberg::rest::HttpResponse</scope><name>~HttpResponse</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

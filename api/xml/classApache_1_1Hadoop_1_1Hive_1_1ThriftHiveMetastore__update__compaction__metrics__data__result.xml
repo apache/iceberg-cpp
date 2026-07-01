@@ -1,0 +1,304 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__update__compaction__metrics__data__result" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::ThriftHiveMetastore_update_compaction_metrics_data_result</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__update__compaction__metrics__data__result_1aae152f7e7ccfb43605569548e4b0ce2e" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::ThriftHiveMetastore_update_compaction_metrics_data_result::success</definition>
+        <argsstring></argsstring>
+        <name>success</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_update_compaction_metrics_data_result::success</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="23455" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="23455" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__update__compaction__metrics__data__result_1a89281bd54c3541fe816d50472780ee49" prot="public" static="no" mutable="no">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1MetaException" kindref="compound">MetaException</ref></type>
+        <definition>MetaException Apache::Hadoop::Hive::ThriftHiveMetastore_update_compaction_metrics_data_result::o1</definition>
+        <argsstring></argsstring>
+        <name>o1</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_update_compaction_metrics_data_result::o1</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="23456" column="17" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="23456" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__update__compaction__metrics__data__result_1a56197c14055aea4d3ee4a2e04faeaaad" prot="public" static="no" mutable="no">
+        <type><ref refid="structApache_1_1Hadoop_1_1Hive_1_1__ThriftHiveMetastore__update__compaction__metrics__data__result____isset" kindref="compound">_ThriftHiveMetastore_update_compaction_metrics_data_result__isset</ref></type>
+        <definition>_ThriftHiveMetastore_update_compaction_metrics_data_result__isset Apache::Hadoop::Hive::ThriftHiveMetastore_update_compaction_metrics_data_result::__isset</definition>
+        <argsstring></argsstring>
+        <name>__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_update_compaction_metrics_data_result::__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="23458" column="69" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="23458" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__update__compaction__metrics__data__result_1ace95b374502657295efb1bd464d8ea04" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::ThriftHiveMetastore_update_compaction_metrics_data_result::ThriftHiveMetastore_update_compaction_metrics_data_result</definition>
+        <argsstring>(const ThriftHiveMetastore_update_compaction_metrics_data_result &amp;)</argsstring>
+        <name>ThriftHiveMetastore_update_compaction_metrics_data_result</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_update_compaction_metrics_data_result::ThriftHiveMetastore_update_compaction_metrics_data_result</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__update__compaction__metrics__data__result" kindref="compound">ThriftHiveMetastore_update_compaction_metrics_data_result</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="23450" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__update__compaction__metrics__data__result_1a06538819be346dc776cf155687847787" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__update__compaction__metrics__data__result" kindref="compound">ThriftHiveMetastore_update_compaction_metrics_data_result</ref> &amp;</type>
+        <definition>ThriftHiveMetastore_update_compaction_metrics_data_result &amp; Apache::Hadoop::Hive::ThriftHiveMetastore_update_compaction_metrics_data_result::operator=</definition>
+        <argsstring>(const ThriftHiveMetastore_update_compaction_metrics_data_result &amp;)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_update_compaction_metrics_data_result::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__update__compaction__metrics__data__result" kindref="compound">ThriftHiveMetastore_update_compaction_metrics_data_result</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="23451" column="61"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__update__compaction__metrics__data__result_1a7f2bbfa6075d631c0263a1871db42cfd" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::ThriftHiveMetastore_update_compaction_metrics_data_result::ThriftHiveMetastore_update_compaction_metrics_data_result</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>ThriftHiveMetastore_update_compaction_metrics_data_result</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_update_compaction_metrics_data_result::ThriftHiveMetastore_update_compaction_metrics_data_result</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="23452" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.cpp" bodystart="52170" bodyend="52172"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__update__compaction__metrics__data__result_1acdcf6cbab54fa04226771b2b9f4b2ecf" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::ThriftHiveMetastore_update_compaction_metrics_data_result::~ThriftHiveMetastore_update_compaction_metrics_data_result</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~ThriftHiveMetastore_update_compaction_metrics_data_result</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_update_compaction_metrics_data_result::~ThriftHiveMetastore_update_compaction_metrics_data_result</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="23454" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.cpp" bodystart="52167" bodyend="52168"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__update__compaction__metrics__data__result_1a2cd2dc4cb997b399c9c7a06e8abacf37" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::ThriftHiveMetastore_update_compaction_metrics_data_result::__set_success</definition>
+        <argsstring>(const bool val)</argsstring>
+        <name>__set_success</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_update_compaction_metrics_data_result::__set_success</qualifiedname>
+        <param>
+          <type>const bool</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="23460" column="8"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__update__compaction__metrics__data__result_1a0c6536a8853c860134679a099977206d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::ThriftHiveMetastore_update_compaction_metrics_data_result::__set_o1</definition>
+        <argsstring>(const MetaException &amp;val)</argsstring>
+        <name>__set_o1</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_update_compaction_metrics_data_result::__set_o1</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1MetaException" kindref="compound">MetaException</ref> &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="23462" column="8"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__update__compaction__metrics__data__result_1af0eb185763c903f721929480071aa3e1" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::ThriftHiveMetastore_update_compaction_metrics_data_result::operator==</definition>
+        <argsstring>(const ThriftHiveMetastore_update_compaction_metrics_data_result &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_update_compaction_metrics_data_result::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__update__compaction__metrics__data__result" kindref="compound">ThriftHiveMetastore_update_compaction_metrics_data_result</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="23464" column="8"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__update__compaction__metrics__data__result_1ab5e8328a75122aecc8d562943aa70733" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::ThriftHiveMetastore_update_compaction_metrics_data_result::operator!=</definition>
+        <argsstring>(const ThriftHiveMetastore_update_compaction_metrics_data_result &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_update_compaction_metrics_data_result::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__update__compaction__metrics__data__result" kindref="compound">ThriftHiveMetastore_update_compaction_metrics_data_result</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="23465" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="23465" bodyend="23467"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__update__compaction__metrics__data__result_1a38492aec318b0999234ba22639c1db05" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::ThriftHiveMetastore_update_compaction_metrics_data_result::operator&lt;</definition>
+        <argsstring>(const ThriftHiveMetastore_update_compaction_metrics_data_result &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_update_compaction_metrics_data_result::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__update__compaction__metrics__data__result" kindref="compound">ThriftHiveMetastore_update_compaction_metrics_data_result</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="23469" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__update__compaction__metrics__data__result_1a5744dfa28d26099fc37f091b71ece91e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::ThriftHiveMetastore_update_compaction_metrics_data_result::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot)</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_update_compaction_metrics_data_result::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="23471" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.cpp" bodystart="52174" bodyend="52221"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__update__compaction__metrics__data__result_1adb1d4c10ef466f169815502307b9b527" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::ThriftHiveMetastore_update_compaction_metrics_data_result::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_update_compaction_metrics_data_result::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="23472" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.cpp" bodystart="52223" bodyend="52241"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="2">
+        <label>Apache::Hadoop::Hive::MetaException</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1MetaException"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>message</edgelabel>
+          <edgelabel>thriftTExceptionMessageHolder_</edgelabel>
+        </childnode>
+        <childnode refid="6" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::ThriftHiveMetastore_update_compaction_metrics_data_result</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__update__compaction__metrics__data__result"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>o1</edgelabel>
+        </childnode>
+        <childnode refid="7" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="6">
+        <label>Apache::Hadoop::Hive::_MetaException__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__MetaException____isset"/>
+      </node>
+      <node id="7">
+        <label>Apache::Hadoop::Hive::_ThriftHiveMetastore_update_compaction_metrics_data_result__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__ThriftHiveMetastore__update__compaction__metrics__data__result____isset"/>
+      </node>
+      <node id="3">
+        <label>apache::thrift::TException</label>
+      </node>
+      <node id="5">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="4">
+        <label>std::string</label>
+        <childnode refid="5" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="23447" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="23447" bodyend="23474"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__update__compaction__metrics__data__result_1a56197c14055aea4d3ee4a2e04faeaaad" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_update_compaction_metrics_data_result</scope><name>__isset</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__update__compaction__metrics__data__result_1a0c6536a8853c860134679a099977206d" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_update_compaction_metrics_data_result</scope><name>__set_o1</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__update__compaction__metrics__data__result_1a2cd2dc4cb997b399c9c7a06e8abacf37" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_update_compaction_metrics_data_result</scope><name>__set_success</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__update__compaction__metrics__data__result_1a89281bd54c3541fe816d50472780ee49" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_update_compaction_metrics_data_result</scope><name>o1</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__update__compaction__metrics__data__result_1ab5e8328a75122aecc8d562943aa70733" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_update_compaction_metrics_data_result</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__update__compaction__metrics__data__result_1a38492aec318b0999234ba22639c1db05" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_update_compaction_metrics_data_result</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__update__compaction__metrics__data__result_1a06538819be346dc776cf155687847787" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_update_compaction_metrics_data_result</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__update__compaction__metrics__data__result_1af0eb185763c903f721929480071aa3e1" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_update_compaction_metrics_data_result</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__update__compaction__metrics__data__result_1a5744dfa28d26099fc37f091b71ece91e" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_update_compaction_metrics_data_result</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__update__compaction__metrics__data__result_1aae152f7e7ccfb43605569548e4b0ce2e" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_update_compaction_metrics_data_result</scope><name>success</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__update__compaction__metrics__data__result_1ace95b374502657295efb1bd464d8ea04" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_update_compaction_metrics_data_result</scope><name>ThriftHiveMetastore_update_compaction_metrics_data_result</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__update__compaction__metrics__data__result_1a7f2bbfa6075d631c0263a1871db42cfd" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_update_compaction_metrics_data_result</scope><name>ThriftHiveMetastore_update_compaction_metrics_data_result</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__update__compaction__metrics__data__result_1adb1d4c10ef466f169815502307b9b527" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_update_compaction_metrics_data_result</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__update__compaction__metrics__data__result_1acdcf6cbab54fa04226771b2b9f4b2ecf" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_update_compaction_metrics_data_result</scope><name>~ThriftHiveMetastore_update_compaction_metrics_data_result</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

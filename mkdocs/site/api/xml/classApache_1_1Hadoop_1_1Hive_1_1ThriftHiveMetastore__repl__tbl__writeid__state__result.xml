@@ -1,0 +1,174 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__repl__tbl__writeid__state__result" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::ThriftHiveMetastore_repl_tbl_writeid_state_result</compoundname>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__repl__tbl__writeid__state__result_1a429cf5a2a66d28aba38ba2e05198121d" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::ThriftHiveMetastore_repl_tbl_writeid_state_result::ThriftHiveMetastore_repl_tbl_writeid_state_result</definition>
+        <argsstring>(const ThriftHiveMetastore_repl_tbl_writeid_state_result &amp;) noexcept</argsstring>
+        <name>ThriftHiveMetastore_repl_tbl_writeid_state_result</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_repl_tbl_writeid_state_result::ThriftHiveMetastore_repl_tbl_writeid_state_result</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__repl__tbl__writeid__state__result" kindref="compound">ThriftHiveMetastore_repl_tbl_writeid_state_result</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="20973" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__repl__tbl__writeid__state__result_1a5eda86a295c27d39b6ecd62224ef1422" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__repl__tbl__writeid__state__result" kindref="compound">ThriftHiveMetastore_repl_tbl_writeid_state_result</ref> &amp;</type>
+        <definition>ThriftHiveMetastore_repl_tbl_writeid_state_result &amp; Apache::Hadoop::Hive::ThriftHiveMetastore_repl_tbl_writeid_state_result::operator=</definition>
+        <argsstring>(const ThriftHiveMetastore_repl_tbl_writeid_state_result &amp;) noexcept</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_repl_tbl_writeid_state_result::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__repl__tbl__writeid__state__result" kindref="compound">ThriftHiveMetastore_repl_tbl_writeid_state_result</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="20974" column="53"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__repl__tbl__writeid__state__result_1aea5b8fd86c02d4a783cb254e0acb9389" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::ThriftHiveMetastore_repl_tbl_writeid_state_result::ThriftHiveMetastore_repl_tbl_writeid_state_result</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>ThriftHiveMetastore_repl_tbl_writeid_state_result</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_repl_tbl_writeid_state_result::ThriftHiveMetastore_repl_tbl_writeid_state_result</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="20975" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.cpp" bodystart="46802" bodyend="46803"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__repl__tbl__writeid__state__result_1a81f7c89c77165a7d7afd608782842060" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::ThriftHiveMetastore_repl_tbl_writeid_state_result::~ThriftHiveMetastore_repl_tbl_writeid_state_result</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~ThriftHiveMetastore_repl_tbl_writeid_state_result</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_repl_tbl_writeid_state_result::~ThriftHiveMetastore_repl_tbl_writeid_state_result</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="20977" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.cpp" bodystart="46799" bodyend="46800"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__repl__tbl__writeid__state__result_1a89374dcc35689571916e0f0b90fe9340" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::ThriftHiveMetastore_repl_tbl_writeid_state_result::operator==</definition>
+        <argsstring>(const ThriftHiveMetastore_repl_tbl_writeid_state_result &amp;) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_repl_tbl_writeid_state_result::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__repl__tbl__writeid__state__result" kindref="compound">ThriftHiveMetastore_repl_tbl_writeid_state_result</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="20979" column="8"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__repl__tbl__writeid__state__result_1a8d2d3ba37eb2d225d7e43ba9b27056fa" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::ThriftHiveMetastore_repl_tbl_writeid_state_result::operator!=</definition>
+        <argsstring>(const ThriftHiveMetastore_repl_tbl_writeid_state_result &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_repl_tbl_writeid_state_result::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__repl__tbl__writeid__state__result" kindref="compound">ThriftHiveMetastore_repl_tbl_writeid_state_result</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="20980" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="20980" bodyend="20982"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__repl__tbl__writeid__state__result_1a1ac3926aa875af3f0c85d6e4c5d2306e" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::ThriftHiveMetastore_repl_tbl_writeid_state_result::operator&lt;</definition>
+        <argsstring>(const ThriftHiveMetastore_repl_tbl_writeid_state_result &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_repl_tbl_writeid_state_result::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__repl__tbl__writeid__state__result" kindref="compound">ThriftHiveMetastore_repl_tbl_writeid_state_result</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="20984" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__repl__tbl__writeid__state__result_1a55523090a499a620e6a7d97be55adfd4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::ThriftHiveMetastore_repl_tbl_writeid_state_result::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot)</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_repl_tbl_writeid_state_result::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="20986" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.cpp" bodystart="46805" bodyend="46831"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__repl__tbl__writeid__state__result_1a2f3a55987c81cbc98edcd57cfc4f9f70" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::ThriftHiveMetastore_repl_tbl_writeid_state_result::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_repl_tbl_writeid_state_result::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="20987" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.cpp" bodystart="46833" bodyend="46842"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="20970" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="20970" bodyend="20989"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__repl__tbl__writeid__state__result_1a8d2d3ba37eb2d225d7e43ba9b27056fa" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_repl_tbl_writeid_state_result</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__repl__tbl__writeid__state__result_1a1ac3926aa875af3f0c85d6e4c5d2306e" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_repl_tbl_writeid_state_result</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__repl__tbl__writeid__state__result_1a5eda86a295c27d39b6ecd62224ef1422" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_repl_tbl_writeid_state_result</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__repl__tbl__writeid__state__result_1a89374dcc35689571916e0f0b90fe9340" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_repl_tbl_writeid_state_result</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__repl__tbl__writeid__state__result_1a55523090a499a620e6a7d97be55adfd4" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_repl_tbl_writeid_state_result</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__repl__tbl__writeid__state__result_1a429cf5a2a66d28aba38ba2e05198121d" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_repl_tbl_writeid_state_result</scope><name>ThriftHiveMetastore_repl_tbl_writeid_state_result</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__repl__tbl__writeid__state__result_1aea5b8fd86c02d4a783cb254e0acb9389" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_repl_tbl_writeid_state_result</scope><name>ThriftHiveMetastore_repl_tbl_writeid_state_result</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__repl__tbl__writeid__state__result_1a2f3a55987c81cbc98edcd57cfc4f9f70" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_repl_tbl_writeid_state_result</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__repl__tbl__writeid__state__result_1a81f7c89c77165a7d7afd608782842060" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_repl_tbl_writeid_state_result</scope><name>~ThriftHiveMetastore_repl_tbl_writeid_state_result</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

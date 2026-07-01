@@ -1,0 +1,390 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1BooleanColumnStatsData" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::BooleanColumnStatsData</compoundname>
+    <basecompoundref prot="public" virt="virtual">apache::thrift::TBase</basecompoundref>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1BooleanColumnStatsData_1a5ec506b7135eb0b407430acd58fc38bf" prot="public" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t Apache::Hadoop::Hive::BooleanColumnStatsData::numTrues</definition>
+        <argsstring></argsstring>
+        <name>numTrues</name>
+        <qualifiedname>Apache::Hadoop::Hive::BooleanColumnStatsData::numTrues</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3291" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="3291" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1BooleanColumnStatsData_1a28c3ac98e06183805609d76e2c56b359" prot="public" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t Apache::Hadoop::Hive::BooleanColumnStatsData::numFalses</definition>
+        <argsstring></argsstring>
+        <name>numFalses</name>
+        <qualifiedname>Apache::Hadoop::Hive::BooleanColumnStatsData::numFalses</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3292" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="3292" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1BooleanColumnStatsData_1a1ac3afdf06c4576fb9026299e433cf19" prot="public" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t Apache::Hadoop::Hive::BooleanColumnStatsData::numNulls</definition>
+        <argsstring></argsstring>
+        <name>numNulls</name>
+        <qualifiedname>Apache::Hadoop::Hive::BooleanColumnStatsData::numNulls</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3293" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="3293" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1BooleanColumnStatsData_1af966573f556fc5bb281dd82c3fbee1f6" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::BooleanColumnStatsData::bitVectors</definition>
+        <argsstring></argsstring>
+        <name>bitVectors</name>
+        <qualifiedname>Apache::Hadoop::Hive::BooleanColumnStatsData::bitVectors</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3294" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="3294" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1BooleanColumnStatsData_1a45449e46dc96eee8bdfc82b11e4a179a" prot="public" static="no" mutable="no">
+        <type><ref refid="structApache_1_1Hadoop_1_1Hive_1_1__BooleanColumnStatsData____isset" kindref="compound">_BooleanColumnStatsData__isset</ref></type>
+        <definition>_BooleanColumnStatsData__isset Apache::Hadoop::Hive::BooleanColumnStatsData::__isset</definition>
+        <argsstring></argsstring>
+        <name>__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::BooleanColumnStatsData::__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3296" column="34" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="3296" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1BooleanColumnStatsData_1a57976601929688d01aa41874b555f554" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::BooleanColumnStatsData::BooleanColumnStatsData</definition>
+        <argsstring>(const BooleanColumnStatsData &amp;)</argsstring>
+        <name>BooleanColumnStatsData</name>
+        <qualifiedname>Apache::Hadoop::Hive::BooleanColumnStatsData::BooleanColumnStatsData</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1BooleanColumnStatsData" kindref="compound">BooleanColumnStatsData</ref> &amp;</type>
+          <defname>other346</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3286" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="9907" bodyend="9913"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1BooleanColumnStatsData_1a1544f1c02f119646067b4201f20706a5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1BooleanColumnStatsData" kindref="compound">BooleanColumnStatsData</ref> &amp;</type>
+        <definition>BooleanColumnStatsData &amp; Apache::Hadoop::Hive::BooleanColumnStatsData::operator=</definition>
+        <argsstring>(const BooleanColumnStatsData &amp;)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::BooleanColumnStatsData::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1BooleanColumnStatsData" kindref="compound">BooleanColumnStatsData</ref> &amp;</type>
+          <defname>other347</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3287" column="26" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="9914" bodyend="9921"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1BooleanColumnStatsData_1a5c6c91a31958d9308b8f9bbd44d31b40" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::BooleanColumnStatsData::BooleanColumnStatsData</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>BooleanColumnStatsData</name>
+        <qualifiedname>Apache::Hadoop::Hive::BooleanColumnStatsData::BooleanColumnStatsData</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3288" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="9752" bodyend="9757"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1BooleanColumnStatsData_1afa38c0ff3ab6bea022589924a92f5861" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::BooleanColumnStatsData::~BooleanColumnStatsData</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~BooleanColumnStatsData</name>
+        <qualifiedname>Apache::Hadoop::Hive::BooleanColumnStatsData::~BooleanColumnStatsData</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3290" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="9749" bodyend="9750"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1BooleanColumnStatsData_1a80ee5279a3bc33419f919e86862aa444" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::BooleanColumnStatsData::__set_numTrues</definition>
+        <argsstring>(const int64_t val)</argsstring>
+        <name>__set_numTrues</name>
+        <qualifiedname>Apache::Hadoop::Hive::BooleanColumnStatsData::__set_numTrues</qualifiedname>
+        <param>
+          <type>const int64_t</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3298" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="9759" bodyend="9761"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1BooleanColumnStatsData_1a6cefa81a71eef5d1f5e30fd2cd9fc39c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::BooleanColumnStatsData::__set_numFalses</definition>
+        <argsstring>(const int64_t val)</argsstring>
+        <name>__set_numFalses</name>
+        <qualifiedname>Apache::Hadoop::Hive::BooleanColumnStatsData::__set_numFalses</qualifiedname>
+        <param>
+          <type>const int64_t</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3300" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="9763" bodyend="9765"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1BooleanColumnStatsData_1a730d591ba50e867e826bd2567bf98885" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::BooleanColumnStatsData::__set_numNulls</definition>
+        <argsstring>(const int64_t val)</argsstring>
+        <name>__set_numNulls</name>
+        <qualifiedname>Apache::Hadoop::Hive::BooleanColumnStatsData::__set_numNulls</qualifiedname>
+        <param>
+          <type>const int64_t</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3302" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="9767" bodyend="9769"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1BooleanColumnStatsData_1a2b7d227c81a1ac7786245531f9b5bb35" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::BooleanColumnStatsData::__set_bitVectors</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_bitVectors</name>
+        <qualifiedname>Apache::Hadoop::Hive::BooleanColumnStatsData::__set_bitVectors</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3304" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="9771" bodyend="9774"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1BooleanColumnStatsData_1a0de2fbd6d6e8b88c86134eb86a1819ba" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::BooleanColumnStatsData::operator==</definition>
+        <argsstring>(const BooleanColumnStatsData &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::BooleanColumnStatsData::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1BooleanColumnStatsData" kindref="compound">BooleanColumnStatsData</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3306" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="9892" bodyend="9905"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1BooleanColumnStatsData_1a6a590e43f99174e33279b651cb893388" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::BooleanColumnStatsData::operator!=</definition>
+        <argsstring>(const BooleanColumnStatsData &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::BooleanColumnStatsData::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1BooleanColumnStatsData" kindref="compound">BooleanColumnStatsData</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3307" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="3307" bodyend="3309"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1BooleanColumnStatsData_1a7b489b392a044c7c7c9fba06af92dc6d" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::BooleanColumnStatsData::operator&lt;</definition>
+        <argsstring>(const BooleanColumnStatsData &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::BooleanColumnStatsData::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1BooleanColumnStatsData" kindref="compound">BooleanColumnStatsData</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3311" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1BooleanColumnStatsData_1a254919d2b711bcbc24d4ca4e62119e9d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::BooleanColumnStatsData::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot) override</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::BooleanColumnStatsData::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3313" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="9782" bodyend="9854"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1BooleanColumnStatsData_1ad624fb1642c182e6b44fabbf1f4ab4c1" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::BooleanColumnStatsData::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const override</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::BooleanColumnStatsData::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3314" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="9856" bodyend="9881"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1BooleanColumnStatsData_1a2707bfd44eec7bfb50f2c36890de4a9c" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::BooleanColumnStatsData::printTo</definition>
+        <argsstring>(std::ostream &amp;out) const</argsstring>
+        <name>printTo</name>
+        <qualifiedname>Apache::Hadoop::Hive::BooleanColumnStatsData::printTo</qualifiedname>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3316" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="9922" bodyend="9930"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::BooleanColumnStatsData</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1BooleanColumnStatsData"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::BooleanColumnStatsData</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1BooleanColumnStatsData"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>bitVectors</edgelabel>
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="5">
+        <label>Apache::Hadoop::Hive::_BooleanColumnStatsData__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__BooleanColumnStatsData____isset"/>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+      <node id="4">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="3">
+        <label>std::string</label>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3283" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="3283" bodyend="3317"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1BooleanColumnStatsData_1a45449e46dc96eee8bdfc82b11e4a179a" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::BooleanColumnStatsData</scope><name>__isset</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1BooleanColumnStatsData_1a2b7d227c81a1ac7786245531f9b5bb35" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::BooleanColumnStatsData</scope><name>__set_bitVectors</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1BooleanColumnStatsData_1a6cefa81a71eef5d1f5e30fd2cd9fc39c" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::BooleanColumnStatsData</scope><name>__set_numFalses</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1BooleanColumnStatsData_1a730d591ba50e867e826bd2567bf98885" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::BooleanColumnStatsData</scope><name>__set_numNulls</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1BooleanColumnStatsData_1a80ee5279a3bc33419f919e86862aa444" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::BooleanColumnStatsData</scope><name>__set_numTrues</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1BooleanColumnStatsData_1af966573f556fc5bb281dd82c3fbee1f6" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::BooleanColumnStatsData</scope><name>bitVectors</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1BooleanColumnStatsData_1a57976601929688d01aa41874b555f554" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::BooleanColumnStatsData</scope><name>BooleanColumnStatsData</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1BooleanColumnStatsData_1a5c6c91a31958d9308b8f9bbd44d31b40" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::BooleanColumnStatsData</scope><name>BooleanColumnStatsData</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1BooleanColumnStatsData_1a28c3ac98e06183805609d76e2c56b359" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::BooleanColumnStatsData</scope><name>numFalses</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1BooleanColumnStatsData_1a1ac3afdf06c4576fb9026299e433cf19" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::BooleanColumnStatsData</scope><name>numNulls</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1BooleanColumnStatsData_1a5ec506b7135eb0b407430acd58fc38bf" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::BooleanColumnStatsData</scope><name>numTrues</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1BooleanColumnStatsData_1a6a590e43f99174e33279b651cb893388" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::BooleanColumnStatsData</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1BooleanColumnStatsData_1a7b489b392a044c7c7c9fba06af92dc6d" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::BooleanColumnStatsData</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1BooleanColumnStatsData_1a1544f1c02f119646067b4201f20706a5" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::BooleanColumnStatsData</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1BooleanColumnStatsData_1a0de2fbd6d6e8b88c86134eb86a1819ba" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::BooleanColumnStatsData</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1BooleanColumnStatsData_1a2707bfd44eec7bfb50f2c36890de4a9c" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::BooleanColumnStatsData</scope><name>printTo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1BooleanColumnStatsData_1a254919d2b711bcbc24d4ca4e62119e9d" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::BooleanColumnStatsData</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1BooleanColumnStatsData_1ad624fb1642c182e6b44fabbf1f4ab4c1" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::BooleanColumnStatsData</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1BooleanColumnStatsData_1afa38c0ff3ab6bea022589924a92f5861" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::BooleanColumnStatsData</scope><name>~BooleanColumnStatsData</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

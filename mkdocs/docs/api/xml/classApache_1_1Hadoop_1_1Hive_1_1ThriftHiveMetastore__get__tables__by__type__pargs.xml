@@ -1,0 +1,115 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__tables__by__type__pargs" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::ThriftHiveMetastore_get_tables_by_type_pargs</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__tables__by__type__pargs_1acc96812216351c46b2308aa5869ac3f9" prot="public" static="no" mutable="no">
+        <type>const std::string *</type>
+        <definition>const std::string* Apache::Hadoop::Hive::ThriftHiveMetastore_get_tables_by_type_pargs::db_name</definition>
+        <argsstring></argsstring>
+        <name>db_name</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_get_tables_by_type_pargs::db_name</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="6573" column="21" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="6573" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__tables__by__type__pargs_1a58bb6ea980d0219e52e50f3a966e29b6" prot="public" static="no" mutable="no">
+        <type>const std::string *</type>
+        <definition>const std::string* Apache::Hadoop::Hive::ThriftHiveMetastore_get_tables_by_type_pargs::pattern</definition>
+        <argsstring></argsstring>
+        <name>pattern</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_get_tables_by_type_pargs::pattern</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="6574" column="21" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="6574" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__tables__by__type__pargs_1a12fb3879f61b4f2e16340cfce5ff8840" prot="public" static="no" mutable="no">
+        <type>const std::string *</type>
+        <definition>const std::string* Apache::Hadoop::Hive::ThriftHiveMetastore_get_tables_by_type_pargs::tableType</definition>
+        <argsstring></argsstring>
+        <name>tableType</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_get_tables_by_type_pargs::tableType</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="6575" column="21" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="6575" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__tables__by__type__pargs_1a7f6b9a98b68938031b60f2db30d27420" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::ThriftHiveMetastore_get_tables_by_type_pargs::~ThriftHiveMetastore_get_tables_by_type_pargs</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~ThriftHiveMetastore_get_tables_by_type_pargs</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_get_tables_by_type_pargs::~ThriftHiveMetastore_get_tables_by_type_pargs</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="6572" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.cpp" bodystart="12463" bodyend="12464"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__tables__by__type__pargs_1a26caff4b75838c31ddc449289efe567d" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::ThriftHiveMetastore_get_tables_by_type_pargs::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_get_tables_by_type_pargs::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="6577" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.cpp" bodystart="12467" bodyend="12487"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::ThriftHiveMetastore_get_tables_by_type_pargs</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__tables__by__type__pargs"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>db_name</edgelabel>
+          <edgelabel>pattern</edgelabel>
+          <edgelabel>tableType</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="2">
+        <label>std::string</label>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="6568" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="6568" bodyend="6579"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__tables__by__type__pargs_1acc96812216351c46b2308aa5869ac3f9" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_get_tables_by_type_pargs</scope><name>db_name</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__tables__by__type__pargs_1a58bb6ea980d0219e52e50f3a966e29b6" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_get_tables_by_type_pargs</scope><name>pattern</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__tables__by__type__pargs_1a12fb3879f61b4f2e16340cfce5ff8840" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_get_tables_by_type_pargs</scope><name>tableType</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__tables__by__type__pargs_1a26caff4b75838c31ddc449289efe567d" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_get_tables_by_type_pargs</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__tables__by__type__pargs_1a7f6b9a98b68938031b60f2db30d27420" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_get_tables_by_type_pargs</scope><name>~ThriftHiveMetastore_get_tables_by_type_pargs</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

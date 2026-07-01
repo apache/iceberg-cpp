@@ -1,0 +1,224 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1test_1_1FakeRetryEnvironment" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::test::FakeRetryEnvironment</compoundname>
+    <sectiondef kind="public-type">
+      <memberdef kind="typedef" id="classiceberg_1_1test_1_1FakeRetryEnvironment_1a7972c94b9e7c34ae5e3c150a62ad6ed3" prot="public" static="no">
+        <type>RetryTestHooks::Duration</type>
+        <definition>using iceberg::test::FakeRetryEnvironment::Duration =  RetryTestHooks::Duration</definition>
+        <argsstring></argsstring>
+        <name>Duration</name>
+        <qualifiedname>iceberg::test::FakeRetryEnvironment::Duration</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/retry.h" line="39" column="3" bodyfile="iceberg/test/retry.h" bodystart="39" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="classiceberg_1_1test_1_1FakeRetryEnvironment_1a4da17e520b160d81c0349e40fa5ef332" prot="public" static="no">
+        <type>RetryTestHooks::TimePoint</type>
+        <definition>using iceberg::test::FakeRetryEnvironment::TimePoint =  RetryTestHooks::TimePoint</definition>
+        <argsstring></argsstring>
+        <name>TimePoint</name>
+        <qualifiedname>iceberg::test::FakeRetryEnvironment::TimePoint</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/retry.h" line="40" column="3" bodyfile="iceberg/test/retry.h" bodystart="40" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1test_1_1FakeRetryEnvironment_1ab9d6d72fdf3847083ab6bc62315ea000" prot="private" static="no" mutable="no">
+        <type><ref refid="structiceberg_1_1RetryTestHooks" kindref="compound">RetryTestHooks</ref></type>
+        <definition>RetryTestHooks iceberg::test::FakeRetryEnvironment::hooks_</definition>
+        <argsstring></argsstring>
+        <name>hooks_</name>
+        <qualifiedname>iceberg::test::FakeRetryEnvironment::hooks_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/retry.h" line="69" column="18" bodyfile="iceberg/test/retry.h" bodystart="69" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1test_1_1FakeRetryEnvironment_1a9626ed19eca4ed20a4d3fdc7db08b4fc" prot="private" static="no" mutable="no">
+        <type>TimePoint</type>
+        <definition>TimePoint iceberg::test::FakeRetryEnvironment::now_</definition>
+        <argsstring></argsstring>
+        <name>now_</name>
+        <qualifiedname>iceberg::test::FakeRetryEnvironment::now_</qualifiedname>
+        <initializer>{}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/retry.h" line="70" column="13" bodyfile="iceberg/test/retry.h" bodystart="70" bodyend="70"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1test_1_1FakeRetryEnvironment_1adc331731d326464851455d9896d3322d" prot="private" static="no" mutable="no">
+        <type>int32_t</type>
+        <definition>int32_t iceberg::test::FakeRetryEnvironment::jitter_offset_ms_</definition>
+        <argsstring></argsstring>
+        <name>jitter_offset_ms_</name>
+        <qualifiedname>iceberg::test::FakeRetryEnvironment::jitter_offset_ms_</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/retry.h" line="71" column="11" bodyfile="iceberg/test/retry.h" bodystart="71" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1test_1_1FakeRetryEnvironment_1a0961110400e8b3dc0d78537fec38ac59" prot="private" static="no" mutable="no">
+        <type>std::vector&lt; Duration &gt;</type>
+        <definition>std::vector&lt;Duration&gt; iceberg::test::FakeRetryEnvironment::sleep_durations_</definition>
+        <argsstring></argsstring>
+        <name>sleep_durations_</name>
+        <qualifiedname>iceberg::test::FakeRetryEnvironment::sleep_durations_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/retry.h" line="72" column="15" bodyfile="iceberg/test/retry.h" bodystart="72" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1test_1_1FakeRetryEnvironment_1a22a86523ee944985e21360eeb2c8d726" prot="private" static="no" mutable="no">
+        <type>std::vector&lt; int32_t &gt;</type>
+        <definition>std::vector&lt;int32_t&gt; iceberg::test::FakeRetryEnvironment::observed_base_delays_ms_</definition>
+        <argsstring></argsstring>
+        <name>observed_base_delays_ms_</name>
+        <qualifiedname>iceberg::test::FakeRetryEnvironment::observed_base_delays_ms_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/retry.h" line="73" column="15" bodyfile="iceberg/test/retry.h" bodystart="73" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1test_1_1FakeRetryEnvironment_1af075764f4aee01c0c5157dd67debb5a4" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::test::FakeRetryEnvironment::FakeRetryEnvironment</definition>
+        <argsstring>()</argsstring>
+        <name>FakeRetryEnvironment</name>
+        <qualifiedname>iceberg::test::FakeRetryEnvironment::FakeRetryEnvironment</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/retry.h" line="42" column="3" bodyfile="iceberg/test/retry.h" bodystart="42" bodyend="52"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1test_1_1FakeRetryEnvironment_1a73016f4c518d295bf97e45a158071fc2" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::test::FakeRetryEnvironment::Advance</definition>
+        <argsstring>(Duration duration)</argsstring>
+        <name>Advance</name>
+        <qualifiedname>iceberg::test::FakeRetryEnvironment::Advance</qualifiedname>
+        <param>
+          <type>Duration</type>
+          <declname>duration</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/retry.h" line="54" column="8" bodyfile="iceberg/test/retry.h" bodystart="54" bodyend="54"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1test_1_1FakeRetryEnvironment_1aee670985f35b6f2e73407cbc697363a2" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::test::FakeRetryEnvironment::SetJitterOffsetMs</definition>
+        <argsstring>(int32_t jitter_offset_ms)</argsstring>
+        <name>SetJitterOffsetMs</name>
+        <qualifiedname>iceberg::test::FakeRetryEnvironment::SetJitterOffsetMs</qualifiedname>
+        <param>
+          <type>int32_t</type>
+          <declname>jitter_offset_ms</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/retry.h" line="56" column="8" bodyfile="iceberg/test/retry.h" bodystart="56" bodyend="58"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1test_1_1FakeRetryEnvironment_1ac0ada390df6cc1e9d01086566ce66c28" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>const <ref refid="structiceberg_1_1RetryTestHooks" kindref="compound">RetryTestHooks</ref> &amp;</type>
+        <definition>const RetryTestHooks &amp; iceberg::test::FakeRetryEnvironment::hooks</definition>
+        <argsstring>() const</argsstring>
+        <name>hooks</name>
+        <qualifiedname>iceberg::test::FakeRetryEnvironment::hooks</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/retry.h" line="60" column="24" bodyfile="iceberg/test/retry.h" bodystart="60" bodyend="60"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1test_1_1FakeRetryEnvironment_1a24ddcb1dec8c42ec5b0c51afe38eca23" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>const std::vector&lt; Duration &gt; &amp;</type>
+        <definition>const std::vector&lt; Duration &gt; &amp; iceberg::test::FakeRetryEnvironment::sleep_durations</definition>
+        <argsstring>() const</argsstring>
+        <name>sleep_durations</name>
+        <qualifiedname>iceberg::test::FakeRetryEnvironment::sleep_durations</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/retry.h" line="62" column="21" bodyfile="iceberg/test/retry.h" bodystart="62" bodyend="62"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1test_1_1FakeRetryEnvironment_1ad32372b799cdfea4af57828a7753b33f" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>const std::vector&lt; int32_t &gt; &amp;</type>
+        <definition>const std::vector&lt; int32_t &gt; &amp; iceberg::test::FakeRetryEnvironment::observed_base_delays_ms</definition>
+        <argsstring>() const</argsstring>
+        <name>observed_base_delays_ms</name>
+        <qualifiedname>iceberg::test::FakeRetryEnvironment::observed_base_delays_ms</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/retry.h" line="64" column="21" bodyfile="iceberg/test/retry.h" bodystart="64" bodyend="66"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/test/retry.h" line="37" column="1" bodyfile="iceberg/test/retry.h" bodystart="37" bodyend="74"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1test_1_1FakeRetryEnvironment_1a73016f4c518d295bf97e45a158071fc2" prot="public" virt="non-virtual"><scope>iceberg::test::FakeRetryEnvironment</scope><name>Advance</name></member>
+      <member refid="classiceberg_1_1test_1_1FakeRetryEnvironment_1a7972c94b9e7c34ae5e3c150a62ad6ed3" prot="public" virt="non-virtual"><scope>iceberg::test::FakeRetryEnvironment</scope><name>Duration</name></member>
+      <member refid="classiceberg_1_1test_1_1FakeRetryEnvironment_1af075764f4aee01c0c5157dd67debb5a4" prot="public" virt="non-virtual"><scope>iceberg::test::FakeRetryEnvironment</scope><name>FakeRetryEnvironment</name></member>
+      <member refid="classiceberg_1_1test_1_1FakeRetryEnvironment_1ac0ada390df6cc1e9d01086566ce66c28" prot="public" virt="non-virtual"><scope>iceberg::test::FakeRetryEnvironment</scope><name>hooks</name></member>
+      <member refid="classiceberg_1_1test_1_1FakeRetryEnvironment_1ab9d6d72fdf3847083ab6bc62315ea000" prot="private" virt="non-virtual"><scope>iceberg::test::FakeRetryEnvironment</scope><name>hooks_</name></member>
+      <member refid="classiceberg_1_1test_1_1FakeRetryEnvironment_1adc331731d326464851455d9896d3322d" prot="private" virt="non-virtual"><scope>iceberg::test::FakeRetryEnvironment</scope><name>jitter_offset_ms_</name></member>
+      <member refid="classiceberg_1_1test_1_1FakeRetryEnvironment_1a9626ed19eca4ed20a4d3fdc7db08b4fc" prot="private" virt="non-virtual"><scope>iceberg::test::FakeRetryEnvironment</scope><name>now_</name></member>
+      <member refid="classiceberg_1_1test_1_1FakeRetryEnvironment_1ad32372b799cdfea4af57828a7753b33f" prot="public" virt="non-virtual"><scope>iceberg::test::FakeRetryEnvironment</scope><name>observed_base_delays_ms</name></member>
+      <member refid="classiceberg_1_1test_1_1FakeRetryEnvironment_1a22a86523ee944985e21360eeb2c8d726" prot="private" virt="non-virtual"><scope>iceberg::test::FakeRetryEnvironment</scope><name>observed_base_delays_ms_</name></member>
+      <member refid="classiceberg_1_1test_1_1FakeRetryEnvironment_1aee670985f35b6f2e73407cbc697363a2" prot="public" virt="non-virtual"><scope>iceberg::test::FakeRetryEnvironment</scope><name>SetJitterOffsetMs</name></member>
+      <member refid="classiceberg_1_1test_1_1FakeRetryEnvironment_1a24ddcb1dec8c42ec5b0c51afe38eca23" prot="public" virt="non-virtual"><scope>iceberg::test::FakeRetryEnvironment</scope><name>sleep_durations</name></member>
+      <member refid="classiceberg_1_1test_1_1FakeRetryEnvironment_1a0961110400e8b3dc0d78537fec38ac59" prot="private" virt="non-virtual"><scope>iceberg::test::FakeRetryEnvironment</scope><name>sleep_durations_</name></member>
+      <member refid="classiceberg_1_1test_1_1FakeRetryEnvironment_1a4da17e520b160d81c0349e40fa5ef332" prot="public" virt="non-virtual"><scope>iceberg::test::FakeRetryEnvironment</scope><name>TimePoint</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,292 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__add__foreign__key__args" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::ThriftHiveMetastore_add_foreign_key_args</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__add__foreign__key__args_1a204076329629d753c408b84c7a8c0834" prot="public" static="no" mutable="no">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1AddForeignKeyRequest" kindref="compound">AddForeignKeyRequest</ref></type>
+        <definition>AddForeignKeyRequest Apache::Hadoop::Hive::ThriftHiveMetastore_add_foreign_key_args::req</definition>
+        <argsstring></argsstring>
+        <name>req</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_add_foreign_key_args::req</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="5313" column="24" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="5313" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__add__foreign__key__args_1a3fa54bee661bd0a276ce55b5e2d93273" prot="public" static="no" mutable="no">
+        <type><ref refid="structApache_1_1Hadoop_1_1Hive_1_1__ThriftHiveMetastore__add__foreign__key__args____isset" kindref="compound">_ThriftHiveMetastore_add_foreign_key_args__isset</ref></type>
+        <definition>_ThriftHiveMetastore_add_foreign_key_args__isset Apache::Hadoop::Hive::ThriftHiveMetastore_add_foreign_key_args::__isset</definition>
+        <argsstring></argsstring>
+        <name>__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_add_foreign_key_args::__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="5315" column="52" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="5315" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__add__foreign__key__args_1a7d471fe017bf9ae9647546a028286d4a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::ThriftHiveMetastore_add_foreign_key_args::ThriftHiveMetastore_add_foreign_key_args</definition>
+        <argsstring>(const ThriftHiveMetastore_add_foreign_key_args &amp;)</argsstring>
+        <name>ThriftHiveMetastore_add_foreign_key_args</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_add_foreign_key_args::ThriftHiveMetastore_add_foreign_key_args</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__add__foreign__key__args" kindref="compound">ThriftHiveMetastore_add_foreign_key_args</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="5308" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__add__foreign__key__args_1a7c66bee906a159726f50ca40360e61da" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__add__foreign__key__args" kindref="compound">ThriftHiveMetastore_add_foreign_key_args</ref> &amp;</type>
+        <definition>ThriftHiveMetastore_add_foreign_key_args &amp; Apache::Hadoop::Hive::ThriftHiveMetastore_add_foreign_key_args::operator=</definition>
+        <argsstring>(const ThriftHiveMetastore_add_foreign_key_args &amp;)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_add_foreign_key_args::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__add__foreign__key__args" kindref="compound">ThriftHiveMetastore_add_foreign_key_args</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="5309" column="44"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__add__foreign__key__args_1ac4762bf536c3daecb123680fb76c7fdf" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::ThriftHiveMetastore_add_foreign_key_args::ThriftHiveMetastore_add_foreign_key_args</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>ThriftHiveMetastore_add_foreign_key_args</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_add_foreign_key_args::ThriftHiveMetastore_add_foreign_key_args</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="5310" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.cpp" bodystart="9607" bodyend="9608"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__add__foreign__key__args_1abb57c7f044985534e1af7cfad8c511d3" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::ThriftHiveMetastore_add_foreign_key_args::~ThriftHiveMetastore_add_foreign_key_args</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~ThriftHiveMetastore_add_foreign_key_args</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_add_foreign_key_args::~ThriftHiveMetastore_add_foreign_key_args</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="5312" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.cpp" bodystart="9604" bodyend="9605"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__add__foreign__key__args_1aaf1fe06200d8d9c58bef98b3639497a4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::ThriftHiveMetastore_add_foreign_key_args::__set_req</definition>
+        <argsstring>(const AddForeignKeyRequest &amp;val)</argsstring>
+        <name>__set_req</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_add_foreign_key_args::__set_req</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1AddForeignKeyRequest" kindref="compound">AddForeignKeyRequest</ref> &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="5317" column="8"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__add__foreign__key__args_1aa1ea90f153f25bc1742cb0f255c6ad96" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::ThriftHiveMetastore_add_foreign_key_args::operator==</definition>
+        <argsstring>(const ThriftHiveMetastore_add_foreign_key_args &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_add_foreign_key_args::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__add__foreign__key__args" kindref="compound">ThriftHiveMetastore_add_foreign_key_args</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="5319" column="8"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__add__foreign__key__args_1a4edd85a410e9fce8c57e3634cb61a290" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::ThriftHiveMetastore_add_foreign_key_args::operator!=</definition>
+        <argsstring>(const ThriftHiveMetastore_add_foreign_key_args &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_add_foreign_key_args::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__add__foreign__key__args" kindref="compound">ThriftHiveMetastore_add_foreign_key_args</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="5320" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="5320" bodyend="5322"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__add__foreign__key__args_1a32b165dde76add31bd2d2c2dcf421b1b" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::ThriftHiveMetastore_add_foreign_key_args::operator&lt;</definition>
+        <argsstring>(const ThriftHiveMetastore_add_foreign_key_args &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_add_foreign_key_args::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__add__foreign__key__args" kindref="compound">ThriftHiveMetastore_add_foreign_key_args</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="5324" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__add__foreign__key__args_1abfc2413279f7f401ce763f7aa9d9b181" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::ThriftHiveMetastore_add_foreign_key_args::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot)</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_add_foreign_key_args::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="5326" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.cpp" bodystart="9610" bodyend="9649"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__add__foreign__key__args_1ac5f8091b73d6e91b5674d48107cf3bb0" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::ThriftHiveMetastore_add_foreign_key_args::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_add_foreign_key_args::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="5327" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.cpp" bodystart="9651" bodyend="9663"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="2">
+        <label>Apache::Hadoop::Hive::AddForeignKeyRequest</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1AddForeignKeyRequest"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>foreignKeyCols</edgelabel>
+        </childnode>
+      </node>
+      <node id="5">
+        <label>Apache::Hadoop::Hive::SQLForeignKey</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1SQLForeignKey"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+        <childnode refid="6" relation="usage">
+          <edgelabel>catName</edgelabel>
+          <edgelabel>fk_name</edgelabel>
+          <edgelabel>fkcolumn_name</edgelabel>
+          <edgelabel>fktable_db</edgelabel>
+          <edgelabel>fktable_name</edgelabel>
+          <edgelabel>pk_name</edgelabel>
+          <edgelabel>pkcolumn_name</edgelabel>
+          <edgelabel>pktable_db</edgelabel>
+          <edgelabel>pktable_name</edgelabel>
+        </childnode>
+        <childnode refid="8" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::ThriftHiveMetastore_add_foreign_key_args</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__add__foreign__key__args"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>req</edgelabel>
+        </childnode>
+        <childnode refid="9" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="8">
+        <label>Apache::Hadoop::Hive::_SQLForeignKey__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__SQLForeignKey____isset"/>
+      </node>
+      <node id="9">
+        <label>Apache::Hadoop::Hive::_ThriftHiveMetastore_add_foreign_key_args__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__ThriftHiveMetastore__add__foreign__key__args____isset"/>
+      </node>
+      <node id="3">
+        <label>apache::thrift::TBase</label>
+      </node>
+      <node id="7">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="6">
+        <label>std::string</label>
+        <childnode refid="7" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>std::vector&lt; Apache::Hadoop::Hive::SQLForeignKey &gt;</label>
+        <childnode refid="5" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="5305" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="5305" bodyend="5329"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__add__foreign__key__args_1a3fa54bee661bd0a276ce55b5e2d93273" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_add_foreign_key_args</scope><name>__isset</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__add__foreign__key__args_1aaf1fe06200d8d9c58bef98b3639497a4" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_add_foreign_key_args</scope><name>__set_req</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__add__foreign__key__args_1a4edd85a410e9fce8c57e3634cb61a290" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_add_foreign_key_args</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__add__foreign__key__args_1a32b165dde76add31bd2d2c2dcf421b1b" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_add_foreign_key_args</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__add__foreign__key__args_1a7c66bee906a159726f50ca40360e61da" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_add_foreign_key_args</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__add__foreign__key__args_1aa1ea90f153f25bc1742cb0f255c6ad96" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_add_foreign_key_args</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__add__foreign__key__args_1abfc2413279f7f401ce763f7aa9d9b181" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_add_foreign_key_args</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__add__foreign__key__args_1a204076329629d753c408b84c7a8c0834" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_add_foreign_key_args</scope><name>req</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__add__foreign__key__args_1a7d471fe017bf9ae9647546a028286d4a" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_add_foreign_key_args</scope><name>ThriftHiveMetastore_add_foreign_key_args</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__add__foreign__key__args_1ac4762bf536c3daecb123680fb76c7fdf" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_add_foreign_key_args</scope><name>ThriftHiveMetastore_add_foreign_key_args</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__add__foreign__key__args_1ac5f8091b73d6e91b5674d48107cf3bb0" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_add_foreign_key_args</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__add__foreign__key__args_1abb57c7f044985534e1af7cfad8c511d3" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_add_foreign_key_args</scope><name>~ThriftHiveMetastore_add_foreign_key_args</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

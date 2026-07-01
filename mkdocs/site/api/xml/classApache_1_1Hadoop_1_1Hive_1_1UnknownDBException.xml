@@ -1,0 +1,319 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1UnknownDBException" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::UnknownDBException</compoundname>
+    <basecompoundref prot="public" virt="non-virtual">apache::thrift::TException</basecompoundref>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1UnknownDBException_1a512ec3b21b36dfe751f19fc31ee0da1a" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::UnknownDBException::message</definition>
+        <argsstring></argsstring>
+        <name>message</name>
+        <qualifiedname>Apache::Hadoop::Hive::UnknownDBException::message</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15353" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="15353" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1UnknownDBException_1a27b171d4e51eed45cb77590f2446b28c" prot="public" static="no" mutable="no">
+        <type><ref refid="structApache_1_1Hadoop_1_1Hive_1_1__UnknownDBException____isset" kindref="compound">_UnknownDBException__isset</ref></type>
+        <definition>_UnknownDBException__isset Apache::Hadoop::Hive::UnknownDBException::__isset</definition>
+        <argsstring></argsstring>
+        <name>__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::UnknownDBException::__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15355" column="30" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="15355" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1UnknownDBException_1a11e8dc35a3f4a54a6cdc979d024095b0" prot="public" static="no" mutable="yes">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::UnknownDBException::thriftTExceptionMessageHolder_</definition>
+        <argsstring></argsstring>
+        <name>thriftTExceptionMessageHolder_</name>
+        <qualifiedname>Apache::Hadoop::Hive::UnknownDBException::thriftTExceptionMessageHolder_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15370" column="23" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="15370" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1UnknownDBException_1ab1308a8176258533dc6f86e227e46abd" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::UnknownDBException::UnknownDBException</definition>
+        <argsstring>(const UnknownDBException &amp;)</argsstring>
+        <name>UnknownDBException</name>
+        <qualifiedname>Apache::Hadoop::Hive::UnknownDBException::UnknownDBException</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1UnknownDBException" kindref="compound">UnknownDBException</ref> &amp;</type>
+          <defname>other1857</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15348" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="60713" bodyend="60716"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1UnknownDBException_1a9a07c2a5088b3dd9d22f5b50a2b20f31" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1UnknownDBException" kindref="compound">UnknownDBException</ref> &amp;</type>
+        <definition>UnknownDBException &amp; Apache::Hadoop::Hive::UnknownDBException::operator=</definition>
+        <argsstring>(const UnknownDBException &amp;)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::UnknownDBException::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1UnknownDBException" kindref="compound">UnknownDBException</ref> &amp;</type>
+          <defname>other1858</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15349" column="22" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="60717" bodyend="60721"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1UnknownDBException_1a15a841168a7fd2404fef567dab6c6a32" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::UnknownDBException::UnknownDBException</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>UnknownDBException</name>
+        <qualifiedname>Apache::Hadoop::Hive::UnknownDBException::UnknownDBException</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15350" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="60631" bodyend="60633"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1UnknownDBException_1af971637d87cdc910b1169ee3fe38596f" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::UnknownDBException::~UnknownDBException</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~UnknownDBException</name>
+        <qualifiedname>Apache::Hadoop::Hive::UnknownDBException::~UnknownDBException</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15352" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="60628" bodyend="60629"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1UnknownDBException_1a2afc3abda14b8a4f04c00d7d5021bdf4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::UnknownDBException::__set_message</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_message</name>
+        <qualifiedname>Apache::Hadoop::Hive::UnknownDBException::__set_message</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15357" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="60635" bodyend="60637"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1UnknownDBException_1ac2327acea68fd75ea712bc9f99edd975" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::UnknownDBException::operator==</definition>
+        <argsstring>(const UnknownDBException &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::UnknownDBException::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1UnknownDBException" kindref="compound">UnknownDBException</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15359" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="60706" bodyend="60711"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1UnknownDBException_1ac73d907a17040a20f34e7f0e908793fb" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::UnknownDBException::operator!=</definition>
+        <argsstring>(const UnknownDBException &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::UnknownDBException::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1UnknownDBException" kindref="compound">UnknownDBException</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15360" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="15360" bodyend="15362"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1UnknownDBException_1a40b7c86d2afe341fdf700b41c9eb9a9c" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::UnknownDBException::operator&lt;</definition>
+        <argsstring>(const UnknownDBException &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::UnknownDBException::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1UnknownDBException" kindref="compound">UnknownDBException</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15364" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1UnknownDBException_1aebb4191c8c84d6873e6e41af12b6d997" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::UnknownDBException::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot)</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::UnknownDBException::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15366" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="60645" bodyend="60684"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1UnknownDBException_1a4cec1e672819f08b39bbcd41e7d08fd2" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::UnknownDBException::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::UnknownDBException::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15367" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="60686" bodyend="60698"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1UnknownDBException_1ac69330f07ab15a84b09af3601b8fbcd1" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::UnknownDBException::printTo</definition>
+        <argsstring>(std::ostream &amp;out) const</argsstring>
+        <name>printTo</name>
+        <qualifiedname>Apache::Hadoop::Hive::UnknownDBException::printTo</qualifiedname>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15369" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="60722" bodyend="60727"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1UnknownDBException_1adbb398e1c4fd556c5f5de23c2927f662" prot="public" static="no" const="yes" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type>const char *</type>
+        <definition>const char * Apache::Hadoop::Hive::UnknownDBException::what</definition>
+        <argsstring>() const noexcept override</argsstring>
+        <name>what</name>
+        <qualifiedname>Apache::Hadoop::Hive::UnknownDBException::what</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15371" column="14" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="60729" bodyend="60738"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::UnknownDBException</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1UnknownDBException"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TException</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::UnknownDBException</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1UnknownDBException"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>message</edgelabel>
+          <edgelabel>thriftTExceptionMessageHolder_</edgelabel>
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="5">
+        <label>Apache::Hadoop::Hive::_UnknownDBException__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__UnknownDBException____isset"/>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TException</label>
+      </node>
+      <node id="4">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="3">
+        <label>std::string</label>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15345" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="15345" bodyend="15372"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1UnknownDBException_1a27b171d4e51eed45cb77590f2446b28c" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::UnknownDBException</scope><name>__isset</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1UnknownDBException_1a2afc3abda14b8a4f04c00d7d5021bdf4" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::UnknownDBException</scope><name>__set_message</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1UnknownDBException_1a512ec3b21b36dfe751f19fc31ee0da1a" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::UnknownDBException</scope><name>message</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1UnknownDBException_1ac73d907a17040a20f34e7f0e908793fb" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::UnknownDBException</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1UnknownDBException_1a40b7c86d2afe341fdf700b41c9eb9a9c" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::UnknownDBException</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1UnknownDBException_1a9a07c2a5088b3dd9d22f5b50a2b20f31" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::UnknownDBException</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1UnknownDBException_1ac2327acea68fd75ea712bc9f99edd975" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::UnknownDBException</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1UnknownDBException_1ac69330f07ab15a84b09af3601b8fbcd1" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::UnknownDBException</scope><name>printTo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1UnknownDBException_1aebb4191c8c84d6873e6e41af12b6d997" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::UnknownDBException</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1UnknownDBException_1a11e8dc35a3f4a54a6cdc979d024095b0" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::UnknownDBException</scope><name>thriftTExceptionMessageHolder_</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1UnknownDBException_1ab1308a8176258533dc6f86e227e46abd" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::UnknownDBException</scope><name>UnknownDBException</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1UnknownDBException_1a15a841168a7fd2404fef567dab6c6a32" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::UnknownDBException</scope><name>UnknownDBException</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1UnknownDBException_1adbb398e1c4fd556c5f5de23c2927f662" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::UnknownDBException</scope><name>what</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1UnknownDBException_1a4cec1e672819f08b39bbcd41e7d08fd2" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::UnknownDBException</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1UnknownDBException_1af971637d87cdc910b1169ee3fe38596f" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::UnknownDBException</scope><name>~UnknownDBException</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

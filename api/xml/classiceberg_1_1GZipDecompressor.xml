@@ -1,0 +1,96 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1GZipDecompressor" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::GZipDecompressor</compoundname>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1GZipDecompressor_1ade50ba816d22767ff43c66d4a88413b1" prot="private" static="no" mutable="no">
+        <type>std::unique_ptr&lt; <ref refid="classiceberg_1_1ZlibImpl" kindref="compound">ZlibImpl</ref> &gt;</type>
+        <definition>std::unique_ptr&lt;ZlibImpl&gt; iceberg::GZipDecompressor::zlib_impl_</definition>
+        <argsstring></argsstring>
+        <name>zlib_impl_</name>
+        <qualifiedname>iceberg::GZipDecompressor::zlib_impl_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/gzip_internal.h" line="42" column="19" bodyfile="iceberg/util/gzip_internal.h" bodystart="42" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1GZipDecompressor_1a0c14f8edc2f8f893c18fa678663d5d25" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::GZipDecompressor::GZipDecompressor</definition>
+        <argsstring>()</argsstring>
+        <name>GZipDecompressor</name>
+        <qualifiedname>iceberg::GZipDecompressor::GZipDecompressor</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/gzip_internal.h" line="33" column="3" bodyfile="iceberg/util/gzip_internal.cc" bodystart="85" bodyend="85"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1GZipDecompressor_1acbb2c912167d20563df4f1a14d03f298" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::GZipDecompressor::~GZipDecompressor</definition>
+        <argsstring>()</argsstring>
+        <name>~GZipDecompressor</name>
+        <qualifiedname>iceberg::GZipDecompressor::~GZipDecompressor</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/gzip_internal.h" line="35" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1GZipDecompressor_1a57a640e5963cb4ecdca85dda0b956d33" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::GZipDecompressor::Init</definition>
+        <argsstring>()</argsstring>
+        <name>Init</name>
+        <qualifiedname>iceberg::GZipDecompressor::Init</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/gzip_internal.h" line="37" column="10" bodyfile="iceberg/util/gzip_internal.cc" bodystart="89" bodyend="89"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1GZipDecompressor_1ad54ce1ed3030bf73df368de8d904ec26" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::string &gt;</type>
+        <definition>Result&lt; std::string &gt; iceberg::GZipDecompressor::Decompress</definition>
+        <argsstring>(const std::string &amp;compressed_data)</argsstring>
+        <name>Decompress</name>
+        <qualifiedname>iceberg::GZipDecompressor::Decompress</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>compressed_data</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/gzip_internal.h" line="39" column="10" bodyfile="iceberg/util/gzip_internal.cc" bodystart="91" bodyend="93"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/util/gzip_internal.h" line="31" column="1" bodyfile="iceberg/util/gzip_internal.h" bodystart="31" bodyend="43"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1GZipDecompressor_1ad54ce1ed3030bf73df368de8d904ec26" prot="public" virt="non-virtual"><scope>iceberg::GZipDecompressor</scope><name>Decompress</name></member>
+      <member refid="classiceberg_1_1GZipDecompressor_1a0c14f8edc2f8f893c18fa678663d5d25" prot="public" virt="non-virtual"><scope>iceberg::GZipDecompressor</scope><name>GZipDecompressor</name></member>
+      <member refid="classiceberg_1_1GZipDecompressor_1a57a640e5963cb4ecdca85dda0b956d33" prot="public" virt="non-virtual"><scope>iceberg::GZipDecompressor</scope><name>Init</name></member>
+      <member refid="classiceberg_1_1GZipDecompressor_1ade50ba816d22767ff43c66d4a88413b1" prot="private" virt="non-virtual"><scope>iceberg::GZipDecompressor</scope><name>zlib_impl_</name></member>
+      <member refid="classiceberg_1_1GZipDecompressor_1acbb2c912167d20563df4f1a14d03f298" prot="public" virt="non-virtual"><scope>iceberg::GZipDecompressor</scope><name>~GZipDecompressor</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

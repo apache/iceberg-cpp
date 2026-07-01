@@ -1,0 +1,80 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structApache_1_1Hadoop_1_1Hive_1_1__ThriftHiveMetastore__get__schema__with__environment__context__args____isset" kind="struct" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::_ThriftHiveMetastore_get_schema_with_environment_context_args__isset</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__ThriftHiveMetastore__get__schema__with__environment__context__args____isset_1a42163397d6c357eb3512c7189bb7930e" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_ThriftHiveMetastore_get_schema_with_environment_context_args__isset::db_name</definition>
+        <argsstring></argsstring>
+        <name>db_name</name>
+        <qualifiedname>Apache::Hadoop::Hive::_ThriftHiveMetastore_get_schema_with_environment_context_args__isset::db_name</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="4401" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="4401" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__ThriftHiveMetastore__get__schema__with__environment__context__args____isset_1ae406b9c8a0821b975def253a8d8ad9c9" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_ThriftHiveMetastore_get_schema_with_environment_context_args__isset::table_name</definition>
+        <argsstring></argsstring>
+        <name>table_name</name>
+        <qualifiedname>Apache::Hadoop::Hive::_ThriftHiveMetastore_get_schema_with_environment_context_args__isset::table_name</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="4402" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="4402" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__ThriftHiveMetastore__get__schema__with__environment__context__args____isset_1a5c500e65ffe5676a856446e4b7f2cfc7" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_ThriftHiveMetastore_get_schema_with_environment_context_args__isset::environment_context</definition>
+        <argsstring></argsstring>
+        <name>environment_context</name>
+        <qualifiedname>Apache::Hadoop::Hive::_ThriftHiveMetastore_get_schema_with_environment_context_args__isset::environment_context</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="4403" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="4403" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structApache_1_1Hadoop_1_1Hive_1_1__ThriftHiveMetastore__get__schema__with__environment__context__args____isset_1aaf0ffc43ff8a880ce50a05c190ede135" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::_ThriftHiveMetastore_get_schema_with_environment_context_args__isset::_ThriftHiveMetastore_get_schema_with_environment_context_args__isset</definition>
+        <argsstring>()</argsstring>
+        <name>_ThriftHiveMetastore_get_schema_with_environment_context_args__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::_ThriftHiveMetastore_get_schema_with_environment_context_args__isset::_ThriftHiveMetastore_get_schema_with_environment_context_args__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="4400" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="4400" bodyend="4400"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="4399" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="4399" bodyend="4404"/>
+    <listofallmembers>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__ThriftHiveMetastore__get__schema__with__environment__context__args____isset_1aaf0ffc43ff8a880ce50a05c190ede135" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_ThriftHiveMetastore_get_schema_with_environment_context_args__isset</scope><name>_ThriftHiveMetastore_get_schema_with_environment_context_args__isset</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__ThriftHiveMetastore__get__schema__with__environment__context__args____isset_1a42163397d6c357eb3512c7189bb7930e" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_ThriftHiveMetastore_get_schema_with_environment_context_args__isset</scope><name>db_name</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__ThriftHiveMetastore__get__schema__with__environment__context__args____isset_1a5c500e65ffe5676a856446e4b7f2cfc7" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_ThriftHiveMetastore_get_schema_with_environment_context_args__isset</scope><name>environment_context</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__ThriftHiveMetastore__get__schema__with__environment__context__args____isset_1ae406b9c8a0821b975def253a8d8ad9c9" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_ThriftHiveMetastore_get_schema_with_environment_context_args__isset</scope><name>table_name</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,324 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__add__check__constraint__result" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::ThriftHiveMetastore_add_check_constraint_result</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__add__check__constraint__result_1a6f039def5a6fb286ec6a0ff334ee98d7" prot="public" static="no" mutable="no">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1NoSuchObjectException" kindref="compound">NoSuchObjectException</ref></type>
+        <definition>NoSuchObjectException Apache::Hadoop::Hive::ThriftHiveMetastore_add_check_constraint_result::o1</definition>
+        <argsstring></argsstring>
+        <name>o1</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_add_check_constraint_result::o1</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="5749" column="25" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="5749" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__add__check__constraint__result_1a5e21c907f8302439cb432d582d40b8e2" prot="public" static="no" mutable="no">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1MetaException" kindref="compound">MetaException</ref></type>
+        <definition>MetaException Apache::Hadoop::Hive::ThriftHiveMetastore_add_check_constraint_result::o2</definition>
+        <argsstring></argsstring>
+        <name>o2</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_add_check_constraint_result::o2</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="5750" column="17" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="5750" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__add__check__constraint__result_1a2f07aa50d9789ea2afab9fdb3f92ba49" prot="public" static="no" mutable="no">
+        <type><ref refid="structApache_1_1Hadoop_1_1Hive_1_1__ThriftHiveMetastore__add__check__constraint__result____isset" kindref="compound">_ThriftHiveMetastore_add_check_constraint_result__isset</ref></type>
+        <definition>_ThriftHiveMetastore_add_check_constraint_result__isset Apache::Hadoop::Hive::ThriftHiveMetastore_add_check_constraint_result::__isset</definition>
+        <argsstring></argsstring>
+        <name>__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_add_check_constraint_result::__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="5752" column="59" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="5752" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__add__check__constraint__result_1abc4952a331f1ee7ff0cdf152a5f86927" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::ThriftHiveMetastore_add_check_constraint_result::ThriftHiveMetastore_add_check_constraint_result</definition>
+        <argsstring>(const ThriftHiveMetastore_add_check_constraint_result &amp;)</argsstring>
+        <name>ThriftHiveMetastore_add_check_constraint_result</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_add_check_constraint_result::ThriftHiveMetastore_add_check_constraint_result</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__add__check__constraint__result" kindref="compound">ThriftHiveMetastore_add_check_constraint_result</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="5744" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__add__check__constraint__result_1a2e6ac2c65f9df2b557e19aff7f85b9e7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__add__check__constraint__result" kindref="compound">ThriftHiveMetastore_add_check_constraint_result</ref> &amp;</type>
+        <definition>ThriftHiveMetastore_add_check_constraint_result &amp; Apache::Hadoop::Hive::ThriftHiveMetastore_add_check_constraint_result::operator=</definition>
+        <argsstring>(const ThriftHiveMetastore_add_check_constraint_result &amp;)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_add_check_constraint_result::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__add__check__constraint__result" kindref="compound">ThriftHiveMetastore_add_check_constraint_result</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="5745" column="51"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__add__check__constraint__result_1a293d53f903fcac1eb0c5ee0c17309b96" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::ThriftHiveMetastore_add_check_constraint_result::ThriftHiveMetastore_add_check_constraint_result</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>ThriftHiveMetastore_add_check_constraint_result</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_add_check_constraint_result::ThriftHiveMetastore_add_check_constraint_result</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="5746" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.cpp" bodystart="10532" bodyend="10533"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__add__check__constraint__result_1a0a6e804e3a91a870a2cd850813e81631" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::ThriftHiveMetastore_add_check_constraint_result::~ThriftHiveMetastore_add_check_constraint_result</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~ThriftHiveMetastore_add_check_constraint_result</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_add_check_constraint_result::~ThriftHiveMetastore_add_check_constraint_result</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="5748" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.cpp" bodystart="10529" bodyend="10530"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__add__check__constraint__result_1ac9542bdb9ec0d56bb265aec98aede015" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::ThriftHiveMetastore_add_check_constraint_result::__set_o1</definition>
+        <argsstring>(const NoSuchObjectException &amp;val)</argsstring>
+        <name>__set_o1</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_add_check_constraint_result::__set_o1</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1NoSuchObjectException" kindref="compound">NoSuchObjectException</ref> &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="5754" column="8"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__add__check__constraint__result_1a3ba8f0ca8a9aa803562eb41532861ba5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::ThriftHiveMetastore_add_check_constraint_result::__set_o2</definition>
+        <argsstring>(const MetaException &amp;val)</argsstring>
+        <name>__set_o2</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_add_check_constraint_result::__set_o2</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1MetaException" kindref="compound">MetaException</ref> &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="5756" column="8"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__add__check__constraint__result_1a21b15aef9a8d7c01bbe62c8e6a4b37ed" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::ThriftHiveMetastore_add_check_constraint_result::operator==</definition>
+        <argsstring>(const ThriftHiveMetastore_add_check_constraint_result &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_add_check_constraint_result::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__add__check__constraint__result" kindref="compound">ThriftHiveMetastore_add_check_constraint_result</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="5758" column="8"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__add__check__constraint__result_1acb51d81ea8481f759576e86f1d24bb85" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::ThriftHiveMetastore_add_check_constraint_result::operator!=</definition>
+        <argsstring>(const ThriftHiveMetastore_add_check_constraint_result &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_add_check_constraint_result::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__add__check__constraint__result" kindref="compound">ThriftHiveMetastore_add_check_constraint_result</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="5759" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="5759" bodyend="5761"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__add__check__constraint__result_1a67f4896f3143ae70ed3feb6c1025e741" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::ThriftHiveMetastore_add_check_constraint_result::operator&lt;</definition>
+        <argsstring>(const ThriftHiveMetastore_add_check_constraint_result &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_add_check_constraint_result::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__add__check__constraint__result" kindref="compound">ThriftHiveMetastore_add_check_constraint_result</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="5763" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__add__check__constraint__result_1a547533a1f7ad55a6dc47910f196aaee9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::ThriftHiveMetastore_add_check_constraint_result::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot)</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_add_check_constraint_result::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="5765" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.cpp" bodystart="10535" bodyend="10582"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__add__check__constraint__result_1ad3d68b21002a7e297eb2c7dfcba8bdc9" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::ThriftHiveMetastore_add_check_constraint_result::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_add_check_constraint_result::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="5766" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.cpp" bodystart="10584" bodyend="10602"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="7">
+        <label>Apache::Hadoop::Hive::MetaException</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1MetaException"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>message</edgelabel>
+          <edgelabel>thriftTExceptionMessageHolder_</edgelabel>
+        </childnode>
+        <childnode refid="8" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="2">
+        <label>Apache::Hadoop::Hive::NoSuchObjectException</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1NoSuchObjectException"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>message</edgelabel>
+          <edgelabel>thriftTExceptionMessageHolder_</edgelabel>
+        </childnode>
+        <childnode refid="6" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::ThriftHiveMetastore_add_check_constraint_result</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__add__check__constraint__result"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>o1</edgelabel>
+        </childnode>
+        <childnode refid="7" relation="usage">
+          <edgelabel>o2</edgelabel>
+        </childnode>
+        <childnode refid="9" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="8">
+        <label>Apache::Hadoop::Hive::_MetaException__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__MetaException____isset"/>
+      </node>
+      <node id="6">
+        <label>Apache::Hadoop::Hive::_NoSuchObjectException__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__NoSuchObjectException____isset"/>
+      </node>
+      <node id="9">
+        <label>Apache::Hadoop::Hive::_ThriftHiveMetastore_add_check_constraint_result__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__ThriftHiveMetastore__add__check__constraint__result____isset"/>
+      </node>
+      <node id="3">
+        <label>apache::thrift::TException</label>
+      </node>
+      <node id="5">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="4">
+        <label>std::string</label>
+        <childnode refid="5" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="5741" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="5741" bodyend="5768"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__add__check__constraint__result_1a2f07aa50d9789ea2afab9fdb3f92ba49" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_add_check_constraint_result</scope><name>__isset</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__add__check__constraint__result_1ac9542bdb9ec0d56bb265aec98aede015" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_add_check_constraint_result</scope><name>__set_o1</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__add__check__constraint__result_1a3ba8f0ca8a9aa803562eb41532861ba5" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_add_check_constraint_result</scope><name>__set_o2</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__add__check__constraint__result_1a6f039def5a6fb286ec6a0ff334ee98d7" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_add_check_constraint_result</scope><name>o1</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__add__check__constraint__result_1a5e21c907f8302439cb432d582d40b8e2" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_add_check_constraint_result</scope><name>o2</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__add__check__constraint__result_1acb51d81ea8481f759576e86f1d24bb85" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_add_check_constraint_result</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__add__check__constraint__result_1a67f4896f3143ae70ed3feb6c1025e741" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_add_check_constraint_result</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__add__check__constraint__result_1a2e6ac2c65f9df2b557e19aff7f85b9e7" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_add_check_constraint_result</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__add__check__constraint__result_1a21b15aef9a8d7c01bbe62c8e6a4b37ed" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_add_check_constraint_result</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__add__check__constraint__result_1a547533a1f7ad55a6dc47910f196aaee9" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_add_check_constraint_result</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__add__check__constraint__result_1abc4952a331f1ee7ff0cdf152a5f86927" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_add_check_constraint_result</scope><name>ThriftHiveMetastore_add_check_constraint_result</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__add__check__constraint__result_1a293d53f903fcac1eb0c5ee0c17309b96" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_add_check_constraint_result</scope><name>ThriftHiveMetastore_add_check_constraint_result</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__add__check__constraint__result_1ad3d68b21002a7e297eb2c7dfcba8bdc9" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_add_check_constraint_result</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__add__check__constraint__result_1a0a6e804e3a91a870a2cd850813e81631" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_add_check_constraint_result</scope><name>~ThriftHiveMetastore_add_check_constraint_result</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

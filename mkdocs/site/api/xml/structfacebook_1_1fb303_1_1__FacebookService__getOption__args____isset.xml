@@ -1,0 +1,48 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structfacebook_1_1fb303_1_1__FacebookService__getOption__args____isset" kind="struct" language="C++" prot="public">
+    <compoundname>facebook::fb303::_FacebookService_getOption_args__isset</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfacebook_1_1fb303_1_1__FacebookService__getOption__args____isset_1a71dbe3dc9d346f199a7e45ef57f223bb" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool facebook::fb303::_FacebookService_getOption_args__isset::key</definition>
+        <argsstring></argsstring>
+        <name>key</name>
+        <qualifiedname>facebook::fb303::_FacebookService_getOption_args__isset::key</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="770" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.h" bodystart="770" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structfacebook_1_1fb303_1_1__FacebookService__getOption__args____isset_1a0fb9314dfec08ddae59ff646d13f4a65" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>facebook::fb303::_FacebookService_getOption_args__isset::_FacebookService_getOption_args__isset</definition>
+        <argsstring>()</argsstring>
+        <name>_FacebookService_getOption_args__isset</name>
+        <qualifiedname>facebook::fb303::_FacebookService_getOption_args__isset::_FacebookService_getOption_args__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="769" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.h" bodystart="769" bodyend="769"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="768" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.h" bodystart="768" bodyend="771"/>
+    <listofallmembers>
+      <member refid="structfacebook_1_1fb303_1_1__FacebookService__getOption__args____isset_1a0fb9314dfec08ddae59ff646d13f4a65" prot="public" virt="non-virtual"><scope>facebook::fb303::_FacebookService_getOption_args__isset</scope><name>_FacebookService_getOption_args__isset</name></member>
+      <member refid="structfacebook_1_1fb303_1_1__FacebookService__getOption__args____isset_1a71dbe3dc9d346f199a7e45ef57f223bb" prot="public" virt="non-virtual"><scope>facebook::fb303::_FacebookService_getOption_args__isset</scope><name>key</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

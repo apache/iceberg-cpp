@@ -1,0 +1,304 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1PropertyGetResponse" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::PropertyGetResponse</compoundname>
+    <basecompoundref prot="public" virt="virtual">apache::thrift::TBase</basecompoundref>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1PropertyGetResponse_1ae503a778d8e049cab0bcc85081bf5be4" prot="public" static="no" mutable="no">
+        <type>std::map&lt; std::string, std::map&lt; std::string, std::string &gt; &gt;</type>
+        <definition>std::map&lt;std::string, std::map&lt;std::string, std::string&gt; &gt; Apache::Hadoop::Hive::PropertyGetResponse::properties</definition>
+        <argsstring></argsstring>
+        <name>properties</name>
+        <qualifiedname>Apache::Hadoop::Hive::PropertyGetResponse::properties</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1847" column="13" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="1847" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1PropertyGetResponse_1a76e34c0390f74ce3482ed4c7d69512b6" prot="public" static="no" mutable="no">
+        <type><ref refid="structApache_1_1Hadoop_1_1Hive_1_1__PropertyGetResponse____isset" kindref="compound">_PropertyGetResponse__isset</ref></type>
+        <definition>_PropertyGetResponse__isset Apache::Hadoop::Hive::PropertyGetResponse::__isset</definition>
+        <argsstring></argsstring>
+        <name>__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::PropertyGetResponse::__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1849" column="31" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="1849" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1PropertyGetResponse_1a45f4a54769699ac4e60652c38d89fc0c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::PropertyGetResponse::PropertyGetResponse</definition>
+        <argsstring>(const PropertyGetResponse &amp;)</argsstring>
+        <name>PropertyGetResponse</name>
+        <qualifiedname>Apache::Hadoop::Hive::PropertyGetResponse::PropertyGetResponse</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1PropertyGetResponse" kindref="compound">PropertyGetResponse</ref> &amp;</type>
+          <defname>other106</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1842" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="4212" bodyend="4215"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1PropertyGetResponse_1a1ec179315fd714db54243b4599af17c8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1PropertyGetResponse" kindref="compound">PropertyGetResponse</ref> &amp;</type>
+        <definition>PropertyGetResponse &amp; Apache::Hadoop::Hive::PropertyGetResponse::operator=</definition>
+        <argsstring>(const PropertyGetResponse &amp;)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::PropertyGetResponse::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1PropertyGetResponse" kindref="compound">PropertyGetResponse</ref> &amp;</type>
+          <defname>other107</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1843" column="23" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="4216" bodyend="4220"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1PropertyGetResponse_1a7fd8479b40a0cdd2871006914ad4ff3f" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::PropertyGetResponse::PropertyGetResponse</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>PropertyGetResponse</name>
+        <qualifiedname>Apache::Hadoop::Hive::PropertyGetResponse::PropertyGetResponse</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1844" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="4083" bodyend="4084"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1PropertyGetResponse_1a5ec277284cd471f51d45f1803b308526" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::PropertyGetResponse::~PropertyGetResponse</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~PropertyGetResponse</name>
+        <qualifiedname>Apache::Hadoop::Hive::PropertyGetResponse::~PropertyGetResponse</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1846" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="4080" bodyend="4081"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1PropertyGetResponse_1a5e0ba02062e18f0619208c2a84baca71" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::PropertyGetResponse::__set_properties</definition>
+        <argsstring>(const std::map&lt; std::string, std::map&lt; std::string, std::string &gt; &gt; &amp;val)</argsstring>
+        <name>__set_properties</name>
+        <qualifiedname>Apache::Hadoop::Hive::PropertyGetResponse::__set_properties</qualifiedname>
+        <param>
+          <type>const std::map&lt; std::string, std::map&lt; std::string, std::string &gt; &gt; &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1851" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="4086" bodyend="4088"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1PropertyGetResponse_1a4bf3e4f35ff7a4381973449581d3e807" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::PropertyGetResponse::operator==</definition>
+        <argsstring>(const PropertyGetResponse &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::PropertyGetResponse::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1PropertyGetResponse" kindref="compound">PropertyGetResponse</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1853" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="4205" bodyend="4210"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1PropertyGetResponse_1ad33f875d63a2bdfdb6bf3235200c478f" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::PropertyGetResponse::operator!=</definition>
+        <argsstring>(const PropertyGetResponse &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::PropertyGetResponse::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1PropertyGetResponse" kindref="compound">PropertyGetResponse</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1854" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="1854" bodyend="1856"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1PropertyGetResponse_1a7cfd95b243d8693773a4c61a999adcf0" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::PropertyGetResponse::operator&lt;</definition>
+        <argsstring>(const PropertyGetResponse &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::PropertyGetResponse::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1PropertyGetResponse" kindref="compound">PropertyGetResponse</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1858" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1PropertyGetResponse_1ac17f2182d5eecb9b20c58ec6fe449019" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::PropertyGetResponse::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot) override</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::PropertyGetResponse::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1860" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="4096" bodyend="4165"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1PropertyGetResponse_1a1158a7c670337032a0471cbaefe1f14e" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::PropertyGetResponse::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const override</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::PropertyGetResponse::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1861" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="4167" bodyend="4197"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1PropertyGetResponse_1a5901c8729604a02f6f3f7c6e7628d6f4" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::PropertyGetResponse::printTo</definition>
+        <argsstring>(std::ostream &amp;out) const</argsstring>
+        <name>printTo</name>
+        <qualifiedname>Apache::Hadoop::Hive::PropertyGetResponse::printTo</qualifiedname>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1863" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="4221" bodyend="4226"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::PropertyGetResponse</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1PropertyGetResponse"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::PropertyGetResponse</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1PropertyGetResponse"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>properties</edgelabel>
+        </childnode>
+        <childnode refid="7" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="7">
+        <label>Apache::Hadoop::Hive::_PropertyGetResponse__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__PropertyGetResponse____isset"/>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+      <node id="3">
+        <label>std::map&lt; std::string, std::map&lt; std::string, std::string &gt; &gt;</label>
+        <childnode refid="4" relation="usage">
+          <edgelabel>keys</edgelabel>
+        </childnode>
+        <childnode refid="6" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="6">
+        <label>std::map&lt; std::string, std::string &gt;</label>
+        <childnode refid="4" relation="usage">
+          <edgelabel>elements</edgelabel>
+          <edgelabel>keys</edgelabel>
+        </childnode>
+      </node>
+      <node id="5">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="4">
+        <label>std::string</label>
+        <childnode refid="5" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1839" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="1839" bodyend="1864"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1PropertyGetResponse_1a76e34c0390f74ce3482ed4c7d69512b6" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::PropertyGetResponse</scope><name>__isset</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1PropertyGetResponse_1a5e0ba02062e18f0619208c2a84baca71" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::PropertyGetResponse</scope><name>__set_properties</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1PropertyGetResponse_1ad33f875d63a2bdfdb6bf3235200c478f" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::PropertyGetResponse</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1PropertyGetResponse_1a7cfd95b243d8693773a4c61a999adcf0" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::PropertyGetResponse</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1PropertyGetResponse_1a1ec179315fd714db54243b4599af17c8" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::PropertyGetResponse</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1PropertyGetResponse_1a4bf3e4f35ff7a4381973449581d3e807" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::PropertyGetResponse</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1PropertyGetResponse_1a5901c8729604a02f6f3f7c6e7628d6f4" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::PropertyGetResponse</scope><name>printTo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1PropertyGetResponse_1ae503a778d8e049cab0bcc85081bf5be4" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::PropertyGetResponse</scope><name>properties</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1PropertyGetResponse_1a45f4a54769699ac4e60652c38d89fc0c" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::PropertyGetResponse</scope><name>PropertyGetResponse</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1PropertyGetResponse_1a7fd8479b40a0cdd2871006914ad4ff3f" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::PropertyGetResponse</scope><name>PropertyGetResponse</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1PropertyGetResponse_1ac17f2182d5eecb9b20c58ec6fe449019" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::PropertyGetResponse</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1PropertyGetResponse_1a1158a7c670337032a0471cbaefe1f14e" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::PropertyGetResponse</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1PropertyGetResponse_1a5ec277284cd471f51d45f1803b308526" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::PropertyGetResponse</scope><name>~PropertyGetResponse</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,64 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structApache_1_1Hadoop_1_1Hive_1_1__ThriftHiveMetastore__get__replication__metrics__result____isset" kind="struct" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::_ThriftHiveMetastore_get_replication_metrics_result__isset</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__ThriftHiveMetastore__get__replication__metrics__result____isset_1a9fc693c51e5d563cc215a983ad54b68d" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_ThriftHiveMetastore_get_replication_metrics_result__isset::success</definition>
+        <argsstring></argsstring>
+        <name>success</name>
+        <qualifiedname>Apache::Hadoop::Hive::_ThriftHiveMetastore_get_replication_metrics_result__isset::success</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="29338" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="29338" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__ThriftHiveMetastore__get__replication__metrics__result____isset_1a7f4c0a548f15101019b7e9ea65ffa4c4" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_ThriftHiveMetastore_get_replication_metrics_result__isset::o1</definition>
+        <argsstring></argsstring>
+        <name>o1</name>
+        <qualifiedname>Apache::Hadoop::Hive::_ThriftHiveMetastore_get_replication_metrics_result__isset::o1</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="29339" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="29339" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structApache_1_1Hadoop_1_1Hive_1_1__ThriftHiveMetastore__get__replication__metrics__result____isset_1ab8748c0a4620466b6b379ff01fdb8e39" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::_ThriftHiveMetastore_get_replication_metrics_result__isset::_ThriftHiveMetastore_get_replication_metrics_result__isset</definition>
+        <argsstring>()</argsstring>
+        <name>_ThriftHiveMetastore_get_replication_metrics_result__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::_ThriftHiveMetastore_get_replication_metrics_result__isset::_ThriftHiveMetastore_get_replication_metrics_result__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="29337" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="29337" bodyend="29337"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="29336" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="29336" bodyend="29340"/>
+    <listofallmembers>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__ThriftHiveMetastore__get__replication__metrics__result____isset_1ab8748c0a4620466b6b379ff01fdb8e39" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_ThriftHiveMetastore_get_replication_metrics_result__isset</scope><name>_ThriftHiveMetastore_get_replication_metrics_result__isset</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__ThriftHiveMetastore__get__replication__metrics__result____isset_1a7f4c0a548f15101019b7e9ea65ffa4c4" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_ThriftHiveMetastore_get_replication_metrics_result__isset</scope><name>o1</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__ThriftHiveMetastore__get__replication__metrics__result____isset_1a9fc693c51e5d563cc215a983ad54b68d" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_ThriftHiveMetastore_get_replication_metrics_result__isset</scope><name>success</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

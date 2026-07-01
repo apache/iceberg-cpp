@@ -1,0 +1,262 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__scheduled__query__poll__args" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::ThriftHiveMetastore_scheduled_query_poll_args</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__scheduled__query__poll__args_1a6a3f8b64f5c89861d36e97d03f25a3ce" prot="public" static="no" mutable="no">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1ScheduledQueryPollRequest" kindref="compound">ScheduledQueryPollRequest</ref></type>
+        <definition>ScheduledQueryPollRequest Apache::Hadoop::Hive::ThriftHiveMetastore_scheduled_query_poll_args::request</definition>
+        <argsstring></argsstring>
+        <name>request</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_scheduled_query_poll_args::request</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="28804" column="29" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="28804" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__scheduled__query__poll__args_1a7a8ced34d4ff426ffbd22908cf398605" prot="public" static="no" mutable="no">
+        <type><ref refid="structApache_1_1Hadoop_1_1Hive_1_1__ThriftHiveMetastore__scheduled__query__poll__args____isset" kindref="compound">_ThriftHiveMetastore_scheduled_query_poll_args__isset</ref></type>
+        <definition>_ThriftHiveMetastore_scheduled_query_poll_args__isset Apache::Hadoop::Hive::ThriftHiveMetastore_scheduled_query_poll_args::__isset</definition>
+        <argsstring></argsstring>
+        <name>__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_scheduled_query_poll_args::__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="28806" column="57" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="28806" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__scheduled__query__poll__args_1a2f8dd73355eeccd9c93c33c969857f61" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::ThriftHiveMetastore_scheduled_query_poll_args::ThriftHiveMetastore_scheduled_query_poll_args</definition>
+        <argsstring>(const ThriftHiveMetastore_scheduled_query_poll_args &amp;)</argsstring>
+        <name>ThriftHiveMetastore_scheduled_query_poll_args</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_scheduled_query_poll_args::ThriftHiveMetastore_scheduled_query_poll_args</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__scheduled__query__poll__args" kindref="compound">ThriftHiveMetastore_scheduled_query_poll_args</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="28799" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__scheduled__query__poll__args_1a437708e73ce1654b7efddcbf0f9af23e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__scheduled__query__poll__args" kindref="compound">ThriftHiveMetastore_scheduled_query_poll_args</ref> &amp;</type>
+        <definition>ThriftHiveMetastore_scheduled_query_poll_args &amp; Apache::Hadoop::Hive::ThriftHiveMetastore_scheduled_query_poll_args::operator=</definition>
+        <argsstring>(const ThriftHiveMetastore_scheduled_query_poll_args &amp;)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_scheduled_query_poll_args::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__scheduled__query__poll__args" kindref="compound">ThriftHiveMetastore_scheduled_query_poll_args</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="28800" column="49"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__scheduled__query__poll__args_1aa1b4ecf751f84323556e048cec966a11" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::ThriftHiveMetastore_scheduled_query_poll_args::ThriftHiveMetastore_scheduled_query_poll_args</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>ThriftHiveMetastore_scheduled_query_poll_args</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_scheduled_query_poll_args::ThriftHiveMetastore_scheduled_query_poll_args</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="28801" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.cpp" bodystart="63973" bodyend="63974"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__scheduled__query__poll__args_1a58b5330938efef6e7e46be4272b834c8" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::ThriftHiveMetastore_scheduled_query_poll_args::~ThriftHiveMetastore_scheduled_query_poll_args</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~ThriftHiveMetastore_scheduled_query_poll_args</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_scheduled_query_poll_args::~ThriftHiveMetastore_scheduled_query_poll_args</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="28803" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.cpp" bodystart="63970" bodyend="63971"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__scheduled__query__poll__args_1a08fdabdb8ee3dc8e9a39a4eda54a5fad" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::ThriftHiveMetastore_scheduled_query_poll_args::__set_request</definition>
+        <argsstring>(const ScheduledQueryPollRequest &amp;val)</argsstring>
+        <name>__set_request</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_scheduled_query_poll_args::__set_request</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ScheduledQueryPollRequest" kindref="compound">ScheduledQueryPollRequest</ref> &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="28808" column="8"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__scheduled__query__poll__args_1ab877d779412fc6d2c2fda58ffdb45995" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::ThriftHiveMetastore_scheduled_query_poll_args::operator==</definition>
+        <argsstring>(const ThriftHiveMetastore_scheduled_query_poll_args &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_scheduled_query_poll_args::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__scheduled__query__poll__args" kindref="compound">ThriftHiveMetastore_scheduled_query_poll_args</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="28810" column="8"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__scheduled__query__poll__args_1ac1c0ec1eea03851b3677ff7a94c78ccc" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::ThriftHiveMetastore_scheduled_query_poll_args::operator!=</definition>
+        <argsstring>(const ThriftHiveMetastore_scheduled_query_poll_args &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_scheduled_query_poll_args::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__scheduled__query__poll__args" kindref="compound">ThriftHiveMetastore_scheduled_query_poll_args</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="28811" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="28811" bodyend="28813"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__scheduled__query__poll__args_1af5426c576318c751466f7c59a925b847" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::ThriftHiveMetastore_scheduled_query_poll_args::operator&lt;</definition>
+        <argsstring>(const ThriftHiveMetastore_scheduled_query_poll_args &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_scheduled_query_poll_args::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__scheduled__query__poll__args" kindref="compound">ThriftHiveMetastore_scheduled_query_poll_args</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="28815" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__scheduled__query__poll__args_1a9087ad13a8ba64653a33335f1647a39d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::ThriftHiveMetastore_scheduled_query_poll_args::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot)</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_scheduled_query_poll_args::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="28817" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.cpp" bodystart="63976" bodyend="64015"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__scheduled__query__poll__args_1a173fc25b73b48e8999a5fc0859d4e3f9" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::ThriftHiveMetastore_scheduled_query_poll_args::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_scheduled_query_poll_args::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="28818" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.cpp" bodystart="64017" bodyend="64029"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="2">
+        <label>Apache::Hadoop::Hive::ScheduledQueryPollRequest</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1ScheduledQueryPollRequest"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>clusterNamespace</edgelabel>
+        </childnode>
+      </node>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::ThriftHiveMetastore_scheduled_query_poll_args</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__scheduled__query__poll__args"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>request</edgelabel>
+        </childnode>
+        <childnode refid="6" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="6">
+        <label>Apache::Hadoop::Hive::_ThriftHiveMetastore_scheduled_query_poll_args__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__ThriftHiveMetastore__scheduled__query__poll__args____isset"/>
+      </node>
+      <node id="3">
+        <label>apache::thrift::TBase</label>
+      </node>
+      <node id="5">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="4">
+        <label>std::string</label>
+        <childnode refid="5" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="28796" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="28796" bodyend="28820"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__scheduled__query__poll__args_1a7a8ced34d4ff426ffbd22908cf398605" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_scheduled_query_poll_args</scope><name>__isset</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__scheduled__query__poll__args_1a08fdabdb8ee3dc8e9a39a4eda54a5fad" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_scheduled_query_poll_args</scope><name>__set_request</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__scheduled__query__poll__args_1ac1c0ec1eea03851b3677ff7a94c78ccc" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_scheduled_query_poll_args</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__scheduled__query__poll__args_1af5426c576318c751466f7c59a925b847" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_scheduled_query_poll_args</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__scheduled__query__poll__args_1a437708e73ce1654b7efddcbf0f9af23e" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_scheduled_query_poll_args</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__scheduled__query__poll__args_1ab877d779412fc6d2c2fda58ffdb45995" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_scheduled_query_poll_args</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__scheduled__query__poll__args_1a9087ad13a8ba64653a33335f1647a39d" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_scheduled_query_poll_args</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__scheduled__query__poll__args_1a6a3f8b64f5c89861d36e97d03f25a3ce" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_scheduled_query_poll_args</scope><name>request</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__scheduled__query__poll__args_1a2f8dd73355eeccd9c93c33c969857f61" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_scheduled_query_poll_args</scope><name>ThriftHiveMetastore_scheduled_query_poll_args</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__scheduled__query__poll__args_1aa1b4ecf751f84323556e048cec966a11" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_scheduled_query_poll_args</scope><name>ThriftHiveMetastore_scheduled_query_poll_args</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__scheduled__query__poll__args_1a173fc25b73b48e8999a5fc0859d4e3f9" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_scheduled_query_poll_args</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__scheduled__query__poll__args_1a58b5330938efef6e7e46be4272b834c8" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_scheduled_query_poll_args</scope><name>~ThriftHiveMetastore_scheduled_query_poll_args</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

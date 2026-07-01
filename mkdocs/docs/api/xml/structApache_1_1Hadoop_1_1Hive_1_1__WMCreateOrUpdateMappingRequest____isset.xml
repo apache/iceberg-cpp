@@ -1,0 +1,64 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structApache_1_1Hadoop_1_1Hive_1_1__WMCreateOrUpdateMappingRequest____isset" kind="struct" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::_WMCreateOrUpdateMappingRequest__isset</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__WMCreateOrUpdateMappingRequest____isset_1a095e9eae752e65b6e0ecfd11be57c599" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_WMCreateOrUpdateMappingRequest__isset::mapping</definition>
+        <argsstring></argsstring>
+        <name>mapping</name>
+        <qualifiedname>Apache::Hadoop::Hive::_WMCreateOrUpdateMappingRequest__isset::mapping</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12296" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="12296" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__WMCreateOrUpdateMappingRequest____isset_1a7078e96e1b2474458a44c69c3b81e99d" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_WMCreateOrUpdateMappingRequest__isset::update</definition>
+        <argsstring></argsstring>
+        <name>update</name>
+        <qualifiedname>Apache::Hadoop::Hive::_WMCreateOrUpdateMappingRequest__isset::update</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12297" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="12297" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structApache_1_1Hadoop_1_1Hive_1_1__WMCreateOrUpdateMappingRequest____isset_1a2ac22cb52af9248b048c24feb38014fc" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::_WMCreateOrUpdateMappingRequest__isset::_WMCreateOrUpdateMappingRequest__isset</definition>
+        <argsstring>()</argsstring>
+        <name>_WMCreateOrUpdateMappingRequest__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::_WMCreateOrUpdateMappingRequest__isset::_WMCreateOrUpdateMappingRequest__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12295" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="12295" bodyend="12295"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12294" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="12294" bodyend="12298"/>
+    <listofallmembers>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__WMCreateOrUpdateMappingRequest____isset_1a2ac22cb52af9248b048c24feb38014fc" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_WMCreateOrUpdateMappingRequest__isset</scope><name>_WMCreateOrUpdateMappingRequest__isset</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__WMCreateOrUpdateMappingRequest____isset_1a095e9eae752e65b6e0ecfd11be57c599" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_WMCreateOrUpdateMappingRequest__isset</scope><name>mapping</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__WMCreateOrUpdateMappingRequest____isset_1a7078e96e1b2474458a44c69c3b81e99d" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_WMCreateOrUpdateMappingRequest__isset</scope><name>update</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

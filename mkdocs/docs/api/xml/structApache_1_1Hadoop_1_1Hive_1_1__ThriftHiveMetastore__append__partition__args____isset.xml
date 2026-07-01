@@ -1,0 +1,80 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structApache_1_1Hadoop_1_1Hive_1_1__ThriftHiveMetastore__append__partition__args____isset" kind="struct" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::_ThriftHiveMetastore_append_partition_args__isset</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__ThriftHiveMetastore__append__partition__args____isset_1ac2982b7cee77031be1417c813ef7b539" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_ThriftHiveMetastore_append_partition_args__isset::db_name</definition>
+        <argsstring></argsstring>
+        <name>db_name</name>
+        <qualifiedname>Apache::Hadoop::Hive::_ThriftHiveMetastore_append_partition_args__isset::db_name</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="8579" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="8579" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__ThriftHiveMetastore__append__partition__args____isset_1afe620c5e98d89e2f369405916020bd74" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_ThriftHiveMetastore_append_partition_args__isset::tbl_name</definition>
+        <argsstring></argsstring>
+        <name>tbl_name</name>
+        <qualifiedname>Apache::Hadoop::Hive::_ThriftHiveMetastore_append_partition_args__isset::tbl_name</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="8580" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="8580" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__ThriftHiveMetastore__append__partition__args____isset_1a7fdd54b2668f9ec238c3eeaf3bb588e2" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_ThriftHiveMetastore_append_partition_args__isset::part_vals</definition>
+        <argsstring></argsstring>
+        <name>part_vals</name>
+        <qualifiedname>Apache::Hadoop::Hive::_ThriftHiveMetastore_append_partition_args__isset::part_vals</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="8581" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="8581" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structApache_1_1Hadoop_1_1Hive_1_1__ThriftHiveMetastore__append__partition__args____isset_1ace6db703ad5328a74cbc905e735f197d" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::_ThriftHiveMetastore_append_partition_args__isset::_ThriftHiveMetastore_append_partition_args__isset</definition>
+        <argsstring>()</argsstring>
+        <name>_ThriftHiveMetastore_append_partition_args__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::_ThriftHiveMetastore_append_partition_args__isset::_ThriftHiveMetastore_append_partition_args__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="8578" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="8578" bodyend="8578"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="8577" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="8577" bodyend="8582"/>
+    <listofallmembers>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__ThriftHiveMetastore__append__partition__args____isset_1ace6db703ad5328a74cbc905e735f197d" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_ThriftHiveMetastore_append_partition_args__isset</scope><name>_ThriftHiveMetastore_append_partition_args__isset</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__ThriftHiveMetastore__append__partition__args____isset_1ac2982b7cee77031be1417c813ef7b539" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_ThriftHiveMetastore_append_partition_args__isset</scope><name>db_name</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__ThriftHiveMetastore__append__partition__args____isset_1a7fdd54b2668f9ec238c3eeaf3bb588e2" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_ThriftHiveMetastore_append_partition_args__isset</scope><name>part_vals</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__ThriftHiveMetastore__append__partition__args____isset_1afe620c5e98d89e2f369405916020bd74" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_ThriftHiveMetastore_append_partition_args__isset</scope><name>tbl_name</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

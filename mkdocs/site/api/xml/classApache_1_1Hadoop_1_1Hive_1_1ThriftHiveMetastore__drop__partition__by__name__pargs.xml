@@ -1,0 +1,130 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__drop__partition__by__name__pargs" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::ThriftHiveMetastore_drop_partition_by_name_pargs</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__drop__partition__by__name__pargs_1a37fc276bdce78e763dc5c75920ea0bf4" prot="public" static="no" mutable="no">
+        <type>const std::string *</type>
+        <definition>const std::string* Apache::Hadoop::Hive::ThriftHiveMetastore_drop_partition_by_name_pargs::db_name</definition>
+        <argsstring></argsstring>
+        <name>db_name</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_drop_partition_by_name_pargs::db_name</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="9683" column="21" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="9683" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__drop__partition__by__name__pargs_1a0c98fbd17636efe635f54164583958d5" prot="public" static="no" mutable="no">
+        <type>const std::string *</type>
+        <definition>const std::string* Apache::Hadoop::Hive::ThriftHiveMetastore_drop_partition_by_name_pargs::tbl_name</definition>
+        <argsstring></argsstring>
+        <name>tbl_name</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_drop_partition_by_name_pargs::tbl_name</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="9684" column="21" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="9684" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__drop__partition__by__name__pargs_1ade60f64f7821550fceac8a1c412a3e3d" prot="public" static="no" mutable="no">
+        <type>const std::string *</type>
+        <definition>const std::string* Apache::Hadoop::Hive::ThriftHiveMetastore_drop_partition_by_name_pargs::part_name</definition>
+        <argsstring></argsstring>
+        <name>part_name</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_drop_partition_by_name_pargs::part_name</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="9685" column="21" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="9685" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__drop__partition__by__name__pargs_1a95a9309dc199b2457553d79d5ee90d25" prot="public" static="no" mutable="no">
+        <type>const bool *</type>
+        <definition>const bool* Apache::Hadoop::Hive::ThriftHiveMetastore_drop_partition_by_name_pargs::deleteData</definition>
+        <argsstring></argsstring>
+        <name>deleteData</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_drop_partition_by_name_pargs::deleteData</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="9686" column="14" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="9686" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__drop__partition__by__name__pargs_1abb20a4335028560c1f25f656710bf882" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::ThriftHiveMetastore_drop_partition_by_name_pargs::~ThriftHiveMetastore_drop_partition_by_name_pargs</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~ThriftHiveMetastore_drop_partition_by_name_pargs</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_drop_partition_by_name_pargs::~ThriftHiveMetastore_drop_partition_by_name_pargs</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="9682" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.cpp" bodystart="20041" bodyend="20042"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__drop__partition__by__name__pargs_1a037fc0bec9bd4df0259efd3be419b584" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::ThriftHiveMetastore_drop_partition_by_name_pargs::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_drop_partition_by_name_pargs::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="9688" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.cpp" bodystart="20045" bodyend="20069"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::ThriftHiveMetastore_drop_partition_by_name_pargs</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__drop__partition__by__name__pargs"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>db_name</edgelabel>
+          <edgelabel>part_name</edgelabel>
+          <edgelabel>tbl_name</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="2">
+        <label>std::string</label>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="9678" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="9678" bodyend="9690"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__drop__partition__by__name__pargs_1a37fc276bdce78e763dc5c75920ea0bf4" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_drop_partition_by_name_pargs</scope><name>db_name</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__drop__partition__by__name__pargs_1a95a9309dc199b2457553d79d5ee90d25" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_drop_partition_by_name_pargs</scope><name>deleteData</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__drop__partition__by__name__pargs_1ade60f64f7821550fceac8a1c412a3e3d" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_drop_partition_by_name_pargs</scope><name>part_name</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__drop__partition__by__name__pargs_1a0c98fbd17636efe635f54164583958d5" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_drop_partition_by_name_pargs</scope><name>tbl_name</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__drop__partition__by__name__pargs_1a037fc0bec9bd4df0259efd3be419b584" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_drop_partition_by_name_pargs</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__drop__partition__by__name__pargs_1abb20a4335028560c1f25f656710bf882" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_drop_partition_by_name_pargs</scope><name>~ThriftHiveMetastore_drop_partition_by_name_pargs</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

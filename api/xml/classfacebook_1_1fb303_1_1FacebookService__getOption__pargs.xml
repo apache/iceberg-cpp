@@ -1,0 +1,83 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classfacebook_1_1fb303_1_1FacebookService__getOption__pargs" kind="class" language="C++" prot="public">
+    <compoundname>facebook::fb303::FacebookService_getOption_pargs</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classfacebook_1_1fb303_1_1FacebookService__getOption__pargs_1a71d4f9822dc7e722292e04d6a2e1470d" prot="public" static="no" mutable="no">
+        <type>const std::string *</type>
+        <definition>const std::string* facebook::fb303::FacebookService_getOption_pargs::key</definition>
+        <argsstring></argsstring>
+        <name>key</name>
+        <qualifiedname>facebook::fb303::FacebookService_getOption_pargs::key</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="805" column="21" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.h" bodystart="805" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookService__getOption__pargs_1a6f91b1904fe11d554b8f4cc96dc711c3" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>facebook::fb303::FacebookService_getOption_pargs::~FacebookService_getOption_pargs</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~FacebookService_getOption_pargs</name>
+        <qualifiedname>facebook::fb303::FacebookService_getOption_pargs::~FacebookService_getOption_pargs</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="804" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.cpp" bodystart="1343" bodyend="1344"/>
+      </memberdef>
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookService__getOption__pargs_1aa027eb8455669585bd56927cb3c3e47b" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t facebook::fb303::FacebookService_getOption_pargs::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const</argsstring>
+        <name>write</name>
+        <qualifiedname>facebook::fb303::FacebookService_getOption_pargs::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="807" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.cpp" bodystart="1347" bodyend="1359"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>facebook::fb303::FacebookService_getOption_pargs</label>
+        <link refid="classfacebook_1_1fb303_1_1FacebookService__getOption__pargs"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>key</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="2">
+        <label>std::string</label>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="800" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.h" bodystart="800" bodyend="809"/>
+    <listofallmembers>
+      <member refid="classfacebook_1_1fb303_1_1FacebookService__getOption__pargs_1a71d4f9822dc7e722292e04d6a2e1470d" prot="public" virt="non-virtual"><scope>facebook::fb303::FacebookService_getOption_pargs</scope><name>key</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookService__getOption__pargs_1aa027eb8455669585bd56927cb3c3e47b" prot="public" virt="non-virtual"><scope>facebook::fb303::FacebookService_getOption_pargs</scope><name>write</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookService__getOption__pargs_1a6f91b1904fe11d554b8f4cc96dc711c3" prot="public" virt="virtual"><scope>facebook::fb303::FacebookService_getOption_pargs</scope><name>~FacebookService_getOption_pargs</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,80 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structApache_1_1Hadoop_1_1Hive_1_1__ThriftHiveMetastore__get__valid__write__ids__result____isset" kind="struct" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::_ThriftHiveMetastore_get_valid_write_ids_result__isset</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__ThriftHiveMetastore__get__valid__write__ids__result____isset_1ab86d556f97d359e01b55fe2103d96a75" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_ThriftHiveMetastore_get_valid_write_ids_result__isset::success</definition>
+        <argsstring></argsstring>
+        <name>success</name>
+        <qualifiedname>Apache::Hadoop::Hive::_ThriftHiveMetastore_get_valid_write_ids_result__isset::success</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="21047" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="21047" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__ThriftHiveMetastore__get__valid__write__ids__result____isset_1af0ac229169840ec440c9594ae1d3d3ca" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_ThriftHiveMetastore_get_valid_write_ids_result__isset::o1</definition>
+        <argsstring></argsstring>
+        <name>o1</name>
+        <qualifiedname>Apache::Hadoop::Hive::_ThriftHiveMetastore_get_valid_write_ids_result__isset::o1</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="21048" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="21048" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__ThriftHiveMetastore__get__valid__write__ids__result____isset_1a41f39ab52bffe5a3ed931897d6b37a29" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_ThriftHiveMetastore_get_valid_write_ids_result__isset::o2</definition>
+        <argsstring></argsstring>
+        <name>o2</name>
+        <qualifiedname>Apache::Hadoop::Hive::_ThriftHiveMetastore_get_valid_write_ids_result__isset::o2</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="21049" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="21049" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structApache_1_1Hadoop_1_1Hive_1_1__ThriftHiveMetastore__get__valid__write__ids__result____isset_1a4bedabb715660799bd3c960fbdd6e6ff" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::_ThriftHiveMetastore_get_valid_write_ids_result__isset::_ThriftHiveMetastore_get_valid_write_ids_result__isset</definition>
+        <argsstring>()</argsstring>
+        <name>_ThriftHiveMetastore_get_valid_write_ids_result__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::_ThriftHiveMetastore_get_valid_write_ids_result__isset::_ThriftHiveMetastore_get_valid_write_ids_result__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="21046" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="21046" bodyend="21046"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="21045" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="21045" bodyend="21050"/>
+    <listofallmembers>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__ThriftHiveMetastore__get__valid__write__ids__result____isset_1a4bedabb715660799bd3c960fbdd6e6ff" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_ThriftHiveMetastore_get_valid_write_ids_result__isset</scope><name>_ThriftHiveMetastore_get_valid_write_ids_result__isset</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__ThriftHiveMetastore__get__valid__write__ids__result____isset_1af0ac229169840ec440c9594ae1d3d3ca" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_ThriftHiveMetastore_get_valid_write_ids_result__isset</scope><name>o1</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__ThriftHiveMetastore__get__valid__write__ids__result____isset_1a41f39ab52bffe5a3ed931897d6b37a29" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_ThriftHiveMetastore_get_valid_write_ids_result__isset</scope><name>o2</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__ThriftHiveMetastore__get__valid__write__ids__result____isset_1ab86d556f97d359e01b55fe2103d96a75" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_ThriftHiveMetastore_get_valid_write_ids_result__isset</scope><name>success</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

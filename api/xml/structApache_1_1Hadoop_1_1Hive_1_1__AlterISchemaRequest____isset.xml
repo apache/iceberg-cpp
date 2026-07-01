@@ -1,0 +1,64 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structApache_1_1Hadoop_1_1Hive_1_1__AlterISchemaRequest____isset" kind="struct" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::_AlterISchemaRequest__isset</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__AlterISchemaRequest____isset_1a9d18fb7f99c03c05b4ce45c84e738a21" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_AlterISchemaRequest__isset::name</definition>
+        <argsstring></argsstring>
+        <name>name</name>
+        <qualifiedname>Apache::Hadoop::Hive::_AlterISchemaRequest__isset::name</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12629" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="12629" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__AlterISchemaRequest____isset_1abf867015ad4ec28c0eb48e2af7b3b2f1" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_AlterISchemaRequest__isset::newSchema</definition>
+        <argsstring></argsstring>
+        <name>newSchema</name>
+        <qualifiedname>Apache::Hadoop::Hive::_AlterISchemaRequest__isset::newSchema</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12630" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="12630" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structApache_1_1Hadoop_1_1Hive_1_1__AlterISchemaRequest____isset_1a5a9cea62d94cf16c510dead53e779c01" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::_AlterISchemaRequest__isset::_AlterISchemaRequest__isset</definition>
+        <argsstring>()</argsstring>
+        <name>_AlterISchemaRequest__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::_AlterISchemaRequest__isset::_AlterISchemaRequest__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12628" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="12628" bodyend="12628"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12627" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="12627" bodyend="12631"/>
+    <listofallmembers>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__AlterISchemaRequest____isset_1a5a9cea62d94cf16c510dead53e779c01" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_AlterISchemaRequest__isset</scope><name>_AlterISchemaRequest__isset</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__AlterISchemaRequest____isset_1a9d18fb7f99c03c05b4ce45c84e738a21" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_AlterISchemaRequest__isset</scope><name>name</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__AlterISchemaRequest____isset_1abf867015ad4ec28c0eb48e2af7b3b2f1" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_AlterISchemaRequest__isset</scope><name>newSchema</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

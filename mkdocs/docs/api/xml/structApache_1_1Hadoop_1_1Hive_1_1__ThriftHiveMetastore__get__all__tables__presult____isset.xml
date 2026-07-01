@@ -1,0 +1,64 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structApache_1_1Hadoop_1_1Hive_1_1__ThriftHiveMetastore__get__all__tables__presult____isset" kind="struct" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::_ThriftHiveMetastore_get_all_tables_presult__isset</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__ThriftHiveMetastore__get__all__tables__presult____isset_1a3963b3496bb181c119809d2c77c7b1e1" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_ThriftHiveMetastore_get_all_tables_presult__isset::success</definition>
+        <argsstring></argsstring>
+        <name>success</name>
+        <qualifiedname>Apache::Hadoop::Hive::_ThriftHiveMetastore_get_all_tables_presult__isset::success</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="7010" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="7010" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__ThriftHiveMetastore__get__all__tables__presult____isset_1a73fa72238a631bc149e8c139613b0e83" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_ThriftHiveMetastore_get_all_tables_presult__isset::o1</definition>
+        <argsstring></argsstring>
+        <name>o1</name>
+        <qualifiedname>Apache::Hadoop::Hive::_ThriftHiveMetastore_get_all_tables_presult__isset::o1</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="7011" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="7011" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structApache_1_1Hadoop_1_1Hive_1_1__ThriftHiveMetastore__get__all__tables__presult____isset_1a62a4dd674eb73f95ea3036ea3aa44c84" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::_ThriftHiveMetastore_get_all_tables_presult__isset::_ThriftHiveMetastore_get_all_tables_presult__isset</definition>
+        <argsstring>()</argsstring>
+        <name>_ThriftHiveMetastore_get_all_tables_presult__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::_ThriftHiveMetastore_get_all_tables_presult__isset::_ThriftHiveMetastore_get_all_tables_presult__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="7009" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="7009" bodyend="7009"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="7008" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="7008" bodyend="7012"/>
+    <listofallmembers>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__ThriftHiveMetastore__get__all__tables__presult____isset_1a62a4dd674eb73f95ea3036ea3aa44c84" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_ThriftHiveMetastore_get_all_tables_presult__isset</scope><name>_ThriftHiveMetastore_get_all_tables_presult__isset</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__ThriftHiveMetastore__get__all__tables__presult____isset_1a73fa72238a631bc149e8c139613b0e83" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_ThriftHiveMetastore_get_all_tables_presult__isset</scope><name>o1</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__ThriftHiveMetastore__get__all__tables__presult____isset_1a3963b3496bb181c119809d2c77c7b1e1" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_ThriftHiveMetastore_get_all_tables_presult__isset</scope><name>success</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,432 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__partitions__ps__with__auth__args" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::ThriftHiveMetastore_get_partitions_ps_with_auth_args</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__partitions__ps__with__auth__args_1a89aea4ee65ee3dd358ceabdc476e67ad" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::ThriftHiveMetastore_get_partitions_ps_with_auth_args::db_name</definition>
+        <argsstring></argsstring>
+        <name>db_name</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_get_partitions_ps_with_auth_args::db_name</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="11624" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="11624" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__partitions__ps__with__auth__args_1ad3f853359c2bfb43522e3f77f3b78223" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::ThriftHiveMetastore_get_partitions_ps_with_auth_args::tbl_name</definition>
+        <argsstring></argsstring>
+        <name>tbl_name</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_get_partitions_ps_with_auth_args::tbl_name</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="11625" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="11625" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__partitions__ps__with__auth__args_1a471a0966f0e579d90d29425e981b710e" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; std::string &gt;</type>
+        <definition>std::vector&lt;std::string&gt; Apache::Hadoop::Hive::ThriftHiveMetastore_get_partitions_ps_with_auth_args::part_vals</definition>
+        <argsstring></argsstring>
+        <name>part_vals</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_get_partitions_ps_with_auth_args::part_vals</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="11626" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="11626" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__partitions__ps__with__auth__args_1a813c002460d7798609342a220902f86b" prot="public" static="no" mutable="no">
+        <type>int16_t</type>
+        <definition>int16_t Apache::Hadoop::Hive::ThriftHiveMetastore_get_partitions_ps_with_auth_args::max_parts</definition>
+        <argsstring></argsstring>
+        <name>max_parts</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_get_partitions_ps_with_auth_args::max_parts</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="11627" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="11627" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__partitions__ps__with__auth__args_1acbd11a9aa3bd9283184772df3eaf5b14" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::ThriftHiveMetastore_get_partitions_ps_with_auth_args::user_name</definition>
+        <argsstring></argsstring>
+        <name>user_name</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_get_partitions_ps_with_auth_args::user_name</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="11628" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="11628" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__partitions__ps__with__auth__args_1a695f015be471c32e6551683294879b87" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; std::string &gt;</type>
+        <definition>std::vector&lt;std::string&gt; Apache::Hadoop::Hive::ThriftHiveMetastore_get_partitions_ps_with_auth_args::group_names</definition>
+        <argsstring></argsstring>
+        <name>group_names</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_get_partitions_ps_with_auth_args::group_names</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="11629" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="11629" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__partitions__ps__with__auth__args_1aa713109396cb1dd3cd415dfae68187d3" prot="public" static="no" mutable="no">
+        <type><ref refid="structApache_1_1Hadoop_1_1Hive_1_1__ThriftHiveMetastore__get__partitions__ps__with__auth__args____isset" kindref="compound">_ThriftHiveMetastore_get_partitions_ps_with_auth_args__isset</ref></type>
+        <definition>_ThriftHiveMetastore_get_partitions_ps_with_auth_args__isset Apache::Hadoop::Hive::ThriftHiveMetastore_get_partitions_ps_with_auth_args::__isset</definition>
+        <argsstring></argsstring>
+        <name>__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_get_partitions_ps_with_auth_args::__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="11631" column="64" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="11631" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__partitions__ps__with__auth__args_1a47f9941927c8dd49d1d0660359852fda" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::ThriftHiveMetastore_get_partitions_ps_with_auth_args::ThriftHiveMetastore_get_partitions_ps_with_auth_args</definition>
+        <argsstring>(const ThriftHiveMetastore_get_partitions_ps_with_auth_args &amp;)</argsstring>
+        <name>ThriftHiveMetastore_get_partitions_ps_with_auth_args</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_get_partitions_ps_with_auth_args::ThriftHiveMetastore_get_partitions_ps_with_auth_args</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__partitions__ps__with__auth__args" kindref="compound">ThriftHiveMetastore_get_partitions_ps_with_auth_args</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="11619" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__partitions__ps__with__auth__args_1a7e1c0ae774016022f85408107a5d9efc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__partitions__ps__with__auth__args" kindref="compound">ThriftHiveMetastore_get_partitions_ps_with_auth_args</ref> &amp;</type>
+        <definition>ThriftHiveMetastore_get_partitions_ps_with_auth_args &amp; Apache::Hadoop::Hive::ThriftHiveMetastore_get_partitions_ps_with_auth_args::operator=</definition>
+        <argsstring>(const ThriftHiveMetastore_get_partitions_ps_with_auth_args &amp;)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_get_partitions_ps_with_auth_args::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__partitions__ps__with__auth__args" kindref="compound">ThriftHiveMetastore_get_partitions_ps_with_auth_args</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="11620" column="56"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__partitions__ps__with__auth__args_1a292312f67a935d00859d5041af4acc80" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::ThriftHiveMetastore_get_partitions_ps_with_auth_args::ThriftHiveMetastore_get_partitions_ps_with_auth_args</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>ThriftHiveMetastore_get_partitions_ps_with_auth_args</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_get_partitions_ps_with_auth_args::ThriftHiveMetastore_get_partitions_ps_with_auth_args</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="11621" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.cpp" bodystart="24997" bodyend="25002"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__partitions__ps__with__auth__args_1a1fb044bf4312de572db4cfb1e6a71f81" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::ThriftHiveMetastore_get_partitions_ps_with_auth_args::~ThriftHiveMetastore_get_partitions_ps_with_auth_args</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~ThriftHiveMetastore_get_partitions_ps_with_auth_args</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_get_partitions_ps_with_auth_args::~ThriftHiveMetastore_get_partitions_ps_with_auth_args</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="11623" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.cpp" bodystart="24994" bodyend="24995"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__partitions__ps__with__auth__args_1aee00f4854252c0bd0d96f1614fd44383" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::ThriftHiveMetastore_get_partitions_ps_with_auth_args::__set_db_name</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_db_name</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_get_partitions_ps_with_auth_args::__set_db_name</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="11633" column="8"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__partitions__ps__with__auth__args_1ad70eb4632d42c8402944f3ed618db5d8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::ThriftHiveMetastore_get_partitions_ps_with_auth_args::__set_tbl_name</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_tbl_name</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_get_partitions_ps_with_auth_args::__set_tbl_name</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="11635" column="8"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__partitions__ps__with__auth__args_1a1035cc8e645e795ec6ec6eb46e26be07" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::ThriftHiveMetastore_get_partitions_ps_with_auth_args::__set_part_vals</definition>
+        <argsstring>(const std::vector&lt; std::string &gt; &amp;val)</argsstring>
+        <name>__set_part_vals</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_get_partitions_ps_with_auth_args::__set_part_vals</qualifiedname>
+        <param>
+          <type>const std::vector&lt; std::string &gt; &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="11637" column="8"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__partitions__ps__with__auth__args_1a62f35524328388b3021a54bd98233c24" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::ThriftHiveMetastore_get_partitions_ps_with_auth_args::__set_max_parts</definition>
+        <argsstring>(const int16_t val)</argsstring>
+        <name>__set_max_parts</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_get_partitions_ps_with_auth_args::__set_max_parts</qualifiedname>
+        <param>
+          <type>const int16_t</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="11639" column="8"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__partitions__ps__with__auth__args_1aa93e1d967fc5b0a3326bbd1665dd1ee9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::ThriftHiveMetastore_get_partitions_ps_with_auth_args::__set_user_name</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_user_name</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_get_partitions_ps_with_auth_args::__set_user_name</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="11641" column="8"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__partitions__ps__with__auth__args_1ad68b4abe40914eb4b0e049341ee995f2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::ThriftHiveMetastore_get_partitions_ps_with_auth_args::__set_group_names</definition>
+        <argsstring>(const std::vector&lt; std::string &gt; &amp;val)</argsstring>
+        <name>__set_group_names</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_get_partitions_ps_with_auth_args::__set_group_names</qualifiedname>
+        <param>
+          <type>const std::vector&lt; std::string &gt; &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="11643" column="8"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__partitions__ps__with__auth__args_1aa39978b781fb10bb33875eac6a95506b" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::ThriftHiveMetastore_get_partitions_ps_with_auth_args::operator==</definition>
+        <argsstring>(const ThriftHiveMetastore_get_partitions_ps_with_auth_args &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_get_partitions_ps_with_auth_args::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__partitions__ps__with__auth__args" kindref="compound">ThriftHiveMetastore_get_partitions_ps_with_auth_args</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="11645" column="8"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__partitions__ps__with__auth__args_1a6b65401e08dda8b8100a7ecfc53c836b" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::ThriftHiveMetastore_get_partitions_ps_with_auth_args::operator!=</definition>
+        <argsstring>(const ThriftHiveMetastore_get_partitions_ps_with_auth_args &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_get_partitions_ps_with_auth_args::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__partitions__ps__with__auth__args" kindref="compound">ThriftHiveMetastore_get_partitions_ps_with_auth_args</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="11646" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="11646" bodyend="11648"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__partitions__ps__with__auth__args_1ac8fb9e013ae4e0980f35cf5b0c26b70d" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::ThriftHiveMetastore_get_partitions_ps_with_auth_args::operator&lt;</definition>
+        <argsstring>(const ThriftHiveMetastore_get_partitions_ps_with_auth_args &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_get_partitions_ps_with_auth_args::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__partitions__ps__with__auth__args" kindref="compound">ThriftHiveMetastore_get_partitions_ps_with_auth_args</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="11650" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__partitions__ps__with__auth__args_1a0d625f81e369c86200ae8ff46894dc21" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::ThriftHiveMetastore_get_partitions_ps_with_auth_args::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot)</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_get_partitions_ps_with_auth_args::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="11652" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.cpp" bodystart="25004" bodyend="25107"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__partitions__ps__with__auth__args_1a62d0610068c19a256e59d35747166346" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::ThriftHiveMetastore_get_partitions_ps_with_auth_args::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_get_partitions_ps_with_auth_args::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="11653" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.cpp" bodystart="25109" bodyend="25157"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::ThriftHiveMetastore_get_partitions_ps_with_auth_args</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__partitions__ps__with__auth__args"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>db_name</edgelabel>
+          <edgelabel>tbl_name</edgelabel>
+          <edgelabel>user_name</edgelabel>
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>group_names</edgelabel>
+          <edgelabel>part_vals</edgelabel>
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="5">
+        <label>Apache::Hadoop::Hive::_ThriftHiveMetastore_get_partitions_ps_with_auth_args__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__ThriftHiveMetastore__get__partitions__ps__with__auth__args____isset"/>
+      </node>
+      <node id="3">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="2">
+        <label>std::string</label>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>std::vector&lt; std::string &gt;</label>
+        <childnode refid="2" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="11616" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="11616" bodyend="11655"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__partitions__ps__with__auth__args_1aa713109396cb1dd3cd415dfae68187d3" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_get_partitions_ps_with_auth_args</scope><name>__isset</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__partitions__ps__with__auth__args_1aee00f4854252c0bd0d96f1614fd44383" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_get_partitions_ps_with_auth_args</scope><name>__set_db_name</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__partitions__ps__with__auth__args_1ad68b4abe40914eb4b0e049341ee995f2" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_get_partitions_ps_with_auth_args</scope><name>__set_group_names</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__partitions__ps__with__auth__args_1a62f35524328388b3021a54bd98233c24" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_get_partitions_ps_with_auth_args</scope><name>__set_max_parts</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__partitions__ps__with__auth__args_1a1035cc8e645e795ec6ec6eb46e26be07" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_get_partitions_ps_with_auth_args</scope><name>__set_part_vals</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__partitions__ps__with__auth__args_1ad70eb4632d42c8402944f3ed618db5d8" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_get_partitions_ps_with_auth_args</scope><name>__set_tbl_name</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__partitions__ps__with__auth__args_1aa93e1d967fc5b0a3326bbd1665dd1ee9" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_get_partitions_ps_with_auth_args</scope><name>__set_user_name</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__partitions__ps__with__auth__args_1a89aea4ee65ee3dd358ceabdc476e67ad" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_get_partitions_ps_with_auth_args</scope><name>db_name</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__partitions__ps__with__auth__args_1a695f015be471c32e6551683294879b87" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_get_partitions_ps_with_auth_args</scope><name>group_names</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__partitions__ps__with__auth__args_1a813c002460d7798609342a220902f86b" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_get_partitions_ps_with_auth_args</scope><name>max_parts</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__partitions__ps__with__auth__args_1a6b65401e08dda8b8100a7ecfc53c836b" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_get_partitions_ps_with_auth_args</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__partitions__ps__with__auth__args_1ac8fb9e013ae4e0980f35cf5b0c26b70d" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_get_partitions_ps_with_auth_args</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__partitions__ps__with__auth__args_1a7e1c0ae774016022f85408107a5d9efc" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_get_partitions_ps_with_auth_args</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__partitions__ps__with__auth__args_1aa39978b781fb10bb33875eac6a95506b" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_get_partitions_ps_with_auth_args</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__partitions__ps__with__auth__args_1a471a0966f0e579d90d29425e981b710e" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_get_partitions_ps_with_auth_args</scope><name>part_vals</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__partitions__ps__with__auth__args_1a0d625f81e369c86200ae8ff46894dc21" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_get_partitions_ps_with_auth_args</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__partitions__ps__with__auth__args_1ad3f853359c2bfb43522e3f77f3b78223" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_get_partitions_ps_with_auth_args</scope><name>tbl_name</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__partitions__ps__with__auth__args_1a47f9941927c8dd49d1d0660359852fda" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_get_partitions_ps_with_auth_args</scope><name>ThriftHiveMetastore_get_partitions_ps_with_auth_args</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__partitions__ps__with__auth__args_1a292312f67a935d00859d5041af4acc80" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_get_partitions_ps_with_auth_args</scope><name>ThriftHiveMetastore_get_partitions_ps_with_auth_args</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__partitions__ps__with__auth__args_1acbd11a9aa3bd9283184772df3eaf5b14" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_get_partitions_ps_with_auth_args</scope><name>user_name</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__partitions__ps__with__auth__args_1a62d0610068c19a256e59d35747166346" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_get_partitions_ps_with_auth_args</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__partitions__ps__with__auth__args_1a1fb044bf4312de572db4cfb1e6a71f81" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_get_partitions_ps_with_auth_args</scope><name>~ThriftHiveMetastore_get_partitions_ps_with_auth_args</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

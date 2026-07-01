@@ -1,0 +1,269 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__all__resource__plans__args" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::ThriftHiveMetastore_get_all_resource_plans_args</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__all__resource__plans__args_1a7fd72b92ce85ffacc4cb6e0d0b9f6b8e" prot="public" static="no" mutable="no">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1WMGetAllResourcePlanRequest" kindref="compound">WMGetAllResourcePlanRequest</ref></type>
+        <definition>WMGetAllResourcePlanRequest Apache::Hadoop::Hive::ThriftHiveMetastore_get_all_resource_plans_args::request</definition>
+        <argsstring></argsstring>
+        <name>request</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_get_all_resource_plans_args::request</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="25340" column="31" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="25340" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__all__resource__plans__args_1af75a56f35e8a32fd8249c17fbc904ad1" prot="public" static="no" mutable="no">
+        <type><ref refid="structApache_1_1Hadoop_1_1Hive_1_1__ThriftHiveMetastore__get__all__resource__plans__args____isset" kindref="compound">_ThriftHiveMetastore_get_all_resource_plans_args__isset</ref></type>
+        <definition>_ThriftHiveMetastore_get_all_resource_plans_args__isset Apache::Hadoop::Hive::ThriftHiveMetastore_get_all_resource_plans_args::__isset</definition>
+        <argsstring></argsstring>
+        <name>__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_get_all_resource_plans_args::__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="25342" column="59" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="25342" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__all__resource__plans__args_1adf3a8e32cd249736469c5ba6093c0f0f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::ThriftHiveMetastore_get_all_resource_plans_args::ThriftHiveMetastore_get_all_resource_plans_args</definition>
+        <argsstring>(const ThriftHiveMetastore_get_all_resource_plans_args &amp;)</argsstring>
+        <name>ThriftHiveMetastore_get_all_resource_plans_args</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_get_all_resource_plans_args::ThriftHiveMetastore_get_all_resource_plans_args</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__all__resource__plans__args" kindref="compound">ThriftHiveMetastore_get_all_resource_plans_args</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="25335" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__all__resource__plans__args_1a47804114de370be3066044cc7cfc4ba1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__all__resource__plans__args" kindref="compound">ThriftHiveMetastore_get_all_resource_plans_args</ref> &amp;</type>
+        <definition>ThriftHiveMetastore_get_all_resource_plans_args &amp; Apache::Hadoop::Hive::ThriftHiveMetastore_get_all_resource_plans_args::operator=</definition>
+        <argsstring>(const ThriftHiveMetastore_get_all_resource_plans_args &amp;)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_get_all_resource_plans_args::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__all__resource__plans__args" kindref="compound">ThriftHiveMetastore_get_all_resource_plans_args</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="25336" column="51"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__all__resource__plans__args_1ae1f146141210960f020fda803fe330c9" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::ThriftHiveMetastore_get_all_resource_plans_args::ThriftHiveMetastore_get_all_resource_plans_args</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>ThriftHiveMetastore_get_all_resource_plans_args</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_get_all_resource_plans_args::ThriftHiveMetastore_get_all_resource_plans_args</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="25337" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.cpp" bodystart="56175" bodyend="56176"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__all__resource__plans__args_1ab850f22fa1bb3d36e542aa123ed546f9" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::ThriftHiveMetastore_get_all_resource_plans_args::~ThriftHiveMetastore_get_all_resource_plans_args</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~ThriftHiveMetastore_get_all_resource_plans_args</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_get_all_resource_plans_args::~ThriftHiveMetastore_get_all_resource_plans_args</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="25339" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.cpp" bodystart="56172" bodyend="56173"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__all__resource__plans__args_1a878347b05cb5418f05098a72f9715938" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::ThriftHiveMetastore_get_all_resource_plans_args::__set_request</definition>
+        <argsstring>(const WMGetAllResourcePlanRequest &amp;val)</argsstring>
+        <name>__set_request</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_get_all_resource_plans_args::__set_request</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1WMGetAllResourcePlanRequest" kindref="compound">WMGetAllResourcePlanRequest</ref> &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="25344" column="8"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__all__resource__plans__args_1aced92445465ff86740e1f65de402a0c3" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::ThriftHiveMetastore_get_all_resource_plans_args::operator==</definition>
+        <argsstring>(const ThriftHiveMetastore_get_all_resource_plans_args &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_get_all_resource_plans_args::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__all__resource__plans__args" kindref="compound">ThriftHiveMetastore_get_all_resource_plans_args</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="25346" column="8"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__all__resource__plans__args_1a2b22fbccd85aee0a48401d161c662d02" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::ThriftHiveMetastore_get_all_resource_plans_args::operator!=</definition>
+        <argsstring>(const ThriftHiveMetastore_get_all_resource_plans_args &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_get_all_resource_plans_args::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__all__resource__plans__args" kindref="compound">ThriftHiveMetastore_get_all_resource_plans_args</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="25347" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="25347" bodyend="25349"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__all__resource__plans__args_1ad83df598d870b7bf3889b87e294f6346" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::ThriftHiveMetastore_get_all_resource_plans_args::operator&lt;</definition>
+        <argsstring>(const ThriftHiveMetastore_get_all_resource_plans_args &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_get_all_resource_plans_args::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__all__resource__plans__args" kindref="compound">ThriftHiveMetastore_get_all_resource_plans_args</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="25351" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__all__resource__plans__args_1aeb5e1ec836c26e51fa8df3638ff41b89" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::ThriftHiveMetastore_get_all_resource_plans_args::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot)</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_get_all_resource_plans_args::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="25353" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.cpp" bodystart="56178" bodyend="56217"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__all__resource__plans__args_1aad24e2e9eb3cae5ae8d29d0378e2d74d" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::ThriftHiveMetastore_get_all_resource_plans_args::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_get_all_resource_plans_args::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="25354" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.cpp" bodystart="56219" bodyend="56231"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::ThriftHiveMetastore_get_all_resource_plans_args</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__all__resource__plans__args"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>request</edgelabel>
+        </childnode>
+        <childnode refid="7" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="2">
+        <label>Apache::Hadoop::Hive::WMGetAllResourcePlanRequest</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1WMGetAllResourcePlanRequest"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>ns</edgelabel>
+        </childnode>
+        <childnode refid="6" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="7">
+        <label>Apache::Hadoop::Hive::_ThriftHiveMetastore_get_all_resource_plans_args__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__ThriftHiveMetastore__get__all__resource__plans__args____isset"/>
+      </node>
+      <node id="6">
+        <label>Apache::Hadoop::Hive::_WMGetAllResourcePlanRequest__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__WMGetAllResourcePlanRequest____isset"/>
+      </node>
+      <node id="3">
+        <label>apache::thrift::TBase</label>
+      </node>
+      <node id="5">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="4">
+        <label>std::string</label>
+        <childnode refid="5" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="25332" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="25332" bodyend="25356"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__all__resource__plans__args_1af75a56f35e8a32fd8249c17fbc904ad1" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_get_all_resource_plans_args</scope><name>__isset</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__all__resource__plans__args_1a878347b05cb5418f05098a72f9715938" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_get_all_resource_plans_args</scope><name>__set_request</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__all__resource__plans__args_1a2b22fbccd85aee0a48401d161c662d02" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_get_all_resource_plans_args</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__all__resource__plans__args_1ad83df598d870b7bf3889b87e294f6346" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_get_all_resource_plans_args</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__all__resource__plans__args_1a47804114de370be3066044cc7cfc4ba1" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_get_all_resource_plans_args</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__all__resource__plans__args_1aced92445465ff86740e1f65de402a0c3" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_get_all_resource_plans_args</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__all__resource__plans__args_1aeb5e1ec836c26e51fa8df3638ff41b89" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_get_all_resource_plans_args</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__all__resource__plans__args_1a7fd72b92ce85ffacc4cb6e0d0b9f6b8e" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_get_all_resource_plans_args</scope><name>request</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__all__resource__plans__args_1adf3a8e32cd249736469c5ba6093c0f0f" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_get_all_resource_plans_args</scope><name>ThriftHiveMetastore_get_all_resource_plans_args</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__all__resource__plans__args_1ae1f146141210960f020fda803fe330c9" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_get_all_resource_plans_args</scope><name>ThriftHiveMetastore_get_all_resource_plans_args</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__all__resource__plans__args_1aad24e2e9eb3cae5ae8d29d0378e2d74d" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_get_all_resource_plans_args</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__all__resource__plans__args_1ab850f22fa1bb3d36e542aa123ed546f9" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_get_all_resource_plans_args</scope><name>~ThriftHiveMetastore_get_all_resource_plans_args</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,109 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__abort__Compactions__pargs" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::ThriftHiveMetastore_abort_Compactions_pargs</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__abort__Compactions__pargs_1a4293b282265c2f7933b2f4386c57a470" prot="public" static="no" mutable="no">
+        <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1AbortCompactionRequest" kindref="compound">AbortCompactionRequest</ref> *</type>
+        <definition>const AbortCompactionRequest* Apache::Hadoop::Hive::ThriftHiveMetastore_abort_Compactions_pargs::rqst</definition>
+        <argsstring></argsstring>
+        <name>rqst</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_abort_Compactions_pargs::rqst</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="1250" column="32" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="1250" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__abort__Compactions__pargs_1ae6e384f907afbc9f5fbf6a84f2ae0df8" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::ThriftHiveMetastore_abort_Compactions_pargs::~ThriftHiveMetastore_abort_Compactions_pargs</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~ThriftHiveMetastore_abort_Compactions_pargs</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_abort_Compactions_pargs::~ThriftHiveMetastore_abort_Compactions_pargs</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="1249" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.cpp" bodystart="74" bodyend="75"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__abort__Compactions__pargs_1ad8e7bfca71078c1be2c74535d72ecee1" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::ThriftHiveMetastore_abort_Compactions_pargs::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_abort_Compactions_pargs::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="1252" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.cpp" bodystart="78" bodyend="90"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="2">
+        <label>Apache::Hadoop::Hive::AbortCompactionRequest</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1AbortCompactionRequest"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>compactionIds</edgelabel>
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>poolName</edgelabel>
+          <edgelabel>type</edgelabel>
+        </childnode>
+        <childnode refid="7" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::ThriftHiveMetastore_abort_Compactions_pargs</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__abort__Compactions__pargs"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>rqst</edgelabel>
+        </childnode>
+      </node>
+      <node id="7">
+        <label>Apache::Hadoop::Hive::_AbortCompactionRequest__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__AbortCompactionRequest____isset"/>
+      </node>
+      <node id="3">
+        <label>apache::thrift::TBase</label>
+      </node>
+      <node id="6">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="5">
+        <label>std::string</label>
+        <childnode refid="6" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>std::vector&lt; int64_t &gt;</label>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="1245" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="1245" bodyend="1254"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__abort__Compactions__pargs_1a4293b282265c2f7933b2f4386c57a470" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_abort_Compactions_pargs</scope><name>rqst</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__abort__Compactions__pargs_1ad8e7bfca71078c1be2c74535d72ecee1" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_abort_Compactions_pargs</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__abort__Compactions__pargs_1ae6e384f907afbc9f5fbf6a84f2ae0df8" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_abort_Compactions_pargs</scope><name>~ThriftHiveMetastore_abort_Compactions_pargs</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

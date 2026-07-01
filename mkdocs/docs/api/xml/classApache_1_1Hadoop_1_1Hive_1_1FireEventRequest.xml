@@ -1,0 +1,560 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1FireEventRequest" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::FireEventRequest</compoundname>
+    <basecompoundref prot="public" virt="virtual">apache::thrift::TBase</basecompoundref>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1FireEventRequest_1aa83cc427603600c9b2370359bacd6ce2" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::FireEventRequest::successful</definition>
+        <argsstring></argsstring>
+        <name>successful</name>
+        <qualifiedname>Apache::Hadoop::Hive::FireEventRequest::successful</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9487" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="9487" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1FireEventRequest_1ae2f755570ca82a6bcc09ec68e1635ff7" prot="public" static="no" mutable="no">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1FireEventRequestData" kindref="compound">FireEventRequestData</ref></type>
+        <definition>FireEventRequestData Apache::Hadoop::Hive::FireEventRequest::data</definition>
+        <argsstring></argsstring>
+        <name>data</name>
+        <qualifiedname>Apache::Hadoop::Hive::FireEventRequest::data</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9488" column="24" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="9488" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1FireEventRequest_1a1113746dc362c72d5f6f42a928d7c432" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::FireEventRequest::dbName</definition>
+        <argsstring></argsstring>
+        <name>dbName</name>
+        <qualifiedname>Apache::Hadoop::Hive::FireEventRequest::dbName</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9489" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="9489" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1FireEventRequest_1afb53948f7979a6f76e06a74001035f18" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::FireEventRequest::tableName</definition>
+        <argsstring></argsstring>
+        <name>tableName</name>
+        <qualifiedname>Apache::Hadoop::Hive::FireEventRequest::tableName</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9490" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="9490" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1FireEventRequest_1aceecdadda34c006e846264d3377a23f5" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; std::string &gt;</type>
+        <definition>std::vector&lt;std::string&gt; Apache::Hadoop::Hive::FireEventRequest::partitionVals</definition>
+        <argsstring></argsstring>
+        <name>partitionVals</name>
+        <qualifiedname>Apache::Hadoop::Hive::FireEventRequest::partitionVals</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9491" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="9491" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1FireEventRequest_1a735c33cba948dee4f1b6587b2f63454a" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::FireEventRequest::catName</definition>
+        <argsstring></argsstring>
+        <name>catName</name>
+        <qualifiedname>Apache::Hadoop::Hive::FireEventRequest::catName</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9492" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="9492" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1FireEventRequest_1abd74910ac5593dd6c07200137e113149" prot="public" static="no" mutable="no">
+        <type>std::map&lt; std::string, std::string &gt;</type>
+        <definition>std::map&lt;std::string, std::string&gt; Apache::Hadoop::Hive::FireEventRequest::tblParams</definition>
+        <argsstring></argsstring>
+        <name>tblParams</name>
+        <qualifiedname>Apache::Hadoop::Hive::FireEventRequest::tblParams</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9493" column="13" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="9493" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1FireEventRequest_1ae344a1d341acdde6d6e2d6e4c45c2fda" prot="public" static="no" mutable="no">
+        <type><ref refid="structApache_1_1Hadoop_1_1Hive_1_1__FireEventRequest____isset" kindref="compound">_FireEventRequest__isset</ref></type>
+        <definition>_FireEventRequest__isset Apache::Hadoop::Hive::FireEventRequest::__isset</definition>
+        <argsstring></argsstring>
+        <name>__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::FireEventRequest::__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9495" column="28" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="9495" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1FireEventRequest_1a6ba98dd409518a955aa6f522397b1c07" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::FireEventRequest::FireEventRequest</definition>
+        <argsstring>(const FireEventRequest &amp;)</argsstring>
+        <name>FireEventRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::FireEventRequest::FireEventRequest</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1FireEventRequest" kindref="compound">FireEventRequest</ref> &amp;</type>
+          <defname>other1198</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9482" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="37452" bodyend="37461"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1FireEventRequest_1a37682bd11019220783f9da27bb7e5f60" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1FireEventRequest" kindref="compound">FireEventRequest</ref> &amp;</type>
+        <definition>FireEventRequest &amp; Apache::Hadoop::Hive::FireEventRequest::operator=</definition>
+        <argsstring>(const FireEventRequest &amp;)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::FireEventRequest::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1FireEventRequest" kindref="compound">FireEventRequest</ref> &amp;</type>
+          <defname>other1199</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9483" column="20" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="37462" bodyend="37472"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1FireEventRequest_1a577b3b18e84021c71d24fd3d23970a82" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::FireEventRequest::FireEventRequest</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>FireEventRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::FireEventRequest::FireEventRequest</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9484" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="37183" bodyend="37188"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1FireEventRequest_1a0a68d546f5f823e2d73c5f47c6a2a3d1" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::FireEventRequest::~FireEventRequest</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~FireEventRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::FireEventRequest::~FireEventRequest</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9486" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="37180" bodyend="37181"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1FireEventRequest_1a7f0125968e1470f0aa359279863efc2e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::FireEventRequest::__set_successful</definition>
+        <argsstring>(const bool val)</argsstring>
+        <name>__set_successful</name>
+        <qualifiedname>Apache::Hadoop::Hive::FireEventRequest::__set_successful</qualifiedname>
+        <param>
+          <type>const bool</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9497" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="37190" bodyend="37192"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1FireEventRequest_1adfa0771cc1f65844e479d67bd2592983" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::FireEventRequest::__set_data</definition>
+        <argsstring>(const FireEventRequestData &amp;val)</argsstring>
+        <name>__set_data</name>
+        <qualifiedname>Apache::Hadoop::Hive::FireEventRequest::__set_data</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1FireEventRequestData" kindref="compound">FireEventRequestData</ref> &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9499" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="37194" bodyend="37196"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1FireEventRequest_1a029f253ebbcefb3b70a937c10bd6ba8d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::FireEventRequest::__set_dbName</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_dbName</name>
+        <qualifiedname>Apache::Hadoop::Hive::FireEventRequest::__set_dbName</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9501" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="37198" bodyend="37201"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1FireEventRequest_1a2b090371d523d8c3cd0f6bb9a73930a6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::FireEventRequest::__set_tableName</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_tableName</name>
+        <qualifiedname>Apache::Hadoop::Hive::FireEventRequest::__set_tableName</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9503" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="37203" bodyend="37206"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1FireEventRequest_1ac6924538b1096ad93c3b10b2b34243b1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::FireEventRequest::__set_partitionVals</definition>
+        <argsstring>(const std::vector&lt; std::string &gt; &amp;val)</argsstring>
+        <name>__set_partitionVals</name>
+        <qualifiedname>Apache::Hadoop::Hive::FireEventRequest::__set_partitionVals</qualifiedname>
+        <param>
+          <type>const std::vector&lt; std::string &gt; &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9505" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="37208" bodyend="37211"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1FireEventRequest_1a7b7b0c4f59929e05940edfb57006eba1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::FireEventRequest::__set_catName</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_catName</name>
+        <qualifiedname>Apache::Hadoop::Hive::FireEventRequest::__set_catName</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9507" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="37213" bodyend="37216"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1FireEventRequest_1a1c50df30aff9488679d4c2f35bdf09c4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::FireEventRequest::__set_tblParams</definition>
+        <argsstring>(const std::map&lt; std::string, std::string &gt; &amp;val)</argsstring>
+        <name>__set_tblParams</name>
+        <qualifiedname>Apache::Hadoop::Hive::FireEventRequest::__set_tblParams</qualifiedname>
+        <param>
+          <type>const std::map&lt; std::string, std::string &gt; &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9509" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="37218" bodyend="37221"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1FireEventRequest_1a74f360af6ba0eb5d35357e07789a12be" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::FireEventRequest::operator==</definition>
+        <argsstring>(const FireEventRequest &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::FireEventRequest::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1FireEventRequest" kindref="compound">FireEventRequest</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9511" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="37423" bodyend="37450"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1FireEventRequest_1acc662b5aed0aa2c42b96960f359289ac" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::FireEventRequest::operator!=</definition>
+        <argsstring>(const FireEventRequest &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::FireEventRequest::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1FireEventRequest" kindref="compound">FireEventRequest</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9512" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="9512" bodyend="9514"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1FireEventRequest_1a6443e26679d208608fbb6b8a4c530bb0" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::FireEventRequest::operator&lt;</definition>
+        <argsstring>(const FireEventRequest &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::FireEventRequest::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1FireEventRequest" kindref="compound">FireEventRequest</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9516" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1FireEventRequest_1ae5a992a7f6df786c798fbfc1475abbd3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::FireEventRequest::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot) override</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::FireEventRequest::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9518" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="37229" bodyend="37349"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1FireEventRequest_1a765ab24651faf69716bbf60c227dada5" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::FireEventRequest::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const override</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::FireEventRequest::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9519" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="37351" bodyend="37409"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1FireEventRequest_1a3541c105e4f4e7188140ad4742b3ad99" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::FireEventRequest::printTo</definition>
+        <argsstring>(std::ostream &amp;out) const</argsstring>
+        <name>printTo</name>
+        <qualifiedname>Apache::Hadoop::Hive::FireEventRequest::printTo</qualifiedname>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9521" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="37473" bodyend="37484"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::FireEventRequest</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1FireEventRequest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::FireEventRequest</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1FireEventRequest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>data</edgelabel>
+        </childnode>
+        <childnode refid="6" relation="usage">
+          <edgelabel>catName</edgelabel>
+          <edgelabel>dbName</edgelabel>
+          <edgelabel>tableName</edgelabel>
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>partitionVals</edgelabel>
+        </childnode>
+        <childnode refid="11" relation="usage">
+          <edgelabel>tblParams</edgelabel>
+        </childnode>
+        <childnode refid="12" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>Apache::Hadoop::Hive::FireEventRequestData</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1FireEventRequestData"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>insertData</edgelabel>
+        </childnode>
+        <childnode refid="9" relation="usage">
+          <edgelabel>insertDatas</edgelabel>
+        </childnode>
+        <childnode refid="10" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="4">
+        <label>Apache::Hadoop::Hive::InsertEventRequestData</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1InsertEventRequestData"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>filesAdded</edgelabel>
+          <edgelabel>filesAddedChecksum</edgelabel>
+          <edgelabel>partitionVal</edgelabel>
+          <edgelabel>subDirectoryList</edgelabel>
+        </childnode>
+        <childnode refid="8" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="10">
+        <label>Apache::Hadoop::Hive::_FireEventRequestData__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__FireEventRequestData____isset"/>
+      </node>
+      <node id="12">
+        <label>Apache::Hadoop::Hive::_FireEventRequest__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__FireEventRequest____isset"/>
+      </node>
+      <node id="8">
+        <label>Apache::Hadoop::Hive::_InsertEventRequestData__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__InsertEventRequestData____isset"/>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+      <node id="11">
+        <label>std::map&lt; std::string, std::string &gt;</label>
+        <childnode refid="6" relation="usage">
+          <edgelabel>elements</edgelabel>
+          <edgelabel>keys</edgelabel>
+        </childnode>
+      </node>
+      <node id="7">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="6">
+        <label>std::string</label>
+        <childnode refid="7" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="9">
+        <label>std::vector&lt; Apache::Hadoop::Hive::InsertEventRequestData &gt;</label>
+        <childnode refid="4" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="5">
+        <label>std::vector&lt; std::string &gt;</label>
+        <childnode refid="6" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9479" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="9479" bodyend="9522"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1FireEventRequest_1ae344a1d341acdde6d6e2d6e4c45c2fda" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::FireEventRequest</scope><name>__isset</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1FireEventRequest_1a7b7b0c4f59929e05940edfb57006eba1" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::FireEventRequest</scope><name>__set_catName</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1FireEventRequest_1adfa0771cc1f65844e479d67bd2592983" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::FireEventRequest</scope><name>__set_data</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1FireEventRequest_1a029f253ebbcefb3b70a937c10bd6ba8d" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::FireEventRequest</scope><name>__set_dbName</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1FireEventRequest_1ac6924538b1096ad93c3b10b2b34243b1" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::FireEventRequest</scope><name>__set_partitionVals</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1FireEventRequest_1a7f0125968e1470f0aa359279863efc2e" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::FireEventRequest</scope><name>__set_successful</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1FireEventRequest_1a2b090371d523d8c3cd0f6bb9a73930a6" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::FireEventRequest</scope><name>__set_tableName</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1FireEventRequest_1a1c50df30aff9488679d4c2f35bdf09c4" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::FireEventRequest</scope><name>__set_tblParams</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1FireEventRequest_1a735c33cba948dee4f1b6587b2f63454a" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::FireEventRequest</scope><name>catName</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1FireEventRequest_1ae2f755570ca82a6bcc09ec68e1635ff7" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::FireEventRequest</scope><name>data</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1FireEventRequest_1a1113746dc362c72d5f6f42a928d7c432" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::FireEventRequest</scope><name>dbName</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1FireEventRequest_1a6ba98dd409518a955aa6f522397b1c07" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::FireEventRequest</scope><name>FireEventRequest</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1FireEventRequest_1a577b3b18e84021c71d24fd3d23970a82" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::FireEventRequest</scope><name>FireEventRequest</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1FireEventRequest_1acc662b5aed0aa2c42b96960f359289ac" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::FireEventRequest</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1FireEventRequest_1a6443e26679d208608fbb6b8a4c530bb0" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::FireEventRequest</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1FireEventRequest_1a37682bd11019220783f9da27bb7e5f60" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::FireEventRequest</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1FireEventRequest_1a74f360af6ba0eb5d35357e07789a12be" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::FireEventRequest</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1FireEventRequest_1aceecdadda34c006e846264d3377a23f5" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::FireEventRequest</scope><name>partitionVals</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1FireEventRequest_1a3541c105e4f4e7188140ad4742b3ad99" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::FireEventRequest</scope><name>printTo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1FireEventRequest_1ae5a992a7f6df786c798fbfc1475abbd3" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::FireEventRequest</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1FireEventRequest_1aa83cc427603600c9b2370359bacd6ce2" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::FireEventRequest</scope><name>successful</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1FireEventRequest_1afb53948f7979a6f76e06a74001035f18" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::FireEventRequest</scope><name>tableName</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1FireEventRequest_1abd74910ac5593dd6c07200137e113149" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::FireEventRequest</scope><name>tblParams</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1FireEventRequest_1a765ab24651faf69716bbf60c227dada5" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::FireEventRequest</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1FireEventRequest_1a0a68d546f5f823e2d73c5f47c6a2a3d1" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::FireEventRequest</scope><name>~FireEventRequest</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

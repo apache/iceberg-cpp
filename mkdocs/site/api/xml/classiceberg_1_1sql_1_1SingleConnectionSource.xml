@@ -1,0 +1,114 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1sql_1_1SingleConnectionSource" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::sql::SingleConnectionSource</compoundname>
+    <templateparamlist>
+      <param>
+        <type>typename Connection</type>
+      </param>
+    </templateparamlist>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1sql_1_1SingleConnectionSource_1a68a718bdc45899a53ef29f0bd8d625a4" prot="private" static="no" mutable="no">
+        <type>Connection</type>
+        <definition>Connection iceberg::sql::SingleConnectionSource&lt; Connection &gt;::connection_</definition>
+        <argsstring></argsstring>
+        <name>connection_</name>
+        <qualifiedname>iceberg::sql::SingleConnectionSource::connection_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/catalog_store_sqlpp23_internal.h" line="89" column="14" bodyfile="iceberg/catalog/sql/catalog_store_sqlpp23_internal.h" bodystart="89" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1sql_1_1SingleConnectionSource_1a9e32c9cdb66de74906233051ef4349af" prot="private" static="no" mutable="no">
+        <type>std::recursive_mutex</type>
+        <definition>std::recursive_mutex iceberg::sql::SingleConnectionSource&lt; Connection &gt;::mutex_</definition>
+        <argsstring></argsstring>
+        <name>mutex_</name>
+        <qualifiedname>iceberg::sql::SingleConnectionSource::mutex_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/catalog_store_sqlpp23_internal.h" line="90" column="24" bodyfile="iceberg/catalog/sql/catalog_store_sqlpp23_internal.h" bodystart="90" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1sql_1_1SingleConnectionSource_1af13b7ceffcfde59f046521a93125640f" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::sql::SingleConnectionSource&lt; Connection &gt;::SingleConnectionSource</definition>
+        <argsstring>(Connection connection)</argsstring>
+        <name>SingleConnectionSource</name>
+        <qualifiedname>iceberg::sql::SingleConnectionSource::SingleConnectionSource</qualifiedname>
+        <param>
+          <type>Connection</type>
+          <declname>connection</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/catalog_store_sqlpp23_internal.h" line="59" column="12" bodyfile="iceberg/catalog/sql/catalog_store_sqlpp23_internal.h" bodystart="59" bodyend="60"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1sql_1_1SingleConnectionSource_1a385e7efdb0e34c8df938ce05ffe7eb72" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename Fn</type>
+          </param>
+        </templateparamlist>
+        <type>decltype(auto)</type>
+        <definition>decltype(auto) iceberg::sql::SingleConnectionSource&lt; Connection &gt;::WithConnection</definition>
+        <argsstring>(Fn &amp;&amp;fn)</argsstring>
+        <name>WithConnection</name>
+        <qualifiedname>iceberg::sql::SingleConnectionSource::WithConnection</qualifiedname>
+        <param>
+          <type>Fn &amp;&amp;</type>
+          <declname>fn</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/catalog_store_sqlpp23_internal.h" line="63" column="12" bodyfile="iceberg/catalog/sql/catalog_store_sqlpp23_internal.h" bodystart="63" bodyend="66"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1sql_1_1SingleConnectionSource_1a67d41f536e646e833cd143055d1f3797" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::sql::SingleConnectionSource&lt; Connection &gt;::RunInTransaction</definition>
+        <argsstring>(const std::function&lt; Status()&gt; &amp;body)</argsstring>
+        <name>RunInTransaction</name>
+        <qualifiedname>iceberg::sql::SingleConnectionSource::RunInTransaction</qualifiedname>
+        <param>
+          <type>const std::function&lt; Status()&gt; &amp;</type>
+          <declname>body</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/catalog_store_sqlpp23_internal.h" line="68" column="10" bodyfile="iceberg/catalog/sql/catalog_store_sqlpp23_internal.h" bodystart="68" bodyend="86"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/sql/catalog_store_sqlpp23_internal.h" line="57" column="1" bodyfile="iceberg/catalog/sql/catalog_store_sqlpp23_internal.h" bodystart="57" bodyend="91"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1sql_1_1SingleConnectionSource_1a68a718bdc45899a53ef29f0bd8d625a4" prot="private" virt="non-virtual"><scope>iceberg::sql::SingleConnectionSource</scope><name>connection_</name></member>
+      <member refid="classiceberg_1_1sql_1_1SingleConnectionSource_1a9e32c9cdb66de74906233051ef4349af" prot="private" virt="non-virtual"><scope>iceberg::sql::SingleConnectionSource</scope><name>mutex_</name></member>
+      <member refid="classiceberg_1_1sql_1_1SingleConnectionSource_1a67d41f536e646e833cd143055d1f3797" prot="public" virt="non-virtual"><scope>iceberg::sql::SingleConnectionSource</scope><name>RunInTransaction</name></member>
+      <member refid="classiceberg_1_1sql_1_1SingleConnectionSource_1af13b7ceffcfde59f046521a93125640f" prot="public" virt="non-virtual"><scope>iceberg::sql::SingleConnectionSource</scope><name>SingleConnectionSource</name></member>
+      <member refid="classiceberg_1_1sql_1_1SingleConnectionSource_1a385e7efdb0e34c8df938ce05ffe7eb72" prot="public" virt="non-virtual"><scope>iceberg::sql::SingleConnectionSource</scope><name>WithConnection</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

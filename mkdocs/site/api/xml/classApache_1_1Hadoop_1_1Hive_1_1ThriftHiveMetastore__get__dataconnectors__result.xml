@@ -1,0 +1,313 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__dataconnectors__result" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::ThriftHiveMetastore_get_dataconnectors_result</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__dataconnectors__result_1aa59fe6a076855596d7c200dff2bb2522" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; std::string &gt;</type>
+        <definition>std::vector&lt;std::string&gt; Apache::Hadoop::Hive::ThriftHiveMetastore_get_dataconnectors_result::success</definition>
+        <argsstring></argsstring>
+        <name>success</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_get_dataconnectors_result::success</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="3384" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="3384" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__dataconnectors__result_1a3ebbcb2d7842c7972d63f0ae2f16a4e7" prot="public" static="no" mutable="no">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1MetaException" kindref="compound">MetaException</ref></type>
+        <definition>MetaException Apache::Hadoop::Hive::ThriftHiveMetastore_get_dataconnectors_result::o1</definition>
+        <argsstring></argsstring>
+        <name>o1</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_get_dataconnectors_result::o1</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="3385" column="17" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="3385" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__dataconnectors__result_1a31bf2c9cf7861b151ab01938b6fc4346" prot="public" static="no" mutable="no">
+        <type><ref refid="structApache_1_1Hadoop_1_1Hive_1_1__ThriftHiveMetastore__get__dataconnectors__result____isset" kindref="compound">_ThriftHiveMetastore_get_dataconnectors_result__isset</ref></type>
+        <definition>_ThriftHiveMetastore_get_dataconnectors_result__isset Apache::Hadoop::Hive::ThriftHiveMetastore_get_dataconnectors_result::__isset</definition>
+        <argsstring></argsstring>
+        <name>__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_get_dataconnectors_result::__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="3387" column="57" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="3387" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__dataconnectors__result_1a9eeee88ab3ea07bfa05bf61a97d4e1c5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::ThriftHiveMetastore_get_dataconnectors_result::ThriftHiveMetastore_get_dataconnectors_result</definition>
+        <argsstring>(const ThriftHiveMetastore_get_dataconnectors_result &amp;)</argsstring>
+        <name>ThriftHiveMetastore_get_dataconnectors_result</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_get_dataconnectors_result::ThriftHiveMetastore_get_dataconnectors_result</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__dataconnectors__result" kindref="compound">ThriftHiveMetastore_get_dataconnectors_result</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="3379" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__dataconnectors__result_1aa69cda86b2c1f83f310c6c19414b90dc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__dataconnectors__result" kindref="compound">ThriftHiveMetastore_get_dataconnectors_result</ref> &amp;</type>
+        <definition>ThriftHiveMetastore_get_dataconnectors_result &amp; Apache::Hadoop::Hive::ThriftHiveMetastore_get_dataconnectors_result::operator=</definition>
+        <argsstring>(const ThriftHiveMetastore_get_dataconnectors_result &amp;)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_get_dataconnectors_result::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__dataconnectors__result" kindref="compound">ThriftHiveMetastore_get_dataconnectors_result</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="3380" column="49"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__dataconnectors__result_1afaafb5c93ee864a2fe8ea756f6945ebd" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::ThriftHiveMetastore_get_dataconnectors_result::ThriftHiveMetastore_get_dataconnectors_result</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>ThriftHiveMetastore_get_dataconnectors_result</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_get_dataconnectors_result::ThriftHiveMetastore_get_dataconnectors_result</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="3381" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.cpp" bodystart="4822" bodyend="4823"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__dataconnectors__result_1ac39f889fb6b23b34cedd75d9f495bc70" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::ThriftHiveMetastore_get_dataconnectors_result::~ThriftHiveMetastore_get_dataconnectors_result</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~ThriftHiveMetastore_get_dataconnectors_result</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_get_dataconnectors_result::~ThriftHiveMetastore_get_dataconnectors_result</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="3383" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.cpp" bodystart="4819" bodyend="4820"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__dataconnectors__result_1afd7239d9fe912cccc9bcb44b11cb03d9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::ThriftHiveMetastore_get_dataconnectors_result::__set_success</definition>
+        <argsstring>(const std::vector&lt; std::string &gt; &amp;val)</argsstring>
+        <name>__set_success</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_get_dataconnectors_result::__set_success</qualifiedname>
+        <param>
+          <type>const std::vector&lt; std::string &gt; &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="3389" column="8"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__dataconnectors__result_1a841c4341918cfb5859746c41bb5a62cf" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::ThriftHiveMetastore_get_dataconnectors_result::__set_o1</definition>
+        <argsstring>(const MetaException &amp;val)</argsstring>
+        <name>__set_o1</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_get_dataconnectors_result::__set_o1</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1MetaException" kindref="compound">MetaException</ref> &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="3391" column="8"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__dataconnectors__result_1a4cebbc60a42a765e3993f49565e5ec31" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::ThriftHiveMetastore_get_dataconnectors_result::operator==</definition>
+        <argsstring>(const ThriftHiveMetastore_get_dataconnectors_result &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_get_dataconnectors_result::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__dataconnectors__result" kindref="compound">ThriftHiveMetastore_get_dataconnectors_result</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="3393" column="8"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__dataconnectors__result_1a1658808be8585ea3c2c6ca7528d5575f" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::ThriftHiveMetastore_get_dataconnectors_result::operator!=</definition>
+        <argsstring>(const ThriftHiveMetastore_get_dataconnectors_result &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_get_dataconnectors_result::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__dataconnectors__result" kindref="compound">ThriftHiveMetastore_get_dataconnectors_result</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="3394" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="3394" bodyend="3396"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__dataconnectors__result_1aab5f8b30d79014c000dd03fccbd9c340" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::ThriftHiveMetastore_get_dataconnectors_result::operator&lt;</definition>
+        <argsstring>(const ThriftHiveMetastore_get_dataconnectors_result &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_get_dataconnectors_result::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__dataconnectors__result" kindref="compound">ThriftHiveMetastore_get_dataconnectors_result</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="3398" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__dataconnectors__result_1a7e428a19b35bc1af026efcecec39d1e1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::ThriftHiveMetastore_get_dataconnectors_result::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot)</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_get_dataconnectors_result::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="3400" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.cpp" bodystart="4825" bodyend="4884"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__dataconnectors__result_1ac51a3c08f9fb6bb676c26cba72a2a934" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::ThriftHiveMetastore_get_dataconnectors_result::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_get_dataconnectors_result::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="3401" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.cpp" bodystart="4886" bodyend="4912"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="5">
+        <label>Apache::Hadoop::Hive::MetaException</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1MetaException"/>
+        <childnode refid="6" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>message</edgelabel>
+          <edgelabel>thriftTExceptionMessageHolder_</edgelabel>
+        </childnode>
+        <childnode refid="7" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::ThriftHiveMetastore_get_dataconnectors_result</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__dataconnectors__result"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>success</edgelabel>
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>o1</edgelabel>
+        </childnode>
+        <childnode refid="8" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="7">
+        <label>Apache::Hadoop::Hive::_MetaException__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__MetaException____isset"/>
+      </node>
+      <node id="8">
+        <label>Apache::Hadoop::Hive::_ThriftHiveMetastore_get_dataconnectors_result__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__ThriftHiveMetastore__get__dataconnectors__result____isset"/>
+      </node>
+      <node id="6">
+        <label>apache::thrift::TException</label>
+      </node>
+      <node id="4">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="3">
+        <label>std::string</label>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>std::vector&lt; std::string &gt;</label>
+        <childnode refid="3" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="3376" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="3376" bodyend="3403"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__dataconnectors__result_1a31bf2c9cf7861b151ab01938b6fc4346" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_get_dataconnectors_result</scope><name>__isset</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__dataconnectors__result_1a841c4341918cfb5859746c41bb5a62cf" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_get_dataconnectors_result</scope><name>__set_o1</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__dataconnectors__result_1afd7239d9fe912cccc9bcb44b11cb03d9" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_get_dataconnectors_result</scope><name>__set_success</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__dataconnectors__result_1a3ebbcb2d7842c7972d63f0ae2f16a4e7" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_get_dataconnectors_result</scope><name>o1</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__dataconnectors__result_1a1658808be8585ea3c2c6ca7528d5575f" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_get_dataconnectors_result</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__dataconnectors__result_1aab5f8b30d79014c000dd03fccbd9c340" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_get_dataconnectors_result</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__dataconnectors__result_1aa69cda86b2c1f83f310c6c19414b90dc" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_get_dataconnectors_result</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__dataconnectors__result_1a4cebbc60a42a765e3993f49565e5ec31" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_get_dataconnectors_result</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__dataconnectors__result_1a7e428a19b35bc1af026efcecec39d1e1" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_get_dataconnectors_result</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__dataconnectors__result_1aa59fe6a076855596d7c200dff2bb2522" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_get_dataconnectors_result</scope><name>success</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__dataconnectors__result_1a9eeee88ab3ea07bfa05bf61a97d4e1c5" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_get_dataconnectors_result</scope><name>ThriftHiveMetastore_get_dataconnectors_result</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__dataconnectors__result_1afaafb5c93ee864a2fe8ea756f6945ebd" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_get_dataconnectors_result</scope><name>ThriftHiveMetastore_get_dataconnectors_result</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__dataconnectors__result_1ac51a3c08f9fb6bb676c26cba72a2a934" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_get_dataconnectors_result</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__dataconnectors__result_1ac39f889fb6b23b34cedd75d9f495bc70" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_get_dataconnectors_result</scope><name>~ThriftHiveMetastore_get_dataconnectors_result</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

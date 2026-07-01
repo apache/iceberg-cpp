@@ -1,0 +1,142 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__markPartitionForEvent__pargs" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::ThriftHiveMetastore_markPartitionForEvent_pargs</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__markPartitionForEvent__pargs_1ac7551b3ac75376dfeed28ede12682ba9" prot="public" static="no" mutable="no">
+        <type>const std::string *</type>
+        <definition>const std::string* Apache::Hadoop::Hive::ThriftHiveMetastore_markPartitionForEvent_pargs::db_name</definition>
+        <argsstring></argsstring>
+        <name>db_name</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_markPartitionForEvent_pargs::db_name</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="14486" column="21" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="14486" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__markPartitionForEvent__pargs_1a2f275e79b9c0c301747c05b5fc23e88b" prot="public" static="no" mutable="no">
+        <type>const std::string *</type>
+        <definition>const std::string* Apache::Hadoop::Hive::ThriftHiveMetastore_markPartitionForEvent_pargs::tbl_name</definition>
+        <argsstring></argsstring>
+        <name>tbl_name</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_markPartitionForEvent_pargs::tbl_name</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="14487" column="21" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="14487" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__markPartitionForEvent__pargs_1a166aad545f0a87cd713e21ca1e17e7d2" prot="public" static="no" mutable="no">
+        <type>const std::map&lt; std::string, std::string &gt; *</type>
+        <definition>const std::map&lt;std::string, std::string&gt;* Apache::Hadoop::Hive::ThriftHiveMetastore_markPartitionForEvent_pargs::part_vals</definition>
+        <argsstring></argsstring>
+        <name>part_vals</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_markPartitionForEvent_pargs::part_vals</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="14488" column="19" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="14488" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__markPartitionForEvent__pargs_1aed01c1e3148a3bf2e553cf8ac24ac2cf" prot="public" static="no" mutable="no">
+        <type>const PartitionEventType::type *</type>
+        <definition>const PartitionEventType::type* Apache::Hadoop::Hive::ThriftHiveMetastore_markPartitionForEvent_pargs::eventType</definition>
+        <argsstring></argsstring>
+        <name>eventType</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_markPartitionForEvent_pargs::eventType</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="see"><para><ref refid="structApache_1_1Hadoop_1_1Hive_1_1PartitionEventType" kindref="compound">PartitionEventType</ref> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="14493" column="34" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="14493" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__markPartitionForEvent__pargs_1a45ef31e5d55a757b212d13d40e567852" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::ThriftHiveMetastore_markPartitionForEvent_pargs::~ThriftHiveMetastore_markPartitionForEvent_pargs</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~ThriftHiveMetastore_markPartitionForEvent_pargs</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_markPartitionForEvent_pargs::~ThriftHiveMetastore_markPartitionForEvent_pargs</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="14485" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.cpp" bodystart="32073" bodyend="32074"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__markPartitionForEvent__pargs_1aa12ae525f25833fbcd6407a85eddbb54" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::ThriftHiveMetastore_markPartitionForEvent_pargs::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_markPartitionForEvent_pargs::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="14495" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.cpp" bodystart="32077" bodyend="32110"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::ThriftHiveMetastore_markPartitionForEvent_pargs</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__markPartitionForEvent__pargs"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>db_name</edgelabel>
+          <edgelabel>tbl_name</edgelabel>
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>part_vals</edgelabel>
+        </childnode>
+      </node>
+      <node id="4">
+        <label>std::map&lt; std::string, std::string &gt;</label>
+        <childnode refid="2" relation="usage">
+          <edgelabel>elements</edgelabel>
+          <edgelabel>keys</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="2">
+        <label>std::string</label>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="14481" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="14481" bodyend="14497"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__markPartitionForEvent__pargs_1ac7551b3ac75376dfeed28ede12682ba9" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_markPartitionForEvent_pargs</scope><name>db_name</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__markPartitionForEvent__pargs_1aed01c1e3148a3bf2e553cf8ac24ac2cf" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_markPartitionForEvent_pargs</scope><name>eventType</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__markPartitionForEvent__pargs_1a166aad545f0a87cd713e21ca1e17e7d2" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_markPartitionForEvent_pargs</scope><name>part_vals</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__markPartitionForEvent__pargs_1a2f275e79b9c0c301747c05b5fc23e88b" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_markPartitionForEvent_pargs</scope><name>tbl_name</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__markPartitionForEvent__pargs_1aa12ae525f25833fbcd6407a85eddbb54" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_markPartitionForEvent_pargs</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__markPartitionForEvent__pargs_1a45ef31e5d55a757b212d13d40e567852" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_markPartitionForEvent_pargs</scope><name>~ThriftHiveMetastore_markPartitionForEvent_pargs</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

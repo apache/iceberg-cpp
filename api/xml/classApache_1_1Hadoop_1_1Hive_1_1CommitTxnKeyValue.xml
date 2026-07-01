@@ -1,0 +1,335 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1CommitTxnKeyValue" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::CommitTxnKeyValue</compoundname>
+    <basecompoundref prot="public" virt="virtual">apache::thrift::TBase</basecompoundref>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1CommitTxnKeyValue_1ad38eefdc5c138e954e875420e4d6a496" prot="public" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t Apache::Hadoop::Hive::CommitTxnKeyValue::tableId</definition>
+        <argsstring></argsstring>
+        <name>tableId</name>
+        <qualifiedname>Apache::Hadoop::Hive::CommitTxnKeyValue::tableId</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6934" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="6934" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1CommitTxnKeyValue_1a4d919fc8f298ff12e57252ca7e7d7e20" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::CommitTxnKeyValue::key</definition>
+        <argsstring></argsstring>
+        <name>key</name>
+        <qualifiedname>Apache::Hadoop::Hive::CommitTxnKeyValue::key</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6935" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="6935" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1CommitTxnKeyValue_1a2d1697bd6849e7eeae6c7403f8c27403" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::CommitTxnKeyValue::value</definition>
+        <argsstring></argsstring>
+        <name>value</name>
+        <qualifiedname>Apache::Hadoop::Hive::CommitTxnKeyValue::value</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6936" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="6936" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CommitTxnKeyValue_1a688288d082a0ae90e10286750ed5d2c7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::CommitTxnKeyValue::CommitTxnKeyValue</definition>
+        <argsstring>(const CommitTxnKeyValue &amp;)</argsstring>
+        <name>CommitTxnKeyValue</name>
+        <qualifiedname>Apache::Hadoop::Hive::CommitTxnKeyValue::CommitTxnKeyValue</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1CommitTxnKeyValue" kindref="compound">CommitTxnKeyValue</ref> &amp;</type>
+          <defname>other884</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6929" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="26038" bodyend="26042"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CommitTxnKeyValue_1ac82ee89ab98c51637f778d34800ace89" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1CommitTxnKeyValue" kindref="compound">CommitTxnKeyValue</ref> &amp;</type>
+        <definition>CommitTxnKeyValue &amp; Apache::Hadoop::Hive::CommitTxnKeyValue::operator=</definition>
+        <argsstring>(const CommitTxnKeyValue &amp;)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::CommitTxnKeyValue::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1CommitTxnKeyValue" kindref="compound">CommitTxnKeyValue</ref> &amp;</type>
+          <defname>other885</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6930" column="21" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="26043" bodyend="26048"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CommitTxnKeyValue_1acd287cc7d8a4e8e771151c15fa0925b6" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::CommitTxnKeyValue::CommitTxnKeyValue</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>CommitTxnKeyValue</name>
+        <qualifiedname>Apache::Hadoop::Hive::CommitTxnKeyValue::CommitTxnKeyValue</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6931" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="25908" bodyend="25912"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CommitTxnKeyValue_1a583da236642d11cd64aa596d4033c10c" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::CommitTxnKeyValue::~CommitTxnKeyValue</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~CommitTxnKeyValue</name>
+        <qualifiedname>Apache::Hadoop::Hive::CommitTxnKeyValue::~CommitTxnKeyValue</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6933" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="25905" bodyend="25906"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CommitTxnKeyValue_1a25f3c46eedb2c918b971a2ac81e11562" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::CommitTxnKeyValue::__set_tableId</definition>
+        <argsstring>(const int64_t val)</argsstring>
+        <name>__set_tableId</name>
+        <qualifiedname>Apache::Hadoop::Hive::CommitTxnKeyValue::__set_tableId</qualifiedname>
+        <param>
+          <type>const int64_t</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6938" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="25914" bodyend="25916"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CommitTxnKeyValue_1a50ba0ca59e4cfc8d98fea38a42adb33d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::CommitTxnKeyValue::__set_key</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_key</name>
+        <qualifiedname>Apache::Hadoop::Hive::CommitTxnKeyValue::__set_key</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6940" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="25918" bodyend="25920"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CommitTxnKeyValue_1a324c963b28e3030127fbfb99f4fe4b51" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::CommitTxnKeyValue::__set_value</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_value</name>
+        <qualifiedname>Apache::Hadoop::Hive::CommitTxnKeyValue::__set_value</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6942" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="25922" bodyend="25924"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CommitTxnKeyValue_1a753891e06c7c98a99f84f944cde6959a" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::CommitTxnKeyValue::operator==</definition>
+        <argsstring>(const CommitTxnKeyValue &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::CommitTxnKeyValue::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1CommitTxnKeyValue" kindref="compound">CommitTxnKeyValue</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6944" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="26027" bodyend="26036"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CommitTxnKeyValue_1ad664ad18c161f80a4cc38db499688ded" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::CommitTxnKeyValue::operator!=</definition>
+        <argsstring>(const CommitTxnKeyValue &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::CommitTxnKeyValue::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1CommitTxnKeyValue" kindref="compound">CommitTxnKeyValue</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6945" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="6945" bodyend="6947"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CommitTxnKeyValue_1acf131f0b4e4783bde35996dbb619a4b6" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::CommitTxnKeyValue::operator&lt;</definition>
+        <argsstring>(const CommitTxnKeyValue &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::CommitTxnKeyValue::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1CommitTxnKeyValue" kindref="compound">CommitTxnKeyValue</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6949" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CommitTxnKeyValue_1af947eae724b1abbb6c944196bd6838c1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::CommitTxnKeyValue::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot) override</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::CommitTxnKeyValue::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6951" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="25932" bodyend="25996"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CommitTxnKeyValue_1a3905d70be46e2598ba6bd8e5dfb26598" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::CommitTxnKeyValue::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const override</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::CommitTxnKeyValue::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6952" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="25998" bodyend="26018"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CommitTxnKeyValue_1a0d89a71a4aba443c5b03b62c1c854417" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::CommitTxnKeyValue::printTo</definition>
+        <argsstring>(std::ostream &amp;out) const</argsstring>
+        <name>printTo</name>
+        <qualifiedname>Apache::Hadoop::Hive::CommitTxnKeyValue::printTo</qualifiedname>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6954" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="26049" bodyend="26056"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::CommitTxnKeyValue</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1CommitTxnKeyValue"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::CommitTxnKeyValue</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1CommitTxnKeyValue"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>key</edgelabel>
+          <edgelabel>value</edgelabel>
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+      <node id="4">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="3">
+        <label>std::string</label>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6926" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="6926" bodyend="6955"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CommitTxnKeyValue_1a50ba0ca59e4cfc8d98fea38a42adb33d" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CommitTxnKeyValue</scope><name>__set_key</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CommitTxnKeyValue_1a25f3c46eedb2c918b971a2ac81e11562" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CommitTxnKeyValue</scope><name>__set_tableId</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CommitTxnKeyValue_1a324c963b28e3030127fbfb99f4fe4b51" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CommitTxnKeyValue</scope><name>__set_value</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CommitTxnKeyValue_1a688288d082a0ae90e10286750ed5d2c7" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CommitTxnKeyValue</scope><name>CommitTxnKeyValue</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CommitTxnKeyValue_1acd287cc7d8a4e8e771151c15fa0925b6" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CommitTxnKeyValue</scope><name>CommitTxnKeyValue</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CommitTxnKeyValue_1a4d919fc8f298ff12e57252ca7e7d7e20" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CommitTxnKeyValue</scope><name>key</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CommitTxnKeyValue_1ad664ad18c161f80a4cc38db499688ded" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CommitTxnKeyValue</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CommitTxnKeyValue_1acf131f0b4e4783bde35996dbb619a4b6" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CommitTxnKeyValue</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CommitTxnKeyValue_1ac82ee89ab98c51637f778d34800ace89" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CommitTxnKeyValue</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CommitTxnKeyValue_1a753891e06c7c98a99f84f944cde6959a" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CommitTxnKeyValue</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CommitTxnKeyValue_1a0d89a71a4aba443c5b03b62c1c854417" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::CommitTxnKeyValue</scope><name>printTo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CommitTxnKeyValue_1af947eae724b1abbb6c944196bd6838c1" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CommitTxnKeyValue</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CommitTxnKeyValue_1ad38eefdc5c138e954e875420e4d6a496" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CommitTxnKeyValue</scope><name>tableId</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CommitTxnKeyValue_1a2d1697bd6849e7eeae6c7403f8c27403" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CommitTxnKeyValue</scope><name>value</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CommitTxnKeyValue_1a3905d70be46e2598ba6bd8e5dfb26598" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CommitTxnKeyValue</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CommitTxnKeyValue_1a583da236642d11cd64aa596d4033c10c" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::CommitTxnKeyValue</scope><name>~CommitTxnKeyValue</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,431 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1TableValidWriteIds" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::TableValidWriteIds</compoundname>
+    <basecompoundref prot="public" virt="virtual">apache::thrift::TBase</basecompoundref>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1TableValidWriteIds_1a0db4c93990a1fec234e322e939001fe5" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::TableValidWriteIds::fullTableName</definition>
+        <argsstring></argsstring>
+        <name>fullTableName</name>
+        <qualifiedname>Apache::Hadoop::Hive::TableValidWriteIds::fullTableName</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7276" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="7276" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1TableValidWriteIds_1ace2e28f09e6093b1b1e5ab3ce51a319c" prot="public" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t Apache::Hadoop::Hive::TableValidWriteIds::writeIdHighWaterMark</definition>
+        <argsstring></argsstring>
+        <name>writeIdHighWaterMark</name>
+        <qualifiedname>Apache::Hadoop::Hive::TableValidWriteIds::writeIdHighWaterMark</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7277" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="7277" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1TableValidWriteIds_1a3ae9c6def47d5c2578b1154fdb7329bf" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; int64_t &gt;</type>
+        <definition>std::vector&lt;int64_t&gt; Apache::Hadoop::Hive::TableValidWriteIds::invalidWriteIds</definition>
+        <argsstring></argsstring>
+        <name>invalidWriteIds</name>
+        <qualifiedname>Apache::Hadoop::Hive::TableValidWriteIds::invalidWriteIds</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7278" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="7278" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1TableValidWriteIds_1aedcbaf2e523272342af79f580356d26c" prot="public" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t Apache::Hadoop::Hive::TableValidWriteIds::minOpenWriteId</definition>
+        <argsstring></argsstring>
+        <name>minOpenWriteId</name>
+        <qualifiedname>Apache::Hadoop::Hive::TableValidWriteIds::minOpenWriteId</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7279" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="7279" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1TableValidWriteIds_1a9d8be6955bedfbebec3999a18942a8c8" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::TableValidWriteIds::abortedBits</definition>
+        <argsstring></argsstring>
+        <name>abortedBits</name>
+        <qualifiedname>Apache::Hadoop::Hive::TableValidWriteIds::abortedBits</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7280" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="7280" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1TableValidWriteIds_1a04fa6a489bcae037f699a2e4078facc1" prot="public" static="no" mutable="no">
+        <type><ref refid="structApache_1_1Hadoop_1_1Hive_1_1__TableValidWriteIds____isset" kindref="compound">_TableValidWriteIds__isset</ref></type>
+        <definition>_TableValidWriteIds__isset Apache::Hadoop::Hive::TableValidWriteIds::__isset</definition>
+        <argsstring></argsstring>
+        <name>__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::TableValidWriteIds::__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7282" column="30" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="7282" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1TableValidWriteIds_1a502d3cbc33b260d9117c531cd91d5c9e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::TableValidWriteIds::TableValidWriteIds</definition>
+        <argsstring>(const TableValidWriteIds &amp;)</argsstring>
+        <name>TableValidWriteIds</name>
+        <qualifiedname>Apache::Hadoop::Hive::TableValidWriteIds::TableValidWriteIds</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1TableValidWriteIds" kindref="compound">TableValidWriteIds</ref> &amp;</type>
+          <defname>other929</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7271" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="27653" bodyend="27660"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1TableValidWriteIds_1a9ee9d5697c8a68ac0de36a05320dd52c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1TableValidWriteIds" kindref="compound">TableValidWriteIds</ref> &amp;</type>
+        <definition>TableValidWriteIds &amp; Apache::Hadoop::Hive::TableValidWriteIds::operator=</definition>
+        <argsstring>(const TableValidWriteIds &amp;)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::TableValidWriteIds::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1TableValidWriteIds" kindref="compound">TableValidWriteIds</ref> &amp;</type>
+          <defname>other930</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7272" column="22" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="27661" bodyend="27669"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1TableValidWriteIds_1ab9a92d55dd358af44039b9e8722b7450" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::TableValidWriteIds::TableValidWriteIds</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>TableValidWriteIds</name>
+        <qualifiedname>Apache::Hadoop::Hive::TableValidWriteIds::TableValidWriteIds</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7273" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="27456" bodyend="27461"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1TableValidWriteIds_1ab61893a6733642827e3cc51f13ce2540" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::TableValidWriteIds::~TableValidWriteIds</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~TableValidWriteIds</name>
+        <qualifiedname>Apache::Hadoop::Hive::TableValidWriteIds::~TableValidWriteIds</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7275" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="27453" bodyend="27454"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1TableValidWriteIds_1aa96f095d968454c090d6e84a77ecb962" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::TableValidWriteIds::__set_fullTableName</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_fullTableName</name>
+        <qualifiedname>Apache::Hadoop::Hive::TableValidWriteIds::__set_fullTableName</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7284" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="27463" bodyend="27465"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1TableValidWriteIds_1aa8322cf390f2559f27fde87a32e9aa02" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::TableValidWriteIds::__set_writeIdHighWaterMark</definition>
+        <argsstring>(const int64_t val)</argsstring>
+        <name>__set_writeIdHighWaterMark</name>
+        <qualifiedname>Apache::Hadoop::Hive::TableValidWriteIds::__set_writeIdHighWaterMark</qualifiedname>
+        <param>
+          <type>const int64_t</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7286" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="27467" bodyend="27469"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1TableValidWriteIds_1ab352dd147caaa855516cce6ec5f47632" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::TableValidWriteIds::__set_invalidWriteIds</definition>
+        <argsstring>(const std::vector&lt; int64_t &gt; &amp;val)</argsstring>
+        <name>__set_invalidWriteIds</name>
+        <qualifiedname>Apache::Hadoop::Hive::TableValidWriteIds::__set_invalidWriteIds</qualifiedname>
+        <param>
+          <type>const std::vector&lt; int64_t &gt; &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7288" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="27471" bodyend="27473"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1TableValidWriteIds_1aa863e927541d3b545d9798c5e64d1dfa" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::TableValidWriteIds::__set_minOpenWriteId</definition>
+        <argsstring>(const int64_t val)</argsstring>
+        <name>__set_minOpenWriteId</name>
+        <qualifiedname>Apache::Hadoop::Hive::TableValidWriteIds::__set_minOpenWriteId</qualifiedname>
+        <param>
+          <type>const int64_t</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7290" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="27475" bodyend="27478"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1TableValidWriteIds_1a005b189f41f6d7c69cb1060837d7a731" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::TableValidWriteIds::__set_abortedBits</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_abortedBits</name>
+        <qualifiedname>Apache::Hadoop::Hive::TableValidWriteIds::__set_abortedBits</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7292" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="27480" bodyend="27482"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1TableValidWriteIds_1af717fb2679369b36930c1d83e84ab639" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::TableValidWriteIds::operator==</definition>
+        <argsstring>(const TableValidWriteIds &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::TableValidWriteIds::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1TableValidWriteIds" kindref="compound">TableValidWriteIds</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7294" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="27636" bodyend="27651"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1TableValidWriteIds_1ae90689f0a6bd6013931ef36dba14049c" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::TableValidWriteIds::operator!=</definition>
+        <argsstring>(const TableValidWriteIds &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::TableValidWriteIds::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1TableValidWriteIds" kindref="compound">TableValidWriteIds</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7295" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="7295" bodyend="7297"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1TableValidWriteIds_1adeb61e262ef95bb808be43e561a6c6e4" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::TableValidWriteIds::operator&lt;</definition>
+        <argsstring>(const TableValidWriteIds &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::TableValidWriteIds::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1TableValidWriteIds" kindref="compound">TableValidWriteIds</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7299" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1TableValidWriteIds_1a444a71c4df4059e491d7f99d122454c4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::TableValidWriteIds::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot) override</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::TableValidWriteIds::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7301" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="27490" bodyend="27585"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1TableValidWriteIds_1af8ddb31074048b6b8f2fbdfbc992ccc4" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::TableValidWriteIds::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const override</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::TableValidWriteIds::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7302" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="27587" bodyend="27624"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1TableValidWriteIds_1a85bcbf631ae3465f6c4852203a13b554" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::TableValidWriteIds::printTo</definition>
+        <argsstring>(std::ostream &amp;out) const</argsstring>
+        <name>printTo</name>
+        <qualifiedname>Apache::Hadoop::Hive::TableValidWriteIds::printTo</qualifiedname>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7304" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="27670" bodyend="27679"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::TableValidWriteIds</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1TableValidWriteIds"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::TableValidWriteIds</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1TableValidWriteIds"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>abortedBits</edgelabel>
+          <edgelabel>fullTableName</edgelabel>
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>invalidWriteIds</edgelabel>
+        </childnode>
+        <childnode refid="6" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="6">
+        <label>Apache::Hadoop::Hive::_TableValidWriteIds__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__TableValidWriteIds____isset"/>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+      <node id="4">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="3">
+        <label>std::string</label>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>std::vector&lt; int64_t &gt;</label>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7268" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="7268" bodyend="7305"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1TableValidWriteIds_1a04fa6a489bcae037f699a2e4078facc1" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::TableValidWriteIds</scope><name>__isset</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1TableValidWriteIds_1a005b189f41f6d7c69cb1060837d7a731" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::TableValidWriteIds</scope><name>__set_abortedBits</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1TableValidWriteIds_1aa96f095d968454c090d6e84a77ecb962" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::TableValidWriteIds</scope><name>__set_fullTableName</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1TableValidWriteIds_1ab352dd147caaa855516cce6ec5f47632" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::TableValidWriteIds</scope><name>__set_invalidWriteIds</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1TableValidWriteIds_1aa863e927541d3b545d9798c5e64d1dfa" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::TableValidWriteIds</scope><name>__set_minOpenWriteId</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1TableValidWriteIds_1aa8322cf390f2559f27fde87a32e9aa02" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::TableValidWriteIds</scope><name>__set_writeIdHighWaterMark</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1TableValidWriteIds_1a9d8be6955bedfbebec3999a18942a8c8" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::TableValidWriteIds</scope><name>abortedBits</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1TableValidWriteIds_1a0db4c93990a1fec234e322e939001fe5" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::TableValidWriteIds</scope><name>fullTableName</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1TableValidWriteIds_1a3ae9c6def47d5c2578b1154fdb7329bf" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::TableValidWriteIds</scope><name>invalidWriteIds</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1TableValidWriteIds_1aedcbaf2e523272342af79f580356d26c" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::TableValidWriteIds</scope><name>minOpenWriteId</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1TableValidWriteIds_1ae90689f0a6bd6013931ef36dba14049c" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::TableValidWriteIds</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1TableValidWriteIds_1adeb61e262ef95bb808be43e561a6c6e4" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::TableValidWriteIds</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1TableValidWriteIds_1a9ee9d5697c8a68ac0de36a05320dd52c" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::TableValidWriteIds</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1TableValidWriteIds_1af717fb2679369b36930c1d83e84ab639" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::TableValidWriteIds</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1TableValidWriteIds_1a85bcbf631ae3465f6c4852203a13b554" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::TableValidWriteIds</scope><name>printTo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1TableValidWriteIds_1a444a71c4df4059e491d7f99d122454c4" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::TableValidWriteIds</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1TableValidWriteIds_1a502d3cbc33b260d9117c531cd91d5c9e" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::TableValidWriteIds</scope><name>TableValidWriteIds</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1TableValidWriteIds_1ab9a92d55dd358af44039b9e8722b7450" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::TableValidWriteIds</scope><name>TableValidWriteIds</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1TableValidWriteIds_1af8ddb31074048b6b8f2fbdfbc992ccc4" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::TableValidWriteIds</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1TableValidWriteIds_1ace2e28f09e6093b1b1e5ab3ce51a319c" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::TableValidWriteIds</scope><name>writeIdHighWaterMark</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1TableValidWriteIds_1ab61893a6733642827e3cc51f13ce2540" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::TableValidWriteIds</scope><name>~TableValidWriteIds</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

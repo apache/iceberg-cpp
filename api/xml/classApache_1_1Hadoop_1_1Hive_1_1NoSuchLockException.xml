@@ -1,0 +1,319 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1NoSuchLockException" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::NoSuchLockException</compoundname>
+    <basecompoundref prot="public" virt="non-virtual">apache::thrift::TException</basecompoundref>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1NoSuchLockException_1ae0541486f98c41e2ab3ef0b56001d2fb" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::NoSuchLockException::message</definition>
+        <argsstring></argsstring>
+        <name>message</name>
+        <qualifiedname>Apache::Hadoop::Hive::NoSuchLockException::message</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15809" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="15809" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1NoSuchLockException_1a9ce0c442199186525dd8ddcf6b1ac665" prot="public" static="no" mutable="no">
+        <type><ref refid="structApache_1_1Hadoop_1_1Hive_1_1__NoSuchLockException____isset" kindref="compound">_NoSuchLockException__isset</ref></type>
+        <definition>_NoSuchLockException__isset Apache::Hadoop::Hive::NoSuchLockException::__isset</definition>
+        <argsstring></argsstring>
+        <name>__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::NoSuchLockException::__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15811" column="31" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="15811" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1NoSuchLockException_1a80a05e68004f880cb4d9ba662366d355" prot="public" static="no" mutable="yes">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::NoSuchLockException::thriftTExceptionMessageHolder_</definition>
+        <argsstring></argsstring>
+        <name>thriftTExceptionMessageHolder_</name>
+        <qualifiedname>Apache::Hadoop::Hive::NoSuchLockException::thriftTExceptionMessageHolder_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15826" column="23" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="15826" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1NoSuchLockException_1a968751db2cf6901e6f790a3018cbdadf" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::NoSuchLockException::NoSuchLockException</definition>
+        <argsstring>(const NoSuchLockException &amp;)</argsstring>
+        <name>NoSuchLockException</name>
+        <qualifiedname>Apache::Hadoop::Hive::NoSuchLockException::NoSuchLockException</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1NoSuchLockException" kindref="compound">NoSuchLockException</ref> &amp;</type>
+          <defname>other1881</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15804" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="62069" bodyend="62072"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1NoSuchLockException_1aa8e6eaac1cf4e5e8b66eff95ffad8cf7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1NoSuchLockException" kindref="compound">NoSuchLockException</ref> &amp;</type>
+        <definition>NoSuchLockException &amp; Apache::Hadoop::Hive::NoSuchLockException::operator=</definition>
+        <argsstring>(const NoSuchLockException &amp;)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::NoSuchLockException::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1NoSuchLockException" kindref="compound">NoSuchLockException</ref> &amp;</type>
+          <defname>other1882</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15805" column="23" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="62073" bodyend="62077"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1NoSuchLockException_1ad104486e3311c0615792b463415c0671" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::NoSuchLockException::NoSuchLockException</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>NoSuchLockException</name>
+        <qualifiedname>Apache::Hadoop::Hive::NoSuchLockException::NoSuchLockException</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15806" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="61987" bodyend="61989"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1NoSuchLockException_1a935fb1292604e97a427dbb8bbd573459" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::NoSuchLockException::~NoSuchLockException</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~NoSuchLockException</name>
+        <qualifiedname>Apache::Hadoop::Hive::NoSuchLockException::~NoSuchLockException</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15808" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="61984" bodyend="61985"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1NoSuchLockException_1a9cd24ac3c1291280ff52c544bb2704b3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::NoSuchLockException::__set_message</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_message</name>
+        <qualifiedname>Apache::Hadoop::Hive::NoSuchLockException::__set_message</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15813" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="61991" bodyend="61993"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1NoSuchLockException_1a46f1945769dab2fc798d10c1cd98fd20" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::NoSuchLockException::operator==</definition>
+        <argsstring>(const NoSuchLockException &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::NoSuchLockException::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1NoSuchLockException" kindref="compound">NoSuchLockException</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15815" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="62062" bodyend="62067"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1NoSuchLockException_1aaedde82b52f5cbd69c9634e6e823174b" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::NoSuchLockException::operator!=</definition>
+        <argsstring>(const NoSuchLockException &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::NoSuchLockException::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1NoSuchLockException" kindref="compound">NoSuchLockException</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15816" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="15816" bodyend="15818"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1NoSuchLockException_1a552f6aabbc29e45a536c1431748940f1" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::NoSuchLockException::operator&lt;</definition>
+        <argsstring>(const NoSuchLockException &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::NoSuchLockException::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1NoSuchLockException" kindref="compound">NoSuchLockException</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15820" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1NoSuchLockException_1a27f36f314c2f96fa2e1d435aa8ebcbf9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::NoSuchLockException::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot)</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::NoSuchLockException::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15822" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="62001" bodyend="62040"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1NoSuchLockException_1ad4d18f885c133e7618f26455b6343378" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::NoSuchLockException::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::NoSuchLockException::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15823" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="62042" bodyend="62054"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1NoSuchLockException_1abb9dc4c6f766af8132c806b9a4b885ca" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::NoSuchLockException::printTo</definition>
+        <argsstring>(std::ostream &amp;out) const</argsstring>
+        <name>printTo</name>
+        <qualifiedname>Apache::Hadoop::Hive::NoSuchLockException::printTo</qualifiedname>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15825" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="62078" bodyend="62083"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1NoSuchLockException_1a9a5ae8e28977c5a6a6a109e1552f00b8" prot="public" static="no" const="yes" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type>const char *</type>
+        <definition>const char * Apache::Hadoop::Hive::NoSuchLockException::what</definition>
+        <argsstring>() const noexcept override</argsstring>
+        <name>what</name>
+        <qualifiedname>Apache::Hadoop::Hive::NoSuchLockException::what</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15827" column="14" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="62085" bodyend="62094"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::NoSuchLockException</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1NoSuchLockException"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TException</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::NoSuchLockException</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1NoSuchLockException"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>message</edgelabel>
+          <edgelabel>thriftTExceptionMessageHolder_</edgelabel>
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="5">
+        <label>Apache::Hadoop::Hive::_NoSuchLockException__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__NoSuchLockException____isset"/>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TException</label>
+      </node>
+      <node id="4">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="3">
+        <label>std::string</label>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15801" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="15801" bodyend="15828"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1NoSuchLockException_1a9ce0c442199186525dd8ddcf6b1ac665" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::NoSuchLockException</scope><name>__isset</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1NoSuchLockException_1a9cd24ac3c1291280ff52c544bb2704b3" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::NoSuchLockException</scope><name>__set_message</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1NoSuchLockException_1ae0541486f98c41e2ab3ef0b56001d2fb" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::NoSuchLockException</scope><name>message</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1NoSuchLockException_1a968751db2cf6901e6f790a3018cbdadf" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::NoSuchLockException</scope><name>NoSuchLockException</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1NoSuchLockException_1ad104486e3311c0615792b463415c0671" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::NoSuchLockException</scope><name>NoSuchLockException</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1NoSuchLockException_1aaedde82b52f5cbd69c9634e6e823174b" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::NoSuchLockException</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1NoSuchLockException_1a552f6aabbc29e45a536c1431748940f1" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::NoSuchLockException</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1NoSuchLockException_1aa8e6eaac1cf4e5e8b66eff95ffad8cf7" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::NoSuchLockException</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1NoSuchLockException_1a46f1945769dab2fc798d10c1cd98fd20" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::NoSuchLockException</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1NoSuchLockException_1abb9dc4c6f766af8132c806b9a4b885ca" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::NoSuchLockException</scope><name>printTo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1NoSuchLockException_1a27f36f314c2f96fa2e1d435aa8ebcbf9" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::NoSuchLockException</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1NoSuchLockException_1a80a05e68004f880cb4d9ba662366d355" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::NoSuchLockException</scope><name>thriftTExceptionMessageHolder_</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1NoSuchLockException_1a9a5ae8e28977c5a6a6a109e1552f00b8" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::NoSuchLockException</scope><name>what</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1NoSuchLockException_1ad4d18f885c133e7618f26455b6343378" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::NoSuchLockException</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1NoSuchLockException_1a935fb1292604e97a427dbb8bbd573459" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::NoSuchLockException</scope><name>~NoSuchLockException</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

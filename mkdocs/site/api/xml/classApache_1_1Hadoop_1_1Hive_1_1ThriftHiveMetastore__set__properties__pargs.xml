@@ -1,0 +1,112 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__set__properties__pargs" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::ThriftHiveMetastore_set_properties_pargs</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__set__properties__pargs_1ad08860ec9f7b81bccbdd16c292f01be1" prot="public" static="no" mutable="no">
+        <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1PropertySetRequest" kindref="compound">PropertySetRequest</ref> *</type>
+        <definition>const PropertySetRequest* Apache::Hadoop::Hive::ThriftHiveMetastore_set_properties_pargs::req</definition>
+        <argsstring></argsstring>
+        <name>req</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_set_properties_pargs::req</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="13201" column="28" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="13201" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__set__properties__pargs_1a77866f820b5de2dd44aa086d4196174b" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::ThriftHiveMetastore_set_properties_pargs::~ThriftHiveMetastore_set_properties_pargs</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~ThriftHiveMetastore_set_properties_pargs</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_set_properties_pargs::~ThriftHiveMetastore_set_properties_pargs</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="13200" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.cpp" bodystart="28975" bodyend="28976"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__set__properties__pargs_1ad8b31bc1a1e45feaa0ca7480ffcc65f0" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::ThriftHiveMetastore_set_properties_pargs::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_set_properties_pargs::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="13203" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.cpp" bodystart="28979" bodyend="28991"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="2">
+        <label>Apache::Hadoop::Hive::PropertySetRequest</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1PropertySetRequest"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>nameSpace</edgelabel>
+        </childnode>
+        <childnode refid="6" relation="usage">
+          <edgelabel>propertyMap</edgelabel>
+        </childnode>
+        <childnode refid="7" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::ThriftHiveMetastore_set_properties_pargs</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__set__properties__pargs"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>req</edgelabel>
+        </childnode>
+      </node>
+      <node id="7">
+        <label>Apache::Hadoop::Hive::_PropertySetRequest__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__PropertySetRequest____isset"/>
+      </node>
+      <node id="3">
+        <label>apache::thrift::TBase</label>
+      </node>
+      <node id="6">
+        <label>std::map&lt; std::string, std::string &gt;</label>
+        <childnode refid="4" relation="usage">
+          <edgelabel>elements</edgelabel>
+          <edgelabel>keys</edgelabel>
+        </childnode>
+      </node>
+      <node id="5">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="4">
+        <label>std::string</label>
+        <childnode refid="5" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="13196" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="13196" bodyend="13205"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__set__properties__pargs_1ad08860ec9f7b81bccbdd16c292f01be1" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_set_properties_pargs</scope><name>req</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__set__properties__pargs_1ad8b31bc1a1e45feaa0ca7480ffcc65f0" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_set_properties_pargs</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__set__properties__pargs_1a77866f820b5de2dd44aa086d4196174b" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_set_properties_pargs</scope><name>~ThriftHiveMetastore_set_properties_pargs</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

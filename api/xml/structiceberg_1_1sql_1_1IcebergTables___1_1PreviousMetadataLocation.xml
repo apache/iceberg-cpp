@@ -1,0 +1,68 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1sql_1_1IcebergTables___1_1PreviousMetadataLocation" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::sql::IcebergTables_::PreviousMetadataLocation</compoundname>
+    <sectiondef kind="public-type">
+      <memberdef kind="typedef" id="structiceberg_1_1sql_1_1IcebergTables___1_1PreviousMetadataLocation_1a1086e1fd9226680e313168ad107a1dc4" prot="public" static="no">
+        <type>std::optional&lt;::sqlpp::text &gt;</type>
+        <definition>using iceberg::sql::IcebergTables_::PreviousMetadataLocation::data_type =  std::optional&lt;::sqlpp::text&gt;</definition>
+        <argsstring></argsstring>
+        <name>data_type</name>
+        <qualifiedname>iceberg::sql::IcebergTables_::PreviousMetadataLocation::data_type</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/sql_catalog_tables_internal.h" line="70" column="5" bodyfile="iceberg/catalog/sql/sql_catalog_tables_internal.h" bodystart="70" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="structiceberg_1_1sql_1_1IcebergTables___1_1PreviousMetadataLocation_1a757981ec82aad70c01c26fb0e8b9a884" prot="public" static="no">
+        <type>std::true_type</type>
+        <definition>using iceberg::sql::IcebergTables_::PreviousMetadataLocation::has_default =  std::true_type</definition>
+        <argsstring></argsstring>
+        <name>has_default</name>
+        <qualifiedname>iceberg::sql::IcebergTables_::PreviousMetadataLocation::has_default</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/sql_catalog_tables_internal.h" line="71" column="5" bodyfile="iceberg/catalog/sql/sql_catalog_tables_internal.h" bodystart="71" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structiceberg_1_1sql_1_1IcebergTables___1_1PreviousMetadataLocation_1a049361d84c266d4e0139d30ba6a4ce3d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::sql::IcebergTables_::PreviousMetadataLocation::SQLPP_CREATE_NAME_TAG_FOR_SQL_AND_CPP</definition>
+        <argsstring>(previous_metadata_location, previousMetadataLocation)</argsstring>
+        <name>SQLPP_CREATE_NAME_TAG_FOR_SQL_AND_CPP</name>
+        <qualifiedname>iceberg::sql::IcebergTables_::PreviousMetadataLocation::SQLPP_CREATE_NAME_TAG_FOR_SQL_AND_CPP</qualifiedname>
+        <param>
+          <type>previous_metadata_location</type>
+        </param>
+        <param>
+          <type>previousMetadataLocation</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/sql_catalog_tables_internal.h" line="68" column="5"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/sql/sql_catalog_tables_internal.h" line="67" column="3" bodyfile="iceberg/catalog/sql/sql_catalog_tables_internal.h" bodystart="67" bodyend="72"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1sql_1_1IcebergTables___1_1PreviousMetadataLocation_1a1086e1fd9226680e313168ad107a1dc4" prot="public" virt="non-virtual"><scope>iceberg::sql::IcebergTables_::PreviousMetadataLocation</scope><name>data_type</name></member>
+      <member refid="structiceberg_1_1sql_1_1IcebergTables___1_1PreviousMetadataLocation_1a757981ec82aad70c01c26fb0e8b9a884" prot="public" virt="non-virtual"><scope>iceberg::sql::IcebergTables_::PreviousMetadataLocation</scope><name>has_default</name></member>
+      <member refid="structiceberg_1_1sql_1_1IcebergTables___1_1PreviousMetadataLocation_1a049361d84c266d4e0139d30ba6a4ce3d" prot="public" virt="non-virtual"><scope>iceberg::sql::IcebergTables_::PreviousMetadataLocation</scope><name>SQLPP_CREATE_NAME_TAG_FOR_SQL_AND_CPP</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

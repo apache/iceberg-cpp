@@ -1,0 +1,323 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1ListStoredProcedureRequest" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::ListStoredProcedureRequest</compoundname>
+    <basecompoundref prot="public" virt="virtual">apache::thrift::TBase</basecompoundref>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ListStoredProcedureRequest_1af3e0e0d3e50f40f0ee6e0849d487f3ca" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::ListStoredProcedureRequest::catName</definition>
+        <argsstring></argsstring>
+        <name>catName</name>
+        <qualifiedname>Apache::Hadoop::Hive::ListStoredProcedureRequest::catName</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14920" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="14920" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ListStoredProcedureRequest_1a05477e7049bed94ddbb83e34ac6750dd" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::ListStoredProcedureRequest::dbName</definition>
+        <argsstring></argsstring>
+        <name>dbName</name>
+        <qualifiedname>Apache::Hadoop::Hive::ListStoredProcedureRequest::dbName</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14921" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="14921" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ListStoredProcedureRequest_1a484df7f8ec18ae59577785990cac5063" prot="public" static="no" mutable="no">
+        <type><ref refid="structApache_1_1Hadoop_1_1Hive_1_1__ListStoredProcedureRequest____isset" kindref="compound">_ListStoredProcedureRequest__isset</ref></type>
+        <definition>_ListStoredProcedureRequest__isset Apache::Hadoop::Hive::ListStoredProcedureRequest::__isset</definition>
+        <argsstring></argsstring>
+        <name>__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::ListStoredProcedureRequest::__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14923" column="38" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="14923" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ListStoredProcedureRequest_1a3dae5cef14ccafc9b1da5e49c8fed73f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::ListStoredProcedureRequest::ListStoredProcedureRequest</definition>
+        <argsstring>(const ListStoredProcedureRequest &amp;)</argsstring>
+        <name>ListStoredProcedureRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::ListStoredProcedureRequest::ListStoredProcedureRequest</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ListStoredProcedureRequest" kindref="compound">ListStoredProcedureRequest</ref> &amp;</type>
+          <defname>other1837</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14915" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="59155" bodyend="59159"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ListStoredProcedureRequest_1ad929f4328c73523f6a24dbc5c8c533d6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1ListStoredProcedureRequest" kindref="compound">ListStoredProcedureRequest</ref> &amp;</type>
+        <definition>ListStoredProcedureRequest &amp; Apache::Hadoop::Hive::ListStoredProcedureRequest::operator=</definition>
+        <argsstring>(const ListStoredProcedureRequest &amp;)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::ListStoredProcedureRequest::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ListStoredProcedureRequest" kindref="compound">ListStoredProcedureRequest</ref> &amp;</type>
+          <defname>other1838</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14916" column="30" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="59160" bodyend="59165"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ListStoredProcedureRequest_1ab18b5989b54b8d206cb4275d54669f6f" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::ListStoredProcedureRequest::ListStoredProcedureRequest</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>ListStoredProcedureRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::ListStoredProcedureRequest::ListStoredProcedureRequest</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14917" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="59046" bodyend="59049"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ListStoredProcedureRequest_1af629252c3f5a5926038036c474e021ce" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::ListStoredProcedureRequest::~ListStoredProcedureRequest</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~ListStoredProcedureRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::ListStoredProcedureRequest::~ListStoredProcedureRequest</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14919" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="59043" bodyend="59044"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ListStoredProcedureRequest_1a17c2623b0d6860696b118ace32106dac" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::ListStoredProcedureRequest::__set_catName</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_catName</name>
+        <qualifiedname>Apache::Hadoop::Hive::ListStoredProcedureRequest::__set_catName</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14925" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="59051" bodyend="59053"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ListStoredProcedureRequest_1a1bccdac386a45e40ecc68dd5c7a3af36" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::ListStoredProcedureRequest::__set_dbName</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_dbName</name>
+        <qualifiedname>Apache::Hadoop::Hive::ListStoredProcedureRequest::__set_dbName</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14927" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="59055" bodyend="59058"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ListStoredProcedureRequest_1a2884a188c251853a78aff41eedf87b63" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::ListStoredProcedureRequest::operator==</definition>
+        <argsstring>(const ListStoredProcedureRequest &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::ListStoredProcedureRequest::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ListStoredProcedureRequest" kindref="compound">ListStoredProcedureRequest</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14929" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="59144" bodyend="59153"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ListStoredProcedureRequest_1abea05d54580d561c9e4c6c31d532d389" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::ListStoredProcedureRequest::operator!=</definition>
+        <argsstring>(const ListStoredProcedureRequest &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::ListStoredProcedureRequest::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ListStoredProcedureRequest" kindref="compound">ListStoredProcedureRequest</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14930" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="14930" bodyend="14932"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ListStoredProcedureRequest_1a9803f874c06e601975e3b30b1743946e" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::ListStoredProcedureRequest::operator&lt;</definition>
+        <argsstring>(const ListStoredProcedureRequest &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::ListStoredProcedureRequest::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ListStoredProcedureRequest" kindref="compound">ListStoredProcedureRequest</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14934" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ListStoredProcedureRequest_1a8d7d8e38dfbb2a3d34ff8dbb58c4ef41" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::ListStoredProcedureRequest::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot) override</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::ListStoredProcedureRequest::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14936" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="59066" bodyend="59116"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ListStoredProcedureRequest_1a4275d4f90329d1abb3ade1f68b24a3a5" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::ListStoredProcedureRequest::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const override</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::ListStoredProcedureRequest::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14937" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="59118" bodyend="59135"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ListStoredProcedureRequest_1a1731fe8238f139a0f61fd87bf55a7fe1" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::ListStoredProcedureRequest::printTo</definition>
+        <argsstring>(std::ostream &amp;out) const</argsstring>
+        <name>printTo</name>
+        <qualifiedname>Apache::Hadoop::Hive::ListStoredProcedureRequest::printTo</qualifiedname>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14939" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="59166" bodyend="59172"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::ListStoredProcedureRequest</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1ListStoredProcedureRequest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::ListStoredProcedureRequest</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1ListStoredProcedureRequest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>catName</edgelabel>
+          <edgelabel>dbName</edgelabel>
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="5">
+        <label>Apache::Hadoop::Hive::_ListStoredProcedureRequest__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__ListStoredProcedureRequest____isset"/>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+      <node id="4">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="3">
+        <label>std::string</label>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14912" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="14912" bodyend="14940"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ListStoredProcedureRequest_1a484df7f8ec18ae59577785990cac5063" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ListStoredProcedureRequest</scope><name>__isset</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ListStoredProcedureRequest_1a17c2623b0d6860696b118ace32106dac" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ListStoredProcedureRequest</scope><name>__set_catName</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ListStoredProcedureRequest_1a1bccdac386a45e40ecc68dd5c7a3af36" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ListStoredProcedureRequest</scope><name>__set_dbName</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ListStoredProcedureRequest_1af3e0e0d3e50f40f0ee6e0849d487f3ca" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ListStoredProcedureRequest</scope><name>catName</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ListStoredProcedureRequest_1a05477e7049bed94ddbb83e34ac6750dd" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ListStoredProcedureRequest</scope><name>dbName</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ListStoredProcedureRequest_1a3dae5cef14ccafc9b1da5e49c8fed73f" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ListStoredProcedureRequest</scope><name>ListStoredProcedureRequest</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ListStoredProcedureRequest_1ab18b5989b54b8d206cb4275d54669f6f" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ListStoredProcedureRequest</scope><name>ListStoredProcedureRequest</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ListStoredProcedureRequest_1abea05d54580d561c9e4c6c31d532d389" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ListStoredProcedureRequest</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ListStoredProcedureRequest_1a9803f874c06e601975e3b30b1743946e" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ListStoredProcedureRequest</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ListStoredProcedureRequest_1ad929f4328c73523f6a24dbc5c8c533d6" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ListStoredProcedureRequest</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ListStoredProcedureRequest_1a2884a188c251853a78aff41eedf87b63" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ListStoredProcedureRequest</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ListStoredProcedureRequest_1a1731fe8238f139a0f61fd87bf55a7fe1" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::ListStoredProcedureRequest</scope><name>printTo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ListStoredProcedureRequest_1a8d7d8e38dfbb2a3d34ff8dbb58c4ef41" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ListStoredProcedureRequest</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ListStoredProcedureRequest_1a4275d4f90329d1abb3ade1f68b24a3a5" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ListStoredProcedureRequest</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ListStoredProcedureRequest_1af629252c3f5a5926038036c474e021ce" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::ListStoredProcedureRequest</scope><name>~ListStoredProcedureRequest</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

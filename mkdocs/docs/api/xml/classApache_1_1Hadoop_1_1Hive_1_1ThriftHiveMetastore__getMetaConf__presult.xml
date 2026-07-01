@@ -1,0 +1,143 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__getMetaConf__presult" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::ThriftHiveMetastore_getMetaConf_presult</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__getMetaConf__presult_1a5e4a3932f886d1485891dca0953df07c" prot="public" static="no" mutable="no">
+        <type>std::string *</type>
+        <definition>std::string* Apache::Hadoop::Hive::ThriftHiveMetastore_getMetaConf_presult::success</definition>
+        <argsstring></argsstring>
+        <name>success</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_getMetaConf_presult::success</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="1394" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="1394" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__getMetaConf__presult_1a97fa01a2751fd71e0f4862cc2bcc587d" prot="public" static="no" mutable="no">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1MetaException" kindref="compound">MetaException</ref></type>
+        <definition>MetaException Apache::Hadoop::Hive::ThriftHiveMetastore_getMetaConf_presult::o1</definition>
+        <argsstring></argsstring>
+        <name>o1</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_getMetaConf_presult::o1</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="1395" column="17" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="1395" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__getMetaConf__presult_1a87ce7252c9406e4ee088b2f1cbaa482d" prot="public" static="no" mutable="no">
+        <type><ref refid="structApache_1_1Hadoop_1_1Hive_1_1__ThriftHiveMetastore__getMetaConf__presult____isset" kindref="compound">_ThriftHiveMetastore_getMetaConf_presult__isset</ref></type>
+        <definition>_ThriftHiveMetastore_getMetaConf_presult__isset Apache::Hadoop::Hive::ThriftHiveMetastore_getMetaConf_presult::__isset</definition>
+        <argsstring></argsstring>
+        <name>__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_getMetaConf_presult::__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="1397" column="51" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="1397" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__getMetaConf__presult_1ac0e64962e3853bc397b9ecc313b3147c" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::ThriftHiveMetastore_getMetaConf_presult::~ThriftHiveMetastore_getMetaConf_presult</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~ThriftHiveMetastore_getMetaConf_presult</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_getMetaConf_presult::~ThriftHiveMetastore_getMetaConf_presult</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="1393" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.cpp" bodystart="362" bodyend="363"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__getMetaConf__presult_1a77bc35144056ed78eb63466d5b1934f4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::ThriftHiveMetastore_getMetaConf_presult::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot)</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_getMetaConf_presult::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="1399" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.cpp" bodystart="366" bodyend="413"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="4">
+        <label>Apache::Hadoop::Hive::MetaException</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1MetaException"/>
+        <childnode refid="5" relation="public-inheritance">
+        </childnode>
+        <childnode refid="2" relation="usage">
+          <edgelabel>message</edgelabel>
+          <edgelabel>thriftTExceptionMessageHolder_</edgelabel>
+        </childnode>
+        <childnode refid="6" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::ThriftHiveMetastore_getMetaConf_presult</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__getMetaConf__presult"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>success</edgelabel>
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>o1</edgelabel>
+        </childnode>
+        <childnode refid="7" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="6">
+        <label>Apache::Hadoop::Hive::_MetaException__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__MetaException____isset"/>
+      </node>
+      <node id="7">
+        <label>Apache::Hadoop::Hive::_ThriftHiveMetastore_getMetaConf_presult__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__ThriftHiveMetastore__getMetaConf__presult____isset"/>
+      </node>
+      <node id="5">
+        <label>apache::thrift::TException</label>
+      </node>
+      <node id="3">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="2">
+        <label>std::string</label>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="1389" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="1389" bodyend="1401"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__getMetaConf__presult_1a87ce7252c9406e4ee088b2f1cbaa482d" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_getMetaConf_presult</scope><name>__isset</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__getMetaConf__presult_1a97fa01a2751fd71e0f4862cc2bcc587d" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_getMetaConf_presult</scope><name>o1</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__getMetaConf__presult_1a77bc35144056ed78eb63466d5b1934f4" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_getMetaConf_presult</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__getMetaConf__presult_1a5e4a3932f886d1485891dca0953df07c" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_getMetaConf_presult</scope><name>success</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__getMetaConf__presult_1ac0e64962e3853bc397b9ecc313b3147c" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_getMetaConf_presult</scope><name>~ThriftHiveMetastore_getMetaConf_presult</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

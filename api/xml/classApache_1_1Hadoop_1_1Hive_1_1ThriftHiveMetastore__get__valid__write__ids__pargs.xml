@@ -1,0 +1,111 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__valid__write__ids__pargs" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::ThriftHiveMetastore_get_valid_write_ids_pargs</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__valid__write__ids__pargs_1ac46e5918edf45625d2cb3c3170308c57" prot="public" static="no" mutable="no">
+        <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1GetValidWriteIdsRequest" kindref="compound">GetValidWriteIdsRequest</ref> *</type>
+        <definition>const GetValidWriteIdsRequest* Apache::Hadoop::Hive::ThriftHiveMetastore_get_valid_write_ids_pargs::rqst</definition>
+        <argsstring></argsstring>
+        <name>rqst</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_get_valid_write_ids_pargs::rqst</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="21039" column="33" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="21039" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__valid__write__ids__pargs_1a8ba6b849828a01f627afbbe450d61097" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::ThriftHiveMetastore_get_valid_write_ids_pargs::~ThriftHiveMetastore_get_valid_write_ids_pargs</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~ThriftHiveMetastore_get_valid_write_ids_pargs</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_get_valid_write_ids_pargs::~ThriftHiveMetastore_get_valid_write_ids_pargs</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="21038" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.cpp" bodystart="46940" bodyend="46941"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__valid__write__ids__pargs_1a1f346e0d6225e4851b7d017049723e40" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::ThriftHiveMetastore_get_valid_write_ids_pargs::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_get_valid_write_ids_pargs::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="21041" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.cpp" bodystart="46944" bodyend="46956"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="2">
+        <label>Apache::Hadoop::Hive::GetValidWriteIdsRequest</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1GetValidWriteIdsRequest"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>fullTableNames</edgelabel>
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>validTxnList</edgelabel>
+        </childnode>
+        <childnode refid="7" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::ThriftHiveMetastore_get_valid_write_ids_pargs</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__valid__write__ids__pargs"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>rqst</edgelabel>
+        </childnode>
+      </node>
+      <node id="7">
+        <label>Apache::Hadoop::Hive::_GetValidWriteIdsRequest__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__GetValidWriteIdsRequest____isset"/>
+      </node>
+      <node id="3">
+        <label>apache::thrift::TBase</label>
+      </node>
+      <node id="6">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="5">
+        <label>std::string</label>
+        <childnode refid="6" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>std::vector&lt; std::string &gt;</label>
+        <childnode refid="5" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="21034" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="21034" bodyend="21043"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__valid__write__ids__pargs_1ac46e5918edf45625d2cb3c3170308c57" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_get_valid_write_ids_pargs</scope><name>rqst</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__valid__write__ids__pargs_1a1f346e0d6225e4851b7d017049723e40" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_get_valid_write_ids_pargs</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__valid__write__ids__pargs_1a8ba6b849828a01f627afbbe450d61097" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_get_valid_write_ids_pargs</scope><name>~ThriftHiveMetastore_get_valid_write_ids_pargs</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

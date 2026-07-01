@@ -1,0 +1,487 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1GetFieldsRequest" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::GetFieldsRequest</compoundname>
+    <basecompoundref prot="public" virt="virtual">apache::thrift::TBase</basecompoundref>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1GetFieldsRequest_1a4cd9ea4560a4365c51be15382b02d5cb" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::GetFieldsRequest::catName</definition>
+        <argsstring></argsstring>
+        <name>catName</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetFieldsRequest::catName</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14113" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="14113" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1GetFieldsRequest_1ac7f8a73ab0fc7857998959280563b2ab" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::GetFieldsRequest::dbName</definition>
+        <argsstring></argsstring>
+        <name>dbName</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetFieldsRequest::dbName</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14114" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="14114" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1GetFieldsRequest_1a3e3826736bc2ba53cb91e12da91e4d8d" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::GetFieldsRequest::tblName</definition>
+        <argsstring></argsstring>
+        <name>tblName</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetFieldsRequest::tblName</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14115" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="14115" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1GetFieldsRequest_1a54bdfa3b3d5ecd82f5bd623a58088e3e" prot="public" static="no" mutable="no">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1EnvironmentContext" kindref="compound">EnvironmentContext</ref></type>
+        <definition>EnvironmentContext Apache::Hadoop::Hive::GetFieldsRequest::envContext</definition>
+        <argsstring></argsstring>
+        <name>envContext</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetFieldsRequest::envContext</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14116" column="22" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="14116" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1GetFieldsRequest_1a4defbbe40290968dc561a21beed6056f" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::GetFieldsRequest::validWriteIdList</definition>
+        <argsstring></argsstring>
+        <name>validWriteIdList</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetFieldsRequest::validWriteIdList</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14117" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="14117" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1GetFieldsRequest_1a6e6acf00e32b653e411870798c6aa998" prot="public" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t Apache::Hadoop::Hive::GetFieldsRequest::id</definition>
+        <argsstring></argsstring>
+        <name>id</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetFieldsRequest::id</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14118" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="14118" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1GetFieldsRequest_1aba19517670f62e79e4d323489c408796" prot="public" static="no" mutable="no">
+        <type><ref refid="structApache_1_1Hadoop_1_1Hive_1_1__GetFieldsRequest____isset" kindref="compound">_GetFieldsRequest__isset</ref></type>
+        <definition>_GetFieldsRequest__isset Apache::Hadoop::Hive::GetFieldsRequest::__isset</definition>
+        <argsstring></argsstring>
+        <name>__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetFieldsRequest::__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14120" column="28" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="14120" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetFieldsRequest_1a983190b6b5c5427058de81e8c5b3e268" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::GetFieldsRequest::GetFieldsRequest</definition>
+        <argsstring>(const GetFieldsRequest &amp;)</argsstring>
+        <name>GetFieldsRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetFieldsRequest::GetFieldsRequest</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1GetFieldsRequest" kindref="compound">GetFieldsRequest</ref> &amp;</type>
+          <defname>other1728</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14108" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="55637" bodyend="55645"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetFieldsRequest_1ab8c23773abcf12f610b2191e4e878e06" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1GetFieldsRequest" kindref="compound">GetFieldsRequest</ref> &amp;</type>
+        <definition>GetFieldsRequest &amp; Apache::Hadoop::Hive::GetFieldsRequest::operator=</definition>
+        <argsstring>(const GetFieldsRequest &amp;)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetFieldsRequest::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1GetFieldsRequest" kindref="compound">GetFieldsRequest</ref> &amp;</type>
+          <defname>other1729</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14109" column="20" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="55646" bodyend="55655"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetFieldsRequest_1a7b914c5085681f723f4e2caf438301fe" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::GetFieldsRequest::GetFieldsRequest</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>GetFieldsRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetFieldsRequest::GetFieldsRequest</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14110" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="55434" bodyend="55440"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetFieldsRequest_1a875b58b110513f6d28b9f5a9463b3d05" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::GetFieldsRequest::~GetFieldsRequest</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~GetFieldsRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetFieldsRequest::~GetFieldsRequest</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14112" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="55431" bodyend="55432"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetFieldsRequest_1ade013c99bc1686e7fd4cb9e67a61d8a4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::GetFieldsRequest::__set_catName</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_catName</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetFieldsRequest::__set_catName</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14122" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="55442" bodyend="55445"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetFieldsRequest_1a4694ee97dffc11651ee4786aa6447862" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::GetFieldsRequest::__set_dbName</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_dbName</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetFieldsRequest::__set_dbName</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14124" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="55447" bodyend="55449"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetFieldsRequest_1a140cbd4c7edc155a094a078fcf5df2c5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::GetFieldsRequest::__set_tblName</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_tblName</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetFieldsRequest::__set_tblName</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14126" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="55451" bodyend="55453"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetFieldsRequest_1ac2d10832c59a6e64046004aae38e579a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::GetFieldsRequest::__set_envContext</definition>
+        <argsstring>(const EnvironmentContext &amp;val)</argsstring>
+        <name>__set_envContext</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetFieldsRequest::__set_envContext</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1EnvironmentContext" kindref="compound">EnvironmentContext</ref> &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14128" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="55455" bodyend="55458"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetFieldsRequest_1a491ea759f92bfbc14473b7c55af5f191" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::GetFieldsRequest::__set_validWriteIdList</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_validWriteIdList</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetFieldsRequest::__set_validWriteIdList</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14130" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="55460" bodyend="55463"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetFieldsRequest_1a269d79642ea827242efa8f947301cde9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::GetFieldsRequest::__set_id</definition>
+        <argsstring>(const int64_t val)</argsstring>
+        <name>__set_id</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetFieldsRequest::__set_id</qualifiedname>
+        <param>
+          <type>const int64_t</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14132" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="55465" bodyend="55468"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetFieldsRequest_1ac5ec3c57a89c59340e4e0359549fecbf" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::GetFieldsRequest::operator==</definition>
+        <argsstring>(const GetFieldsRequest &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetFieldsRequest::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1GetFieldsRequest" kindref="compound">GetFieldsRequest</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14134" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="55612" bodyend="55635"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetFieldsRequest_1a19767022cd278ec193632b9e7711f6d3" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::GetFieldsRequest::operator!=</definition>
+        <argsstring>(const GetFieldsRequest &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetFieldsRequest::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1GetFieldsRequest" kindref="compound">GetFieldsRequest</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14135" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="14135" bodyend="14137"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetFieldsRequest_1a1522875ebc76e64008e1534e6124ac38" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::GetFieldsRequest::operator&lt;</definition>
+        <argsstring>(const GetFieldsRequest &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetFieldsRequest::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1GetFieldsRequest" kindref="compound">GetFieldsRequest</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14139" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetFieldsRequest_1a9a8306a6bffba06f305785408cc7bab9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::GetFieldsRequest::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot) override</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetFieldsRequest::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14141" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="55476" bodyend="55561"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetFieldsRequest_1a43a99450b725c0bc12d9399433ffd33a" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::GetFieldsRequest::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const override</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetFieldsRequest::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14142" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="55563" bodyend="55599"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetFieldsRequest_1a17cd0c900c7b531c6bca9acbe6b993ca" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::GetFieldsRequest::printTo</definition>
+        <argsstring>(std::ostream &amp;out) const</argsstring>
+        <name>printTo</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetFieldsRequest::printTo</qualifiedname>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14144" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="55656" bodyend="55666"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::GetFieldsRequest</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1GetFieldsRequest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="5">
+        <label>Apache::Hadoop::Hive::EnvironmentContext</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1EnvironmentContext"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="6" relation="usage">
+          <edgelabel>properties</edgelabel>
+        </childnode>
+        <childnode refid="7" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::GetFieldsRequest</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1GetFieldsRequest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>catName</edgelabel>
+          <edgelabel>dbName</edgelabel>
+          <edgelabel>tblName</edgelabel>
+          <edgelabel>validWriteIdList</edgelabel>
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>envContext</edgelabel>
+        </childnode>
+        <childnode refid="8" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="7">
+        <label>Apache::Hadoop::Hive::_EnvironmentContext__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__EnvironmentContext____isset"/>
+      </node>
+      <node id="8">
+        <label>Apache::Hadoop::Hive::_GetFieldsRequest__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__GetFieldsRequest____isset"/>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+      <node id="6">
+        <label>std::map&lt; std::string, std::string &gt;</label>
+        <childnode refid="3" relation="usage">
+          <edgelabel>elements</edgelabel>
+          <edgelabel>keys</edgelabel>
+        </childnode>
+      </node>
+      <node id="4">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="3">
+        <label>std::string</label>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14105" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="14105" bodyend="14145"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetFieldsRequest_1aba19517670f62e79e4d323489c408796" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetFieldsRequest</scope><name>__isset</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetFieldsRequest_1ade013c99bc1686e7fd4cb9e67a61d8a4" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetFieldsRequest</scope><name>__set_catName</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetFieldsRequest_1a4694ee97dffc11651ee4786aa6447862" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetFieldsRequest</scope><name>__set_dbName</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetFieldsRequest_1ac2d10832c59a6e64046004aae38e579a" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetFieldsRequest</scope><name>__set_envContext</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetFieldsRequest_1a269d79642ea827242efa8f947301cde9" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetFieldsRequest</scope><name>__set_id</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetFieldsRequest_1a140cbd4c7edc155a094a078fcf5df2c5" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetFieldsRequest</scope><name>__set_tblName</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetFieldsRequest_1a491ea759f92bfbc14473b7c55af5f191" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetFieldsRequest</scope><name>__set_validWriteIdList</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetFieldsRequest_1a4cd9ea4560a4365c51be15382b02d5cb" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetFieldsRequest</scope><name>catName</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetFieldsRequest_1ac7f8a73ab0fc7857998959280563b2ab" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetFieldsRequest</scope><name>dbName</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetFieldsRequest_1a54bdfa3b3d5ecd82f5bd623a58088e3e" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetFieldsRequest</scope><name>envContext</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetFieldsRequest_1a983190b6b5c5427058de81e8c5b3e268" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetFieldsRequest</scope><name>GetFieldsRequest</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetFieldsRequest_1a7b914c5085681f723f4e2caf438301fe" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetFieldsRequest</scope><name>GetFieldsRequest</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetFieldsRequest_1a6e6acf00e32b653e411870798c6aa998" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetFieldsRequest</scope><name>id</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetFieldsRequest_1a19767022cd278ec193632b9e7711f6d3" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetFieldsRequest</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetFieldsRequest_1a1522875ebc76e64008e1534e6124ac38" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetFieldsRequest</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetFieldsRequest_1ab8c23773abcf12f610b2191e4e878e06" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetFieldsRequest</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetFieldsRequest_1ac5ec3c57a89c59340e4e0359549fecbf" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetFieldsRequest</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetFieldsRequest_1a17cd0c900c7b531c6bca9acbe6b993ca" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::GetFieldsRequest</scope><name>printTo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetFieldsRequest_1a9a8306a6bffba06f305785408cc7bab9" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetFieldsRequest</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetFieldsRequest_1a3e3826736bc2ba53cb91e12da91e4d8d" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetFieldsRequest</scope><name>tblName</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetFieldsRequest_1a4defbbe40290968dc561a21beed6056f" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetFieldsRequest</scope><name>validWriteIdList</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetFieldsRequest_1a43a99450b725c0bc12d9399433ffd33a" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetFieldsRequest</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetFieldsRequest_1a875b58b110513f6d28b9f5a9463b3d05" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::GetFieldsRequest</scope><name>~GetFieldsRequest</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

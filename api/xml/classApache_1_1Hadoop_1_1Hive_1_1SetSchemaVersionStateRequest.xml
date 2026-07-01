@@ -1,0 +1,359 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1SetSchemaVersionStateRequest" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::SetSchemaVersionStateRequest</compoundname>
+    <basecompoundref prot="public" virt="virtual">apache::thrift::TBase</basecompoundref>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1SetSchemaVersionStateRequest_1aaf8645de8598d46c6f8f31c38981606f" prot="public" static="no" mutable="no">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1SchemaVersionDescriptor" kindref="compound">SchemaVersionDescriptor</ref></type>
+        <definition>SchemaVersionDescriptor Apache::Hadoop::Hive::SetSchemaVersionStateRequest::schemaVersion</definition>
+        <argsstring></argsstring>
+        <name>schemaVersion</name>
+        <qualifiedname>Apache::Hadoop::Hive::SetSchemaVersionStateRequest::schemaVersion</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12917" column="27" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="12917" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1SetSchemaVersionStateRequest_1a7aba7ec9ef43d19e9fccdd612afa34e9" prot="public" static="no" mutable="no">
+        <type>SchemaVersionState::type</type>
+        <definition>SchemaVersionState::type Apache::Hadoop::Hive::SetSchemaVersionStateRequest::state</definition>
+        <argsstring></argsstring>
+        <name>state</name>
+        <qualifiedname>Apache::Hadoop::Hive::SetSchemaVersionStateRequest::state</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="see"><para><ref refid="structApache_1_1Hadoop_1_1Hive_1_1SchemaVersionState" kindref="compound">SchemaVersionState</ref> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12922" column="28" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="12922" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1SetSchemaVersionStateRequest_1a289d40e553bfe40cd318da3a9c73a2aa" prot="public" static="no" mutable="no">
+        <type><ref refid="structApache_1_1Hadoop_1_1Hive_1_1__SetSchemaVersionStateRequest____isset" kindref="compound">_SetSchemaVersionStateRequest__isset</ref></type>
+        <definition>_SetSchemaVersionStateRequest__isset Apache::Hadoop::Hive::SetSchemaVersionStateRequest::__isset</definition>
+        <argsstring></argsstring>
+        <name>__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::SetSchemaVersionStateRequest::__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12924" column="40" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="12924" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1SetSchemaVersionStateRequest_1a499b127a0aa43585aa22ce73d66f1f6a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::SetSchemaVersionStateRequest::SetSchemaVersionStateRequest</definition>
+        <argsstring>(const SetSchemaVersionStateRequest &amp;)</argsstring>
+        <name>SetSchemaVersionStateRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::SetSchemaVersionStateRequest::SetSchemaVersionStateRequest</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1SetSchemaVersionStateRequest" kindref="compound">SetSchemaVersionStateRequest</ref> &amp;</type>
+          <defname>other1567</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12912" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="50422" bodyend="50426"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1SetSchemaVersionStateRequest_1a593dbcffcb80a7a67c36684b33f028cf" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1SetSchemaVersionStateRequest" kindref="compound">SetSchemaVersionStateRequest</ref> &amp;</type>
+        <definition>SetSchemaVersionStateRequest &amp; Apache::Hadoop::Hive::SetSchemaVersionStateRequest::operator=</definition>
+        <argsstring>(const SetSchemaVersionStateRequest &amp;)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::SetSchemaVersionStateRequest::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1SetSchemaVersionStateRequest" kindref="compound">SetSchemaVersionStateRequest</ref> &amp;</type>
+          <defname>other1568</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12913" column="32" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="50427" bodyend="50432"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1SetSchemaVersionStateRequest_1a14a1ed6b2d2d1560243e169d5f4d971a" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::SetSchemaVersionStateRequest::SetSchemaVersionStateRequest</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>SetSchemaVersionStateRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::SetSchemaVersionStateRequest::SetSchemaVersionStateRequest</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12914" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="50319" bodyend="50321"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1SetSchemaVersionStateRequest_1a19fc1356ac755db3f4705280cc62a6a7" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::SetSchemaVersionStateRequest::~SetSchemaVersionStateRequest</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~SetSchemaVersionStateRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::SetSchemaVersionStateRequest::~SetSchemaVersionStateRequest</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12916" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="50316" bodyend="50317"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1SetSchemaVersionStateRequest_1afebcae462c43f0bcd9dfc55a11618304" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::SetSchemaVersionStateRequest::__set_schemaVersion</definition>
+        <argsstring>(const SchemaVersionDescriptor &amp;val)</argsstring>
+        <name>__set_schemaVersion</name>
+        <qualifiedname>Apache::Hadoop::Hive::SetSchemaVersionStateRequest::__set_schemaVersion</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1SchemaVersionDescriptor" kindref="compound">SchemaVersionDescriptor</ref> &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12926" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="50323" bodyend="50325"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1SetSchemaVersionStateRequest_1ab16c8809e21c94796acc500b06cba07c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::SetSchemaVersionStateRequest::__set_state</definition>
+        <argsstring>(const SchemaVersionState::type val)</argsstring>
+        <name>__set_state</name>
+        <qualifiedname>Apache::Hadoop::Hive::SetSchemaVersionStateRequest::__set_state</qualifiedname>
+        <param>
+          <type>const SchemaVersionState::type</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12928" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="50327" bodyend="50329"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1SetSchemaVersionStateRequest_1ad53e7228fefc4e7ae216eddd502bf78c" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::SetSchemaVersionStateRequest::operator==</definition>
+        <argsstring>(const SetSchemaVersionStateRequest &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::SetSchemaVersionStateRequest::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1SetSchemaVersionStateRequest" kindref="compound">SetSchemaVersionStateRequest</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12930" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="50413" bodyend="50420"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1SetSchemaVersionStateRequest_1a221b57be7c7feb9509ffd57e74d92848" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::SetSchemaVersionStateRequest::operator!=</definition>
+        <argsstring>(const SetSchemaVersionStateRequest &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::SetSchemaVersionStateRequest::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1SetSchemaVersionStateRequest" kindref="compound">SetSchemaVersionStateRequest</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12931" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="12931" bodyend="12933"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1SetSchemaVersionStateRequest_1a497294fe652fd145920e068199d14c68" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::SetSchemaVersionStateRequest::operator&lt;</definition>
+        <argsstring>(const SetSchemaVersionStateRequest &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::SetSchemaVersionStateRequest::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1SetSchemaVersionStateRequest" kindref="compound">SetSchemaVersionStateRequest</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12935" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1SetSchemaVersionStateRequest_1a0c10063d72c0207a0540e24cfc554d0d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::SetSchemaVersionStateRequest::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot) override</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::SetSchemaVersionStateRequest::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12937" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="50337" bodyend="50386"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1SetSchemaVersionStateRequest_1acc660c7ad23ce1c778b464553ba2ce13" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::SetSchemaVersionStateRequest::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const override</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::SetSchemaVersionStateRequest::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12938" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="50388" bodyend="50404"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1SetSchemaVersionStateRequest_1a90ae812df7185499dc947ba6364de41a" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::SetSchemaVersionStateRequest::printTo</definition>
+        <argsstring>(std::ostream &amp;out) const</argsstring>
+        <name>printTo</name>
+        <qualifiedname>Apache::Hadoop::Hive::SetSchemaVersionStateRequest::printTo</qualifiedname>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12940" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="50433" bodyend="50439"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::SetSchemaVersionStateRequest</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1SetSchemaVersionStateRequest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="4">
+        <label>Apache::Hadoop::Hive::ISchemaName</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1ISchemaName"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>catName</edgelabel>
+          <edgelabel>dbName</edgelabel>
+          <edgelabel>schemaName</edgelabel>
+        </childnode>
+        <childnode refid="7" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>Apache::Hadoop::Hive::SchemaVersionDescriptor</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1SchemaVersionDescriptor"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>schema</edgelabel>
+        </childnode>
+        <childnode refid="8" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::SetSchemaVersionStateRequest</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1SetSchemaVersionStateRequest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>schemaVersion</edgelabel>
+        </childnode>
+        <childnode refid="9" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="7">
+        <label>Apache::Hadoop::Hive::_ISchemaName__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__ISchemaName____isset"/>
+      </node>
+      <node id="8">
+        <label>Apache::Hadoop::Hive::_SchemaVersionDescriptor__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__SchemaVersionDescriptor____isset"/>
+      </node>
+      <node id="9">
+        <label>Apache::Hadoop::Hive::_SetSchemaVersionStateRequest__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__SetSchemaVersionStateRequest____isset"/>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+      <node id="6">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="5">
+        <label>std::string</label>
+        <childnode refid="6" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12909" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="12909" bodyend="12941"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1SetSchemaVersionStateRequest_1a289d40e553bfe40cd318da3a9c73a2aa" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::SetSchemaVersionStateRequest</scope><name>__isset</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1SetSchemaVersionStateRequest_1afebcae462c43f0bcd9dfc55a11618304" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::SetSchemaVersionStateRequest</scope><name>__set_schemaVersion</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1SetSchemaVersionStateRequest_1ab16c8809e21c94796acc500b06cba07c" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::SetSchemaVersionStateRequest</scope><name>__set_state</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1SetSchemaVersionStateRequest_1a221b57be7c7feb9509ffd57e74d92848" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::SetSchemaVersionStateRequest</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1SetSchemaVersionStateRequest_1a497294fe652fd145920e068199d14c68" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::SetSchemaVersionStateRequest</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1SetSchemaVersionStateRequest_1a593dbcffcb80a7a67c36684b33f028cf" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::SetSchemaVersionStateRequest</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1SetSchemaVersionStateRequest_1ad53e7228fefc4e7ae216eddd502bf78c" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::SetSchemaVersionStateRequest</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1SetSchemaVersionStateRequest_1a90ae812df7185499dc947ba6364de41a" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::SetSchemaVersionStateRequest</scope><name>printTo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1SetSchemaVersionStateRequest_1a0c10063d72c0207a0540e24cfc554d0d" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::SetSchemaVersionStateRequest</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1SetSchemaVersionStateRequest_1aaf8645de8598d46c6f8f31c38981606f" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::SetSchemaVersionStateRequest</scope><name>schemaVersion</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1SetSchemaVersionStateRequest_1a499b127a0aa43585aa22ce73d66f1f6a" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::SetSchemaVersionStateRequest</scope><name>SetSchemaVersionStateRequest</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1SetSchemaVersionStateRequest_1a14a1ed6b2d2d1560243e169d5f4d971a" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::SetSchemaVersionStateRequest</scope><name>SetSchemaVersionStateRequest</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1SetSchemaVersionStateRequest_1a7aba7ec9ef43d19e9fccdd612afa34e9" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::SetSchemaVersionStateRequest</scope><name>state</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1SetSchemaVersionStateRequest_1acc660c7ad23ce1c778b464553ba2ce13" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::SetSchemaVersionStateRequest</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1SetSchemaVersionStateRequest_1a19fc1356ac755db3f4705280cc62a6a7" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::SetSchemaVersionStateRequest</scope><name>~SetSchemaVersionStateRequest</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,38 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="concepticeberg_1_1internal_1_1ParallelCollectible" kind="concept">
+    <compoundname>iceberg::internal::ParallelCollectible</compoundname>
+    <templateparamlist>
+      <param>
+        <type>typename InputRange</type>
+      </param>
+      <param>
+        <type>typename Task</type>
+      </param>
+      <param>
+        <type>auto...</type>
+        <declname>Options</declname>
+        <defname>Options</defname>
+      </param>
+    </templateparamlist>
+    <initializer>template&lt;typename InputRange, typename Task, auto... Options&gt;
+concept <ref refid="concepticeberg_1_1internal_1_1ParallelCollectible" kindref="compound">iceberg::internal::ParallelCollectible</ref> = 
+    std::ranges::forward_range&lt;InputRange&gt; &amp;&amp; std::ranges::sized_range&lt;InputRange&gt; &amp;&amp;
+    (std::is_lvalue_reference_v&lt;std::ranges::range_reference_t&lt;InputRange&gt;&gt; ||
+     std::constructible_from&lt;
+         std::remove_cvref_t&lt;std::ranges::range_reference_t&lt;InputRange&gt;&gt;,
+         std::ranges::range_reference_t&lt;InputRange&gt;&gt;) &amp;&amp;
+    requires(std::remove_reference_t&lt;Task&gt;&amp; task,
+             ParallelCollectArgT&lt;std::ranges::range_reference_t&lt;InputRange&gt;&gt; item) {
+      { std::invoke(task, std::forward&lt;decltype(item)&gt;(item)) } -&gt; AsResult;
+      requires(!std::same_as&lt;void, ParallelCollectValueT&lt;InputRange, Task&gt;&gt;);
+      requires std::default_initializable&lt;ParallelCollectValueT&lt;InputRange, Task&gt;&gt;;
+      requires ParallelReducible&lt;ParallelCollectValueT&lt;InputRange, Task&gt;, Options...&gt;;
+    }    </initializer>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/util/executor_util_internal.h" line="71" column="1"/>
+  </compounddef>
+</doxygen>

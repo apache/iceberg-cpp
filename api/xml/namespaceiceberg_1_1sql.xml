@@ -1,0 +1,549 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="namespaceiceberg_1_1sql" kind="namespace" language="C++">
+    <compoundname>iceberg::sql</compoundname>
+    <innerclass refid="classiceberg_1_1sql_1_1CatalogStore" prot="public">iceberg::sql::CatalogStore</innerclass>
+    <innerclass refid="structiceberg_1_1sql_1_1CatalogStoreOptions" prot="public">iceberg::sql::CatalogStoreOptions</innerclass>
+    <innerclass refid="structiceberg_1_1sql_1_1ConnectionUri" prot="public">iceberg::sql::ConnectionUri</innerclass>
+    <innerclass refid="structiceberg_1_1sql_1_1IcebergNamespaceProperties__" prot="public">iceberg::sql::IcebergNamespaceProperties_</innerclass>
+    <innerclass refid="structiceberg_1_1sql_1_1IcebergTables__" prot="public">iceberg::sql::IcebergTables_</innerclass>
+    <innerclass refid="structiceberg_1_1sql_1_1NamespaceProperty" prot="public">iceberg::sql::NamespaceProperty</innerclass>
+    <innerclass refid="classiceberg_1_1sql_1_1PooledConnectionSource" prot="public">iceberg::sql::PooledConnectionSource</innerclass>
+    <innerclass refid="classiceberg_1_1sql_1_1SingleConnectionSource" prot="public">iceberg::sql::SingleConnectionSource</innerclass>
+    <innerclass refid="classiceberg_1_1sql_1_1SqlCatalog" prot="public">iceberg::sql::SqlCatalog</innerclass>
+    <innerclass refid="structiceberg_1_1sql_1_1SqlCatalogConfig" prot="public">iceberg::sql::SqlCatalogConfig</innerclass>
+    <innerclass refid="classiceberg_1_1sql_1_1SqlCatalogTest" prot="public">iceberg::sql::SqlCatalogTest</innerclass>
+    <innerclass refid="classiceberg_1_1sql_1_1Sqlpp23CatalogStore" prot="public">iceberg::sql::Sqlpp23CatalogStore</innerclass>
+    <sectiondef kind="typedef">
+      <memberdef kind="typedef" id="sql__catalog__tables__internal_8h_1aed14380d66a5a2d117b074b5c4bf5dcf" prot="public" static="no">
+        <type>::sqlpp::table_t&lt; <ref refid="structiceberg_1_1sql_1_1IcebergTables__" kindref="compound">IcebergTables_</ref> &gt;</type>
+        <definition>using iceberg::sql::IcebergTables = typedef ::sqlpp::table_t&lt;IcebergTables_&gt;</definition>
+        <argsstring></argsstring>
+        <name>IcebergTables</name>
+        <qualifiedname>iceberg::sql::IcebergTables</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/sql_catalog_tables_internal.h" line="94" column="1" bodyfile="iceberg/catalog/sql/sql_catalog_tables_internal.h" bodystart="94" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="sql__catalog__tables__internal_8h_1a122fdb90b0ba068f25da53cab51bd4bf" prot="public" static="no">
+        <type>::sqlpp::table_t&lt; <ref refid="structiceberg_1_1sql_1_1IcebergNamespaceProperties__" kindref="compound">IcebergNamespaceProperties_</ref> &gt;</type>
+        <definition>using iceberg::sql::IcebergNamespaceProperties = typedef ::sqlpp::table_t&lt;IcebergNamespaceProperties_&gt;</definition>
+        <argsstring></argsstring>
+        <name>IcebergNamespaceProperties</name>
+        <qualifiedname>iceberg::sql::IcebergNamespaceProperties</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/sql_catalog_tables_internal.h" line="133" column="1" bodyfile="iceberg/catalog/sql/sql_catalog_tables_internal.h" bodystart="133" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="var">
+      <memberdef kind="variable" id="sql__catalog_8h_1aaee7ebe40dfa60fa3c14fdb7e65c0f75" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr int32_t</type>
+        <definition>constexpr int32_t iceberg::sql::kMaxConnections</definition>
+        <argsstring></argsstring>
+        <name>kMaxConnections</name>
+        <qualifiedname>iceberg::sql::kMaxConnections</qualifiedname>
+        <initializer>= 10</initializer>
+        <briefdescription>
+<para>Default maximum number of database connections for built-in SQL stores. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/sql_catalog.h" line="46" column="26" bodyfile="iceberg/catalog/sql/sql_catalog.h" bodystart="46" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="func">
+      <memberdef kind="function" id="catalog__store_8h_1a9c77ec40070cf6ce15a251de1ebf93f3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>ICEBERG_SQL_CATALOG_EXPORT Result&lt; std::shared_ptr&lt; <ref refid="classiceberg_1_1sql_1_1CatalogStore" kindref="compound">CatalogStore</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::shared_ptr&lt; CatalogStore &gt; &gt; iceberg::sql::MakeSqliteCatalogStore</definition>
+        <argsstring>(const CatalogStoreOptions &amp;options)</argsstring>
+        <name>MakeSqliteCatalogStore</name>
+        <qualifiedname>iceberg::sql::MakeSqliteCatalogStore</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1sql_1_1CatalogStoreOptions" kindref="compound">CatalogStoreOptions</ref> &amp;</type>
+          <declname>options</declname>
+        </param>
+        <briefdescription>
+<para>Build the built-in SQLite catalog store (sqlpp23 + SQLite3). </para>
+        </briefdescription>
+        <detaileddescription>
+<para><computeroutput>options.uri</computeroutput> is the SQLite database file path, or &quot;:memory:&quot;.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>options</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Store connection options. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A catalog store instance, or ErrorKind::kNotSupported if the SQLite connector was not built. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/catalog_store_sqlite3.cc" line="64" column="8" bodyfile="iceberg/catalog/sql/catalog_store_sqlite3.cc" bodystart="64" bodyend="84" declfile="iceberg/catalog/sql/catalog_store.h" declline="208" declcolumn="35"/>
+      </memberdef>
+      <memberdef kind="function" id="catalog__store_8h_1a734ac3032d44682ac5517f35f64bd909" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>ICEBERG_SQL_CATALOG_EXPORT Result&lt; std::shared_ptr&lt; <ref refid="classiceberg_1_1sql_1_1CatalogStore" kindref="compound">CatalogStore</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::shared_ptr&lt; CatalogStore &gt; &gt; iceberg::sql::MakePostgreSqlCatalogStore</definition>
+        <argsstring>(const CatalogStoreOptions &amp;options)</argsstring>
+        <name>MakePostgreSqlCatalogStore</name>
+        <qualifiedname>iceberg::sql::MakePostgreSqlCatalogStore</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1sql_1_1CatalogStoreOptions" kindref="compound">CatalogStoreOptions</ref> &amp;</type>
+          <declname>options</declname>
+        </param>
+        <briefdescription>
+<para>Build the built-in PostgreSQL catalog store (sqlpp23 + libpq). </para>
+        </briefdescription>
+        <detaileddescription>
+<para><computeroutput>options.uri</computeroutput> is parsed as <computeroutput>[scheme://][user[:password]@]host[:port][/database]</computeroutput>.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>options</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Store connection options. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A catalog store instance, or ErrorKind::kNotSupported if the PostgreSQL connector was not built. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/catalog_store_postgresql.cc" line="61" column="8" bodyfile="iceberg/catalog/sql/catalog_store_postgresql.cc" bodystart="61" bodyend="88" declfile="iceberg/catalog/sql/catalog_store.h" declline="220" declcolumn="1"/>
+      </memberdef>
+      <memberdef kind="function" id="catalog__store_8h_1a2f1cda8fe4de0b0b6254d9b3595f4654" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>ICEBERG_SQL_CATALOG_EXPORT Result&lt; std::shared_ptr&lt; <ref refid="classiceberg_1_1sql_1_1CatalogStore" kindref="compound">CatalogStore</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::shared_ptr&lt; CatalogStore &gt; &gt; iceberg::sql::MakeMySqlCatalogStore</definition>
+        <argsstring>(const CatalogStoreOptions &amp;options)</argsstring>
+        <name>MakeMySqlCatalogStore</name>
+        <qualifiedname>iceberg::sql::MakeMySqlCatalogStore</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1sql_1_1CatalogStoreOptions" kindref="compound">CatalogStoreOptions</ref> &amp;</type>
+          <declname>options</declname>
+        </param>
+        <briefdescription>
+<para>Build the built-in MySQL catalog store (sqlpp23 + libmysqlclient). </para>
+        </briefdescription>
+        <detaileddescription>
+<para><computeroutput>options.uri</computeroutput> is parsed as <computeroutput>[scheme://][user[:password]@]host[:port][/database]</computeroutput>.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>options</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Store connection options. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A catalog store instance, or ErrorKind::kNotSupported if the MySQL connector was not built. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/catalog_store_mysql.cc" line="67" column="8" bodyfile="iceberg/catalog/sql/catalog_store_mysql.cc" bodystart="67" bodyend="98" declfile="iceberg/catalog/sql/catalog_store.h" declline="230" declcolumn="35"/>
+      </memberdef>
+      <memberdef kind="function" id="connection__uri_8cc_1a6656274769a7224fdd9a5ecb1446603b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; <ref refid="structiceberg_1_1sql_1_1ConnectionUri" kindref="compound">ConnectionUri</ref> &gt;</type>
+        <definition>Result&lt; ConnectionUri &gt; iceberg::sql::ParseConnectionUri</definition>
+        <argsstring>(std::string_view uri)</argsstring>
+        <name>ParseConnectionUri</name>
+        <qualifiedname>iceberg::sql::ParseConnectionUri</qualifiedname>
+        <param>
+          <type>std::string_view</type>
+          <declname>uri</declname>
+        </param>
+        <briefdescription>
+<para>Parse a <computeroutput>scheme://[user[:password]@]host[:port][/database]</computeroutput> URI. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>All components are optional; missing pieces are returned empty/unset. A leading <computeroutput>scheme://</computeroutput> is stripped when present. Malformed syntax that cannot be passed unambiguously to a SQL driver is returned as <computeroutput>InvalidArgument</computeroutput>. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/connection_uri.cc" line="53" column="8" bodyfile="iceberg/catalog/sql/connection_uri.cc" bodystart="53" bodyend="96" declfile="iceberg/catalog/sql/connection_uri_internal.h" declline="48" declcolumn="8"/>
+      </memberdef>
+      <memberdef kind="function" id="sql__catalog__test_8cc_1af0ebd03f5b8d387d1db040563b02ce68" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::sql::TEST</definition>
+        <argsstring>(ConnectionUriTest, ParsesUserHostPortAndDatabase)</argsstring>
+        <name>TEST</name>
+        <qualifiedname>iceberg::sql::TEST</qualifiedname>
+        <param>
+          <type>ConnectionUriTest</type>
+        </param>
+        <param>
+          <type>ParsesUserHostPortAndDatabase</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/sql_catalog_test.cc" line="151" column="1" bodyfile="iceberg/test/sql_catalog_test.cc" bodystart="151" bodyend="159"/>
+      </memberdef>
+      <memberdef kind="function" id="sql__catalog__test_8cc_1a2176197cc19fcd458b37ca0416b2047b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::sql::TEST</definition>
+        <argsstring>(ConnectionUriTest, RejectsInvalidPort)</argsstring>
+        <name>TEST</name>
+        <qualifiedname>iceberg::sql::TEST</qualifiedname>
+        <param>
+          <type>ConnectionUriTest</type>
+        </param>
+        <param>
+          <type>RejectsInvalidPort</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/sql_catalog_test.cc" line="161" column="1" bodyfile="iceberg/test/sql_catalog_test.cc" bodystart="161" bodyend="168"/>
+      </memberdef>
+      <memberdef kind="function" id="sql__catalog__test_8cc_1a244202a876ad439fdf59a9f0ef039931" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::sql::TEST_F</definition>
+        <argsstring>(SqlCatalogTest, CatalogName)</argsstring>
+        <name>TEST_F</name>
+        <qualifiedname>iceberg::sql::TEST_F</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1sql_1_1SqlCatalogTest" kindref="compound">SqlCatalogTest</ref></type>
+        </param>
+        <param>
+          <type>CatalogName</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/sql_catalog_test.cc" line="170" column="1" bodyfile="iceberg/test/sql_catalog_test.cc" bodystart="170" bodyend="170"/>
+      </memberdef>
+      <memberdef kind="function" id="sql__catalog__test_8cc_1a0ed8ba15c995492365d8c20efc935fb9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::sql::TEST_F</definition>
+        <argsstring>(SqlCatalogTest, NamespaceLifecycle)</argsstring>
+        <name>TEST_F</name>
+        <qualifiedname>iceberg::sql::TEST_F</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1sql_1_1SqlCatalogTest" kindref="compound">SqlCatalogTest</ref></type>
+        </param>
+        <param>
+          <type>NamespaceLifecycle</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/sql_catalog_test.cc" line="172" column="1" bodyfile="iceberg/test/sql_catalog_test.cc" bodystart="172" bodyend="200"/>
+      </memberdef>
+      <memberdef kind="function" id="sql__catalog__test_8cc_1afc5eda855767ffd8414780ff3f3f9633" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::sql::TEST_F</definition>
+        <argsstring>(SqlCatalogTest, ListNamespacesReturnsImmediateChildren)</argsstring>
+        <name>TEST_F</name>
+        <qualifiedname>iceberg::sql::TEST_F</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1sql_1_1SqlCatalogTest" kindref="compound">SqlCatalogTest</ref></type>
+        </param>
+        <param>
+          <type>ListNamespacesReturnsImmediateChildren</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/sql_catalog_test.cc" line="202" column="1" bodyfile="iceberg/test/sql_catalog_test.cc" bodystart="202" bodyend="215"/>
+      </memberdef>
+      <memberdef kind="function" id="sql__catalog__test_8cc_1a4fec6ca4a5c1eff61b0873d0d7b3690e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::sql::TEST_F</definition>
+        <argsstring>(SqlCatalogTest, TableLifecycle)</argsstring>
+        <name>TEST_F</name>
+        <qualifiedname>iceberg::sql::TEST_F</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1sql_1_1SqlCatalogTest" kindref="compound">SqlCatalogTest</ref></type>
+        </param>
+        <param>
+          <type>TableLifecycle</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/sql_catalog_test.cc" line="217" column="1" bodyfile="iceberg/test/sql_catalog_test.cc" bodystart="217" bodyend="256"/>
+      </memberdef>
+      <memberdef kind="function" id="sql__catalog__test_8cc_1abe8db0efb7e60b0cc368b80f75b4cf24" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::sql::TEST_F</definition>
+        <argsstring>(SqlCatalogTest, CreateTableRequiresNamespace)</argsstring>
+        <name>TEST_F</name>
+        <qualifiedname>iceberg::sql::TEST_F</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1sql_1_1SqlCatalogTest" kindref="compound">SqlCatalogTest</ref></type>
+        </param>
+        <param>
+          <type>CreateTableRequiresNamespace</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/sql_catalog_test.cc" line="258" column="1" bodyfile="iceberg/test/sql_catalog_test.cc" bodystart="258" bodyend="263"/>
+      </memberdef>
+      <memberdef kind="function" id="sql__catalog__test_8cc_1a9cd848018514177fe19c4667026b16ee" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::sql::TEST_F</definition>
+        <argsstring>(SqlCatalogTest, CreateTableUsesNamespaceLocationWhenLocationIsMissing)</argsstring>
+        <name>TEST_F</name>
+        <qualifiedname>iceberg::sql::TEST_F</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1sql_1_1SqlCatalogTest" kindref="compound">SqlCatalogTest</ref></type>
+        </param>
+        <param>
+          <type>CreateTableUsesNamespaceLocationWhenLocationIsMissing</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/sql_catalog_test.cc" line="265" column="1" bodyfile="iceberg/test/sql_catalog_test.cc" bodystart="265" bodyend="280"/>
+      </memberdef>
+      <memberdef kind="function" id="sql__catalog__test_8cc_1a2efa67239cdbabdf78b5fb4beb4d49a7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::sql::TEST_F</definition>
+        <argsstring>(SqlCatalogTest, CreateTableFallsBackToWarehouseNamespacePath)</argsstring>
+        <name>TEST_F</name>
+        <qualifiedname>iceberg::sql::TEST_F</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1sql_1_1SqlCatalogTest" kindref="compound">SqlCatalogTest</ref></type>
+        </param>
+        <param>
+          <type>CreateTableFallsBackToWarehouseNamespacePath</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/sql_catalog_test.cc" line="282" column="1" bodyfile="iceberg/test/sql_catalog_test.cc" bodystart="282" bodyend="294"/>
+      </memberdef>
+      <memberdef kind="function" id="sql__catalog__test_8cc_1ace67e8ea59a2dc08cd9184435d7591ba" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::sql::TEST_F</definition>
+        <argsstring>(SqlCatalogTest, StageCreateTableRequiresNamespace)</argsstring>
+        <name>TEST_F</name>
+        <qualifiedname>iceberg::sql::TEST_F</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1sql_1_1SqlCatalogTest" kindref="compound">SqlCatalogTest</ref></type>
+        </param>
+        <param>
+          <type>StageCreateTableRequiresNamespace</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/sql_catalog_test.cc" line="296" column="1" bodyfile="iceberg/test/sql_catalog_test.cc" bodystart="296" bodyend="302"/>
+      </memberdef>
+      <memberdef kind="function" id="sql__catalog__test_8cc_1a84574a4915eb43716a5041eeeee94664" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::sql::TEST_F</definition>
+        <argsstring>(SqlCatalogTest, NamespaceLevelsCannotContainDots)</argsstring>
+        <name>TEST_F</name>
+        <qualifiedname>iceberg::sql::TEST_F</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1sql_1_1SqlCatalogTest" kindref="compound">SqlCatalogTest</ref></type>
+        </param>
+        <param>
+          <type>NamespaceLevelsCannotContainDots</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/sql_catalog_test.cc" line="304" column="1" bodyfile="iceberg/test/sql_catalog_test.cc" bodystart="304" bodyend="312"/>
+      </memberdef>
+      <memberdef kind="function" id="sql__catalog__test_8cc_1adf08d10de229f3b789f33daa909d5113" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::sql::TEST_F</definition>
+        <argsstring>(SqlCatalogTest, ListNamespacesIncludesTableOnlyNamespaces)</argsstring>
+        <name>TEST_F</name>
+        <qualifiedname>iceberg::sql::TEST_F</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1sql_1_1SqlCatalogTest" kindref="compound">SqlCatalogTest</ref></type>
+        </param>
+        <param>
+          <type>ListNamespacesIncludesTableOnlyNamespaces</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/sql_catalog_test.cc" line="314" column="1" bodyfile="iceberg/test/sql_catalog_test.cc" bodystart="314" bodyend="320"/>
+      </memberdef>
+      <memberdef kind="function" id="sql__catalog__test_8cc_1a0b0894886aa48f98cb77e5b40da9686d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::sql::TEST_F</definition>
+        <argsstring>(SqlCatalogTest, CustomStoreInjection)</argsstring>
+        <name>TEST_F</name>
+        <qualifiedname>iceberg::sql::TEST_F</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1sql_1_1SqlCatalogTest" kindref="compound">SqlCatalogTest</ref></type>
+        </param>
+        <param>
+          <type>CustomStoreInjection</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/sql_catalog_test.cc" line="322" column="1" bodyfile="iceberg/test/sql_catalog_test.cc" bodystart="322" bodyend="332"/>
+      </memberdef>
+      <memberdef kind="function" id="sql__catalog__test_8cc_1ad7f9077507799563ac554851dea5a089" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::sql::TEST</definition>
+        <argsstring>(SqliteCatalogStoreTest, DuplicateKeyMapsToAlreadyExists)</argsstring>
+        <name>TEST</name>
+        <qualifiedname>iceberg::sql::TEST</qualifiedname>
+        <param>
+          <type>SqliteCatalogStoreTest</type>
+        </param>
+        <param>
+          <type>DuplicateKeyMapsToAlreadyExists</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/sql_catalog_test.cc" line="334" column="1" bodyfile="iceberg/test/sql_catalog_test.cc" bodystart="334" bodyend="343"/>
+      </memberdef>
+      <memberdef kind="function" id="sql__catalog__test_8cc_1a50ce2df6be841bc94cefb130b6a8e952" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::sql::TEST</definition>
+        <argsstring>(SqliteCatalogStoreTest, TableRowsUseRecordTypeAndReadLegacyNullRows)</argsstring>
+        <name>TEST</name>
+        <qualifiedname>iceberg::sql::TEST</qualifiedname>
+        <param>
+          <type>SqliteCatalogStoreTest</type>
+        </param>
+        <param>
+          <type>TableRowsUseRecordTypeAndReadLegacyNullRows</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/sql_catalog_test.cc" line="345" column="1" bodyfile="iceberg/test/sql_catalog_test.cc" bodystart="345" bodyend="375"/>
+      </memberdef>
+      <memberdef kind="function" id="sql__catalog__test_8cc_1addfb33f88306f24ae9d3b2dde5783721" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::sql::TEST</definition>
+        <argsstring>(SqliteCatalogStoreTest, RunInTransactionRollsBackOnError)</argsstring>
+        <name>TEST</name>
+        <qualifiedname>iceberg::sql::TEST</qualifiedname>
+        <param>
+          <type>SqliteCatalogStoreTest</type>
+        </param>
+        <param>
+          <type>RunInTransactionRollsBackOnError</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/sql_catalog_test.cc" line="377" column="1" bodyfile="iceberg/test/sql_catalog_test.cc" bodystart="377" bodyend="393"/>
+      </memberdef>
+      <memberdef kind="function" id="sql__catalog__test_8cc_1af02a03f7708af8a6546e8ff19a5d0f9a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::sql::TEST</definition>
+        <argsstring>(SqliteCatalogStoreTest, MaxConnectionsIgnoredAndTransactionRollsBack)</argsstring>
+        <name>TEST</name>
+        <qualifiedname>iceberg::sql::TEST</qualifiedname>
+        <param>
+          <type>SqliteCatalogStoreTest</type>
+        </param>
+        <param>
+          <type>MaxConnectionsIgnoredAndTransactionRollsBack</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/sql_catalog_test.cc" line="397" column="1" bodyfile="iceberg/test/sql_catalog_test.cc" bodystart="397" bodyend="420"/>
+      </memberdef>
+      <memberdef kind="function" id="sql__catalog__test_8cc_1a1a1963857c4aec89f5516adcbbaf85d5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::sql::TEST</definition>
+        <argsstring>(SqliteCatalogStoreTest, UpdateTableMetadataLocationReturnsAffectedRows)</argsstring>
+        <name>TEST</name>
+        <qualifiedname>iceberg::sql::TEST</qualifiedname>
+        <param>
+          <type>SqliteCatalogStoreTest</type>
+        </param>
+        <param>
+          <type>UpdateTableMetadataLocationReturnsAffectedRows</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/sql_catalog_test.cc" line="422" column="1" bodyfile="iceberg/test/sql_catalog_test.cc" bodystart="422" bodyend="437"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/sql/catalog_store.h" line="41" column="1"/>
+  </compounddef>
+</doxygen>

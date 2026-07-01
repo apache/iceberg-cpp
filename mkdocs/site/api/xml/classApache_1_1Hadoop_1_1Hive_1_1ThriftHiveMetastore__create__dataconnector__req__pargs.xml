@@ -1,0 +1,125 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__create__dataconnector__req__pargs" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::ThriftHiveMetastore_create_dataconnector_req_pargs</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__create__dataconnector__req__pargs_1abb6c7c1ef0aed280289029e19904a3e4" prot="public" static="no" mutable="no">
+        <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1CreateDataConnectorRequest" kindref="compound">CreateDataConnectorRequest</ref> *</type>
+        <definition>const CreateDataConnectorRequest* Apache::Hadoop::Hive::ThriftHiveMetastore_create_dataconnector_req_pargs::connectorReq</definition>
+        <argsstring></argsstring>
+        <name>connectorReq</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_create_dataconnector_req_pargs::connectorReq</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="3062" column="36" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="3062" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__create__dataconnector__req__pargs_1a6519689a32e08ef6b5c23785d028b6fd" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::ThriftHiveMetastore_create_dataconnector_req_pargs::~ThriftHiveMetastore_create_dataconnector_req_pargs</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~ThriftHiveMetastore_create_dataconnector_req_pargs</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_create_dataconnector_req_pargs::~ThriftHiveMetastore_create_dataconnector_req_pargs</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="3061" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.cpp" bodystart="4128" bodyend="4129"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__create__dataconnector__req__pargs_1a31d1045706bf7dbed2a69e459f10c0f6" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::ThriftHiveMetastore_create_dataconnector_req_pargs::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_create_dataconnector_req_pargs::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="3064" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.cpp" bodystart="4132" bodyend="4144"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="2">
+        <label>Apache::Hadoop::Hive::CreateDataConnectorRequest</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1CreateDataConnectorRequest"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>connector</edgelabel>
+        </childnode>
+      </node>
+      <node id="4">
+        <label>Apache::Hadoop::Hive::DataConnector</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1DataConnector"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>description</edgelabel>
+          <edgelabel>name</edgelabel>
+          <edgelabel>ownerName</edgelabel>
+          <edgelabel>type</edgelabel>
+          <edgelabel>url</edgelabel>
+        </childnode>
+        <childnode refid="7" relation="usage">
+          <edgelabel>parameters</edgelabel>
+        </childnode>
+        <childnode refid="8" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::ThriftHiveMetastore_create_dataconnector_req_pargs</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__create__dataconnector__req__pargs"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>connectorReq</edgelabel>
+        </childnode>
+      </node>
+      <node id="8">
+        <label>Apache::Hadoop::Hive::_DataConnector__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__DataConnector____isset"/>
+      </node>
+      <node id="3">
+        <label>apache::thrift::TBase</label>
+      </node>
+      <node id="7">
+        <label>std::map&lt; std::string, std::string &gt;</label>
+        <childnode refid="5" relation="usage">
+          <edgelabel>elements</edgelabel>
+          <edgelabel>keys</edgelabel>
+        </childnode>
+      </node>
+      <node id="6">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="5">
+        <label>std::string</label>
+        <childnode refid="6" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="3057" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="3057" bodyend="3066"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__create__dataconnector__req__pargs_1abb6c7c1ef0aed280289029e19904a3e4" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_create_dataconnector_req_pargs</scope><name>connectorReq</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__create__dataconnector__req__pargs_1a31d1045706bf7dbed2a69e459f10c0f6" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_create_dataconnector_req_pargs</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__create__dataconnector__req__pargs_1a6519689a32e08ef6b5c23785d028b6fd" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_create_dataconnector_req_pargs</scope><name>~ThriftHiveMetastore_create_dataconnector_req_pargs</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

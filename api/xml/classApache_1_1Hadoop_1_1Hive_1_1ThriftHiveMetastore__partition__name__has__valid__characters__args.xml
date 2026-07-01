@@ -1,0 +1,290 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__partition__name__has__valid__characters__args" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::ThriftHiveMetastore_partition_name_has_valid_characters_args</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__partition__name__has__valid__characters__args_1a2f61b8cc820ce2c2a0c450a6cf75d139" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; std::string &gt;</type>
+        <definition>std::vector&lt;std::string&gt; Apache::Hadoop::Hive::ThriftHiveMetastore_partition_name_has_valid_characters_args::part_vals</definition>
+        <argsstring></argsstring>
+        <name>part_vals</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_partition_name_has_valid_characters_args::part_vals</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="14045" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="14045" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__partition__name__has__valid__characters__args_1a5364e620fffaeb090bdd0d455a88ab1d" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::ThriftHiveMetastore_partition_name_has_valid_characters_args::throw_exception</definition>
+        <argsstring></argsstring>
+        <name>throw_exception</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_partition_name_has_valid_characters_args::throw_exception</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="14046" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="14046" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__partition__name__has__valid__characters__args_1aadfba7642ac1971f3ec2caaf2311a848" prot="public" static="no" mutable="no">
+        <type><ref refid="structApache_1_1Hadoop_1_1Hive_1_1__ThriftHiveMetastore__partition__name__has__valid__characters__args____isset" kindref="compound">_ThriftHiveMetastore_partition_name_has_valid_characters_args__isset</ref></type>
+        <definition>_ThriftHiveMetastore_partition_name_has_valid_characters_args__isset Apache::Hadoop::Hive::ThriftHiveMetastore_partition_name_has_valid_characters_args::__isset</definition>
+        <argsstring></argsstring>
+        <name>__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_partition_name_has_valid_characters_args::__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="14048" column="72" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="14048" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__partition__name__has__valid__characters__args_1afd0783ebc2551740d954f60e3883c72f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::ThriftHiveMetastore_partition_name_has_valid_characters_args::ThriftHiveMetastore_partition_name_has_valid_characters_args</definition>
+        <argsstring>(const ThriftHiveMetastore_partition_name_has_valid_characters_args &amp;)</argsstring>
+        <name>ThriftHiveMetastore_partition_name_has_valid_characters_args</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_partition_name_has_valid_characters_args::ThriftHiveMetastore_partition_name_has_valid_characters_args</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__partition__name__has__valid__characters__args" kindref="compound">ThriftHiveMetastore_partition_name_has_valid_characters_args</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="14040" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__partition__name__has__valid__characters__args_1a5c5288af9c723659eb9963dac9d7ff74" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__partition__name__has__valid__characters__args" kindref="compound">ThriftHiveMetastore_partition_name_has_valid_characters_args</ref> &amp;</type>
+        <definition>ThriftHiveMetastore_partition_name_has_valid_characters_args &amp; Apache::Hadoop::Hive::ThriftHiveMetastore_partition_name_has_valid_characters_args::operator=</definition>
+        <argsstring>(const ThriftHiveMetastore_partition_name_has_valid_characters_args &amp;)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_partition_name_has_valid_characters_args::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__partition__name__has__valid__characters__args" kindref="compound">ThriftHiveMetastore_partition_name_has_valid_characters_args</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="14041" column="64"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__partition__name__has__valid__characters__args_1a55ba265529106857d55b349d405280c9" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::ThriftHiveMetastore_partition_name_has_valid_characters_args::ThriftHiveMetastore_partition_name_has_valid_characters_args</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>ThriftHiveMetastore_partition_name_has_valid_characters_args</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_partition_name_has_valid_characters_args::ThriftHiveMetastore_partition_name_has_valid_characters_args</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="14042" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.cpp" bodystart="30967" bodyend="30969"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__partition__name__has__valid__characters__args_1ae17ee3dd0326e9e06cec0bcf34e04fa2" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::ThriftHiveMetastore_partition_name_has_valid_characters_args::~ThriftHiveMetastore_partition_name_has_valid_characters_args</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~ThriftHiveMetastore_partition_name_has_valid_characters_args</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_partition_name_has_valid_characters_args::~ThriftHiveMetastore_partition_name_has_valid_characters_args</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="14044" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.cpp" bodystart="30964" bodyend="30965"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__partition__name__has__valid__characters__args_1a8a502c057b6a84746ee1bc2612e9dc7e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::ThriftHiveMetastore_partition_name_has_valid_characters_args::__set_part_vals</definition>
+        <argsstring>(const std::vector&lt; std::string &gt; &amp;val)</argsstring>
+        <name>__set_part_vals</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_partition_name_has_valid_characters_args::__set_part_vals</qualifiedname>
+        <param>
+          <type>const std::vector&lt; std::string &gt; &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="14050" column="8"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__partition__name__has__valid__characters__args_1aff806ff76e6a17cc90b2e3f02947e048" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::ThriftHiveMetastore_partition_name_has_valid_characters_args::__set_throw_exception</definition>
+        <argsstring>(const bool val)</argsstring>
+        <name>__set_throw_exception</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_partition_name_has_valid_characters_args::__set_throw_exception</qualifiedname>
+        <param>
+          <type>const bool</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="14052" column="8"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__partition__name__has__valid__characters__args_1a07999bc1b3ea0e84f824634da7c180bd" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::ThriftHiveMetastore_partition_name_has_valid_characters_args::operator==</definition>
+        <argsstring>(const ThriftHiveMetastore_partition_name_has_valid_characters_args &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_partition_name_has_valid_characters_args::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__partition__name__has__valid__characters__args" kindref="compound">ThriftHiveMetastore_partition_name_has_valid_characters_args</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="14054" column="8"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__partition__name__has__valid__characters__args_1a4d46b1003d807cdfa248ecd3e69a0ffb" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::ThriftHiveMetastore_partition_name_has_valid_characters_args::operator!=</definition>
+        <argsstring>(const ThriftHiveMetastore_partition_name_has_valid_characters_args &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_partition_name_has_valid_characters_args::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__partition__name__has__valid__characters__args" kindref="compound">ThriftHiveMetastore_partition_name_has_valid_characters_args</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="14055" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="14055" bodyend="14057"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__partition__name__has__valid__characters__args_1adc32319066f2e11494e9509655a915dc" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::ThriftHiveMetastore_partition_name_has_valid_characters_args::operator&lt;</definition>
+        <argsstring>(const ThriftHiveMetastore_partition_name_has_valid_characters_args &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_partition_name_has_valid_characters_args::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__partition__name__has__valid__characters__args" kindref="compound">ThriftHiveMetastore_partition_name_has_valid_characters_args</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="14059" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__partition__name__has__valid__characters__args_1a3cf7e984f56ed5ee4548ad9179ed33d7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::ThriftHiveMetastore_partition_name_has_valid_characters_args::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot)</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_partition_name_has_valid_characters_args::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="14061" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.cpp" bodystart="30971" bodyend="31030"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__partition__name__has__valid__characters__args_1a62455743ff42d80e3cbe6901817153a7" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::ThriftHiveMetastore_partition_name_has_valid_characters_args::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_partition_name_has_valid_characters_args::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="14062" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.cpp" bodystart="31032" bodyend="31056"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::ThriftHiveMetastore_partition_name_has_valid_characters_args</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__partition__name__has__valid__characters__args"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>part_vals</edgelabel>
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="5">
+        <label>Apache::Hadoop::Hive::_ThriftHiveMetastore_partition_name_has_valid_characters_args__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__ThriftHiveMetastore__partition__name__has__valid__characters__args____isset"/>
+      </node>
+      <node id="4">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="3">
+        <label>std::string</label>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>std::vector&lt; std::string &gt;</label>
+        <childnode refid="3" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="14037" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="14037" bodyend="14064"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__partition__name__has__valid__characters__args_1aadfba7642ac1971f3ec2caaf2311a848" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_partition_name_has_valid_characters_args</scope><name>__isset</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__partition__name__has__valid__characters__args_1a8a502c057b6a84746ee1bc2612e9dc7e" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_partition_name_has_valid_characters_args</scope><name>__set_part_vals</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__partition__name__has__valid__characters__args_1aff806ff76e6a17cc90b2e3f02947e048" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_partition_name_has_valid_characters_args</scope><name>__set_throw_exception</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__partition__name__has__valid__characters__args_1a4d46b1003d807cdfa248ecd3e69a0ffb" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_partition_name_has_valid_characters_args</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__partition__name__has__valid__characters__args_1adc32319066f2e11494e9509655a915dc" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_partition_name_has_valid_characters_args</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__partition__name__has__valid__characters__args_1a5c5288af9c723659eb9963dac9d7ff74" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_partition_name_has_valid_characters_args</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__partition__name__has__valid__characters__args_1a07999bc1b3ea0e84f824634da7c180bd" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_partition_name_has_valid_characters_args</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__partition__name__has__valid__characters__args_1a2f61b8cc820ce2c2a0c450a6cf75d139" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_partition_name_has_valid_characters_args</scope><name>part_vals</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__partition__name__has__valid__characters__args_1a3cf7e984f56ed5ee4548ad9179ed33d7" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_partition_name_has_valid_characters_args</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__partition__name__has__valid__characters__args_1afd0783ebc2551740d954f60e3883c72f" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_partition_name_has_valid_characters_args</scope><name>ThriftHiveMetastore_partition_name_has_valid_characters_args</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__partition__name__has__valid__characters__args_1a55ba265529106857d55b349d405280c9" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_partition_name_has_valid_characters_args</scope><name>ThriftHiveMetastore_partition_name_has_valid_characters_args</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__partition__name__has__valid__characters__args_1a5364e620fffaeb090bdd0d455a88ab1d" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_partition_name_has_valid_characters_args</scope><name>throw_exception</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__partition__name__has__valid__characters__args_1a62455743ff42d80e3cbe6901817153a7" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_partition_name_has_valid_characters_args</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__partition__name__has__valid__characters__args_1ae17ee3dd0326e9e06cec0bcf34e04fa2" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_partition_name_has_valid_characters_args</scope><name>~ThriftHiveMetastore_partition_name_has_valid_characters_args</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

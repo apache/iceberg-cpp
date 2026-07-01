@@ -1,0 +1,21 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="dir_ae8b9c595ed5fd0f0c5ad7d4ab5e5286" kind="dir">
+    <compoundname>iceberg/catalog/hive/gen-cpp</compoundname>
+    <innerfile refid="FacebookService_8cpp">FacebookService.cpp</innerfile>
+    <innerfile refid="FacebookService_8h">FacebookService.h</innerfile>
+    <innerfile refid="fb303__types_8cpp">fb303_types.cpp</innerfile>
+    <innerfile refid="fb303__types_8h">fb303_types.h</innerfile>
+    <innerfile refid="hive__metastore__constants_8cpp">hive_metastore_constants.cpp</innerfile>
+    <innerfile refid="hive__metastore__constants_8h">hive_metastore_constants.h</innerfile>
+    <innerfile refid="hive__metastore__types_8cpp">hive_metastore_types.cpp</innerfile>
+    <innerfile refid="hive__metastore__types_8h">hive_metastore_types.h</innerfile>
+    <innerfile refid="ThriftHiveMetastore_8cpp">ThriftHiveMetastore.cpp</innerfile>
+    <innerfile refid="ThriftHiveMetastore_8h">ThriftHiveMetastore.h</innerfile>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/"/>
+  </compounddef>
+</doxygen>

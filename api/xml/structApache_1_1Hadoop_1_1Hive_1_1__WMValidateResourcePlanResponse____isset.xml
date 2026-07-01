@@ -1,0 +1,64 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structApache_1_1Hadoop_1_1Hive_1_1__WMValidateResourcePlanResponse____isset" kind="struct" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::_WMValidateResourcePlanResponse__isset</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__WMValidateResourcePlanResponse____isset_1aea07349ea8c63c2f4a026680f014f9fa" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_WMValidateResourcePlanResponse__isset::errors</definition>
+        <argsstring></argsstring>
+        <name>errors</name>
+        <qualifiedname>Apache::Hadoop::Hive::_WMValidateResourcePlanResponse__isset::errors</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11715" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="11715" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__WMValidateResourcePlanResponse____isset_1a9455138951d90c6cff4a193ea493c431" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_WMValidateResourcePlanResponse__isset::warnings</definition>
+        <argsstring></argsstring>
+        <name>warnings</name>
+        <qualifiedname>Apache::Hadoop::Hive::_WMValidateResourcePlanResponse__isset::warnings</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11716" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="11716" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structApache_1_1Hadoop_1_1Hive_1_1__WMValidateResourcePlanResponse____isset_1a0ac5274d93eb6fcc0b54d7d8ee5ff4fe" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::_WMValidateResourcePlanResponse__isset::_WMValidateResourcePlanResponse__isset</definition>
+        <argsstring>()</argsstring>
+        <name>_WMValidateResourcePlanResponse__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::_WMValidateResourcePlanResponse__isset::_WMValidateResourcePlanResponse__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11714" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="11714" bodyend="11714"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11713" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="11713" bodyend="11717"/>
+    <listofallmembers>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__WMValidateResourcePlanResponse____isset_1a0ac5274d93eb6fcc0b54d7d8ee5ff4fe" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_WMValidateResourcePlanResponse__isset</scope><name>_WMValidateResourcePlanResponse__isset</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__WMValidateResourcePlanResponse____isset_1aea07349ea8c63c2f4a026680f014f9fa" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_WMValidateResourcePlanResponse__isset</scope><name>errors</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__WMValidateResourcePlanResponse____isset_1a9455138951d90c6cff4a193ea493c431" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_WMValidateResourcePlanResponse__isset</scope><name>warnings</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

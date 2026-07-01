@@ -1,0 +1,80 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structApache_1_1Hadoop_1_1Hive_1_1__PropertyGetRequest____isset" kind="struct" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::_PropertyGetRequest__isset</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__PropertyGetRequest____isset_1a4513d45719f1f99124885bfa215826a2" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_PropertyGetRequest__isset::mapPrefix</definition>
+        <argsstring></argsstring>
+        <name>mapPrefix</name>
+        <qualifiedname>Apache::Hadoop::Hive::_PropertyGetRequest__isset::mapPrefix</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1789" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="1789" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__PropertyGetRequest____isset_1abee1cefb4c1523148f0765faf0927d95" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_PropertyGetRequest__isset::mapPredicate</definition>
+        <argsstring></argsstring>
+        <name>mapPredicate</name>
+        <qualifiedname>Apache::Hadoop::Hive::_PropertyGetRequest__isset::mapPredicate</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1790" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="1790" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__PropertyGetRequest____isset_1ab412fa8956d13d7c5a39b05d1ed3de57" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_PropertyGetRequest__isset::mapSelection</definition>
+        <argsstring></argsstring>
+        <name>mapSelection</name>
+        <qualifiedname>Apache::Hadoop::Hive::_PropertyGetRequest__isset::mapSelection</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1791" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="1791" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structApache_1_1Hadoop_1_1Hive_1_1__PropertyGetRequest____isset_1a084d41350714da633dc5cfc9a77b4b0b" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::_PropertyGetRequest__isset::_PropertyGetRequest__isset</definition>
+        <argsstring>()</argsstring>
+        <name>_PropertyGetRequest__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::_PropertyGetRequest__isset::_PropertyGetRequest__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1788" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="1788" bodyend="1788"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1787" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="1787" bodyend="1792"/>
+    <listofallmembers>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__PropertyGetRequest____isset_1a084d41350714da633dc5cfc9a77b4b0b" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_PropertyGetRequest__isset</scope><name>_PropertyGetRequest__isset</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__PropertyGetRequest____isset_1abee1cefb4c1523148f0765faf0927d95" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_PropertyGetRequest__isset</scope><name>mapPredicate</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__PropertyGetRequest____isset_1a4513d45719f1f99124885bfa215826a2" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_PropertyGetRequest__isset</scope><name>mapPrefix</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__PropertyGetRequest____isset_1ab412fa8956d13d7c5a39b05d1ed3de57" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_PropertyGetRequest__isset</scope><name>mapSelection</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

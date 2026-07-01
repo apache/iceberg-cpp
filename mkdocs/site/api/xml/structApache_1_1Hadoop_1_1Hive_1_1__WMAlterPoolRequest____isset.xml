@@ -1,0 +1,64 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structApache_1_1Hadoop_1_1Hive_1_1__WMAlterPoolRequest____isset" kind="struct" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::_WMAlterPoolRequest__isset</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__WMAlterPoolRequest____isset_1a31fadc5a189498ba80691dae4597166b" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_WMAlterPoolRequest__isset::pool</definition>
+        <argsstring></argsstring>
+        <name>pool</name>
+        <qualifiedname>Apache::Hadoop::Hive::_WMAlterPoolRequest__isset::pool</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12158" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="12158" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__WMAlterPoolRequest____isset_1a989ee44c187af7b279bbfc8ca7ada740" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_WMAlterPoolRequest__isset::poolPath</definition>
+        <argsstring></argsstring>
+        <name>poolPath</name>
+        <qualifiedname>Apache::Hadoop::Hive::_WMAlterPoolRequest__isset::poolPath</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12159" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="12159" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structApache_1_1Hadoop_1_1Hive_1_1__WMAlterPoolRequest____isset_1a460b689557eb8843fdefd424ba53b266" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::_WMAlterPoolRequest__isset::_WMAlterPoolRequest__isset</definition>
+        <argsstring>()</argsstring>
+        <name>_WMAlterPoolRequest__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::_WMAlterPoolRequest__isset::_WMAlterPoolRequest__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12157" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="12157" bodyend="12157"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12156" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="12156" bodyend="12160"/>
+    <listofallmembers>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__WMAlterPoolRequest____isset_1a460b689557eb8843fdefd424ba53b266" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_WMAlterPoolRequest__isset</scope><name>_WMAlterPoolRequest__isset</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__WMAlterPoolRequest____isset_1a31fadc5a189498ba80691dae4597166b" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_WMAlterPoolRequest__isset</scope><name>pool</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__WMAlterPoolRequest____isset_1a989ee44c187af7b279bbfc8ca7ada740" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_WMAlterPoolRequest__isset</scope><name>poolPath</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

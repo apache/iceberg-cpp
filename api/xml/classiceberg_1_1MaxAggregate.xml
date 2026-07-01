@@ -1,0 +1,234 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1MaxAggregate" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::MaxAggregate</compoundname>
+    <basecompoundref refid="classiceberg_1_1BoundAggregate" prot="public" virt="non-virtual">iceberg::BoundAggregate</basecompoundref>
+    <includes refid="aggregate_8h" local="no">aggregate.h</includes>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classiceberg_1_1MaxAggregate_1a5d3e138963f8125cb66bdb59fac38d18" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1MaxAggregate" kindref="compound">MaxAggregate</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::unique_ptr&lt; MaxAggregate &gt; &gt; iceberg::MaxAggregate::Make</definition>
+        <argsstring>(std::shared_ptr&lt; BoundTerm &gt; term)</argsstring>
+        <name>Make</name>
+        <qualifiedname>iceberg::MaxAggregate::Make</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1BoundTerm" kindref="compound">BoundTerm</ref> &gt;</type>
+          <declname>term</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/aggregate.h" line="210" column="17" bodyfile="iceberg/expression/aggregate.cc" bodystart="393" bodyend="402"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1MaxAggregate_1ae27637ed8f26b71702fc02c2c5708141" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>Result&lt; <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &gt;</type>
+        <definition>Result&lt; Literal &gt; iceberg::MaxAggregate::Evaluate</definition>
+        <argsstring>(const StructLike &amp;data) const override</argsstring>
+        <name>Evaluate</name>
+        <qualifiedname>iceberg::MaxAggregate::Evaluate</qualifiedname>
+        <reimplements refid="classiceberg_1_1BoundAggregate_1af9bc8efe3b6b7a6c3c85bf37efd7a6d7">Evaluate</reimplements>
+        <param>
+          <type>const <ref refid="classiceberg_1_1StructLike" kindref="compound">StructLike</ref> &amp;</type>
+          <declname>data</declname>
+        </param>
+        <briefdescription>
+<para>Evaluate this expression against a row-based data. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/aggregate.h" line="212" column="10" bodyfile="iceberg/expression/aggregate.cc" bodystart="404" bodyend="406"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1MaxAggregate_1af30abfb9eb2b12c362d06deb5edeca27" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>Result&lt; <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &gt;</type>
+        <definition>Result&lt; Literal &gt; iceberg::MaxAggregate::Evaluate</definition>
+        <argsstring>(const DataFile &amp;file) const override</argsstring>
+        <name>Evaluate</name>
+        <qualifiedname>iceberg::MaxAggregate::Evaluate</qualifiedname>
+        <reimplements refid="classiceberg_1_1BoundAggregate_1a04005958ba054d0bdfe1a4994be92213">Evaluate</reimplements>
+        <param>
+          <type>const <ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref> &amp;</type>
+          <declname>file</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/aggregate.h" line="213" column="10" bodyfile="iceberg/expression/aggregate.cc" bodystart="408" bodyend="412"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1MaxAggregate_1a245350baecd328b724476b1464d0c5fd" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>bool</type>
+        <definition>bool iceberg::MaxAggregate::HasValue</definition>
+        <argsstring>(const DataFile &amp;file) const override</argsstring>
+        <name>HasValue</name>
+        <qualifiedname>iceberg::MaxAggregate::HasValue</qualifiedname>
+        <reimplements refid="classiceberg_1_1BoundAggregate_1a4159215eb35deeb927c0bf30ad2b8e51">HasValue</reimplements>
+        <param>
+          <type>const <ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref> &amp;</type>
+          <declname>file</declname>
+        </param>
+        <briefdescription>
+<para>Whether metrics in the data file are sufficient to evaluate. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/aggregate.h" line="214" column="8" bodyfile="iceberg/expression/aggregate.cc" bodystart="418" bodyend="426"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1MaxAggregate_1a636955f15c0ea54972f981773ce1f5f4" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>std::unique_ptr&lt; <ref refid="classiceberg_1_1BoundAggregate_1_1Aggregator" kindref="compound">Aggregator</ref> &gt;</type>
+        <definition>std::unique_ptr&lt; BoundAggregate::Aggregator &gt; iceberg::MaxAggregate::NewAggregator</definition>
+        <argsstring>() const override</argsstring>
+        <name>NewAggregator</name>
+        <qualifiedname>iceberg::MaxAggregate::NewAggregator</qualifiedname>
+        <reimplements refid="classiceberg_1_1BoundAggregate_1a3f4eec971652a38cc96cd197b9fd9df2">NewAggregator</reimplements>
+        <briefdescription>
+<para>Create a new aggregator for this aggregate. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="note"><para>The returned aggregator cannot outlive the <ref refid="classiceberg_1_1BoundAggregate" kindref="compound">BoundAggregate</ref> that creates it. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/aggregate.h" line="216" column="19" bodyfile="iceberg/expression/aggregate.cc" bodystart="414" bodyend="416"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classiceberg_1_1MaxAggregate_1a7a0d22e96b47e595fc9edc7c2767e236" prot="private" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::MaxAggregate::MaxAggregate</definition>
+        <argsstring>(std::shared_ptr&lt; BoundTerm &gt; term)</argsstring>
+        <name>MaxAggregate</name>
+        <qualifiedname>iceberg::MaxAggregate::MaxAggregate</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1BoundTerm" kindref="compound">BoundTerm</ref> &gt;</type>
+          <declname>term</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/aggregate.h" line="219" column="12" bodyfile="iceberg/expression/aggregate.cc" bodystart="390" bodyend="391"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para><ref refid="classiceberg_1_1Bound" kindref="compound">Bound</ref> MAX aggregate. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="3">
+        <label>iceberg::Aggregate&lt; BoundTerm &gt;</label>
+        <link refid="classiceberg_1_1Aggregate"/>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="6">
+        <label>iceberg::Bound</label>
+        <link refid="classiceberg_1_1Bound"/>
+      </node>
+      <node id="2">
+        <label>iceberg::BoundAggregate</label>
+        <link refid="classiceberg_1_1BoundAggregate"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+        <childnode refid="6" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>iceberg::Expression</label>
+        <link refid="classiceberg_1_1Expression"/>
+        <childnode refid="5" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::MaxAggregate</label>
+        <link refid="classiceberg_1_1MaxAggregate"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="3">
+        <label>iceberg::Aggregate&lt; BoundTerm &gt;</label>
+        <link refid="classiceberg_1_1Aggregate"/>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="6">
+        <label>iceberg::Bound</label>
+        <link refid="classiceberg_1_1Bound"/>
+      </node>
+      <node id="2">
+        <label>iceberg::BoundAggregate</label>
+        <link refid="classiceberg_1_1BoundAggregate"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+        <childnode refid="6" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>iceberg::Expression</label>
+        <link refid="classiceberg_1_1Expression"/>
+        <childnode refid="5" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::MaxAggregate</label>
+        <link refid="classiceberg_1_1MaxAggregate"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/expression/aggregate.h" line="208" column="1" bodyfile="iceberg/expression/aggregate.h" bodystart="208" bodyend="220"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1Aggregate_1a6faf5ff7b6ecd69dc6cd26ee84a3dd30" prot="protected" virt="non-virtual"><scope>iceberg::MaxAggregate</scope><name>Aggregate</name></member>
+      <member refid="classiceberg_1_1BoundAggregate_1ab096b57c1d6b00adf59ab5191cf90057" prot="protected" virt="non-virtual"><scope>iceberg::MaxAggregate</scope><name>BoundAggregate</name></member>
+      <member refid="classiceberg_1_1Expression_1a5f62190ba4e74757afb0fba05acb1e6a" prot="public" virt="virtual"><scope>iceberg::MaxAggregate</scope><name>Equals</name></member>
+      <member refid="classiceberg_1_1MaxAggregate_1ae27637ed8f26b71702fc02c2c5708141" prot="public" virt="virtual"><scope>iceberg::MaxAggregate</scope><name>Evaluate</name></member>
+      <member refid="classiceberg_1_1MaxAggregate_1af30abfb9eb2b12c362d06deb5edeca27" prot="public" virt="virtual"><scope>iceberg::MaxAggregate</scope><name>Evaluate</name></member>
+      <member refid="classiceberg_1_1MaxAggregate_1a245350baecd328b724476b1464d0c5fd" prot="public" virt="virtual"><scope>iceberg::MaxAggregate</scope><name>HasValue</name></member>
+      <member refid="classiceberg_1_1BoundAggregate_1a14aa0f3e84ca3ec8323134d4b0fa43d7" prot="public" virt="virtual"><scope>iceberg::MaxAggregate</scope><name>is_bound_aggregate</name></member>
+      <member refid="classiceberg_1_1Expression_1a8807793506a834a71384dac034e6c62f" prot="public" virt="virtual"><scope>iceberg::MaxAggregate</scope><name>is_bound_predicate</name></member>
+      <member refid="classiceberg_1_1Expression_1a9d17c720a2f03ee4924b8c36f0420ff1" prot="public" virt="virtual"><scope>iceberg::MaxAggregate</scope><name>is_unbound_aggregate</name></member>
+      <member refid="classiceberg_1_1Expression_1a96e614d02433117161d21989f7ff1257" prot="public" virt="virtual"><scope>iceberg::MaxAggregate</scope><name>is_unbound_predicate</name></member>
+      <member refid="classiceberg_1_1Aggregate_1a5af32b25e4103d34dfc370064e1a14a9" prot="protected" virt="non-virtual"><scope>iceberg::MaxAggregate</scope><name>IsSupportedOp</name></member>
+      <member refid="classiceberg_1_1MaxAggregate_1a5d3e138963f8125cb66bdb59fac38d18" prot="public" virt="non-virtual"><scope>iceberg::MaxAggregate</scope><name>Make</name></member>
+      <member refid="classiceberg_1_1MaxAggregate_1a7a0d22e96b47e595fc9edc7c2767e236" prot="private" virt="non-virtual"><scope>iceberg::MaxAggregate</scope><name>MaxAggregate</name></member>
+      <member refid="classiceberg_1_1Expression_1a7ce9433b8cc063b06ac6371d6d56815c" prot="public" virt="virtual"><scope>iceberg::MaxAggregate</scope><name>Negate</name></member>
+      <member refid="classiceberg_1_1MaxAggregate_1a636955f15c0ea54972f981773ce1f5f4" prot="public" virt="virtual"><scope>iceberg::MaxAggregate</scope><name>NewAggregator</name></member>
+      <member refid="classiceberg_1_1Aggregate_1a04e2d2492b3a5580b85a6663f32fd251" prot="public" virt="virtual"><scope>iceberg::MaxAggregate</scope><name>op</name></member>
+      <member refid="classiceberg_1_1Expression_1a433076bdc34ce0b6d359313c6c7b8a9c" prot="public" virt="non-virtual"><scope>iceberg::MaxAggregate</scope><name>Operation</name></member>
+      <member refid="classiceberg_1_1Aggregate_1a4dbbc648f79d02a088ede60b0158dfee" prot="protected" virt="non-virtual"><scope>iceberg::MaxAggregate</scope><name>operation_</name></member>
+      <member refid="classiceberg_1_1BoundAggregate_1af59679da53f3634d45d775a11f0417e7" prot="public" virt="virtual"><scope>iceberg::MaxAggregate</scope><name>reference</name></member>
+      <member refid="classiceberg_1_1Aggregate_1a761fc9c146cc30271fa100b2906bf056" prot="public" virt="non-virtual"><scope>iceberg::MaxAggregate</scope><name>term</name></member>
+      <member refid="classiceberg_1_1Aggregate_1a96a91318a214bade482691853f82ee03" prot="protected" virt="non-virtual"><scope>iceberg::MaxAggregate</scope><name>term_</name></member>
+      <member refid="classiceberg_1_1Aggregate_1afaed75e6a5da8ce6aedd320e687539a3" prot="public" virt="virtual"><scope>iceberg::MaxAggregate</scope><name>ToString</name></member>
+      <member refid="classiceberg_1_1Aggregate_1a1473f637e1355db39626813ed10831c6" prot="public" virt="non-virtual"><scope>iceberg::MaxAggregate</scope><name>~Aggregate</name></member>
+      <member refid="classiceberg_1_1Bound_1abc22c55a926f2041f458bdc8be7a18b5" prot="public" virt="virtual"><scope>iceberg::MaxAggregate</scope><name>~Bound</name></member>
+      <member refid="classiceberg_1_1Expression_1a7529a7fa43b6a6ff1cd09eac4359f1ca" prot="public" virt="virtual"><scope>iceberg::MaxAggregate</scope><name>~Expression</name></member>
+      <member refid="classiceberg_1_1util_1_1Formattable_1acfe29264450018bab0ceab0828cf46f9" prot="public" virt="virtual"><scope>iceberg::MaxAggregate</scope><name>~Formattable</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

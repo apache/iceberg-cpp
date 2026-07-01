@@ -1,0 +1,48 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structApache_1_1Hadoop_1_1Hive_1_1__UnknownTableException____isset" kind="struct" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::_UnknownTableException__isset</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__UnknownTableException____isset_1ad0103459253c14a75f8036ce4698d2ed" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_UnknownTableException__isset::message</definition>
+        <argsstring></argsstring>
+        <name>message</name>
+        <qualifiedname>Apache::Hadoop::Hive::_UnknownTableException__isset::message</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15304" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="15304" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structApache_1_1Hadoop_1_1Hive_1_1__UnknownTableException____isset_1a2b8fca9f64e8e162be1b63d4e50f362d" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::_UnknownTableException__isset::_UnknownTableException__isset</definition>
+        <argsstring>()</argsstring>
+        <name>_UnknownTableException__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::_UnknownTableException__isset::_UnknownTableException__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15303" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="15303" bodyend="15303"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15302" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="15302" bodyend="15305"/>
+    <listofallmembers>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__UnknownTableException____isset_1a2b8fca9f64e8e162be1b63d4e50f362d" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_UnknownTableException__isset</scope><name>_UnknownTableException__isset</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__UnknownTableException____isset_1ad0103459253c14a75f8036ce4698d2ed" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_UnknownTableException__isset</scope><name>message</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

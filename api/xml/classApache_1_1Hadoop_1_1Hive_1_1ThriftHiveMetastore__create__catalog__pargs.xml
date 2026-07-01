@@ -1,0 +1,120 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__create__catalog__pargs" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::ThriftHiveMetastore_create_catalog_pargs</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__create__catalog__pargs_1a0b9baf3633d00e75827db1482e0d63f3" prot="public" static="no" mutable="no">
+        <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1CreateCatalogRequest" kindref="compound">CreateCatalogRequest</ref> *</type>
+        <definition>const CreateCatalogRequest* Apache::Hadoop::Hive::ThriftHiveMetastore_create_catalog_pargs::catalog</definition>
+        <argsstring></argsstring>
+        <name>catalog</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_create_catalog_pargs::catalog</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="1537" column="30" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="1537" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__create__catalog__pargs_1ac7660603fc0de990ab0b1302d4789c43" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::ThriftHiveMetastore_create_catalog_pargs::~ThriftHiveMetastore_create_catalog_pargs</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~ThriftHiveMetastore_create_catalog_pargs</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_create_catalog_pargs::~ThriftHiveMetastore_create_catalog_pargs</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="1536" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.cpp" bodystart="687" bodyend="688"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__create__catalog__pargs_1a9541bd4d29e4d591893e85461cbe2f5f" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::ThriftHiveMetastore_create_catalog_pargs::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_create_catalog_pargs::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="1539" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.cpp" bodystart="691" bodyend="703"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="4">
+        <label>Apache::Hadoop::Hive::Catalog</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1Catalog"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>description</edgelabel>
+          <edgelabel>locationUri</edgelabel>
+          <edgelabel>name</edgelabel>
+        </childnode>
+        <childnode refid="7" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="2">
+        <label>Apache::Hadoop::Hive::CreateCatalogRequest</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1CreateCatalogRequest"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>catalog</edgelabel>
+        </childnode>
+        <childnode refid="8" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::ThriftHiveMetastore_create_catalog_pargs</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__create__catalog__pargs"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>catalog</edgelabel>
+        </childnode>
+      </node>
+      <node id="7">
+        <label>Apache::Hadoop::Hive::_Catalog__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__Catalog____isset"/>
+      </node>
+      <node id="8">
+        <label>Apache::Hadoop::Hive::_CreateCatalogRequest__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__CreateCatalogRequest____isset"/>
+      </node>
+      <node id="3">
+        <label>apache::thrift::TBase</label>
+      </node>
+      <node id="6">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="5">
+        <label>std::string</label>
+        <childnode refid="6" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="1532" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="1532" bodyend="1541"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__create__catalog__pargs_1a0b9baf3633d00e75827db1482e0d63f3" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_create_catalog_pargs</scope><name>catalog</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__create__catalog__pargs_1a9541bd4d29e4d591893e85461cbe2f5f" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_create_catalog_pargs</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__create__catalog__pargs_1ac7660603fc0de990ab0b1302d4789c43" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_create_catalog_pargs</scope><name>~ThriftHiveMetastore_create_catalog_pargs</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,320 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__table__objects__by__name__req__args" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::ThriftHiveMetastore_get_table_objects_by_name_req_args</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__table__objects__by__name__req__args_1a82db2c5976ad8ab953096d523665d822" prot="public" static="no" mutable="no">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1GetTablesRequest" kindref="compound">GetTablesRequest</ref></type>
+        <definition>GetTablesRequest Apache::Hadoop::Hive::ThriftHiveMetastore_get_table_objects_by_name_req_args::req</definition>
+        <argsstring></argsstring>
+        <name>req</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_get_table_objects_by_name_req_args::req</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="7243" column="20" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="7243" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__table__objects__by__name__req__args_1a46a753dda6802b296fcb5a3d02b723c1" prot="public" static="no" mutable="no">
+        <type><ref refid="structApache_1_1Hadoop_1_1Hive_1_1__ThriftHiveMetastore__get__table__objects__by__name__req__args____isset" kindref="compound">_ThriftHiveMetastore_get_table_objects_by_name_req_args__isset</ref></type>
+        <definition>_ThriftHiveMetastore_get_table_objects_by_name_req_args__isset Apache::Hadoop::Hive::ThriftHiveMetastore_get_table_objects_by_name_req_args::__isset</definition>
+        <argsstring></argsstring>
+        <name>__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_get_table_objects_by_name_req_args::__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="7245" column="66" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="7245" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__table__objects__by__name__req__args_1a3b1c7f9ea010a1d1d3e73be042aa34bf" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::ThriftHiveMetastore_get_table_objects_by_name_req_args::ThriftHiveMetastore_get_table_objects_by_name_req_args</definition>
+        <argsstring>(const ThriftHiveMetastore_get_table_objects_by_name_req_args &amp;)</argsstring>
+        <name>ThriftHiveMetastore_get_table_objects_by_name_req_args</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_get_table_objects_by_name_req_args::ThriftHiveMetastore_get_table_objects_by_name_req_args</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__table__objects__by__name__req__args" kindref="compound">ThriftHiveMetastore_get_table_objects_by_name_req_args</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="7238" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__table__objects__by__name__req__args_1ae25da2b31d610cee85a652ffbfe1e2e8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__table__objects__by__name__req__args" kindref="compound">ThriftHiveMetastore_get_table_objects_by_name_req_args</ref> &amp;</type>
+        <definition>ThriftHiveMetastore_get_table_objects_by_name_req_args &amp; Apache::Hadoop::Hive::ThriftHiveMetastore_get_table_objects_by_name_req_args::operator=</definition>
+        <argsstring>(const ThriftHiveMetastore_get_table_objects_by_name_req_args &amp;)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_get_table_objects_by_name_req_args::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__table__objects__by__name__req__args" kindref="compound">ThriftHiveMetastore_get_table_objects_by_name_req_args</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="7239" column="58"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__table__objects__by__name__req__args_1a452ffd85be407c09b8558a3228b9b8ab" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::ThriftHiveMetastore_get_table_objects_by_name_req_args::ThriftHiveMetastore_get_table_objects_by_name_req_args</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>ThriftHiveMetastore_get_table_objects_by_name_req_args</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_get_table_objects_by_name_req_args::ThriftHiveMetastore_get_table_objects_by_name_req_args</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="7240" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.cpp" bodystart="14144" bodyend="14145"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__table__objects__by__name__req__args_1a93a11f8c3a7b80e5fb3bc09112fd6e14" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::ThriftHiveMetastore_get_table_objects_by_name_req_args::~ThriftHiveMetastore_get_table_objects_by_name_req_args</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~ThriftHiveMetastore_get_table_objects_by_name_req_args</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_get_table_objects_by_name_req_args::~ThriftHiveMetastore_get_table_objects_by_name_req_args</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="7242" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.cpp" bodystart="14141" bodyend="14142"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__table__objects__by__name__req__args_1adb45b72cdca75b20c2c12f521c29d5f3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::ThriftHiveMetastore_get_table_objects_by_name_req_args::__set_req</definition>
+        <argsstring>(const GetTablesRequest &amp;val)</argsstring>
+        <name>__set_req</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_get_table_objects_by_name_req_args::__set_req</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1GetTablesRequest" kindref="compound">GetTablesRequest</ref> &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="7247" column="8"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__table__objects__by__name__req__args_1a4f1725c5950d40c55adcfa40a745c6e1" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::ThriftHiveMetastore_get_table_objects_by_name_req_args::operator==</definition>
+        <argsstring>(const ThriftHiveMetastore_get_table_objects_by_name_req_args &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_get_table_objects_by_name_req_args::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__table__objects__by__name__req__args" kindref="compound">ThriftHiveMetastore_get_table_objects_by_name_req_args</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="7249" column="8"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__table__objects__by__name__req__args_1ad4ee0f32a86d8acbb1a265cc004c3f1a" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::ThriftHiveMetastore_get_table_objects_by_name_req_args::operator!=</definition>
+        <argsstring>(const ThriftHiveMetastore_get_table_objects_by_name_req_args &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_get_table_objects_by_name_req_args::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__table__objects__by__name__req__args" kindref="compound">ThriftHiveMetastore_get_table_objects_by_name_req_args</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="7250" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="7250" bodyend="7252"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__table__objects__by__name__req__args_1a5e139f3001698ef548f565d94ee72636" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::ThriftHiveMetastore_get_table_objects_by_name_req_args::operator&lt;</definition>
+        <argsstring>(const ThriftHiveMetastore_get_table_objects_by_name_req_args &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_get_table_objects_by_name_req_args::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__table__objects__by__name__req__args" kindref="compound">ThriftHiveMetastore_get_table_objects_by_name_req_args</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="7254" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__table__objects__by__name__req__args_1af31652bce2b2c37dd154b5093b079484" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::ThriftHiveMetastore_get_table_objects_by_name_req_args::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot)</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_get_table_objects_by_name_req_args::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="7256" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.cpp" bodystart="14147" bodyend="14186"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__table__objects__by__name__req__args_1abd9292775835d9e0f8c7b6335ddf69a0" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::ThriftHiveMetastore_get_table_objects_by_name_req_args::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_get_table_objects_by_name_req_args::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="7257" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.cpp" bodystart="14188" bodyend="14200"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="7">
+        <label>Apache::Hadoop::Hive::ClientCapabilities</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1ClientCapabilities"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+        <childnode refid="8" relation="usage">
+          <edgelabel>values</edgelabel>
+        </childnode>
+      </node>
+      <node id="9">
+        <label>Apache::Hadoop::Hive::GetProjectionsSpec</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1GetProjectionsSpec"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+        <childnode refid="6" relation="usage">
+          <edgelabel>fieldList</edgelabel>
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>excludeParamKeyPattern</edgelabel>
+          <edgelabel>includeParamKeyPattern</edgelabel>
+        </childnode>
+        <childnode refid="10" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="2">
+        <label>Apache::Hadoop::Hive::GetTablesRequest</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1GetTablesRequest"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>catName</edgelabel>
+          <edgelabel>dbName</edgelabel>
+          <edgelabel>processorIdentifier</edgelabel>
+          <edgelabel>tablesPattern</edgelabel>
+        </childnode>
+        <childnode refid="6" relation="usage">
+          <edgelabel>processorCapabilities</edgelabel>
+          <edgelabel>tblNames</edgelabel>
+        </childnode>
+        <childnode refid="7" relation="usage">
+          <edgelabel>capabilities</edgelabel>
+        </childnode>
+        <childnode refid="9" relation="usage">
+          <edgelabel>projectionSpec</edgelabel>
+        </childnode>
+        <childnode refid="11" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::ThriftHiveMetastore_get_table_objects_by_name_req_args</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__table__objects__by__name__req__args"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>req</edgelabel>
+        </childnode>
+        <childnode refid="12" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="10">
+        <label>Apache::Hadoop::Hive::_GetProjectionsSpec__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__GetProjectionsSpec____isset"/>
+      </node>
+      <node id="11">
+        <label>Apache::Hadoop::Hive::_GetTablesRequest__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__GetTablesRequest____isset"/>
+      </node>
+      <node id="12">
+        <label>Apache::Hadoop::Hive::_ThriftHiveMetastore_get_table_objects_by_name_req_args__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__ThriftHiveMetastore__get__table__objects__by__name__req__args____isset"/>
+      </node>
+      <node id="3">
+        <label>apache::thrift::TBase</label>
+      </node>
+      <node id="5">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="4">
+        <label>std::string</label>
+        <childnode refid="5" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="8">
+        <label>std::vector&lt; ClientCapability::type &gt;</label>
+      </node>
+      <node id="6">
+        <label>std::vector&lt; std::string &gt;</label>
+        <childnode refid="4" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="7235" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="7235" bodyend="7259"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__table__objects__by__name__req__args_1a46a753dda6802b296fcb5a3d02b723c1" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_get_table_objects_by_name_req_args</scope><name>__isset</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__table__objects__by__name__req__args_1adb45b72cdca75b20c2c12f521c29d5f3" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_get_table_objects_by_name_req_args</scope><name>__set_req</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__table__objects__by__name__req__args_1ad4ee0f32a86d8acbb1a265cc004c3f1a" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_get_table_objects_by_name_req_args</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__table__objects__by__name__req__args_1a5e139f3001698ef548f565d94ee72636" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_get_table_objects_by_name_req_args</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__table__objects__by__name__req__args_1ae25da2b31d610cee85a652ffbfe1e2e8" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_get_table_objects_by_name_req_args</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__table__objects__by__name__req__args_1a4f1725c5950d40c55adcfa40a745c6e1" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_get_table_objects_by_name_req_args</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__table__objects__by__name__req__args_1af31652bce2b2c37dd154b5093b079484" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_get_table_objects_by_name_req_args</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__table__objects__by__name__req__args_1a82db2c5976ad8ab953096d523665d822" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_get_table_objects_by_name_req_args</scope><name>req</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__table__objects__by__name__req__args_1a3b1c7f9ea010a1d1d3e73be042aa34bf" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_get_table_objects_by_name_req_args</scope><name>ThriftHiveMetastore_get_table_objects_by_name_req_args</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__table__objects__by__name__req__args_1a452ffd85be407c09b8558a3228b9b8ab" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_get_table_objects_by_name_req_args</scope><name>ThriftHiveMetastore_get_table_objects_by_name_req_args</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__table__objects__by__name__req__args_1abd9292775835d9e0f8c7b6335ddf69a0" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_get_table_objects_by_name_req_args</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__table__objects__by__name__req__args_1a93a11f8c3a7b80e5fb3bc09112fd6e14" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_get_table_objects_by_name_req_args</scope><name>~ThriftHiveMetastore_get_table_objects_by_name_req_args</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,427 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1UniqueConstraintsRequest" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::UniqueConstraintsRequest</compoundname>
+    <basecompoundref prot="public" virt="virtual">apache::thrift::TBase</basecompoundref>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1UniqueConstraintsRequest_1afc22cae865aa3f44d33417d51551e109" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::UniqueConstraintsRequest::catName</definition>
+        <argsstring></argsstring>
+        <name>catName</name>
+        <qualifiedname>Apache::Hadoop::Hive::UniqueConstraintsRequest::catName</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="4866" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="4866" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1UniqueConstraintsRequest_1a998262d449e979b6cdb6176116ca40e6" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::UniqueConstraintsRequest::db_name</definition>
+        <argsstring></argsstring>
+        <name>db_name</name>
+        <qualifiedname>Apache::Hadoop::Hive::UniqueConstraintsRequest::db_name</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="4867" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="4867" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1UniqueConstraintsRequest_1a23298f0d6796ef116016507add90e90d" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::UniqueConstraintsRequest::tbl_name</definition>
+        <argsstring></argsstring>
+        <name>tbl_name</name>
+        <qualifiedname>Apache::Hadoop::Hive::UniqueConstraintsRequest::tbl_name</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="4868" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="4868" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1UniqueConstraintsRequest_1a3c3553864b032d784d8b47b819d5620c" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::UniqueConstraintsRequest::validWriteIdList</definition>
+        <argsstring></argsstring>
+        <name>validWriteIdList</name>
+        <qualifiedname>Apache::Hadoop::Hive::UniqueConstraintsRequest::validWriteIdList</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="4869" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="4869" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1UniqueConstraintsRequest_1a63c8ee3a6b766a2c9190ce921167be03" prot="public" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t Apache::Hadoop::Hive::UniqueConstraintsRequest::tableId</definition>
+        <argsstring></argsstring>
+        <name>tableId</name>
+        <qualifiedname>Apache::Hadoop::Hive::UniqueConstraintsRequest::tableId</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="4870" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="4870" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1UniqueConstraintsRequest_1a8cbad6808d0bb75503562f04e95994e7" prot="public" static="no" mutable="no">
+        <type><ref refid="structApache_1_1Hadoop_1_1Hive_1_1__UniqueConstraintsRequest____isset" kindref="compound">_UniqueConstraintsRequest__isset</ref></type>
+        <definition>_UniqueConstraintsRequest__isset Apache::Hadoop::Hive::UniqueConstraintsRequest::__isset</definition>
+        <argsstring></argsstring>
+        <name>__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::UniqueConstraintsRequest::__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="4872" column="36" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="4872" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1UniqueConstraintsRequest_1a155526ab7a35872fb3425bdb3231c560" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::UniqueConstraintsRequest::UniqueConstraintsRequest</definition>
+        <argsstring>(const UniqueConstraintsRequest &amp;)</argsstring>
+        <name>UniqueConstraintsRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::UniqueConstraintsRequest::UniqueConstraintsRequest</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1UniqueConstraintsRequest" kindref="compound">UniqueConstraintsRequest</ref> &amp;</type>
+          <defname>other541</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="4861" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="16894" bodyend="16901"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1UniqueConstraintsRequest_1a9d0c854c3771744daf9d45cf5f177c93" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1UniqueConstraintsRequest" kindref="compound">UniqueConstraintsRequest</ref> &amp;</type>
+        <definition>UniqueConstraintsRequest &amp; Apache::Hadoop::Hive::UniqueConstraintsRequest::operator=</definition>
+        <argsstring>(const UniqueConstraintsRequest &amp;)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::UniqueConstraintsRequest::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1UniqueConstraintsRequest" kindref="compound">UniqueConstraintsRequest</ref> &amp;</type>
+          <defname>other542</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="4862" column="28" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="16902" bodyend="16910"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1UniqueConstraintsRequest_1a40a76d6e87b982c53c45c723e45f6348" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::UniqueConstraintsRequest::UniqueConstraintsRequest</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>UniqueConstraintsRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::UniqueConstraintsRequest::UniqueConstraintsRequest</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="4863" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="16715" bodyend="16721"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1UniqueConstraintsRequest_1ae2bb2a4d2d6558a4c7fb384a4178c187" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::UniqueConstraintsRequest::~UniqueConstraintsRequest</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~UniqueConstraintsRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::UniqueConstraintsRequest::~UniqueConstraintsRequest</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="4865" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="16712" bodyend="16713"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1UniqueConstraintsRequest_1aacaa8fd86732132516ec47b430c4ab19" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::UniqueConstraintsRequest::__set_catName</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_catName</name>
+        <qualifiedname>Apache::Hadoop::Hive::UniqueConstraintsRequest::__set_catName</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="4874" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="16723" bodyend="16725"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1UniqueConstraintsRequest_1a9266478f31b167d58160c004ee39b094" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::UniqueConstraintsRequest::__set_db_name</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_db_name</name>
+        <qualifiedname>Apache::Hadoop::Hive::UniqueConstraintsRequest::__set_db_name</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="4876" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="16727" bodyend="16729"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1UniqueConstraintsRequest_1ae2905fc81a75b7c11c0c3ea218c09032" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::UniqueConstraintsRequest::__set_tbl_name</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_tbl_name</name>
+        <qualifiedname>Apache::Hadoop::Hive::UniqueConstraintsRequest::__set_tbl_name</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="4878" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="16731" bodyend="16733"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1UniqueConstraintsRequest_1a90d46fc8abc076fde5b85ff4fc16f9f1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::UniqueConstraintsRequest::__set_validWriteIdList</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_validWriteIdList</name>
+        <qualifiedname>Apache::Hadoop::Hive::UniqueConstraintsRequest::__set_validWriteIdList</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="4880" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="16735" bodyend="16738"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1UniqueConstraintsRequest_1a930c8f4fa7f50a92abc08d18db213a07" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::UniqueConstraintsRequest::__set_tableId</definition>
+        <argsstring>(const int64_t val)</argsstring>
+        <name>__set_tableId</name>
+        <qualifiedname>Apache::Hadoop::Hive::UniqueConstraintsRequest::__set_tableId</qualifiedname>
+        <param>
+          <type>const int64_t</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="4882" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="16740" bodyend="16743"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1UniqueConstraintsRequest_1a832520e933b67f738020a0e1c6aa252e" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::UniqueConstraintsRequest::operator==</definition>
+        <argsstring>(const UniqueConstraintsRequest &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::UniqueConstraintsRequest::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1UniqueConstraintsRequest" kindref="compound">UniqueConstraintsRequest</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="4884" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="16875" bodyend="16892"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1UniqueConstraintsRequest_1a34174ee2a0b6399ff3e0d44b62163c30" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::UniqueConstraintsRequest::operator!=</definition>
+        <argsstring>(const UniqueConstraintsRequest &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::UniqueConstraintsRequest::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1UniqueConstraintsRequest" kindref="compound">UniqueConstraintsRequest</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="4885" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="4885" bodyend="4887"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1UniqueConstraintsRequest_1ae90507451df51710f6cf19c287a96e87" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::UniqueConstraintsRequest::operator&lt;</definition>
+        <argsstring>(const UniqueConstraintsRequest &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::UniqueConstraintsRequest::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1UniqueConstraintsRequest" kindref="compound">UniqueConstraintsRequest</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="4889" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1UniqueConstraintsRequest_1aa8a85e59f95c82e6317f9884a6978c06" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::UniqueConstraintsRequest::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot) override</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::UniqueConstraintsRequest::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="4891" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="16751" bodyend="16831"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1UniqueConstraintsRequest_1a81bf05784faca707fdad69fb756fd2f8" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::UniqueConstraintsRequest::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const override</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::UniqueConstraintsRequest::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="4892" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="16833" bodyend="16863"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1UniqueConstraintsRequest_1a658a4eef790c22154ae5dd592bde11c5" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::UniqueConstraintsRequest::printTo</definition>
+        <argsstring>(std::ostream &amp;out) const</argsstring>
+        <name>printTo</name>
+        <qualifiedname>Apache::Hadoop::Hive::UniqueConstraintsRequest::printTo</qualifiedname>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="4894" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="16911" bodyend="16920"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::UniqueConstraintsRequest</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1UniqueConstraintsRequest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::UniqueConstraintsRequest</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1UniqueConstraintsRequest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>catName</edgelabel>
+          <edgelabel>db_name</edgelabel>
+          <edgelabel>tbl_name</edgelabel>
+          <edgelabel>validWriteIdList</edgelabel>
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="5">
+        <label>Apache::Hadoop::Hive::_UniqueConstraintsRequest__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__UniqueConstraintsRequest____isset"/>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+      <node id="4">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="3">
+        <label>std::string</label>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="4858" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="4858" bodyend="4895"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1UniqueConstraintsRequest_1a8cbad6808d0bb75503562f04e95994e7" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::UniqueConstraintsRequest</scope><name>__isset</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1UniqueConstraintsRequest_1aacaa8fd86732132516ec47b430c4ab19" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::UniqueConstraintsRequest</scope><name>__set_catName</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1UniqueConstraintsRequest_1a9266478f31b167d58160c004ee39b094" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::UniqueConstraintsRequest</scope><name>__set_db_name</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1UniqueConstraintsRequest_1a930c8f4fa7f50a92abc08d18db213a07" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::UniqueConstraintsRequest</scope><name>__set_tableId</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1UniqueConstraintsRequest_1ae2905fc81a75b7c11c0c3ea218c09032" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::UniqueConstraintsRequest</scope><name>__set_tbl_name</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1UniqueConstraintsRequest_1a90d46fc8abc076fde5b85ff4fc16f9f1" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::UniqueConstraintsRequest</scope><name>__set_validWriteIdList</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1UniqueConstraintsRequest_1afc22cae865aa3f44d33417d51551e109" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::UniqueConstraintsRequest</scope><name>catName</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1UniqueConstraintsRequest_1a998262d449e979b6cdb6176116ca40e6" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::UniqueConstraintsRequest</scope><name>db_name</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1UniqueConstraintsRequest_1a34174ee2a0b6399ff3e0d44b62163c30" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::UniqueConstraintsRequest</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1UniqueConstraintsRequest_1ae90507451df51710f6cf19c287a96e87" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::UniqueConstraintsRequest</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1UniqueConstraintsRequest_1a9d0c854c3771744daf9d45cf5f177c93" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::UniqueConstraintsRequest</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1UniqueConstraintsRequest_1a832520e933b67f738020a0e1c6aa252e" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::UniqueConstraintsRequest</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1UniqueConstraintsRequest_1a658a4eef790c22154ae5dd592bde11c5" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::UniqueConstraintsRequest</scope><name>printTo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1UniqueConstraintsRequest_1aa8a85e59f95c82e6317f9884a6978c06" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::UniqueConstraintsRequest</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1UniqueConstraintsRequest_1a63c8ee3a6b766a2c9190ce921167be03" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::UniqueConstraintsRequest</scope><name>tableId</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1UniqueConstraintsRequest_1a23298f0d6796ef116016507add90e90d" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::UniqueConstraintsRequest</scope><name>tbl_name</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1UniqueConstraintsRequest_1a155526ab7a35872fb3425bdb3231c560" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::UniqueConstraintsRequest</scope><name>UniqueConstraintsRequest</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1UniqueConstraintsRequest_1a40a76d6e87b982c53c45c723e45f6348" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::UniqueConstraintsRequest</scope><name>UniqueConstraintsRequest</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1UniqueConstraintsRequest_1a3c3553864b032d784d8b47b819d5620c" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::UniqueConstraintsRequest</scope><name>validWriteIdList</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1UniqueConstraintsRequest_1a81bf05784faca707fdad69fb756fd2f8" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::UniqueConstraintsRequest</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1UniqueConstraintsRequest_1ae2bb2a4d2d6558a4c7fb384a4178c187" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::UniqueConstraintsRequest</scope><name>~UniqueConstraintsRequest</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

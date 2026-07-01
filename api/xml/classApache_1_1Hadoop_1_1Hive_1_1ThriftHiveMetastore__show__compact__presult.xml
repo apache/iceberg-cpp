@@ -1,0 +1,149 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__show__compact__presult" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::ThriftHiveMetastore_show_compact_presult</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__show__compact__presult_1a69ca4ed4f546a6a5663191298c938a75" prot="public" static="no" mutable="no">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponse" kindref="compound">ShowCompactResponse</ref> *</type>
+        <definition>ShowCompactResponse* Apache::Hadoop::Hive::ThriftHiveMetastore_show_compact_presult::success</definition>
+        <argsstring></argsstring>
+        <name>success</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_show_compact_presult::success</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="22447" column="23" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="22447" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__show__compact__presult_1add49783c3cb79ce81edfe63185003d35" prot="public" static="no" mutable="no">
+        <type><ref refid="structApache_1_1Hadoop_1_1Hive_1_1__ThriftHiveMetastore__show__compact__presult____isset" kindref="compound">_ThriftHiveMetastore_show_compact_presult__isset</ref></type>
+        <definition>_ThriftHiveMetastore_show_compact_presult__isset Apache::Hadoop::Hive::ThriftHiveMetastore_show_compact_presult::__isset</definition>
+        <argsstring></argsstring>
+        <name>__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_show_compact_presult::__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="22449" column="52" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="22449" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__show__compact__presult_1a4dee3c267aca100be980c07e5f6e3242" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::ThriftHiveMetastore_show_compact_presult::~ThriftHiveMetastore_show_compact_presult</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~ThriftHiveMetastore_show_compact_presult</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_show_compact_presult::~ThriftHiveMetastore_show_compact_presult</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="22446" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.cpp" bodystart="49996" bodyend="49997"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__show__compact__presult_1a8c95ee43fde94b1b44a6f4b59a262460" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::ThriftHiveMetastore_show_compact_presult::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot)</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_show_compact_presult::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="22451" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.cpp" bodystart="50000" bodyend="50039"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="2">
+        <label>Apache::Hadoop::Hive::ShowCompactResponse</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponse"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>compacts</edgelabel>
+        </childnode>
+      </node>
+      <node id="5">
+        <label>Apache::Hadoop::Hive::ShowCompactResponseElement</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1ShowCompactResponseElement"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+        <childnode refid="6" relation="usage">
+          <edgelabel>dbname</edgelabel>
+          <edgelabel>errorMessage</edgelabel>
+          <edgelabel>hadoopJobId</edgelabel>
+          <edgelabel>initiatorId</edgelabel>
+          <edgelabel>initiatorVersion</edgelabel>
+          <edgelabel>metaInfo</edgelabel>
+          <edgelabel>partitionname</edgelabel>
+          <edgelabel>poolName</edgelabel>
+          <edgelabel>runAs</edgelabel>
+          <edgelabel>state</edgelabel>
+          <edgelabel>...</edgelabel>
+        </childnode>
+        <childnode refid="8" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::ThriftHiveMetastore_show_compact_presult</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__show__compact__presult"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>success</edgelabel>
+        </childnode>
+        <childnode refid="9" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="8">
+        <label>Apache::Hadoop::Hive::_ShowCompactResponseElement__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__ShowCompactResponseElement____isset"/>
+      </node>
+      <node id="9">
+        <label>Apache::Hadoop::Hive::_ThriftHiveMetastore_show_compact_presult__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__ThriftHiveMetastore__show__compact__presult____isset"/>
+      </node>
+      <node id="3">
+        <label>apache::thrift::TBase</label>
+      </node>
+      <node id="7">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="6">
+        <label>std::string</label>
+        <childnode refid="7" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>std::vector&lt; Apache::Hadoop::Hive::ShowCompactResponseElement &gt;</label>
+        <childnode refid="5" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="22442" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="22442" bodyend="22453"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__show__compact__presult_1add49783c3cb79ce81edfe63185003d35" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_show_compact_presult</scope><name>__isset</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__show__compact__presult_1a8c95ee43fde94b1b44a6f4b59a262460" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_show_compact_presult</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__show__compact__presult_1a69ca4ed4f546a6a5663191298c938a75" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_show_compact_presult</scope><name>success</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__show__compact__presult_1a4dee3c267aca100be980c07e5f6e3242" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_show_compact_presult</scope><name>~ThriftHiveMetastore_show_compact_presult</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

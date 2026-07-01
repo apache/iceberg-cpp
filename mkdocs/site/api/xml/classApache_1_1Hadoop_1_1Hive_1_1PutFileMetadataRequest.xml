@@ -1,0 +1,371 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1PutFileMetadataRequest" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::PutFileMetadataRequest</compoundname>
+    <basecompoundref prot="public" virt="virtual">apache::thrift::TBase</basecompoundref>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1PutFileMetadataRequest_1a5b0c9340f4e8bfee35748ceef771c4d5" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; int64_t &gt;</type>
+        <definition>std::vector&lt;int64_t&gt; Apache::Hadoop::Hive::PutFileMetadataRequest::fileIds</definition>
+        <argsstring></argsstring>
+        <name>fileIds</name>
+        <qualifiedname>Apache::Hadoop::Hive::PutFileMetadataRequest::fileIds</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9934" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="9934" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1PutFileMetadataRequest_1a584f08a166822fc7d82beed325743c5b" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; std::string &gt;</type>
+        <definition>std::vector&lt;std::string&gt; Apache::Hadoop::Hive::PutFileMetadataRequest::metadata</definition>
+        <argsstring></argsstring>
+        <name>metadata</name>
+        <qualifiedname>Apache::Hadoop::Hive::PutFileMetadataRequest::metadata</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9935" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="9935" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1PutFileMetadataRequest_1a2be3482f9c1fd12c5b0db2d7c526b433" prot="public" static="no" mutable="no">
+        <type>FileMetadataExprType::type</type>
+        <definition>FileMetadataExprType::type Apache::Hadoop::Hive::PutFileMetadataRequest::type</definition>
+        <argsstring></argsstring>
+        <name>type</name>
+        <qualifiedname>Apache::Hadoop::Hive::PutFileMetadataRequest::type</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="see"><para><ref refid="structApache_1_1Hadoop_1_1Hive_1_1FileMetadataExprType" kindref="compound">FileMetadataExprType</ref> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9940" column="30" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="9940" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1PutFileMetadataRequest_1a00f88e329b88af1979e6623aaa3db6e7" prot="public" static="no" mutable="no">
+        <type><ref refid="structApache_1_1Hadoop_1_1Hive_1_1__PutFileMetadataRequest____isset" kindref="compound">_PutFileMetadataRequest__isset</ref></type>
+        <definition>_PutFileMetadataRequest__isset Apache::Hadoop::Hive::PutFileMetadataRequest::__isset</definition>
+        <argsstring></argsstring>
+        <name>__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::PutFileMetadataRequest::__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9942" column="34" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="9942" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1PutFileMetadataRequest_1a8afcda33dea503c1ad097d43461de28a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::PutFileMetadataRequest::PutFileMetadataRequest</definition>
+        <argsstring>(const PutFileMetadataRequest &amp;)</argsstring>
+        <name>PutFileMetadataRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::PutFileMetadataRequest::PutFileMetadataRequest</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1PutFileMetadataRequest" kindref="compound">PutFileMetadataRequest</ref> &amp;</type>
+          <defname>other1282</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9929" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="39223" bodyend="39228"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1PutFileMetadataRequest_1a963f0b1b56365cf6bc1ec05e05fe4e6e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1PutFileMetadataRequest" kindref="compound">PutFileMetadataRequest</ref> &amp;</type>
+        <definition>PutFileMetadataRequest &amp; Apache::Hadoop::Hive::PutFileMetadataRequest::operator=</definition>
+        <argsstring>(const PutFileMetadataRequest &amp;)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::PutFileMetadataRequest::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1PutFileMetadataRequest" kindref="compound">PutFileMetadataRequest</ref> &amp;</type>
+          <defname>other1283</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9930" column="26" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="39229" bodyend="39235"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1PutFileMetadataRequest_1aa512c837d627f73041dcdd139087808a" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::PutFileMetadataRequest::PutFileMetadataRequest</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>PutFileMetadataRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::PutFileMetadataRequest::PutFileMetadataRequest</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9931" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="39051" bodyend="39053"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1PutFileMetadataRequest_1aa6329bed4f0ea1f97c4cfda1864c9d87" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::PutFileMetadataRequest::~PutFileMetadataRequest</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~PutFileMetadataRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::PutFileMetadataRequest::~PutFileMetadataRequest</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9933" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="39048" bodyend="39049"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1PutFileMetadataRequest_1a393584899a08d8fc6d7c3f0c83009c6b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::PutFileMetadataRequest::__set_fileIds</definition>
+        <argsstring>(const std::vector&lt; int64_t &gt; &amp;val)</argsstring>
+        <name>__set_fileIds</name>
+        <qualifiedname>Apache::Hadoop::Hive::PutFileMetadataRequest::__set_fileIds</qualifiedname>
+        <param>
+          <type>const std::vector&lt; int64_t &gt; &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9944" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="39055" bodyend="39057"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1PutFileMetadataRequest_1ace2942bba742ba5c57640cd09eae8b27" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::PutFileMetadataRequest::__set_metadata</definition>
+        <argsstring>(const std::vector&lt; std::string &gt; &amp;val)</argsstring>
+        <name>__set_metadata</name>
+        <qualifiedname>Apache::Hadoop::Hive::PutFileMetadataRequest::__set_metadata</qualifiedname>
+        <param>
+          <type>const std::vector&lt; std::string &gt; &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9946" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="39059" bodyend="39061"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1PutFileMetadataRequest_1a8b428de1815b7672aac6e6a3e51dcc3b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::PutFileMetadataRequest::__set_type</definition>
+        <argsstring>(const FileMetadataExprType::type val)</argsstring>
+        <name>__set_type</name>
+        <qualifiedname>Apache::Hadoop::Hive::PutFileMetadataRequest::__set_type</qualifiedname>
+        <param>
+          <type>const FileMetadataExprType::type</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9948" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="39063" bodyend="39066"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1PutFileMetadataRequest_1ad1c08f9734146c47410e3d87d4707b6b" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::PutFileMetadataRequest::operator==</definition>
+        <argsstring>(const PutFileMetadataRequest &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::PutFileMetadataRequest::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1PutFileMetadataRequest" kindref="compound">PutFileMetadataRequest</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9950" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="39210" bodyend="39221"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1PutFileMetadataRequest_1a1c9981d0aa29fca6628ef15d3ce47313" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::PutFileMetadataRequest::operator!=</definition>
+        <argsstring>(const PutFileMetadataRequest &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::PutFileMetadataRequest::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1PutFileMetadataRequest" kindref="compound">PutFileMetadataRequest</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9951" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="9951" bodyend="9953"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1PutFileMetadataRequest_1a85d7a53e92e097bb6a5432ab0821fb9c" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::PutFileMetadataRequest::operator&lt;</definition>
+        <argsstring>(const PutFileMetadataRequest &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::PutFileMetadataRequest::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1PutFileMetadataRequest" kindref="compound">PutFileMetadataRequest</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9955" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1PutFileMetadataRequest_1a70c36059615585703b9f1ba46586079b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::PutFileMetadataRequest::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot) override</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::PutFileMetadataRequest::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9957" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="39074" bodyend="39161"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1PutFileMetadataRequest_1add0a313b14adff04c5b5b4dcb97f5315" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::PutFileMetadataRequest::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const override</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::PutFileMetadataRequest::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9958" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="39163" bodyend="39200"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1PutFileMetadataRequest_1ab1a1f02c1e1480beaf8ab427b4946a78" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::PutFileMetadataRequest::printTo</definition>
+        <argsstring>(std::ostream &amp;out) const</argsstring>
+        <name>printTo</name>
+        <qualifiedname>Apache::Hadoop::Hive::PutFileMetadataRequest::printTo</qualifiedname>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9960" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="39236" bodyend="39243"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::PutFileMetadataRequest</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1PutFileMetadataRequest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::PutFileMetadataRequest</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1PutFileMetadataRequest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>fileIds</edgelabel>
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>metadata</edgelabel>
+        </childnode>
+        <childnode refid="7" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="7">
+        <label>Apache::Hadoop::Hive::_PutFileMetadataRequest__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__PutFileMetadataRequest____isset"/>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+      <node id="6">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="5">
+        <label>std::string</label>
+        <childnode refid="6" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::vector&lt; int64_t &gt;</label>
+      </node>
+      <node id="4">
+        <label>std::vector&lt; std::string &gt;</label>
+        <childnode refid="5" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9926" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="9926" bodyend="9961"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1PutFileMetadataRequest_1a00f88e329b88af1979e6623aaa3db6e7" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::PutFileMetadataRequest</scope><name>__isset</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1PutFileMetadataRequest_1a393584899a08d8fc6d7c3f0c83009c6b" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::PutFileMetadataRequest</scope><name>__set_fileIds</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1PutFileMetadataRequest_1ace2942bba742ba5c57640cd09eae8b27" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::PutFileMetadataRequest</scope><name>__set_metadata</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1PutFileMetadataRequest_1a8b428de1815b7672aac6e6a3e51dcc3b" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::PutFileMetadataRequest</scope><name>__set_type</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1PutFileMetadataRequest_1a5b0c9340f4e8bfee35748ceef771c4d5" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::PutFileMetadataRequest</scope><name>fileIds</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1PutFileMetadataRequest_1a584f08a166822fc7d82beed325743c5b" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::PutFileMetadataRequest</scope><name>metadata</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1PutFileMetadataRequest_1a1c9981d0aa29fca6628ef15d3ce47313" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::PutFileMetadataRequest</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1PutFileMetadataRequest_1a85d7a53e92e097bb6a5432ab0821fb9c" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::PutFileMetadataRequest</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1PutFileMetadataRequest_1a963f0b1b56365cf6bc1ec05e05fe4e6e" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::PutFileMetadataRequest</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1PutFileMetadataRequest_1ad1c08f9734146c47410e3d87d4707b6b" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::PutFileMetadataRequest</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1PutFileMetadataRequest_1ab1a1f02c1e1480beaf8ab427b4946a78" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::PutFileMetadataRequest</scope><name>printTo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1PutFileMetadataRequest_1a8afcda33dea503c1ad097d43461de28a" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::PutFileMetadataRequest</scope><name>PutFileMetadataRequest</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1PutFileMetadataRequest_1aa512c837d627f73041dcdd139087808a" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::PutFileMetadataRequest</scope><name>PutFileMetadataRequest</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1PutFileMetadataRequest_1a70c36059615585703b9f1ba46586079b" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::PutFileMetadataRequest</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1PutFileMetadataRequest_1a2be3482f9c1fd12c5b0db2d7c526b433" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::PutFileMetadataRequest</scope><name>type</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1PutFileMetadataRequest_1add0a313b14adff04c5b5b4dcb97f5315" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::PutFileMetadataRequest</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1PutFileMetadataRequest_1aa6329bed4f0ea1f97c4cfda1864c9d87" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::PutFileMetadataRequest</scope><name>~PutFileMetadataRequest</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

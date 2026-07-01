@@ -1,0 +1,255 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1Timestamp" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::Timestamp</compoundname>
+    <basecompoundref prot="public" virt="virtual">apache::thrift::TBase</basecompoundref>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1Timestamp_1aa5ea0b7858e03347bea2fdc7e59fb3a4" prot="public" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t Apache::Hadoop::Hive::Timestamp::secondsSinceEpoch</definition>
+        <argsstring></argsstring>
+        <name>secondsSinceEpoch</name>
+        <qualifiedname>Apache::Hadoop::Hive::Timestamp::secondsSinceEpoch</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3704" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="3704" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1Timestamp_1a300d74cac2ea6883c1addccf6d0c57eb" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::Timestamp::Timestamp</definition>
+        <argsstring>(const Timestamp &amp;) noexcept</argsstring>
+        <name>Timestamp</name>
+        <qualifiedname>Apache::Hadoop::Hive::Timestamp::Timestamp</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1Timestamp" kindref="compound">Timestamp</ref> &amp;</type>
+          <defname>other364</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3699" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="11596" bodyend="11598"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1Timestamp_1a6935231f11048418d590ddc2bd18ddbf" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1Timestamp" kindref="compound">Timestamp</ref> &amp;</type>
+        <definition>Timestamp &amp; Apache::Hadoop::Hive::Timestamp::operator=</definition>
+        <argsstring>(const Timestamp &amp;) noexcept</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::Timestamp::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1Timestamp" kindref="compound">Timestamp</ref> &amp;</type>
+          <defname>other365</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3700" column="13" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="11599" bodyend="11602"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1Timestamp_1a7d306c620a87794d74bba638dcd88d1e" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::Timestamp::Timestamp</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>Timestamp</name>
+        <qualifiedname>Apache::Hadoop::Hive::Timestamp::Timestamp</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3701" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="11512" bodyend="11514"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1Timestamp_1aca637bf210739026701cb994f942b45a" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::Timestamp::~Timestamp</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~Timestamp</name>
+        <qualifiedname>Apache::Hadoop::Hive::Timestamp::~Timestamp</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3703" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="11509" bodyend="11510"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1Timestamp_1a895b513f209d362d29d64fecf9093430" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::Timestamp::__set_secondsSinceEpoch</definition>
+        <argsstring>(const int64_t val)</argsstring>
+        <name>__set_secondsSinceEpoch</name>
+        <qualifiedname>Apache::Hadoop::Hive::Timestamp::__set_secondsSinceEpoch</qualifiedname>
+        <param>
+          <type>const int64_t</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3706" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="11516" bodyend="11518"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1Timestamp_1a4e1e3e8b8fb9e29adada478376037e23" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::Timestamp::operator==</definition>
+        <argsstring>(const Timestamp &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::Timestamp::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1Timestamp" kindref="compound">Timestamp</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3708" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="11589" bodyend="11594"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1Timestamp_1ae923cfcc0e62d380d0e6fadf50300c1a" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::Timestamp::operator!=</definition>
+        <argsstring>(const Timestamp &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::Timestamp::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1Timestamp" kindref="compound">Timestamp</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3709" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="3709" bodyend="3711"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1Timestamp_1ae0f74a860dfd213c5a02b08a0d0440be" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::Timestamp::operator&lt;</definition>
+        <argsstring>(const Timestamp &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::Timestamp::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1Timestamp" kindref="compound">Timestamp</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3713" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1Timestamp_1a486198fd1c931aca8a03a152f73235b4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::Timestamp::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot) override</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::Timestamp::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3715" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="11526" bodyend="11568"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1Timestamp_1a23307db695c1a7ab5585f78fc988cc9c" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::Timestamp::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const override</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::Timestamp::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3716" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="11570" bodyend="11582"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1Timestamp_1a38438df0fef94cbb56f7b84235da0506" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::Timestamp::printTo</definition>
+        <argsstring>(std::ostream &amp;out) const</argsstring>
+        <name>printTo</name>
+        <qualifiedname>Apache::Hadoop::Hive::Timestamp::printTo</qualifiedname>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3718" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="11603" bodyend="11608"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::Timestamp</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1Timestamp"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::Timestamp</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1Timestamp"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3696" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="3696" bodyend="3719"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1Timestamp_1a895b513f209d362d29d64fecf9093430" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::Timestamp</scope><name>__set_secondsSinceEpoch</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1Timestamp_1ae923cfcc0e62d380d0e6fadf50300c1a" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::Timestamp</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1Timestamp_1ae0f74a860dfd213c5a02b08a0d0440be" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::Timestamp</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1Timestamp_1a6935231f11048418d590ddc2bd18ddbf" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::Timestamp</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1Timestamp_1a4e1e3e8b8fb9e29adada478376037e23" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::Timestamp</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1Timestamp_1a38438df0fef94cbb56f7b84235da0506" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::Timestamp</scope><name>printTo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1Timestamp_1a486198fd1c931aca8a03a152f73235b4" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::Timestamp</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1Timestamp_1aa5ea0b7858e03347bea2fdc7e59fb3a4" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::Timestamp</scope><name>secondsSinceEpoch</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1Timestamp_1a300d74cac2ea6883c1addccf6d0c57eb" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::Timestamp</scope><name>Timestamp</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1Timestamp_1a7d306c620a87794d74bba638dcd88d1e" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::Timestamp</scope><name>Timestamp</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1Timestamp_1a23307db695c1a7ab5585f78fc988cc9c" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::Timestamp</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1Timestamp_1aca637bf210739026701cb994f942b45a" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::Timestamp</scope><name>~Timestamp</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

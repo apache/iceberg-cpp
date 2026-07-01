@@ -1,0 +1,319 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1CompactionAbortedException" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::CompactionAbortedException</compoundname>
+    <basecompoundref prot="public" virt="non-virtual">apache::thrift::TException</basecompoundref>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1CompactionAbortedException_1afce1a35ed274d7451bb06c211cd02273" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::CompactionAbortedException::message</definition>
+        <argsstring></argsstring>
+        <name>message</name>
+        <qualifiedname>Apache::Hadoop::Hive::CompactionAbortedException::message</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15847" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="15847" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1CompactionAbortedException_1ac3c2945203c9fd93a85635df05f648ea" prot="public" static="no" mutable="no">
+        <type><ref refid="structApache_1_1Hadoop_1_1Hive_1_1__CompactionAbortedException____isset" kindref="compound">_CompactionAbortedException__isset</ref></type>
+        <definition>_CompactionAbortedException__isset Apache::Hadoop::Hive::CompactionAbortedException::__isset</definition>
+        <argsstring></argsstring>
+        <name>__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::CompactionAbortedException::__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15849" column="38" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="15849" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1CompactionAbortedException_1a4b4cad36808395f175756bc711a9424f" prot="public" static="no" mutable="yes">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::CompactionAbortedException::thriftTExceptionMessageHolder_</definition>
+        <argsstring></argsstring>
+        <name>thriftTExceptionMessageHolder_</name>
+        <qualifiedname>Apache::Hadoop::Hive::CompactionAbortedException::thriftTExceptionMessageHolder_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15864" column="23" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="15864" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CompactionAbortedException_1a5b37eef9abae13041de28406e079f992" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::CompactionAbortedException::CompactionAbortedException</definition>
+        <argsstring>(const CompactionAbortedException &amp;)</argsstring>
+        <name>CompactionAbortedException</name>
+        <qualifiedname>Apache::Hadoop::Hive::CompactionAbortedException::CompactionAbortedException</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionAbortedException" kindref="compound">CompactionAbortedException</ref> &amp;</type>
+          <defname>other1883</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15842" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="62182" bodyend="62185"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CompactionAbortedException_1ac5109ae6dcb530277e0ee9f9fbdb77ae" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionAbortedException" kindref="compound">CompactionAbortedException</ref> &amp;</type>
+        <definition>CompactionAbortedException &amp; Apache::Hadoop::Hive::CompactionAbortedException::operator=</definition>
+        <argsstring>(const CompactionAbortedException &amp;)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::CompactionAbortedException::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionAbortedException" kindref="compound">CompactionAbortedException</ref> &amp;</type>
+          <defname>other1884</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15843" column="30" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="62186" bodyend="62190"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CompactionAbortedException_1a5a57090dadc49b30cf61cdf606a3a177" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::CompactionAbortedException::CompactionAbortedException</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>CompactionAbortedException</name>
+        <qualifiedname>Apache::Hadoop::Hive::CompactionAbortedException::CompactionAbortedException</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15844" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="62100" bodyend="62102"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CompactionAbortedException_1a6d2dfdf84bfbb893222d7d708a30c814" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::CompactionAbortedException::~CompactionAbortedException</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~CompactionAbortedException</name>
+        <qualifiedname>Apache::Hadoop::Hive::CompactionAbortedException::~CompactionAbortedException</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15846" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="62097" bodyend="62098"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CompactionAbortedException_1a90c2b7dcda7745d141d5dcd6da3847a2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::CompactionAbortedException::__set_message</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_message</name>
+        <qualifiedname>Apache::Hadoop::Hive::CompactionAbortedException::__set_message</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15851" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="62104" bodyend="62106"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CompactionAbortedException_1a879721588a5e41df18a323100e3dfdbb" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::CompactionAbortedException::operator==</definition>
+        <argsstring>(const CompactionAbortedException &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::CompactionAbortedException::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionAbortedException" kindref="compound">CompactionAbortedException</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15853" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="62175" bodyend="62180"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CompactionAbortedException_1abfef0c208576fdf89ebc6e68a7f1ad6a" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::CompactionAbortedException::operator!=</definition>
+        <argsstring>(const CompactionAbortedException &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::CompactionAbortedException::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionAbortedException" kindref="compound">CompactionAbortedException</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15854" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="15854" bodyend="15856"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CompactionAbortedException_1af23f291a64126b7f2b75aac39860f914" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::CompactionAbortedException::operator&lt;</definition>
+        <argsstring>(const CompactionAbortedException &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::CompactionAbortedException::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionAbortedException" kindref="compound">CompactionAbortedException</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15858" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CompactionAbortedException_1a79c9f756aab1028db61e2c7487f011d3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::CompactionAbortedException::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot)</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::CompactionAbortedException::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15860" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="62114" bodyend="62153"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CompactionAbortedException_1aecea744183a4db198f2656b6f0d7acc8" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::CompactionAbortedException::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::CompactionAbortedException::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15861" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="62155" bodyend="62167"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CompactionAbortedException_1a0017ddcc6e8d5a9db06f6d0c820910f5" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::CompactionAbortedException::printTo</definition>
+        <argsstring>(std::ostream &amp;out) const</argsstring>
+        <name>printTo</name>
+        <qualifiedname>Apache::Hadoop::Hive::CompactionAbortedException::printTo</qualifiedname>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15863" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="62191" bodyend="62196"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CompactionAbortedException_1ac54910c6ac9f4da31f3e57f6aca1de04" prot="public" static="no" const="yes" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type>const char *</type>
+        <definition>const char * Apache::Hadoop::Hive::CompactionAbortedException::what</definition>
+        <argsstring>() const noexcept override</argsstring>
+        <name>what</name>
+        <qualifiedname>Apache::Hadoop::Hive::CompactionAbortedException::what</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15865" column="14" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="62198" bodyend="62207"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::CompactionAbortedException</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionAbortedException"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TException</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::CompactionAbortedException</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionAbortedException"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>message</edgelabel>
+          <edgelabel>thriftTExceptionMessageHolder_</edgelabel>
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="5">
+        <label>Apache::Hadoop::Hive::_CompactionAbortedException__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__CompactionAbortedException____isset"/>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TException</label>
+      </node>
+      <node id="4">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="3">
+        <label>std::string</label>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15839" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="15839" bodyend="15866"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionAbortedException_1ac3c2945203c9fd93a85635df05f648ea" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CompactionAbortedException</scope><name>__isset</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionAbortedException_1a90c2b7dcda7745d141d5dcd6da3847a2" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CompactionAbortedException</scope><name>__set_message</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionAbortedException_1a5b37eef9abae13041de28406e079f992" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CompactionAbortedException</scope><name>CompactionAbortedException</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionAbortedException_1a5a57090dadc49b30cf61cdf606a3a177" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CompactionAbortedException</scope><name>CompactionAbortedException</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionAbortedException_1afce1a35ed274d7451bb06c211cd02273" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CompactionAbortedException</scope><name>message</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionAbortedException_1abfef0c208576fdf89ebc6e68a7f1ad6a" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CompactionAbortedException</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionAbortedException_1af23f291a64126b7f2b75aac39860f914" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CompactionAbortedException</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionAbortedException_1ac5109ae6dcb530277e0ee9f9fbdb77ae" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CompactionAbortedException</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionAbortedException_1a879721588a5e41df18a323100e3dfdbb" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CompactionAbortedException</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionAbortedException_1a0017ddcc6e8d5a9db06f6d0c820910f5" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::CompactionAbortedException</scope><name>printTo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionAbortedException_1a79c9f756aab1028db61e2c7487f011d3" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CompactionAbortedException</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionAbortedException_1a4b4cad36808395f175756bc711a9424f" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CompactionAbortedException</scope><name>thriftTExceptionMessageHolder_</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionAbortedException_1ac54910c6ac9f4da31f3e57f6aca1de04" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CompactionAbortedException</scope><name>what</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionAbortedException_1aecea744183a4db198f2656b6f0d7acc8" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CompactionAbortedException</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionAbortedException_1a6d2dfdf84bfbb893222d7d708a30c814" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::CompactionAbortedException</scope><name>~CompactionAbortedException</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

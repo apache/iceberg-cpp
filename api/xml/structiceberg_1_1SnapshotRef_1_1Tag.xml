@@ -1,0 +1,79 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1SnapshotRef_1_1Tag" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::SnapshotRef::Tag</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1SnapshotRef_1_1Tag_1a51a7a1608df43d8eff2cc8cd1600420e" prot="public" static="no" mutable="no">
+        <type>std::optional&lt; int64_t &gt;</type>
+        <definition>std::optional&lt;int64_t&gt; iceberg::SnapshotRef::Tag::max_ref_age_ms</definition>
+        <argsstring></argsstring>
+        <name>max_ref_age_ms</name>
+        <qualifiedname>iceberg::SnapshotRef::Tag::max_ref_age_ms</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>For snapshot references except the main branch, a positive number for the max age of the snapshot reference to keep while expiring snapshots. Defaults to table property history.expire.max-ref-age-ms. The main branch never expires. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/snapshot.h" line="99" column="19" bodyfile="iceberg/snapshot.h" bodystart="99" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="friend">
+      <memberdef kind="friend" id="structiceberg_1_1SnapshotRef_1_1Tag_1ac2b7639cd47e0904f7e8bd8ca4efe367" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool operator==</definition>
+        <argsstring>(const Tag &amp;lhs, const Tag &amp;rhs)</argsstring>
+        <name>operator==</name>
+        <qualifiedname>iceberg::SnapshotRef::Tag::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1SnapshotRef_1_1Tag" kindref="compound">Tag</ref> &amp;</type>
+          <declname>lhs</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structiceberg_1_1SnapshotRef_1_1Tag" kindref="compound">Tag</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+<para>Compare two tags for equality. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/snapshot.h" line="102" column="17" bodyfile="iceberg/snapshot.h" bodystart="102" bodyend="102"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="structiceberg_1_1SnapshotRef_1_1Tag_1a465e05f50bc3aec5e7d918f1ef3e7268" prot="private" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::SnapshotRef::Tag::Equals</definition>
+        <argsstring>(const Tag &amp;other) const</argsstring>
+        <name>Equals</name>
+        <qualifiedname>iceberg::SnapshotRef::Tag::Equals</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1SnapshotRef_1_1Tag" kindref="compound">Tag</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+<para>Compare two tags for equality. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/snapshot.h" line="106" column="10" bodyfile="iceberg/snapshot.cc" bodystart="59" bodyend="61"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/snapshot.h" line="95" column="3" bodyfile="iceberg/snapshot.h" bodystart="95" bodyend="107"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1SnapshotRef_1_1Tag_1a465e05f50bc3aec5e7d918f1ef3e7268" prot="private" virt="non-virtual"><scope>iceberg::SnapshotRef::Tag</scope><name>Equals</name></member>
+      <member refid="structiceberg_1_1SnapshotRef_1_1Tag_1a51a7a1608df43d8eff2cc8cd1600420e" prot="public" virt="non-virtual"><scope>iceberg::SnapshotRef::Tag</scope><name>max_ref_age_ms</name></member>
+      <member refid="structiceberg_1_1SnapshotRef_1_1Tag_1ac2b7639cd47e0904f7e8bd8ca4efe367" prot="public" virt="non-virtual"><scope>iceberg::SnapshotRef::Tag</scope><name>operator==</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

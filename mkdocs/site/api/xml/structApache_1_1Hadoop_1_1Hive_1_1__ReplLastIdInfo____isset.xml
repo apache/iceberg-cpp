@@ -1,0 +1,80 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structApache_1_1Hadoop_1_1Hive_1_1__ReplLastIdInfo____isset" kind="struct" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::_ReplLastIdInfo__isset</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__ReplLastIdInfo____isset_1a8dceac632ce7d918b7f9b39972b45616" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_ReplLastIdInfo__isset::table</definition>
+        <argsstring></argsstring>
+        <name>table</name>
+        <qualifiedname>Apache::Hadoop::Hive::_ReplLastIdInfo__isset::table</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7019" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="7019" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__ReplLastIdInfo____isset_1a3e6ca21a5236f4c0e518188b7e3b3cb1" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_ReplLastIdInfo__isset::catalog</definition>
+        <argsstring></argsstring>
+        <name>catalog</name>
+        <qualifiedname>Apache::Hadoop::Hive::_ReplLastIdInfo__isset::catalog</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7020" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="7020" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__ReplLastIdInfo____isset_1a3f4893cdb537223868366987d19aef9e" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_ReplLastIdInfo__isset::partitionList</definition>
+        <argsstring></argsstring>
+        <name>partitionList</name>
+        <qualifiedname>Apache::Hadoop::Hive::_ReplLastIdInfo__isset::partitionList</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7021" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="7021" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structApache_1_1Hadoop_1_1Hive_1_1__ReplLastIdInfo____isset_1aec2901b65426eeb4319d118209470b93" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::_ReplLastIdInfo__isset::_ReplLastIdInfo__isset</definition>
+        <argsstring>()</argsstring>
+        <name>_ReplLastIdInfo__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::_ReplLastIdInfo__isset::_ReplLastIdInfo__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7018" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="7018" bodyend="7018"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7017" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="7017" bodyend="7022"/>
+    <listofallmembers>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__ReplLastIdInfo____isset_1aec2901b65426eeb4319d118209470b93" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_ReplLastIdInfo__isset</scope><name>_ReplLastIdInfo__isset</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__ReplLastIdInfo____isset_1a3e6ca21a5236f4c0e518188b7e3b3cb1" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_ReplLastIdInfo__isset</scope><name>catalog</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__ReplLastIdInfo____isset_1a3f4893cdb537223868366987d19aef9e" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_ReplLastIdInfo__isset</scope><name>partitionList</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__ReplLastIdInfo____isset_1a8dceac632ce7d918b7f9b39972b45616" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_ReplLastIdInfo__isset</scope><name>table</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

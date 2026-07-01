@@ -1,0 +1,1257 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1AlterTableRequest" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::AlterTableRequest</compoundname>
+    <basecompoundref prot="public" virt="virtual">apache::thrift::TBase</basecompoundref>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1AlterTableRequest_1a8002a6918197d84e71028220f1453edc" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::AlterTableRequest::catName</definition>
+        <argsstring></argsstring>
+        <name>catName</name>
+        <qualifiedname>Apache::Hadoop::Hive::AlterTableRequest::catName</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13861" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="13861" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1AlterTableRequest_1a6435bf86086b114e46c651487d73ee05" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::AlterTableRequest::dbName</definition>
+        <argsstring></argsstring>
+        <name>dbName</name>
+        <qualifiedname>Apache::Hadoop::Hive::AlterTableRequest::dbName</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13862" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="13862" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1AlterTableRequest_1ae9d5431ae1fabf137b9fee17377cc9fb" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::AlterTableRequest::tableName</definition>
+        <argsstring></argsstring>
+        <name>tableName</name>
+        <qualifiedname>Apache::Hadoop::Hive::AlterTableRequest::tableName</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13863" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="13863" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1AlterTableRequest_1a2cb845cf77c6c01cec42f1807ef3fd0c" prot="public" static="no" mutable="no">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1Table" kindref="compound">Table</ref></type>
+        <definition>Table Apache::Hadoop::Hive::AlterTableRequest::table</definition>
+        <argsstring></argsstring>
+        <name>table</name>
+        <qualifiedname>Apache::Hadoop::Hive::AlterTableRequest::table</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13864" column="9" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="13864" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1AlterTableRequest_1a3d009af3ffaf4265c7db30e74ced0711" prot="public" static="no" mutable="no">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1EnvironmentContext" kindref="compound">EnvironmentContext</ref></type>
+        <definition>EnvironmentContext Apache::Hadoop::Hive::AlterTableRequest::environmentContext</definition>
+        <argsstring></argsstring>
+        <name>environmentContext</name>
+        <qualifiedname>Apache::Hadoop::Hive::AlterTableRequest::environmentContext</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13865" column="22" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="13865" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1AlterTableRequest_1af9842dce359f041f867cedb5a1524496" prot="public" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t Apache::Hadoop::Hive::AlterTableRequest::writeId</definition>
+        <argsstring></argsstring>
+        <name>writeId</name>
+        <qualifiedname>Apache::Hadoop::Hive::AlterTableRequest::writeId</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13866" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="13866" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1AlterTableRequest_1a0687974f54682495d16ccd94434e5009" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::AlterTableRequest::validWriteIdList</definition>
+        <argsstring></argsstring>
+        <name>validWriteIdList</name>
+        <qualifiedname>Apache::Hadoop::Hive::AlterTableRequest::validWriteIdList</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13867" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="13867" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1AlterTableRequest_1a26bd92af96ace2961b848335d9ce74a7" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; std::string &gt;</type>
+        <definition>std::vector&lt;std::string&gt; Apache::Hadoop::Hive::AlterTableRequest::processorCapabilities</definition>
+        <argsstring></argsstring>
+        <name>processorCapabilities</name>
+        <qualifiedname>Apache::Hadoop::Hive::AlterTableRequest::processorCapabilities</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13868" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="13868" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1AlterTableRequest_1ae46d53221b495ef63c788595fa350f27" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::AlterTableRequest::processorIdentifier</definition>
+        <argsstring></argsstring>
+        <name>processorIdentifier</name>
+        <qualifiedname>Apache::Hadoop::Hive::AlterTableRequest::processorIdentifier</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13869" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="13869" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1AlterTableRequest_1a5aec4ff8ba5b7c7425858b01d70ca5e0" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::AlterTableRequest::expectedParameterKey</definition>
+        <argsstring></argsstring>
+        <name>expectedParameterKey</name>
+        <qualifiedname>Apache::Hadoop::Hive::AlterTableRequest::expectedParameterKey</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13870" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="13870" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1AlterTableRequest_1aa8b29c2461069a95fbb5202512b308e4" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::AlterTableRequest::expectedParameterValue</definition>
+        <argsstring></argsstring>
+        <name>expectedParameterValue</name>
+        <qualifiedname>Apache::Hadoop::Hive::AlterTableRequest::expectedParameterValue</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13871" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="13871" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1AlterTableRequest_1ac8ec6b35181e6eb2f4563ffe432c2976" prot="public" static="no" mutable="no">
+        <type><ref refid="structApache_1_1Hadoop_1_1Hive_1_1__AlterTableRequest____isset" kindref="compound">_AlterTableRequest__isset</ref></type>
+        <definition>_AlterTableRequest__isset Apache::Hadoop::Hive::AlterTableRequest::__isset</definition>
+        <argsstring></argsstring>
+        <name>__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::AlterTableRequest::__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13873" column="29" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="13873" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AlterTableRequest_1a2b275e7c173f32ed3024dd0dd25b81fa" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::AlterTableRequest::AlterTableRequest</definition>
+        <argsstring>(const AlterTableRequest &amp;)</argsstring>
+        <name>AlterTableRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::AlterTableRequest::AlterTableRequest</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1AlterTableRequest" kindref="compound">AlterTableRequest</ref> &amp;</type>
+          <defname>other1693</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13856" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="54638" bodyend="54651"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AlterTableRequest_1a58e5402a2bc2fb17602a62ec618e1184" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1AlterTableRequest" kindref="compound">AlterTableRequest</ref> &amp;</type>
+        <definition>AlterTableRequest &amp; Apache::Hadoop::Hive::AlterTableRequest::operator=</definition>
+        <argsstring>(const AlterTableRequest &amp;)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::AlterTableRequest::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1AlterTableRequest" kindref="compound">AlterTableRequest</ref> &amp;</type>
+          <defname>other1694</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13857" column="21" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="54652" bodyend="54666"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AlterTableRequest_1ab69622c73231c8766c1c116ba7347971" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::AlterTableRequest::AlterTableRequest</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>AlterTableRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::AlterTableRequest::AlterTableRequest</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13858" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="54298" bodyend="54307"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AlterTableRequest_1a6c92e1ce607c29831eb136728cfbd9f3" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::AlterTableRequest::~AlterTableRequest</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~AlterTableRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::AlterTableRequest::~AlterTableRequest</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13860" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="54295" bodyend="54296"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AlterTableRequest_1a7464336d29131d6cd960cc3e2a811cc0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::AlterTableRequest::__set_catName</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_catName</name>
+        <qualifiedname>Apache::Hadoop::Hive::AlterTableRequest::__set_catName</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13875" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="54309" bodyend="54312"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AlterTableRequest_1af328d0645edb70c1e4c3c203cde92ca2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::AlterTableRequest::__set_dbName</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_dbName</name>
+        <qualifiedname>Apache::Hadoop::Hive::AlterTableRequest::__set_dbName</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13877" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="54314" bodyend="54316"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AlterTableRequest_1aac76f06672e148daa5f74def1a5f6092" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::AlterTableRequest::__set_tableName</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_tableName</name>
+        <qualifiedname>Apache::Hadoop::Hive::AlterTableRequest::__set_tableName</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13879" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="54318" bodyend="54320"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AlterTableRequest_1a34ac42df504d98052717c8bb3bb6eb95" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::AlterTableRequest::__set_table</definition>
+        <argsstring>(const Table &amp;val)</argsstring>
+        <name>__set_table</name>
+        <qualifiedname>Apache::Hadoop::Hive::AlterTableRequest::__set_table</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1Table" kindref="compound">Table</ref> &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13881" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="54322" bodyend="54324"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AlterTableRequest_1ae8e42642855a785eb3ba7d3ac20cca6f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::AlterTableRequest::__set_environmentContext</definition>
+        <argsstring>(const EnvironmentContext &amp;val)</argsstring>
+        <name>__set_environmentContext</name>
+        <qualifiedname>Apache::Hadoop::Hive::AlterTableRequest::__set_environmentContext</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1EnvironmentContext" kindref="compound">EnvironmentContext</ref> &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13883" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="54326" bodyend="54329"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AlterTableRequest_1a199da8cf301fdbe6a49aa1d1e421bd09" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::AlterTableRequest::__set_writeId</definition>
+        <argsstring>(const int64_t val)</argsstring>
+        <name>__set_writeId</name>
+        <qualifiedname>Apache::Hadoop::Hive::AlterTableRequest::__set_writeId</qualifiedname>
+        <param>
+          <type>const int64_t</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13885" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="54331" bodyend="54334"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AlterTableRequest_1a51e893d6d3e3a4ba4c0b1ba645a2c923" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::AlterTableRequest::__set_validWriteIdList</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_validWriteIdList</name>
+        <qualifiedname>Apache::Hadoop::Hive::AlterTableRequest::__set_validWriteIdList</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13887" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="54336" bodyend="54339"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AlterTableRequest_1a2279ef70e577fbaf72b3671439d2144e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::AlterTableRequest::__set_processorCapabilities</definition>
+        <argsstring>(const std::vector&lt; std::string &gt; &amp;val)</argsstring>
+        <name>__set_processorCapabilities</name>
+        <qualifiedname>Apache::Hadoop::Hive::AlterTableRequest::__set_processorCapabilities</qualifiedname>
+        <param>
+          <type>const std::vector&lt; std::string &gt; &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13889" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="54341" bodyend="54344"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AlterTableRequest_1a622b149fefe61746937ef011424d2782" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::AlterTableRequest::__set_processorIdentifier</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_processorIdentifier</name>
+        <qualifiedname>Apache::Hadoop::Hive::AlterTableRequest::__set_processorIdentifier</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13891" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="54346" bodyend="54349"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AlterTableRequest_1a326449b94c26c9822a183773ad5a0393" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::AlterTableRequest::__set_expectedParameterKey</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_expectedParameterKey</name>
+        <qualifiedname>Apache::Hadoop::Hive::AlterTableRequest::__set_expectedParameterKey</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13893" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="54351" bodyend="54354"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AlterTableRequest_1a622fbd72f2d60630617cbe181aa8e977" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::AlterTableRequest::__set_expectedParameterValue</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_expectedParameterValue</name>
+        <qualifiedname>Apache::Hadoop::Hive::AlterTableRequest::__set_expectedParameterValue</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13895" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="54356" bodyend="54359"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AlterTableRequest_1a6dda6567f01cea4b4dc9487acc5ca414" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::AlterTableRequest::operator==</definition>
+        <argsstring>(const AlterTableRequest &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::AlterTableRequest::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1AlterTableRequest" kindref="compound">AlterTableRequest</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13897" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="54595" bodyend="54636"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AlterTableRequest_1adb0d7899e04781c69bd137bf16374790" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::AlterTableRequest::operator!=</definition>
+        <argsstring>(const AlterTableRequest &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::AlterTableRequest::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1AlterTableRequest" kindref="compound">AlterTableRequest</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13898" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="13898" bodyend="13900"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AlterTableRequest_1a85f2ce9a9b60c028706f01381064f108" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::AlterTableRequest::operator&lt;</definition>
+        <argsstring>(const AlterTableRequest &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::AlterTableRequest::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1AlterTableRequest" kindref="compound">AlterTableRequest</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13902" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AlterTableRequest_1ac1d27f3b062b10c1020202e17dae1c13" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::AlterTableRequest::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot) override</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::AlterTableRequest::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13904" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="54367" bodyend="54507"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AlterTableRequest_1a9d133af049bbaa4a324e2d61af6651ee" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::AlterTableRequest::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const override</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::AlterTableRequest::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13905" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="54509" bodyend="54577"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AlterTableRequest_1ada2d6227c23d9fcac991f65e4a0436de" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::AlterTableRequest::printTo</definition>
+        <argsstring>(std::ostream &amp;out) const</argsstring>
+        <name>printTo</name>
+        <qualifiedname>Apache::Hadoop::Hive::AlterTableRequest::printTo</qualifiedname>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13907" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="54667" bodyend="54682"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::AlterTableRequest</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1AlterTableRequest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::AlterTableRequest</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1AlterTableRequest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>catName</edgelabel>
+          <edgelabel>dbName</edgelabel>
+          <edgelabel>expectedParameterKey</edgelabel>
+          <edgelabel>expectedParameterValue</edgelabel>
+          <edgelabel>processorIdentifier</edgelabel>
+          <edgelabel>tableName</edgelabel>
+          <edgelabel>validWriteIdList</edgelabel>
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>table</edgelabel>
+        </childnode>
+        <childnode refid="65" relation="usage">
+          <edgelabel>environmentContext</edgelabel>
+        </childnode>
+        <childnode refid="13" relation="usage">
+          <edgelabel>processorCapabilities</edgelabel>
+        </childnode>
+        <childnode refid="67" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="47">
+        <label>Apache::Hadoop::Hive::BinaryColumnStatsData</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1BinaryColumnStatsData"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>bitVectors</edgelabel>
+        </childnode>
+        <childnode refid="48" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="39">
+        <label>Apache::Hadoop::Hive::BooleanColumnStatsData</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1BooleanColumnStatsData"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>bitVectors</edgelabel>
+        </childnode>
+        <childnode refid="40" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="33">
+        <label>Apache::Hadoop::Hive::ColumnStatistics</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1ColumnStatistics"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="34" relation="usage">
+          <edgelabel>statsDesc</edgelabel>
+        </childnode>
+        <childnode refid="36" relation="usage">
+          <edgelabel>statsObj</edgelabel>
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>engine</edgelabel>
+        </childnode>
+        <childnode refid="59" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="38">
+        <label>Apache::Hadoop::Hive::ColumnStatisticsData</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1ColumnStatisticsData"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="39" relation="usage">
+          <edgelabel>booleanStats</edgelabel>
+        </childnode>
+        <childnode refid="41" relation="usage">
+          <edgelabel>longStats</edgelabel>
+        </childnode>
+        <childnode refid="43" relation="usage">
+          <edgelabel>doubleStats</edgelabel>
+        </childnode>
+        <childnode refid="45" relation="usage">
+          <edgelabel>stringStats</edgelabel>
+        </childnode>
+        <childnode refid="47" relation="usage">
+          <edgelabel>binaryStats</edgelabel>
+        </childnode>
+        <childnode refid="49" relation="usage">
+          <edgelabel>decimalStats</edgelabel>
+        </childnode>
+        <childnode refid="52" relation="usage">
+          <edgelabel>dateStats</edgelabel>
+        </childnode>
+        <childnode refid="55" relation="usage">
+          <edgelabel>timestampStats</edgelabel>
+        </childnode>
+        <childnode refid="58" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="34">
+        <label>Apache::Hadoop::Hive::ColumnStatisticsDesc</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1ColumnStatisticsDesc"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>catName</edgelabel>
+          <edgelabel>dbName</edgelabel>
+          <edgelabel>partName</edgelabel>
+          <edgelabel>tableName</edgelabel>
+        </childnode>
+        <childnode refid="35" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="37">
+        <label>Apache::Hadoop::Hive::ColumnStatisticsObj</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1ColumnStatisticsObj"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>colName</edgelabel>
+          <edgelabel>colType</edgelabel>
+        </childnode>
+        <childnode refid="38" relation="usage">
+          <edgelabel>statsData</edgelabel>
+        </childnode>
+      </node>
+      <node id="28">
+        <label>Apache::Hadoop::Hive::CreationMetadata</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1CreationMetadata"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>catName</edgelabel>
+          <edgelabel>dbName</edgelabel>
+          <edgelabel>tblName</edgelabel>
+          <edgelabel>validTxnList</edgelabel>
+        </childnode>
+        <childnode refid="29" relation="usage">
+          <edgelabel>tablesUsed</edgelabel>
+        </childnode>
+        <childnode refid="30" relation="usage">
+          <edgelabel>sourceTables</edgelabel>
+        </childnode>
+        <childnode refid="32" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="53">
+        <label>Apache::Hadoop::Hive::Date</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1Date"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="52">
+        <label>Apache::Hadoop::Hive::DateColumnStatsData</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1DateColumnStatsData"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="53" relation="usage">
+          <edgelabel>highValue</edgelabel>
+          <edgelabel>lowValue</edgelabel>
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>bitVectors</edgelabel>
+          <edgelabel>histogram</edgelabel>
+        </childnode>
+        <childnode refid="54" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="50">
+        <label>Apache::Hadoop::Hive::Decimal</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1Decimal"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>unscaled</edgelabel>
+        </childnode>
+      </node>
+      <node id="49">
+        <label>Apache::Hadoop::Hive::DecimalColumnStatsData</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1DecimalColumnStatsData"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="50" relation="usage">
+          <edgelabel>highValue</edgelabel>
+          <edgelabel>lowValue</edgelabel>
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>bitVectors</edgelabel>
+          <edgelabel>histogram</edgelabel>
+        </childnode>
+        <childnode refid="51" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="43">
+        <label>Apache::Hadoop::Hive::DoubleColumnStatsData</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1DoubleColumnStatsData"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>bitVectors</edgelabel>
+          <edgelabel>histogram</edgelabel>
+        </childnode>
+        <childnode refid="44" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="65">
+        <label>Apache::Hadoop::Hive::EnvironmentContext</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1EnvironmentContext"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="11" relation="usage">
+          <edgelabel>properties</edgelabel>
+        </childnode>
+        <childnode refid="66" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="8">
+        <label>Apache::Hadoop::Hive::FieldSchema</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1FieldSchema"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>comment</edgelabel>
+          <edgelabel>name</edgelabel>
+          <edgelabel>type</edgelabel>
+        </childnode>
+        <childnode refid="9" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="60">
+        <label>Apache::Hadoop::Hive::FileMetadata</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1FileMetadata"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="13" relation="usage">
+          <edgelabel>data</edgelabel>
+        </childnode>
+        <childnode refid="61" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="41">
+        <label>Apache::Hadoop::Hive::LongColumnStatsData</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1LongColumnStatsData"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>bitVectors</edgelabel>
+          <edgelabel>histogram</edgelabel>
+        </childnode>
+        <childnode refid="42" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="62">
+        <label>Apache::Hadoop::Hive::ObjectDictionary</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1ObjectDictionary"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="63" relation="usage">
+          <edgelabel>values</edgelabel>
+        </childnode>
+      </node>
+      <node id="15">
+        <label>Apache::Hadoop::Hive::Order</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1Order"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>col</edgelabel>
+        </childnode>
+        <childnode refid="16" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="22">
+        <label>Apache::Hadoop::Hive::PrincipalPrivilegeSet</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1PrincipalPrivilegeSet"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="23" relation="usage">
+          <edgelabel>groupPrivileges</edgelabel>
+          <edgelabel>rolePrivileges</edgelabel>
+          <edgelabel>userPrivileges</edgelabel>
+        </childnode>
+        <childnode refid="27" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="25">
+        <label>Apache::Hadoop::Hive::PrivilegeGrantInfo</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1PrivilegeGrantInfo"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>grantor</edgelabel>
+          <edgelabel>privilege</edgelabel>
+        </childnode>
+        <childnode refid="26" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="10">
+        <label>Apache::Hadoop::Hive::SerDeInfo</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1SerDeInfo"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>description</edgelabel>
+          <edgelabel>deserializerClass</edgelabel>
+          <edgelabel>name</edgelabel>
+          <edgelabel>serializationLib</edgelabel>
+          <edgelabel>serializerClass</edgelabel>
+        </childnode>
+        <childnode refid="11" relation="usage">
+          <edgelabel>parameters</edgelabel>
+        </childnode>
+        <childnode refid="12" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="17">
+        <label>Apache::Hadoop::Hive::SkewedInfo</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1SkewedInfo"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="13" relation="usage">
+          <edgelabel>skewedColNames</edgelabel>
+        </childnode>
+        <childnode refid="18" relation="usage">
+          <edgelabel>skewedColValues</edgelabel>
+        </childnode>
+        <childnode refid="19" relation="usage">
+          <edgelabel>skewedColValueLocationMaps</edgelabel>
+        </childnode>
+        <childnode refid="20" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="31">
+        <label>Apache::Hadoop::Hive::SourceTable</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1SourceTable"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>table</edgelabel>
+        </childnode>
+      </node>
+      <node id="6">
+        <label>Apache::Hadoop::Hive::StorageDescriptor</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1StorageDescriptor"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="7" relation="usage">
+          <edgelabel>cols</edgelabel>
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>inputFormat</edgelabel>
+          <edgelabel>location</edgelabel>
+          <edgelabel>outputFormat</edgelabel>
+        </childnode>
+        <childnode refid="10" relation="usage">
+          <edgelabel>serdeInfo</edgelabel>
+        </childnode>
+        <childnode refid="13" relation="usage">
+          <edgelabel>bucketCols</edgelabel>
+        </childnode>
+        <childnode refid="14" relation="usage">
+          <edgelabel>sortCols</edgelabel>
+        </childnode>
+        <childnode refid="11" relation="usage">
+          <edgelabel>parameters</edgelabel>
+        </childnode>
+        <childnode refid="17" relation="usage">
+          <edgelabel>skewedInfo</edgelabel>
+        </childnode>
+        <childnode refid="21" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="45">
+        <label>Apache::Hadoop::Hive::StringColumnStatsData</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1StringColumnStatsData"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>bitVectors</edgelabel>
+        </childnode>
+        <childnode refid="46" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="5">
+        <label>Apache::Hadoop::Hive::Table</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1Table"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>catName</edgelabel>
+          <edgelabel>dbName</edgelabel>
+          <edgelabel>owner</edgelabel>
+          <edgelabel>tableName</edgelabel>
+          <edgelabel>tableType</edgelabel>
+          <edgelabel>viewExpandedText</edgelabel>
+          <edgelabel>viewOriginalText</edgelabel>
+        </childnode>
+        <childnode refid="6" relation="usage">
+          <edgelabel>sd</edgelabel>
+        </childnode>
+        <childnode refid="7" relation="usage">
+          <edgelabel>partitionKeys</edgelabel>
+        </childnode>
+        <childnode refid="11" relation="usage">
+          <edgelabel>parameters</edgelabel>
+        </childnode>
+        <childnode refid="22" relation="usage">
+          <edgelabel>privileges</edgelabel>
+        </childnode>
+        <childnode refid="28" relation="usage">
+          <edgelabel>creationMetadata</edgelabel>
+        </childnode>
+        <childnode refid="33" relation="usage">
+          <edgelabel>colStats</edgelabel>
+        </childnode>
+        <childnode refid="13" relation="usage">
+          <edgelabel>requiredReadCapabilities</edgelabel>
+          <edgelabel>requiredWriteCapabilities</edgelabel>
+        </childnode>
+        <childnode refid="60" relation="usage">
+          <edgelabel>fileMetadata</edgelabel>
+        </childnode>
+        <childnode refid="62" relation="usage">
+          <edgelabel>dictionary</edgelabel>
+        </childnode>
+        <childnode refid="64" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="56">
+        <label>Apache::Hadoop::Hive::Timestamp</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1Timestamp"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="55">
+        <label>Apache::Hadoop::Hive::TimestampColumnStatsData</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1TimestampColumnStatsData"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="56" relation="usage">
+          <edgelabel>highValue</edgelabel>
+          <edgelabel>lowValue</edgelabel>
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>bitVectors</edgelabel>
+          <edgelabel>histogram</edgelabel>
+        </childnode>
+        <childnode refid="57" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="67">
+        <label>Apache::Hadoop::Hive::_AlterTableRequest__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__AlterTableRequest____isset"/>
+      </node>
+      <node id="48">
+        <label>Apache::Hadoop::Hive::_BinaryColumnStatsData__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__BinaryColumnStatsData____isset"/>
+      </node>
+      <node id="40">
+        <label>Apache::Hadoop::Hive::_BooleanColumnStatsData__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__BooleanColumnStatsData____isset"/>
+      </node>
+      <node id="58">
+        <label>Apache::Hadoop::Hive::_ColumnStatisticsData__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__ColumnStatisticsData____isset"/>
+      </node>
+      <node id="35">
+        <label>Apache::Hadoop::Hive::_ColumnStatisticsDesc__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__ColumnStatisticsDesc____isset"/>
+      </node>
+      <node id="59">
+        <label>Apache::Hadoop::Hive::_ColumnStatistics__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__ColumnStatistics____isset"/>
+      </node>
+      <node id="32">
+        <label>Apache::Hadoop::Hive::_CreationMetadata__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__CreationMetadata____isset"/>
+      </node>
+      <node id="54">
+        <label>Apache::Hadoop::Hive::_DateColumnStatsData__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__DateColumnStatsData____isset"/>
+      </node>
+      <node id="51">
+        <label>Apache::Hadoop::Hive::_DecimalColumnStatsData__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__DecimalColumnStatsData____isset"/>
+      </node>
+      <node id="44">
+        <label>Apache::Hadoop::Hive::_DoubleColumnStatsData__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__DoubleColumnStatsData____isset"/>
+      </node>
+      <node id="66">
+        <label>Apache::Hadoop::Hive::_EnvironmentContext__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__EnvironmentContext____isset"/>
+      </node>
+      <node id="9">
+        <label>Apache::Hadoop::Hive::_FieldSchema__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__FieldSchema____isset"/>
+      </node>
+      <node id="61">
+        <label>Apache::Hadoop::Hive::_FileMetadata__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__FileMetadata____isset"/>
+      </node>
+      <node id="42">
+        <label>Apache::Hadoop::Hive::_LongColumnStatsData__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__LongColumnStatsData____isset"/>
+      </node>
+      <node id="16">
+        <label>Apache::Hadoop::Hive::_Order__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__Order____isset"/>
+      </node>
+      <node id="27">
+        <label>Apache::Hadoop::Hive::_PrincipalPrivilegeSet__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__PrincipalPrivilegeSet____isset"/>
+      </node>
+      <node id="26">
+        <label>Apache::Hadoop::Hive::_PrivilegeGrantInfo__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__PrivilegeGrantInfo____isset"/>
+      </node>
+      <node id="12">
+        <label>Apache::Hadoop::Hive::_SerDeInfo__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__SerDeInfo____isset"/>
+      </node>
+      <node id="20">
+        <label>Apache::Hadoop::Hive::_SkewedInfo__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__SkewedInfo____isset"/>
+      </node>
+      <node id="21">
+        <label>Apache::Hadoop::Hive::_StorageDescriptor__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__StorageDescriptor____isset"/>
+      </node>
+      <node id="46">
+        <label>Apache::Hadoop::Hive::_StringColumnStatsData__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__StringColumnStatsData____isset"/>
+      </node>
+      <node id="64">
+        <label>Apache::Hadoop::Hive::_Table__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__Table____isset"/>
+      </node>
+      <node id="57">
+        <label>Apache::Hadoop::Hive::_TimestampColumnStatsData__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__TimestampColumnStatsData____isset"/>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+      <node id="11">
+        <label>std::map&lt; std::string, std::string &gt;</label>
+        <childnode refid="3" relation="usage">
+          <edgelabel>elements</edgelabel>
+          <edgelabel>keys</edgelabel>
+        </childnode>
+      </node>
+      <node id="23">
+        <label>std::map&lt; std::string, std::vector&lt; Apache::Hadoop::Hive::PrivilegeGrantInfo &gt; &gt;</label>
+        <childnode refid="3" relation="usage">
+          <edgelabel>keys</edgelabel>
+        </childnode>
+        <childnode refid="24" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="63">
+        <label>std::map&lt; std::string, std::vector&lt; std::string &gt; &gt;</label>
+        <childnode refid="3" relation="usage">
+          <edgelabel>keys</edgelabel>
+        </childnode>
+        <childnode refid="13" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="19">
+        <label>std::map&lt; std::vector&lt; std::string &gt;, std::string &gt;</label>
+        <childnode refid="13" relation="usage">
+          <edgelabel>keys</edgelabel>
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="29">
+        <label>std::set&lt; std::string &gt;</label>
+        <childnode refid="3" relation="usage">
+          <edgelabel>keys</edgelabel>
+        </childnode>
+      </node>
+      <node id="4">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="3">
+        <label>std::string</label>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="36">
+        <label>std::vector&lt; Apache::Hadoop::Hive::ColumnStatisticsObj &gt;</label>
+        <childnode refid="37" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="7">
+        <label>std::vector&lt; Apache::Hadoop::Hive::FieldSchema &gt;</label>
+        <childnode refid="8" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="14">
+        <label>std::vector&lt; Apache::Hadoop::Hive::Order &gt;</label>
+        <childnode refid="15" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="24">
+        <label>std::vector&lt; Apache::Hadoop::Hive::PrivilegeGrantInfo &gt;</label>
+        <childnode refid="25" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="30">
+        <label>std::vector&lt; Apache::Hadoop::Hive::SourceTable &gt;</label>
+        <childnode refid="31" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="13">
+        <label>std::vector&lt; std::string &gt;</label>
+        <childnode refid="3" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="18">
+        <label>std::vector&lt; std::vector&lt; std::string &gt; &gt;</label>
+        <childnode refid="13" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13853" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="13853" bodyend="13908"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AlterTableRequest_1ac8ec6b35181e6eb2f4563ffe432c2976" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AlterTableRequest</scope><name>__isset</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AlterTableRequest_1a7464336d29131d6cd960cc3e2a811cc0" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AlterTableRequest</scope><name>__set_catName</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AlterTableRequest_1af328d0645edb70c1e4c3c203cde92ca2" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AlterTableRequest</scope><name>__set_dbName</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AlterTableRequest_1ae8e42642855a785eb3ba7d3ac20cca6f" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AlterTableRequest</scope><name>__set_environmentContext</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AlterTableRequest_1a326449b94c26c9822a183773ad5a0393" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AlterTableRequest</scope><name>__set_expectedParameterKey</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AlterTableRequest_1a622fbd72f2d60630617cbe181aa8e977" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AlterTableRequest</scope><name>__set_expectedParameterValue</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AlterTableRequest_1a2279ef70e577fbaf72b3671439d2144e" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AlterTableRequest</scope><name>__set_processorCapabilities</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AlterTableRequest_1a622b149fefe61746937ef011424d2782" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AlterTableRequest</scope><name>__set_processorIdentifier</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AlterTableRequest_1a34ac42df504d98052717c8bb3bb6eb95" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AlterTableRequest</scope><name>__set_table</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AlterTableRequest_1aac76f06672e148daa5f74def1a5f6092" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AlterTableRequest</scope><name>__set_tableName</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AlterTableRequest_1a51e893d6d3e3a4ba4c0b1ba645a2c923" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AlterTableRequest</scope><name>__set_validWriteIdList</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AlterTableRequest_1a199da8cf301fdbe6a49aa1d1e421bd09" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AlterTableRequest</scope><name>__set_writeId</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AlterTableRequest_1a2b275e7c173f32ed3024dd0dd25b81fa" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AlterTableRequest</scope><name>AlterTableRequest</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AlterTableRequest_1ab69622c73231c8766c1c116ba7347971" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AlterTableRequest</scope><name>AlterTableRequest</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AlterTableRequest_1a8002a6918197d84e71028220f1453edc" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AlterTableRequest</scope><name>catName</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AlterTableRequest_1a6435bf86086b114e46c651487d73ee05" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AlterTableRequest</scope><name>dbName</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AlterTableRequest_1a3d009af3ffaf4265c7db30e74ced0711" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AlterTableRequest</scope><name>environmentContext</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AlterTableRequest_1a5aec4ff8ba5b7c7425858b01d70ca5e0" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AlterTableRequest</scope><name>expectedParameterKey</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AlterTableRequest_1aa8b29c2461069a95fbb5202512b308e4" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AlterTableRequest</scope><name>expectedParameterValue</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AlterTableRequest_1adb0d7899e04781c69bd137bf16374790" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AlterTableRequest</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AlterTableRequest_1a85f2ce9a9b60c028706f01381064f108" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AlterTableRequest</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AlterTableRequest_1a58e5402a2bc2fb17602a62ec618e1184" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AlterTableRequest</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AlterTableRequest_1a6dda6567f01cea4b4dc9487acc5ca414" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AlterTableRequest</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AlterTableRequest_1ada2d6227c23d9fcac991f65e4a0436de" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::AlterTableRequest</scope><name>printTo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AlterTableRequest_1a26bd92af96ace2961b848335d9ce74a7" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AlterTableRequest</scope><name>processorCapabilities</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AlterTableRequest_1ae46d53221b495ef63c788595fa350f27" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AlterTableRequest</scope><name>processorIdentifier</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AlterTableRequest_1ac1d27f3b062b10c1020202e17dae1c13" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AlterTableRequest</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AlterTableRequest_1a2cb845cf77c6c01cec42f1807ef3fd0c" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AlterTableRequest</scope><name>table</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AlterTableRequest_1ae9d5431ae1fabf137b9fee17377cc9fb" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AlterTableRequest</scope><name>tableName</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AlterTableRequest_1a0687974f54682495d16ccd94434e5009" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AlterTableRequest</scope><name>validWriteIdList</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AlterTableRequest_1a9d133af049bbaa4a324e2d61af6651ee" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AlterTableRequest</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AlterTableRequest_1af9842dce359f041f867cedb5a1524496" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AlterTableRequest</scope><name>writeId</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AlterTableRequest_1a6c92e1ce607c29831eb136728cfbd9f3" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::AlterTableRequest</scope><name>~AlterTableRequest</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

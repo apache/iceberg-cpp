@@ -1,0 +1,48 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structApache_1_1Hadoop_1_1Hive_1_1__GetOpenTxnsResponse____isset" kind="struct" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::_GetOpenTxnsResponse__isset</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__GetOpenTxnsResponse____isset_1a160feac739536d120e4d07773a237de8" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_GetOpenTxnsResponse__isset::min_open_txn</definition>
+        <argsstring></argsstring>
+        <name>min_open_txn</name>
+        <qualifiedname>Apache::Hadoop::Hive::_GetOpenTxnsResponse__isset::min_open_txn</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6701" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="6701" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structApache_1_1Hadoop_1_1Hive_1_1__GetOpenTxnsResponse____isset_1ac4dac3a1d074e2dc8f15a43cac48c90d" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::_GetOpenTxnsResponse__isset::_GetOpenTxnsResponse__isset</definition>
+        <argsstring>()</argsstring>
+        <name>_GetOpenTxnsResponse__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::_GetOpenTxnsResponse__isset::_GetOpenTxnsResponse__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6700" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="6700" bodyend="6700"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6699" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="6699" bodyend="6702"/>
+    <listofallmembers>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__GetOpenTxnsResponse____isset_1ac4dac3a1d074e2dc8f15a43cac48c90d" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_GetOpenTxnsResponse__isset</scope><name>_GetOpenTxnsResponse__isset</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__GetOpenTxnsResponse____isset_1a160feac739536d120e4d07773a237de8" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_GetOpenTxnsResponse__isset</scope><name>min_open_txn</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

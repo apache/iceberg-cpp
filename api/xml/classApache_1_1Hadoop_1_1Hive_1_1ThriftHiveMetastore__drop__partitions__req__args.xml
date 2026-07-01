@@ -1,0 +1,347 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__drop__partitions__req__args" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::ThriftHiveMetastore_drop_partitions_req_args</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__drop__partitions__req__args_1ad8c190ff54a1dd1b69da16003a03fa2a" prot="public" static="no" mutable="no">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1DropPartitionsRequest" kindref="compound">DropPartitionsRequest</ref></type>
+        <definition>DropPartitionsRequest Apache::Hadoop::Hive::ThriftHiveMetastore_drop_partitions_req_args::req</definition>
+        <argsstring></argsstring>
+        <name>req</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_drop_partitions_req_args::req</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="9890" column="25" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="9890" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__drop__partitions__req__args_1a2994b3a66fa1016693d1f8e60f95e24e" prot="public" static="no" mutable="no">
+        <type><ref refid="structApache_1_1Hadoop_1_1Hive_1_1__ThriftHiveMetastore__drop__partitions__req__args____isset" kindref="compound">_ThriftHiveMetastore_drop_partitions_req_args__isset</ref></type>
+        <definition>_ThriftHiveMetastore_drop_partitions_req_args__isset Apache::Hadoop::Hive::ThriftHiveMetastore_drop_partitions_req_args::__isset</definition>
+        <argsstring></argsstring>
+        <name>__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_drop_partitions_req_args::__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="9892" column="56" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="9892" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__drop__partitions__req__args_1af82467214b0be2505c317040b0aa882f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::ThriftHiveMetastore_drop_partitions_req_args::ThriftHiveMetastore_drop_partitions_req_args</definition>
+        <argsstring>(const ThriftHiveMetastore_drop_partitions_req_args &amp;)</argsstring>
+        <name>ThriftHiveMetastore_drop_partitions_req_args</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_drop_partitions_req_args::ThriftHiveMetastore_drop_partitions_req_args</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__drop__partitions__req__args" kindref="compound">ThriftHiveMetastore_drop_partitions_req_args</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="9885" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__drop__partitions__req__args_1ac0368d157e8a5797c2fbc6ca93bf0163" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__drop__partitions__req__args" kindref="compound">ThriftHiveMetastore_drop_partitions_req_args</ref> &amp;</type>
+        <definition>ThriftHiveMetastore_drop_partitions_req_args &amp; Apache::Hadoop::Hive::ThriftHiveMetastore_drop_partitions_req_args::operator=</definition>
+        <argsstring>(const ThriftHiveMetastore_drop_partitions_req_args &amp;)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_drop_partitions_req_args::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__drop__partitions__req__args" kindref="compound">ThriftHiveMetastore_drop_partitions_req_args</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="9886" column="48"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__drop__partitions__req__args_1afbf751cfd50ccf697b0e65d4210b5a6b" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::ThriftHiveMetastore_drop_partitions_req_args::ThriftHiveMetastore_drop_partitions_req_args</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>ThriftHiveMetastore_drop_partitions_req_args</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_drop_partitions_req_args::ThriftHiveMetastore_drop_partitions_req_args</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="9887" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.cpp" bodystart="20526" bodyend="20527"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__drop__partitions__req__args_1a53c71550f8bf88abfbf7c3374eb77d57" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::ThriftHiveMetastore_drop_partitions_req_args::~ThriftHiveMetastore_drop_partitions_req_args</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~ThriftHiveMetastore_drop_partitions_req_args</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_drop_partitions_req_args::~ThriftHiveMetastore_drop_partitions_req_args</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="9889" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.cpp" bodystart="20523" bodyend="20524"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__drop__partitions__req__args_1a18bc21d8a94646f4cecd809626b55484" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::ThriftHiveMetastore_drop_partitions_req_args::__set_req</definition>
+        <argsstring>(const DropPartitionsRequest &amp;val)</argsstring>
+        <name>__set_req</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_drop_partitions_req_args::__set_req</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1DropPartitionsRequest" kindref="compound">DropPartitionsRequest</ref> &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="9894" column="8"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__drop__partitions__req__args_1a5821ddad05abae3af7d1b9f3824d224c" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::ThriftHiveMetastore_drop_partitions_req_args::operator==</definition>
+        <argsstring>(const ThriftHiveMetastore_drop_partitions_req_args &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_drop_partitions_req_args::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__drop__partitions__req__args" kindref="compound">ThriftHiveMetastore_drop_partitions_req_args</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="9896" column="8"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__drop__partitions__req__args_1a9abbfc7cd5b8e6c4e19589fc2c0f7fe8" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::ThriftHiveMetastore_drop_partitions_req_args::operator!=</definition>
+        <argsstring>(const ThriftHiveMetastore_drop_partitions_req_args &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_drop_partitions_req_args::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__drop__partitions__req__args" kindref="compound">ThriftHiveMetastore_drop_partitions_req_args</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="9897" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="9897" bodyend="9899"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__drop__partitions__req__args_1a1a2cd9fb826142df9e13f062d4491cc1" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::ThriftHiveMetastore_drop_partitions_req_args::operator&lt;</definition>
+        <argsstring>(const ThriftHiveMetastore_drop_partitions_req_args &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_drop_partitions_req_args::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__drop__partitions__req__args" kindref="compound">ThriftHiveMetastore_drop_partitions_req_args</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="9901" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__drop__partitions__req__args_1af4ad873d32c8bd7e6e73ff6eb802b4ab" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::ThriftHiveMetastore_drop_partitions_req_args::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot)</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_drop_partitions_req_args::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="9903" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.cpp" bodystart="20529" bodyend="20568"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__drop__partitions__req__args_1a307bcf8ad90963fb2f8d47fa5b25b6b8" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::ThriftHiveMetastore_drop_partitions_req_args::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_drop_partitions_req_args::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="9904" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.cpp" bodystart="20570" bodyend="20582"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="9">
+        <label>Apache::Hadoop::Hive::DropPartitionsExpr</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1DropPartitionsExpr"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>expr</edgelabel>
+        </childnode>
+        <childnode refid="10" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="2">
+        <label>Apache::Hadoop::Hive::DropPartitionsRequest</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1DropPartitionsRequest"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>catName</edgelabel>
+          <edgelabel>dbName</edgelabel>
+          <edgelabel>tblName</edgelabel>
+        </childnode>
+        <childnode refid="6" relation="usage">
+          <edgelabel>parts</edgelabel>
+        </childnode>
+        <childnode refid="12" relation="usage">
+          <edgelabel>environmentContext</edgelabel>
+        </childnode>
+        <childnode refid="15" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="12">
+        <label>Apache::Hadoop::Hive::EnvironmentContext</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1EnvironmentContext"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+        <childnode refid="13" relation="usage">
+          <edgelabel>properties</edgelabel>
+        </childnode>
+        <childnode refid="14" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="6">
+        <label>Apache::Hadoop::Hive::RequestPartsSpec</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1RequestPartsSpec"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+        <childnode refid="7" relation="usage">
+          <edgelabel>names</edgelabel>
+        </childnode>
+        <childnode refid="8" relation="usage">
+          <edgelabel>exprs</edgelabel>
+        </childnode>
+        <childnode refid="11" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::ThriftHiveMetastore_drop_partitions_req_args</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__drop__partitions__req__args"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>req</edgelabel>
+        </childnode>
+        <childnode refid="16" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="10">
+        <label>Apache::Hadoop::Hive::_DropPartitionsExpr__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__DropPartitionsExpr____isset"/>
+      </node>
+      <node id="15">
+        <label>Apache::Hadoop::Hive::_DropPartitionsRequest__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__DropPartitionsRequest____isset"/>
+      </node>
+      <node id="14">
+        <label>Apache::Hadoop::Hive::_EnvironmentContext__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__EnvironmentContext____isset"/>
+      </node>
+      <node id="11">
+        <label>Apache::Hadoop::Hive::_RequestPartsSpec__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__RequestPartsSpec____isset"/>
+      </node>
+      <node id="16">
+        <label>Apache::Hadoop::Hive::_ThriftHiveMetastore_drop_partitions_req_args__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__ThriftHiveMetastore__drop__partitions__req__args____isset"/>
+      </node>
+      <node id="3">
+        <label>apache::thrift::TBase</label>
+      </node>
+      <node id="13">
+        <label>std::map&lt; std::string, std::string &gt;</label>
+        <childnode refid="4" relation="usage">
+          <edgelabel>elements</edgelabel>
+          <edgelabel>keys</edgelabel>
+        </childnode>
+      </node>
+      <node id="5">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="4">
+        <label>std::string</label>
+        <childnode refid="5" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="8">
+        <label>std::vector&lt; Apache::Hadoop::Hive::DropPartitionsExpr &gt;</label>
+        <childnode refid="9" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="7">
+        <label>std::vector&lt; std::string &gt;</label>
+        <childnode refid="4" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="9882" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="9882" bodyend="9906"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__drop__partitions__req__args_1a2994b3a66fa1016693d1f8e60f95e24e" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_drop_partitions_req_args</scope><name>__isset</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__drop__partitions__req__args_1a18bc21d8a94646f4cecd809626b55484" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_drop_partitions_req_args</scope><name>__set_req</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__drop__partitions__req__args_1a9abbfc7cd5b8e6c4e19589fc2c0f7fe8" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_drop_partitions_req_args</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__drop__partitions__req__args_1a1a2cd9fb826142df9e13f062d4491cc1" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_drop_partitions_req_args</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__drop__partitions__req__args_1ac0368d157e8a5797c2fbc6ca93bf0163" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_drop_partitions_req_args</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__drop__partitions__req__args_1a5821ddad05abae3af7d1b9f3824d224c" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_drop_partitions_req_args</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__drop__partitions__req__args_1af4ad873d32c8bd7e6e73ff6eb802b4ab" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_drop_partitions_req_args</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__drop__partitions__req__args_1ad8c190ff54a1dd1b69da16003a03fa2a" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_drop_partitions_req_args</scope><name>req</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__drop__partitions__req__args_1af82467214b0be2505c317040b0aa882f" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_drop_partitions_req_args</scope><name>ThriftHiveMetastore_drop_partitions_req_args</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__drop__partitions__req__args_1afbf751cfd50ccf697b0e65d4210b5a6b" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_drop_partitions_req_args</scope><name>ThriftHiveMetastore_drop_partitions_req_args</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__drop__partitions__req__args_1a307bcf8ad90963fb2f8d47fa5b25b6b8" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_drop_partitions_req_args</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__drop__partitions__req__args_1a53c71550f8bf88abfbf7c3374eb77d57" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_drop_partitions_req_args</scope><name>~ThriftHiveMetastore_drop_partitions_req_args</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

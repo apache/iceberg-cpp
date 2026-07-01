@@ -1,0 +1,601 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classfacebook_1_1fb303_1_1FacebookServiceProcessor" kind="class" language="C++" prot="public">
+    <compoundname>facebook::fb303::FacebookServiceProcessor</compoundname>
+    <basecompoundref prot="public" virt="non-virtual">apache::thrift::TDispatchProcessor</basecompoundref>
+    <derivedcompoundref refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastoreProcessor" prot="public" virt="non-virtual">Apache::Hadoop::Hive::ThriftHiveMetastoreProcessor</derivedcompoundref>
+    <sectiondef kind="private-type">
+      <memberdef kind="typedef" id="classfacebook_1_1fb303_1_1FacebookServiceProcessor_1add874f0f1f6a93860f2569e14c842313" prot="private" static="no">
+        <type>void(FacebookServiceProcessor::*</type>
+        <definition>typedef void(FacebookServiceProcessor::* facebook::fb303::FacebookServiceProcessor::ProcessFunction) (int32_t, ::apache::thrift::protocol::TProtocol *, ::apache::thrift::protocol::TProtocol *, void *)</definition>
+        <argsstring>)(int32_t, ::apache::thrift::protocol::TProtocol *, ::apache::thrift::protocol::TProtocol *, void *)</argsstring>
+        <name>ProcessFunction</name>
+        <qualifiedname>facebook::fb303::FacebookServiceProcessor::ProcessFunction</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="1306" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.h" bodystart="1306" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="classfacebook_1_1fb303_1_1FacebookServiceProcessor_1aa212d25659c8c08b6c4fbdb082a9adbe" prot="private" static="no">
+        <type>std::map&lt; std::string, ProcessFunction &gt;</type>
+        <definition>typedef std::map&lt;std::string, ProcessFunction&gt; facebook::fb303::FacebookServiceProcessor::ProcessMap</definition>
+        <argsstring></argsstring>
+        <name>ProcessMap</name>
+        <qualifiedname>facebook::fb303::FacebookServiceProcessor::ProcessMap</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="1307" column="20" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.h" bodystart="1307" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="protected-attrib">
+      <memberdef kind="variable" id="classfacebook_1_1fb303_1_1FacebookServiceProcessor_1a1ec428be6b6c158695a13779a0a07d97" prot="protected" static="no" mutable="no">
+        <type>::std::shared_ptr&lt; <ref refid="classfacebook_1_1fb303_1_1FacebookServiceIf" kindref="compound">FacebookServiceIf</ref> &gt;</type>
+        <definition>::std::shared_ptr&lt;FacebookServiceIf&gt; facebook::fb303::FacebookServiceProcessor::iface_</definition>
+        <argsstring></argsstring>
+        <name>iface_</name>
+        <qualifiedname>facebook::fb303::FacebookServiceProcessor::iface_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="1303" column="21" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.h" bodystart="1303" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classfacebook_1_1fb303_1_1FacebookServiceProcessor_1add5978800c9bc004e495a4c8e332796d" prot="private" static="no" mutable="no">
+        <type>ProcessMap</type>
+        <definition>ProcessMap facebook::fb303::FacebookServiceProcessor::processMap_</definition>
+        <argsstring></argsstring>
+        <name>processMap_</name>
+        <qualifiedname>facebook::fb303::FacebookServiceProcessor::processMap_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="1308" column="14" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.h" bodystart="1308" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="protected-func">
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookServiceProcessor_1a5fe42a372ce4f8061d281921dff6444a" prot="protected" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>bool</type>
+        <definition>bool facebook::fb303::FacebookServiceProcessor::dispatchCall</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot, ::apache::thrift::protocol::TProtocol *oprot, const std::string &amp;fname, int32_t seqid, void *callContext) override</argsstring>
+        <name>dispatchCall</name>
+        <qualifiedname>facebook::fb303::FacebookServiceProcessor::dispatchCall</qualifiedname>
+        <reimplementedby refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastoreProcessor_1a3c4323c708ff76c3fc9b36cb9981d291">dispatchCall</reimplementedby>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>fname</declname>
+        </param>
+        <param>
+          <type>int32_t</type>
+          <declname>seqid</declname>
+        </param>
+        <param>
+          <type>void *</type>
+          <declname>callContext</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="1304" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.cpp" bodystart="2828" bodyend="2845"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookServiceProcessor_1ac88d2e95bca4dcbd292a0edf2b28987d" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void facebook::fb303::FacebookServiceProcessor::process_getName</definition>
+        <argsstring>(int32_t seqid, ::apache::thrift::protocol::TProtocol *iprot, ::apache::thrift::protocol::TProtocol *oprot, void *callContext)</argsstring>
+        <name>process_getName</name>
+        <qualifiedname>facebook::fb303::FacebookServiceProcessor::process_getName</qualifiedname>
+        <param>
+          <type>int32_t</type>
+          <declname>seqid</declname>
+        </param>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <param>
+          <type>void *</type>
+          <declname>callContext</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="1309" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.cpp" bodystart="2847" bodyend="2899"/>
+      </memberdef>
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookServiceProcessor_1aa67802dc802b025b01ef3e28ec8e5349" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void facebook::fb303::FacebookServiceProcessor::process_getVersion</definition>
+        <argsstring>(int32_t seqid, ::apache::thrift::protocol::TProtocol *iprot, ::apache::thrift::protocol::TProtocol *oprot, void *callContext)</argsstring>
+        <name>process_getVersion</name>
+        <qualifiedname>facebook::fb303::FacebookServiceProcessor::process_getVersion</qualifiedname>
+        <param>
+          <type>int32_t</type>
+          <declname>seqid</declname>
+        </param>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <param>
+          <type>void *</type>
+          <declname>callContext</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="1310" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.cpp" bodystart="2901" bodyend="2953"/>
+      </memberdef>
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookServiceProcessor_1a00bf55b022a51ae4b947433c9c1d82db" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void facebook::fb303::FacebookServiceProcessor::process_getStatus</definition>
+        <argsstring>(int32_t seqid, ::apache::thrift::protocol::TProtocol *iprot, ::apache::thrift::protocol::TProtocol *oprot, void *callContext)</argsstring>
+        <name>process_getStatus</name>
+        <qualifiedname>facebook::fb303::FacebookServiceProcessor::process_getStatus</qualifiedname>
+        <param>
+          <type>int32_t</type>
+          <declname>seqid</declname>
+        </param>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <param>
+          <type>void *</type>
+          <declname>callContext</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="1311" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.cpp" bodystart="2955" bodyend="3007"/>
+      </memberdef>
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookServiceProcessor_1ae223b083183747b2fccdf51e088c76fb" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void facebook::fb303::FacebookServiceProcessor::process_getStatusDetails</definition>
+        <argsstring>(int32_t seqid, ::apache::thrift::protocol::TProtocol *iprot, ::apache::thrift::protocol::TProtocol *oprot, void *callContext)</argsstring>
+        <name>process_getStatusDetails</name>
+        <qualifiedname>facebook::fb303::FacebookServiceProcessor::process_getStatusDetails</qualifiedname>
+        <param>
+          <type>int32_t</type>
+          <declname>seqid</declname>
+        </param>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <param>
+          <type>void *</type>
+          <declname>callContext</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="1312" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.cpp" bodystart="3009" bodyend="3061"/>
+      </memberdef>
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookServiceProcessor_1a6d9c694ab1d813e9c6cfe0e57b3d8631" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void facebook::fb303::FacebookServiceProcessor::process_getCounters</definition>
+        <argsstring>(int32_t seqid, ::apache::thrift::protocol::TProtocol *iprot, ::apache::thrift::protocol::TProtocol *oprot, void *callContext)</argsstring>
+        <name>process_getCounters</name>
+        <qualifiedname>facebook::fb303::FacebookServiceProcessor::process_getCounters</qualifiedname>
+        <param>
+          <type>int32_t</type>
+          <declname>seqid</declname>
+        </param>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <param>
+          <type>void *</type>
+          <declname>callContext</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="1313" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.cpp" bodystart="3063" bodyend="3115"/>
+      </memberdef>
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookServiceProcessor_1a07ab7f5a31c40c308f0a9cdb5fa84248" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void facebook::fb303::FacebookServiceProcessor::process_getCounter</definition>
+        <argsstring>(int32_t seqid, ::apache::thrift::protocol::TProtocol *iprot, ::apache::thrift::protocol::TProtocol *oprot, void *callContext)</argsstring>
+        <name>process_getCounter</name>
+        <qualifiedname>facebook::fb303::FacebookServiceProcessor::process_getCounter</qualifiedname>
+        <param>
+          <type>int32_t</type>
+          <declname>seqid</declname>
+        </param>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <param>
+          <type>void *</type>
+          <declname>callContext</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="1314" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.cpp" bodystart="3117" bodyend="3169"/>
+      </memberdef>
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookServiceProcessor_1ada04aff8cf4f9e0c9b2c83e4f33a9ba0" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void facebook::fb303::FacebookServiceProcessor::process_setOption</definition>
+        <argsstring>(int32_t seqid, ::apache::thrift::protocol::TProtocol *iprot, ::apache::thrift::protocol::TProtocol *oprot, void *callContext)</argsstring>
+        <name>process_setOption</name>
+        <qualifiedname>facebook::fb303::FacebookServiceProcessor::process_setOption</qualifiedname>
+        <param>
+          <type>int32_t</type>
+          <declname>seqid</declname>
+        </param>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <param>
+          <type>void *</type>
+          <declname>callContext</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="1315" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.cpp" bodystart="3171" bodyend="3222"/>
+      </memberdef>
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookServiceProcessor_1a368c642ab65f513b231f4715b57067dc" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void facebook::fb303::FacebookServiceProcessor::process_getOption</definition>
+        <argsstring>(int32_t seqid, ::apache::thrift::protocol::TProtocol *iprot, ::apache::thrift::protocol::TProtocol *oprot, void *callContext)</argsstring>
+        <name>process_getOption</name>
+        <qualifiedname>facebook::fb303::FacebookServiceProcessor::process_getOption</qualifiedname>
+        <param>
+          <type>int32_t</type>
+          <declname>seqid</declname>
+        </param>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <param>
+          <type>void *</type>
+          <declname>callContext</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="1316" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.cpp" bodystart="3224" bodyend="3276"/>
+      </memberdef>
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookServiceProcessor_1ac76da4c0b2808973a0b9604cebc8d934" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void facebook::fb303::FacebookServiceProcessor::process_getOptions</definition>
+        <argsstring>(int32_t seqid, ::apache::thrift::protocol::TProtocol *iprot, ::apache::thrift::protocol::TProtocol *oprot, void *callContext)</argsstring>
+        <name>process_getOptions</name>
+        <qualifiedname>facebook::fb303::FacebookServiceProcessor::process_getOptions</qualifiedname>
+        <param>
+          <type>int32_t</type>
+          <declname>seqid</declname>
+        </param>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <param>
+          <type>void *</type>
+          <declname>callContext</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="1317" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.cpp" bodystart="3278" bodyend="3330"/>
+      </memberdef>
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookServiceProcessor_1a1a68bf5f76af584ac6a714ed7c89f410" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void facebook::fb303::FacebookServiceProcessor::process_getCpuProfile</definition>
+        <argsstring>(int32_t seqid, ::apache::thrift::protocol::TProtocol *iprot, ::apache::thrift::protocol::TProtocol *oprot, void *callContext)</argsstring>
+        <name>process_getCpuProfile</name>
+        <qualifiedname>facebook::fb303::FacebookServiceProcessor::process_getCpuProfile</qualifiedname>
+        <param>
+          <type>int32_t</type>
+          <declname>seqid</declname>
+        </param>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <param>
+          <type>void *</type>
+          <declname>callContext</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="1318" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.cpp" bodystart="3332" bodyend="3384"/>
+      </memberdef>
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookServiceProcessor_1aa3e2df17851aa963faf33a0831efd6fb" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void facebook::fb303::FacebookServiceProcessor::process_aliveSince</definition>
+        <argsstring>(int32_t seqid, ::apache::thrift::protocol::TProtocol *iprot, ::apache::thrift::protocol::TProtocol *oprot, void *callContext)</argsstring>
+        <name>process_aliveSince</name>
+        <qualifiedname>facebook::fb303::FacebookServiceProcessor::process_aliveSince</qualifiedname>
+        <param>
+          <type>int32_t</type>
+          <declname>seqid</declname>
+        </param>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <param>
+          <type>void *</type>
+          <declname>callContext</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="1319" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.cpp" bodystart="3386" bodyend="3438"/>
+      </memberdef>
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookServiceProcessor_1afe2797aee7c304ddb5b5619eb4002531" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void facebook::fb303::FacebookServiceProcessor::process_reinitialize</definition>
+        <argsstring>(int32_t seqid, ::apache::thrift::protocol::TProtocol *iprot, ::apache::thrift::protocol::TProtocol *oprot, void *callContext)</argsstring>
+        <name>process_reinitialize</name>
+        <qualifiedname>facebook::fb303::FacebookServiceProcessor::process_reinitialize</qualifiedname>
+        <param>
+          <type>int32_t</type>
+          <declname>seqid</declname>
+        </param>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <param>
+          <type>void *</type>
+          <declname>callContext</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="1320" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.cpp" bodystart="3440" bodyend="3475"/>
+      </memberdef>
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookServiceProcessor_1abec17df89befc94d751d2e493ca84406" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void facebook::fb303::FacebookServiceProcessor::process_shutdown</definition>
+        <argsstring>(int32_t seqid, ::apache::thrift::protocol::TProtocol *iprot, ::apache::thrift::protocol::TProtocol *oprot, void *callContext)</argsstring>
+        <name>process_shutdown</name>
+        <qualifiedname>facebook::fb303::FacebookServiceProcessor::process_shutdown</qualifiedname>
+        <param>
+          <type>int32_t</type>
+          <declname>seqid</declname>
+        </param>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <param>
+          <type>void *</type>
+          <declname>callContext</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="1321" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.cpp" bodystart="3477" bodyend="3512"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookServiceProcessor_1ad8684b6154050edaad6367bf32353f58" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>facebook::fb303::FacebookServiceProcessor::FacebookServiceProcessor</definition>
+        <argsstring>(::std::shared_ptr&lt; FacebookServiceIf &gt; iface)</argsstring>
+        <name>FacebookServiceProcessor</name>
+        <qualifiedname>facebook::fb303::FacebookServiceProcessor::FacebookServiceProcessor</qualifiedname>
+        <param>
+          <type>::std::shared_ptr&lt; <ref refid="classfacebook_1_1fb303_1_1FacebookServiceIf" kindref="compound">FacebookServiceIf</ref> &gt;</type>
+          <declname>iface</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="1323" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.h" bodystart="1323" bodyend="1338"/>
+      </memberdef>
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookServiceProcessor_1a928fe6b83541797e03313e3a604262df" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type></type>
+        <definition>virtual facebook::fb303::FacebookServiceProcessor::~FacebookServiceProcessor</definition>
+        <argsstring>()</argsstring>
+        <name>~FacebookServiceProcessor</name>
+        <qualifiedname>facebook::fb303::FacebookServiceProcessor::~FacebookServiceProcessor</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="1340" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.h" bodystart="1340" bodyend="1340"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="3">
+        <label>Apache::Hadoop::Hive::ThriftHiveMetastoreProcessor</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastoreProcessor"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TDispatchProcessor</label>
+      </node>
+      <node id="1">
+        <label>facebook::fb303::FacebookServiceProcessor</label>
+        <link refid="classfacebook_1_1fb303_1_1FacebookServiceProcessor"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="2">
+        <label>apache::thrift::TDispatchProcessor</label>
+      </node>
+      <node id="4">
+        <label>facebook::fb303::FacebookServiceIf</label>
+        <link refid="classfacebook_1_1fb303_1_1FacebookServiceIf"/>
+      </node>
+      <node id="1">
+        <label>facebook::fb303::FacebookServiceProcessor</label>
+        <link refid="classfacebook_1_1fb303_1_1FacebookServiceProcessor"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>iface_</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::shared_ptr&lt; facebook::fb303::FacebookServiceIf &gt;</label>
+        <childnode refid="4" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="1301" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.h" bodystart="1301" bodyend="1341"/>
+    <listofallmembers>
+      <member refid="classfacebook_1_1fb303_1_1FacebookServiceProcessor_1a5fe42a372ce4f8061d281921dff6444a" prot="protected" virt="virtual"><scope>facebook::fb303::FacebookServiceProcessor</scope><name>dispatchCall</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookServiceProcessor_1ad8684b6154050edaad6367bf32353f58" prot="public" virt="non-virtual"><scope>facebook::fb303::FacebookServiceProcessor</scope><name>FacebookServiceProcessor</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookServiceProcessor_1a1ec428be6b6c158695a13779a0a07d97" prot="protected" virt="non-virtual"><scope>facebook::fb303::FacebookServiceProcessor</scope><name>iface_</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookServiceProcessor_1aa3e2df17851aa963faf33a0831efd6fb" prot="private" virt="non-virtual"><scope>facebook::fb303::FacebookServiceProcessor</scope><name>process_aliveSince</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookServiceProcessor_1a07ab7f5a31c40c308f0a9cdb5fa84248" prot="private" virt="non-virtual"><scope>facebook::fb303::FacebookServiceProcessor</scope><name>process_getCounter</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookServiceProcessor_1a6d9c694ab1d813e9c6cfe0e57b3d8631" prot="private" virt="non-virtual"><scope>facebook::fb303::FacebookServiceProcessor</scope><name>process_getCounters</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookServiceProcessor_1a1a68bf5f76af584ac6a714ed7c89f410" prot="private" virt="non-virtual"><scope>facebook::fb303::FacebookServiceProcessor</scope><name>process_getCpuProfile</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookServiceProcessor_1ac88d2e95bca4dcbd292a0edf2b28987d" prot="private" virt="non-virtual"><scope>facebook::fb303::FacebookServiceProcessor</scope><name>process_getName</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookServiceProcessor_1a368c642ab65f513b231f4715b57067dc" prot="private" virt="non-virtual"><scope>facebook::fb303::FacebookServiceProcessor</scope><name>process_getOption</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookServiceProcessor_1ac76da4c0b2808973a0b9604cebc8d934" prot="private" virt="non-virtual"><scope>facebook::fb303::FacebookServiceProcessor</scope><name>process_getOptions</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookServiceProcessor_1a00bf55b022a51ae4b947433c9c1d82db" prot="private" virt="non-virtual"><scope>facebook::fb303::FacebookServiceProcessor</scope><name>process_getStatus</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookServiceProcessor_1ae223b083183747b2fccdf51e088c76fb" prot="private" virt="non-virtual"><scope>facebook::fb303::FacebookServiceProcessor</scope><name>process_getStatusDetails</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookServiceProcessor_1aa67802dc802b025b01ef3e28ec8e5349" prot="private" virt="non-virtual"><scope>facebook::fb303::FacebookServiceProcessor</scope><name>process_getVersion</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookServiceProcessor_1afe2797aee7c304ddb5b5619eb4002531" prot="private" virt="non-virtual"><scope>facebook::fb303::FacebookServiceProcessor</scope><name>process_reinitialize</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookServiceProcessor_1ada04aff8cf4f9e0c9b2c83e4f33a9ba0" prot="private" virt="non-virtual"><scope>facebook::fb303::FacebookServiceProcessor</scope><name>process_setOption</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookServiceProcessor_1abec17df89befc94d751d2e493ca84406" prot="private" virt="non-virtual"><scope>facebook::fb303::FacebookServiceProcessor</scope><name>process_shutdown</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookServiceProcessor_1add874f0f1f6a93860f2569e14c842313" prot="private" virt="non-virtual"><scope>facebook::fb303::FacebookServiceProcessor</scope><name>ProcessFunction</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookServiceProcessor_1aa212d25659c8c08b6c4fbdb082a9adbe" prot="private" virt="non-virtual"><scope>facebook::fb303::FacebookServiceProcessor</scope><name>ProcessMap</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookServiceProcessor_1add5978800c9bc004e495a4c8e332796d" prot="private" virt="non-virtual"><scope>facebook::fb303::FacebookServiceProcessor</scope><name>processMap_</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookServiceProcessor_1a928fe6b83541797e03313e3a604262df" prot="public" virt="virtual"><scope>facebook::fb303::FacebookServiceProcessor</scope><name>~FacebookServiceProcessor</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

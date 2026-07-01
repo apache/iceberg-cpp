@@ -1,0 +1,319 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1InvalidPartitionException" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::InvalidPartitionException</compoundname>
+    <basecompoundref prot="public" virt="non-virtual">apache::thrift::TException</basecompoundref>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1InvalidPartitionException_1adb444ed948231c18c8b0d7547a7054ca" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::InvalidPartitionException::message</definition>
+        <argsstring></argsstring>
+        <name>message</name>
+        <qualifiedname>Apache::Hadoop::Hive::InvalidPartitionException::message</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15429" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="15429" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1InvalidPartitionException_1ad65edb717c763e1c25e509068606ce52" prot="public" static="no" mutable="no">
+        <type><ref refid="structApache_1_1Hadoop_1_1Hive_1_1__InvalidPartitionException____isset" kindref="compound">_InvalidPartitionException__isset</ref></type>
+        <definition>_InvalidPartitionException__isset Apache::Hadoop::Hive::InvalidPartitionException::__isset</definition>
+        <argsstring></argsstring>
+        <name>__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::InvalidPartitionException::__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15431" column="37" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="15431" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1InvalidPartitionException_1ae626487469efa3b1e3061b44396694de" prot="public" static="no" mutable="yes">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::InvalidPartitionException::thriftTExceptionMessageHolder_</definition>
+        <argsstring></argsstring>
+        <name>thriftTExceptionMessageHolder_</name>
+        <qualifiedname>Apache::Hadoop::Hive::InvalidPartitionException::thriftTExceptionMessageHolder_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15446" column="23" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="15446" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1InvalidPartitionException_1a038c915f2f6c5d1fadaa2181a886ad28" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::InvalidPartitionException::InvalidPartitionException</definition>
+        <argsstring>(const InvalidPartitionException &amp;)</argsstring>
+        <name>InvalidPartitionException</name>
+        <qualifiedname>Apache::Hadoop::Hive::InvalidPartitionException::InvalidPartitionException</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1InvalidPartitionException" kindref="compound">InvalidPartitionException</ref> &amp;</type>
+          <defname>other1861</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15424" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="60939" bodyend="60942"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1InvalidPartitionException_1a57b5aff3320bfa70fca647368d3bc7ff" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1InvalidPartitionException" kindref="compound">InvalidPartitionException</ref> &amp;</type>
+        <definition>InvalidPartitionException &amp; Apache::Hadoop::Hive::InvalidPartitionException::operator=</definition>
+        <argsstring>(const InvalidPartitionException &amp;)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::InvalidPartitionException::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1InvalidPartitionException" kindref="compound">InvalidPartitionException</ref> &amp;</type>
+          <defname>other1862</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15425" column="29" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="60943" bodyend="60947"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1InvalidPartitionException_1ab74e1f40b4fbfac6613f2f8df031a665" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::InvalidPartitionException::InvalidPartitionException</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>InvalidPartitionException</name>
+        <qualifiedname>Apache::Hadoop::Hive::InvalidPartitionException::InvalidPartitionException</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15426" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="60857" bodyend="60859"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1InvalidPartitionException_1afee71b56af031751dca5bb554157235b" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::InvalidPartitionException::~InvalidPartitionException</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~InvalidPartitionException</name>
+        <qualifiedname>Apache::Hadoop::Hive::InvalidPartitionException::~InvalidPartitionException</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15428" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="60854" bodyend="60855"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1InvalidPartitionException_1ab1b22059dd32a0dec42bd51dfccb295d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::InvalidPartitionException::__set_message</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_message</name>
+        <qualifiedname>Apache::Hadoop::Hive::InvalidPartitionException::__set_message</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15433" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="60861" bodyend="60863"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1InvalidPartitionException_1a53f227a776d7a95b779bea28188ab6fa" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::InvalidPartitionException::operator==</definition>
+        <argsstring>(const InvalidPartitionException &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::InvalidPartitionException::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1InvalidPartitionException" kindref="compound">InvalidPartitionException</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15435" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="60932" bodyend="60937"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1InvalidPartitionException_1ace6c1200afc778862985597631dc4347" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::InvalidPartitionException::operator!=</definition>
+        <argsstring>(const InvalidPartitionException &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::InvalidPartitionException::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1InvalidPartitionException" kindref="compound">InvalidPartitionException</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15436" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="15436" bodyend="15438"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1InvalidPartitionException_1aa2516666849e8fc81ab871469c1f7642" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::InvalidPartitionException::operator&lt;</definition>
+        <argsstring>(const InvalidPartitionException &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::InvalidPartitionException::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1InvalidPartitionException" kindref="compound">InvalidPartitionException</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15440" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1InvalidPartitionException_1a4ee4da41e6902eb606742602f0180cd2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::InvalidPartitionException::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot)</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::InvalidPartitionException::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15442" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="60871" bodyend="60910"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1InvalidPartitionException_1af8d16711f046c94518b6563061ff9423" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::InvalidPartitionException::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::InvalidPartitionException::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15443" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="60912" bodyend="60924"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1InvalidPartitionException_1a768ba64caad08e6a354cf1b54f035801" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::InvalidPartitionException::printTo</definition>
+        <argsstring>(std::ostream &amp;out) const</argsstring>
+        <name>printTo</name>
+        <qualifiedname>Apache::Hadoop::Hive::InvalidPartitionException::printTo</qualifiedname>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15445" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="60948" bodyend="60953"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1InvalidPartitionException_1a5c3b551463e52503d9892b98d76f103e" prot="public" static="no" const="yes" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type>const char *</type>
+        <definition>const char * Apache::Hadoop::Hive::InvalidPartitionException::what</definition>
+        <argsstring>() const noexcept override</argsstring>
+        <name>what</name>
+        <qualifiedname>Apache::Hadoop::Hive::InvalidPartitionException::what</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15447" column="14" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="60955" bodyend="60964"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::InvalidPartitionException</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1InvalidPartitionException"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TException</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::InvalidPartitionException</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1InvalidPartitionException"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>message</edgelabel>
+          <edgelabel>thriftTExceptionMessageHolder_</edgelabel>
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="5">
+        <label>Apache::Hadoop::Hive::_InvalidPartitionException__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__InvalidPartitionException____isset"/>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TException</label>
+      </node>
+      <node id="4">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="3">
+        <label>std::string</label>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15421" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="15421" bodyend="15448"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1InvalidPartitionException_1ad65edb717c763e1c25e509068606ce52" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::InvalidPartitionException</scope><name>__isset</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1InvalidPartitionException_1ab1b22059dd32a0dec42bd51dfccb295d" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::InvalidPartitionException</scope><name>__set_message</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1InvalidPartitionException_1a038c915f2f6c5d1fadaa2181a886ad28" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::InvalidPartitionException</scope><name>InvalidPartitionException</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1InvalidPartitionException_1ab74e1f40b4fbfac6613f2f8df031a665" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::InvalidPartitionException</scope><name>InvalidPartitionException</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1InvalidPartitionException_1adb444ed948231c18c8b0d7547a7054ca" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::InvalidPartitionException</scope><name>message</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1InvalidPartitionException_1ace6c1200afc778862985597631dc4347" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::InvalidPartitionException</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1InvalidPartitionException_1aa2516666849e8fc81ab871469c1f7642" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::InvalidPartitionException</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1InvalidPartitionException_1a57b5aff3320bfa70fca647368d3bc7ff" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::InvalidPartitionException</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1InvalidPartitionException_1a53f227a776d7a95b779bea28188ab6fa" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::InvalidPartitionException</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1InvalidPartitionException_1a768ba64caad08e6a354cf1b54f035801" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::InvalidPartitionException</scope><name>printTo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1InvalidPartitionException_1a4ee4da41e6902eb606742602f0180cd2" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::InvalidPartitionException</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1InvalidPartitionException_1ae626487469efa3b1e3061b44396694de" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::InvalidPartitionException</scope><name>thriftTExceptionMessageHolder_</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1InvalidPartitionException_1a5c3b551463e52503d9892b98d76f103e" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::InvalidPartitionException</scope><name>what</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1InvalidPartitionException_1af8d16711f046c94518b6563061ff9423" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::InvalidPartitionException</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1InvalidPartitionException_1afee71b56af031751dca5bb554157235b" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::InvalidPartitionException</scope><name>~InvalidPartitionException</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

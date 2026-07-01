@@ -1,0 +1,128 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structApache_1_1Hadoop_1_1Hive_1_1__WMAlterResourcePlanRequest____isset" kind="struct" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::_WMAlterResourcePlanRequest__isset</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__WMAlterResourcePlanRequest____isset_1a6366ef0ec7a76f5a57e87fe482bcf918" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_WMAlterResourcePlanRequest__isset::resourcePlanName</definition>
+        <argsstring></argsstring>
+        <name>resourcePlanName</name>
+        <qualifiedname>Apache::Hadoop::Hive::_WMAlterResourcePlanRequest__isset::resourcePlanName</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11583" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="11583" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__WMAlterResourcePlanRequest____isset_1a78e7b1fb82c37dcd1d1b788f01034457" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_WMAlterResourcePlanRequest__isset::resourcePlan</definition>
+        <argsstring></argsstring>
+        <name>resourcePlan</name>
+        <qualifiedname>Apache::Hadoop::Hive::_WMAlterResourcePlanRequest__isset::resourcePlan</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11584" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="11584" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__WMAlterResourcePlanRequest____isset_1a94738abb426357edd16e1954804b4432" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_WMAlterResourcePlanRequest__isset::isEnableAndActivate</definition>
+        <argsstring></argsstring>
+        <name>isEnableAndActivate</name>
+        <qualifiedname>Apache::Hadoop::Hive::_WMAlterResourcePlanRequest__isset::isEnableAndActivate</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11585" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="11585" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__WMAlterResourcePlanRequest____isset_1a3cf2ceefa4911b136157d047db6c9dcf" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_WMAlterResourcePlanRequest__isset::isForceDeactivate</definition>
+        <argsstring></argsstring>
+        <name>isForceDeactivate</name>
+        <qualifiedname>Apache::Hadoop::Hive::_WMAlterResourcePlanRequest__isset::isForceDeactivate</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11586" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="11586" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__WMAlterResourcePlanRequest____isset_1a488a57d328ae2c9a36705385cbe1ac1f" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_WMAlterResourcePlanRequest__isset::isReplace</definition>
+        <argsstring></argsstring>
+        <name>isReplace</name>
+        <qualifiedname>Apache::Hadoop::Hive::_WMAlterResourcePlanRequest__isset::isReplace</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11587" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="11587" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__WMAlterResourcePlanRequest____isset_1a2f6aa8a0db8961d03449a1aca70c64ff" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_WMAlterResourcePlanRequest__isset::ns</definition>
+        <argsstring></argsstring>
+        <name>ns</name>
+        <qualifiedname>Apache::Hadoop::Hive::_WMAlterResourcePlanRequest__isset::ns</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11588" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="11588" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structApache_1_1Hadoop_1_1Hive_1_1__WMAlterResourcePlanRequest____isset_1a84301beed74776ca6e3b4dc48babeaee" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::_WMAlterResourcePlanRequest__isset::_WMAlterResourcePlanRequest__isset</definition>
+        <argsstring>()</argsstring>
+        <name>_WMAlterResourcePlanRequest__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::_WMAlterResourcePlanRequest__isset::_WMAlterResourcePlanRequest__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11582" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="11582" bodyend="11582"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11581" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="11581" bodyend="11589"/>
+    <listofallmembers>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__WMAlterResourcePlanRequest____isset_1a84301beed74776ca6e3b4dc48babeaee" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_WMAlterResourcePlanRequest__isset</scope><name>_WMAlterResourcePlanRequest__isset</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__WMAlterResourcePlanRequest____isset_1a94738abb426357edd16e1954804b4432" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_WMAlterResourcePlanRequest__isset</scope><name>isEnableAndActivate</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__WMAlterResourcePlanRequest____isset_1a3cf2ceefa4911b136157d047db6c9dcf" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_WMAlterResourcePlanRequest__isset</scope><name>isForceDeactivate</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__WMAlterResourcePlanRequest____isset_1a488a57d328ae2c9a36705385cbe1ac1f" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_WMAlterResourcePlanRequest__isset</scope><name>isReplace</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__WMAlterResourcePlanRequest____isset_1a2f6aa8a0db8961d03449a1aca70c64ff" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_WMAlterResourcePlanRequest__isset</scope><name>ns</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__WMAlterResourcePlanRequest____isset_1a78e7b1fb82c37dcd1d1b788f01034457" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_WMAlterResourcePlanRequest__isset</scope><name>resourcePlan</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__WMAlterResourcePlanRequest____isset_1a6366ef0ec7a76f5a57e87fe482bcf918" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_WMAlterResourcePlanRequest__isset</scope><name>resourcePlanName</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

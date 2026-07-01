@@ -1,0 +1,48 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structfacebook_1_1fb303_1_1__FacebookService__getVersion__presult____isset" kind="struct" language="C++" prot="public">
+    <compoundname>facebook::fb303::_FacebookService_getVersion_presult__isset</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structfacebook_1_1fb303_1_1__FacebookService__getVersion__presult____isset_1a74c613d0336adf5557610e0d3b15caaa" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool facebook::fb303::_FacebookService_getVersion_presult__isset::success</definition>
+        <argsstring></argsstring>
+        <name>success</name>
+        <qualifiedname>facebook::fb303::_FacebookService_getVersion_presult__isset::success</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="325" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.h" bodystart="325" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structfacebook_1_1fb303_1_1__FacebookService__getVersion__presult____isset_1ad667fca5dfc59d0e46583fe490729111" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>facebook::fb303::_FacebookService_getVersion_presult__isset::_FacebookService_getVersion_presult__isset</definition>
+        <argsstring>()</argsstring>
+        <name>_FacebookService_getVersion_presult__isset</name>
+        <qualifiedname>facebook::fb303::_FacebookService_getVersion_presult__isset::_FacebookService_getVersion_presult__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="324" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.h" bodystart="324" bodyend="324"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="323" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.h" bodystart="323" bodyend="326"/>
+    <listofallmembers>
+      <member refid="structfacebook_1_1fb303_1_1__FacebookService__getVersion__presult____isset_1ad667fca5dfc59d0e46583fe490729111" prot="public" virt="non-virtual"><scope>facebook::fb303::_FacebookService_getVersion_presult__isset</scope><name>_FacebookService_getVersion_presult__isset</name></member>
+      <member refid="structfacebook_1_1fb303_1_1__FacebookService__getVersion__presult____isset_1a74c613d0336adf5557610e0d3b15caaa" prot="public" virt="non-virtual"><scope>facebook::fb303::_FacebookService_getVersion_presult__isset</scope><name>success</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,66 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classfacebook_1_1fb303_1_1FacebookService__getCpuProfile__pargs" kind="class" language="C++" prot="public">
+    <compoundname>facebook::fb303::FacebookService_getCpuProfile_pargs</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classfacebook_1_1fb303_1_1FacebookService__getCpuProfile__pargs_1ae358e75a76d3475400287fd9f7e7046f" prot="public" static="no" mutable="no">
+        <type>const int32_t *</type>
+        <definition>const int32_t* facebook::fb303::FacebookService_getCpuProfile_pargs::profileDurationInSec</definition>
+        <argsstring></argsstring>
+        <name>profileDurationInSec</name>
+        <qualifiedname>facebook::fb303::FacebookService_getCpuProfile_pargs::profileDurationInSec</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="979" column="17" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.h" bodystart="979" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookService__getCpuProfile__pargs_1adf8446f0071f0a3a102df0c38eab9af0" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>facebook::fb303::FacebookService_getCpuProfile_pargs::~FacebookService_getCpuProfile_pargs</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~FacebookService_getCpuProfile_pargs</name>
+        <qualifiedname>facebook::fb303::FacebookService_getCpuProfile_pargs::~FacebookService_getCpuProfile_pargs</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="978" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.cpp" bodystart="1745" bodyend="1746"/>
+      </memberdef>
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookService__getCpuProfile__pargs_1a92bfffc5a2f031b4a9ec000f83489d5e" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t facebook::fb303::FacebookService_getCpuProfile_pargs::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const</argsstring>
+        <name>write</name>
+        <qualifiedname>facebook::fb303::FacebookService_getCpuProfile_pargs::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="981" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.cpp" bodystart="1749" bodyend="1761"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="974" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.h" bodystart="974" bodyend="983"/>
+    <listofallmembers>
+      <member refid="classfacebook_1_1fb303_1_1FacebookService__getCpuProfile__pargs_1ae358e75a76d3475400287fd9f7e7046f" prot="public" virt="non-virtual"><scope>facebook::fb303::FacebookService_getCpuProfile_pargs</scope><name>profileDurationInSec</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookService__getCpuProfile__pargs_1a92bfffc5a2f031b4a9ec000f83489d5e" prot="public" virt="non-virtual"><scope>facebook::fb303::FacebookService_getCpuProfile_pargs</scope><name>write</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookService__getCpuProfile__pargs_1adf8446f0071f0a3a102df0c38eab9af0" prot="public" virt="virtual"><scope>facebook::fb303::FacebookService_getCpuProfile_pargs</scope><name>~FacebookService_getCpuProfile_pargs</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

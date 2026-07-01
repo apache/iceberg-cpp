@@ -1,0 +1,288 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1GetCatalogRequest" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::GetCatalogRequest</compoundname>
+    <basecompoundref prot="public" virt="virtual">apache::thrift::TBase</basecompoundref>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1GetCatalogRequest_1a0300d700176ed6036eb48f0915cb3211" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::GetCatalogRequest::name</definition>
+        <argsstring></argsstring>
+        <name>name</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetCatalogRequest::name</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="2771" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="2771" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1GetCatalogRequest_1a5c5474b1cdfa7a6ccb893be465804b7e" prot="public" static="no" mutable="no">
+        <type><ref refid="structApache_1_1Hadoop_1_1Hive_1_1__GetCatalogRequest____isset" kindref="compound">_GetCatalogRequest__isset</ref></type>
+        <definition>_GetCatalogRequest__isset Apache::Hadoop::Hive::GetCatalogRequest::__isset</definition>
+        <argsstring></argsstring>
+        <name>__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetCatalogRequest::__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="2773" column="29" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="2773" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetCatalogRequest_1af6980f03f680d7d843af9d4c4f52e49e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::GetCatalogRequest::GetCatalogRequest</definition>
+        <argsstring>(const GetCatalogRequest &amp;)</argsstring>
+        <name>GetCatalogRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetCatalogRequest::GetCatalogRequest</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1GetCatalogRequest" kindref="compound">GetCatalogRequest</ref> &amp;</type>
+          <defname>other230</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="2766" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="7569" bodyend="7572"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetCatalogRequest_1ae040d3593f9e904d138baf49c521fb93" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1GetCatalogRequest" kindref="compound">GetCatalogRequest</ref> &amp;</type>
+        <definition>GetCatalogRequest &amp; Apache::Hadoop::Hive::GetCatalogRequest::operator=</definition>
+        <argsstring>(const GetCatalogRequest &amp;)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetCatalogRequest::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1GetCatalogRequest" kindref="compound">GetCatalogRequest</ref> &amp;</type>
+          <defname>other231</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="2767" column="21" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="7573" bodyend="7577"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetCatalogRequest_1af0c7b09d714f8a6d31eee6dc849f0f09" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::GetCatalogRequest::GetCatalogRequest</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>GetCatalogRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetCatalogRequest::GetCatalogRequest</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="2768" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="7487" bodyend="7489"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetCatalogRequest_1a7cfdfdc0972a667ded37c76d88e92ecf" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::GetCatalogRequest::~GetCatalogRequest</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~GetCatalogRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetCatalogRequest::~GetCatalogRequest</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="2770" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="7484" bodyend="7485"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetCatalogRequest_1a2f9857a8dff2de06ede09afc7886444b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::GetCatalogRequest::__set_name</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_name</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetCatalogRequest::__set_name</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="2775" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="7491" bodyend="7493"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetCatalogRequest_1af88606e23a4e7212e5c9a4f54a5e46e5" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::GetCatalogRequest::operator==</definition>
+        <argsstring>(const GetCatalogRequest &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetCatalogRequest::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1GetCatalogRequest" kindref="compound">GetCatalogRequest</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="2777" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="7562" bodyend="7567"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetCatalogRequest_1af0c0d945770e5b04f642b2a7fbf078e2" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::GetCatalogRequest::operator!=</definition>
+        <argsstring>(const GetCatalogRequest &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetCatalogRequest::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1GetCatalogRequest" kindref="compound">GetCatalogRequest</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="2778" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="2778" bodyend="2780"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetCatalogRequest_1aa0d9ff44d0bdeff6cb246616ff34560a" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::GetCatalogRequest::operator&lt;</definition>
+        <argsstring>(const GetCatalogRequest &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetCatalogRequest::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1GetCatalogRequest" kindref="compound">GetCatalogRequest</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="2782" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetCatalogRequest_1a7ea47d42e26bea704ec6b800c08f779f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::GetCatalogRequest::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot) override</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetCatalogRequest::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="2784" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="7501" bodyend="7540"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetCatalogRequest_1aff1ce6a11f95b46f8dfb728c0fd2cedb" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::GetCatalogRequest::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const override</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetCatalogRequest::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="2785" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="7542" bodyend="7554"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetCatalogRequest_1a469572411d453b009ab2d43ec0833696" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::GetCatalogRequest::printTo</definition>
+        <argsstring>(std::ostream &amp;out) const</argsstring>
+        <name>printTo</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetCatalogRequest::printTo</qualifiedname>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="2787" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="7578" bodyend="7583"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::GetCatalogRequest</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1GetCatalogRequest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::GetCatalogRequest</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1GetCatalogRequest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>name</edgelabel>
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="5">
+        <label>Apache::Hadoop::Hive::_GetCatalogRequest__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__GetCatalogRequest____isset"/>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+      <node id="4">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="3">
+        <label>std::string</label>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="2763" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="2763" bodyend="2788"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetCatalogRequest_1a5c5474b1cdfa7a6ccb893be465804b7e" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetCatalogRequest</scope><name>__isset</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetCatalogRequest_1a2f9857a8dff2de06ede09afc7886444b" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetCatalogRequest</scope><name>__set_name</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetCatalogRequest_1af6980f03f680d7d843af9d4c4f52e49e" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetCatalogRequest</scope><name>GetCatalogRequest</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetCatalogRequest_1af0c7b09d714f8a6d31eee6dc849f0f09" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetCatalogRequest</scope><name>GetCatalogRequest</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetCatalogRequest_1a0300d700176ed6036eb48f0915cb3211" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetCatalogRequest</scope><name>name</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetCatalogRequest_1af0c0d945770e5b04f642b2a7fbf078e2" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetCatalogRequest</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetCatalogRequest_1aa0d9ff44d0bdeff6cb246616ff34560a" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetCatalogRequest</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetCatalogRequest_1ae040d3593f9e904d138baf49c521fb93" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetCatalogRequest</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetCatalogRequest_1af88606e23a4e7212e5c9a4f54a5e46e5" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetCatalogRequest</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetCatalogRequest_1a469572411d453b009ab2d43ec0833696" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::GetCatalogRequest</scope><name>printTo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetCatalogRequest_1a7ea47d42e26bea704ec6b800c08f779f" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetCatalogRequest</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetCatalogRequest_1aff1ce6a11f95b46f8dfb728c0fd2cedb" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetCatalogRequest</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetCatalogRequest_1a7cfdfdc0972a667ded37c76d88e92ecf" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::GetCatalogRequest</scope><name>~GetCatalogRequest</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

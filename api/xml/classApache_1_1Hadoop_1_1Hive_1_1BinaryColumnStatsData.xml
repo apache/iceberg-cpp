@@ -1,0 +1,390 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1BinaryColumnStatsData" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::BinaryColumnStatsData</compoundname>
+    <basecompoundref prot="public" virt="virtual">apache::thrift::TBase</basecompoundref>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1BinaryColumnStatsData_1aa828395d54c5265af4ce81f14e1f9edb" prot="public" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t Apache::Hadoop::Hive::BinaryColumnStatsData::maxColLen</definition>
+        <argsstring></argsstring>
+        <name>maxColLen</name>
+        <qualifiedname>Apache::Hadoop::Hive::BinaryColumnStatsData::maxColLen</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3492" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="3492" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1BinaryColumnStatsData_1ac518eb13a6235a26a89ded4c43bc9171" prot="public" static="no" mutable="no">
+        <type>double</type>
+        <definition>double Apache::Hadoop::Hive::BinaryColumnStatsData::avgColLen</definition>
+        <argsstring></argsstring>
+        <name>avgColLen</name>
+        <qualifiedname>Apache::Hadoop::Hive::BinaryColumnStatsData::avgColLen</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3493" column="10" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="3493" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1BinaryColumnStatsData_1ad2258282fc9b6c49c1c11f106abd9e30" prot="public" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t Apache::Hadoop::Hive::BinaryColumnStatsData::numNulls</definition>
+        <argsstring></argsstring>
+        <name>numNulls</name>
+        <qualifiedname>Apache::Hadoop::Hive::BinaryColumnStatsData::numNulls</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3494" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="3494" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1BinaryColumnStatsData_1af8ffff20b5f2047a26a8f596248dcd2d" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::BinaryColumnStatsData::bitVectors</definition>
+        <argsstring></argsstring>
+        <name>bitVectors</name>
+        <qualifiedname>Apache::Hadoop::Hive::BinaryColumnStatsData::bitVectors</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3495" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="3495" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1BinaryColumnStatsData_1a29c44720829e42121f302bec7799a164" prot="public" static="no" mutable="no">
+        <type><ref refid="structApache_1_1Hadoop_1_1Hive_1_1__BinaryColumnStatsData____isset" kindref="compound">_BinaryColumnStatsData__isset</ref></type>
+        <definition>_BinaryColumnStatsData__isset Apache::Hadoop::Hive::BinaryColumnStatsData::__isset</definition>
+        <argsstring></argsstring>
+        <name>__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::BinaryColumnStatsData::__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3497" column="33" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="3497" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1BinaryColumnStatsData_1a3500f9c43430040c41d56912b6150c88" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::BinaryColumnStatsData::BinaryColumnStatsData</definition>
+        <argsstring>(const BinaryColumnStatsData &amp;)</argsstring>
+        <name>BinaryColumnStatsData</name>
+        <qualifiedname>Apache::Hadoop::Hive::BinaryColumnStatsData::BinaryColumnStatsData</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1BinaryColumnStatsData" kindref="compound">BinaryColumnStatsData</ref> &amp;</type>
+          <defname>other354</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3487" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="10779" bodyend="10785"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1BinaryColumnStatsData_1a075dd284b953fc26e062ac2062410f2d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1BinaryColumnStatsData" kindref="compound">BinaryColumnStatsData</ref> &amp;</type>
+        <definition>BinaryColumnStatsData &amp; Apache::Hadoop::Hive::BinaryColumnStatsData::operator=</definition>
+        <argsstring>(const BinaryColumnStatsData &amp;)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::BinaryColumnStatsData::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1BinaryColumnStatsData" kindref="compound">BinaryColumnStatsData</ref> &amp;</type>
+          <defname>other355</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3488" column="25" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="10786" bodyend="10793"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1BinaryColumnStatsData_1af8be6bf958490080cce4ced2602d05b2" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::BinaryColumnStatsData::BinaryColumnStatsData</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>BinaryColumnStatsData</name>
+        <qualifiedname>Apache::Hadoop::Hive::BinaryColumnStatsData::BinaryColumnStatsData</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3489" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="10624" bodyend="10629"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1BinaryColumnStatsData_1a0397fd9c6567758c527003e232367457" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::BinaryColumnStatsData::~BinaryColumnStatsData</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~BinaryColumnStatsData</name>
+        <qualifiedname>Apache::Hadoop::Hive::BinaryColumnStatsData::~BinaryColumnStatsData</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3491" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="10621" bodyend="10622"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1BinaryColumnStatsData_1a10e9d08433b1956993debf6f1245cf76" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::BinaryColumnStatsData::__set_maxColLen</definition>
+        <argsstring>(const int64_t val)</argsstring>
+        <name>__set_maxColLen</name>
+        <qualifiedname>Apache::Hadoop::Hive::BinaryColumnStatsData::__set_maxColLen</qualifiedname>
+        <param>
+          <type>const int64_t</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3499" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="10631" bodyend="10633"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1BinaryColumnStatsData_1aaeb3732ff442a85fab2fe5d9ffd50465" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::BinaryColumnStatsData::__set_avgColLen</definition>
+        <argsstring>(const double val)</argsstring>
+        <name>__set_avgColLen</name>
+        <qualifiedname>Apache::Hadoop::Hive::BinaryColumnStatsData::__set_avgColLen</qualifiedname>
+        <param>
+          <type>const double</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3501" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="10635" bodyend="10637"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1BinaryColumnStatsData_1a897a52c68d5446200634b62b242674a5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::BinaryColumnStatsData::__set_numNulls</definition>
+        <argsstring>(const int64_t val)</argsstring>
+        <name>__set_numNulls</name>
+        <qualifiedname>Apache::Hadoop::Hive::BinaryColumnStatsData::__set_numNulls</qualifiedname>
+        <param>
+          <type>const int64_t</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3503" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="10639" bodyend="10641"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1BinaryColumnStatsData_1a8a7177f58388522218d4445733e52599" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::BinaryColumnStatsData::__set_bitVectors</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_bitVectors</name>
+        <qualifiedname>Apache::Hadoop::Hive::BinaryColumnStatsData::__set_bitVectors</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3505" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="10643" bodyend="10646"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1BinaryColumnStatsData_1a66ebe2833817029e5c96e619a52d4173" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::BinaryColumnStatsData::operator==</definition>
+        <argsstring>(const BinaryColumnStatsData &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::BinaryColumnStatsData::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1BinaryColumnStatsData" kindref="compound">BinaryColumnStatsData</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3507" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="10764" bodyend="10777"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1BinaryColumnStatsData_1a793213bcbdc3d9c041bd69963b910e8c" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::BinaryColumnStatsData::operator!=</definition>
+        <argsstring>(const BinaryColumnStatsData &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::BinaryColumnStatsData::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1BinaryColumnStatsData" kindref="compound">BinaryColumnStatsData</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3508" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="3508" bodyend="3510"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1BinaryColumnStatsData_1a58a507e3358495161ebbaa823a8fa1a1" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::BinaryColumnStatsData::operator&lt;</definition>
+        <argsstring>(const BinaryColumnStatsData &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::BinaryColumnStatsData::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1BinaryColumnStatsData" kindref="compound">BinaryColumnStatsData</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3512" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1BinaryColumnStatsData_1a925fd9ebe590d2c7e2aaf7d3f6a64905" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::BinaryColumnStatsData::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot) override</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::BinaryColumnStatsData::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3514" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="10654" bodyend="10726"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1BinaryColumnStatsData_1a71140626930605e13c13564911a08683" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::BinaryColumnStatsData::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const override</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::BinaryColumnStatsData::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3515" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="10728" bodyend="10753"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1BinaryColumnStatsData_1adc047df419f9b3809cb56bb4fb33043d" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::BinaryColumnStatsData::printTo</definition>
+        <argsstring>(std::ostream &amp;out) const</argsstring>
+        <name>printTo</name>
+        <qualifiedname>Apache::Hadoop::Hive::BinaryColumnStatsData::printTo</qualifiedname>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3517" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="10794" bodyend="10802"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::BinaryColumnStatsData</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1BinaryColumnStatsData"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::BinaryColumnStatsData</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1BinaryColumnStatsData"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>bitVectors</edgelabel>
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="5">
+        <label>Apache::Hadoop::Hive::_BinaryColumnStatsData__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__BinaryColumnStatsData____isset"/>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+      <node id="4">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="3">
+        <label>std::string</label>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3484" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="3484" bodyend="3518"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1BinaryColumnStatsData_1a29c44720829e42121f302bec7799a164" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::BinaryColumnStatsData</scope><name>__isset</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1BinaryColumnStatsData_1aaeb3732ff442a85fab2fe5d9ffd50465" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::BinaryColumnStatsData</scope><name>__set_avgColLen</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1BinaryColumnStatsData_1a8a7177f58388522218d4445733e52599" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::BinaryColumnStatsData</scope><name>__set_bitVectors</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1BinaryColumnStatsData_1a10e9d08433b1956993debf6f1245cf76" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::BinaryColumnStatsData</scope><name>__set_maxColLen</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1BinaryColumnStatsData_1a897a52c68d5446200634b62b242674a5" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::BinaryColumnStatsData</scope><name>__set_numNulls</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1BinaryColumnStatsData_1ac518eb13a6235a26a89ded4c43bc9171" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::BinaryColumnStatsData</scope><name>avgColLen</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1BinaryColumnStatsData_1a3500f9c43430040c41d56912b6150c88" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::BinaryColumnStatsData</scope><name>BinaryColumnStatsData</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1BinaryColumnStatsData_1af8be6bf958490080cce4ced2602d05b2" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::BinaryColumnStatsData</scope><name>BinaryColumnStatsData</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1BinaryColumnStatsData_1af8ffff20b5f2047a26a8f596248dcd2d" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::BinaryColumnStatsData</scope><name>bitVectors</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1BinaryColumnStatsData_1aa828395d54c5265af4ce81f14e1f9edb" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::BinaryColumnStatsData</scope><name>maxColLen</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1BinaryColumnStatsData_1ad2258282fc9b6c49c1c11f106abd9e30" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::BinaryColumnStatsData</scope><name>numNulls</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1BinaryColumnStatsData_1a793213bcbdc3d9c041bd69963b910e8c" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::BinaryColumnStatsData</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1BinaryColumnStatsData_1a58a507e3358495161ebbaa823a8fa1a1" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::BinaryColumnStatsData</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1BinaryColumnStatsData_1a075dd284b953fc26e062ac2062410f2d" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::BinaryColumnStatsData</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1BinaryColumnStatsData_1a66ebe2833817029e5c96e619a52d4173" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::BinaryColumnStatsData</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1BinaryColumnStatsData_1adc047df419f9b3809cb56bb4fb33043d" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::BinaryColumnStatsData</scope><name>printTo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1BinaryColumnStatsData_1a925fd9ebe590d2c7e2aaf7d3f6a64905" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::BinaryColumnStatsData</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1BinaryColumnStatsData_1a71140626930605e13c13564911a08683" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::BinaryColumnStatsData</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1BinaryColumnStatsData_1a0397fd9c6567758c527003e232367457" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::BinaryColumnStatsData</scope><name>~BinaryColumnStatsData</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

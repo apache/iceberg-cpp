@@ -1,0 +1,319 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1MetaException" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::MetaException</compoundname>
+    <basecompoundref prot="public" virt="non-virtual">apache::thrift::TException</basecompoundref>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1MetaException_1aaa75faab0c0184ac028be6999f78bd7b" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::MetaException::message</definition>
+        <argsstring></argsstring>
+        <name>message</name>
+        <qualifiedname>Apache::Hadoop::Hive::MetaException::message</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15277" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="15277" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1MetaException_1a5e83de3674808841f4d84c3aadb9c3cf" prot="public" static="no" mutable="no">
+        <type><ref refid="structApache_1_1Hadoop_1_1Hive_1_1__MetaException____isset" kindref="compound">_MetaException__isset</ref></type>
+        <definition>_MetaException__isset Apache::Hadoop::Hive::MetaException::__isset</definition>
+        <argsstring></argsstring>
+        <name>__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::MetaException::__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15279" column="25" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="15279" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1MetaException_1a04bc68bb8b6b55fcf38a078a336ce147" prot="public" static="no" mutable="yes">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::MetaException::thriftTExceptionMessageHolder_</definition>
+        <argsstring></argsstring>
+        <name>thriftTExceptionMessageHolder_</name>
+        <qualifiedname>Apache::Hadoop::Hive::MetaException::thriftTExceptionMessageHolder_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15294" column="23" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="15294" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1MetaException_1a4f69f4cdf39bf0899ba1db310b7328dc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::MetaException::MetaException</definition>
+        <argsstring>(const MetaException &amp;)</argsstring>
+        <name>MetaException</name>
+        <qualifiedname>Apache::Hadoop::Hive::MetaException::MetaException</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1MetaException" kindref="compound">MetaException</ref> &amp;</type>
+          <defname>other1853</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15272" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="60487" bodyend="60490"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1MetaException_1ac3eb69eb5aaf2ec4be67621799e88152" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1MetaException" kindref="compound">MetaException</ref> &amp;</type>
+        <definition>MetaException &amp; Apache::Hadoop::Hive::MetaException::operator=</definition>
+        <argsstring>(const MetaException &amp;)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::MetaException::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1MetaException" kindref="compound">MetaException</ref> &amp;</type>
+          <defname>other1854</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15273" column="17" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="60491" bodyend="60495"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1MetaException_1a5a5ed02134af0186142099dc90bed2c0" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::MetaException::MetaException</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>MetaException</name>
+        <qualifiedname>Apache::Hadoop::Hive::MetaException::MetaException</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15274" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="60405" bodyend="60407"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1MetaException_1a45b03ecff6386119da678de239e95ecc" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::MetaException::~MetaException</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~MetaException</name>
+        <qualifiedname>Apache::Hadoop::Hive::MetaException::~MetaException</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15276" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="60402" bodyend="60403"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1MetaException_1a74abe464c5fa1d8796ebaa8fe6d88710" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::MetaException::__set_message</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_message</name>
+        <qualifiedname>Apache::Hadoop::Hive::MetaException::__set_message</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15281" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="60409" bodyend="60411"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1MetaException_1ab0c15bb7e17947b4fbe657879fb39303" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::MetaException::operator==</definition>
+        <argsstring>(const MetaException &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::MetaException::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1MetaException" kindref="compound">MetaException</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15283" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="60480" bodyend="60485"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1MetaException_1a8ceb8184cd7f2cb74d88bb11f3565e4d" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::MetaException::operator!=</definition>
+        <argsstring>(const MetaException &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::MetaException::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1MetaException" kindref="compound">MetaException</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15284" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="15284" bodyend="15286"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1MetaException_1a34338e4a3ffc9856f412e7cbf6559ed6" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::MetaException::operator&lt;</definition>
+        <argsstring>(const MetaException &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::MetaException::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1MetaException" kindref="compound">MetaException</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15288" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1MetaException_1a7cef93335d1939986912569976b56e35" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::MetaException::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot)</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::MetaException::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15290" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="60419" bodyend="60458"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1MetaException_1a00f8a775212b067a78b815e059b6ef02" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::MetaException::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::MetaException::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15291" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="60460" bodyend="60472"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1MetaException_1af474ef2f227174174c576961762733f9" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::MetaException::printTo</definition>
+        <argsstring>(std::ostream &amp;out) const</argsstring>
+        <name>printTo</name>
+        <qualifiedname>Apache::Hadoop::Hive::MetaException::printTo</qualifiedname>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15293" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="60496" bodyend="60501"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1MetaException_1a2bc72cfc8b6bd160772edb9ff04818ea" prot="public" static="no" const="yes" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type>const char *</type>
+        <definition>const char * Apache::Hadoop::Hive::MetaException::what</definition>
+        <argsstring>() const noexcept override</argsstring>
+        <name>what</name>
+        <qualifiedname>Apache::Hadoop::Hive::MetaException::what</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15295" column="14" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="60503" bodyend="60512"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::MetaException</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1MetaException"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TException</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::MetaException</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1MetaException"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>message</edgelabel>
+          <edgelabel>thriftTExceptionMessageHolder_</edgelabel>
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="5">
+        <label>Apache::Hadoop::Hive::_MetaException__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__MetaException____isset"/>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TException</label>
+      </node>
+      <node id="4">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="3">
+        <label>std::string</label>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15269" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="15269" bodyend="15296"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1MetaException_1a5e83de3674808841f4d84c3aadb9c3cf" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::MetaException</scope><name>__isset</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1MetaException_1a74abe464c5fa1d8796ebaa8fe6d88710" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::MetaException</scope><name>__set_message</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1MetaException_1aaa75faab0c0184ac028be6999f78bd7b" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::MetaException</scope><name>message</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1MetaException_1a4f69f4cdf39bf0899ba1db310b7328dc" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::MetaException</scope><name>MetaException</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1MetaException_1a5a5ed02134af0186142099dc90bed2c0" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::MetaException</scope><name>MetaException</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1MetaException_1a8ceb8184cd7f2cb74d88bb11f3565e4d" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::MetaException</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1MetaException_1a34338e4a3ffc9856f412e7cbf6559ed6" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::MetaException</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1MetaException_1ac3eb69eb5aaf2ec4be67621799e88152" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::MetaException</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1MetaException_1ab0c15bb7e17947b4fbe657879fb39303" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::MetaException</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1MetaException_1af474ef2f227174174c576961762733f9" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::MetaException</scope><name>printTo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1MetaException_1a7cef93335d1939986912569976b56e35" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::MetaException</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1MetaException_1a04bc68bb8b6b55fcf38a078a336ce147" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::MetaException</scope><name>thriftTExceptionMessageHolder_</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1MetaException_1a2bc72cfc8b6bd160772edb9ff04818ea" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::MetaException</scope><name>what</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1MetaException_1a00f8a775212b067a78b815e059b6ef02" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::MetaException</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1MetaException_1a45b03ecff6386119da678de239e95ecc" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::MetaException</scope><name>~MetaException</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

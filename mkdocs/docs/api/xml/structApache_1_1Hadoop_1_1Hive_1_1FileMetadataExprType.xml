@@ -1,0 +1,37 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structApache_1_1Hadoop_1_1Hive_1_1FileMetadataExprType" kind="struct" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::FileMetadataExprType</compoundname>
+    <sectiondef kind="public-type">
+      <memberdef kind="enum" id="structApache_1_1Hadoop_1_1Hive_1_1FileMetadataExprType_1a252f33128c5f9de52bf521e44d31dcbc" prot="public" static="no" strong="no">
+        <type></type>
+        <name>type</name>
+        <qualifiedname>Apache::Hadoop::Hive::FileMetadataExprType::type</qualifiedname>
+        <enumvalue id="structApache_1_1Hadoop_1_1Hive_1_1FileMetadataExprType_1a252f33128c5f9de52bf521e44d31dcbcac4bc84803f4b6ba17d4aff2e9233590c" prot="public">
+          <name>ORC_SARG</name>
+          <initializer>= 1</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="344" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="344" bodyend="346"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="343" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="343" bodyend="347"/>
+    <listofallmembers>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1FileMetadataExprType_1a252f33128c5f9de52bf521e44d31dcbcac4bc84803f4b6ba17d4aff2e9233590c" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::FileMetadataExprType</scope><name>ORC_SARG</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1FileMetadataExprType_1a252f33128c5f9de52bf521e44d31dcbc" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::FileMetadataExprType</scope><name>type</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

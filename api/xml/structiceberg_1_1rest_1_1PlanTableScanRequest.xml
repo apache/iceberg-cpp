@@ -1,0 +1,233 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1rest_1_1PlanTableScanRequest" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::rest::PlanTableScanRequest</compoundname>
+    <includes refid="types_8h" local="no">types.h</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1rest_1_1PlanTableScanRequest_1a9bc191351498ba9e65f601ff718f18b7" prot="public" static="no" mutable="no">
+        <type>std::optional&lt; int64_t &gt;</type>
+        <definition>std::optional&lt;int64_t&gt; iceberg::rest::PlanTableScanRequest::snapshot_id</definition>
+        <argsstring></argsstring>
+        <name>snapshot_id</name>
+        <qualifiedname>iceberg::rest::PlanTableScanRequest::snapshot_id</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/types.h" line="316" column="17" bodyfile="iceberg/catalog/rest/types.h" bodystart="316" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1rest_1_1PlanTableScanRequest_1a441ecbe4966020e9529988773694ce4e" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; std::string &gt;</type>
+        <definition>std::vector&lt;std::string&gt; iceberg::rest::PlanTableScanRequest::select</definition>
+        <argsstring></argsstring>
+        <name>select</name>
+        <qualifiedname>iceberg::rest::PlanTableScanRequest::select</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/types.h" line="317" column="15" bodyfile="iceberg/catalog/rest/types.h" bodystart="317" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1rest_1_1PlanTableScanRequest_1a39e747bb8cc8df8709976c4f04071445" prot="public" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Expression" kindref="compound">Expression</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;Expression&gt; iceberg::rest::PlanTableScanRequest::filter</definition>
+        <argsstring></argsstring>
+        <name>filter</name>
+        <qualifiedname>iceberg::rest::PlanTableScanRequest::filter</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/types.h" line="318" column="19" bodyfile="iceberg/catalog/rest/types.h" bodystart="318" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1rest_1_1PlanTableScanRequest_1acc3083a052cb5e3fdea44c7d9b995db5" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool iceberg::rest::PlanTableScanRequest::case_sensitive</definition>
+        <argsstring></argsstring>
+        <name>case_sensitive</name>
+        <qualifiedname>iceberg::rest::PlanTableScanRequest::case_sensitive</qualifiedname>
+        <initializer>= true</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/types.h" line="319" column="8" bodyfile="iceberg/catalog/rest/types.h" bodystart="319" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1rest_1_1PlanTableScanRequest_1a4a795167f95577cb65c52fcc70a9b3be" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool iceberg::rest::PlanTableScanRequest::use_snapshot_schema</definition>
+        <argsstring></argsstring>
+        <name>use_snapshot_schema</name>
+        <qualifiedname>iceberg::rest::PlanTableScanRequest::use_snapshot_schema</qualifiedname>
+        <initializer>= false</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/types.h" line="320" column="8" bodyfile="iceberg/catalog/rest/types.h" bodystart="320" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1rest_1_1PlanTableScanRequest_1ac5683ddbb2ab9373a44457fe403cc1b5" prot="public" static="no" mutable="no">
+        <type>std::optional&lt; int64_t &gt;</type>
+        <definition>std::optional&lt;int64_t&gt; iceberg::rest::PlanTableScanRequest::start_snapshot_id</definition>
+        <argsstring></argsstring>
+        <name>start_snapshot_id</name>
+        <qualifiedname>iceberg::rest::PlanTableScanRequest::start_snapshot_id</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/types.h" line="321" column="17" bodyfile="iceberg/catalog/rest/types.h" bodystart="321" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1rest_1_1PlanTableScanRequest_1a51753a5ceeec4dd48c4950a1f482e84f" prot="public" static="no" mutable="no">
+        <type>std::optional&lt; int64_t &gt;</type>
+        <definition>std::optional&lt;int64_t&gt; iceberg::rest::PlanTableScanRequest::end_snapshot_id</definition>
+        <argsstring></argsstring>
+        <name>end_snapshot_id</name>
+        <qualifiedname>iceberg::rest::PlanTableScanRequest::end_snapshot_id</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/types.h" line="322" column="17" bodyfile="iceberg/catalog/rest/types.h" bodystart="322" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1rest_1_1PlanTableScanRequest_1a3a33c8262348d4f078cc68b95f5c8810" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; std::string &gt;</type>
+        <definition>std::vector&lt;std::string&gt; iceberg::rest::PlanTableScanRequest::stats_fields</definition>
+        <argsstring></argsstring>
+        <name>stats_fields</name>
+        <qualifiedname>iceberg::rest::PlanTableScanRequest::stats_fields</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/types.h" line="323" column="15" bodyfile="iceberg/catalog/rest/types.h" bodystart="323" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1rest_1_1PlanTableScanRequest_1a69008efd45eac83619604a13f6cc6029" prot="public" static="no" mutable="no">
+        <type>std::optional&lt; int64_t &gt;</type>
+        <definition>std::optional&lt;int64_t&gt; iceberg::rest::PlanTableScanRequest::min_rows_requested</definition>
+        <argsstring></argsstring>
+        <name>min_rows_requested</name>
+        <qualifiedname>iceberg::rest::PlanTableScanRequest::min_rows_requested</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/types.h" line="324" column="17" bodyfile="iceberg/catalog/rest/types.h" bodystart="324" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structiceberg_1_1rest_1_1PlanTableScanRequest_1a18e5bcfbfa166618143c42ae923b3b81" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::rest::PlanTableScanRequest::Validate</definition>
+        <argsstring>() const</argsstring>
+        <name>Validate</name>
+        <qualifiedname>iceberg::rest::PlanTableScanRequest::Validate</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/types.h" line="326" column="10" bodyfile="iceberg/catalog/rest/types.cc" bodystart="266" bodyend="284"/>
+      </memberdef>
+      <memberdef kind="function" id="structiceberg_1_1rest_1_1PlanTableScanRequest_1a0e71899517b45e6249b614f772168599" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::rest::PlanTableScanRequest::operator==</definition>
+        <argsstring>(const PlanTableScanRequest &amp;) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>iceberg::rest::PlanTableScanRequest::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1rest_1_1PlanTableScanRequest" kindref="compound">PlanTableScanRequest</ref> &amp;</type>
+          <defname>other</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/types.h" line="328" column="8" bodyfile="iceberg/catalog/rest/types.cc" bodystart="160" bodyend="168"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Request to initiate a server-side scan planning operation. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="6">
+        <label>iceberg::Expression</label>
+        <link refid="classiceberg_1_1Expression"/>
+        <childnode refid="7" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::rest::PlanTableScanRequest</label>
+        <link refid="structiceberg_1_1rest_1_1PlanTableScanRequest"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>select</edgelabel>
+          <edgelabel>stats_fields</edgelabel>
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>filter</edgelabel>
+        </childnode>
+      </node>
+      <node id="7">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+      <node id="5">
+        <label>std::shared_ptr&lt; iceberg::Expression &gt;</label>
+        <childnode refid="6" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="4">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="3">
+        <label>std::string</label>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>std::vector&lt; std::string &gt;</label>
+        <childnode refid="3" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/rest/types.h" line="315" column="1" bodyfile="iceberg/catalog/rest/types.h" bodystart="315" bodyend="329"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1rest_1_1PlanTableScanRequest_1acc3083a052cb5e3fdea44c7d9b995db5" prot="public" virt="non-virtual"><scope>iceberg::rest::PlanTableScanRequest</scope><name>case_sensitive</name></member>
+      <member refid="structiceberg_1_1rest_1_1PlanTableScanRequest_1a51753a5ceeec4dd48c4950a1f482e84f" prot="public" virt="non-virtual"><scope>iceberg::rest::PlanTableScanRequest</scope><name>end_snapshot_id</name></member>
+      <member refid="structiceberg_1_1rest_1_1PlanTableScanRequest_1a39e747bb8cc8df8709976c4f04071445" prot="public" virt="non-virtual"><scope>iceberg::rest::PlanTableScanRequest</scope><name>filter</name></member>
+      <member refid="structiceberg_1_1rest_1_1PlanTableScanRequest_1a69008efd45eac83619604a13f6cc6029" prot="public" virt="non-virtual"><scope>iceberg::rest::PlanTableScanRequest</scope><name>min_rows_requested</name></member>
+      <member refid="structiceberg_1_1rest_1_1PlanTableScanRequest_1a0e71899517b45e6249b614f772168599" prot="public" virt="non-virtual"><scope>iceberg::rest::PlanTableScanRequest</scope><name>operator==</name></member>
+      <member refid="structiceberg_1_1rest_1_1PlanTableScanRequest_1a441ecbe4966020e9529988773694ce4e" prot="public" virt="non-virtual"><scope>iceberg::rest::PlanTableScanRequest</scope><name>select</name></member>
+      <member refid="structiceberg_1_1rest_1_1PlanTableScanRequest_1a9bc191351498ba9e65f601ff718f18b7" prot="public" virt="non-virtual"><scope>iceberg::rest::PlanTableScanRequest</scope><name>snapshot_id</name></member>
+      <member refid="structiceberg_1_1rest_1_1PlanTableScanRequest_1ac5683ddbb2ab9373a44457fe403cc1b5" prot="public" virt="non-virtual"><scope>iceberg::rest::PlanTableScanRequest</scope><name>start_snapshot_id</name></member>
+      <member refid="structiceberg_1_1rest_1_1PlanTableScanRequest_1a3a33c8262348d4f078cc68b95f5c8810" prot="public" virt="non-virtual"><scope>iceberg::rest::PlanTableScanRequest</scope><name>stats_fields</name></member>
+      <member refid="structiceberg_1_1rest_1_1PlanTableScanRequest_1a4a795167f95577cb65c52fcc70a9b3be" prot="public" virt="non-virtual"><scope>iceberg::rest::PlanTableScanRequest</scope><name>use_snapshot_schema</name></member>
+      <member refid="structiceberg_1_1rest_1_1PlanTableScanRequest_1a18e5bcfbfa166618143c42ae923b3b81" prot="public" virt="non-virtual"><scope>iceberg::rest::PlanTableScanRequest</scope><name>Validate</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

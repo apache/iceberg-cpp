@@ -1,0 +1,611 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__partitions__statistics__req__result" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::ThriftHiveMetastore_get_partitions_statistics_req_result</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__partitions__statistics__req__result_1a3087035ae1bb4b512874ea804523a7b1" prot="public" static="no" mutable="no">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1PartitionsStatsResult" kindref="compound">PartitionsStatsResult</ref></type>
+        <definition>PartitionsStatsResult Apache::Hadoop::Hive::ThriftHiveMetastore_get_partitions_statistics_req_result::success</definition>
+        <argsstring></argsstring>
+        <name>success</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_get_partitions_statistics_req_result::success</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="16432" column="25" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="16432" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__partitions__statistics__req__result_1a73c5193bd60143c6fb72de4446494402" prot="public" static="no" mutable="no">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1NoSuchObjectException" kindref="compound">NoSuchObjectException</ref></type>
+        <definition>NoSuchObjectException Apache::Hadoop::Hive::ThriftHiveMetastore_get_partitions_statistics_req_result::o1</definition>
+        <argsstring></argsstring>
+        <name>o1</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_get_partitions_statistics_req_result::o1</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="16433" column="25" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="16433" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__partitions__statistics__req__result_1a5d957466e6b2eefcbe3ad4ff3a915230" prot="public" static="no" mutable="no">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1MetaException" kindref="compound">MetaException</ref></type>
+        <definition>MetaException Apache::Hadoop::Hive::ThriftHiveMetastore_get_partitions_statistics_req_result::o2</definition>
+        <argsstring></argsstring>
+        <name>o2</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_get_partitions_statistics_req_result::o2</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="16434" column="17" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="16434" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__partitions__statistics__req__result_1a97056b2e40bdc91b0d17b47019018718" prot="public" static="no" mutable="no">
+        <type><ref refid="structApache_1_1Hadoop_1_1Hive_1_1__ThriftHiveMetastore__get__partitions__statistics__req__result____isset" kindref="compound">_ThriftHiveMetastore_get_partitions_statistics_req_result__isset</ref></type>
+        <definition>_ThriftHiveMetastore_get_partitions_statistics_req_result__isset Apache::Hadoop::Hive::ThriftHiveMetastore_get_partitions_statistics_req_result::__isset</definition>
+        <argsstring></argsstring>
+        <name>__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_get_partitions_statistics_req_result::__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="16436" column="68" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="16436" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__partitions__statistics__req__result_1a5d9384cc56303af28cc0a20feada8fe8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::ThriftHiveMetastore_get_partitions_statistics_req_result::ThriftHiveMetastore_get_partitions_statistics_req_result</definition>
+        <argsstring>(const ThriftHiveMetastore_get_partitions_statistics_req_result &amp;)</argsstring>
+        <name>ThriftHiveMetastore_get_partitions_statistics_req_result</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_get_partitions_statistics_req_result::ThriftHiveMetastore_get_partitions_statistics_req_result</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__partitions__statistics__req__result" kindref="compound">ThriftHiveMetastore_get_partitions_statistics_req_result</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="16427" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__partitions__statistics__req__result_1a2444dbd4203b8818573235a686d8ee9d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__partitions__statistics__req__result" kindref="compound">ThriftHiveMetastore_get_partitions_statistics_req_result</ref> &amp;</type>
+        <definition>ThriftHiveMetastore_get_partitions_statistics_req_result &amp; Apache::Hadoop::Hive::ThriftHiveMetastore_get_partitions_statistics_req_result::operator=</definition>
+        <argsstring>(const ThriftHiveMetastore_get_partitions_statistics_req_result &amp;)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_get_partitions_statistics_req_result::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__partitions__statistics__req__result" kindref="compound">ThriftHiveMetastore_get_partitions_statistics_req_result</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="16428" column="60"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__partitions__statistics__req__result_1af0160fbab2af393f2a7e3f9c174b624e" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::ThriftHiveMetastore_get_partitions_statistics_req_result::ThriftHiveMetastore_get_partitions_statistics_req_result</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>ThriftHiveMetastore_get_partitions_statistics_req_result</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_get_partitions_statistics_req_result::ThriftHiveMetastore_get_partitions_statistics_req_result</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="16429" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.cpp" bodystart="36559" bodyend="36560"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__partitions__statistics__req__result_1a3caa084f3d38047bf71bf4bd9c568083" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::ThriftHiveMetastore_get_partitions_statistics_req_result::~ThriftHiveMetastore_get_partitions_statistics_req_result</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~ThriftHiveMetastore_get_partitions_statistics_req_result</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_get_partitions_statistics_req_result::~ThriftHiveMetastore_get_partitions_statistics_req_result</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="16431" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.cpp" bodystart="36556" bodyend="36557"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__partitions__statistics__req__result_1a8ba5f2ad9fbe8586c2840a76b73d7a36" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::ThriftHiveMetastore_get_partitions_statistics_req_result::__set_success</definition>
+        <argsstring>(const PartitionsStatsResult &amp;val)</argsstring>
+        <name>__set_success</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_get_partitions_statistics_req_result::__set_success</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1PartitionsStatsResult" kindref="compound">PartitionsStatsResult</ref> &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="16438" column="8"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__partitions__statistics__req__result_1a31cea811477a7be6441f1ba55df9e370" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::ThriftHiveMetastore_get_partitions_statistics_req_result::__set_o1</definition>
+        <argsstring>(const NoSuchObjectException &amp;val)</argsstring>
+        <name>__set_o1</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_get_partitions_statistics_req_result::__set_o1</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1NoSuchObjectException" kindref="compound">NoSuchObjectException</ref> &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="16440" column="8"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__partitions__statistics__req__result_1a32aaf50ef9f3f481fde1ae9fe34be571" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::ThriftHiveMetastore_get_partitions_statistics_req_result::__set_o2</definition>
+        <argsstring>(const MetaException &amp;val)</argsstring>
+        <name>__set_o2</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_get_partitions_statistics_req_result::__set_o2</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1MetaException" kindref="compound">MetaException</ref> &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="16442" column="8"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__partitions__statistics__req__result_1aa281038cff736cb71aa893d6c7176758" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::ThriftHiveMetastore_get_partitions_statistics_req_result::operator==</definition>
+        <argsstring>(const ThriftHiveMetastore_get_partitions_statistics_req_result &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_get_partitions_statistics_req_result::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__partitions__statistics__req__result" kindref="compound">ThriftHiveMetastore_get_partitions_statistics_req_result</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="16444" column="8"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__partitions__statistics__req__result_1a8b1e9c943d857f63ab6d75a80c63d98c" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::ThriftHiveMetastore_get_partitions_statistics_req_result::operator!=</definition>
+        <argsstring>(const ThriftHiveMetastore_get_partitions_statistics_req_result &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_get_partitions_statistics_req_result::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__partitions__statistics__req__result" kindref="compound">ThriftHiveMetastore_get_partitions_statistics_req_result</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="16445" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="16445" bodyend="16447"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__partitions__statistics__req__result_1a300b9b139bf603ff5d2c9dc303aeda23" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::ThriftHiveMetastore_get_partitions_statistics_req_result::operator&lt;</definition>
+        <argsstring>(const ThriftHiveMetastore_get_partitions_statistics_req_result &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_get_partitions_statistics_req_result::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__partitions__statistics__req__result" kindref="compound">ThriftHiveMetastore_get_partitions_statistics_req_result</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="16449" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__partitions__statistics__req__result_1ab351c2d19a6f215811186eac51d1ff5a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::ThriftHiveMetastore_get_partitions_statistics_req_result::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot)</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_get_partitions_statistics_req_result::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="16451" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.cpp" bodystart="36562" bodyend="36617"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__partitions__statistics__req__result_1ab37fd9b5dbcc3fcbd3217f5c6fde5927" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::ThriftHiveMetastore_get_partitions_statistics_req_result::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_get_partitions_statistics_req_result::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="16452" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.cpp" bodystart="36619" bodyend="36641"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="18">
+        <label>Apache::Hadoop::Hive::BinaryColumnStatsData</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1BinaryColumnStatsData"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>bitVectors</edgelabel>
+        </childnode>
+        <childnode refid="19" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="10">
+        <label>Apache::Hadoop::Hive::BooleanColumnStatsData</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1BooleanColumnStatsData"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>bitVectors</edgelabel>
+        </childnode>
+        <childnode refid="11" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="9">
+        <label>Apache::Hadoop::Hive::ColumnStatisticsData</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1ColumnStatisticsData"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+        <childnode refid="10" relation="usage">
+          <edgelabel>booleanStats</edgelabel>
+        </childnode>
+        <childnode refid="12" relation="usage">
+          <edgelabel>longStats</edgelabel>
+        </childnode>
+        <childnode refid="14" relation="usage">
+          <edgelabel>doubleStats</edgelabel>
+        </childnode>
+        <childnode refid="16" relation="usage">
+          <edgelabel>stringStats</edgelabel>
+        </childnode>
+        <childnode refid="18" relation="usage">
+          <edgelabel>binaryStats</edgelabel>
+        </childnode>
+        <childnode refid="20" relation="usage">
+          <edgelabel>decimalStats</edgelabel>
+        </childnode>
+        <childnode refid="23" relation="usage">
+          <edgelabel>dateStats</edgelabel>
+        </childnode>
+        <childnode refid="26" relation="usage">
+          <edgelabel>timestampStats</edgelabel>
+        </childnode>
+        <childnode refid="29" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="8">
+        <label>Apache::Hadoop::Hive::ColumnStatisticsObj</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1ColumnStatisticsObj"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>colName</edgelabel>
+          <edgelabel>colType</edgelabel>
+        </childnode>
+        <childnode refid="9" relation="usage">
+          <edgelabel>statsData</edgelabel>
+        </childnode>
+      </node>
+      <node id="24">
+        <label>Apache::Hadoop::Hive::Date</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1Date"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="23">
+        <label>Apache::Hadoop::Hive::DateColumnStatsData</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1DateColumnStatsData"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+        <childnode refid="24" relation="usage">
+          <edgelabel>highValue</edgelabel>
+          <edgelabel>lowValue</edgelabel>
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>bitVectors</edgelabel>
+          <edgelabel>histogram</edgelabel>
+        </childnode>
+        <childnode refid="25" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="21">
+        <label>Apache::Hadoop::Hive::Decimal</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1Decimal"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>unscaled</edgelabel>
+        </childnode>
+      </node>
+      <node id="20">
+        <label>Apache::Hadoop::Hive::DecimalColumnStatsData</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1DecimalColumnStatsData"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+        <childnode refid="21" relation="usage">
+          <edgelabel>highValue</edgelabel>
+          <edgelabel>lowValue</edgelabel>
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>bitVectors</edgelabel>
+          <edgelabel>histogram</edgelabel>
+        </childnode>
+        <childnode refid="22" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="14">
+        <label>Apache::Hadoop::Hive::DoubleColumnStatsData</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1DoubleColumnStatsData"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>bitVectors</edgelabel>
+          <edgelabel>histogram</edgelabel>
+        </childnode>
+        <childnode refid="15" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="12">
+        <label>Apache::Hadoop::Hive::LongColumnStatsData</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1LongColumnStatsData"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>bitVectors</edgelabel>
+          <edgelabel>histogram</edgelabel>
+        </childnode>
+        <childnode refid="13" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="34">
+        <label>Apache::Hadoop::Hive::MetaException</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1MetaException"/>
+        <childnode refid="32" relation="public-inheritance">
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>message</edgelabel>
+          <edgelabel>thriftTExceptionMessageHolder_</edgelabel>
+        </childnode>
+        <childnode refid="35" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="31">
+        <label>Apache::Hadoop::Hive::NoSuchObjectException</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1NoSuchObjectException"/>
+        <childnode refid="32" relation="public-inheritance">
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>message</edgelabel>
+          <edgelabel>thriftTExceptionMessageHolder_</edgelabel>
+        </childnode>
+        <childnode refid="33" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="2">
+        <label>Apache::Hadoop::Hive::PartitionsStatsResult</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1PartitionsStatsResult"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>partStats</edgelabel>
+        </childnode>
+        <childnode refid="30" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="16">
+        <label>Apache::Hadoop::Hive::StringColumnStatsData</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1StringColumnStatsData"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>bitVectors</edgelabel>
+        </childnode>
+        <childnode refid="17" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::ThriftHiveMetastore_get_partitions_statistics_req_result</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__partitions__statistics__req__result"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>success</edgelabel>
+        </childnode>
+        <childnode refid="31" relation="usage">
+          <edgelabel>o1</edgelabel>
+        </childnode>
+        <childnode refid="34" relation="usage">
+          <edgelabel>o2</edgelabel>
+        </childnode>
+        <childnode refid="36" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="27">
+        <label>Apache::Hadoop::Hive::Timestamp</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1Timestamp"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="26">
+        <label>Apache::Hadoop::Hive::TimestampColumnStatsData</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1TimestampColumnStatsData"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+        <childnode refid="27" relation="usage">
+          <edgelabel>highValue</edgelabel>
+          <edgelabel>lowValue</edgelabel>
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>bitVectors</edgelabel>
+          <edgelabel>histogram</edgelabel>
+        </childnode>
+        <childnode refid="28" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="19">
+        <label>Apache::Hadoop::Hive::_BinaryColumnStatsData__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__BinaryColumnStatsData____isset"/>
+      </node>
+      <node id="11">
+        <label>Apache::Hadoop::Hive::_BooleanColumnStatsData__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__BooleanColumnStatsData____isset"/>
+      </node>
+      <node id="29">
+        <label>Apache::Hadoop::Hive::_ColumnStatisticsData__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__ColumnStatisticsData____isset"/>
+      </node>
+      <node id="25">
+        <label>Apache::Hadoop::Hive::_DateColumnStatsData__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__DateColumnStatsData____isset"/>
+      </node>
+      <node id="22">
+        <label>Apache::Hadoop::Hive::_DecimalColumnStatsData__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__DecimalColumnStatsData____isset"/>
+      </node>
+      <node id="15">
+        <label>Apache::Hadoop::Hive::_DoubleColumnStatsData__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__DoubleColumnStatsData____isset"/>
+      </node>
+      <node id="13">
+        <label>Apache::Hadoop::Hive::_LongColumnStatsData__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__LongColumnStatsData____isset"/>
+      </node>
+      <node id="35">
+        <label>Apache::Hadoop::Hive::_MetaException__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__MetaException____isset"/>
+      </node>
+      <node id="33">
+        <label>Apache::Hadoop::Hive::_NoSuchObjectException__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__NoSuchObjectException____isset"/>
+      </node>
+      <node id="30">
+        <label>Apache::Hadoop::Hive::_PartitionsStatsResult__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__PartitionsStatsResult____isset"/>
+      </node>
+      <node id="17">
+        <label>Apache::Hadoop::Hive::_StringColumnStatsData__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__StringColumnStatsData____isset"/>
+      </node>
+      <node id="36">
+        <label>Apache::Hadoop::Hive::_ThriftHiveMetastore_get_partitions_statistics_req_result__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__ThriftHiveMetastore__get__partitions__statistics__req__result____isset"/>
+      </node>
+      <node id="28">
+        <label>Apache::Hadoop::Hive::_TimestampColumnStatsData__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__TimestampColumnStatsData____isset"/>
+      </node>
+      <node id="3">
+        <label>apache::thrift::TBase</label>
+      </node>
+      <node id="32">
+        <label>apache::thrift::TException</label>
+      </node>
+      <node id="4">
+        <label>std::map&lt; std::string, std::vector&lt; Apache::Hadoop::Hive::ColumnStatisticsObj &gt; &gt;</label>
+        <childnode refid="5" relation="usage">
+          <edgelabel>keys</edgelabel>
+        </childnode>
+        <childnode refid="7" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="6">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="5">
+        <label>std::string</label>
+        <childnode refid="6" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="7">
+        <label>std::vector&lt; Apache::Hadoop::Hive::ColumnStatisticsObj &gt;</label>
+        <childnode refid="8" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="16424" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="16424" bodyend="16454"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__partitions__statistics__req__result_1a97056b2e40bdc91b0d17b47019018718" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_get_partitions_statistics_req_result</scope><name>__isset</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__partitions__statistics__req__result_1a31cea811477a7be6441f1ba55df9e370" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_get_partitions_statistics_req_result</scope><name>__set_o1</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__partitions__statistics__req__result_1a32aaf50ef9f3f481fde1ae9fe34be571" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_get_partitions_statistics_req_result</scope><name>__set_o2</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__partitions__statistics__req__result_1a8ba5f2ad9fbe8586c2840a76b73d7a36" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_get_partitions_statistics_req_result</scope><name>__set_success</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__partitions__statistics__req__result_1a73c5193bd60143c6fb72de4446494402" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_get_partitions_statistics_req_result</scope><name>o1</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__partitions__statistics__req__result_1a5d957466e6b2eefcbe3ad4ff3a915230" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_get_partitions_statistics_req_result</scope><name>o2</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__partitions__statistics__req__result_1a8b1e9c943d857f63ab6d75a80c63d98c" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_get_partitions_statistics_req_result</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__partitions__statistics__req__result_1a300b9b139bf603ff5d2c9dc303aeda23" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_get_partitions_statistics_req_result</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__partitions__statistics__req__result_1a2444dbd4203b8818573235a686d8ee9d" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_get_partitions_statistics_req_result</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__partitions__statistics__req__result_1aa281038cff736cb71aa893d6c7176758" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_get_partitions_statistics_req_result</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__partitions__statistics__req__result_1ab351c2d19a6f215811186eac51d1ff5a" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_get_partitions_statistics_req_result</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__partitions__statistics__req__result_1a3087035ae1bb4b512874ea804523a7b1" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_get_partitions_statistics_req_result</scope><name>success</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__partitions__statistics__req__result_1a5d9384cc56303af28cc0a20feada8fe8" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_get_partitions_statistics_req_result</scope><name>ThriftHiveMetastore_get_partitions_statistics_req_result</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__partitions__statistics__req__result_1af0160fbab2af393f2a7e3f9c174b624e" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_get_partitions_statistics_req_result</scope><name>ThriftHiveMetastore_get_partitions_statistics_req_result</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__partitions__statistics__req__result_1ab37fd9b5dbcc3fcbd3217f5c6fde5927" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_get_partitions_statistics_req_result</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__get__partitions__statistics__req__result_1a3caa084f3d38047bf71bf4bd9c568083" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_get_partitions_statistics_req_result</scope><name>~ThriftHiveMetastore_get_partitions_statistics_req_result</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

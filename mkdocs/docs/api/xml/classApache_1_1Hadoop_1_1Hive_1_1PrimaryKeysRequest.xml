@@ -1,0 +1,427 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1PrimaryKeysRequest" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::PrimaryKeysRequest</compoundname>
+    <basecompoundref prot="public" virt="virtual">apache::thrift::TBase</basecompoundref>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1PrimaryKeysRequest_1a382448ea5a3341aeb664f3520e53364b" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::PrimaryKeysRequest::db_name</definition>
+        <argsstring></argsstring>
+        <name>db_name</name>
+        <qualifiedname>Apache::Hadoop::Hive::PrimaryKeysRequest::db_name</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="4697" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="4697" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1PrimaryKeysRequest_1a950e498c377d446eba2e95df0066002b" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::PrimaryKeysRequest::tbl_name</definition>
+        <argsstring></argsstring>
+        <name>tbl_name</name>
+        <qualifiedname>Apache::Hadoop::Hive::PrimaryKeysRequest::tbl_name</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="4698" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="4698" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1PrimaryKeysRequest_1aacd0c2f7501c96f6eb842a2f515f7775" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::PrimaryKeysRequest::catName</definition>
+        <argsstring></argsstring>
+        <name>catName</name>
+        <qualifiedname>Apache::Hadoop::Hive::PrimaryKeysRequest::catName</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="4699" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="4699" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1PrimaryKeysRequest_1afa670b696c75c9210a93d507be467a01" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::PrimaryKeysRequest::validWriteIdList</definition>
+        <argsstring></argsstring>
+        <name>validWriteIdList</name>
+        <qualifiedname>Apache::Hadoop::Hive::PrimaryKeysRequest::validWriteIdList</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="4700" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="4700" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1PrimaryKeysRequest_1a52b6308fc96ef9867262a0d20810cebe" prot="public" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t Apache::Hadoop::Hive::PrimaryKeysRequest::tableId</definition>
+        <argsstring></argsstring>
+        <name>tableId</name>
+        <qualifiedname>Apache::Hadoop::Hive::PrimaryKeysRequest::tableId</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="4701" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="4701" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1PrimaryKeysRequest_1ad8c1042edd3bbd94bcb75923b6ad8519" prot="public" static="no" mutable="no">
+        <type><ref refid="structApache_1_1Hadoop_1_1Hive_1_1__PrimaryKeysRequest____isset" kindref="compound">_PrimaryKeysRequest__isset</ref></type>
+        <definition>_PrimaryKeysRequest__isset Apache::Hadoop::Hive::PrimaryKeysRequest::__isset</definition>
+        <argsstring></argsstring>
+        <name>__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::PrimaryKeysRequest::__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="4703" column="30" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="4703" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1PrimaryKeysRequest_1a533c143a26f61038ecd9c4326cd200f4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::PrimaryKeysRequest::PrimaryKeysRequest</definition>
+        <argsstring>(const PrimaryKeysRequest &amp;)</argsstring>
+        <name>PrimaryKeysRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::PrimaryKeysRequest::PrimaryKeysRequest</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1PrimaryKeysRequest" kindref="compound">PrimaryKeysRequest</ref> &amp;</type>
+          <defname>other521</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="4692" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="16189" bodyend="16196"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1PrimaryKeysRequest_1a2d281cd5eaa79b593c8364698042d513" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1PrimaryKeysRequest" kindref="compound">PrimaryKeysRequest</ref> &amp;</type>
+        <definition>PrimaryKeysRequest &amp; Apache::Hadoop::Hive::PrimaryKeysRequest::operator=</definition>
+        <argsstring>(const PrimaryKeysRequest &amp;)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::PrimaryKeysRequest::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1PrimaryKeysRequest" kindref="compound">PrimaryKeysRequest</ref> &amp;</type>
+          <defname>other522</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="4693" column="22" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="16197" bodyend="16205"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1PrimaryKeysRequest_1a8af887db80ff6c28d1fc71838aaffbc1" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::PrimaryKeysRequest::PrimaryKeysRequest</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>PrimaryKeysRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::PrimaryKeysRequest::PrimaryKeysRequest</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="4694" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="16009" bodyend="16015"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1PrimaryKeysRequest_1af5d80bb3c52d46053404f3c484ed4caf" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::PrimaryKeysRequest::~PrimaryKeysRequest</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~PrimaryKeysRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::PrimaryKeysRequest::~PrimaryKeysRequest</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="4696" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="16006" bodyend="16007"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1PrimaryKeysRequest_1a3c445597405443a9edee04bffee64fea" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::PrimaryKeysRequest::__set_db_name</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_db_name</name>
+        <qualifiedname>Apache::Hadoop::Hive::PrimaryKeysRequest::__set_db_name</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="4705" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="16017" bodyend="16019"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1PrimaryKeysRequest_1a7fbe6752ebdd283078c54168e7f4147a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::PrimaryKeysRequest::__set_tbl_name</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_tbl_name</name>
+        <qualifiedname>Apache::Hadoop::Hive::PrimaryKeysRequest::__set_tbl_name</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="4707" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="16021" bodyend="16023"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1PrimaryKeysRequest_1adecfc1d4643f15b92b0b2f28f1358fcc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::PrimaryKeysRequest::__set_catName</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_catName</name>
+        <qualifiedname>Apache::Hadoop::Hive::PrimaryKeysRequest::__set_catName</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="4709" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="16025" bodyend="16028"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1PrimaryKeysRequest_1ac22279a8d9d655d22d3cda7a173f0f92" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::PrimaryKeysRequest::__set_validWriteIdList</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_validWriteIdList</name>
+        <qualifiedname>Apache::Hadoop::Hive::PrimaryKeysRequest::__set_validWriteIdList</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="4711" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="16030" bodyend="16033"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1PrimaryKeysRequest_1ade24e5b8daf22ae3f33542d8edf5eb71" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::PrimaryKeysRequest::__set_tableId</definition>
+        <argsstring>(const int64_t val)</argsstring>
+        <name>__set_tableId</name>
+        <qualifiedname>Apache::Hadoop::Hive::PrimaryKeysRequest::__set_tableId</qualifiedname>
+        <param>
+          <type>const int64_t</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="4713" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="16035" bodyend="16038"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1PrimaryKeysRequest_1a7e8495603f7c8b9246cd509ab7230c55" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::PrimaryKeysRequest::operator==</definition>
+        <argsstring>(const PrimaryKeysRequest &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::PrimaryKeysRequest::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1PrimaryKeysRequest" kindref="compound">PrimaryKeysRequest</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="4715" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="16168" bodyend="16187"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1PrimaryKeysRequest_1aac303602a4c21432114f75f8bef828f7" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::PrimaryKeysRequest::operator!=</definition>
+        <argsstring>(const PrimaryKeysRequest &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::PrimaryKeysRequest::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1PrimaryKeysRequest" kindref="compound">PrimaryKeysRequest</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="4716" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="4716" bodyend="4718"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1PrimaryKeysRequest_1a4efc357e61a1d7f06df5ade226afe25b" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::PrimaryKeysRequest::operator&lt;</definition>
+        <argsstring>(const PrimaryKeysRequest &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::PrimaryKeysRequest::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1PrimaryKeysRequest" kindref="compound">PrimaryKeysRequest</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="4720" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1PrimaryKeysRequest_1a809bd61ef3f844a943cf807fdf391c84" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::PrimaryKeysRequest::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot) override</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::PrimaryKeysRequest::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="4722" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="16046" bodyend="16123"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1PrimaryKeysRequest_1a7a7e0b25af189facdc5bd0c7775eddcc" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::PrimaryKeysRequest::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const override</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::PrimaryKeysRequest::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="4723" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="16125" bodyend="16156"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1PrimaryKeysRequest_1a046b81765defe8198e00e56801d7abf3" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::PrimaryKeysRequest::printTo</definition>
+        <argsstring>(std::ostream &amp;out) const</argsstring>
+        <name>printTo</name>
+        <qualifiedname>Apache::Hadoop::Hive::PrimaryKeysRequest::printTo</qualifiedname>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="4725" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="16206" bodyend="16215"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::PrimaryKeysRequest</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1PrimaryKeysRequest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::PrimaryKeysRequest</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1PrimaryKeysRequest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>catName</edgelabel>
+          <edgelabel>db_name</edgelabel>
+          <edgelabel>tbl_name</edgelabel>
+          <edgelabel>validWriteIdList</edgelabel>
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="5">
+        <label>Apache::Hadoop::Hive::_PrimaryKeysRequest__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__PrimaryKeysRequest____isset"/>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+      <node id="4">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="3">
+        <label>std::string</label>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="4689" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="4689" bodyend="4726"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1PrimaryKeysRequest_1ad8c1042edd3bbd94bcb75923b6ad8519" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::PrimaryKeysRequest</scope><name>__isset</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1PrimaryKeysRequest_1adecfc1d4643f15b92b0b2f28f1358fcc" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::PrimaryKeysRequest</scope><name>__set_catName</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1PrimaryKeysRequest_1a3c445597405443a9edee04bffee64fea" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::PrimaryKeysRequest</scope><name>__set_db_name</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1PrimaryKeysRequest_1ade24e5b8daf22ae3f33542d8edf5eb71" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::PrimaryKeysRequest</scope><name>__set_tableId</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1PrimaryKeysRequest_1a7fbe6752ebdd283078c54168e7f4147a" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::PrimaryKeysRequest</scope><name>__set_tbl_name</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1PrimaryKeysRequest_1ac22279a8d9d655d22d3cda7a173f0f92" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::PrimaryKeysRequest</scope><name>__set_validWriteIdList</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1PrimaryKeysRequest_1aacd0c2f7501c96f6eb842a2f515f7775" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::PrimaryKeysRequest</scope><name>catName</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1PrimaryKeysRequest_1a382448ea5a3341aeb664f3520e53364b" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::PrimaryKeysRequest</scope><name>db_name</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1PrimaryKeysRequest_1aac303602a4c21432114f75f8bef828f7" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::PrimaryKeysRequest</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1PrimaryKeysRequest_1a4efc357e61a1d7f06df5ade226afe25b" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::PrimaryKeysRequest</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1PrimaryKeysRequest_1a2d281cd5eaa79b593c8364698042d513" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::PrimaryKeysRequest</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1PrimaryKeysRequest_1a7e8495603f7c8b9246cd509ab7230c55" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::PrimaryKeysRequest</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1PrimaryKeysRequest_1a533c143a26f61038ecd9c4326cd200f4" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::PrimaryKeysRequest</scope><name>PrimaryKeysRequest</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1PrimaryKeysRequest_1a8af887db80ff6c28d1fc71838aaffbc1" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::PrimaryKeysRequest</scope><name>PrimaryKeysRequest</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1PrimaryKeysRequest_1a046b81765defe8198e00e56801d7abf3" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::PrimaryKeysRequest</scope><name>printTo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1PrimaryKeysRequest_1a809bd61ef3f844a943cf807fdf391c84" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::PrimaryKeysRequest</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1PrimaryKeysRequest_1a52b6308fc96ef9867262a0d20810cebe" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::PrimaryKeysRequest</scope><name>tableId</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1PrimaryKeysRequest_1a950e498c377d446eba2e95df0066002b" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::PrimaryKeysRequest</scope><name>tbl_name</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1PrimaryKeysRequest_1afa670b696c75c9210a93d507be467a01" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::PrimaryKeysRequest</scope><name>validWriteIdList</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1PrimaryKeysRequest_1a7a7e0b25af189facdc5bd0c7775eddcc" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::PrimaryKeysRequest</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1PrimaryKeysRequest_1af5d80bb3c52d46053404f3c484ed4caf" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::PrimaryKeysRequest</scope><name>~PrimaryKeysRequest</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

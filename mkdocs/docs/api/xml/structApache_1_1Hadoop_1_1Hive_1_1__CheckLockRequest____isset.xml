@@ -1,0 +1,64 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structApache_1_1Hadoop_1_1Hive_1_1__CheckLockRequest____isset" kind="struct" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::_CheckLockRequest__isset</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__CheckLockRequest____isset_1aa40fb4dd693cba2a6f7fe360e96bf969" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_CheckLockRequest__isset::txnid</definition>
+        <argsstring></argsstring>
+        <name>txnid</name>
+        <qualifiedname>Apache::Hadoop::Hive::_CheckLockRequest__isset::txnid</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7769" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="7769" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__CheckLockRequest____isset_1a31acc4c74b749a7325b6335cbfd023f9" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_CheckLockRequest__isset::elapsed_ms</definition>
+        <argsstring></argsstring>
+        <name>elapsed_ms</name>
+        <qualifiedname>Apache::Hadoop::Hive::_CheckLockRequest__isset::elapsed_ms</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7770" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="7770" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structApache_1_1Hadoop_1_1Hive_1_1__CheckLockRequest____isset_1a90390a99bb959b78401b1bc5fe4b68b5" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::_CheckLockRequest__isset::_CheckLockRequest__isset</definition>
+        <argsstring>()</argsstring>
+        <name>_CheckLockRequest__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::_CheckLockRequest__isset::_CheckLockRequest__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7768" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="7768" bodyend="7768"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7767" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="7767" bodyend="7771"/>
+    <listofallmembers>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__CheckLockRequest____isset_1a90390a99bb959b78401b1bc5fe4b68b5" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_CheckLockRequest__isset</scope><name>_CheckLockRequest__isset</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__CheckLockRequest____isset_1a31acc4c74b749a7325b6335cbfd023f9" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_CheckLockRequest__isset</scope><name>elapsed_ms</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__CheckLockRequest____isset_1aa40fb4dd693cba2a6f7fe360e96bf969" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_CheckLockRequest__isset</scope><name>txnid</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

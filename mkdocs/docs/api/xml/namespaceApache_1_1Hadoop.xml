@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="namespaceApache_1_1Hadoop" kind="namespace" language="C++">
+    <compoundname>Apache::Hadoop</compoundname>
+    <innernamespace refid="namespaceApache_1_1Hadoop_1_1Hive">Apache::Hadoop::Hive</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_constants.cpp" line="9" column="16"/>
+  </compounddef>
+</doxygen>

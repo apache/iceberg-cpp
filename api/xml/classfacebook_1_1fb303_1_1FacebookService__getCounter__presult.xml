@@ -1,0 +1,94 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classfacebook_1_1fb303_1_1FacebookService__getCounter__presult" kind="class" language="C++" prot="public">
+    <compoundname>facebook::fb303::FacebookService_getCounter_presult</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classfacebook_1_1fb303_1_1FacebookService__getCounter__presult_1abc9f067d88f563a5bdbe5870670f870d" prot="public" static="no" mutable="no">
+        <type>int64_t *</type>
+        <definition>int64_t* facebook::fb303::FacebookService_getCounter_presult::success</definition>
+        <argsstring></argsstring>
+        <name>success</name>
+        <qualifiedname>facebook::fb303::FacebookService_getCounter_presult::success</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="679" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.h" bodystart="679" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classfacebook_1_1fb303_1_1FacebookService__getCounter__presult_1ab7694e22e31b4c2d08279f51c87e97e0" prot="public" static="no" mutable="no">
+        <type><ref refid="structfacebook_1_1fb303_1_1__FacebookService__getCounter__presult____isset" kindref="compound">_FacebookService_getCounter_presult__isset</ref></type>
+        <definition>_FacebookService_getCounter_presult__isset facebook::fb303::FacebookService_getCounter_presult::__isset</definition>
+        <argsstring></argsstring>
+        <name>__isset</name>
+        <qualifiedname>facebook::fb303::FacebookService_getCounter_presult::__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="681" column="46" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.h" bodystart="681" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookService__getCounter__presult_1ab357f31d4d3b4dd056b0d4e7a5b8604b" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>facebook::fb303::FacebookService_getCounter_presult::~FacebookService_getCounter_presult</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~FacebookService_getCounter_presult</name>
+        <qualifiedname>facebook::fb303::FacebookService_getCounter_presult::~FacebookService_getCounter_presult</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="678" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.cpp" bodystart="1056" bodyend="1057"/>
+      </memberdef>
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookService__getCounter__presult_1ab58f2a16ef8171b72b2761d31c90acab" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t facebook::fb303::FacebookService_getCounter_presult::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot)</argsstring>
+        <name>read</name>
+        <qualifiedname>facebook::fb303::FacebookService_getCounter_presult::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="683" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.cpp" bodystart="1060" bodyend="1099"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>facebook::fb303::FacebookService_getCounter_presult</label>
+        <link refid="classfacebook_1_1fb303_1_1FacebookService__getCounter__presult"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="2">
+        <label>facebook::fb303::_FacebookService_getCounter_presult__isset</label>
+        <link refid="structfacebook_1_1fb303_1_1__FacebookService__getCounter__presult____isset"/>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="674" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.h" bodystart="674" bodyend="685"/>
+    <listofallmembers>
+      <member refid="classfacebook_1_1fb303_1_1FacebookService__getCounter__presult_1ab7694e22e31b4c2d08279f51c87e97e0" prot="public" virt="non-virtual"><scope>facebook::fb303::FacebookService_getCounter_presult</scope><name>__isset</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookService__getCounter__presult_1ab58f2a16ef8171b72b2761d31c90acab" prot="public" virt="non-virtual"><scope>facebook::fb303::FacebookService_getCounter_presult</scope><name>read</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookService__getCounter__presult_1abc9f067d88f563a5bdbe5870670f870d" prot="public" virt="non-virtual"><scope>facebook::fb303::FacebookService_getCounter_presult</scope><name>success</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookService__getCounter__presult_1ab357f31d4d3b4dd056b0d4e7a5b8604b" prot="public" virt="virtual"><scope>facebook::fb303::FacebookService_getCounter_presult</scope><name>~FacebookService_getCounter_presult</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

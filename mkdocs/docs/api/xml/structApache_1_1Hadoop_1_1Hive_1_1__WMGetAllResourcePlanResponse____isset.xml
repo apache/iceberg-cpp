@@ -1,0 +1,48 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structApache_1_1Hadoop_1_1Hive_1_1__WMGetAllResourcePlanResponse____isset" kind="struct" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::_WMGetAllResourcePlanResponse__isset</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__WMGetAllResourcePlanResponse____isset_1a81848e9e1cf1a4135694870f0490f876" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_WMGetAllResourcePlanResponse__isset::resourcePlans</definition>
+        <argsstring></argsstring>
+        <name>resourcePlans</name>
+        <qualifiedname>Apache::Hadoop::Hive::_WMGetAllResourcePlanResponse__isset::resourcePlans</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11547" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="11547" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structApache_1_1Hadoop_1_1Hive_1_1__WMGetAllResourcePlanResponse____isset_1ab4e50696920803ba7af3079e929a6d8a" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::_WMGetAllResourcePlanResponse__isset::_WMGetAllResourcePlanResponse__isset</definition>
+        <argsstring>()</argsstring>
+        <name>_WMGetAllResourcePlanResponse__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::_WMGetAllResourcePlanResponse__isset::_WMGetAllResourcePlanResponse__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11546" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="11546" bodyend="11546"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11545" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="11545" bodyend="11548"/>
+    <listofallmembers>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__WMGetAllResourcePlanResponse____isset_1ab4e50696920803ba7af3079e929a6d8a" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_WMGetAllResourcePlanResponse__isset</scope><name>_WMGetAllResourcePlanResponse__isset</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__WMGetAllResourcePlanResponse____isset_1a81848e9e1cf1a4135694870f0490f876" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_WMGetAllResourcePlanResponse__isset</scope><name>resourcePlans</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

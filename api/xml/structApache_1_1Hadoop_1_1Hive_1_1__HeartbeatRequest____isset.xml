@@ -1,0 +1,64 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structApache_1_1Hadoop_1_1Hive_1_1__HeartbeatRequest____isset" kind="struct" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::_HeartbeatRequest__isset</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__HeartbeatRequest____isset_1a779a7383a6783903cee23f14de45bf45" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_HeartbeatRequest__isset::lockid</definition>
+        <argsstring></argsstring>
+        <name>lockid</name>
+        <qualifiedname>Apache::Hadoop::Hive::_HeartbeatRequest__isset::lockid</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8027" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="8027" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__HeartbeatRequest____isset_1a8b33dd37545fa94e2de33879252ec800" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_HeartbeatRequest__isset::txnid</definition>
+        <argsstring></argsstring>
+        <name>txnid</name>
+        <qualifiedname>Apache::Hadoop::Hive::_HeartbeatRequest__isset::txnid</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8028" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="8028" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structApache_1_1Hadoop_1_1Hive_1_1__HeartbeatRequest____isset_1a328287cd904e71f7de526e8ff2adf399" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::_HeartbeatRequest__isset::_HeartbeatRequest__isset</definition>
+        <argsstring>()</argsstring>
+        <name>_HeartbeatRequest__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::_HeartbeatRequest__isset::_HeartbeatRequest__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8026" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="8026" bodyend="8026"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8025" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="8025" bodyend="8029"/>
+    <listofallmembers>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__HeartbeatRequest____isset_1a328287cd904e71f7de526e8ff2adf399" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_HeartbeatRequest__isset</scope><name>_HeartbeatRequest__isset</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__HeartbeatRequest____isset_1a779a7383a6783903cee23f14de45bf45" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_HeartbeatRequest__isset</scope><name>lockid</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__HeartbeatRequest____isset_1a8b33dd37545fa94e2de33879252ec800" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_HeartbeatRequest__isset</scope><name>txnid</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

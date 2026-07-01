@@ -1,0 +1,80 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structApache_1_1Hadoop_1_1Hive_1_1__SkewedInfo____isset" kind="struct" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::_SkewedInfo__isset</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__SkewedInfo____isset_1a6a2d52c264271ac7493fefc72b88cbfc" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_SkewedInfo__isset::skewedColNames</definition>
+        <argsstring></argsstring>
+        <name>skewedColNames</name>
+        <qualifiedname>Apache::Hadoop::Hive::_SkewedInfo__isset::skewedColNames</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3100" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="3100" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__SkewedInfo____isset_1a2a8150d72f8808e49fe5112674af6d8a" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_SkewedInfo__isset::skewedColValues</definition>
+        <argsstring></argsstring>
+        <name>skewedColValues</name>
+        <qualifiedname>Apache::Hadoop::Hive::_SkewedInfo__isset::skewedColValues</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3101" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="3101" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__SkewedInfo____isset_1af3b94be9fb545b54e7144671f6f5a80f" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_SkewedInfo__isset::skewedColValueLocationMaps</definition>
+        <argsstring></argsstring>
+        <name>skewedColValueLocationMaps</name>
+        <qualifiedname>Apache::Hadoop::Hive::_SkewedInfo__isset::skewedColValueLocationMaps</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3102" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="3102" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structApache_1_1Hadoop_1_1Hive_1_1__SkewedInfo____isset_1aace8cb010d6fd12bece64a980b6e5ed1" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::_SkewedInfo__isset::_SkewedInfo__isset</definition>
+        <argsstring>()</argsstring>
+        <name>_SkewedInfo__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::_SkewedInfo__isset::_SkewedInfo__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3099" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="3099" bodyend="3099"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3098" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="3098" bodyend="3103"/>
+    <listofallmembers>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__SkewedInfo____isset_1aace8cb010d6fd12bece64a980b6e5ed1" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_SkewedInfo__isset</scope><name>_SkewedInfo__isset</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__SkewedInfo____isset_1a6a2d52c264271ac7493fefc72b88cbfc" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_SkewedInfo__isset</scope><name>skewedColNames</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__SkewedInfo____isset_1af3b94be9fb545b54e7144671f6f5a80f" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_SkewedInfo__isset</scope><name>skewedColValueLocationMaps</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__SkewedInfo____isset_1a2a8150d72f8808e49fe5112674af6d8a" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_SkewedInfo__isset</scope><name>skewedColValues</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

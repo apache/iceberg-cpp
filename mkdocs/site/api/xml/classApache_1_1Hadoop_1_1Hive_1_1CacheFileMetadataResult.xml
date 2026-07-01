@@ -1,0 +1,255 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1CacheFileMetadataResult" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::CacheFileMetadataResult</compoundname>
+    <basecompoundref prot="public" virt="virtual">apache::thrift::TBase</basecompoundref>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1CacheFileMetadataResult_1a4bbcd204bd2f78a60373eb831d44b1ba" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::CacheFileMetadataResult::isSupported</definition>
+        <argsstring></argsstring>
+        <name>isSupported</name>
+        <qualifiedname>Apache::Hadoop::Hive::CacheFileMetadataResult::isSupported</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10033" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="10033" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CacheFileMetadataResult_1a40013f773ce5f4621fba39476fa760d4" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::CacheFileMetadataResult::CacheFileMetadataResult</definition>
+        <argsstring>(const CacheFileMetadataResult &amp;) noexcept</argsstring>
+        <name>CacheFileMetadataResult</name>
+        <qualifiedname>Apache::Hadoop::Hive::CacheFileMetadataResult::CacheFileMetadataResult</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1CacheFileMetadataResult" kindref="compound">CacheFileMetadataResult</ref> &amp;</type>
+          <defname>other1294</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10028" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="39529" bodyend="39531"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CacheFileMetadataResult_1aed2748dc9c67d6caaab55080d197b030" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1CacheFileMetadataResult" kindref="compound">CacheFileMetadataResult</ref> &amp;</type>
+        <definition>CacheFileMetadataResult &amp; Apache::Hadoop::Hive::CacheFileMetadataResult::operator=</definition>
+        <argsstring>(const CacheFileMetadataResult &amp;) noexcept</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::CacheFileMetadataResult::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1CacheFileMetadataResult" kindref="compound">CacheFileMetadataResult</ref> &amp;</type>
+          <defname>other1295</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10029" column="27" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="39532" bodyend="39535"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CacheFileMetadataResult_1ab4fcabb6458fd8b47bf7718a561b138e" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::CacheFileMetadataResult::CacheFileMetadataResult</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>CacheFileMetadataResult</name>
+        <qualifiedname>Apache::Hadoop::Hive::CacheFileMetadataResult::CacheFileMetadataResult</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10030" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="39445" bodyend="39447"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CacheFileMetadataResult_1a463c9d2e8fc9b84fb4e1b8bc46298917" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::CacheFileMetadataResult::~CacheFileMetadataResult</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~CacheFileMetadataResult</name>
+        <qualifiedname>Apache::Hadoop::Hive::CacheFileMetadataResult::~CacheFileMetadataResult</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10032" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="39442" bodyend="39443"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CacheFileMetadataResult_1a4a7f37696c54b4f273994ce172b62701" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::CacheFileMetadataResult::__set_isSupported</definition>
+        <argsstring>(const bool val)</argsstring>
+        <name>__set_isSupported</name>
+        <qualifiedname>Apache::Hadoop::Hive::CacheFileMetadataResult::__set_isSupported</qualifiedname>
+        <param>
+          <type>const bool</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10035" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="39449" bodyend="39451"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CacheFileMetadataResult_1ab07ef5d294322637346441c9b740d047" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::CacheFileMetadataResult::operator==</definition>
+        <argsstring>(const CacheFileMetadataResult &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::CacheFileMetadataResult::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1CacheFileMetadataResult" kindref="compound">CacheFileMetadataResult</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10037" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="39522" bodyend="39527"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CacheFileMetadataResult_1a3e9259f7b9f4c2aae29a5812fd4c09ec" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::CacheFileMetadataResult::operator!=</definition>
+        <argsstring>(const CacheFileMetadataResult &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::CacheFileMetadataResult::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1CacheFileMetadataResult" kindref="compound">CacheFileMetadataResult</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10038" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="10038" bodyend="10040"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CacheFileMetadataResult_1a95a71ff6c89eb7851a403c612455495a" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::CacheFileMetadataResult::operator&lt;</definition>
+        <argsstring>(const CacheFileMetadataResult &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::CacheFileMetadataResult::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1CacheFileMetadataResult" kindref="compound">CacheFileMetadataResult</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10042" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CacheFileMetadataResult_1a808e185abeaabbd2da7d5da16c629e05" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::CacheFileMetadataResult::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot) override</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::CacheFileMetadataResult::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10044" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="39459" bodyend="39501"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CacheFileMetadataResult_1a8c9c7ef6b84fa394a34c0472abdd4531" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::CacheFileMetadataResult::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const override</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::CacheFileMetadataResult::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10045" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="39503" bodyend="39515"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CacheFileMetadataResult_1ab920fffd309e72b717215dc80ce68c77" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::CacheFileMetadataResult::printTo</definition>
+        <argsstring>(std::ostream &amp;out) const</argsstring>
+        <name>printTo</name>
+        <qualifiedname>Apache::Hadoop::Hive::CacheFileMetadataResult::printTo</qualifiedname>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10047" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="39536" bodyend="39541"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::CacheFileMetadataResult</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1CacheFileMetadataResult"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::CacheFileMetadataResult</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1CacheFileMetadataResult"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10025" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="10025" bodyend="10048"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CacheFileMetadataResult_1a4a7f37696c54b4f273994ce172b62701" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CacheFileMetadataResult</scope><name>__set_isSupported</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CacheFileMetadataResult_1a40013f773ce5f4621fba39476fa760d4" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CacheFileMetadataResult</scope><name>CacheFileMetadataResult</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CacheFileMetadataResult_1ab4fcabb6458fd8b47bf7718a561b138e" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CacheFileMetadataResult</scope><name>CacheFileMetadataResult</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CacheFileMetadataResult_1a4bbcd204bd2f78a60373eb831d44b1ba" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CacheFileMetadataResult</scope><name>isSupported</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CacheFileMetadataResult_1a3e9259f7b9f4c2aae29a5812fd4c09ec" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CacheFileMetadataResult</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CacheFileMetadataResult_1a95a71ff6c89eb7851a403c612455495a" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CacheFileMetadataResult</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CacheFileMetadataResult_1aed2748dc9c67d6caaab55080d197b030" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CacheFileMetadataResult</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CacheFileMetadataResult_1ab07ef5d294322637346441c9b740d047" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CacheFileMetadataResult</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CacheFileMetadataResult_1ab920fffd309e72b717215dc80ce68c77" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::CacheFileMetadataResult</scope><name>printTo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CacheFileMetadataResult_1a808e185abeaabbd2da7d5da16c629e05" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CacheFileMetadataResult</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CacheFileMetadataResult_1a8c9c7ef6b84fa394a34c0472abdd4531" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CacheFileMetadataResult</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CacheFileMetadataResult_1a463c9d2e8fc9b84fb4e1b8bc46298917" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::CacheFileMetadataResult</scope><name>~CacheFileMetadataResult</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

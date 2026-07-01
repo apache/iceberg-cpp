@@ -1,0 +1,64 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structApache_1_1Hadoop_1_1Hive_1_1__ResourceUri____isset" kind="struct" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::_ResourceUri__isset</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__ResourceUri____isset_1a053b9fe4fd372f8c4c234a53bae728b4" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_ResourceUri__isset::resourceType</definition>
+        <argsstring></argsstring>
+        <name>resourceType</name>
+        <qualifiedname>Apache::Hadoop::Hive::_ResourceUri__isset::resourceType</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6480" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="6480" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__ResourceUri____isset_1a543bc6f0a0497e84abecbd80cd9eb594" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_ResourceUri__isset::uri</definition>
+        <argsstring></argsstring>
+        <name>uri</name>
+        <qualifiedname>Apache::Hadoop::Hive::_ResourceUri__isset::uri</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6481" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="6481" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structApache_1_1Hadoop_1_1Hive_1_1__ResourceUri____isset_1a216b99087264985dfd551bd912929530" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::_ResourceUri__isset::_ResourceUri__isset</definition>
+        <argsstring>()</argsstring>
+        <name>_ResourceUri__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::_ResourceUri__isset::_ResourceUri__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6479" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="6479" bodyend="6479"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6478" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="6478" bodyend="6482"/>
+    <listofallmembers>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__ResourceUri____isset_1a216b99087264985dfd551bd912929530" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_ResourceUri__isset</scope><name>_ResourceUri__isset</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__ResourceUri____isset_1a053b9fe4fd372f8c4c234a53bae728b4" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_ResourceUri__isset</scope><name>resourceType</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__ResourceUri____isset_1a543bc6f0a0497e84abecbd80cd9eb594" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_ResourceUri__isset</scope><name>uri</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

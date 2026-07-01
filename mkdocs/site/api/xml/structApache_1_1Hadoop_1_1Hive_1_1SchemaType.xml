@@ -1,0 +1,46 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structApache_1_1Hadoop_1_1Hive_1_1SchemaType" kind="struct" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::SchemaType</compoundname>
+    <sectiondef kind="public-type">
+      <memberdef kind="enum" id="structApache_1_1Hadoop_1_1Hive_1_1SchemaType_1ad4e03d265f02823efcd96de06b1d0e62" prot="public" static="no" strong="no">
+        <type></type>
+        <name>type</name>
+        <qualifiedname>Apache::Hadoop::Hive::SchemaType::type</qualifiedname>
+        <enumvalue id="structApache_1_1Hadoop_1_1Hive_1_1SchemaType_1ad4e03d265f02823efcd96de06b1d0e62ad378f35b250bb16fad4e2318a5ab5367" prot="public">
+          <name>HIVE</name>
+          <initializer>= 1</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="structApache_1_1Hadoop_1_1Hive_1_1SchemaType_1ad4e03d265f02823efcd96de06b1d0e62ab285a8f6c6adccc09d1124f0bcf829da" prot="public">
+          <name>AVRO</name>
+          <initializer>= 2</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="199" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="199" bodyend="202"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="198" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="198" bodyend="203"/>
+    <listofallmembers>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1SchemaType_1ad4e03d265f02823efcd96de06b1d0e62ab285a8f6c6adccc09d1124f0bcf829da" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::SchemaType</scope><name>AVRO</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1SchemaType_1ad4e03d265f02823efcd96de06b1d0e62ad378f35b250bb16fad4e2318a5ab5367" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::SchemaType</scope><name>HIVE</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1SchemaType_1ad4e03d265f02823efcd96de06b1d0e62" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::SchemaType</scope><name>type</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

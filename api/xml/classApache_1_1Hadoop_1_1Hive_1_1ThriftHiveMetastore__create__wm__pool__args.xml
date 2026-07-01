@@ -1,0 +1,288 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__create__wm__pool__args" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::ThriftHiveMetastore_create_wm_pool_args</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__create__wm__pool__args_1a0aa28bd40c4e9f725d8aa7439b902303" prot="public" static="no" mutable="no">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1WMCreatePoolRequest" kindref="compound">WMCreatePoolRequest</ref></type>
+        <definition>WMCreatePoolRequest Apache::Hadoop::Hive::ThriftHiveMetastore_create_wm_pool_args::request</definition>
+        <argsstring></argsstring>
+        <name>request</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_create_wm_pool_args::request</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="26202" column="23" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="26202" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__create__wm__pool__args_1aa366994015550fe2ae85689c5d19ab0a" prot="public" static="no" mutable="no">
+        <type><ref refid="structApache_1_1Hadoop_1_1Hive_1_1__ThriftHiveMetastore__create__wm__pool__args____isset" kindref="compound">_ThriftHiveMetastore_create_wm_pool_args__isset</ref></type>
+        <definition>_ThriftHiveMetastore_create_wm_pool_args__isset Apache::Hadoop::Hive::ThriftHiveMetastore_create_wm_pool_args::__isset</definition>
+        <argsstring></argsstring>
+        <name>__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_create_wm_pool_args::__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="26204" column="51" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="26204" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__create__wm__pool__args_1ae376714c536028a8493b0be9760cad6a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::ThriftHiveMetastore_create_wm_pool_args::ThriftHiveMetastore_create_wm_pool_args</definition>
+        <argsstring>(const ThriftHiveMetastore_create_wm_pool_args &amp;)</argsstring>
+        <name>ThriftHiveMetastore_create_wm_pool_args</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_create_wm_pool_args::ThriftHiveMetastore_create_wm_pool_args</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__create__wm__pool__args" kindref="compound">ThriftHiveMetastore_create_wm_pool_args</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="26197" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__create__wm__pool__args_1a5cf15858a20c92850c85b8d318478789" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__create__wm__pool__args" kindref="compound">ThriftHiveMetastore_create_wm_pool_args</ref> &amp;</type>
+        <definition>ThriftHiveMetastore_create_wm_pool_args &amp; Apache::Hadoop::Hive::ThriftHiveMetastore_create_wm_pool_args::operator=</definition>
+        <argsstring>(const ThriftHiveMetastore_create_wm_pool_args &amp;)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_create_wm_pool_args::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__create__wm__pool__args" kindref="compound">ThriftHiveMetastore_create_wm_pool_args</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="26198" column="43"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__create__wm__pool__args_1a54cd97b7d3b91865368f5b6162fc1556" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::ThriftHiveMetastore_create_wm_pool_args::ThriftHiveMetastore_create_wm_pool_args</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>ThriftHiveMetastore_create_wm_pool_args</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_create_wm_pool_args::ThriftHiveMetastore_create_wm_pool_args</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="26199" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.cpp" bodystart="58123" bodyend="58124"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__create__wm__pool__args_1ae0fef25c06e3c2f2a62f1293ec2287bc" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::ThriftHiveMetastore_create_wm_pool_args::~ThriftHiveMetastore_create_wm_pool_args</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~ThriftHiveMetastore_create_wm_pool_args</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_create_wm_pool_args::~ThriftHiveMetastore_create_wm_pool_args</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="26201" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.cpp" bodystart="58120" bodyend="58121"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__create__wm__pool__args_1a78cc2ba23b31e9c5481b9423435166c1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::ThriftHiveMetastore_create_wm_pool_args::__set_request</definition>
+        <argsstring>(const WMCreatePoolRequest &amp;val)</argsstring>
+        <name>__set_request</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_create_wm_pool_args::__set_request</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1WMCreatePoolRequest" kindref="compound">WMCreatePoolRequest</ref> &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="26206" column="8"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__create__wm__pool__args_1a26135f43ad3361096a7b63c57e300b45" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::ThriftHiveMetastore_create_wm_pool_args::operator==</definition>
+        <argsstring>(const ThriftHiveMetastore_create_wm_pool_args &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_create_wm_pool_args::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__create__wm__pool__args" kindref="compound">ThriftHiveMetastore_create_wm_pool_args</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="26208" column="8"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__create__wm__pool__args_1a51ebc55b88570340fec8c6d60fc935a6" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::ThriftHiveMetastore_create_wm_pool_args::operator!=</definition>
+        <argsstring>(const ThriftHiveMetastore_create_wm_pool_args &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_create_wm_pool_args::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__create__wm__pool__args" kindref="compound">ThriftHiveMetastore_create_wm_pool_args</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="26209" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="26209" bodyend="26211"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__create__wm__pool__args_1a9e8fce46a9c508f78c3c0f0ab4c2ff5b" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::ThriftHiveMetastore_create_wm_pool_args::operator&lt;</definition>
+        <argsstring>(const ThriftHiveMetastore_create_wm_pool_args &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_create_wm_pool_args::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__create__wm__pool__args" kindref="compound">ThriftHiveMetastore_create_wm_pool_args</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="26213" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__create__wm__pool__args_1a20beec110404d03cc7c0c73a05495ad6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::ThriftHiveMetastore_create_wm_pool_args::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot)</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_create_wm_pool_args::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="26215" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.cpp" bodystart="58126" bodyend="58165"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__create__wm__pool__args_1a0d9f08c1a17bcd10b609faf76d147575" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::ThriftHiveMetastore_create_wm_pool_args::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_create_wm_pool_args::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="26216" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.cpp" bodystart="58167" bodyend="58179"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::ThriftHiveMetastore_create_wm_pool_args</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__create__wm__pool__args"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>request</edgelabel>
+        </childnode>
+        <childnode refid="9" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="2">
+        <label>Apache::Hadoop::Hive::WMCreatePoolRequest</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1WMCreatePoolRequest"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>pool</edgelabel>
+        </childnode>
+        <childnode refid="8" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="4">
+        <label>Apache::Hadoop::Hive::WMPool</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1WMPool"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>ns</edgelabel>
+          <edgelabel>poolPath</edgelabel>
+          <edgelabel>resourcePlanName</edgelabel>
+          <edgelabel>schedulingPolicy</edgelabel>
+        </childnode>
+        <childnode refid="7" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="9">
+        <label>Apache::Hadoop::Hive::_ThriftHiveMetastore_create_wm_pool_args__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__ThriftHiveMetastore__create__wm__pool__args____isset"/>
+      </node>
+      <node id="8">
+        <label>Apache::Hadoop::Hive::_WMCreatePoolRequest__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__WMCreatePoolRequest____isset"/>
+      </node>
+      <node id="7">
+        <label>Apache::Hadoop::Hive::_WMPool__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__WMPool____isset"/>
+      </node>
+      <node id="3">
+        <label>apache::thrift::TBase</label>
+      </node>
+      <node id="6">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="5">
+        <label>std::string</label>
+        <childnode refid="6" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="26194" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="26194" bodyend="26218"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__create__wm__pool__args_1aa366994015550fe2ae85689c5d19ab0a" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_create_wm_pool_args</scope><name>__isset</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__create__wm__pool__args_1a78cc2ba23b31e9c5481b9423435166c1" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_create_wm_pool_args</scope><name>__set_request</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__create__wm__pool__args_1a51ebc55b88570340fec8c6d60fc935a6" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_create_wm_pool_args</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__create__wm__pool__args_1a9e8fce46a9c508f78c3c0f0ab4c2ff5b" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_create_wm_pool_args</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__create__wm__pool__args_1a5cf15858a20c92850c85b8d318478789" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_create_wm_pool_args</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__create__wm__pool__args_1a26135f43ad3361096a7b63c57e300b45" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_create_wm_pool_args</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__create__wm__pool__args_1a20beec110404d03cc7c0c73a05495ad6" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_create_wm_pool_args</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__create__wm__pool__args_1a0aa28bd40c4e9f725d8aa7439b902303" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_create_wm_pool_args</scope><name>request</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__create__wm__pool__args_1ae376714c536028a8493b0be9760cad6a" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_create_wm_pool_args</scope><name>ThriftHiveMetastore_create_wm_pool_args</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__create__wm__pool__args_1a54cd97b7d3b91865368f5b6162fc1556" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_create_wm_pool_args</scope><name>ThriftHiveMetastore_create_wm_pool_args</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__create__wm__pool__args_1a0d9f08c1a17bcd10b609faf76d147575" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_create_wm_pool_args</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__create__wm__pool__args_1ae0fef25c06e3c2f2a62f1293ec2287bc" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_create_wm_pool_args</scope><name>~ThriftHiveMetastore_create_wm_pool_args</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

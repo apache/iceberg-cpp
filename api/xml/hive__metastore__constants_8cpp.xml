@@ -1,0 +1,197 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="hive__metastore__constants_8cpp" kind="file" language="C++">
+    <compoundname>hive_metastore_constants.cpp</compoundname>
+    <includes refid="hive__metastore__constants_8h" local="yes">hive_metastore_constants.h</includes>
+    <incdepgraph>
+      <node id="12">
+        <label>fb303_types.h</label>
+        <link refid="fb303__types_8h_source"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg/catalog/hive/gen-cpp/hive_metastore_constants.cpp</label>
+        <link refid="hive__metastore__constants_8cpp"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>hive_metastore_constants.h</label>
+        <link refid="hive__metastore__constants_8h_source"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>hive_metastore_types.h</label>
+        <link refid="hive__metastore__types_8h_source"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+      </node>
+      <node id="10">
+        <label>functional</label>
+      </node>
+      <node id="4">
+        <label>iosfwd</label>
+      </node>
+      <node id="11">
+        <label>memory</label>
+      </node>
+      <node id="6">
+        <label>thrift/TApplicationException.h</label>
+      </node>
+      <node id="7">
+        <label>thrift/TBase.h</label>
+      </node>
+      <node id="5">
+        <label>thrift/Thrift.h</label>
+      </node>
+      <node id="8">
+        <label>thrift/protocol/TProtocol.h</label>
+      </node>
+      <node id="9">
+        <label>thrift/transport/TTransport.h</label>
+      </node>
+    </incdepgraph>
+    <innernamespace refid="namespaceApache">Apache</innernamespace>
+    <innernamespace refid="namespaceApache_1_1Hadoop">Apache::Hadoop</innernamespace>
+    <innernamespace refid="namespaceApache_1_1Hadoop_1_1Hive">Apache::Hadoop::Hive</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="normal"></highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;hive_metastore_constants.h&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight></codeline>
+<codeline lineno="9" refid="namespaceApache" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespaceApache" kindref="compound">Apache</ref><sp/>{<sp/></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">Hadoop<sp/>{<sp/></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">Hive<sp/>{</highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight></codeline>
+<codeline lineno="11"><highlight class="normal"></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>hive_metastoreConstants<sp/>g_hive_metastore_constants;</highlight></codeline>
+<codeline lineno="12"><highlight class="normal"></highlight></codeline>
+<codeline lineno="13"><highlight class="normal">hive_metastoreConstants::hive_metastoreConstants()<sp/>{</highlight></codeline>
+<codeline lineno="14"><highlight class="normal"><sp/><sp/>DDL_TIME<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;transient_lastDdlTime&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="15"><highlight class="normal"></highlight></codeline>
+<codeline lineno="16"><highlight class="normal"><sp/><sp/>ACCESSTYPE_NONE<sp/>=<sp/>1;</highlight></codeline>
+<codeline lineno="17"><highlight class="normal"></highlight></codeline>
+<codeline lineno="18"><highlight class="normal"><sp/><sp/>ACCESSTYPE_READONLY<sp/>=<sp/>2;</highlight></codeline>
+<codeline lineno="19"><highlight class="normal"></highlight></codeline>
+<codeline lineno="20"><highlight class="normal"><sp/><sp/>ACCESSTYPE_WRITEONLY<sp/>=<sp/>4;</highlight></codeline>
+<codeline lineno="21"><highlight class="normal"></highlight></codeline>
+<codeline lineno="22"><highlight class="normal"><sp/><sp/>ACCESSTYPE_READWRITE<sp/>=<sp/>8;</highlight></codeline>
+<codeline lineno="23"><highlight class="normal"></highlight></codeline>
+<codeline lineno="24"><highlight class="normal"><sp/><sp/>HIVE_FILTER_FIELD_OWNER<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;hive_filter_field_owner__&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="25"><highlight class="normal"></highlight></codeline>
+<codeline lineno="26"><highlight class="normal"><sp/><sp/>HIVE_FILTER_FIELD_PARAMS<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;hive_filter_field_params__&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="27"><highlight class="normal"></highlight></codeline>
+<codeline lineno="28"><highlight class="normal"><sp/><sp/>HIVE_FILTER_FIELD_LAST_ACCESS<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;hive_filter_field_last_access__&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="29"><highlight class="normal"></highlight></codeline>
+<codeline lineno="30"><highlight class="normal"><sp/><sp/>HIVE_FILTER_FIELD_TABLE_NAME<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;hive_filter_field_tableName__&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="31"><highlight class="normal"></highlight></codeline>
+<codeline lineno="32"><highlight class="normal"><sp/><sp/>HIVE_FILTER_FIELD_TABLE_TYPE<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;hive_filter_field_tableType__&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="33"><highlight class="normal"></highlight></codeline>
+<codeline lineno="34"><highlight class="normal"><sp/><sp/>IS_ARCHIVED<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;is_archived&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="35"><highlight class="normal"></highlight></codeline>
+<codeline lineno="36"><highlight class="normal"><sp/><sp/>ORIGINAL_LOCATION<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;original_location&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="37"><highlight class="normal"></highlight></codeline>
+<codeline lineno="38"><highlight class="normal"><sp/><sp/>IS_IMMUTABLE<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;immutable&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="39"><highlight class="normal"></highlight></codeline>
+<codeline lineno="40"><highlight class="normal"><sp/><sp/>META_TABLE_COLUMNS<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;columns&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="41"><highlight class="normal"></highlight></codeline>
+<codeline lineno="42"><highlight class="normal"><sp/><sp/>META_TABLE_COLUMN_TYPES<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;columns.types&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="43"><highlight class="normal"></highlight></codeline>
+<codeline lineno="44"><highlight class="normal"><sp/><sp/>BUCKET_FIELD_NAME<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;bucket_field_name&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="45"><highlight class="normal"></highlight></codeline>
+<codeline lineno="46"><highlight class="normal"><sp/><sp/>BUCKET_COUNT<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;bucket_count&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="47"><highlight class="normal"></highlight></codeline>
+<codeline lineno="48"><highlight class="normal"><sp/><sp/>FIELD_TO_DIMENSION<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;field_to_dimension&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="49"><highlight class="normal"></highlight></codeline>
+<codeline lineno="50"><highlight class="normal"><sp/><sp/>IF_PURGE<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;ifPurge&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="51"><highlight class="normal"></highlight></codeline>
+<codeline lineno="52"><highlight class="normal"><sp/><sp/>META_TABLE_NAME<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;name&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="53"><highlight class="normal"></highlight></codeline>
+<codeline lineno="54"><highlight class="normal"><sp/><sp/>META_TABLE_DB<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;db&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="55"><highlight class="normal"></highlight></codeline>
+<codeline lineno="56"><highlight class="normal"><sp/><sp/>META_TABLE_LOCATION<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;location&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="57"><highlight class="normal"></highlight></codeline>
+<codeline lineno="58"><highlight class="normal"><sp/><sp/>META_TABLE_SERDE<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;serde&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="59"><highlight class="normal"></highlight></codeline>
+<codeline lineno="60"><highlight class="normal"><sp/><sp/>META_TABLE_PARTITION_COLUMNS<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;partition_columns&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="61"><highlight class="normal"></highlight></codeline>
+<codeline lineno="62"><highlight class="normal"><sp/><sp/>META_TABLE_PARTITION_COLUMN_TYPES<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;partition_columns.types&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="63"><highlight class="normal"></highlight></codeline>
+<codeline lineno="64"><highlight class="normal"><sp/><sp/>FILE_INPUT_FORMAT<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;file.inputformat&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="65"><highlight class="normal"></highlight></codeline>
+<codeline lineno="66"><highlight class="normal"><sp/><sp/>FILE_OUTPUT_FORMAT<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;file.outputformat&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="67"><highlight class="normal"></highlight></codeline>
+<codeline lineno="68"><highlight class="normal"><sp/><sp/>META_TABLE_STORAGE<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;storage_handler&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="69"><highlight class="normal"></highlight></codeline>
+<codeline lineno="70"><highlight class="normal"><sp/><sp/>TABLE_IS_TRANSACTIONAL<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;transactional&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="71"><highlight class="normal"></highlight></codeline>
+<codeline lineno="72"><highlight class="normal"><sp/><sp/>NO_AUTO_COMPACT<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;no_auto_compaction&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="73"><highlight class="normal"></highlight></codeline>
+<codeline lineno="74"><highlight class="normal"><sp/><sp/>TABLE_TRANSACTIONAL_PROPERTIES<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;transactional_properties&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="75"><highlight class="normal"></highlight></codeline>
+<codeline lineno="76"><highlight class="normal"><sp/><sp/>TABLE_BUCKETING_VERSION<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;bucketing_version&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="77"><highlight class="normal"></highlight></codeline>
+<codeline lineno="78"><highlight class="normal"><sp/><sp/>DRUID_CONFIG_PREFIX<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;druid.&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="79"><highlight class="normal"></highlight></codeline>
+<codeline lineno="80"><highlight class="normal"><sp/><sp/>JDBC_CONFIG_PREFIX<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;hive.sql.&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="81"><highlight class="normal"></highlight></codeline>
+<codeline lineno="82"><highlight class="normal"><sp/><sp/>TABLE_IS_CTAS<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;created_with_ctas&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="83"><highlight class="normal"></highlight></codeline>
+<codeline lineno="84"><highlight class="normal"><sp/><sp/>TABLE_IS_CTLT<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;created_with_ctlt&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="85"><highlight class="normal"></highlight></codeline>
+<codeline lineno="86"><highlight class="normal"><sp/><sp/>PARTITION_TRANSFORM_SPEC<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;partition_transform_spec&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="87"><highlight class="normal"></highlight></codeline>
+<codeline lineno="88"><highlight class="normal"><sp/><sp/>NO_CLEANUP<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;no_cleanup&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="89"><highlight class="normal"></highlight></codeline>
+<codeline lineno="90"><highlight class="normal"><sp/><sp/>CTAS_LEGACY_CONFIG<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;create_table_as_external&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="91"><highlight class="normal"></highlight></codeline>
+<codeline lineno="92"><highlight class="normal"><sp/><sp/>DEFAULT_TABLE_TYPE<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;defaultTableType&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="93"><highlight class="normal"></highlight></codeline>
+<codeline lineno="94"><highlight class="normal"><sp/><sp/>TXN_ID<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;txnId&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="95"><highlight class="normal"></highlight></codeline>
+<codeline lineno="96"><highlight class="normal"><sp/><sp/>WRITE_ID<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;writeId&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="97"><highlight class="normal"></highlight></codeline>
+<codeline lineno="98"><highlight class="normal"><sp/><sp/>EXPECTED_PARAMETER_KEY<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;expected_parameter_key&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="99"><highlight class="normal"></highlight></codeline>
+<codeline lineno="100"><highlight class="normal"><sp/><sp/>EXPECTED_PARAMETER_VALUE<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;expected_parameter_value&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="101"><highlight class="normal"></highlight></codeline>
+<codeline lineno="102"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="103"><highlight class="normal"></highlight></codeline>
+<codeline lineno="104"><highlight class="normal">}}}<sp/></highlight><highlight class="comment">//<sp/>namespace</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="105"><highlight class="normal"></highlight></codeline>
+    </programlisting>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_constants.cpp"/>
+  </compounddef>
+</doxygen>

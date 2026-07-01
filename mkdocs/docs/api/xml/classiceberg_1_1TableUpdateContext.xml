@@ -1,0 +1,452 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1TableUpdateContext" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::TableUpdateContext</compoundname>
+    <includes refid="table__requirements_8h" local="no">table_requirements.h</includes>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1TableUpdateContext_1adfe7ef6dc085cc64508f1ea6c1eb68b4" prot="private" static="no" mutable="no">
+        <type>const <ref refid="structiceberg_1_1TableMetadata" kindref="compound">TableMetadata</ref> *</type>
+        <definition>const TableMetadata* iceberg::TableUpdateContext::base_</definition>
+        <argsstring></argsstring>
+        <name>base_</name>
+        <qualifiedname>iceberg::TableUpdateContext::base_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_requirements.h" line="93" column="23" bodyfile="iceberg/table_requirements.h" bodystart="93" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TableUpdateContext_1a252a06bb9d07bd0018722191c3a3b220" prot="private" static="no" mutable="no">
+        <type>const bool</type>
+        <definition>const bool iceberg::TableUpdateContext::is_replace_</definition>
+        <argsstring></argsstring>
+        <name>is_replace_</name>
+        <qualifiedname>iceberg::TableUpdateContext::is_replace_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_requirements.h" line="94" column="14" bodyfile="iceberg/table_requirements.h" bodystart="94" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TableUpdateContext_1a2ada633219d4ede767526eeb0899a3b5" prot="private" static="no" mutable="no">
+        <type>std::vector&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1TableRequirement" kindref="compound">TableRequirement</ref> &gt; &gt;</type>
+        <definition>std::vector&lt;std::unique_ptr&lt;TableRequirement&gt; &gt; iceberg::TableUpdateContext::requirements_</definition>
+        <argsstring></argsstring>
+        <name>requirements_</name>
+        <qualifiedname>iceberg::TableUpdateContext::requirements_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_requirements.h" line="96" column="15" bodyfile="iceberg/table_requirements.h" bodystart="96" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TableUpdateContext_1adab335b87cd739482a183e7c0071f76c" prot="private" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool iceberg::TableUpdateContext::added_last_assigned_field_id_</definition>
+        <argsstring></argsstring>
+        <name>added_last_assigned_field_id_</name>
+        <qualifiedname>iceberg::TableUpdateContext::added_last_assigned_field_id_</qualifiedname>
+        <initializer>= false</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_requirements.h" line="99" column="8" bodyfile="iceberg/table_requirements.h" bodystart="99" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TableUpdateContext_1a420eae794ceb346ba76ac1639898b344" prot="private" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool iceberg::TableUpdateContext::added_current_schema_id_</definition>
+        <argsstring></argsstring>
+        <name>added_current_schema_id_</name>
+        <qualifiedname>iceberg::TableUpdateContext::added_current_schema_id_</qualifiedname>
+        <initializer>= false</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_requirements.h" line="100" column="8" bodyfile="iceberg/table_requirements.h" bodystart="100" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TableUpdateContext_1a5bca5d1df02cc773cc4f295ca1abd0b0" prot="private" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool iceberg::TableUpdateContext::added_last_assigned_partition_id_</definition>
+        <argsstring></argsstring>
+        <name>added_last_assigned_partition_id_</name>
+        <qualifiedname>iceberg::TableUpdateContext::added_last_assigned_partition_id_</qualifiedname>
+        <initializer>= false</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_requirements.h" line="101" column="8" bodyfile="iceberg/table_requirements.h" bodystart="101" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TableUpdateContext_1a730655185888adfccf2dba7641be434c" prot="private" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool iceberg::TableUpdateContext::added_default_spec_id_</definition>
+        <argsstring></argsstring>
+        <name>added_default_spec_id_</name>
+        <qualifiedname>iceberg::TableUpdateContext::added_default_spec_id_</qualifiedname>
+        <initializer>= false</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_requirements.h" line="102" column="8" bodyfile="iceberg/table_requirements.h" bodystart="102" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TableUpdateContext_1a0d9ae9417573f540c8e302e710760764" prot="private" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool iceberg::TableUpdateContext::added_default_sort_order_id_</definition>
+        <argsstring></argsstring>
+        <name>added_default_sort_order_id_</name>
+        <qualifiedname>iceberg::TableUpdateContext::added_default_sort_order_id_</qualifiedname>
+        <initializer>= false</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_requirements.h" line="103" column="8" bodyfile="iceberg/table_requirements.h" bodystart="103" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TableUpdateContext_1a4029f7ac365b93d829be461f52d80f36" prot="private" static="no" mutable="no">
+        <type>std::unordered_set&lt; std::string &gt;</type>
+        <definition>std::unordered_set&lt;std::string&gt; iceberg::TableUpdateContext::changed_refs_</definition>
+        <argsstring></argsstring>
+        <name>changed_refs_</name>
+        <qualifiedname>iceberg::TableUpdateContext::changed_refs_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_requirements.h" line="106" column="22" bodyfile="iceberg/table_requirements.h" bodystart="106" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1TableUpdateContext_1a4e5fc09d6eb180ae69b59fc560fa22a9" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::TableUpdateContext::TableUpdateContext</definition>
+        <argsstring>(const TableMetadata *base, bool is_replace)</argsstring>
+        <name>TableUpdateContext</name>
+        <qualifiedname>iceberg::TableUpdateContext::TableUpdateContext</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1TableMetadata" kindref="compound">TableMetadata</ref> *</type>
+          <declname>base</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>is_replace</declname>
+        </param>
+        <briefdescription>
+<para>Construct a context for requirement generation. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>base</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The base table metadata (maybe nullptr for table creation) </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>is_replace</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Whether this is a replace operation (more permissive) </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_requirements.h" line="51" column="3" bodyfile="iceberg/table_requirements.h" bodystart="51" bodyend="52"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TableUpdateContext_1afe12076b9704bd28dc14d1c4c7983481" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::TableUpdateContext::TableUpdateContext</definition>
+        <argsstring>(const TableUpdateContext &amp;)=delete</argsstring>
+        <name>TableUpdateContext</name>
+        <qualifiedname>iceberg::TableUpdateContext::TableUpdateContext</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1TableUpdateContext" kindref="compound">TableUpdateContext</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_requirements.h" line="55" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TableUpdateContext_1ad2497205f83a3634a49ea46d86cc1242" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1TableUpdateContext" kindref="compound">TableUpdateContext</ref> &amp;</type>
+        <definition>TableUpdateContext &amp; iceberg::TableUpdateContext::operator=</definition>
+        <argsstring>(const TableUpdateContext &amp;)=delete</argsstring>
+        <name>operator=</name>
+        <qualifiedname>iceberg::TableUpdateContext::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1TableUpdateContext" kindref="compound">TableUpdateContext</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_requirements.h" line="56" column="22"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TableUpdateContext_1a38064dea13bcb5a0407a8a0321b6cfae" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::TableUpdateContext::TableUpdateContext</definition>
+        <argsstring>(TableUpdateContext &amp;&amp;) noexcept=default</argsstring>
+        <name>TableUpdateContext</name>
+        <qualifiedname>iceberg::TableUpdateContext::TableUpdateContext</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1TableUpdateContext" kindref="compound">TableUpdateContext</ref> &amp;&amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_requirements.h" line="59" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TableUpdateContext_1ac7262ec670474b9f76c80697b1152254" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::TableUpdateContext::AddRequirement</definition>
+        <argsstring>(std::unique_ptr&lt; TableRequirement &gt; requirement)</argsstring>
+        <name>AddRequirement</name>
+        <qualifiedname>iceberg::TableUpdateContext::AddRequirement</qualifiedname>
+        <param>
+          <type>std::unique_ptr&lt; <ref refid="classiceberg_1_1TableRequirement" kindref="compound">TableRequirement</ref> &gt;</type>
+          <declname>requirement</declname>
+        </param>
+        <briefdescription>
+<para>Add a requirement to the list. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_requirements.h" line="62" column="8" bodyfile="iceberg/table_requirements.cc" bodystart="33" bodyend="35"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TableUpdateContext_1ac9ce6af878c98278aa07a5f717787819" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>const <ref refid="structiceberg_1_1TableMetadata" kindref="compound">TableMetadata</ref> *</type>
+        <definition>const TableMetadata * iceberg::TableUpdateContext::base</definition>
+        <argsstring>() const</argsstring>
+        <name>base</name>
+        <qualifiedname>iceberg::TableUpdateContext::base</qualifiedname>
+        <briefdescription>
+<para>Get the base table metadata. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_requirements.h" line="65" column="23" bodyfile="iceberg/table_requirements.h" bodystart="65" bodyend="65"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TableUpdateContext_1a827a358a71924bca13c591e7f15e4aaf" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::TableUpdateContext::is_replace</definition>
+        <argsstring>() const</argsstring>
+        <name>is_replace</name>
+        <qualifiedname>iceberg::TableUpdateContext::is_replace</qualifiedname>
+        <briefdescription>
+<para>Check if this is a replace operation. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_requirements.h" line="68" column="8" bodyfile="iceberg/table_requirements.h" bodystart="68" bodyend="68"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TableUpdateContext_1acd97d5656c2eed82d153e8140debe14a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::vector&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1TableRequirement" kindref="compound">TableRequirement</ref> &gt; &gt; &gt;</type>
+        <definition>Result&lt; std::vector&lt; std::unique_ptr&lt; TableRequirement &gt; &gt; &gt; iceberg::TableUpdateContext::Build</definition>
+        <argsstring>()</argsstring>
+        <name>Build</name>
+        <qualifiedname>iceberg::TableUpdateContext::Build</qualifiedname>
+        <briefdescription>
+<para>Build and return the list of requirements. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_requirements.h" line="71" column="10" bodyfile="iceberg/table_requirements.cc" bodystart="37" bodyend="39"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TableUpdateContext_1aef35c480c8299ba87150b4a3729ade81" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::TableUpdateContext::RequireLastAssignedFieldIdUnchanged</definition>
+        <argsstring>()</argsstring>
+        <name>RequireLastAssignedFieldIdUnchanged</name>
+        <qualifiedname>iceberg::TableUpdateContext::RequireLastAssignedFieldIdUnchanged</qualifiedname>
+        <briefdescription>
+<para>Require that the last assigned field ID remains unchanged. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_requirements.h" line="75" column="8" bodyfile="iceberg/table_requirements.cc" bodystart="41" bodyend="49"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TableUpdateContext_1a00de0f6a825ec080bd4013dd2c2dd9cc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::TableUpdateContext::RequireCurrentSchemaIdUnchanged</definition>
+        <argsstring>()</argsstring>
+        <name>RequireCurrentSchemaIdUnchanged</name>
+        <qualifiedname>iceberg::TableUpdateContext::RequireCurrentSchemaIdUnchanged</qualifiedname>
+        <briefdescription>
+<para>Require that the current schema ID remains unchanged. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_requirements.h" line="77" column="8" bodyfile="iceberg/table_requirements.cc" bodystart="51" bodyend="59"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TableUpdateContext_1a42c42aefdc63614a88de0baa4d760d17" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::TableUpdateContext::RequireLastAssignedPartitionIdUnchanged</definition>
+        <argsstring>()</argsstring>
+        <name>RequireLastAssignedPartitionIdUnchanged</name>
+        <qualifiedname>iceberg::TableUpdateContext::RequireLastAssignedPartitionIdUnchanged</qualifiedname>
+        <briefdescription>
+<para>Require that the last assigned partition ID remains unchanged. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_requirements.h" line="79" column="8" bodyfile="iceberg/table_requirements.cc" bodystart="61" bodyend="69"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TableUpdateContext_1a057f2ae6ccff69435ec89ab880f02e8c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::TableUpdateContext::RequireDefaultSpecIdUnchanged</definition>
+        <argsstring>()</argsstring>
+        <name>RequireDefaultSpecIdUnchanged</name>
+        <qualifiedname>iceberg::TableUpdateContext::RequireDefaultSpecIdUnchanged</qualifiedname>
+        <briefdescription>
+<para>Require that the default spec ID remains unchanged. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_requirements.h" line="81" column="8" bodyfile="iceberg/table_requirements.cc" bodystart="71" bodyend="79"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TableUpdateContext_1a1bd7b7090d15ed0871350996fa1b08bd" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::TableUpdateContext::RequireDefaultSortOrderIdUnchanged</definition>
+        <argsstring>()</argsstring>
+        <name>RequireDefaultSortOrderIdUnchanged</name>
+        <qualifiedname>iceberg::TableUpdateContext::RequireDefaultSortOrderIdUnchanged</qualifiedname>
+        <briefdescription>
+<para>Require that the default sort order ID remains unchanged. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_requirements.h" line="83" column="8" bodyfile="iceberg/table_requirements.cc" bodystart="81" bodyend="89"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TableUpdateContext_1a8f080a4cf68fb7f973b657a062402979" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::TableUpdateContext::RequireNoBranchesChanged</definition>
+        <argsstring>()</argsstring>
+        <name>RequireNoBranchesChanged</name>
+        <qualifiedname>iceberg::TableUpdateContext::RequireNoBranchesChanged</qualifiedname>
+        <briefdescription>
+<para>Require that no branches have been changed. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_requirements.h" line="85" column="8" bodyfile="iceberg/table_requirements.cc" bodystart="91" bodyend="100"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TableUpdateContext_1a510a3fb9d39f40238a5c5cc2f2fccaa7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::TableUpdateContext::AddChangedRef</definition>
+        <argsstring>(const std::string &amp;ref_name)</argsstring>
+        <name>AddChangedRef</name>
+        <qualifiedname>iceberg::TableUpdateContext::AddChangedRef</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>ref_name</declname>
+        </param>
+        <briefdescription>
+<para>Track a changed ref and return whether it was newly added. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>ref_name</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The name of the ref being changed </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>true if this is the first time the ref is being changed </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_requirements.h" line="90" column="8" bodyfile="iceberg/table_requirements.cc" bodystart="102" bodyend="105"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Context for generating table requirements. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>This context is passed to each <ref refid="classiceberg_1_1TableUpdate" kindref="compound">TableUpdate</ref>&apos;s GenerateRequirements method and maintains state about what requirements have already been added to avoid duplicates. </para>
+    </detaileddescription>
+    <location file="iceberg/table_requirements.h" line="45" column="1" bodyfile="iceberg/table_requirements.h" bodystart="45" bodyend="107"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1TableUpdateContext_1a510a3fb9d39f40238a5c5cc2f2fccaa7" prot="public" virt="non-virtual"><scope>iceberg::TableUpdateContext</scope><name>AddChangedRef</name></member>
+      <member refid="classiceberg_1_1TableUpdateContext_1a420eae794ceb346ba76ac1639898b344" prot="private" virt="non-virtual"><scope>iceberg::TableUpdateContext</scope><name>added_current_schema_id_</name></member>
+      <member refid="classiceberg_1_1TableUpdateContext_1a0d9ae9417573f540c8e302e710760764" prot="private" virt="non-virtual"><scope>iceberg::TableUpdateContext</scope><name>added_default_sort_order_id_</name></member>
+      <member refid="classiceberg_1_1TableUpdateContext_1a730655185888adfccf2dba7641be434c" prot="private" virt="non-virtual"><scope>iceberg::TableUpdateContext</scope><name>added_default_spec_id_</name></member>
+      <member refid="classiceberg_1_1TableUpdateContext_1adab335b87cd739482a183e7c0071f76c" prot="private" virt="non-virtual"><scope>iceberg::TableUpdateContext</scope><name>added_last_assigned_field_id_</name></member>
+      <member refid="classiceberg_1_1TableUpdateContext_1a5bca5d1df02cc773cc4f295ca1abd0b0" prot="private" virt="non-virtual"><scope>iceberg::TableUpdateContext</scope><name>added_last_assigned_partition_id_</name></member>
+      <member refid="classiceberg_1_1TableUpdateContext_1ac7262ec670474b9f76c80697b1152254" prot="public" virt="non-virtual"><scope>iceberg::TableUpdateContext</scope><name>AddRequirement</name></member>
+      <member refid="classiceberg_1_1TableUpdateContext_1ac9ce6af878c98278aa07a5f717787819" prot="public" virt="non-virtual"><scope>iceberg::TableUpdateContext</scope><name>base</name></member>
+      <member refid="classiceberg_1_1TableUpdateContext_1adfe7ef6dc085cc64508f1ea6c1eb68b4" prot="private" virt="non-virtual"><scope>iceberg::TableUpdateContext</scope><name>base_</name></member>
+      <member refid="classiceberg_1_1TableUpdateContext_1acd97d5656c2eed82d153e8140debe14a" prot="public" virt="non-virtual"><scope>iceberg::TableUpdateContext</scope><name>Build</name></member>
+      <member refid="classiceberg_1_1TableUpdateContext_1a4029f7ac365b93d829be461f52d80f36" prot="private" virt="non-virtual"><scope>iceberg::TableUpdateContext</scope><name>changed_refs_</name></member>
+      <member refid="classiceberg_1_1TableUpdateContext_1a827a358a71924bca13c591e7f15e4aaf" prot="public" virt="non-virtual"><scope>iceberg::TableUpdateContext</scope><name>is_replace</name></member>
+      <member refid="classiceberg_1_1TableUpdateContext_1a252a06bb9d07bd0018722191c3a3b220" prot="private" virt="non-virtual"><scope>iceberg::TableUpdateContext</scope><name>is_replace_</name></member>
+      <member refid="classiceberg_1_1TableUpdateContext_1ad2497205f83a3634a49ea46d86cc1242" prot="public" virt="non-virtual"><scope>iceberg::TableUpdateContext</scope><name>operator=</name></member>
+      <member refid="classiceberg_1_1TableUpdateContext_1a00de0f6a825ec080bd4013dd2c2dd9cc" prot="public" virt="non-virtual"><scope>iceberg::TableUpdateContext</scope><name>RequireCurrentSchemaIdUnchanged</name></member>
+      <member refid="classiceberg_1_1TableUpdateContext_1a1bd7b7090d15ed0871350996fa1b08bd" prot="public" virt="non-virtual"><scope>iceberg::TableUpdateContext</scope><name>RequireDefaultSortOrderIdUnchanged</name></member>
+      <member refid="classiceberg_1_1TableUpdateContext_1a057f2ae6ccff69435ec89ab880f02e8c" prot="public" virt="non-virtual"><scope>iceberg::TableUpdateContext</scope><name>RequireDefaultSpecIdUnchanged</name></member>
+      <member refid="classiceberg_1_1TableUpdateContext_1aef35c480c8299ba87150b4a3729ade81" prot="public" virt="non-virtual"><scope>iceberg::TableUpdateContext</scope><name>RequireLastAssignedFieldIdUnchanged</name></member>
+      <member refid="classiceberg_1_1TableUpdateContext_1a42c42aefdc63614a88de0baa4d760d17" prot="public" virt="non-virtual"><scope>iceberg::TableUpdateContext</scope><name>RequireLastAssignedPartitionIdUnchanged</name></member>
+      <member refid="classiceberg_1_1TableUpdateContext_1a2ada633219d4ede767526eeb0899a3b5" prot="private" virt="non-virtual"><scope>iceberg::TableUpdateContext</scope><name>requirements_</name></member>
+      <member refid="classiceberg_1_1TableUpdateContext_1a8f080a4cf68fb7f973b657a062402979" prot="public" virt="non-virtual"><scope>iceberg::TableUpdateContext</scope><name>RequireNoBranchesChanged</name></member>
+      <member refid="classiceberg_1_1TableUpdateContext_1a4e5fc09d6eb180ae69b59fc560fa22a9" prot="public" virt="non-virtual"><scope>iceberg::TableUpdateContext</scope><name>TableUpdateContext</name></member>
+      <member refid="classiceberg_1_1TableUpdateContext_1afe12076b9704bd28dc14d1c4c7983481" prot="public" virt="non-virtual"><scope>iceberg::TableUpdateContext</scope><name>TableUpdateContext</name></member>
+      <member refid="classiceberg_1_1TableUpdateContext_1a38064dea13bcb5a0407a8a0321b6cfae" prot="public" virt="non-virtual"><scope>iceberg::TableUpdateContext</scope><name>TableUpdateContext</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

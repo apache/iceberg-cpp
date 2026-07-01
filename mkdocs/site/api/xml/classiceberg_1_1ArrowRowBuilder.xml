@@ -1,0 +1,278 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1ArrowRowBuilder" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::ArrowRowBuilder</compoundname>
+    <includes refid="arrow__row__builder__internal_8h" local="no">arrow_row_builder_internal.h</includes>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1ArrowRowBuilder_1a3945f5e4563a3d90861b18cbc6cc9bb9" prot="private" static="no" mutable="no">
+        <type><ref refid="structArrowArray" kindref="compound">ArrowArray</ref></type>
+        <definition>ArrowArray iceberg::ArrowRowBuilder::array_</definition>
+        <argsstring></argsstring>
+        <name>array_</name>
+        <qualifiedname>iceberg::ArrowRowBuilder::array_</qualifiedname>
+        <initializer>{}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/arrow_row_builder_internal.h" line="102" column="14" bodyfile="iceberg/arrow_row_builder_internal.h" bodystart="102" bodyend="102"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classiceberg_1_1ArrowRowBuilder_1aad2007b467efcfdb518d6f808ac2a7ad" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; <ref refid="classiceberg_1_1ArrowRowBuilder" kindref="compound">ArrowRowBuilder</ref> &gt;</type>
+        <definition>Result&lt; ArrowRowBuilder &gt; iceberg::ArrowRowBuilder::Make</definition>
+        <argsstring>(const Schema &amp;schema)</argsstring>
+        <name>Make</name>
+        <qualifiedname>iceberg::ArrowRowBuilder::Make</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &amp;</type>
+          <declname>schema</declname>
+        </param>
+        <briefdescription>
+<para>Create a row builder from an Iceberg schema. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/arrow_row_builder_internal.h" line="66" column="17" bodyfile="iceberg/arrow_row_builder.cc" bodystart="32" bodyend="37"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ArrowRowBuilder_1a3a89453c9dd7aaae439fbf8f57a72244" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; <ref refid="classiceberg_1_1ArrowRowBuilder" kindref="compound">ArrowRowBuilder</ref> &gt;</type>
+        <definition>Result&lt; ArrowRowBuilder &gt; iceberg::ArrowRowBuilder::Make</definition>
+        <argsstring>(const ArrowSchema *schema)</argsstring>
+        <name>Make</name>
+        <qualifiedname>iceberg::ArrowRowBuilder::Make</qualifiedname>
+        <param>
+          <type>const <ref refid="structArrowSchema" kindref="compound">ArrowSchema</ref> *</type>
+          <declname>schema</declname>
+        </param>
+        <briefdescription>
+<para>Create a row builder from an <ref refid="structArrowSchema" kindref="compound">ArrowSchema</ref>. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>The schema must outlive this call (the caller guards it). On failure the partially-initialized array is released automatically. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/arrow_row_builder_internal.h" line="72" column="17" bodyfile="iceberg/arrow_row_builder.cc" bodystart="39" bodyend="50"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1ArrowRowBuilder_1ac5a53d429aaef8475a673adc703566cb" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::ArrowRowBuilder::ArrowRowBuilder</definition>
+        <argsstring>(ArrowRowBuilder &amp;&amp;other) noexcept</argsstring>
+        <name>ArrowRowBuilder</name>
+        <qualifiedname>iceberg::ArrowRowBuilder::ArrowRowBuilder</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1ArrowRowBuilder" kindref="compound">ArrowRowBuilder</ref> &amp;&amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/arrow_row_builder_internal.h" line="74" column="3" bodyfile="iceberg/arrow_row_builder.cc" bodystart="52" bodyend="55"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ArrowRowBuilder_1a0b01bd71fe9f18da1d24062061abc974" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1ArrowRowBuilder" kindref="compound">ArrowRowBuilder</ref> &amp;</type>
+        <definition>ArrowRowBuilder &amp; iceberg::ArrowRowBuilder::operator=</definition>
+        <argsstring>(ArrowRowBuilder &amp;&amp;other) noexcept</argsstring>
+        <name>operator=</name>
+        <qualifiedname>iceberg::ArrowRowBuilder::operator=</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1ArrowRowBuilder" kindref="compound">ArrowRowBuilder</ref> &amp;&amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/arrow_row_builder_internal.h" line="75" column="19" bodyfile="iceberg/arrow_row_builder.cc" bodystart="57" bodyend="66"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ArrowRowBuilder_1ac9ebafb85dd21a14ca36ce7a866051f1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::ArrowRowBuilder::ArrowRowBuilder</definition>
+        <argsstring>(const ArrowRowBuilder &amp;)=delete</argsstring>
+        <name>ArrowRowBuilder</name>
+        <qualifiedname>iceberg::ArrowRowBuilder::ArrowRowBuilder</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1ArrowRowBuilder" kindref="compound">ArrowRowBuilder</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/arrow_row_builder_internal.h" line="77" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ArrowRowBuilder_1a14b1927d9512c43beaba4a924ff18f6b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1ArrowRowBuilder" kindref="compound">ArrowRowBuilder</ref> &amp;</type>
+        <definition>ArrowRowBuilder &amp; iceberg::ArrowRowBuilder::operator=</definition>
+        <argsstring>(const ArrowRowBuilder &amp;)=delete</argsstring>
+        <name>operator=</name>
+        <qualifiedname>iceberg::ArrowRowBuilder::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1ArrowRowBuilder" kindref="compound">ArrowRowBuilder</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/arrow_row_builder_internal.h" line="78" column="19"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ArrowRowBuilder_1a34394aeecce530b9943e3f1e4740e25c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::ArrowRowBuilder::~ArrowRowBuilder</definition>
+        <argsstring>()</argsstring>
+        <name>~ArrowRowBuilder</name>
+        <qualifiedname>iceberg::ArrowRowBuilder::~ArrowRowBuilder</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/arrow_row_builder_internal.h" line="80" column="3" bodyfile="iceberg/arrow_row_builder.cc" bodystart="68" bodyend="72"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ArrowRowBuilder_1a1cdb64573e87052507e26523ad3191ac" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>int64_t</type>
+        <definition>int64_t iceberg::ArrowRowBuilder::num_columns</definition>
+        <argsstring>() const</argsstring>
+        <name>num_columns</name>
+        <qualifiedname>iceberg::ArrowRowBuilder::num_columns</qualifiedname>
+        <briefdescription>
+<para>The number of top-level columns in the batch. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/arrow_row_builder_internal.h" line="83" column="11" bodyfile="iceberg/arrow_row_builder.cc" bodystart="74" bodyend="74"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ArrowRowBuilder_1a39e1b0c7a3cb9a0bdd5cccd03d5c9b36" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="structArrowArray" kindref="compound">ArrowArray</ref> *</type>
+        <definition>ArrowArray * iceberg::ArrowRowBuilder::column</definition>
+        <argsstring>(int64_t index)</argsstring>
+        <name>column</name>
+        <qualifiedname>iceberg::ArrowRowBuilder::column</qualifiedname>
+        <param>
+          <type>int64_t</type>
+          <declname>index</declname>
+        </param>
+        <briefdescription>
+<para>Access the nanoarrow child builder for a top-level column. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>index</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Zero-based column index. Returns nullptr if out of range. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/arrow_row_builder_internal.h" line="88" column="14" bodyfile="iceberg/arrow_row_builder.cc" bodystart="76" bodyend="81"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ArrowRowBuilder_1af239d196d7691ec2e1afc0fad8263280" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::ArrowRowBuilder::FinishRow</definition>
+        <argsstring>()</argsstring>
+        <name>FinishRow</name>
+        <qualifiedname>iceberg::ArrowRowBuilder::FinishRow</qualifiedname>
+        <briefdescription>
+<para>Finish the current row, advancing the struct length by one. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Call after appending exactly one value (or null) to every column. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/arrow_row_builder_internal.h" line="93" column="10" bodyfile="iceberg/arrow_row_builder.cc" bodystart="83" bodyend="86"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ArrowRowBuilder_1add7a2daf1d4d77a3baf7514c6dc4484c" prot="public" static="no" const="no" explicit="no" inline="no" refqual="rvalue" virt="non-virtual">
+        <type>Result&lt; <ref refid="structArrowArray" kindref="compound">ArrowArray</ref> &gt;</type>
+        <definition>Result&lt; ArrowArray &gt; iceberg::ArrowRowBuilder::Finish</definition>
+        <argsstring>() &amp;&amp;</argsstring>
+        <name>Finish</name>
+        <qualifiedname>iceberg::ArrowRowBuilder::Finish</qualifiedname>
+        <briefdescription>
+<para>Finish building and transfer ownership of the resulting array. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>The builder must not be used after this call. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/arrow_row_builder_internal.h" line="98" column="10" bodyfile="iceberg/arrow_row_builder.cc" bodystart="88" bodyend="95"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classiceberg_1_1ArrowRowBuilder_1aea40025cbe991c2552882d1a13419054" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::ArrowRowBuilder::ArrowRowBuilder</definition>
+        <argsstring>()=default</argsstring>
+        <name>ArrowRowBuilder</name>
+        <qualifiedname>iceberg::ArrowRowBuilder::ArrowRowBuilder</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/arrow_row_builder_internal.h" line="101" column="3"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Movable RAII builder that materializes rows into an Arrow struct array. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>Handles the nanoarrow lifecycle: InitFromSchema → StartAppending → ... append values ... → FinishBuilding → Release.</para>
+<para>Two constructors:<itemizedlist>
+<listitem><para><computeroutput>Make(schema)</computeroutput> accepts an Iceberg <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> (typical for metadata tables).</para>
+</listitem><listitem><para><computeroutput>Make(arrow_schema)</computeroutput> accepts a raw <ref refid="structArrowSchema" kindref="compound">ArrowSchema</ref> (for lower-level callers like position_delete_writer or manifest_adapter).</para>
+</listitem></itemizedlist>
+</para>
+<para>Typical usage: <programlisting><codeline><highlight class="normal">ICEBERG_ASSIGN_OR_RAISE(</highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>builder,<sp/><ref refid="classiceberg_1_1ArrowRowBuilder_1aad2007b467efcfdb518d6f808ac2a7ad" kindref="member">ArrowRowBuilder::Make</ref>(schema));</highlight></codeline>
+<codeline><highlight class="normal"></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal">&amp;<sp/>row<sp/>:<sp/>rows)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>ICEBERG_RETURN_UNEXPECTED(AppendInt(builder.column(0),<sp/>row.id));</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>ICEBERG_RETURN_UNEXPECTED(AppendString(builder.column(1),<sp/>row.name));</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>ICEBERG_RETURN_UNEXPECTED(builder.FinishRow());</highlight></codeline>
+<codeline><highlight class="normal">}</highlight></codeline>
+<codeline><highlight class="normal">ICEBERG_ASSIGN_OR_RAISE(</highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>array,<sp/>std::move(builder).<ref refid="classiceberg_1_1ArrowRowBuilder_1add7a2daf1d4d77a3baf7514c6dc4484c" kindref="member">Finish</ref>());</highlight></codeline>
+</programlisting> </para>
+    </detaileddescription>
+    <location file="iceberg/arrow_row_builder_internal.h" line="63" column="1" bodyfile="iceberg/arrow_row_builder_internal.h" bodystart="63" bodyend="103"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1ArrowRowBuilder_1a3945f5e4563a3d90861b18cbc6cc9bb9" prot="private" virt="non-virtual"><scope>iceberg::ArrowRowBuilder</scope><name>array_</name></member>
+      <member refid="classiceberg_1_1ArrowRowBuilder_1ac5a53d429aaef8475a673adc703566cb" prot="public" virt="non-virtual"><scope>iceberg::ArrowRowBuilder</scope><name>ArrowRowBuilder</name></member>
+      <member refid="classiceberg_1_1ArrowRowBuilder_1ac9ebafb85dd21a14ca36ce7a866051f1" prot="public" virt="non-virtual"><scope>iceberg::ArrowRowBuilder</scope><name>ArrowRowBuilder</name></member>
+      <member refid="classiceberg_1_1ArrowRowBuilder_1aea40025cbe991c2552882d1a13419054" prot="private" virt="non-virtual"><scope>iceberg::ArrowRowBuilder</scope><name>ArrowRowBuilder</name></member>
+      <member refid="classiceberg_1_1ArrowRowBuilder_1a39e1b0c7a3cb9a0bdd5cccd03d5c9b36" prot="public" virt="non-virtual"><scope>iceberg::ArrowRowBuilder</scope><name>column</name></member>
+      <member refid="classiceberg_1_1ArrowRowBuilder_1add7a2daf1d4d77a3baf7514c6dc4484c" prot="public" virt="non-virtual"><scope>iceberg::ArrowRowBuilder</scope><name>Finish</name></member>
+      <member refid="classiceberg_1_1ArrowRowBuilder_1af239d196d7691ec2e1afc0fad8263280" prot="public" virt="non-virtual"><scope>iceberg::ArrowRowBuilder</scope><name>FinishRow</name></member>
+      <member refid="classiceberg_1_1ArrowRowBuilder_1aad2007b467efcfdb518d6f808ac2a7ad" prot="public" virt="non-virtual"><scope>iceberg::ArrowRowBuilder</scope><name>Make</name></member>
+      <member refid="classiceberg_1_1ArrowRowBuilder_1a3a89453c9dd7aaae439fbf8f57a72244" prot="public" virt="non-virtual"><scope>iceberg::ArrowRowBuilder</scope><name>Make</name></member>
+      <member refid="classiceberg_1_1ArrowRowBuilder_1a1cdb64573e87052507e26523ad3191ac" prot="public" virt="non-virtual"><scope>iceberg::ArrowRowBuilder</scope><name>num_columns</name></member>
+      <member refid="classiceberg_1_1ArrowRowBuilder_1a0b01bd71fe9f18da1d24062061abc974" prot="public" virt="non-virtual"><scope>iceberg::ArrowRowBuilder</scope><name>operator=</name></member>
+      <member refid="classiceberg_1_1ArrowRowBuilder_1a14b1927d9512c43beaba4a924ff18f6b" prot="public" virt="non-virtual"><scope>iceberg::ArrowRowBuilder</scope><name>operator=</name></member>
+      <member refid="classiceberg_1_1ArrowRowBuilder_1a34394aeecce530b9943e3f1e4740e25c" prot="public" virt="non-virtual"><scope>iceberg::ArrowRowBuilder</scope><name>~ArrowRowBuilder</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

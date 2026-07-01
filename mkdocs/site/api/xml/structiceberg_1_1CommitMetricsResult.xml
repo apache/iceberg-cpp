@@ -1,0 +1,545 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1CommitMetricsResult" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::CommitMetricsResult</compoundname>
+    <includes refid="commit__report_8h" local="no">commit_report.h</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1CommitMetricsResult_1a98646f7b110dedf794b2a4b6de01b9c4" prot="public" static="no" mutable="no">
+        <type>std::optional&lt; <ref refid="structiceberg_1_1TimerResult" kindref="compound">TimerResult</ref> &gt;</type>
+        <definition>std::optional&lt;TimerResult&gt; iceberg::CommitMetricsResult::total_duration</definition>
+        <argsstring></argsstring>
+        <name>total_duration</name>
+        <qualifiedname>iceberg::CommitMetricsResult::total_duration</qualifiedname>
+        <briefdescription>
+<para>Total wall-clock duration of the commit attempt. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/commit_report.h" line="44" column="17" bodyfile="iceberg/metrics/commit_report.h" bodystart="44" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1CommitMetricsResult_1a6f97b7bdfe187476a892b69399820ff0" prot="public" static="no" mutable="no">
+        <type>std::optional&lt; <ref refid="structiceberg_1_1CounterResult" kindref="compound">CounterResult</ref> &gt;</type>
+        <definition>std::optional&lt;CounterResult&gt; iceberg::CommitMetricsResult::attempts</definition>
+        <argsstring></argsstring>
+        <name>attempts</name>
+        <qualifiedname>iceberg::CommitMetricsResult::attempts</qualifiedname>
+        <briefdescription>
+<para>Number of commit attempts (1 on success without retries). </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/commit_report.h" line="46" column="17" bodyfile="iceberg/metrics/commit_report.h" bodystart="46" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1CommitMetricsResult_1a3684e6ee3078dcd537a9012211f6ab6d" prot="public" static="no" mutable="no">
+        <type>std::optional&lt; <ref refid="structiceberg_1_1CounterResult" kindref="compound">CounterResult</ref> &gt;</type>
+        <definition>std::optional&lt;CounterResult&gt; iceberg::CommitMetricsResult::added_data_files</definition>
+        <argsstring></argsstring>
+        <name>added_data_files</name>
+        <qualifiedname>iceberg::CommitMetricsResult::added_data_files</qualifiedname>
+        <briefdescription>
+<para>Number of data files added in this commit. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/commit_report.h" line="48" column="17" bodyfile="iceberg/metrics/commit_report.h" bodystart="48" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1CommitMetricsResult_1ae3dbc89756d2a3dca3493bd2f37eae93" prot="public" static="no" mutable="no">
+        <type>std::optional&lt; <ref refid="structiceberg_1_1CounterResult" kindref="compound">CounterResult</ref> &gt;</type>
+        <definition>std::optional&lt;CounterResult&gt; iceberg::CommitMetricsResult::removed_data_files</definition>
+        <argsstring></argsstring>
+        <name>removed_data_files</name>
+        <qualifiedname>iceberg::CommitMetricsResult::removed_data_files</qualifiedname>
+        <briefdescription>
+<para>Number of data files removed in this commit. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/commit_report.h" line="50" column="17" bodyfile="iceberg/metrics/commit_report.h" bodystart="50" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1CommitMetricsResult_1ae601273dccf42c2c5b7ef129d01b8f6a" prot="public" static="no" mutable="no">
+        <type>std::optional&lt; <ref refid="structiceberg_1_1CounterResult" kindref="compound">CounterResult</ref> &gt;</type>
+        <definition>std::optional&lt;CounterResult&gt; iceberg::CommitMetricsResult::total_data_files</definition>
+        <argsstring></argsstring>
+        <name>total_data_files</name>
+        <qualifiedname>iceberg::CommitMetricsResult::total_data_files</qualifiedname>
+        <briefdescription>
+<para>Total live data files after this commit. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/commit_report.h" line="52" column="17" bodyfile="iceberg/metrics/commit_report.h" bodystart="52" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1CommitMetricsResult_1a187bca3cb6e2826ce04b31c316b60e88" prot="public" static="no" mutable="no">
+        <type>std::optional&lt; <ref refid="structiceberg_1_1CounterResult" kindref="compound">CounterResult</ref> &gt;</type>
+        <definition>std::optional&lt;CounterResult&gt; iceberg::CommitMetricsResult::added_delete_files</definition>
+        <argsstring></argsstring>
+        <name>added_delete_files</name>
+        <qualifiedname>iceberg::CommitMetricsResult::added_delete_files</qualifiedname>
+        <briefdescription>
+<para>Number of delete files added in this commit. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/commit_report.h" line="54" column="17" bodyfile="iceberg/metrics/commit_report.h" bodystart="54" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1CommitMetricsResult_1a096051010be47985692185140ae9a128" prot="public" static="no" mutable="no">
+        <type>std::optional&lt; <ref refid="structiceberg_1_1CounterResult" kindref="compound">CounterResult</ref> &gt;</type>
+        <definition>std::optional&lt;CounterResult&gt; iceberg::CommitMetricsResult::added_equality_delete_files</definition>
+        <argsstring></argsstring>
+        <name>added_equality_delete_files</name>
+        <qualifiedname>iceberg::CommitMetricsResult::added_equality_delete_files</qualifiedname>
+        <briefdescription>
+<para>Equality delete files added. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/commit_report.h" line="56" column="17" bodyfile="iceberg/metrics/commit_report.h" bodystart="56" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1CommitMetricsResult_1a8ab1e3824b32fe6c0c4fe441998ed49f" prot="public" static="no" mutable="no">
+        <type>std::optional&lt; <ref refid="structiceberg_1_1CounterResult" kindref="compound">CounterResult</ref> &gt;</type>
+        <definition>std::optional&lt;CounterResult&gt; iceberg::CommitMetricsResult::added_positional_delete_files</definition>
+        <argsstring></argsstring>
+        <name>added_positional_delete_files</name>
+        <qualifiedname>iceberg::CommitMetricsResult::added_positional_delete_files</qualifiedname>
+        <briefdescription>
+<para>Positional delete files added. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/commit_report.h" line="58" column="17" bodyfile="iceberg/metrics/commit_report.h" bodystart="58" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1CommitMetricsResult_1a0e173739e21ec95b9ead0dbbf4230015" prot="public" static="no" mutable="no">
+        <type>std::optional&lt; <ref refid="structiceberg_1_1CounterResult" kindref="compound">CounterResult</ref> &gt;</type>
+        <definition>std::optional&lt;CounterResult&gt; iceberg::CommitMetricsResult::added_dvs</definition>
+        <argsstring></argsstring>
+        <name>added_dvs</name>
+        <qualifiedname>iceberg::CommitMetricsResult::added_dvs</qualifiedname>
+        <briefdescription>
+<para>Deletion vectors added. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/commit_report.h" line="60" column="17" bodyfile="iceberg/metrics/commit_report.h" bodystart="60" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1CommitMetricsResult_1acbdae00a258a82d65577ca4ed5c388d2" prot="public" static="no" mutable="no">
+        <type>std::optional&lt; <ref refid="structiceberg_1_1CounterResult" kindref="compound">CounterResult</ref> &gt;</type>
+        <definition>std::optional&lt;CounterResult&gt; iceberg::CommitMetricsResult::removed_delete_files</definition>
+        <argsstring></argsstring>
+        <name>removed_delete_files</name>
+        <qualifiedname>iceberg::CommitMetricsResult::removed_delete_files</qualifiedname>
+        <briefdescription>
+<para>Number of delete files removed in this commit. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/commit_report.h" line="62" column="17" bodyfile="iceberg/metrics/commit_report.h" bodystart="62" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1CommitMetricsResult_1a7a0396a2cc446414a983f3b572870668" prot="public" static="no" mutable="no">
+        <type>std::optional&lt; <ref refid="structiceberg_1_1CounterResult" kindref="compound">CounterResult</ref> &gt;</type>
+        <definition>std::optional&lt;CounterResult&gt; iceberg::CommitMetricsResult::removed_positional_delete_files</definition>
+        <argsstring></argsstring>
+        <name>removed_positional_delete_files</name>
+        <qualifiedname>iceberg::CommitMetricsResult::removed_positional_delete_files</qualifiedname>
+        <briefdescription>
+<para>Positional delete files removed. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/commit_report.h" line="64" column="17" bodyfile="iceberg/metrics/commit_report.h" bodystart="64" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1CommitMetricsResult_1a481b36b244511204d3139473e8e745ea" prot="public" static="no" mutable="no">
+        <type>std::optional&lt; <ref refid="structiceberg_1_1CounterResult" kindref="compound">CounterResult</ref> &gt;</type>
+        <definition>std::optional&lt;CounterResult&gt; iceberg::CommitMetricsResult::removed_dvs</definition>
+        <argsstring></argsstring>
+        <name>removed_dvs</name>
+        <qualifiedname>iceberg::CommitMetricsResult::removed_dvs</qualifiedname>
+        <briefdescription>
+<para>Deletion vectors removed. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/commit_report.h" line="66" column="17" bodyfile="iceberg/metrics/commit_report.h" bodystart="66" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1CommitMetricsResult_1a5af6cbcb5beaf5bc3a0791de9494d0f3" prot="public" static="no" mutable="no">
+        <type>std::optional&lt; <ref refid="structiceberg_1_1CounterResult" kindref="compound">CounterResult</ref> &gt;</type>
+        <definition>std::optional&lt;CounterResult&gt; iceberg::CommitMetricsResult::removed_equality_delete_files</definition>
+        <argsstring></argsstring>
+        <name>removed_equality_delete_files</name>
+        <qualifiedname>iceberg::CommitMetricsResult::removed_equality_delete_files</qualifiedname>
+        <briefdescription>
+<para>Equality delete files removed. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/commit_report.h" line="68" column="17" bodyfile="iceberg/metrics/commit_report.h" bodystart="68" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1CommitMetricsResult_1a1040ade096e827f198a6eea57f9ebecc" prot="public" static="no" mutable="no">
+        <type>std::optional&lt; <ref refid="structiceberg_1_1CounterResult" kindref="compound">CounterResult</ref> &gt;</type>
+        <definition>std::optional&lt;CounterResult&gt; iceberg::CommitMetricsResult::total_delete_files</definition>
+        <argsstring></argsstring>
+        <name>total_delete_files</name>
+        <qualifiedname>iceberg::CommitMetricsResult::total_delete_files</qualifiedname>
+        <briefdescription>
+<para>Total live delete files after this commit. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/commit_report.h" line="70" column="17" bodyfile="iceberg/metrics/commit_report.h" bodystart="70" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1CommitMetricsResult_1a8895cb3a31bda73a8a411325d4847203" prot="public" static="no" mutable="no">
+        <type>std::optional&lt; <ref refid="structiceberg_1_1CounterResult" kindref="compound">CounterResult</ref> &gt;</type>
+        <definition>std::optional&lt;CounterResult&gt; iceberg::CommitMetricsResult::added_records</definition>
+        <argsstring></argsstring>
+        <name>added_records</name>
+        <qualifiedname>iceberg::CommitMetricsResult::added_records</qualifiedname>
+        <briefdescription>
+<para>Number of records added in this commit. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/commit_report.h" line="72" column="17" bodyfile="iceberg/metrics/commit_report.h" bodystart="72" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1CommitMetricsResult_1afabc51a2e920398c8f83fec5df759f88" prot="public" static="no" mutable="no">
+        <type>std::optional&lt; <ref refid="structiceberg_1_1CounterResult" kindref="compound">CounterResult</ref> &gt;</type>
+        <definition>std::optional&lt;CounterResult&gt; iceberg::CommitMetricsResult::removed_records</definition>
+        <argsstring></argsstring>
+        <name>removed_records</name>
+        <qualifiedname>iceberg::CommitMetricsResult::removed_records</qualifiedname>
+        <briefdescription>
+<para>Number of records removed in this commit. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/commit_report.h" line="74" column="17" bodyfile="iceberg/metrics/commit_report.h" bodystart="74" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1CommitMetricsResult_1a703fe95e3eb32b8f933e928d49dac9b1" prot="public" static="no" mutable="no">
+        <type>std::optional&lt; <ref refid="structiceberg_1_1CounterResult" kindref="compound">CounterResult</ref> &gt;</type>
+        <definition>std::optional&lt;CounterResult&gt; iceberg::CommitMetricsResult::total_records</definition>
+        <argsstring></argsstring>
+        <name>total_records</name>
+        <qualifiedname>iceberg::CommitMetricsResult::total_records</qualifiedname>
+        <briefdescription>
+<para>Total live records after this commit. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/commit_report.h" line="76" column="17" bodyfile="iceberg/metrics/commit_report.h" bodystart="76" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1CommitMetricsResult_1a676371bd6be1ac5c8d6c23194c79bacf" prot="public" static="no" mutable="no">
+        <type>std::optional&lt; <ref refid="structiceberg_1_1CounterResult" kindref="compound">CounterResult</ref> &gt;</type>
+        <definition>std::optional&lt;CounterResult&gt; iceberg::CommitMetricsResult::added_files_size_bytes</definition>
+        <argsstring></argsstring>
+        <name>added_files_size_bytes</name>
+        <qualifiedname>iceberg::CommitMetricsResult::added_files_size_bytes</qualifiedname>
+        <briefdescription>
+<para>Total byte size of files added. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/commit_report.h" line="78" column="17" bodyfile="iceberg/metrics/commit_report.h" bodystart="78" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1CommitMetricsResult_1a18104cf3e581487c99928223cca7905e" prot="public" static="no" mutable="no">
+        <type>std::optional&lt; <ref refid="structiceberg_1_1CounterResult" kindref="compound">CounterResult</ref> &gt;</type>
+        <definition>std::optional&lt;CounterResult&gt; iceberg::CommitMetricsResult::removed_files_size_bytes</definition>
+        <argsstring></argsstring>
+        <name>removed_files_size_bytes</name>
+        <qualifiedname>iceberg::CommitMetricsResult::removed_files_size_bytes</qualifiedname>
+        <briefdescription>
+<para>Total byte size of files removed. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/commit_report.h" line="80" column="17" bodyfile="iceberg/metrics/commit_report.h" bodystart="80" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1CommitMetricsResult_1a6659201784477871d0776fa6e43c8cf7" prot="public" static="no" mutable="no">
+        <type>std::optional&lt; <ref refid="structiceberg_1_1CounterResult" kindref="compound">CounterResult</ref> &gt;</type>
+        <definition>std::optional&lt;CounterResult&gt; iceberg::CommitMetricsResult::total_files_size_bytes</definition>
+        <argsstring></argsstring>
+        <name>total_files_size_bytes</name>
+        <qualifiedname>iceberg::CommitMetricsResult::total_files_size_bytes</qualifiedname>
+        <briefdescription>
+<para>Total byte size of all live files after this commit. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/commit_report.h" line="82" column="17" bodyfile="iceberg/metrics/commit_report.h" bodystart="82" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1CommitMetricsResult_1a0c056cc24ee0e39f96e0506effafb12d" prot="public" static="no" mutable="no">
+        <type>std::optional&lt; <ref refid="structiceberg_1_1CounterResult" kindref="compound">CounterResult</ref> &gt;</type>
+        <definition>std::optional&lt;CounterResult&gt; iceberg::CommitMetricsResult::added_positional_deletes</definition>
+        <argsstring></argsstring>
+        <name>added_positional_deletes</name>
+        <qualifiedname>iceberg::CommitMetricsResult::added_positional_deletes</qualifiedname>
+        <briefdescription>
+<para>Positional delete records added. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/commit_report.h" line="84" column="17" bodyfile="iceberg/metrics/commit_report.h" bodystart="84" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1CommitMetricsResult_1ae46cba3ea65a2494f4f57e7a981f2478" prot="public" static="no" mutable="no">
+        <type>std::optional&lt; <ref refid="structiceberg_1_1CounterResult" kindref="compound">CounterResult</ref> &gt;</type>
+        <definition>std::optional&lt;CounterResult&gt; iceberg::CommitMetricsResult::removed_positional_deletes</definition>
+        <argsstring></argsstring>
+        <name>removed_positional_deletes</name>
+        <qualifiedname>iceberg::CommitMetricsResult::removed_positional_deletes</qualifiedname>
+        <briefdescription>
+<para>Positional delete records removed. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/commit_report.h" line="86" column="17" bodyfile="iceberg/metrics/commit_report.h" bodystart="86" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1CommitMetricsResult_1a600a814b134abc086624ea5205a47417" prot="public" static="no" mutable="no">
+        <type>std::optional&lt; <ref refid="structiceberg_1_1CounterResult" kindref="compound">CounterResult</ref> &gt;</type>
+        <definition>std::optional&lt;CounterResult&gt; iceberg::CommitMetricsResult::total_positional_deletes</definition>
+        <argsstring></argsstring>
+        <name>total_positional_deletes</name>
+        <qualifiedname>iceberg::CommitMetricsResult::total_positional_deletes</qualifiedname>
+        <briefdescription>
+<para>Total positional delete records after this commit. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/commit_report.h" line="88" column="17" bodyfile="iceberg/metrics/commit_report.h" bodystart="88" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1CommitMetricsResult_1a9729a08ca3eebd68e753cc8f7c5c4978" prot="public" static="no" mutable="no">
+        <type>std::optional&lt; <ref refid="structiceberg_1_1CounterResult" kindref="compound">CounterResult</ref> &gt;</type>
+        <definition>std::optional&lt;CounterResult&gt; iceberg::CommitMetricsResult::added_equality_deletes</definition>
+        <argsstring></argsstring>
+        <name>added_equality_deletes</name>
+        <qualifiedname>iceberg::CommitMetricsResult::added_equality_deletes</qualifiedname>
+        <briefdescription>
+<para>Equality delete records added. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/commit_report.h" line="90" column="17" bodyfile="iceberg/metrics/commit_report.h" bodystart="90" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1CommitMetricsResult_1a1408ff4a954f5809559db34feb616a9d" prot="public" static="no" mutable="no">
+        <type>std::optional&lt; <ref refid="structiceberg_1_1CounterResult" kindref="compound">CounterResult</ref> &gt;</type>
+        <definition>std::optional&lt;CounterResult&gt; iceberg::CommitMetricsResult::removed_equality_deletes</definition>
+        <argsstring></argsstring>
+        <name>removed_equality_deletes</name>
+        <qualifiedname>iceberg::CommitMetricsResult::removed_equality_deletes</qualifiedname>
+        <briefdescription>
+<para>Equality delete records removed. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/commit_report.h" line="92" column="17" bodyfile="iceberg/metrics/commit_report.h" bodystart="92" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1CommitMetricsResult_1a64fb224a78025c65898be0584871767c" prot="public" static="no" mutable="no">
+        <type>std::optional&lt; <ref refid="structiceberg_1_1CounterResult" kindref="compound">CounterResult</ref> &gt;</type>
+        <definition>std::optional&lt;CounterResult&gt; iceberg::CommitMetricsResult::total_equality_deletes</definition>
+        <argsstring></argsstring>
+        <name>total_equality_deletes</name>
+        <qualifiedname>iceberg::CommitMetricsResult::total_equality_deletes</qualifiedname>
+        <briefdescription>
+<para>Total equality delete records after this commit. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/commit_report.h" line="94" column="17" bodyfile="iceberg/metrics/commit_report.h" bodystart="94" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1CommitMetricsResult_1a887790367fe1c2c2b3a2ef89a2c537e6" prot="public" static="no" mutable="no">
+        <type>std::optional&lt; <ref refid="structiceberg_1_1CounterResult" kindref="compound">CounterResult</ref> &gt;</type>
+        <definition>std::optional&lt;CounterResult&gt; iceberg::CommitMetricsResult::kept_manifest_count</definition>
+        <argsstring></argsstring>
+        <name>kept_manifest_count</name>
+        <qualifiedname>iceberg::CommitMetricsResult::kept_manifest_count</qualifiedname>
+        <briefdescription>
+<para>Manifest files kept unchanged in this commit. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/commit_report.h" line="96" column="17" bodyfile="iceberg/metrics/commit_report.h" bodystart="96" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1CommitMetricsResult_1a3f41971ad904f4957ae9bd78ebd9c2b8" prot="public" static="no" mutable="no">
+        <type>std::optional&lt; <ref refid="structiceberg_1_1CounterResult" kindref="compound">CounterResult</ref> &gt;</type>
+        <definition>std::optional&lt;CounterResult&gt; iceberg::CommitMetricsResult::created_manifest_count</definition>
+        <argsstring></argsstring>
+        <name>created_manifest_count</name>
+        <qualifiedname>iceberg::CommitMetricsResult::created_manifest_count</qualifiedname>
+        <briefdescription>
+<para>Manifest files created in this commit. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/commit_report.h" line="98" column="17" bodyfile="iceberg/metrics/commit_report.h" bodystart="98" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1CommitMetricsResult_1a63a1f07045ed6f9c750f5657792f4fdc" prot="public" static="no" mutable="no">
+        <type>std::optional&lt; <ref refid="structiceberg_1_1CounterResult" kindref="compound">CounterResult</ref> &gt;</type>
+        <definition>std::optional&lt;CounterResult&gt; iceberg::CommitMetricsResult::replaced_manifest_count</definition>
+        <argsstring></argsstring>
+        <name>replaced_manifest_count</name>
+        <qualifiedname>iceberg::CommitMetricsResult::replaced_manifest_count</qualifiedname>
+        <briefdescription>
+<para>Manifest files replaced in this commit. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/commit_report.h" line="100" column="17" bodyfile="iceberg/metrics/commit_report.h" bodystart="100" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1CommitMetricsResult_1a3ab924e1028194b9dea3c266ab1b95aa" prot="public" static="no" mutable="no">
+        <type>std::optional&lt; <ref refid="structiceberg_1_1CounterResult" kindref="compound">CounterResult</ref> &gt;</type>
+        <definition>std::optional&lt;CounterResult&gt; iceberg::CommitMetricsResult::processed_manifest_entries_count</definition>
+        <argsstring></argsstring>
+        <name>processed_manifest_entries_count</name>
+        <qualifiedname>iceberg::CommitMetricsResult::processed_manifest_entries_count</qualifiedname>
+        <briefdescription>
+<para>Manifest entries processed in this commit. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/commit_report.h" line="102" column="17" bodyfile="iceberg/metrics/commit_report.h" bodystart="102" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structiceberg_1_1CommitMetricsResult_1a9bb128f69d325d56a5aad2470dae73d0" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::CommitMetricsResult::operator==</definition>
+        <argsstring>(const CommitMetricsResult &amp;) const =default</argsstring>
+        <name>operator==</name>
+        <qualifiedname>iceberg::CommitMetricsResult::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1CommitMetricsResult" kindref="compound">CommitMetricsResult</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/commit_report.h" line="104" column="8"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="structiceberg_1_1CommitMetricsResult_1a1c7207fbee97a78a4679b11e8202e252" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="structiceberg_1_1CommitMetricsResult" kindref="compound">CommitMetricsResult</ref></type>
+        <definition>CommitMetricsResult iceberg::CommitMetricsResult::From</definition>
+        <argsstring>(const CommitMetrics &amp;live_metrics, const std::unordered_map&lt; std::string, std::string &gt; &amp;snapshot_summary)</argsstring>
+        <name>From</name>
+        <qualifiedname>iceberg::CommitMetricsResult::From</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1CommitMetrics" kindref="compound">CommitMetrics</ref> &amp;</type>
+          <declname>live_metrics</declname>
+        </param>
+        <param>
+          <type>const std::unordered_map&lt; std::string, std::string &gt; &amp;</type>
+          <declname>snapshot_summary</declname>
+        </param>
+        <briefdescription>
+<para>Build a <ref refid="structiceberg_1_1CommitMetricsResult" kindref="compound">CommitMetricsResult</ref> from live metrics and a snapshot summary map. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Combines timer/retry measurements from <computeroutput>live_metrics</computeroutput> with records parsed from <computeroutput>snapshot_summary</computeroutput>. Missing or unparseable summary keys are omitted. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/commit_report.h" line="110" column="30" bodyfile="iceberg/metrics/commit_report.cc" bodystart="52" bodyend="109"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Immutable snapshot of commit metrics for use in <ref refid="structiceberg_1_1CommitReport" kindref="compound">CommitReport</ref>. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>Populated by <ref refid="classiceberg_1_1CommitMetrics_1a92090e152d2c313d58543333b8783d43" kindref="member">CommitMetrics::ToResult()</ref> after a commit completes. File and record counts can also be combined from the snapshot summary with <ref refid="structiceberg_1_1CommitMetricsResult_1a1c7207fbee97a78a4679b11e8202e252" kindref="member">From()</ref>. </para>
+    </detaileddescription>
+    <location file="iceberg/metrics/commit_report.h" line="42" column="1" bodyfile="iceberg/metrics/commit_report.h" bodystart="42" bodyend="113"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1CommitMetricsResult_1a3684e6ee3078dcd537a9012211f6ab6d" prot="public" virt="non-virtual"><scope>iceberg::CommitMetricsResult</scope><name>added_data_files</name></member>
+      <member refid="structiceberg_1_1CommitMetricsResult_1a187bca3cb6e2826ce04b31c316b60e88" prot="public" virt="non-virtual"><scope>iceberg::CommitMetricsResult</scope><name>added_delete_files</name></member>
+      <member refid="structiceberg_1_1CommitMetricsResult_1a0e173739e21ec95b9ead0dbbf4230015" prot="public" virt="non-virtual"><scope>iceberg::CommitMetricsResult</scope><name>added_dvs</name></member>
+      <member refid="structiceberg_1_1CommitMetricsResult_1a096051010be47985692185140ae9a128" prot="public" virt="non-virtual"><scope>iceberg::CommitMetricsResult</scope><name>added_equality_delete_files</name></member>
+      <member refid="structiceberg_1_1CommitMetricsResult_1a9729a08ca3eebd68e753cc8f7c5c4978" prot="public" virt="non-virtual"><scope>iceberg::CommitMetricsResult</scope><name>added_equality_deletes</name></member>
+      <member refid="structiceberg_1_1CommitMetricsResult_1a676371bd6be1ac5c8d6c23194c79bacf" prot="public" virt="non-virtual"><scope>iceberg::CommitMetricsResult</scope><name>added_files_size_bytes</name></member>
+      <member refid="structiceberg_1_1CommitMetricsResult_1a8ab1e3824b32fe6c0c4fe441998ed49f" prot="public" virt="non-virtual"><scope>iceberg::CommitMetricsResult</scope><name>added_positional_delete_files</name></member>
+      <member refid="structiceberg_1_1CommitMetricsResult_1a0c056cc24ee0e39f96e0506effafb12d" prot="public" virt="non-virtual"><scope>iceberg::CommitMetricsResult</scope><name>added_positional_deletes</name></member>
+      <member refid="structiceberg_1_1CommitMetricsResult_1a8895cb3a31bda73a8a411325d4847203" prot="public" virt="non-virtual"><scope>iceberg::CommitMetricsResult</scope><name>added_records</name></member>
+      <member refid="structiceberg_1_1CommitMetricsResult_1a6f97b7bdfe187476a892b69399820ff0" prot="public" virt="non-virtual"><scope>iceberg::CommitMetricsResult</scope><name>attempts</name></member>
+      <member refid="structiceberg_1_1CommitMetricsResult_1a3f41971ad904f4957ae9bd78ebd9c2b8" prot="public" virt="non-virtual"><scope>iceberg::CommitMetricsResult</scope><name>created_manifest_count</name></member>
+      <member refid="structiceberg_1_1CommitMetricsResult_1a1c7207fbee97a78a4679b11e8202e252" prot="public" virt="non-virtual"><scope>iceberg::CommitMetricsResult</scope><name>From</name></member>
+      <member refid="structiceberg_1_1CommitMetricsResult_1a887790367fe1c2c2b3a2ef89a2c537e6" prot="public" virt="non-virtual"><scope>iceberg::CommitMetricsResult</scope><name>kept_manifest_count</name></member>
+      <member refid="structiceberg_1_1CommitMetricsResult_1a9bb128f69d325d56a5aad2470dae73d0" prot="public" virt="non-virtual"><scope>iceberg::CommitMetricsResult</scope><name>operator==</name></member>
+      <member refid="structiceberg_1_1CommitMetricsResult_1a3ab924e1028194b9dea3c266ab1b95aa" prot="public" virt="non-virtual"><scope>iceberg::CommitMetricsResult</scope><name>processed_manifest_entries_count</name></member>
+      <member refid="structiceberg_1_1CommitMetricsResult_1ae3dbc89756d2a3dca3493bd2f37eae93" prot="public" virt="non-virtual"><scope>iceberg::CommitMetricsResult</scope><name>removed_data_files</name></member>
+      <member refid="structiceberg_1_1CommitMetricsResult_1acbdae00a258a82d65577ca4ed5c388d2" prot="public" virt="non-virtual"><scope>iceberg::CommitMetricsResult</scope><name>removed_delete_files</name></member>
+      <member refid="structiceberg_1_1CommitMetricsResult_1a481b36b244511204d3139473e8e745ea" prot="public" virt="non-virtual"><scope>iceberg::CommitMetricsResult</scope><name>removed_dvs</name></member>
+      <member refid="structiceberg_1_1CommitMetricsResult_1a5af6cbcb5beaf5bc3a0791de9494d0f3" prot="public" virt="non-virtual"><scope>iceberg::CommitMetricsResult</scope><name>removed_equality_delete_files</name></member>
+      <member refid="structiceberg_1_1CommitMetricsResult_1a1408ff4a954f5809559db34feb616a9d" prot="public" virt="non-virtual"><scope>iceberg::CommitMetricsResult</scope><name>removed_equality_deletes</name></member>
+      <member refid="structiceberg_1_1CommitMetricsResult_1a18104cf3e581487c99928223cca7905e" prot="public" virt="non-virtual"><scope>iceberg::CommitMetricsResult</scope><name>removed_files_size_bytes</name></member>
+      <member refid="structiceberg_1_1CommitMetricsResult_1a7a0396a2cc446414a983f3b572870668" prot="public" virt="non-virtual"><scope>iceberg::CommitMetricsResult</scope><name>removed_positional_delete_files</name></member>
+      <member refid="structiceberg_1_1CommitMetricsResult_1ae46cba3ea65a2494f4f57e7a981f2478" prot="public" virt="non-virtual"><scope>iceberg::CommitMetricsResult</scope><name>removed_positional_deletes</name></member>
+      <member refid="structiceberg_1_1CommitMetricsResult_1afabc51a2e920398c8f83fec5df759f88" prot="public" virt="non-virtual"><scope>iceberg::CommitMetricsResult</scope><name>removed_records</name></member>
+      <member refid="structiceberg_1_1CommitMetricsResult_1a63a1f07045ed6f9c750f5657792f4fdc" prot="public" virt="non-virtual"><scope>iceberg::CommitMetricsResult</scope><name>replaced_manifest_count</name></member>
+      <member refid="structiceberg_1_1CommitMetricsResult_1ae601273dccf42c2c5b7ef129d01b8f6a" prot="public" virt="non-virtual"><scope>iceberg::CommitMetricsResult</scope><name>total_data_files</name></member>
+      <member refid="structiceberg_1_1CommitMetricsResult_1a1040ade096e827f198a6eea57f9ebecc" prot="public" virt="non-virtual"><scope>iceberg::CommitMetricsResult</scope><name>total_delete_files</name></member>
+      <member refid="structiceberg_1_1CommitMetricsResult_1a98646f7b110dedf794b2a4b6de01b9c4" prot="public" virt="non-virtual"><scope>iceberg::CommitMetricsResult</scope><name>total_duration</name></member>
+      <member refid="structiceberg_1_1CommitMetricsResult_1a64fb224a78025c65898be0584871767c" prot="public" virt="non-virtual"><scope>iceberg::CommitMetricsResult</scope><name>total_equality_deletes</name></member>
+      <member refid="structiceberg_1_1CommitMetricsResult_1a6659201784477871d0776fa6e43c8cf7" prot="public" virt="non-virtual"><scope>iceberg::CommitMetricsResult</scope><name>total_files_size_bytes</name></member>
+      <member refid="structiceberg_1_1CommitMetricsResult_1a600a814b134abc086624ea5205a47417" prot="public" virt="non-virtual"><scope>iceberg::CommitMetricsResult</scope><name>total_positional_deletes</name></member>
+      <member refid="structiceberg_1_1CommitMetricsResult_1a703fe95e3eb32b8f933e928d49dac9b1" prot="public" virt="non-virtual"><scope>iceberg::CommitMetricsResult</scope><name>total_records</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

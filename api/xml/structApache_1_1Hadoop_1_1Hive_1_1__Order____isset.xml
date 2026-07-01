@@ -1,0 +1,64 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structApache_1_1Hadoop_1_1Hive_1_1__Order____isset" kind="struct" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::_Order__isset</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__Order____isset_1a10326cf4c2268df4d5228d31d5f6b9a7" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_Order__isset::col</definition>
+        <argsstring></argsstring>
+        <name>col</name>
+        <qualifiedname>Apache::Hadoop::Hive::_Order__isset::col</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3060" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="3060" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__Order____isset_1ad5a4307d4e2419df979a394813f80a51" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_Order__isset::order</definition>
+        <argsstring></argsstring>
+        <name>order</name>
+        <qualifiedname>Apache::Hadoop::Hive::_Order__isset::order</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3061" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="3061" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structApache_1_1Hadoop_1_1Hive_1_1__Order____isset_1a322d0ccc51cf2d05afff755704039ae8" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::_Order__isset::_Order__isset</definition>
+        <argsstring>()</argsstring>
+        <name>_Order__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::_Order__isset::_Order__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3059" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="3059" bodyend="3059"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3058" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="3058" bodyend="3062"/>
+    <listofallmembers>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__Order____isset_1a322d0ccc51cf2d05afff755704039ae8" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_Order__isset</scope><name>_Order__isset</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__Order____isset_1a10326cf4c2268df4d5228d31d5f6b9a7" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_Order__isset</scope><name>col</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__Order____isset_1ad5a4307d4e2419df979a394813f80a51" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_Order__isset</scope><name>order</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

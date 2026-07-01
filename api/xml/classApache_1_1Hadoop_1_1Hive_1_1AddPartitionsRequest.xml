@@ -1,0 +1,1148 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1AddPartitionsRequest" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::AddPartitionsRequest</compoundname>
+    <basecompoundref prot="public" virt="virtual">apache::thrift::TBase</basecompoundref>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1AddPartitionsRequest_1a8bd2cb3f28f051e9693d8f72b68608f7" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::AddPartitionsRequest::dbName</definition>
+        <argsstring></argsstring>
+        <name>dbName</name>
+        <qualifiedname>Apache::Hadoop::Hive::AddPartitionsRequest::dbName</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="5868" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="5868" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1AddPartitionsRequest_1a7a2d8fb681997a51b239a125352beb3e" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::AddPartitionsRequest::tblName</definition>
+        <argsstring></argsstring>
+        <name>tblName</name>
+        <qualifiedname>Apache::Hadoop::Hive::AddPartitionsRequest::tblName</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="5869" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="5869" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1AddPartitionsRequest_1aaf590872a44b5236e1ef03f336616e3c" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; <ref refid="classApache_1_1Hadoop_1_1Hive_1_1Partition" kindref="compound">Partition</ref> &gt;</type>
+        <definition>std::vector&lt;Partition&gt; Apache::Hadoop::Hive::AddPartitionsRequest::parts</definition>
+        <argsstring></argsstring>
+        <name>parts</name>
+        <qualifiedname>Apache::Hadoop::Hive::AddPartitionsRequest::parts</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="5870" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="5870" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1AddPartitionsRequest_1a698436074694e4287e682198976857e9" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::AddPartitionsRequest::ifNotExists</definition>
+        <argsstring></argsstring>
+        <name>ifNotExists</name>
+        <qualifiedname>Apache::Hadoop::Hive::AddPartitionsRequest::ifNotExists</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="5871" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="5871" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1AddPartitionsRequest_1acea15d26a162eda1e59540fbd00105d2" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::AddPartitionsRequest::needResult</definition>
+        <argsstring></argsstring>
+        <name>needResult</name>
+        <qualifiedname>Apache::Hadoop::Hive::AddPartitionsRequest::needResult</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="5872" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="5872" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1AddPartitionsRequest_1a141722e8ce7b3cf502085f37791774ca" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::AddPartitionsRequest::catName</definition>
+        <argsstring></argsstring>
+        <name>catName</name>
+        <qualifiedname>Apache::Hadoop::Hive::AddPartitionsRequest::catName</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="5873" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="5873" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1AddPartitionsRequest_1ad2638465fd89c0120dfbd8391a39fbe9" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::AddPartitionsRequest::validWriteIdList</definition>
+        <argsstring></argsstring>
+        <name>validWriteIdList</name>
+        <qualifiedname>Apache::Hadoop::Hive::AddPartitionsRequest::validWriteIdList</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="5874" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="5874" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1AddPartitionsRequest_1a688fa074204ac6fe6a1befb52333a784" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::AddPartitionsRequest::skipColumnSchemaForPartition</definition>
+        <argsstring></argsstring>
+        <name>skipColumnSchemaForPartition</name>
+        <qualifiedname>Apache::Hadoop::Hive::AddPartitionsRequest::skipColumnSchemaForPartition</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="5875" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="5875" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1AddPartitionsRequest_1af9bbb3fac3dfa903e430e5915e4c93b3" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; <ref refid="classApache_1_1Hadoop_1_1Hive_1_1FieldSchema" kindref="compound">FieldSchema</ref> &gt;</type>
+        <definition>std::vector&lt;FieldSchema&gt; Apache::Hadoop::Hive::AddPartitionsRequest::partitionColSchema</definition>
+        <argsstring></argsstring>
+        <name>partitionColSchema</name>
+        <qualifiedname>Apache::Hadoop::Hive::AddPartitionsRequest::partitionColSchema</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="5876" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="5876" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1AddPartitionsRequest_1a42ff750727ea167bb45853bf23596505" prot="public" static="no" mutable="no">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1EnvironmentContext" kindref="compound">EnvironmentContext</ref></type>
+        <definition>EnvironmentContext Apache::Hadoop::Hive::AddPartitionsRequest::environmentContext</definition>
+        <argsstring></argsstring>
+        <name>environmentContext</name>
+        <qualifiedname>Apache::Hadoop::Hive::AddPartitionsRequest::environmentContext</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="5877" column="22" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="5877" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1AddPartitionsRequest_1a2c6505e1dc8bec45bf76db36dd489614" prot="public" static="no" mutable="no">
+        <type><ref refid="structApache_1_1Hadoop_1_1Hive_1_1__AddPartitionsRequest____isset" kindref="compound">_AddPartitionsRequest__isset</ref></type>
+        <definition>_AddPartitionsRequest__isset Apache::Hadoop::Hive::AddPartitionsRequest::__isset</definition>
+        <argsstring></argsstring>
+        <name>__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::AddPartitionsRequest::__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="5879" column="32" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="5879" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AddPartitionsRequest_1ae54e70f44c21aa2a655461403586d372" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::AddPartitionsRequest::AddPartitionsRequest</definition>
+        <argsstring>(const AddPartitionsRequest &amp;)</argsstring>
+        <name>AddPartitionsRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::AddPartitionsRequest::AddPartitionsRequest</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1AddPartitionsRequest" kindref="compound">AddPartitionsRequest</ref> &amp;</type>
+          <defname>other725</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="5863" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="21402" bodyend="21414"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AddPartitionsRequest_1a7c89f029ea04be300c6ff68f86bc7afe" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1AddPartitionsRequest" kindref="compound">AddPartitionsRequest</ref> &amp;</type>
+        <definition>AddPartitionsRequest &amp; Apache::Hadoop::Hive::AddPartitionsRequest::operator=</definition>
+        <argsstring>(const AddPartitionsRequest &amp;)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::AddPartitionsRequest::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1AddPartitionsRequest" kindref="compound">AddPartitionsRequest</ref> &amp;</type>
+          <defname>other726</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="5864" column="24" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="21415" bodyend="21428"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AddPartitionsRequest_1aeb0aee57546d0580a29cf2a37e262bae" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::AddPartitionsRequest::AddPartitionsRequest</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>AddPartitionsRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::AddPartitionsRequest::AddPartitionsRequest</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="5865" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="21067" bodyend="21075"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AddPartitionsRequest_1a34c82e78ff0e5a6997270525b7785540" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::AddPartitionsRequest::~AddPartitionsRequest</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~AddPartitionsRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::AddPartitionsRequest::~AddPartitionsRequest</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="5867" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="21064" bodyend="21065"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AddPartitionsRequest_1a9340160c3295a04d00eb2d4e8597a457" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::AddPartitionsRequest::__set_dbName</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_dbName</name>
+        <qualifiedname>Apache::Hadoop::Hive::AddPartitionsRequest::__set_dbName</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="5881" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="21077" bodyend="21079"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AddPartitionsRequest_1a44655edaf5851175ba35bedecfc5d5d0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::AddPartitionsRequest::__set_tblName</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_tblName</name>
+        <qualifiedname>Apache::Hadoop::Hive::AddPartitionsRequest::__set_tblName</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="5883" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="21081" bodyend="21083"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AddPartitionsRequest_1a62eea72f79ca7d5a3e6dbe2243d41f0f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::AddPartitionsRequest::__set_parts</definition>
+        <argsstring>(const std::vector&lt; Partition &gt; &amp;val)</argsstring>
+        <name>__set_parts</name>
+        <qualifiedname>Apache::Hadoop::Hive::AddPartitionsRequest::__set_parts</qualifiedname>
+        <param>
+          <type>const std::vector&lt; <ref refid="classApache_1_1Hadoop_1_1Hive_1_1Partition" kindref="compound">Partition</ref> &gt; &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="5885" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="21085" bodyend="21087"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AddPartitionsRequest_1a1b0a15a240d9c1dfb89020b15009160d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::AddPartitionsRequest::__set_ifNotExists</definition>
+        <argsstring>(const bool val)</argsstring>
+        <name>__set_ifNotExists</name>
+        <qualifiedname>Apache::Hadoop::Hive::AddPartitionsRequest::__set_ifNotExists</qualifiedname>
+        <param>
+          <type>const bool</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="5887" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="21089" bodyend="21091"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AddPartitionsRequest_1ac5c05239e4faa98e673db3e56a554cf0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::AddPartitionsRequest::__set_needResult</definition>
+        <argsstring>(const bool val)</argsstring>
+        <name>__set_needResult</name>
+        <qualifiedname>Apache::Hadoop::Hive::AddPartitionsRequest::__set_needResult</qualifiedname>
+        <param>
+          <type>const bool</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="5889" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="21093" bodyend="21096"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AddPartitionsRequest_1a729c8462081977acd6d9cbdf1dfa023b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::AddPartitionsRequest::__set_catName</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_catName</name>
+        <qualifiedname>Apache::Hadoop::Hive::AddPartitionsRequest::__set_catName</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="5891" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="21098" bodyend="21101"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AddPartitionsRequest_1a950a671fa08ca82b7a58d63978ed8edd" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::AddPartitionsRequest::__set_validWriteIdList</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_validWriteIdList</name>
+        <qualifiedname>Apache::Hadoop::Hive::AddPartitionsRequest::__set_validWriteIdList</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="5893" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="21103" bodyend="21106"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AddPartitionsRequest_1a0a037e488f06401e77c7018d67b4c856" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::AddPartitionsRequest::__set_skipColumnSchemaForPartition</definition>
+        <argsstring>(const bool val)</argsstring>
+        <name>__set_skipColumnSchemaForPartition</name>
+        <qualifiedname>Apache::Hadoop::Hive::AddPartitionsRequest::__set_skipColumnSchemaForPartition</qualifiedname>
+        <param>
+          <type>const bool</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="5895" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="21108" bodyend="21111"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AddPartitionsRequest_1adeace12e3c150b4d31d85aff939e21f4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::AddPartitionsRequest::__set_partitionColSchema</definition>
+        <argsstring>(const std::vector&lt; FieldSchema &gt; &amp;val)</argsstring>
+        <name>__set_partitionColSchema</name>
+        <qualifiedname>Apache::Hadoop::Hive::AddPartitionsRequest::__set_partitionColSchema</qualifiedname>
+        <param>
+          <type>const std::vector&lt; <ref refid="classApache_1_1Hadoop_1_1Hive_1_1FieldSchema" kindref="compound">FieldSchema</ref> &gt; &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="5897" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="21113" bodyend="21116"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AddPartitionsRequest_1acf26e9ae6124540fb0cbe291cc15c1eb" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::AddPartitionsRequest::__set_environmentContext</definition>
+        <argsstring>(const EnvironmentContext &amp;val)</argsstring>
+        <name>__set_environmentContext</name>
+        <qualifiedname>Apache::Hadoop::Hive::AddPartitionsRequest::__set_environmentContext</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1EnvironmentContext" kindref="compound">EnvironmentContext</ref> &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="5899" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="21118" bodyend="21121"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AddPartitionsRequest_1a29dc99e9b6807f9fcaf957d25b62b341" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::AddPartitionsRequest::operator==</definition>
+        <argsstring>(const AddPartitionsRequest &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::AddPartitionsRequest::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1AddPartitionsRequest" kindref="compound">AddPartitionsRequest</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="5901" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="21365" bodyend="21400"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AddPartitionsRequest_1aabb85ebd7e087604fd06f34eafd1f9c5" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::AddPartitionsRequest::operator!=</definition>
+        <argsstring>(const AddPartitionsRequest &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::AddPartitionsRequest::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1AddPartitionsRequest" kindref="compound">AddPartitionsRequest</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="5902" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="5902" bodyend="5904"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AddPartitionsRequest_1a0229acdabb261af7c730f653863d3890" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::AddPartitionsRequest::operator&lt;</definition>
+        <argsstring>(const AddPartitionsRequest &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::AddPartitionsRequest::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1AddPartitionsRequest" kindref="compound">AddPartitionsRequest</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="5906" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AddPartitionsRequest_1a597a24667412717906e9e3077cac6c5d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::AddPartitionsRequest::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot) override</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::AddPartitionsRequest::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="5908" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="21129" bodyend="21276"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AddPartitionsRequest_1a84971b81098723a8026b1d006291fcf1" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::AddPartitionsRequest::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const override</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::AddPartitionsRequest::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="5909" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="21278" bodyend="21348"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AddPartitionsRequest_1a6f222567c550f129fa63e6019dabd373" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::AddPartitionsRequest::printTo</definition>
+        <argsstring>(std::ostream &amp;out) const</argsstring>
+        <name>printTo</name>
+        <qualifiedname>Apache::Hadoop::Hive::AddPartitionsRequest::printTo</qualifiedname>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="5911" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="21429" bodyend="21443"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::AddPartitionsRequest</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1AddPartitionsRequest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::AddPartitionsRequest</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1AddPartitionsRequest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>catName</edgelabel>
+          <edgelabel>dbName</edgelabel>
+          <edgelabel>tblName</edgelabel>
+          <edgelabel>validWriteIdList</edgelabel>
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>parts</edgelabel>
+        </childnode>
+        <childnode refid="9" relation="usage">
+          <edgelabel>partitionColSchema</edgelabel>
+        </childnode>
+        <childnode refid="59" relation="usage">
+          <edgelabel>environmentContext</edgelabel>
+        </childnode>
+        <childnode refid="61" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="43">
+        <label>Apache::Hadoop::Hive::BinaryColumnStatsData</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1BinaryColumnStatsData"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>bitVectors</edgelabel>
+        </childnode>
+        <childnode refid="44" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="35">
+        <label>Apache::Hadoop::Hive::BooleanColumnStatsData</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1BooleanColumnStatsData"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>bitVectors</edgelabel>
+        </childnode>
+        <childnode refid="36" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="29">
+        <label>Apache::Hadoop::Hive::ColumnStatistics</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1ColumnStatistics"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="30" relation="usage">
+          <edgelabel>statsDesc</edgelabel>
+        </childnode>
+        <childnode refid="32" relation="usage">
+          <edgelabel>statsObj</edgelabel>
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>engine</edgelabel>
+        </childnode>
+        <childnode refid="55" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="34">
+        <label>Apache::Hadoop::Hive::ColumnStatisticsData</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1ColumnStatisticsData"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="35" relation="usage">
+          <edgelabel>booleanStats</edgelabel>
+        </childnode>
+        <childnode refid="37" relation="usage">
+          <edgelabel>longStats</edgelabel>
+        </childnode>
+        <childnode refid="39" relation="usage">
+          <edgelabel>doubleStats</edgelabel>
+        </childnode>
+        <childnode refid="41" relation="usage">
+          <edgelabel>stringStats</edgelabel>
+        </childnode>
+        <childnode refid="43" relation="usage">
+          <edgelabel>binaryStats</edgelabel>
+        </childnode>
+        <childnode refid="45" relation="usage">
+          <edgelabel>decimalStats</edgelabel>
+        </childnode>
+        <childnode refid="48" relation="usage">
+          <edgelabel>dateStats</edgelabel>
+        </childnode>
+        <childnode refid="51" relation="usage">
+          <edgelabel>timestampStats</edgelabel>
+        </childnode>
+        <childnode refid="54" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="30">
+        <label>Apache::Hadoop::Hive::ColumnStatisticsDesc</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1ColumnStatisticsDesc"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>catName</edgelabel>
+          <edgelabel>dbName</edgelabel>
+          <edgelabel>partName</edgelabel>
+          <edgelabel>tableName</edgelabel>
+        </childnode>
+        <childnode refid="31" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="33">
+        <label>Apache::Hadoop::Hive::ColumnStatisticsObj</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1ColumnStatisticsObj"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>colName</edgelabel>
+          <edgelabel>colType</edgelabel>
+        </childnode>
+        <childnode refid="34" relation="usage">
+          <edgelabel>statsData</edgelabel>
+        </childnode>
+      </node>
+      <node id="49">
+        <label>Apache::Hadoop::Hive::Date</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1Date"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="48">
+        <label>Apache::Hadoop::Hive::DateColumnStatsData</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1DateColumnStatsData"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="49" relation="usage">
+          <edgelabel>highValue</edgelabel>
+          <edgelabel>lowValue</edgelabel>
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>bitVectors</edgelabel>
+          <edgelabel>histogram</edgelabel>
+        </childnode>
+        <childnode refid="50" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="46">
+        <label>Apache::Hadoop::Hive::Decimal</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1Decimal"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>unscaled</edgelabel>
+        </childnode>
+      </node>
+      <node id="45">
+        <label>Apache::Hadoop::Hive::DecimalColumnStatsData</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1DecimalColumnStatsData"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="46" relation="usage">
+          <edgelabel>highValue</edgelabel>
+          <edgelabel>lowValue</edgelabel>
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>bitVectors</edgelabel>
+          <edgelabel>histogram</edgelabel>
+        </childnode>
+        <childnode refid="47" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="39">
+        <label>Apache::Hadoop::Hive::DoubleColumnStatsData</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1DoubleColumnStatsData"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>bitVectors</edgelabel>
+          <edgelabel>histogram</edgelabel>
+        </childnode>
+        <childnode refid="40" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="59">
+        <label>Apache::Hadoop::Hive::EnvironmentContext</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1EnvironmentContext"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="13" relation="usage">
+          <edgelabel>properties</edgelabel>
+        </childnode>
+        <childnode refid="60" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="10">
+        <label>Apache::Hadoop::Hive::FieldSchema</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1FieldSchema"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>comment</edgelabel>
+          <edgelabel>name</edgelabel>
+          <edgelabel>type</edgelabel>
+        </childnode>
+        <childnode refid="11" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="56">
+        <label>Apache::Hadoop::Hive::FileMetadata</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1FileMetadata"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="7" relation="usage">
+          <edgelabel>data</edgelabel>
+        </childnode>
+        <childnode refid="57" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="37">
+        <label>Apache::Hadoop::Hive::LongColumnStatsData</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1LongColumnStatsData"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>bitVectors</edgelabel>
+          <edgelabel>histogram</edgelabel>
+        </childnode>
+        <childnode refid="38" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="16">
+        <label>Apache::Hadoop::Hive::Order</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1Order"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>col</edgelabel>
+        </childnode>
+        <childnode refid="17" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="6">
+        <label>Apache::Hadoop::Hive::Partition</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1Partition"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="7" relation="usage">
+          <edgelabel>values</edgelabel>
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>catName</edgelabel>
+          <edgelabel>dbName</edgelabel>
+          <edgelabel>tableName</edgelabel>
+        </childnode>
+        <childnode refid="8" relation="usage">
+          <edgelabel>sd</edgelabel>
+        </childnode>
+        <childnode refid="13" relation="usage">
+          <edgelabel>parameters</edgelabel>
+        </childnode>
+        <childnode refid="23" relation="usage">
+          <edgelabel>privileges</edgelabel>
+        </childnode>
+        <childnode refid="29" relation="usage">
+          <edgelabel>colStats</edgelabel>
+        </childnode>
+        <childnode refid="56" relation="usage">
+          <edgelabel>fileMetadata</edgelabel>
+        </childnode>
+        <childnode refid="58" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="23">
+        <label>Apache::Hadoop::Hive::PrincipalPrivilegeSet</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1PrincipalPrivilegeSet"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="24" relation="usage">
+          <edgelabel>groupPrivileges</edgelabel>
+          <edgelabel>rolePrivileges</edgelabel>
+          <edgelabel>userPrivileges</edgelabel>
+        </childnode>
+        <childnode refid="28" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="26">
+        <label>Apache::Hadoop::Hive::PrivilegeGrantInfo</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1PrivilegeGrantInfo"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>grantor</edgelabel>
+          <edgelabel>privilege</edgelabel>
+        </childnode>
+        <childnode refid="27" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="12">
+        <label>Apache::Hadoop::Hive::SerDeInfo</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1SerDeInfo"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>description</edgelabel>
+          <edgelabel>deserializerClass</edgelabel>
+          <edgelabel>name</edgelabel>
+          <edgelabel>serializationLib</edgelabel>
+          <edgelabel>serializerClass</edgelabel>
+        </childnode>
+        <childnode refid="13" relation="usage">
+          <edgelabel>parameters</edgelabel>
+        </childnode>
+        <childnode refid="14" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="18">
+        <label>Apache::Hadoop::Hive::SkewedInfo</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1SkewedInfo"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="7" relation="usage">
+          <edgelabel>skewedColNames</edgelabel>
+        </childnode>
+        <childnode refid="19" relation="usage">
+          <edgelabel>skewedColValues</edgelabel>
+        </childnode>
+        <childnode refid="20" relation="usage">
+          <edgelabel>skewedColValueLocationMaps</edgelabel>
+        </childnode>
+        <childnode refid="21" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="8">
+        <label>Apache::Hadoop::Hive::StorageDescriptor</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1StorageDescriptor"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="9" relation="usage">
+          <edgelabel>cols</edgelabel>
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>inputFormat</edgelabel>
+          <edgelabel>location</edgelabel>
+          <edgelabel>outputFormat</edgelabel>
+        </childnode>
+        <childnode refid="12" relation="usage">
+          <edgelabel>serdeInfo</edgelabel>
+        </childnode>
+        <childnode refid="7" relation="usage">
+          <edgelabel>bucketCols</edgelabel>
+        </childnode>
+        <childnode refid="15" relation="usage">
+          <edgelabel>sortCols</edgelabel>
+        </childnode>
+        <childnode refid="13" relation="usage">
+          <edgelabel>parameters</edgelabel>
+        </childnode>
+        <childnode refid="18" relation="usage">
+          <edgelabel>skewedInfo</edgelabel>
+        </childnode>
+        <childnode refid="22" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="41">
+        <label>Apache::Hadoop::Hive::StringColumnStatsData</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1StringColumnStatsData"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>bitVectors</edgelabel>
+        </childnode>
+        <childnode refid="42" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="52">
+        <label>Apache::Hadoop::Hive::Timestamp</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1Timestamp"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="51">
+        <label>Apache::Hadoop::Hive::TimestampColumnStatsData</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1TimestampColumnStatsData"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="52" relation="usage">
+          <edgelabel>highValue</edgelabel>
+          <edgelabel>lowValue</edgelabel>
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>bitVectors</edgelabel>
+          <edgelabel>histogram</edgelabel>
+        </childnode>
+        <childnode refid="53" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="61">
+        <label>Apache::Hadoop::Hive::_AddPartitionsRequest__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__AddPartitionsRequest____isset"/>
+      </node>
+      <node id="44">
+        <label>Apache::Hadoop::Hive::_BinaryColumnStatsData__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__BinaryColumnStatsData____isset"/>
+      </node>
+      <node id="36">
+        <label>Apache::Hadoop::Hive::_BooleanColumnStatsData__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__BooleanColumnStatsData____isset"/>
+      </node>
+      <node id="54">
+        <label>Apache::Hadoop::Hive::_ColumnStatisticsData__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__ColumnStatisticsData____isset"/>
+      </node>
+      <node id="31">
+        <label>Apache::Hadoop::Hive::_ColumnStatisticsDesc__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__ColumnStatisticsDesc____isset"/>
+      </node>
+      <node id="55">
+        <label>Apache::Hadoop::Hive::_ColumnStatistics__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__ColumnStatistics____isset"/>
+      </node>
+      <node id="50">
+        <label>Apache::Hadoop::Hive::_DateColumnStatsData__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__DateColumnStatsData____isset"/>
+      </node>
+      <node id="47">
+        <label>Apache::Hadoop::Hive::_DecimalColumnStatsData__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__DecimalColumnStatsData____isset"/>
+      </node>
+      <node id="40">
+        <label>Apache::Hadoop::Hive::_DoubleColumnStatsData__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__DoubleColumnStatsData____isset"/>
+      </node>
+      <node id="60">
+        <label>Apache::Hadoop::Hive::_EnvironmentContext__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__EnvironmentContext____isset"/>
+      </node>
+      <node id="11">
+        <label>Apache::Hadoop::Hive::_FieldSchema__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__FieldSchema____isset"/>
+      </node>
+      <node id="57">
+        <label>Apache::Hadoop::Hive::_FileMetadata__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__FileMetadata____isset"/>
+      </node>
+      <node id="38">
+        <label>Apache::Hadoop::Hive::_LongColumnStatsData__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__LongColumnStatsData____isset"/>
+      </node>
+      <node id="17">
+        <label>Apache::Hadoop::Hive::_Order__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__Order____isset"/>
+      </node>
+      <node id="58">
+        <label>Apache::Hadoop::Hive::_Partition__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__Partition____isset"/>
+      </node>
+      <node id="28">
+        <label>Apache::Hadoop::Hive::_PrincipalPrivilegeSet__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__PrincipalPrivilegeSet____isset"/>
+      </node>
+      <node id="27">
+        <label>Apache::Hadoop::Hive::_PrivilegeGrantInfo__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__PrivilegeGrantInfo____isset"/>
+      </node>
+      <node id="14">
+        <label>Apache::Hadoop::Hive::_SerDeInfo__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__SerDeInfo____isset"/>
+      </node>
+      <node id="21">
+        <label>Apache::Hadoop::Hive::_SkewedInfo__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__SkewedInfo____isset"/>
+      </node>
+      <node id="22">
+        <label>Apache::Hadoop::Hive::_StorageDescriptor__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__StorageDescriptor____isset"/>
+      </node>
+      <node id="42">
+        <label>Apache::Hadoop::Hive::_StringColumnStatsData__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__StringColumnStatsData____isset"/>
+      </node>
+      <node id="53">
+        <label>Apache::Hadoop::Hive::_TimestampColumnStatsData__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__TimestampColumnStatsData____isset"/>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+      <node id="13">
+        <label>std::map&lt; std::string, std::string &gt;</label>
+        <childnode refid="3" relation="usage">
+          <edgelabel>elements</edgelabel>
+          <edgelabel>keys</edgelabel>
+        </childnode>
+      </node>
+      <node id="24">
+        <label>std::map&lt; std::string, std::vector&lt; Apache::Hadoop::Hive::PrivilegeGrantInfo &gt; &gt;</label>
+        <childnode refid="3" relation="usage">
+          <edgelabel>keys</edgelabel>
+        </childnode>
+        <childnode refid="25" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="20">
+        <label>std::map&lt; std::vector&lt; std::string &gt;, std::string &gt;</label>
+        <childnode refid="7" relation="usage">
+          <edgelabel>keys</edgelabel>
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="4">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="3">
+        <label>std::string</label>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="32">
+        <label>std::vector&lt; Apache::Hadoop::Hive::ColumnStatisticsObj &gt;</label>
+        <childnode refid="33" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="9">
+        <label>std::vector&lt; Apache::Hadoop::Hive::FieldSchema &gt;</label>
+        <childnode refid="10" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="15">
+        <label>std::vector&lt; Apache::Hadoop::Hive::Order &gt;</label>
+        <childnode refid="16" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="5">
+        <label>std::vector&lt; Apache::Hadoop::Hive::Partition &gt;</label>
+        <childnode refid="6" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="25">
+        <label>std::vector&lt; Apache::Hadoop::Hive::PrivilegeGrantInfo &gt;</label>
+        <childnode refid="26" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="7">
+        <label>std::vector&lt; std::string &gt;</label>
+        <childnode refid="3" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="19">
+        <label>std::vector&lt; std::vector&lt; std::string &gt; &gt;</label>
+        <childnode refid="7" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="5860" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="5860" bodyend="5912"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AddPartitionsRequest_1a2c6505e1dc8bec45bf76db36dd489614" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AddPartitionsRequest</scope><name>__isset</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AddPartitionsRequest_1a729c8462081977acd6d9cbdf1dfa023b" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AddPartitionsRequest</scope><name>__set_catName</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AddPartitionsRequest_1a9340160c3295a04d00eb2d4e8597a457" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AddPartitionsRequest</scope><name>__set_dbName</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AddPartitionsRequest_1acf26e9ae6124540fb0cbe291cc15c1eb" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AddPartitionsRequest</scope><name>__set_environmentContext</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AddPartitionsRequest_1a1b0a15a240d9c1dfb89020b15009160d" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AddPartitionsRequest</scope><name>__set_ifNotExists</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AddPartitionsRequest_1ac5c05239e4faa98e673db3e56a554cf0" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AddPartitionsRequest</scope><name>__set_needResult</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AddPartitionsRequest_1adeace12e3c150b4d31d85aff939e21f4" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AddPartitionsRequest</scope><name>__set_partitionColSchema</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AddPartitionsRequest_1a62eea72f79ca7d5a3e6dbe2243d41f0f" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AddPartitionsRequest</scope><name>__set_parts</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AddPartitionsRequest_1a0a037e488f06401e77c7018d67b4c856" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AddPartitionsRequest</scope><name>__set_skipColumnSchemaForPartition</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AddPartitionsRequest_1a44655edaf5851175ba35bedecfc5d5d0" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AddPartitionsRequest</scope><name>__set_tblName</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AddPartitionsRequest_1a950a671fa08ca82b7a58d63978ed8edd" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AddPartitionsRequest</scope><name>__set_validWriteIdList</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AddPartitionsRequest_1ae54e70f44c21aa2a655461403586d372" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AddPartitionsRequest</scope><name>AddPartitionsRequest</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AddPartitionsRequest_1aeb0aee57546d0580a29cf2a37e262bae" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AddPartitionsRequest</scope><name>AddPartitionsRequest</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AddPartitionsRequest_1a141722e8ce7b3cf502085f37791774ca" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AddPartitionsRequest</scope><name>catName</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AddPartitionsRequest_1a8bd2cb3f28f051e9693d8f72b68608f7" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AddPartitionsRequest</scope><name>dbName</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AddPartitionsRequest_1a42ff750727ea167bb45853bf23596505" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AddPartitionsRequest</scope><name>environmentContext</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AddPartitionsRequest_1a698436074694e4287e682198976857e9" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AddPartitionsRequest</scope><name>ifNotExists</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AddPartitionsRequest_1acea15d26a162eda1e59540fbd00105d2" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AddPartitionsRequest</scope><name>needResult</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AddPartitionsRequest_1aabb85ebd7e087604fd06f34eafd1f9c5" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AddPartitionsRequest</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AddPartitionsRequest_1a0229acdabb261af7c730f653863d3890" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AddPartitionsRequest</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AddPartitionsRequest_1a7c89f029ea04be300c6ff68f86bc7afe" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AddPartitionsRequest</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AddPartitionsRequest_1a29dc99e9b6807f9fcaf957d25b62b341" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AddPartitionsRequest</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AddPartitionsRequest_1af9bbb3fac3dfa903e430e5915e4c93b3" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AddPartitionsRequest</scope><name>partitionColSchema</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AddPartitionsRequest_1aaf590872a44b5236e1ef03f336616e3c" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AddPartitionsRequest</scope><name>parts</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AddPartitionsRequest_1a6f222567c550f129fa63e6019dabd373" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::AddPartitionsRequest</scope><name>printTo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AddPartitionsRequest_1a597a24667412717906e9e3077cac6c5d" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AddPartitionsRequest</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AddPartitionsRequest_1a688fa074204ac6fe6a1befb52333a784" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AddPartitionsRequest</scope><name>skipColumnSchemaForPartition</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AddPartitionsRequest_1a7a2d8fb681997a51b239a125352beb3e" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AddPartitionsRequest</scope><name>tblName</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AddPartitionsRequest_1ad2638465fd89c0120dfbd8391a39fbe9" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AddPartitionsRequest</scope><name>validWriteIdList</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AddPartitionsRequest_1a84971b81098723a8026b1d006291fcf1" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AddPartitionsRequest</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AddPartitionsRequest_1a34c82e78ff0e5a6997270525b7785540" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::AddPartitionsRequest</scope><name>~AddPartitionsRequest</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

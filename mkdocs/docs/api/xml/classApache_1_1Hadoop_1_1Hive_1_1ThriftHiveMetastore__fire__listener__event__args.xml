@@ -1,0 +1,337 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__fire__listener__event__args" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::ThriftHiveMetastore_fire_listener_event_args</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__fire__listener__event__args_1a2e65095ff3139d3295202ce1ceea67e0" prot="public" static="no" mutable="no">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1FireEventRequest" kindref="compound">FireEventRequest</ref></type>
+        <definition>FireEventRequest Apache::Hadoop::Hive::ThriftHiveMetastore_fire_listener_event_args::rqst</definition>
+        <argsstring></argsstring>
+        <name>rqst</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_fire_listener_event_args::rqst</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="24040" column="20" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="24040" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__fire__listener__event__args_1acd56ef4ee2e17fd7026f777b3f0ff7f9" prot="public" static="no" mutable="no">
+        <type><ref refid="structApache_1_1Hadoop_1_1Hive_1_1__ThriftHiveMetastore__fire__listener__event__args____isset" kindref="compound">_ThriftHiveMetastore_fire_listener_event_args__isset</ref></type>
+        <definition>_ThriftHiveMetastore_fire_listener_event_args__isset Apache::Hadoop::Hive::ThriftHiveMetastore_fire_listener_event_args::__isset</definition>
+        <argsstring></argsstring>
+        <name>__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_fire_listener_event_args::__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="24042" column="56" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="24042" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__fire__listener__event__args_1af5de5910a080447620c2e68c63e9826f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::ThriftHiveMetastore_fire_listener_event_args::ThriftHiveMetastore_fire_listener_event_args</definition>
+        <argsstring>(const ThriftHiveMetastore_fire_listener_event_args &amp;)</argsstring>
+        <name>ThriftHiveMetastore_fire_listener_event_args</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_fire_listener_event_args::ThriftHiveMetastore_fire_listener_event_args</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__fire__listener__event__args" kindref="compound">ThriftHiveMetastore_fire_listener_event_args</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="24035" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__fire__listener__event__args_1a8d82536f282012acaf0541bb78a952a0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__fire__listener__event__args" kindref="compound">ThriftHiveMetastore_fire_listener_event_args</ref> &amp;</type>
+        <definition>ThriftHiveMetastore_fire_listener_event_args &amp; Apache::Hadoop::Hive::ThriftHiveMetastore_fire_listener_event_args::operator=</definition>
+        <argsstring>(const ThriftHiveMetastore_fire_listener_event_args &amp;)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_fire_listener_event_args::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__fire__listener__event__args" kindref="compound">ThriftHiveMetastore_fire_listener_event_args</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="24036" column="48"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__fire__listener__event__args_1a6025ba0b603100ae9fd3fe39349c1366" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::ThriftHiveMetastore_fire_listener_event_args::ThriftHiveMetastore_fire_listener_event_args</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>ThriftHiveMetastore_fire_listener_event_args</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_fire_listener_event_args::ThriftHiveMetastore_fire_listener_event_args</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="24037" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.cpp" bodystart="53413" bodyend="53414"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__fire__listener__event__args_1a5aaf713b26a0a8add92db671f2e272a2" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::ThriftHiveMetastore_fire_listener_event_args::~ThriftHiveMetastore_fire_listener_event_args</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~ThriftHiveMetastore_fire_listener_event_args</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_fire_listener_event_args::~ThriftHiveMetastore_fire_listener_event_args</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="24039" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.cpp" bodystart="53410" bodyend="53411"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__fire__listener__event__args_1a6f6fa98b9f31abe64fe92f9a198294f6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::ThriftHiveMetastore_fire_listener_event_args::__set_rqst</definition>
+        <argsstring>(const FireEventRequest &amp;val)</argsstring>
+        <name>__set_rqst</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_fire_listener_event_args::__set_rqst</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1FireEventRequest" kindref="compound">FireEventRequest</ref> &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="24044" column="8"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__fire__listener__event__args_1a1c342bb421b24d52cb2f1782c1c4a735" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::ThriftHiveMetastore_fire_listener_event_args::operator==</definition>
+        <argsstring>(const ThriftHiveMetastore_fire_listener_event_args &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_fire_listener_event_args::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__fire__listener__event__args" kindref="compound">ThriftHiveMetastore_fire_listener_event_args</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="24046" column="8"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__fire__listener__event__args_1abf14943cb15c172b2376cad01eea8022" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::ThriftHiveMetastore_fire_listener_event_args::operator!=</definition>
+        <argsstring>(const ThriftHiveMetastore_fire_listener_event_args &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_fire_listener_event_args::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__fire__listener__event__args" kindref="compound">ThriftHiveMetastore_fire_listener_event_args</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="24047" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="24047" bodyend="24049"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__fire__listener__event__args_1a9f9e6d7e195d3b78e48beb8d6e362a53" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::ThriftHiveMetastore_fire_listener_event_args::operator&lt;</definition>
+        <argsstring>(const ThriftHiveMetastore_fire_listener_event_args &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_fire_listener_event_args::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__fire__listener__event__args" kindref="compound">ThriftHiveMetastore_fire_listener_event_args</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="24051" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__fire__listener__event__args_1a125c86c3a572f4622d59b627fabdebbb" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::ThriftHiveMetastore_fire_listener_event_args::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot)</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_fire_listener_event_args::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="24053" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.cpp" bodystart="53416" bodyend="53455"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__fire__listener__event__args_1acd4a181c44c97a76609715f03624e406" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::ThriftHiveMetastore_fire_listener_event_args::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_fire_listener_event_args::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="24054" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.cpp" bodystart="53457" bodyend="53469"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="2">
+        <label>Apache::Hadoop::Hive::FireEventRequest</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1FireEventRequest"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>data</edgelabel>
+        </childnode>
+        <childnode refid="7" relation="usage">
+          <edgelabel>catName</edgelabel>
+          <edgelabel>dbName</edgelabel>
+          <edgelabel>tableName</edgelabel>
+        </childnode>
+        <childnode refid="6" relation="usage">
+          <edgelabel>partitionVals</edgelabel>
+        </childnode>
+        <childnode refid="12" relation="usage">
+          <edgelabel>tblParams</edgelabel>
+        </childnode>
+        <childnode refid="13" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="4">
+        <label>Apache::Hadoop::Hive::FireEventRequestData</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1FireEventRequestData"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>insertData</edgelabel>
+        </childnode>
+        <childnode refid="10" relation="usage">
+          <edgelabel>insertDatas</edgelabel>
+        </childnode>
+        <childnode refid="11" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="5">
+        <label>Apache::Hadoop::Hive::InsertEventRequestData</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1InsertEventRequestData"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+        <childnode refid="6" relation="usage">
+          <edgelabel>filesAdded</edgelabel>
+          <edgelabel>filesAddedChecksum</edgelabel>
+          <edgelabel>partitionVal</edgelabel>
+          <edgelabel>subDirectoryList</edgelabel>
+        </childnode>
+        <childnode refid="9" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::ThriftHiveMetastore_fire_listener_event_args</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__fire__listener__event__args"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>rqst</edgelabel>
+        </childnode>
+        <childnode refid="14" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="11">
+        <label>Apache::Hadoop::Hive::_FireEventRequestData__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__FireEventRequestData____isset"/>
+      </node>
+      <node id="13">
+        <label>Apache::Hadoop::Hive::_FireEventRequest__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__FireEventRequest____isset"/>
+      </node>
+      <node id="9">
+        <label>Apache::Hadoop::Hive::_InsertEventRequestData__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__InsertEventRequestData____isset"/>
+      </node>
+      <node id="14">
+        <label>Apache::Hadoop::Hive::_ThriftHiveMetastore_fire_listener_event_args__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__ThriftHiveMetastore__fire__listener__event__args____isset"/>
+      </node>
+      <node id="3">
+        <label>apache::thrift::TBase</label>
+      </node>
+      <node id="12">
+        <label>std::map&lt; std::string, std::string &gt;</label>
+        <childnode refid="7" relation="usage">
+          <edgelabel>elements</edgelabel>
+          <edgelabel>keys</edgelabel>
+        </childnode>
+      </node>
+      <node id="8">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="7">
+        <label>std::string</label>
+        <childnode refid="8" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="10">
+        <label>std::vector&lt; Apache::Hadoop::Hive::InsertEventRequestData &gt;</label>
+        <childnode refid="5" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="6">
+        <label>std::vector&lt; std::string &gt;</label>
+        <childnode refid="7" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="24032" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="24032" bodyend="24056"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__fire__listener__event__args_1acd56ef4ee2e17fd7026f777b3f0ff7f9" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_fire_listener_event_args</scope><name>__isset</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__fire__listener__event__args_1a6f6fa98b9f31abe64fe92f9a198294f6" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_fire_listener_event_args</scope><name>__set_rqst</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__fire__listener__event__args_1abf14943cb15c172b2376cad01eea8022" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_fire_listener_event_args</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__fire__listener__event__args_1a9f9e6d7e195d3b78e48beb8d6e362a53" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_fire_listener_event_args</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__fire__listener__event__args_1a8d82536f282012acaf0541bb78a952a0" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_fire_listener_event_args</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__fire__listener__event__args_1a1c342bb421b24d52cb2f1782c1c4a735" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_fire_listener_event_args</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__fire__listener__event__args_1a125c86c3a572f4622d59b627fabdebbb" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_fire_listener_event_args</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__fire__listener__event__args_1a2e65095ff3139d3295202ce1ceea67e0" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_fire_listener_event_args</scope><name>rqst</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__fire__listener__event__args_1af5de5910a080447620c2e68c63e9826f" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_fire_listener_event_args</scope><name>ThriftHiveMetastore_fire_listener_event_args</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__fire__listener__event__args_1a6025ba0b603100ae9fd3fe39349c1366" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_fire_listener_event_args</scope><name>ThriftHiveMetastore_fire_listener_event_args</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__fire__listener__event__args_1acd4a181c44c97a76609715f03624e406" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_fire_listener_event_args</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__fire__listener__event__args_1a5aaf713b26a0a8add92db671f2e272a2" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_fire_listener_event_args</scope><name>~ThriftHiveMetastore_fire_listener_event_args</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

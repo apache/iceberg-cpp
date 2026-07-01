@@ -1,0 +1,129 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1parquet_1_1ProjectRecordBatchParam" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::parquet::ProjectRecordBatchParam</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1parquet_1_1ProjectRecordBatchParam_1a81fd36c205d1f93f6081465ce2641fd0" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::parquet::ProjectRecordBatchParam::name</definition>
+        <argsstring></argsstring>
+        <name>name</name>
+        <qualifiedname>iceberg::parquet::ProjectRecordBatchParam::name</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/parquet_data_test.cc" line="41" column="15" bodyfile="iceberg/test/parquet_data_test.cc" bodystart="41" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1parquet_1_1ProjectRecordBatchParam_1a396c1f513cadf2f2af6c4f322818a524" prot="public" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Type" kindref="compound">Type</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;Type&gt; iceberg::parquet::ProjectRecordBatchParam::projected_type</definition>
+        <argsstring></argsstring>
+        <name>projected_type</name>
+        <qualifiedname>iceberg::parquet::ProjectRecordBatchParam::projected_type</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/parquet_data_test.cc" line="42" column="19" bodyfile="iceberg/test/parquet_data_test.cc" bodystart="42" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1parquet_1_1ProjectRecordBatchParam_1aeccd088f2aadbfb63df977c931b473aa" prot="public" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Type" kindref="compound">Type</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;Type&gt; iceberg::parquet::ProjectRecordBatchParam::source_type</definition>
+        <argsstring></argsstring>
+        <name>source_type</name>
+        <qualifiedname>iceberg::parquet::ProjectRecordBatchParam::source_type</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/parquet_data_test.cc" line="43" column="19" bodyfile="iceberg/test/parquet_data_test.cc" bodystart="43" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1parquet_1_1ProjectRecordBatchParam_1a5dd694ca4034253e1b85e0c8ba75546c" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::parquet::ProjectRecordBatchParam::input_json</definition>
+        <argsstring></argsstring>
+        <name>input_json</name>
+        <qualifiedname>iceberg::parquet::ProjectRecordBatchParam::input_json</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/parquet_data_test.cc" line="44" column="15" bodyfile="iceberg/test/parquet_data_test.cc" bodystart="44" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1parquet_1_1ProjectRecordBatchParam_1ac607c62b4583fca942a4853710eb2532" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::parquet::ProjectRecordBatchParam::expected_json</definition>
+        <argsstring></argsstring>
+        <name>expected_json</name>
+        <qualifiedname>iceberg::parquet::ProjectRecordBatchParam::expected_json</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/parquet_data_test.cc" line="45" column="15" bodyfile="iceberg/test/parquet_data_test.cc" bodystart="45" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="5">
+        <label>iceberg::Type</label>
+        <link refid="classiceberg_1_1Type"/>
+        <childnode refid="6" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::parquet::ProjectRecordBatchParam</label>
+        <link refid="structiceberg_1_1parquet_1_1ProjectRecordBatchParam"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>expected_json</edgelabel>
+          <edgelabel>input_json</edgelabel>
+          <edgelabel>name</edgelabel>
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>projected_type</edgelabel>
+          <edgelabel>source_type</edgelabel>
+        </childnode>
+      </node>
+      <node id="6">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+      <node id="4">
+        <label>std::shared_ptr&lt; iceberg::Type &gt;</label>
+        <childnode refid="5" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="2">
+        <label>std::string</label>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/test/parquet_data_test.cc" line="40" column="1" bodyfile="iceberg/test/parquet_data_test.cc" bodystart="40" bodyend="46"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1parquet_1_1ProjectRecordBatchParam_1ac607c62b4583fca942a4853710eb2532" prot="public" virt="non-virtual"><scope>iceberg::parquet::ProjectRecordBatchParam</scope><name>expected_json</name></member>
+      <member refid="structiceberg_1_1parquet_1_1ProjectRecordBatchParam_1a5dd694ca4034253e1b85e0c8ba75546c" prot="public" virt="non-virtual"><scope>iceberg::parquet::ProjectRecordBatchParam</scope><name>input_json</name></member>
+      <member refid="structiceberg_1_1parquet_1_1ProjectRecordBatchParam_1a81fd36c205d1f93f6081465ce2641fd0" prot="public" virt="non-virtual"><scope>iceberg::parquet::ProjectRecordBatchParam</scope><name>name</name></member>
+      <member refid="structiceberg_1_1parquet_1_1ProjectRecordBatchParam_1a396c1f513cadf2f2af6c4f322818a524" prot="public" virt="non-virtual"><scope>iceberg::parquet::ProjectRecordBatchParam</scope><name>projected_type</name></member>
+      <member refid="structiceberg_1_1parquet_1_1ProjectRecordBatchParam_1aeccd088f2aadbfb63df977c931b473aa" prot="public" virt="non-virtual"><scope>iceberg::parquet::ProjectRecordBatchParam</scope><name>source_type</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,319 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1InvalidOperationException" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::InvalidOperationException</compoundname>
+    <basecompoundref prot="public" virt="non-virtual">apache::thrift::TException</basecompoundref>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1InvalidOperationException_1a7e502e42beb4ca890325a6ee6889af90" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::InvalidOperationException::message</definition>
+        <argsstring></argsstring>
+        <name>message</name>
+        <qualifiedname>Apache::Hadoop::Hive::InvalidOperationException::message</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15581" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="15581" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1InvalidOperationException_1ab9f0891de172f4ce2f6e4740560587d8" prot="public" static="no" mutable="no">
+        <type><ref refid="structApache_1_1Hadoop_1_1Hive_1_1__InvalidOperationException____isset" kindref="compound">_InvalidOperationException__isset</ref></type>
+        <definition>_InvalidOperationException__isset Apache::Hadoop::Hive::InvalidOperationException::__isset</definition>
+        <argsstring></argsstring>
+        <name>__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::InvalidOperationException::__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15583" column="37" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="15583" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1InvalidOperationException_1aec51d4c4a96546324828c377fa429909" prot="public" static="no" mutable="yes">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::InvalidOperationException::thriftTExceptionMessageHolder_</definition>
+        <argsstring></argsstring>
+        <name>thriftTExceptionMessageHolder_</name>
+        <qualifiedname>Apache::Hadoop::Hive::InvalidOperationException::thriftTExceptionMessageHolder_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15598" column="23" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="15598" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1InvalidOperationException_1a9016600b16193cd6c452d62ce09c2ab9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::InvalidOperationException::InvalidOperationException</definition>
+        <argsstring>(const InvalidOperationException &amp;)</argsstring>
+        <name>InvalidOperationException</name>
+        <qualifiedname>Apache::Hadoop::Hive::InvalidOperationException::InvalidOperationException</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1InvalidOperationException" kindref="compound">InvalidOperationException</ref> &amp;</type>
+          <defname>other1869</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15576" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="61391" bodyend="61394"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1InvalidOperationException_1a5026ddc9fac315ae612882901e842cfd" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1InvalidOperationException" kindref="compound">InvalidOperationException</ref> &amp;</type>
+        <definition>InvalidOperationException &amp; Apache::Hadoop::Hive::InvalidOperationException::operator=</definition>
+        <argsstring>(const InvalidOperationException &amp;)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::InvalidOperationException::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1InvalidOperationException" kindref="compound">InvalidOperationException</ref> &amp;</type>
+          <defname>other1870</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15577" column="29" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="61395" bodyend="61399"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1InvalidOperationException_1a51b52991e31645e7993b6f71b25173ef" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::InvalidOperationException::InvalidOperationException</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>InvalidOperationException</name>
+        <qualifiedname>Apache::Hadoop::Hive::InvalidOperationException::InvalidOperationException</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15578" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="61309" bodyend="61311"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1InvalidOperationException_1a89012e6b6f7f27233fa15ac36f9291d3" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::InvalidOperationException::~InvalidOperationException</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~InvalidOperationException</name>
+        <qualifiedname>Apache::Hadoop::Hive::InvalidOperationException::~InvalidOperationException</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15580" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="61306" bodyend="61307"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1InvalidOperationException_1a14d38f17603889dab60a085122e9d00c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::InvalidOperationException::__set_message</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_message</name>
+        <qualifiedname>Apache::Hadoop::Hive::InvalidOperationException::__set_message</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15585" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="61313" bodyend="61315"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1InvalidOperationException_1a249f3b872941b10fd501ed751fb63c22" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::InvalidOperationException::operator==</definition>
+        <argsstring>(const InvalidOperationException &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::InvalidOperationException::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1InvalidOperationException" kindref="compound">InvalidOperationException</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15587" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="61384" bodyend="61389"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1InvalidOperationException_1abf90987e590908f1e9665c1e5ea3d857" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::InvalidOperationException::operator!=</definition>
+        <argsstring>(const InvalidOperationException &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::InvalidOperationException::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1InvalidOperationException" kindref="compound">InvalidOperationException</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15588" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="15588" bodyend="15590"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1InvalidOperationException_1a87e6aff9e34b66b37579f87c506697a3" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::InvalidOperationException::operator&lt;</definition>
+        <argsstring>(const InvalidOperationException &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::InvalidOperationException::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1InvalidOperationException" kindref="compound">InvalidOperationException</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15592" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1InvalidOperationException_1a534229455e59c22456726a6c194bde46" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::InvalidOperationException::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot)</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::InvalidOperationException::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15594" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="61323" bodyend="61362"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1InvalidOperationException_1adff3705ddcf68c158d96aaa369aab4af" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::InvalidOperationException::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::InvalidOperationException::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15595" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="61364" bodyend="61376"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1InvalidOperationException_1a8ffab22877aab9662be7b08dea15002a" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::InvalidOperationException::printTo</definition>
+        <argsstring>(std::ostream &amp;out) const</argsstring>
+        <name>printTo</name>
+        <qualifiedname>Apache::Hadoop::Hive::InvalidOperationException::printTo</qualifiedname>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15597" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="61400" bodyend="61405"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1InvalidOperationException_1ac6f34dfb361fb0ed7634864e59ce9513" prot="public" static="no" const="yes" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type>const char *</type>
+        <definition>const char * Apache::Hadoop::Hive::InvalidOperationException::what</definition>
+        <argsstring>() const noexcept override</argsstring>
+        <name>what</name>
+        <qualifiedname>Apache::Hadoop::Hive::InvalidOperationException::what</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15599" column="14" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="61407" bodyend="61416"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::InvalidOperationException</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1InvalidOperationException"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TException</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::InvalidOperationException</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1InvalidOperationException"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>message</edgelabel>
+          <edgelabel>thriftTExceptionMessageHolder_</edgelabel>
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="5">
+        <label>Apache::Hadoop::Hive::_InvalidOperationException__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__InvalidOperationException____isset"/>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TException</label>
+      </node>
+      <node id="4">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="3">
+        <label>std::string</label>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15573" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="15573" bodyend="15600"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1InvalidOperationException_1ab9f0891de172f4ce2f6e4740560587d8" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::InvalidOperationException</scope><name>__isset</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1InvalidOperationException_1a14d38f17603889dab60a085122e9d00c" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::InvalidOperationException</scope><name>__set_message</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1InvalidOperationException_1a9016600b16193cd6c452d62ce09c2ab9" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::InvalidOperationException</scope><name>InvalidOperationException</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1InvalidOperationException_1a51b52991e31645e7993b6f71b25173ef" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::InvalidOperationException</scope><name>InvalidOperationException</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1InvalidOperationException_1a7e502e42beb4ca890325a6ee6889af90" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::InvalidOperationException</scope><name>message</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1InvalidOperationException_1abf90987e590908f1e9665c1e5ea3d857" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::InvalidOperationException</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1InvalidOperationException_1a87e6aff9e34b66b37579f87c506697a3" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::InvalidOperationException</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1InvalidOperationException_1a5026ddc9fac315ae612882901e842cfd" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::InvalidOperationException</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1InvalidOperationException_1a249f3b872941b10fd501ed751fb63c22" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::InvalidOperationException</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1InvalidOperationException_1a8ffab22877aab9662be7b08dea15002a" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::InvalidOperationException</scope><name>printTo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1InvalidOperationException_1a534229455e59c22456726a6c194bde46" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::InvalidOperationException</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1InvalidOperationException_1aec51d4c4a96546324828c377fa429909" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::InvalidOperationException</scope><name>thriftTExceptionMessageHolder_</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1InvalidOperationException_1ac6f34dfb361fb0ed7634864e59ce9513" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::InvalidOperationException</scope><name>what</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1InvalidOperationException_1adff3705ddcf68c158d96aaa369aab4af" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::InvalidOperationException</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1InvalidOperationException_1a89012e6b6f7f27233fa15ac36f9291d3" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::InvalidOperationException</scope><name>~InvalidOperationException</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

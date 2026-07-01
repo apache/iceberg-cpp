@@ -1,0 +1,505 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1TableStatsRequest" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::TableStatsRequest</compoundname>
+    <basecompoundref prot="public" virt="virtual">apache::thrift::TBase</basecompoundref>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1TableStatsRequest_1a5cb796beb6f6c5bdf3f8e7871cea7c3e" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::TableStatsRequest::dbName</definition>
+        <argsstring></argsstring>
+        <name>dbName</name>
+        <qualifiedname>Apache::Hadoop::Hive::TableStatsRequest::dbName</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="5709" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="5709" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1TableStatsRequest_1a9a2e53abb2fa391dcea5bfc7766fe893" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::TableStatsRequest::tblName</definition>
+        <argsstring></argsstring>
+        <name>tblName</name>
+        <qualifiedname>Apache::Hadoop::Hive::TableStatsRequest::tblName</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="5710" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="5710" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1TableStatsRequest_1addddba1b136906b478391cfd5f3ed104" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; std::string &gt;</type>
+        <definition>std::vector&lt;std::string&gt; Apache::Hadoop::Hive::TableStatsRequest::colNames</definition>
+        <argsstring></argsstring>
+        <name>colNames</name>
+        <qualifiedname>Apache::Hadoop::Hive::TableStatsRequest::colNames</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="5711" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="5711" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1TableStatsRequest_1aaaa187ca030268ec0d2d3c5fac989fc9" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::TableStatsRequest::catName</definition>
+        <argsstring></argsstring>
+        <name>catName</name>
+        <qualifiedname>Apache::Hadoop::Hive::TableStatsRequest::catName</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="5712" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="5712" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1TableStatsRequest_1a5d7bc6732cf4a693e460502f04233005" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::TableStatsRequest::validWriteIdList</definition>
+        <argsstring></argsstring>
+        <name>validWriteIdList</name>
+        <qualifiedname>Apache::Hadoop::Hive::TableStatsRequest::validWriteIdList</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="5713" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="5713" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1TableStatsRequest_1a313c2a743e07b6f7eed2f427eab2019c" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::TableStatsRequest::engine</definition>
+        <argsstring></argsstring>
+        <name>engine</name>
+        <qualifiedname>Apache::Hadoop::Hive::TableStatsRequest::engine</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="5714" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="5714" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1TableStatsRequest_1a4a98f30809534464f068441442a5c5fa" prot="public" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t Apache::Hadoop::Hive::TableStatsRequest::id</definition>
+        <argsstring></argsstring>
+        <name>id</name>
+        <qualifiedname>Apache::Hadoop::Hive::TableStatsRequest::id</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="5715" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="5715" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1TableStatsRequest_1a79b6edf6111d2116113bd8d1738a20bc" prot="public" static="no" mutable="no">
+        <type><ref refid="structApache_1_1Hadoop_1_1Hive_1_1__TableStatsRequest____isset" kindref="compound">_TableStatsRequest__isset</ref></type>
+        <definition>_TableStatsRequest__isset Apache::Hadoop::Hive::TableStatsRequest::__isset</definition>
+        <argsstring></argsstring>
+        <name>__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::TableStatsRequest::__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="5717" column="29" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="5717" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1TableStatsRequest_1ace424a517577383412b8eaa98facb273" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::TableStatsRequest::TableStatsRequest</definition>
+        <argsstring>(const TableStatsRequest &amp;)</argsstring>
+        <name>TableStatsRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::TableStatsRequest::TableStatsRequest</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1TableStatsRequest" kindref="compound">TableStatsRequest</ref> &amp;</type>
+          <defname>other683</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="5704" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="20530" bodyend="20539"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1TableStatsRequest_1ae46d7d9d2d8bcf4e494fb8d61337b12b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1TableStatsRequest" kindref="compound">TableStatsRequest</ref> &amp;</type>
+        <definition>TableStatsRequest &amp; Apache::Hadoop::Hive::TableStatsRequest::operator=</definition>
+        <argsstring>(const TableStatsRequest &amp;)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::TableStatsRequest::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1TableStatsRequest" kindref="compound">TableStatsRequest</ref> &amp;</type>
+          <defname>other684</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="5705" column="21" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="20540" bodyend="20550"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1TableStatsRequest_1ad0cb224e591cc9f1908af9de49524947" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::TableStatsRequest::TableStatsRequest</definition>
+        <argsstring>()</argsstring>
+        <name>TableStatsRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::TableStatsRequest::TableStatsRequest</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="5706" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="20285" bodyend="20291"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1TableStatsRequest_1a8823e1b9215cd21b2cdf8cbebcd9c92e" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::TableStatsRequest::~TableStatsRequest</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~TableStatsRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::TableStatsRequest::~TableStatsRequest</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="5708" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="20282" bodyend="20283"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1TableStatsRequest_1a8785e945e3434f541e380738c219e94b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::TableStatsRequest::__set_dbName</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_dbName</name>
+        <qualifiedname>Apache::Hadoop::Hive::TableStatsRequest::__set_dbName</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="5719" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="20293" bodyend="20295"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1TableStatsRequest_1a6b909cba398fffb15596026c093f67d6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::TableStatsRequest::__set_tblName</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_tblName</name>
+        <qualifiedname>Apache::Hadoop::Hive::TableStatsRequest::__set_tblName</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="5721" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="20297" bodyend="20299"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1TableStatsRequest_1ab635370051969f8fd67ff0fdd9843e47" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::TableStatsRequest::__set_colNames</definition>
+        <argsstring>(const std::vector&lt; std::string &gt; &amp;val)</argsstring>
+        <name>__set_colNames</name>
+        <qualifiedname>Apache::Hadoop::Hive::TableStatsRequest::__set_colNames</qualifiedname>
+        <param>
+          <type>const std::vector&lt; std::string &gt; &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="5723" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="20301" bodyend="20303"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1TableStatsRequest_1ac3bdbbf94d50f5efa8bf29e8acf83a37" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::TableStatsRequest::__set_catName</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_catName</name>
+        <qualifiedname>Apache::Hadoop::Hive::TableStatsRequest::__set_catName</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="5725" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="20305" bodyend="20308"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1TableStatsRequest_1a831240ff31279dc32aca1b983b3d681c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::TableStatsRequest::__set_validWriteIdList</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_validWriteIdList</name>
+        <qualifiedname>Apache::Hadoop::Hive::TableStatsRequest::__set_validWriteIdList</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="5727" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="20310" bodyend="20313"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1TableStatsRequest_1a2f2406e30ea0b5505960ae9ae88f8f3d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::TableStatsRequest::__set_engine</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_engine</name>
+        <qualifiedname>Apache::Hadoop::Hive::TableStatsRequest::__set_engine</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="5729" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="20315" bodyend="20318"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1TableStatsRequest_1a160c00518f96657f013de26a60d8de5d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::TableStatsRequest::__set_id</definition>
+        <argsstring>(const int64_t val)</argsstring>
+        <name>__set_id</name>
+        <qualifiedname>Apache::Hadoop::Hive::TableStatsRequest::__set_id</qualifiedname>
+        <param>
+          <type>const int64_t</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="5731" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="20320" bodyend="20323"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1TableStatsRequest_1ae5ff516318fd42244ec1ab602134e7b2" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::TableStatsRequest::operator==</definition>
+        <argsstring>(const TableStatsRequest &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::TableStatsRequest::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1TableStatsRequest" kindref="compound">TableStatsRequest</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="5733" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="20503" bodyend="20528"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1TableStatsRequest_1a59e8252f86e9ecdb9766b5fff511fc44" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::TableStatsRequest::operator!=</definition>
+        <argsstring>(const TableStatsRequest &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::TableStatsRequest::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1TableStatsRequest" kindref="compound">TableStatsRequest</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="5734" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="5734" bodyend="5736"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1TableStatsRequest_1af625b5f3634391bd3c4bb3685e38dcfa" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::TableStatsRequest::operator&lt;</definition>
+        <argsstring>(const TableStatsRequest &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::TableStatsRequest::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1TableStatsRequest" kindref="compound">TableStatsRequest</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="5738" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1TableStatsRequest_1aa01afecc77626289a6d2736ef532c313" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::TableStatsRequest::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot) override</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::TableStatsRequest::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="5740" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="20331" bodyend="20439"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1TableStatsRequest_1ade161605f8edcb44516eaab5132d577c" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::TableStatsRequest::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const override</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::TableStatsRequest::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="5741" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="20441" bodyend="20489"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1TableStatsRequest_1ad746ccfdaf69a57f6e1933cfdd14f37f" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::TableStatsRequest::printTo</definition>
+        <argsstring>(std::ostream &amp;out) const</argsstring>
+        <name>printTo</name>
+        <qualifiedname>Apache::Hadoop::Hive::TableStatsRequest::printTo</qualifiedname>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="5743" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="20551" bodyend="20562"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::TableStatsRequest</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1TableStatsRequest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::TableStatsRequest</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1TableStatsRequest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>catName</edgelabel>
+          <edgelabel>dbName</edgelabel>
+          <edgelabel>engine</edgelabel>
+          <edgelabel>tblName</edgelabel>
+          <edgelabel>validWriteIdList</edgelabel>
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>colNames</edgelabel>
+        </childnode>
+        <childnode refid="6" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="6">
+        <label>Apache::Hadoop::Hive::_TableStatsRequest__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__TableStatsRequest____isset"/>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+      <node id="4">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="3">
+        <label>std::string</label>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>std::vector&lt; std::string &gt;</label>
+        <childnode refid="3" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="5701" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="5701" bodyend="5744"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1TableStatsRequest_1a79b6edf6111d2116113bd8d1738a20bc" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::TableStatsRequest</scope><name>__isset</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1TableStatsRequest_1ac3bdbbf94d50f5efa8bf29e8acf83a37" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::TableStatsRequest</scope><name>__set_catName</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1TableStatsRequest_1ab635370051969f8fd67ff0fdd9843e47" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::TableStatsRequest</scope><name>__set_colNames</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1TableStatsRequest_1a8785e945e3434f541e380738c219e94b" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::TableStatsRequest</scope><name>__set_dbName</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1TableStatsRequest_1a2f2406e30ea0b5505960ae9ae88f8f3d" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::TableStatsRequest</scope><name>__set_engine</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1TableStatsRequest_1a160c00518f96657f013de26a60d8de5d" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::TableStatsRequest</scope><name>__set_id</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1TableStatsRequest_1a6b909cba398fffb15596026c093f67d6" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::TableStatsRequest</scope><name>__set_tblName</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1TableStatsRequest_1a831240ff31279dc32aca1b983b3d681c" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::TableStatsRequest</scope><name>__set_validWriteIdList</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1TableStatsRequest_1aaaa187ca030268ec0d2d3c5fac989fc9" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::TableStatsRequest</scope><name>catName</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1TableStatsRequest_1addddba1b136906b478391cfd5f3ed104" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::TableStatsRequest</scope><name>colNames</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1TableStatsRequest_1a5cb796beb6f6c5bdf3f8e7871cea7c3e" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::TableStatsRequest</scope><name>dbName</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1TableStatsRequest_1a313c2a743e07b6f7eed2f427eab2019c" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::TableStatsRequest</scope><name>engine</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1TableStatsRequest_1a4a98f30809534464f068441442a5c5fa" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::TableStatsRequest</scope><name>id</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1TableStatsRequest_1a59e8252f86e9ecdb9766b5fff511fc44" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::TableStatsRequest</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1TableStatsRequest_1af625b5f3634391bd3c4bb3685e38dcfa" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::TableStatsRequest</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1TableStatsRequest_1ae46d7d9d2d8bcf4e494fb8d61337b12b" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::TableStatsRequest</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1TableStatsRequest_1ae5ff516318fd42244ec1ab602134e7b2" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::TableStatsRequest</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1TableStatsRequest_1ad746ccfdaf69a57f6e1933cfdd14f37f" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::TableStatsRequest</scope><name>printTo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1TableStatsRequest_1aa01afecc77626289a6d2736ef532c313" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::TableStatsRequest</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1TableStatsRequest_1ace424a517577383412b8eaa98facb273" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::TableStatsRequest</scope><name>TableStatsRequest</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1TableStatsRequest_1ad0cb224e591cc9f1908af9de49524947" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::TableStatsRequest</scope><name>TableStatsRequest</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1TableStatsRequest_1a9a2e53abb2fa391dcea5bfc7766fe893" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::TableStatsRequest</scope><name>tblName</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1TableStatsRequest_1a5d7bc6732cf4a693e460502f04233005" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::TableStatsRequest</scope><name>validWriteIdList</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1TableStatsRequest_1ade161605f8edcb44516eaab5132d577c" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::TableStatsRequest</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1TableStatsRequest_1a8823e1b9215cd21b2cdf8cbebcd9c92e" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::TableStatsRequest</scope><name>~TableStatsRequest</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

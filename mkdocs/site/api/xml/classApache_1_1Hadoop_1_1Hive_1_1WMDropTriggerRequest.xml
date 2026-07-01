@@ -1,0 +1,358 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1WMDropTriggerRequest" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::WMDropTriggerRequest</compoundname>
+    <basecompoundref prot="public" virt="virtual">apache::thrift::TBase</basecompoundref>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1WMDropTriggerRequest_1aab27fae1838f981d8d17ce652c048f70" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::WMDropTriggerRequest::resourcePlanName</definition>
+        <argsstring></argsstring>
+        <name>resourcePlanName</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMDropTriggerRequest::resourcePlanName</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11961" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="11961" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1WMDropTriggerRequest_1aa7b098da7be87974c4d3ee3f18e06957" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::WMDropTriggerRequest::triggerName</definition>
+        <argsstring></argsstring>
+        <name>triggerName</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMDropTriggerRequest::triggerName</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11962" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="11962" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1WMDropTriggerRequest_1a436fab0d6f252ce8039adbc9191a50c8" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::WMDropTriggerRequest::ns</definition>
+        <argsstring></argsstring>
+        <name>ns</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMDropTriggerRequest::ns</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11963" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="11963" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1WMDropTriggerRequest_1a66bb4a5bc1c82431180accb9289a66cf" prot="public" static="no" mutable="no">
+        <type><ref refid="structApache_1_1Hadoop_1_1Hive_1_1__WMDropTriggerRequest____isset" kindref="compound">_WMDropTriggerRequest__isset</ref></type>
+        <definition>_WMDropTriggerRequest__isset Apache::Hadoop::Hive::WMDropTriggerRequest::__isset</definition>
+        <argsstring></argsstring>
+        <name>__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMDropTriggerRequest::__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11965" column="32" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="11965" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMDropTriggerRequest_1a8a57e47a891198b0d147a6c3cbd963ef" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::WMDropTriggerRequest::WMDropTriggerRequest</definition>
+        <argsstring>(const WMDropTriggerRequest &amp;)</argsstring>
+        <name>WMDropTriggerRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMDropTriggerRequest::WMDropTriggerRequest</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1WMDropTriggerRequest" kindref="compound">WMDropTriggerRequest</ref> &amp;</type>
+          <defname>other1496</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11956" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="47210" bodyend="47215"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMDropTriggerRequest_1aba32b9e4adf0a29e3e960544266d4125" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1WMDropTriggerRequest" kindref="compound">WMDropTriggerRequest</ref> &amp;</type>
+        <definition>WMDropTriggerRequest &amp; Apache::Hadoop::Hive::WMDropTriggerRequest::operator=</definition>
+        <argsstring>(const WMDropTriggerRequest &amp;)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMDropTriggerRequest::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1WMDropTriggerRequest" kindref="compound">WMDropTriggerRequest</ref> &amp;</type>
+          <defname>other1497</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11957" column="24" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="47216" bodyend="47222"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMDropTriggerRequest_1a4f21eb9bb38bbb9edfa2e4dd905f7ae9" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::WMDropTriggerRequest::WMDropTriggerRequest</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>WMDropTriggerRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMDropTriggerRequest::WMDropTriggerRequest</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11958" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="47076" bodyend="47080"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMDropTriggerRequest_1ad6853c839e3c233ba4fc193d5be383f8" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::WMDropTriggerRequest::~WMDropTriggerRequest</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~WMDropTriggerRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMDropTriggerRequest::~WMDropTriggerRequest</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11960" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="47073" bodyend="47074"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMDropTriggerRequest_1a8d3aba3bd33c94403626a0b91c704c40" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::WMDropTriggerRequest::__set_resourcePlanName</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_resourcePlanName</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMDropTriggerRequest::__set_resourcePlanName</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11967" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="47082" bodyend="47085"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMDropTriggerRequest_1a8206ed7f405d3282cb3eac02c63acf05" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::WMDropTriggerRequest::__set_triggerName</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_triggerName</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMDropTriggerRequest::__set_triggerName</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11969" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="47087" bodyend="47090"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMDropTriggerRequest_1abd87d2ec1a87fd25bbd0ac7c020eba7b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::WMDropTriggerRequest::__set_ns</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_ns</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMDropTriggerRequest::__set_ns</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11971" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="47092" bodyend="47095"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMDropTriggerRequest_1ab3e4a98f69ec08379cf3df7b015b66d4" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::WMDropTriggerRequest::operator==</definition>
+        <argsstring>(const WMDropTriggerRequest &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMDropTriggerRequest::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1WMDropTriggerRequest" kindref="compound">WMDropTriggerRequest</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11973" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="47193" bodyend="47208"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMDropTriggerRequest_1a6af7554147152cac29b45aa1c603271f" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::WMDropTriggerRequest::operator!=</definition>
+        <argsstring>(const WMDropTriggerRequest &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMDropTriggerRequest::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1WMDropTriggerRequest" kindref="compound">WMDropTriggerRequest</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11974" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="11974" bodyend="11976"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMDropTriggerRequest_1a6073656619a0658e42670ed5c7d8c3fa" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::WMDropTriggerRequest::operator&lt;</definition>
+        <argsstring>(const WMDropTriggerRequest &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMDropTriggerRequest::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1WMDropTriggerRequest" kindref="compound">WMDropTriggerRequest</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11978" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMDropTriggerRequest_1ab180f1e39f5641971d30c54d6128f09d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::WMDropTriggerRequest::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot) override</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMDropTriggerRequest::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11980" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="47103" bodyend="47158"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMDropTriggerRequest_1a7ccaa92422f8fb3f4d9e6026774d7370" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::WMDropTriggerRequest::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const override</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMDropTriggerRequest::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11981" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="47160" bodyend="47183"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMDropTriggerRequest_1ace1eade721b483d56384b69c53f74e7a" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::WMDropTriggerRequest::printTo</definition>
+        <argsstring>(std::ostream &amp;out) const</argsstring>
+        <name>printTo</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMDropTriggerRequest::printTo</qualifiedname>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11983" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="47223" bodyend="47230"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::WMDropTriggerRequest</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1WMDropTriggerRequest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::WMDropTriggerRequest</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1WMDropTriggerRequest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>ns</edgelabel>
+          <edgelabel>resourcePlanName</edgelabel>
+          <edgelabel>triggerName</edgelabel>
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="5">
+        <label>Apache::Hadoop::Hive::_WMDropTriggerRequest__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__WMDropTriggerRequest____isset"/>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+      <node id="4">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="3">
+        <label>std::string</label>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11953" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="11953" bodyend="11984"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMDropTriggerRequest_1a66bb4a5bc1c82431180accb9289a66cf" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMDropTriggerRequest</scope><name>__isset</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMDropTriggerRequest_1abd87d2ec1a87fd25bbd0ac7c020eba7b" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMDropTriggerRequest</scope><name>__set_ns</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMDropTriggerRequest_1a8d3aba3bd33c94403626a0b91c704c40" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMDropTriggerRequest</scope><name>__set_resourcePlanName</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMDropTriggerRequest_1a8206ed7f405d3282cb3eac02c63acf05" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMDropTriggerRequest</scope><name>__set_triggerName</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMDropTriggerRequest_1a436fab0d6f252ce8039adbc9191a50c8" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMDropTriggerRequest</scope><name>ns</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMDropTriggerRequest_1a6af7554147152cac29b45aa1c603271f" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMDropTriggerRequest</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMDropTriggerRequest_1a6073656619a0658e42670ed5c7d8c3fa" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMDropTriggerRequest</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMDropTriggerRequest_1aba32b9e4adf0a29e3e960544266d4125" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMDropTriggerRequest</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMDropTriggerRequest_1ab3e4a98f69ec08379cf3df7b015b66d4" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMDropTriggerRequest</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMDropTriggerRequest_1ace1eade721b483d56384b69c53f74e7a" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::WMDropTriggerRequest</scope><name>printTo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMDropTriggerRequest_1ab180f1e39f5641971d30c54d6128f09d" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMDropTriggerRequest</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMDropTriggerRequest_1aab27fae1838f981d8d17ce652c048f70" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMDropTriggerRequest</scope><name>resourcePlanName</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMDropTriggerRequest_1aa7b098da7be87974c4d3ee3f18e06957" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMDropTriggerRequest</scope><name>triggerName</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMDropTriggerRequest_1a8a57e47a891198b0d147a6c3cbd963ef" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMDropTriggerRequest</scope><name>WMDropTriggerRequest</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMDropTriggerRequest_1a4f21eb9bb38bbb9edfa2e4dd905f7ae9" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMDropTriggerRequest</scope><name>WMDropTriggerRequest</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMDropTriggerRequest_1a7ccaa92422f8fb3f4d9e6026774d7370" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMDropTriggerRequest</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMDropTriggerRequest_1ad6853c839e3c233ba4fc193d5be383f8" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::WMDropTriggerRequest</scope><name>~WMDropTriggerRequest</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

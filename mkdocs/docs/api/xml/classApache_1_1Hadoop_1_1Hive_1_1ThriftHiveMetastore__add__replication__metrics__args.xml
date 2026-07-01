@@ -1,0 +1,287 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__add__replication__metrics__args" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::ThriftHiveMetastore_add_replication_metrics_args</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__add__replication__metrics__args_1a6820bee0a1158fb14014a46f9d16800f" prot="public" static="no" mutable="no">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1ReplicationMetricList" kindref="compound">ReplicationMetricList</ref></type>
+        <definition>ReplicationMetricList Apache::Hadoop::Hive::ThriftHiveMetastore_add_replication_metrics_args::replicationMetricList</definition>
+        <argsstring></argsstring>
+        <name>replicationMetricList</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_add_replication_metrics_args::replicationMetricList</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="29214" column="25" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="29214" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__add__replication__metrics__args_1a9e465ff993f73e5f6cac1022efd4194f" prot="public" static="no" mutable="no">
+        <type><ref refid="structApache_1_1Hadoop_1_1Hive_1_1__ThriftHiveMetastore__add__replication__metrics__args____isset" kindref="compound">_ThriftHiveMetastore_add_replication_metrics_args__isset</ref></type>
+        <definition>_ThriftHiveMetastore_add_replication_metrics_args__isset Apache::Hadoop::Hive::ThriftHiveMetastore_add_replication_metrics_args::__isset</definition>
+        <argsstring></argsstring>
+        <name>__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_add_replication_metrics_args::__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="29216" column="60" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="29216" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__add__replication__metrics__args_1ae82e5c53cbd131cc7591e753fe07f38c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::ThriftHiveMetastore_add_replication_metrics_args::ThriftHiveMetastore_add_replication_metrics_args</definition>
+        <argsstring>(const ThriftHiveMetastore_add_replication_metrics_args &amp;)</argsstring>
+        <name>ThriftHiveMetastore_add_replication_metrics_args</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_add_replication_metrics_args::ThriftHiveMetastore_add_replication_metrics_args</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__add__replication__metrics__args" kindref="compound">ThriftHiveMetastore_add_replication_metrics_args</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="29209" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__add__replication__metrics__args_1ad3e9868928d95ef474ad0e178cc0f268" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__add__replication__metrics__args" kindref="compound">ThriftHiveMetastore_add_replication_metrics_args</ref> &amp;</type>
+        <definition>ThriftHiveMetastore_add_replication_metrics_args &amp; Apache::Hadoop::Hive::ThriftHiveMetastore_add_replication_metrics_args::operator=</definition>
+        <argsstring>(const ThriftHiveMetastore_add_replication_metrics_args &amp;)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_add_replication_metrics_args::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__add__replication__metrics__args" kindref="compound">ThriftHiveMetastore_add_replication_metrics_args</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="29210" column="52"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__add__replication__metrics__args_1a0c4ab8e8c8eeea9c5fa2613294f86d27" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::ThriftHiveMetastore_add_replication_metrics_args::ThriftHiveMetastore_add_replication_metrics_args</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>ThriftHiveMetastore_add_replication_metrics_args</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_add_replication_metrics_args::ThriftHiveMetastore_add_replication_metrics_args</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="29211" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.cpp" bodystart="64877" bodyend="64878"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__add__replication__metrics__args_1a9d1dac91cd6992de340f7fd5bca0104a" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::ThriftHiveMetastore_add_replication_metrics_args::~ThriftHiveMetastore_add_replication_metrics_args</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~ThriftHiveMetastore_add_replication_metrics_args</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_add_replication_metrics_args::~ThriftHiveMetastore_add_replication_metrics_args</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="29213" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.cpp" bodystart="64874" bodyend="64875"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__add__replication__metrics__args_1aba37a432f766fdd9bd9e9cb32a45d611" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::ThriftHiveMetastore_add_replication_metrics_args::__set_replicationMetricList</definition>
+        <argsstring>(const ReplicationMetricList &amp;val)</argsstring>
+        <name>__set_replicationMetricList</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_add_replication_metrics_args::__set_replicationMetricList</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ReplicationMetricList" kindref="compound">ReplicationMetricList</ref> &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="29218" column="8"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__add__replication__metrics__args_1ab87c12b9e9fbe2d2461e0ba488294b86" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::ThriftHiveMetastore_add_replication_metrics_args::operator==</definition>
+        <argsstring>(const ThriftHiveMetastore_add_replication_metrics_args &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_add_replication_metrics_args::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__add__replication__metrics__args" kindref="compound">ThriftHiveMetastore_add_replication_metrics_args</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="29220" column="8"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__add__replication__metrics__args_1a6ba18703745da4606c20c58f6920723a" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::ThriftHiveMetastore_add_replication_metrics_args::operator!=</definition>
+        <argsstring>(const ThriftHiveMetastore_add_replication_metrics_args &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_add_replication_metrics_args::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__add__replication__metrics__args" kindref="compound">ThriftHiveMetastore_add_replication_metrics_args</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="29221" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="29221" bodyend="29223"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__add__replication__metrics__args_1a3e212266aa161485d26d055b699c48a2" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::ThriftHiveMetastore_add_replication_metrics_args::operator&lt;</definition>
+        <argsstring>(const ThriftHiveMetastore_add_replication_metrics_args &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_add_replication_metrics_args::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__add__replication__metrics__args" kindref="compound">ThriftHiveMetastore_add_replication_metrics_args</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="29225" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__add__replication__metrics__args_1adc3c1869aeb234ce20a7d7a427ac36e1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::ThriftHiveMetastore_add_replication_metrics_args::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot)</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_add_replication_metrics_args::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="29227" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.cpp" bodystart="64880" bodyend="64919"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__add__replication__metrics__args_1aeec7dcd7712c7551dd0ffb3299a52d65" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::ThriftHiveMetastore_add_replication_metrics_args::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_add_replication_metrics_args::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="29228" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.cpp" bodystart="64921" bodyend="64933"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="2">
+        <label>Apache::Hadoop::Hive::ReplicationMetricList</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1ReplicationMetricList"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>replicationMetricList</edgelabel>
+        </childnode>
+      </node>
+      <node id="5">
+        <label>Apache::Hadoop::Hive::ReplicationMetrics</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1ReplicationMetrics"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+        <childnode refid="6" relation="usage">
+          <edgelabel>messageFormat</edgelabel>
+          <edgelabel>metadata</edgelabel>
+          <edgelabel>policy</edgelabel>
+          <edgelabel>progress</edgelabel>
+        </childnode>
+        <childnode refid="8" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::ThriftHiveMetastore_add_replication_metrics_args</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__add__replication__metrics__args"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>replicationMetricList</edgelabel>
+        </childnode>
+        <childnode refid="9" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="8">
+        <label>Apache::Hadoop::Hive::_ReplicationMetrics__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__ReplicationMetrics____isset"/>
+      </node>
+      <node id="9">
+        <label>Apache::Hadoop::Hive::_ThriftHiveMetastore_add_replication_metrics_args__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__ThriftHiveMetastore__add__replication__metrics__args____isset"/>
+      </node>
+      <node id="3">
+        <label>apache::thrift::TBase</label>
+      </node>
+      <node id="7">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="6">
+        <label>std::string</label>
+        <childnode refid="7" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>std::vector&lt; Apache::Hadoop::Hive::ReplicationMetrics &gt;</label>
+        <childnode refid="5" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="29206" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="29206" bodyend="29230"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__add__replication__metrics__args_1a9e465ff993f73e5f6cac1022efd4194f" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_add_replication_metrics_args</scope><name>__isset</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__add__replication__metrics__args_1aba37a432f766fdd9bd9e9cb32a45d611" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_add_replication_metrics_args</scope><name>__set_replicationMetricList</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__add__replication__metrics__args_1a6ba18703745da4606c20c58f6920723a" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_add_replication_metrics_args</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__add__replication__metrics__args_1a3e212266aa161485d26d055b699c48a2" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_add_replication_metrics_args</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__add__replication__metrics__args_1ad3e9868928d95ef474ad0e178cc0f268" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_add_replication_metrics_args</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__add__replication__metrics__args_1ab87c12b9e9fbe2d2461e0ba488294b86" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_add_replication_metrics_args</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__add__replication__metrics__args_1adc3c1869aeb234ce20a7d7a427ac36e1" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_add_replication_metrics_args</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__add__replication__metrics__args_1a6820bee0a1158fb14014a46f9d16800f" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_add_replication_metrics_args</scope><name>replicationMetricList</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__add__replication__metrics__args_1ae82e5c53cbd131cc7591e753fe07f38c" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_add_replication_metrics_args</scope><name>ThriftHiveMetastore_add_replication_metrics_args</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__add__replication__metrics__args_1a0c4ab8e8c8eeea9c5fa2613294f86d27" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_add_replication_metrics_args</scope><name>ThriftHiveMetastore_add_replication_metrics_args</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__add__replication__metrics__args_1aeec7dcd7712c7551dd0ffb3299a52d65" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_add_replication_metrics_args</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__add__replication__metrics__args_1a9d1dac91cd6992de340f7fd5bca0104a" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_add_replication_metrics_args</scope><name>~ThriftHiveMetastore_add_replication_metrics_args</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

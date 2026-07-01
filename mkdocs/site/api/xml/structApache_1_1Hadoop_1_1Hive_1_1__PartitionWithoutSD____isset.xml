@@ -1,0 +1,128 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structApache_1_1Hadoop_1_1Hive_1_1__PartitionWithoutSD____isset" kind="struct" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::_PartitionWithoutSD__isset</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__PartitionWithoutSD____isset_1a3dfb398e0b33b898787eb5ee06d8eb06" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_PartitionWithoutSD__isset::values</definition>
+        <argsstring></argsstring>
+        <name>values</name>
+        <qualifiedname>Apache::Hadoop::Hive::_PartitionWithoutSD__isset::values</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="4325" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="4325" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__PartitionWithoutSD____isset_1ad3dd1a18f6e419ee36285623bc7c3559" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_PartitionWithoutSD__isset::createTime</definition>
+        <argsstring></argsstring>
+        <name>createTime</name>
+        <qualifiedname>Apache::Hadoop::Hive::_PartitionWithoutSD__isset::createTime</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="4326" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="4326" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__PartitionWithoutSD____isset_1ac08f1e8a02c2ae4958560d3fb90595c1" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_PartitionWithoutSD__isset::lastAccessTime</definition>
+        <argsstring></argsstring>
+        <name>lastAccessTime</name>
+        <qualifiedname>Apache::Hadoop::Hive::_PartitionWithoutSD__isset::lastAccessTime</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="4327" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="4327" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__PartitionWithoutSD____isset_1ab5b1e4bf28a0417d604134979bee744e" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_PartitionWithoutSD__isset::relativePath</definition>
+        <argsstring></argsstring>
+        <name>relativePath</name>
+        <qualifiedname>Apache::Hadoop::Hive::_PartitionWithoutSD__isset::relativePath</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="4328" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="4328" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__PartitionWithoutSD____isset_1ada383a0a097ee21c8382178af0d18c58" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_PartitionWithoutSD__isset::parameters</definition>
+        <argsstring></argsstring>
+        <name>parameters</name>
+        <qualifiedname>Apache::Hadoop::Hive::_PartitionWithoutSD__isset::parameters</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="4329" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="4329" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__PartitionWithoutSD____isset_1aadeab7f8915e79b0d5234d98a5d78957" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_PartitionWithoutSD__isset::privileges</definition>
+        <argsstring></argsstring>
+        <name>privileges</name>
+        <qualifiedname>Apache::Hadoop::Hive::_PartitionWithoutSD__isset::privileges</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="4330" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="4330" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structApache_1_1Hadoop_1_1Hive_1_1__PartitionWithoutSD____isset_1a69d7b3290a1c268055f497725ac9866f" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::_PartitionWithoutSD__isset::_PartitionWithoutSD__isset</definition>
+        <argsstring>()</argsstring>
+        <name>_PartitionWithoutSD__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::_PartitionWithoutSD__isset::_PartitionWithoutSD__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="4324" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="4324" bodyend="4324"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="4323" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="4323" bodyend="4331"/>
+    <listofallmembers>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__PartitionWithoutSD____isset_1a69d7b3290a1c268055f497725ac9866f" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_PartitionWithoutSD__isset</scope><name>_PartitionWithoutSD__isset</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__PartitionWithoutSD____isset_1ad3dd1a18f6e419ee36285623bc7c3559" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_PartitionWithoutSD__isset</scope><name>createTime</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__PartitionWithoutSD____isset_1ac08f1e8a02c2ae4958560d3fb90595c1" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_PartitionWithoutSD__isset</scope><name>lastAccessTime</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__PartitionWithoutSD____isset_1ada383a0a097ee21c8382178af0d18c58" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_PartitionWithoutSD__isset</scope><name>parameters</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__PartitionWithoutSD____isset_1aadeab7f8915e79b0d5234d98a5d78957" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_PartitionWithoutSD__isset</scope><name>privileges</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__PartitionWithoutSD____isset_1ab5b1e4bf28a0417d604134979bee744e" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_PartitionWithoutSD__isset</scope><name>relativePath</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__PartitionWithoutSD____isset_1a3dfb398e0b33b898787eb5ee06d8eb06" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_PartitionWithoutSD__isset</scope><name>values</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,17 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="dir_a4554ad6bcbd24aae26a460ed73b7e2e" kind="dir">
+    <compoundname>iceberg/catalog/hive</compoundname>
+    <innerdir refid="dir_ae8b9c595ed5fd0f0c5ad7d4ab5e5286">iceberg/catalog/hive/gen-cpp</innerdir>
+    <innerfile refid="hive__catalog_8cc">hive_catalog.cc</innerfile>
+    <innerfile refid="hive__catalog_8h">hive_catalog.h</innerfile>
+    <innerfile refid="hive__catalog__properties_8cc">hive_catalog_properties.cc</innerfile>
+    <innerfile refid="hive__catalog__properties_8h">hive_catalog_properties.h</innerfile>
+    <innerfile refid="iceberg__hive__export_8h">iceberg_hive_export.h</innerfile>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/"/>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,96 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structApache_1_1Hadoop_1_1Hive_1_1__GetDatabaseRequest____isset" kind="struct" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::_GetDatabaseRequest__isset</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__GetDatabaseRequest____isset_1a4e7046c8f6d362c35ec326e6238c9d1b" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_GetDatabaseRequest__isset::name</definition>
+        <argsstring></argsstring>
+        <name>name</name>
+        <qualifiedname>Apache::Hadoop::Hive::_GetDatabaseRequest__isset::name</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10571" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="10571" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__GetDatabaseRequest____isset_1a54656a1461e29d95afb9ff6992ad0d36" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_GetDatabaseRequest__isset::catalogName</definition>
+        <argsstring></argsstring>
+        <name>catalogName</name>
+        <qualifiedname>Apache::Hadoop::Hive::_GetDatabaseRequest__isset::catalogName</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10572" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="10572" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__GetDatabaseRequest____isset_1a68d3ef38795d0aad6f0703ebabe384a2" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_GetDatabaseRequest__isset::processorCapabilities</definition>
+        <argsstring></argsstring>
+        <name>processorCapabilities</name>
+        <qualifiedname>Apache::Hadoop::Hive::_GetDatabaseRequest__isset::processorCapabilities</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10573" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="10573" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__GetDatabaseRequest____isset_1a6f49201cd9bf3bf51cd17f54d8a613b0" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_GetDatabaseRequest__isset::processorIdentifier</definition>
+        <argsstring></argsstring>
+        <name>processorIdentifier</name>
+        <qualifiedname>Apache::Hadoop::Hive::_GetDatabaseRequest__isset::processorIdentifier</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10574" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="10574" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structApache_1_1Hadoop_1_1Hive_1_1__GetDatabaseRequest____isset_1a3c258c1eafabbfc5f91ce192e7653ea4" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::_GetDatabaseRequest__isset::_GetDatabaseRequest__isset</definition>
+        <argsstring>()</argsstring>
+        <name>_GetDatabaseRequest__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::_GetDatabaseRequest__isset::_GetDatabaseRequest__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10570" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="10570" bodyend="10570"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10569" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="10569" bodyend="10575"/>
+    <listofallmembers>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__GetDatabaseRequest____isset_1a3c258c1eafabbfc5f91ce192e7653ea4" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_GetDatabaseRequest__isset</scope><name>_GetDatabaseRequest__isset</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__GetDatabaseRequest____isset_1a54656a1461e29d95afb9ff6992ad0d36" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_GetDatabaseRequest__isset</scope><name>catalogName</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__GetDatabaseRequest____isset_1a4e7046c8f6d362c35ec326e6238c9d1b" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_GetDatabaseRequest__isset</scope><name>name</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__GetDatabaseRequest____isset_1a68d3ef38795d0aad6f0703ebabe384a2" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_GetDatabaseRequest__isset</scope><name>processorCapabilities</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__GetDatabaseRequest____isset_1a6f49201cd9bf3bf51cd17f54d8a613b0" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_GetDatabaseRequest__isset</scope><name>processorIdentifier</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

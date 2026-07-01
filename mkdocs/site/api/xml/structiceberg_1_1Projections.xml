@@ -1,0 +1,138 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1Projections" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::Projections</compoundname>
+    <includes refid="projections_8h" local="no">projections.h</includes>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="structiceberg_1_1Projections_1a6164aec49dce234a9326ce4d8e782c0e" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::unique_ptr&lt; <ref refid="classiceberg_1_1ProjectionEvaluator" kindref="compound">ProjectionEvaluator</ref> &gt;</type>
+        <definition>std::unique_ptr&lt; ProjectionEvaluator &gt; iceberg::Projections::Inclusive</definition>
+        <argsstring>(const PartitionSpec &amp;spec, const Schema &amp;schema, bool case_sensitive=true)</argsstring>
+        <name>Inclusive</name>
+        <qualifiedname>iceberg::Projections::Inclusive</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1PartitionSpec" kindref="compound">PartitionSpec</ref> &amp;</type>
+          <declname>spec</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &amp;</type>
+          <declname>schema</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>case_sensitive</declname>
+          <defval>true</defval>
+        </param>
+        <briefdescription>
+<para>Creates an inclusive <ref refid="classiceberg_1_1ProjectionEvaluator" kindref="compound">ProjectionEvaluator</ref> for the partition spec. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>An evaluator is used to project expressions for a table&apos;s data rows into expressions on the table&apos;s partition values. The evaluator returned by this function is inclusive and will build expressions with the following guarantee: if the original expression matches a row, then the projected expression will match that row&apos;s partition.</para>
+<para>Each predicate in the expression is projected using <ref refid="classiceberg_1_1Transform_1ac0a1ac335d0816a473bd3e811fce9b25" kindref="member">Transform::Project</ref>.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>spec</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>a partition spec </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>schema</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>a schema </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>case_sensitive</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>whether the Projection should consider case sensitivity on column names or not. Defaults to true (case sensitive). </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>an inclusive projection evaluator for the partition spec </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/projections.h" line="81" column="26" bodyfile="iceberg/expression/projections.cc" bodystart="188" bodyend="195"/>
+      </memberdef>
+      <memberdef kind="function" id="structiceberg_1_1Projections_1ab9b43869bd3002fc795ba41352f7531e" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::unique_ptr&lt; <ref refid="classiceberg_1_1ProjectionEvaluator" kindref="compound">ProjectionEvaluator</ref> &gt;</type>
+        <definition>std::unique_ptr&lt; ProjectionEvaluator &gt; iceberg::Projections::Strict</definition>
+        <argsstring>(const PartitionSpec &amp;spec, const Schema &amp;schema, bool case_sensitive=true)</argsstring>
+        <name>Strict</name>
+        <qualifiedname>iceberg::Projections::Strict</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1PartitionSpec" kindref="compound">PartitionSpec</ref> &amp;</type>
+          <declname>spec</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &amp;</type>
+          <declname>schema</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>case_sensitive</declname>
+          <defval>true</defval>
+        </param>
+        <briefdescription>
+<para>Creates a strict <ref refid="classiceberg_1_1ProjectionEvaluator" kindref="compound">ProjectionEvaluator</ref> for the partition spec. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>An evaluator is used to project expressions for a table&apos;s data rows into expressions on the table&apos;s partition values. The evaluator returned by this function is strict and will build expressions with the following guarantee: if the projected expression matches a partition, then the original expression will match all rows in that partition.</para>
+<para>Each predicate in the expression is projected using <ref refid="classiceberg_1_1Transform_1a2779a1a98eadc543af8ff3ecb128215e" kindref="member">Transform::ProjectStrict</ref>.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>spec</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>a partition spec </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>schema</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>a schema </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>case_sensitive</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>whether the Projection should consider case sensitivity on column names or not. Defaults to true (case sensitive). </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>a strict projection evaluator for the partition spec </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/projections.h" line="100" column="26" bodyfile="iceberg/expression/projections.cc" bodystart="197" bodyend="203"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Utils to project expressions on rows to expressions on partitions. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>There are two types of projections: inclusive and strict.</para>
+<para>An inclusive projection guarantees that if an expression matches a row, the projected expression will match the row&apos;s partition.</para>
+<para>A strict projection guarantees that if a partition matches a projected expression, then all rows in that partition will match the original expression. </para>
+    </detaileddescription>
+    <location file="iceberg/expression/projections.h" line="65" column="1" bodyfile="iceberg/expression/projections.h" bodystart="65" bodyend="103"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1Projections_1a6164aec49dce234a9326ce4d8e782c0e" prot="public" virt="non-virtual"><scope>iceberg::Projections</scope><name>Inclusive</name></member>
+      <member refid="structiceberg_1_1Projections_1ab9b43869bd3002fc795ba41352f7531e" prot="public" virt="non-virtual"><scope>iceberg::Projections</scope><name>Strict</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

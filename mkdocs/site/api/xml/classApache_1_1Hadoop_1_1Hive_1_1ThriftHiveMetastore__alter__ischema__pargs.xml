@@ -1,0 +1,143 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__alter__ischema__pargs" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::ThriftHiveMetastore_alter_ischema_pargs</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__alter__ischema__pargs_1acc5c4987bcded8e960cba026f4ca114e" prot="public" static="no" mutable="no">
+        <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1AlterISchemaRequest" kindref="compound">AlterISchemaRequest</ref> *</type>
+        <definition>const AlterISchemaRequest* Apache::Hadoop::Hive::ThriftHiveMetastore_alter_ischema_pargs::rqst</definition>
+        <argsstring></argsstring>
+        <name>rqst</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_alter_ischema_pargs::rqst</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="27014" column="29" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="27014" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__alter__ischema__pargs_1a84da0422d7d8d83264c1004ff64ac675" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::ThriftHiveMetastore_alter_ischema_pargs::~ThriftHiveMetastore_alter_ischema_pargs</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~ThriftHiveMetastore_alter_ischema_pargs</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_alter_ischema_pargs::~ThriftHiveMetastore_alter_ischema_pargs</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="27013" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.cpp" bodystart="59999" bodyend="60000"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__alter__ischema__pargs_1ad8c0b850309c778963455a30d04e3600" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::ThriftHiveMetastore_alter_ischema_pargs::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_alter_ischema_pargs::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="27016" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.cpp" bodystart="60003" bodyend="60015"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="2">
+        <label>Apache::Hadoop::Hive::AlterISchemaRequest</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1AlterISchemaRequest"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>name</edgelabel>
+        </childnode>
+        <childnode refid="8" relation="usage">
+          <edgelabel>newSchema</edgelabel>
+        </childnode>
+        <childnode refid="10" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="8">
+        <label>Apache::Hadoop::Hive::ISchema</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1ISchema"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>catName</edgelabel>
+          <edgelabel>dbName</edgelabel>
+          <edgelabel>description</edgelabel>
+          <edgelabel>name</edgelabel>
+          <edgelabel>schemaGroup</edgelabel>
+        </childnode>
+        <childnode refid="9" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="4">
+        <label>Apache::Hadoop::Hive::ISchemaName</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1ISchemaName"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>catName</edgelabel>
+          <edgelabel>dbName</edgelabel>
+          <edgelabel>schemaName</edgelabel>
+        </childnode>
+        <childnode refid="7" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::ThriftHiveMetastore_alter_ischema_pargs</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__alter__ischema__pargs"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>rqst</edgelabel>
+        </childnode>
+      </node>
+      <node id="10">
+        <label>Apache::Hadoop::Hive::_AlterISchemaRequest__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__AlterISchemaRequest____isset"/>
+      </node>
+      <node id="7">
+        <label>Apache::Hadoop::Hive::_ISchemaName__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__ISchemaName____isset"/>
+      </node>
+      <node id="9">
+        <label>Apache::Hadoop::Hive::_ISchema__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__ISchema____isset"/>
+      </node>
+      <node id="3">
+        <label>apache::thrift::TBase</label>
+      </node>
+      <node id="6">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="5">
+        <label>std::string</label>
+        <childnode refid="6" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="27009" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="27009" bodyend="27018"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__alter__ischema__pargs_1acc5c4987bcded8e960cba026f4ca114e" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_alter_ischema_pargs</scope><name>rqst</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__alter__ischema__pargs_1ad8c0b850309c778963455a30d04e3600" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_alter_ischema_pargs</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__alter__ischema__pargs_1a84da0422d7d8d83264c1004ff64ac675" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_alter_ischema_pargs</scope><name>~ThriftHiveMetastore_alter_ischema_pargs</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

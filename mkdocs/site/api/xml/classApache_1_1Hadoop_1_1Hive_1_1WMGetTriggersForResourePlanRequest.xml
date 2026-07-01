@@ -1,0 +1,323 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1WMGetTriggersForResourePlanRequest" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::WMGetTriggersForResourePlanRequest</compoundname>
+    <basecompoundref prot="public" virt="virtual">apache::thrift::TBase</basecompoundref>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1WMGetTriggersForResourePlanRequest_1ab44aeb107027481cb8bab0acc7c063e9" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::WMGetTriggersForResourePlanRequest::resourcePlanName</definition>
+        <argsstring></argsstring>
+        <name>resourcePlanName</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMGetTriggersForResourePlanRequest::resourcePlanName</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12031" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="12031" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1WMGetTriggersForResourePlanRequest_1a57a911a45634add75e1ebc80bc9f242f" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::WMGetTriggersForResourePlanRequest::ns</definition>
+        <argsstring></argsstring>
+        <name>ns</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMGetTriggersForResourePlanRequest::ns</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12032" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="12032" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1WMGetTriggersForResourePlanRequest_1a2464efd911781ffd93f281782d532dc4" prot="public" static="no" mutable="no">
+        <type><ref refid="structApache_1_1Hadoop_1_1Hive_1_1__WMGetTriggersForResourePlanRequest____isset" kindref="compound">_WMGetTriggersForResourePlanRequest__isset</ref></type>
+        <definition>_WMGetTriggersForResourePlanRequest__isset Apache::Hadoop::Hive::WMGetTriggersForResourePlanRequest::__isset</definition>
+        <argsstring></argsstring>
+        <name>__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMGetTriggersForResourePlanRequest::__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12034" column="46" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="12034" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMGetTriggersForResourePlanRequest_1aa62d8400edd3d925aa3c58365848a356" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::WMGetTriggersForResourePlanRequest::WMGetTriggersForResourePlanRequest</definition>
+        <argsstring>(const WMGetTriggersForResourePlanRequest &amp;)</argsstring>
+        <name>WMGetTriggersForResourePlanRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMGetTriggersForResourePlanRequest::WMGetTriggersForResourePlanRequest</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1WMGetTriggersForResourePlanRequest" kindref="compound">WMGetTriggersForResourePlanRequest</ref> &amp;</type>
+          <defname>other1500</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12026" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="47421" bodyend="47425"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMGetTriggersForResourePlanRequest_1a06e329d39dc5aa39dddbd33dd3d0dd92" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1WMGetTriggersForResourePlanRequest" kindref="compound">WMGetTriggersForResourePlanRequest</ref> &amp;</type>
+        <definition>WMGetTriggersForResourePlanRequest &amp; Apache::Hadoop::Hive::WMGetTriggersForResourePlanRequest::operator=</definition>
+        <argsstring>(const WMGetTriggersForResourePlanRequest &amp;)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMGetTriggersForResourePlanRequest::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1WMGetTriggersForResourePlanRequest" kindref="compound">WMGetTriggersForResourePlanRequest</ref> &amp;</type>
+          <defname>other1501</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12027" column="38" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="47426" bodyend="47431"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMGetTriggersForResourePlanRequest_1af30666500f8b42df60edd7f10f8f745e" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::WMGetTriggersForResourePlanRequest::WMGetTriggersForResourePlanRequest</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>WMGetTriggersForResourePlanRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMGetTriggersForResourePlanRequest::WMGetTriggersForResourePlanRequest</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12028" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="47311" bodyend="47314"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMGetTriggersForResourePlanRequest_1ab02116a5ac6e1cb9785e2389ac1989e0" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::WMGetTriggersForResourePlanRequest::~WMGetTriggersForResourePlanRequest</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~WMGetTriggersForResourePlanRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMGetTriggersForResourePlanRequest::~WMGetTriggersForResourePlanRequest</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12030" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="47308" bodyend="47309"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMGetTriggersForResourePlanRequest_1a0a1aa2554a8514b5df126507242d8344" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::WMGetTriggersForResourePlanRequest::__set_resourcePlanName</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_resourcePlanName</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMGetTriggersForResourePlanRequest::__set_resourcePlanName</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12036" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="47316" bodyend="47319"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMGetTriggersForResourePlanRequest_1ac20b51a077d3dcbfc8ab2de539016381" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::WMGetTriggersForResourePlanRequest::__set_ns</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_ns</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMGetTriggersForResourePlanRequest::__set_ns</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12038" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="47321" bodyend="47324"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMGetTriggersForResourePlanRequest_1a21352f8b2f339989f65dc715df725961" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::WMGetTriggersForResourePlanRequest::operator==</definition>
+        <argsstring>(const WMGetTriggersForResourePlanRequest &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMGetTriggersForResourePlanRequest::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1WMGetTriggersForResourePlanRequest" kindref="compound">WMGetTriggersForResourePlanRequest</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12040" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="47408" bodyend="47419"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMGetTriggersForResourePlanRequest_1a671479231446d607fc1ba6922695e8c8" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::WMGetTriggersForResourePlanRequest::operator!=</definition>
+        <argsstring>(const WMGetTriggersForResourePlanRequest &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMGetTriggersForResourePlanRequest::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1WMGetTriggersForResourePlanRequest" kindref="compound">WMGetTriggersForResourePlanRequest</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12041" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="12041" bodyend="12043"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMGetTriggersForResourePlanRequest_1ad6e615ed599d29af9121f0942b88837c" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::WMGetTriggersForResourePlanRequest::operator&lt;</definition>
+        <argsstring>(const WMGetTriggersForResourePlanRequest &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMGetTriggersForResourePlanRequest::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1WMGetTriggersForResourePlanRequest" kindref="compound">WMGetTriggersForResourePlanRequest</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12045" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMGetTriggersForResourePlanRequest_1afa065de6ac3c449bd8123795420f29c0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::WMGetTriggersForResourePlanRequest::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot) override</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMGetTriggersForResourePlanRequest::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12047" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="47332" bodyend="47379"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMGetTriggersForResourePlanRequest_1af6ad3259987c9c861b328e31bf8292cf" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::WMGetTriggersForResourePlanRequest::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const override</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMGetTriggersForResourePlanRequest::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12048" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="47381" bodyend="47399"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMGetTriggersForResourePlanRequest_1a6a9ed1785457d076d7bb43779620cffc" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::WMGetTriggersForResourePlanRequest::printTo</definition>
+        <argsstring>(std::ostream &amp;out) const</argsstring>
+        <name>printTo</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMGetTriggersForResourePlanRequest::printTo</qualifiedname>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12050" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="47432" bodyend="47438"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::WMGetTriggersForResourePlanRequest</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1WMGetTriggersForResourePlanRequest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::WMGetTriggersForResourePlanRequest</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1WMGetTriggersForResourePlanRequest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>ns</edgelabel>
+          <edgelabel>resourcePlanName</edgelabel>
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="5">
+        <label>Apache::Hadoop::Hive::_WMGetTriggersForResourePlanRequest__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__WMGetTriggersForResourePlanRequest____isset"/>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+      <node id="4">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="3">
+        <label>std::string</label>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12023" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="12023" bodyend="12051"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMGetTriggersForResourePlanRequest_1a2464efd911781ffd93f281782d532dc4" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMGetTriggersForResourePlanRequest</scope><name>__isset</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMGetTriggersForResourePlanRequest_1ac20b51a077d3dcbfc8ab2de539016381" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMGetTriggersForResourePlanRequest</scope><name>__set_ns</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMGetTriggersForResourePlanRequest_1a0a1aa2554a8514b5df126507242d8344" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMGetTriggersForResourePlanRequest</scope><name>__set_resourcePlanName</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMGetTriggersForResourePlanRequest_1a57a911a45634add75e1ebc80bc9f242f" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMGetTriggersForResourePlanRequest</scope><name>ns</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMGetTriggersForResourePlanRequest_1a671479231446d607fc1ba6922695e8c8" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMGetTriggersForResourePlanRequest</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMGetTriggersForResourePlanRequest_1ad6e615ed599d29af9121f0942b88837c" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMGetTriggersForResourePlanRequest</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMGetTriggersForResourePlanRequest_1a06e329d39dc5aa39dddbd33dd3d0dd92" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMGetTriggersForResourePlanRequest</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMGetTriggersForResourePlanRequest_1a21352f8b2f339989f65dc715df725961" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMGetTriggersForResourePlanRequest</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMGetTriggersForResourePlanRequest_1a6a9ed1785457d076d7bb43779620cffc" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::WMGetTriggersForResourePlanRequest</scope><name>printTo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMGetTriggersForResourePlanRequest_1afa065de6ac3c449bd8123795420f29c0" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMGetTriggersForResourePlanRequest</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMGetTriggersForResourePlanRequest_1ab44aeb107027481cb8bab0acc7c063e9" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMGetTriggersForResourePlanRequest</scope><name>resourcePlanName</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMGetTriggersForResourePlanRequest_1aa62d8400edd3d925aa3c58365848a356" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMGetTriggersForResourePlanRequest</scope><name>WMGetTriggersForResourePlanRequest</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMGetTriggersForResourePlanRequest_1af30666500f8b42df60edd7f10f8f745e" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMGetTriggersForResourePlanRequest</scope><name>WMGetTriggersForResourePlanRequest</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMGetTriggersForResourePlanRequest_1af6ad3259987c9c861b328e31bf8292cf" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMGetTriggersForResourePlanRequest</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMGetTriggersForResourePlanRequest_1ab02116a5ac6e1cb9785e2389ac1989e0" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::WMGetTriggersForResourePlanRequest</scope><name>~WMGetTriggersForResourePlanRequest</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

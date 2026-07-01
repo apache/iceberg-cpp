@@ -1,0 +1,362 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1PrivilegeBag" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::PrivilegeBag</compoundname>
+    <basecompoundref prot="public" virt="virtual">apache::thrift::TBase</basecompoundref>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1PrivilegeBag_1ab6a1c3b3b48b83ab875d34e5a7d71a12" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; <ref refid="classApache_1_1Hadoop_1_1Hive_1_1HiveObjectPrivilege" kindref="compound">HiveObjectPrivilege</ref> &gt;</type>
+        <definition>std::vector&lt;HiveObjectPrivilege&gt; Apache::Hadoop::Hive::PrivilegeBag::privileges</definition>
+        <argsstring></argsstring>
+        <name>privileges</name>
+        <qualifiedname>Apache::Hadoop::Hive::PrivilegeBag::privileges</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="2055" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="2055" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1PrivilegeBag_1af0fd661d414cea2127033cfb45928249" prot="public" static="no" mutable="no">
+        <type><ref refid="structApache_1_1Hadoop_1_1Hive_1_1__PrivilegeBag____isset" kindref="compound">_PrivilegeBag__isset</ref></type>
+        <definition>_PrivilegeBag__isset Apache::Hadoop::Hive::PrivilegeBag::__isset</definition>
+        <argsstring></argsstring>
+        <name>__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::PrivilegeBag::__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="2057" column="24" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="2057" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1PrivilegeBag_1a6fd47c315c6998fe22f94275c35bf2c6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::PrivilegeBag::PrivilegeBag</definition>
+        <argsstring>(const PrivilegeBag &amp;)</argsstring>
+        <name>PrivilegeBag</name>
+        <qualifiedname>Apache::Hadoop::Hive::PrivilegeBag::PrivilegeBag</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1PrivilegeBag" kindref="compound">PrivilegeBag</ref> &amp;</type>
+          <defname>other129</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="2050" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="4965" bodyend="4968"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1PrivilegeBag_1a9759bb0b19b86d00d845a17730612dd0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1PrivilegeBag" kindref="compound">PrivilegeBag</ref> &amp;</type>
+        <definition>PrivilegeBag &amp; Apache::Hadoop::Hive::PrivilegeBag::operator=</definition>
+        <argsstring>(const PrivilegeBag &amp;)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::PrivilegeBag::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1PrivilegeBag" kindref="compound">PrivilegeBag</ref> &amp;</type>
+          <defname>other130</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="2051" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="4969" bodyend="4973"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1PrivilegeBag_1ae940d65fd6bd10118171512f9d0c08e9" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::PrivilegeBag::PrivilegeBag</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>PrivilegeBag</name>
+        <qualifiedname>Apache::Hadoop::Hive::PrivilegeBag::PrivilegeBag</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="2052" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="4864" bodyend="4865"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1PrivilegeBag_1a24a23a25404c3a85a67839aae92a7615" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::PrivilegeBag::~PrivilegeBag</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~PrivilegeBag</name>
+        <qualifiedname>Apache::Hadoop::Hive::PrivilegeBag::~PrivilegeBag</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="2054" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="4861" bodyend="4862"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1PrivilegeBag_1a7a99c754c833121a8a633f4a2d4e1352" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::PrivilegeBag::__set_privileges</definition>
+        <argsstring>(const std::vector&lt; HiveObjectPrivilege &gt; &amp;val)</argsstring>
+        <name>__set_privileges</name>
+        <qualifiedname>Apache::Hadoop::Hive::PrivilegeBag::__set_privileges</qualifiedname>
+        <param>
+          <type>const std::vector&lt; <ref refid="classApache_1_1Hadoop_1_1Hive_1_1HiveObjectPrivilege" kindref="compound">HiveObjectPrivilege</ref> &gt; &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="2059" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="4867" bodyend="4869"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1PrivilegeBag_1a9a02ee4be3a090090d6eac9890d70fdb" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::PrivilegeBag::operator==</definition>
+        <argsstring>(const PrivilegeBag &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::PrivilegeBag::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1PrivilegeBag" kindref="compound">PrivilegeBag</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="2061" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="4958" bodyend="4963"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1PrivilegeBag_1a6e001d8dbd6ec58a5dec86cc60e74a18" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::PrivilegeBag::operator!=</definition>
+        <argsstring>(const PrivilegeBag &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::PrivilegeBag::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1PrivilegeBag" kindref="compound">PrivilegeBag</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="2062" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="2062" bodyend="2064"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1PrivilegeBag_1a770e622b344ec98f8e1f01ebc1029218" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::PrivilegeBag::operator&lt;</definition>
+        <argsstring>(const PrivilegeBag &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::PrivilegeBag::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1PrivilegeBag" kindref="compound">PrivilegeBag</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="2066" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1PrivilegeBag_1ace7e6d4e69a175ec1414e3870112cba5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::PrivilegeBag::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot) override</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::PrivilegeBag::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="2068" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="4877" bodyend="4928"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1PrivilegeBag_1a6238566e97bbbd3aecf2a6ba8f6f690d" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::PrivilegeBag::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const override</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::PrivilegeBag::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="2069" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="4930" bodyend="4950"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1PrivilegeBag_1af81e32c29c818edf944ec80f972002cc" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::PrivilegeBag::printTo</definition>
+        <argsstring>(std::ostream &amp;out) const</argsstring>
+        <name>printTo</name>
+        <qualifiedname>Apache::Hadoop::Hive::PrivilegeBag::printTo</qualifiedname>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="2071" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="4974" bodyend="4979"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::PrivilegeBag</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1PrivilegeBag"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="4">
+        <label>Apache::Hadoop::Hive::HiveObjectPrivilege</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1HiveObjectPrivilege"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>hiveObject</edgelabel>
+        </childnode>
+        <childnode refid="6" relation="usage">
+          <edgelabel>authorizer</edgelabel>
+          <edgelabel>principalName</edgelabel>
+        </childnode>
+        <childnode refid="10" relation="usage">
+          <edgelabel>grantInfo</edgelabel>
+        </childnode>
+        <childnode refid="12" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="5">
+        <label>Apache::Hadoop::Hive::HiveObjectRef</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1HiveObjectRef"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="6" relation="usage">
+          <edgelabel>catName</edgelabel>
+          <edgelabel>columnName</edgelabel>
+          <edgelabel>dbName</edgelabel>
+          <edgelabel>objectName</edgelabel>
+        </childnode>
+        <childnode refid="8" relation="usage">
+          <edgelabel>partValues</edgelabel>
+        </childnode>
+        <childnode refid="9" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::PrivilegeBag</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1PrivilegeBag"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>privileges</edgelabel>
+        </childnode>
+        <childnode refid="13" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="10">
+        <label>Apache::Hadoop::Hive::PrivilegeGrantInfo</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1PrivilegeGrantInfo"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="6" relation="usage">
+          <edgelabel>grantor</edgelabel>
+          <edgelabel>privilege</edgelabel>
+        </childnode>
+        <childnode refid="11" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="12">
+        <label>Apache::Hadoop::Hive::_HiveObjectPrivilege__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__HiveObjectPrivilege____isset"/>
+      </node>
+      <node id="9">
+        <label>Apache::Hadoop::Hive::_HiveObjectRef__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__HiveObjectRef____isset"/>
+      </node>
+      <node id="13">
+        <label>Apache::Hadoop::Hive::_PrivilegeBag__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__PrivilegeBag____isset"/>
+      </node>
+      <node id="11">
+        <label>Apache::Hadoop::Hive::_PrivilegeGrantInfo__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__PrivilegeGrantInfo____isset"/>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+      <node id="7">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="6">
+        <label>std::string</label>
+        <childnode refid="7" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::vector&lt; Apache::Hadoop::Hive::HiveObjectPrivilege &gt;</label>
+        <childnode refid="4" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="8">
+        <label>std::vector&lt; std::string &gt;</label>
+        <childnode refid="6" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="2047" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="2047" bodyend="2072"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1PrivilegeBag_1af0fd661d414cea2127033cfb45928249" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::PrivilegeBag</scope><name>__isset</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1PrivilegeBag_1a7a99c754c833121a8a633f4a2d4e1352" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::PrivilegeBag</scope><name>__set_privileges</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1PrivilegeBag_1a6e001d8dbd6ec58a5dec86cc60e74a18" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::PrivilegeBag</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1PrivilegeBag_1a770e622b344ec98f8e1f01ebc1029218" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::PrivilegeBag</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1PrivilegeBag_1a9759bb0b19b86d00d845a17730612dd0" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::PrivilegeBag</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1PrivilegeBag_1a9a02ee4be3a090090d6eac9890d70fdb" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::PrivilegeBag</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1PrivilegeBag_1af81e32c29c818edf944ec80f972002cc" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::PrivilegeBag</scope><name>printTo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1PrivilegeBag_1a6fd47c315c6998fe22f94275c35bf2c6" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::PrivilegeBag</scope><name>PrivilegeBag</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1PrivilegeBag_1ae940d65fd6bd10118171512f9d0c08e9" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::PrivilegeBag</scope><name>PrivilegeBag</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1PrivilegeBag_1ab6a1c3b3b48b83ab875d34e5a7d71a12" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::PrivilegeBag</scope><name>privileges</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1PrivilegeBag_1ace7e6d4e69a175ec1414e3870112cba5" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::PrivilegeBag</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1PrivilegeBag_1a6238566e97bbbd3aecf2a6ba8f6f690d" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::PrivilegeBag</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1PrivilegeBag_1a24a23a25404c3a85a67839aae92a7615" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::PrivilegeBag</scope><name>~PrivilegeBag</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

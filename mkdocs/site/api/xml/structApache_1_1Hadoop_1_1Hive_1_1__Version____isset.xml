@@ -1,0 +1,64 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structApache_1_1Hadoop_1_1Hive_1_1__Version____isset" kind="struct" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::_Version__isset</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__Version____isset_1ab41fcaf22c6c544101b86e9f5b9b12cb" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_Version__isset::version</definition>
+        <argsstring></argsstring>
+        <name>version</name>
+        <qualifiedname>Apache::Hadoop::Hive::_Version__isset::version</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1098" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="1098" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__Version____isset_1a709c1c20ca4c358858a8e3fe179c2d79" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_Version__isset::comments</definition>
+        <argsstring></argsstring>
+        <name>comments</name>
+        <qualifiedname>Apache::Hadoop::Hive::_Version__isset::comments</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1099" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="1099" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structApache_1_1Hadoop_1_1Hive_1_1__Version____isset_1ada367ba058619bf6ca76bb6b86e0ac71" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::_Version__isset::_Version__isset</definition>
+        <argsstring>()</argsstring>
+        <name>_Version__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::_Version__isset::_Version__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1097" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="1097" bodyend="1097"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1096" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="1096" bodyend="1100"/>
+    <listofallmembers>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__Version____isset_1ada367ba058619bf6ca76bb6b86e0ac71" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_Version__isset</scope><name>_Version__isset</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__Version____isset_1a709c1c20ca4c358858a8e3fe179c2d79" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_Version__isset</scope><name>comments</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__Version____isset_1ab41fcaf22c6c544101b86e9f5b9b12cb" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_Version__isset</scope><name>version</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

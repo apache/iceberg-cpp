@@ -1,0 +1,289 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1TxnToWriteId" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::TxnToWriteId</compoundname>
+    <basecompoundref prot="public" virt="virtual">apache::thrift::TBase</basecompoundref>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1TxnToWriteId_1a26097d7d2ac43f9761c0371ef78c2f1a" prot="public" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t Apache::Hadoop::Hive::TxnToWriteId::txnId</definition>
+        <argsstring></argsstring>
+        <name>txnId</name>
+        <qualifiedname>Apache::Hadoop::Hive::TxnToWriteId::txnId</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7350" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="7350" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1TxnToWriteId_1a7b99065de09315eb69e906a2591a6028" prot="public" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t Apache::Hadoop::Hive::TxnToWriteId::writeId</definition>
+        <argsstring></argsstring>
+        <name>writeId</name>
+        <qualifiedname>Apache::Hadoop::Hive::TxnToWriteId::writeId</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7351" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="7351" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1TxnToWriteId_1a74d355e65ff82abc1482f6aeedd1edb2" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::TxnToWriteId::TxnToWriteId</definition>
+        <argsstring>(const TxnToWriteId &amp;) noexcept</argsstring>
+        <name>TxnToWriteId</name>
+        <qualifiedname>Apache::Hadoop::Hive::TxnToWriteId::TxnToWriteId</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1TxnToWriteId" kindref="compound">TxnToWriteId</ref> &amp;</type>
+          <defname>other939</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7345" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="27913" bodyend="27916"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1TxnToWriteId_1af822d95c00c7093a998dd9cdb9da18b7" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1TxnToWriteId" kindref="compound">TxnToWriteId</ref> &amp;</type>
+        <definition>TxnToWriteId &amp; Apache::Hadoop::Hive::TxnToWriteId::operator=</definition>
+        <argsstring>(const TxnToWriteId &amp;) noexcept</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::TxnToWriteId::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1TxnToWriteId" kindref="compound">TxnToWriteId</ref> &amp;</type>
+          <defname>other940</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7346" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="27917" bodyend="27921"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1TxnToWriteId_1a068258f82fd20dd9c16d28ee77e15150" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::TxnToWriteId::TxnToWriteId</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>TxnToWriteId</name>
+        <qualifiedname>Apache::Hadoop::Hive::TxnToWriteId::TxnToWriteId</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7347" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="27806" bodyend="27809"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1TxnToWriteId_1a44e8c521c9cca2b988d234d6ede47a37" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::TxnToWriteId::~TxnToWriteId</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~TxnToWriteId</name>
+        <qualifiedname>Apache::Hadoop::Hive::TxnToWriteId::~TxnToWriteId</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7349" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="27803" bodyend="27804"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1TxnToWriteId_1aeb78c6bf70c1f1a316caa450b51f7314" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::TxnToWriteId::__set_txnId</definition>
+        <argsstring>(const int64_t val)</argsstring>
+        <name>__set_txnId</name>
+        <qualifiedname>Apache::Hadoop::Hive::TxnToWriteId::__set_txnId</qualifiedname>
+        <param>
+          <type>const int64_t</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7353" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="27811" bodyend="27813"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1TxnToWriteId_1a89ea2c120845f9abaf2f6ab6f6b49fca" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::TxnToWriteId::__set_writeId</definition>
+        <argsstring>(const int64_t val)</argsstring>
+        <name>__set_writeId</name>
+        <qualifiedname>Apache::Hadoop::Hive::TxnToWriteId::__set_writeId</qualifiedname>
+        <param>
+          <type>const int64_t</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7355" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="27815" bodyend="27817"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1TxnToWriteId_1a8a2514860bcfce1cdde8e7336bfb1e61" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::TxnToWriteId::operator==</definition>
+        <argsstring>(const TxnToWriteId &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::TxnToWriteId::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1TxnToWriteId" kindref="compound">TxnToWriteId</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7357" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="27904" bodyend="27911"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1TxnToWriteId_1a098962d7b8905e064c770296f73f7211" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::TxnToWriteId::operator!=</definition>
+        <argsstring>(const TxnToWriteId &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::TxnToWriteId::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1TxnToWriteId" kindref="compound">TxnToWriteId</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7358" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="7358" bodyend="7360"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1TxnToWriteId_1af5aa0a5cfdb4509d9ae043981dba587d" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::TxnToWriteId::operator&lt;</definition>
+        <argsstring>(const TxnToWriteId &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::TxnToWriteId::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1TxnToWriteId" kindref="compound">TxnToWriteId</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7362" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1TxnToWriteId_1a2d08cd232f51834670e9e46d0fa6d05c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::TxnToWriteId::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot) override</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::TxnToWriteId::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7364" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="27825" bodyend="27878"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1TxnToWriteId_1ab1d5c693e76d6385f4e04cab92785c99" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::TxnToWriteId::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const override</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::TxnToWriteId::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7365" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="27880" bodyend="27896"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1TxnToWriteId_1acfcd92fe8930eab68dcc04bf7cbd2460" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::TxnToWriteId::printTo</definition>
+        <argsstring>(std::ostream &amp;out) const</argsstring>
+        <name>printTo</name>
+        <qualifiedname>Apache::Hadoop::Hive::TxnToWriteId::printTo</qualifiedname>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7367" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="27922" bodyend="27928"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::TxnToWriteId</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1TxnToWriteId"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::TxnToWriteId</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1TxnToWriteId"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7342" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="7342" bodyend="7368"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1TxnToWriteId_1aeb78c6bf70c1f1a316caa450b51f7314" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::TxnToWriteId</scope><name>__set_txnId</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1TxnToWriteId_1a89ea2c120845f9abaf2f6ab6f6b49fca" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::TxnToWriteId</scope><name>__set_writeId</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1TxnToWriteId_1a098962d7b8905e064c770296f73f7211" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::TxnToWriteId</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1TxnToWriteId_1af5aa0a5cfdb4509d9ae043981dba587d" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::TxnToWriteId</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1TxnToWriteId_1af822d95c00c7093a998dd9cdb9da18b7" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::TxnToWriteId</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1TxnToWriteId_1a8a2514860bcfce1cdde8e7336bfb1e61" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::TxnToWriteId</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1TxnToWriteId_1acfcd92fe8930eab68dcc04bf7cbd2460" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::TxnToWriteId</scope><name>printTo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1TxnToWriteId_1a2d08cd232f51834670e9e46d0fa6d05c" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::TxnToWriteId</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1TxnToWriteId_1a26097d7d2ac43f9761c0371ef78c2f1a" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::TxnToWriteId</scope><name>txnId</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1TxnToWriteId_1a74d355e65ff82abc1482f6aeedd1edb2" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::TxnToWriteId</scope><name>TxnToWriteId</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1TxnToWriteId_1a068258f82fd20dd9c16d28ee77e15150" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::TxnToWriteId</scope><name>TxnToWriteId</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1TxnToWriteId_1ab1d5c693e76d6385f4e04cab92785c99" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::TxnToWriteId</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1TxnToWriteId_1a7b99065de09315eb69e906a2591a6028" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::TxnToWriteId</scope><name>writeId</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1TxnToWriteId_1a44e8c521c9cca2b988d234d6ede47a37" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::TxnToWriteId</scope><name>~TxnToWriteId</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

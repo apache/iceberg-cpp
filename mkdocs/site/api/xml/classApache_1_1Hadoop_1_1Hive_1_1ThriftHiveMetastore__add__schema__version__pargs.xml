@@ -1,0 +1,186 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__add__schema__version__pargs" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::ThriftHiveMetastore_add_schema_version_pargs</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__add__schema__version__pargs_1ad54a26259941f05716a61a8a1f7655d8" prot="public" static="no" mutable="no">
+        <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1SchemaVersion" kindref="compound">SchemaVersion</ref> *</type>
+        <definition>const SchemaVersion* Apache::Hadoop::Hive::ThriftHiveMetastore_add_schema_version_pargs::schemaVersion</definition>
+        <argsstring></argsstring>
+        <name>schemaVersion</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_add_schema_version_pargs::schemaVersion</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="27320" column="23" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="27320" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__add__schema__version__pargs_1aa89b602e9690859401b68cd3dd093851" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::ThriftHiveMetastore_add_schema_version_pargs::~ThriftHiveMetastore_add_schema_version_pargs</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~ThriftHiveMetastore_add_schema_version_pargs</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_add_schema_version_pargs::~ThriftHiveMetastore_add_schema_version_pargs</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="27319" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.cpp" bodystart="60672" bodyend="60673"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__add__schema__version__pargs_1a90e12c22b95613a7a4672771bbb14587" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::ThriftHiveMetastore_add_schema_version_pargs::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_add_schema_version_pargs::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="27322" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.cpp" bodystart="60676" bodyend="60688"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="9">
+        <label>Apache::Hadoop::Hive::FieldSchema</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1FieldSchema"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>comment</edgelabel>
+          <edgelabel>name</edgelabel>
+          <edgelabel>type</edgelabel>
+        </childnode>
+        <childnode refid="10" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="4">
+        <label>Apache::Hadoop::Hive::ISchemaName</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1ISchemaName"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>catName</edgelabel>
+          <edgelabel>dbName</edgelabel>
+          <edgelabel>schemaName</edgelabel>
+        </childnode>
+        <childnode refid="7" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="2">
+        <label>Apache::Hadoop::Hive::SchemaVersion</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1SchemaVersion"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>schema</edgelabel>
+        </childnode>
+        <childnode refid="8" relation="usage">
+          <edgelabel>cols</edgelabel>
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>description</edgelabel>
+          <edgelabel>fingerprint</edgelabel>
+          <edgelabel>name</edgelabel>
+          <edgelabel>schemaText</edgelabel>
+        </childnode>
+        <childnode refid="11" relation="usage">
+          <edgelabel>serDe</edgelabel>
+        </childnode>
+        <childnode refid="14" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="11">
+        <label>Apache::Hadoop::Hive::SerDeInfo</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1SerDeInfo"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>description</edgelabel>
+          <edgelabel>deserializerClass</edgelabel>
+          <edgelabel>name</edgelabel>
+          <edgelabel>serializationLib</edgelabel>
+          <edgelabel>serializerClass</edgelabel>
+        </childnode>
+        <childnode refid="12" relation="usage">
+          <edgelabel>parameters</edgelabel>
+        </childnode>
+        <childnode refid="13" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::ThriftHiveMetastore_add_schema_version_pargs</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__add__schema__version__pargs"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>schemaVersion</edgelabel>
+        </childnode>
+      </node>
+      <node id="10">
+        <label>Apache::Hadoop::Hive::_FieldSchema__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__FieldSchema____isset"/>
+      </node>
+      <node id="7">
+        <label>Apache::Hadoop::Hive::_ISchemaName__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__ISchemaName____isset"/>
+      </node>
+      <node id="14">
+        <label>Apache::Hadoop::Hive::_SchemaVersion__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__SchemaVersion____isset"/>
+      </node>
+      <node id="13">
+        <label>Apache::Hadoop::Hive::_SerDeInfo__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__SerDeInfo____isset"/>
+      </node>
+      <node id="3">
+        <label>apache::thrift::TBase</label>
+      </node>
+      <node id="12">
+        <label>std::map&lt; std::string, std::string &gt;</label>
+        <childnode refid="5" relation="usage">
+          <edgelabel>elements</edgelabel>
+          <edgelabel>keys</edgelabel>
+        </childnode>
+      </node>
+      <node id="6">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="5">
+        <label>std::string</label>
+        <childnode refid="6" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="8">
+        <label>std::vector&lt; Apache::Hadoop::Hive::FieldSchema &gt;</label>
+        <childnode refid="9" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="27315" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="27315" bodyend="27324"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__add__schema__version__pargs_1ad54a26259941f05716a61a8a1f7655d8" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_add_schema_version_pargs</scope><name>schemaVersion</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__add__schema__version__pargs_1a90e12c22b95613a7a4672771bbb14587" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_add_schema_version_pargs</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__add__schema__version__pargs_1aa89b602e9690859401b68cd3dd093851" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_add_schema_version_pargs</scope><name>~ThriftHiveMetastore_add_schema_version_pargs</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

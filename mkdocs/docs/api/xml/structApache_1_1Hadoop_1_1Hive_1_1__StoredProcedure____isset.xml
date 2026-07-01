@@ -1,0 +1,112 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structApache_1_1Hadoop_1_1Hive_1_1__StoredProcedure____isset" kind="struct" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::_StoredProcedure__isset</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__StoredProcedure____isset_1a598645e9634f8573e41ef71de169dfcf" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_StoredProcedure__isset::name</definition>
+        <argsstring></argsstring>
+        <name>name</name>
+        <qualifiedname>Apache::Hadoop::Hive::_StoredProcedure__isset::name</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14948" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="14948" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__StoredProcedure____isset_1ae131724711294e57be5bf82cb4b0815b" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_StoredProcedure__isset::dbName</definition>
+        <argsstring></argsstring>
+        <name>dbName</name>
+        <qualifiedname>Apache::Hadoop::Hive::_StoredProcedure__isset::dbName</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14949" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="14949" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__StoredProcedure____isset_1ab790cca419c537e39ab9268a018fc309" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_StoredProcedure__isset::catName</definition>
+        <argsstring></argsstring>
+        <name>catName</name>
+        <qualifiedname>Apache::Hadoop::Hive::_StoredProcedure__isset::catName</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14950" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="14950" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__StoredProcedure____isset_1a00683d57e5884f424c64d143177fe39c" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_StoredProcedure__isset::ownerName</definition>
+        <argsstring></argsstring>
+        <name>ownerName</name>
+        <qualifiedname>Apache::Hadoop::Hive::_StoredProcedure__isset::ownerName</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14951" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="14951" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__StoredProcedure____isset_1affd55ceb4065694f44f70861235872c1" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_StoredProcedure__isset::source</definition>
+        <argsstring></argsstring>
+        <name>source</name>
+        <qualifiedname>Apache::Hadoop::Hive::_StoredProcedure__isset::source</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14952" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="14952" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structApache_1_1Hadoop_1_1Hive_1_1__StoredProcedure____isset_1ac2f6f163b97a50e47b2fa52c66e71795" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::_StoredProcedure__isset::_StoredProcedure__isset</definition>
+        <argsstring>()</argsstring>
+        <name>_StoredProcedure__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::_StoredProcedure__isset::_StoredProcedure__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14947" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="14947" bodyend="14947"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14946" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="14946" bodyend="14953"/>
+    <listofallmembers>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__StoredProcedure____isset_1ac2f6f163b97a50e47b2fa52c66e71795" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_StoredProcedure__isset</scope><name>_StoredProcedure__isset</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__StoredProcedure____isset_1ab790cca419c537e39ab9268a018fc309" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_StoredProcedure__isset</scope><name>catName</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__StoredProcedure____isset_1ae131724711294e57be5bf82cb4b0815b" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_StoredProcedure__isset</scope><name>dbName</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__StoredProcedure____isset_1a598645e9634f8573e41ef71de169dfcf" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_StoredProcedure__isset</scope><name>name</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__StoredProcedure____isset_1a00683d57e5884f424c64d143177fe39c" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_StoredProcedure__isset</scope><name>ownerName</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__StoredProcedure____isset_1affd55ceb4065694f44f70861235872c1" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_StoredProcedure__isset</scope><name>source</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

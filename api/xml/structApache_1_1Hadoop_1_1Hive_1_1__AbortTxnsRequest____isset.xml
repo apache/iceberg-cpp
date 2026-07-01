@@ -1,0 +1,48 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structApache_1_1Hadoop_1_1Hive_1_1__AbortTxnsRequest____isset" kind="struct" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::_AbortTxnsRequest__isset</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__AbortTxnsRequest____isset_1a6e5fe6542180b7538319e292a7d98d9b" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_AbortTxnsRequest__isset::errorCode</definition>
+        <argsstring></argsstring>
+        <name>errorCode</name>
+        <qualifiedname>Apache::Hadoop::Hive::_AbortTxnsRequest__isset::errorCode</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6888" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="6888" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structApache_1_1Hadoop_1_1Hive_1_1__AbortTxnsRequest____isset_1a09e1c0c2c3a6c4dbd932a25f1faaf476" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::_AbortTxnsRequest__isset::_AbortTxnsRequest__isset</definition>
+        <argsstring>()</argsstring>
+        <name>_AbortTxnsRequest__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::_AbortTxnsRequest__isset::_AbortTxnsRequest__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6887" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="6887" bodyend="6887"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6886" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="6886" bodyend="6889"/>
+    <listofallmembers>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__AbortTxnsRequest____isset_1a09e1c0c2c3a6c4dbd932a25f1faaf476" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_AbortTxnsRequest__isset</scope><name>_AbortTxnsRequest__isset</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__AbortTxnsRequest____isset_1a6e5fe6542180b7538319e292a7d98d9b" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_AbortTxnsRequest__isset</scope><name>errorCode</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

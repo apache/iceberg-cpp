@@ -1,0 +1,112 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structApache_1_1Hadoop_1_1Hive_1_1__ScheduledQuery____isset" kind="struct" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::_ScheduledQuery__isset</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__ScheduledQuery____isset_1a6236a504d556432b2835300bf0e230e8" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_ScheduledQuery__isset::enabled</definition>
+        <argsstring></argsstring>
+        <name>enabled</name>
+        <qualifiedname>Apache::Hadoop::Hive::_ScheduledQuery__isset::enabled</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13469" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="13469" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__ScheduledQuery____isset_1ae60a0a3476cdf60ae839178dde3f19ab" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_ScheduledQuery__isset::schedule</definition>
+        <argsstring></argsstring>
+        <name>schedule</name>
+        <qualifiedname>Apache::Hadoop::Hive::_ScheduledQuery__isset::schedule</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13470" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="13470" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__ScheduledQuery____isset_1ace7aac5f27050b77a8df61684d847031" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_ScheduledQuery__isset::user</definition>
+        <argsstring></argsstring>
+        <name>user</name>
+        <qualifiedname>Apache::Hadoop::Hive::_ScheduledQuery__isset::user</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13471" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="13471" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__ScheduledQuery____isset_1a99f6776101de54cffde9ca5e2acba389" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_ScheduledQuery__isset::query</definition>
+        <argsstring></argsstring>
+        <name>query</name>
+        <qualifiedname>Apache::Hadoop::Hive::_ScheduledQuery__isset::query</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13472" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="13472" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__ScheduledQuery____isset_1aeb6445157a566230877b730f0753189a" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_ScheduledQuery__isset::nextExecution</definition>
+        <argsstring></argsstring>
+        <name>nextExecution</name>
+        <qualifiedname>Apache::Hadoop::Hive::_ScheduledQuery__isset::nextExecution</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13473" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="13473" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structApache_1_1Hadoop_1_1Hive_1_1__ScheduledQuery____isset_1ad8c3436e19be3604a4c89bd65ceae272" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::_ScheduledQuery__isset::_ScheduledQuery__isset</definition>
+        <argsstring>()</argsstring>
+        <name>_ScheduledQuery__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::_ScheduledQuery__isset::_ScheduledQuery__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13468" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="13468" bodyend="13468"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13467" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="13467" bodyend="13474"/>
+    <listofallmembers>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__ScheduledQuery____isset_1ad8c3436e19be3604a4c89bd65ceae272" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_ScheduledQuery__isset</scope><name>_ScheduledQuery__isset</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__ScheduledQuery____isset_1a6236a504d556432b2835300bf0e230e8" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_ScheduledQuery__isset</scope><name>enabled</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__ScheduledQuery____isset_1aeb6445157a566230877b730f0753189a" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_ScheduledQuery__isset</scope><name>nextExecution</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__ScheduledQuery____isset_1a99f6776101de54cffde9ca5e2acba389" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_ScheduledQuery__isset</scope><name>query</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__ScheduledQuery____isset_1ae60a0a3476cdf60ae839178dde3f19ab" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_ScheduledQuery__isset</scope><name>schedule</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__ScheduledQuery____isset_1ace7aac5f27050b77a8df61684d847031" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_ScheduledQuery__isset</scope><name>user</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

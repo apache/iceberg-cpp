@@ -1,0 +1,80 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structApache_1_1Hadoop_1_1Hive_1_1__GrantRevokePrivilegeRequest____isset" kind="struct" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::_GrantRevokePrivilegeRequest__isset</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__GrantRevokePrivilegeRequest____isset_1a8a3b76dee3a5ffb3f24789352322edef" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_GrantRevokePrivilegeRequest__isset::requestType</definition>
+        <argsstring></argsstring>
+        <name>requestType</name>
+        <qualifiedname>Apache::Hadoop::Hive::_GrantRevokePrivilegeRequest__isset::requestType</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="2124" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="2124" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__GrantRevokePrivilegeRequest____isset_1adfdfba2c5543cb877c210a194e8d01f9" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_GrantRevokePrivilegeRequest__isset::privileges</definition>
+        <argsstring></argsstring>
+        <name>privileges</name>
+        <qualifiedname>Apache::Hadoop::Hive::_GrantRevokePrivilegeRequest__isset::privileges</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="2125" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="2125" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__GrantRevokePrivilegeRequest____isset_1a0bd649712324f4b2c26b8cbbc23d7158" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_GrantRevokePrivilegeRequest__isset::revokeGrantOption</definition>
+        <argsstring></argsstring>
+        <name>revokeGrantOption</name>
+        <qualifiedname>Apache::Hadoop::Hive::_GrantRevokePrivilegeRequest__isset::revokeGrantOption</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="2126" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="2126" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structApache_1_1Hadoop_1_1Hive_1_1__GrantRevokePrivilegeRequest____isset_1a930ef6347cb58462d896d2990014a647" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::_GrantRevokePrivilegeRequest__isset::_GrantRevokePrivilegeRequest__isset</definition>
+        <argsstring>()</argsstring>
+        <name>_GrantRevokePrivilegeRequest__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::_GrantRevokePrivilegeRequest__isset::_GrantRevokePrivilegeRequest__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="2123" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="2123" bodyend="2123"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="2122" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="2122" bodyend="2127"/>
+    <listofallmembers>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__GrantRevokePrivilegeRequest____isset_1a930ef6347cb58462d896d2990014a647" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_GrantRevokePrivilegeRequest__isset</scope><name>_GrantRevokePrivilegeRequest__isset</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__GrantRevokePrivilegeRequest____isset_1adfdfba2c5543cb877c210a194e8d01f9" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_GrantRevokePrivilegeRequest__isset</scope><name>privileges</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__GrantRevokePrivilegeRequest____isset_1a8a3b76dee3a5ffb3f24789352322edef" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_GrantRevokePrivilegeRequest__isset</scope><name>requestType</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__GrantRevokePrivilegeRequest____isset_1a0bd649712324f4b2c26b8cbbc23d7158" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_GrantRevokePrivilegeRequest__isset</scope><name>revokeGrantOption</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

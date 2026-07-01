@@ -1,0 +1,213 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1Logger" kind="class" language="C++" prot="public" abstract="yes">
+    <compoundname>iceberg::Logger</compoundname>
+    <derivedcompoundref refid="classiceberg_1_1CapturingLogger" prot="public" virt="non-virtual">iceberg::CapturingLogger</derivedcompoundref>
+    <derivedcompoundref refid="classiceberg_1_1CerrLogger" prot="public" virt="non-virtual">iceberg::CerrLogger</derivedcompoundref>
+    <includes refid="logger_8h" local="no">logger.h</includes>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1Logger_1aadc6a4775fd35424936102100cc0ba2b" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type></type>
+        <definition>virtual iceberg::Logger::~Logger</definition>
+        <argsstring>()=default</argsstring>
+        <name>~Logger</name>
+        <qualifiedname>iceberg::Logger::~Logger</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/logging/logger.h" line="147" column="11"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Logger_1afb2309f921f8ebb7aa88ada353f37877" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>Status</type>
+        <definition>virtual Status iceberg::Logger::Initialize</definition>
+        <argsstring>(const std::unordered_map&lt; std::string, std::string &gt; &amp;properties)</argsstring>
+        <name>Initialize</name>
+        <qualifiedname>iceberg::Logger::Initialize</qualifiedname>
+        <param>
+          <type>const std::unordered_map&lt; std::string, std::string &gt; &amp;</type>
+          <declname>properties</declname>
+        </param>
+        <briefdescription>
+<para>Property-based setup, called by Loggers::Load() before first use. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>The base implementation applies the &quot;level&quot; property (parsed via LogLevelFromString); an unrecognized value is an InvalidArgument error. The spdlog backend overrides this to also apply &quot;pattern&quot; and then delegates to this base for &quot;level&quot;; <ref refid="classiceberg_1_1CerrLogger" kindref="compound">CerrLogger</ref> uses the base as-is (fixed layout). </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/logging/logger.h" line="155" column="18" bodyfile="iceberg/logging/logger.h" bodystart="155" bodyend="163"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Logger_1ae94e42dfc0fe122f056c54049f6b751f" prot="public" static="no" const="yes" explicit="no" inline="no" noexcept="yes" virt="pure-virtual">
+        <type>bool</type>
+        <definition>virtual bool iceberg::Logger::ShouldLog</definition>
+        <argsstring>(LogLevel level) const noexcept=0</argsstring>
+        <name>ShouldLog</name>
+        <qualifiedname>iceberg::Logger::ShouldLog</qualifiedname>
+        <reimplementedby refid="classiceberg_1_1CerrLogger_1a558618170d6e63857d529f7679742472">ShouldLog</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1CapturingLogger_1a0823e8445f8aafa255b48dd9caf0bdc5">ShouldLog</reimplementedby>
+        <param>
+          <type><ref refid="log__level_8h_1ab9922ae0d07dc85678a1a86c872e387b" kindref="member">LogLevel</ref></type>
+          <declname>level</declname>
+        </param>
+        <briefdescription>
+<para>Cheap check whether a record at <computeroutput>level</computeroutput> would be emitted. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/logging/logger.h" line="166" column="16"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Logger_1a2cea7121351c84e8fe25a4fb2a1e52a3" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="pure-virtual">
+        <type>void</type>
+        <definition>virtual void iceberg::Logger::Log</definition>
+        <argsstring>(LogMessage &amp;&amp;message) noexcept=0</argsstring>
+        <name>Log</name>
+        <qualifiedname>iceberg::Logger::Log</qualifiedname>
+        <reimplementedby refid="classiceberg_1_1CerrLogger_1a990162c7376b0511aa6522fe64bf5a8c">Log</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1CapturingLogger_1a350ebc9526f05a7b82a6283bb299e6ab">Log</reimplementedby>
+        <param>
+          <type><ref refid="structiceberg_1_1LogMessage" kindref="compound">LogMessage</ref> &amp;&amp;</type>
+          <declname>message</declname>
+        </param>
+        <briefdescription>
+<para>Emit one (already-formatted) record, taking ownership. Must not throw. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/logging/logger.h" line="169" column="16"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Logger_1a929efd366d31507b1d0fb0f20cc981ac" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="pure-virtual">
+        <type>void</type>
+        <definition>virtual void iceberg::Logger::SetLevel</definition>
+        <argsstring>(LogLevel level) noexcept=0</argsstring>
+        <name>SetLevel</name>
+        <qualifiedname>iceberg::Logger::SetLevel</qualifiedname>
+        <reimplementedby refid="classiceberg_1_1CerrLogger_1aa53823148c9833d542e1a391acaa0496">SetLevel</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1CapturingLogger_1aaa05bfb4088646f5b0e409be353f8b93">SetLevel</reimplementedby>
+        <param>
+          <type><ref refid="log__level_8h_1ab9922ae0d07dc85678a1a86c872e387b" kindref="member">LogLevel</ref></type>
+          <declname>level</declname>
+        </param>
+        <briefdescription>
+<para>Set the minimum level this logger emits. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/logging/logger.h" line="172" column="16"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Logger_1a8d7d6a59ecbb0a1ba0ca79cbbb079540" prot="public" static="no" const="yes" explicit="no" inline="no" noexcept="yes" virt="pure-virtual">
+        <type><ref refid="log__level_8h_1ab9922ae0d07dc85678a1a86c872e387b" kindref="member">LogLevel</ref></type>
+        <definition>virtual LogLevel iceberg::Logger::level</definition>
+        <argsstring>() const noexcept=0</argsstring>
+        <name>level</name>
+        <qualifiedname>iceberg::Logger::level</qualifiedname>
+        <reimplementedby refid="classiceberg_1_1CerrLogger_1a6f5492fa7db6c8420b615f4d53440476">level</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1CapturingLogger_1acffa117d675826caa03e932f2d0336e0">level</reimplementedby>
+        <briefdescription>
+<para>Return the minimum level this logger emits. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/logging/logger.h" line="175" column="20"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Logger_1a2a1b632c1d153e90cf3faef8a29e6419" prot="public" static="no" const="no" explicit="no" inline="yes" noexcept="yes" virt="virtual">
+        <type>void</type>
+        <definition>virtual void iceberg::Logger::Flush</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>Flush</name>
+        <qualifiedname>iceberg::Logger::Flush</qualifiedname>
+        <reimplementedby refid="classiceberg_1_1CerrLogger_1a40deb0defa4c4fd1aaeba3a3980466a3">Flush</reimplementedby>
+        <briefdescription>
+<para>Flush any buffered output. Must not throw; best-effort on the fatal path. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/logging/logger.h" line="178" column="16" bodyfile="iceberg/logging/logger.h" bodystart="178" bodyend="178"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Logger_1af869669496ecfff9c7de9b737bdbb404" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
+        <type>bool</type>
+        <definition>virtual bool iceberg::Logger::IsNoop</definition>
+        <argsstring>() const</argsstring>
+        <name>IsNoop</name>
+        <qualifiedname>iceberg::Logger::IsNoop</qualifiedname>
+        <briefdescription>
+<para>Return true if this logger is a no-op. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/logging/logger.h" line="181" column="16" bodyfile="iceberg/logging/logger.h" bodystart="181" bodyend="181"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classiceberg_1_1Logger_1ac1cf661da575bc318994d4663eef0019" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Logger" kindref="compound">Logger</ref> &gt;</type>
+        <definition>std::shared_ptr&lt; Logger &gt; iceberg::Logger::Noop</definition>
+        <argsstring>()</argsstring>
+        <name>Noop</name>
+        <qualifiedname>iceberg::Logger::Noop</qualifiedname>
+        <briefdescription>
+<para>Return a shared, immortal no-op logger singleton. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/logging/logger.h" line="184" column="26" bodyfile="iceberg/logging/logger.cc" bodystart="79" bodyend="84"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Pluggable logging sink. </para>
+    </briefdescription>
+    <detaileddescription>
+<para><ref refid="classiceberg_1_1Logger_1ae94e42dfc0fe122f056c54049f6b751f" kindref="member">ShouldLog()</ref> is the single authority for runtime filtering <ndash/> the macros call it on every (compile-time-enabled) statement, so level changes by any path take effect immediately. Implementations must be thread-safe and must not throw. They must also obey:<itemizedlist>
+<listitem><para>No reentrancy: <ref refid="classiceberg_1_1Logger_1a2cea7121351c84e8fe25a4fb2a1e52a3" kindref="member">Log()</ref>/Flush() must not call the logging macros or GetDefaultLogger() (UB <ndash/> deadlock with mutex-based sinks).</para>
+</listitem><listitem><para><ref refid="classiceberg_1_1Logger_1a8d7d6a59ecbb0a1ba0ca79cbbb079540" kindref="member">level()</ref> is an accessor consistent with ShouldLog (used by SetDefaultLevel and introspection); ShouldLog may implement finer logic than a level compare. </para>
+</listitem></itemizedlist>
+</para>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>iceberg::CapturingLogger</label>
+        <link refid="classiceberg_1_1CapturingLogger"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>iceberg::CerrLogger</label>
+        <link refid="classiceberg_1_1CerrLogger"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::Logger</label>
+        <link refid="classiceberg_1_1Logger"/>
+      </node>
+    </inheritancegraph>
+    <location file="iceberg/logging/logger.h" line="145" column="1" bodyfile="iceberg/logging/logger.h" bodystart="145" bodyend="185"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1Logger_1a2a1b632c1d153e90cf3faef8a29e6419" prot="public" virt="virtual"><scope>iceberg::Logger</scope><name>Flush</name></member>
+      <member refid="classiceberg_1_1Logger_1afb2309f921f8ebb7aa88ada353f37877" prot="public" virt="virtual"><scope>iceberg::Logger</scope><name>Initialize</name></member>
+      <member refid="classiceberg_1_1Logger_1af869669496ecfff9c7de9b737bdbb404" prot="public" virt="virtual"><scope>iceberg::Logger</scope><name>IsNoop</name></member>
+      <member refid="classiceberg_1_1Logger_1a8d7d6a59ecbb0a1ba0ca79cbbb079540" prot="public" virt="pure-virtual"><scope>iceberg::Logger</scope><name>level</name></member>
+      <member refid="classiceberg_1_1Logger_1a2cea7121351c84e8fe25a4fb2a1e52a3" prot="public" virt="pure-virtual"><scope>iceberg::Logger</scope><name>Log</name></member>
+      <member refid="classiceberg_1_1Logger_1ac1cf661da575bc318994d4663eef0019" prot="public" virt="non-virtual"><scope>iceberg::Logger</scope><name>Noop</name></member>
+      <member refid="classiceberg_1_1Logger_1a929efd366d31507b1d0fb0f20cc981ac" prot="public" virt="pure-virtual"><scope>iceberg::Logger</scope><name>SetLevel</name></member>
+      <member refid="classiceberg_1_1Logger_1ae94e42dfc0fe122f056c54049f6b751f" prot="public" virt="pure-virtual"><scope>iceberg::Logger</scope><name>ShouldLog</name></member>
+      <member refid="classiceberg_1_1Logger_1aadc6a4775fd35424936102100cc0ba2b" prot="public" virt="virtual"><scope>iceberg::Logger</scope><name>~Logger</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

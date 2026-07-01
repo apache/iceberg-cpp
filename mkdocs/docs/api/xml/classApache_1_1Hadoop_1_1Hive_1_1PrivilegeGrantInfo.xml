@@ -1,0 +1,428 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1PrivilegeGrantInfo" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::PrivilegeGrantInfo</compoundname>
+    <basecompoundref prot="public" virt="virtual">apache::thrift::TBase</basecompoundref>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1PrivilegeGrantInfo_1ad30cc8c295629f076885627dddaa4cdf" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::PrivilegeGrantInfo::privilege</definition>
+        <argsstring></argsstring>
+        <name>privilege</name>
+        <qualifiedname>Apache::Hadoop::Hive::PrivilegeGrantInfo::privilege</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1947" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="1947" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1PrivilegeGrantInfo_1a9509d95316442b5fc51ca8f1b3d26a27" prot="public" static="no" mutable="no">
+        <type>int32_t</type>
+        <definition>int32_t Apache::Hadoop::Hive::PrivilegeGrantInfo::createTime</definition>
+        <argsstring></argsstring>
+        <name>createTime</name>
+        <qualifiedname>Apache::Hadoop::Hive::PrivilegeGrantInfo::createTime</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1948" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="1948" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1PrivilegeGrantInfo_1a524fb129027062637b01e7c66e8b5ab7" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::PrivilegeGrantInfo::grantor</definition>
+        <argsstring></argsstring>
+        <name>grantor</name>
+        <qualifiedname>Apache::Hadoop::Hive::PrivilegeGrantInfo::grantor</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1949" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="1949" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1PrivilegeGrantInfo_1a7967f2d569109ebb3d6584fb0e3fd3c0" prot="public" static="no" mutable="no">
+        <type>PrincipalType::type</type>
+        <definition>PrincipalType::type Apache::Hadoop::Hive::PrivilegeGrantInfo::grantorType</definition>
+        <argsstring></argsstring>
+        <name>grantorType</name>
+        <qualifiedname>Apache::Hadoop::Hive::PrivilegeGrantInfo::grantorType</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="see"><para><ref refid="structApache_1_1Hadoop_1_1Hive_1_1PrincipalType" kindref="compound">PrincipalType</ref> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1954" column="23" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="1954" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1PrivilegeGrantInfo_1aa55b0d4b7ca63b2163abb19ed74f2453" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::PrivilegeGrantInfo::grantOption</definition>
+        <argsstring></argsstring>
+        <name>grantOption</name>
+        <qualifiedname>Apache::Hadoop::Hive::PrivilegeGrantInfo::grantOption</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1955" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="1955" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1PrivilegeGrantInfo_1ae17410e9c7b6706aac6f129af451bd3e" prot="public" static="no" mutable="no">
+        <type><ref refid="structApache_1_1Hadoop_1_1Hive_1_1__PrivilegeGrantInfo____isset" kindref="compound">_PrivilegeGrantInfo__isset</ref></type>
+        <definition>_PrivilegeGrantInfo__isset Apache::Hadoop::Hive::PrivilegeGrantInfo::__isset</definition>
+        <argsstring></argsstring>
+        <name>__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::PrivilegeGrantInfo::__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1957" column="30" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="1957" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1PrivilegeGrantInfo_1a8ac4a420665b47c4ba7bcfd63cba7fb6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::PrivilegeGrantInfo::PrivilegeGrantInfo</definition>
+        <argsstring>(const PrivilegeGrantInfo &amp;)</argsstring>
+        <name>PrivilegeGrantInfo</name>
+        <qualifiedname>Apache::Hadoop::Hive::PrivilegeGrantInfo::PrivilegeGrantInfo</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1PrivilegeGrantInfo" kindref="compound">PrivilegeGrantInfo</ref> &amp;</type>
+          <defname>other118</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1942" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="4638" bodyend="4645"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1PrivilegeGrantInfo_1a3ca9e223d303b8af1e2e10b999545322" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1PrivilegeGrantInfo" kindref="compound">PrivilegeGrantInfo</ref> &amp;</type>
+        <definition>PrivilegeGrantInfo &amp; Apache::Hadoop::Hive::PrivilegeGrantInfo::operator=</definition>
+        <argsstring>(const PrivilegeGrantInfo &amp;)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::PrivilegeGrantInfo::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1PrivilegeGrantInfo" kindref="compound">PrivilegeGrantInfo</ref> &amp;</type>
+          <defname>other119</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1943" column="22" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="4646" bodyend="4654"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1PrivilegeGrantInfo_1a236c19beaba77bdb618a1785fd515b1d" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::PrivilegeGrantInfo::PrivilegeGrantInfo</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>PrivilegeGrantInfo</name>
+        <qualifiedname>Apache::Hadoop::Hive::PrivilegeGrantInfo::PrivilegeGrantInfo</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1944" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="4474" bodyend="4480"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1PrivilegeGrantInfo_1ad7619aba52b427c425e6187af684233f" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::PrivilegeGrantInfo::~PrivilegeGrantInfo</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~PrivilegeGrantInfo</name>
+        <qualifiedname>Apache::Hadoop::Hive::PrivilegeGrantInfo::~PrivilegeGrantInfo</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1946" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="4471" bodyend="4472"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1PrivilegeGrantInfo_1a34490dc9b773baf5183c9e3c3e1af489" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::PrivilegeGrantInfo::__set_privilege</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_privilege</name>
+        <qualifiedname>Apache::Hadoop::Hive::PrivilegeGrantInfo::__set_privilege</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1959" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="4482" bodyend="4484"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1PrivilegeGrantInfo_1aca43b0a6bddf639f1fa75ba97c522457" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::PrivilegeGrantInfo::__set_createTime</definition>
+        <argsstring>(const int32_t val)</argsstring>
+        <name>__set_createTime</name>
+        <qualifiedname>Apache::Hadoop::Hive::PrivilegeGrantInfo::__set_createTime</qualifiedname>
+        <param>
+          <type>const int32_t</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1961" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="4486" bodyend="4488"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1PrivilegeGrantInfo_1a1dfff30df630e751ca5b2980cfcc5ff5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::PrivilegeGrantInfo::__set_grantor</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_grantor</name>
+        <qualifiedname>Apache::Hadoop::Hive::PrivilegeGrantInfo::__set_grantor</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1963" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="4490" bodyend="4492"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1PrivilegeGrantInfo_1afe437361d556d7bfc78a732a3142b692" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::PrivilegeGrantInfo::__set_grantorType</definition>
+        <argsstring>(const PrincipalType::type val)</argsstring>
+        <name>__set_grantorType</name>
+        <qualifiedname>Apache::Hadoop::Hive::PrivilegeGrantInfo::__set_grantorType</qualifiedname>
+        <param>
+          <type>const PrincipalType::type</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1965" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="4494" bodyend="4496"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1PrivilegeGrantInfo_1a6e79be9ca64b7c865d59992e32ad0089" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::PrivilegeGrantInfo::__set_grantOption</definition>
+        <argsstring>(const bool val)</argsstring>
+        <name>__set_grantOption</name>
+        <qualifiedname>Apache::Hadoop::Hive::PrivilegeGrantInfo::__set_grantOption</qualifiedname>
+        <param>
+          <type>const bool</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1967" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="4498" bodyend="4500"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1PrivilegeGrantInfo_1a8ab359559b2a030bf29f4682c57edc02" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::PrivilegeGrantInfo::operator==</definition>
+        <argsstring>(const PrivilegeGrantInfo &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::PrivilegeGrantInfo::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1PrivilegeGrantInfo" kindref="compound">PrivilegeGrantInfo</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1969" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="4623" bodyend="4636"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1PrivilegeGrantInfo_1a213ab9c360ebcc6fa4bcfcd59502162f" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::PrivilegeGrantInfo::operator!=</definition>
+        <argsstring>(const PrivilegeGrantInfo &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::PrivilegeGrantInfo::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1PrivilegeGrantInfo" kindref="compound">PrivilegeGrantInfo</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1970" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="1970" bodyend="1972"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1PrivilegeGrantInfo_1ada95c0c3ec859713db4d22f15162cb2a" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::PrivilegeGrantInfo::operator&lt;</definition>
+        <argsstring>(const PrivilegeGrantInfo &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::PrivilegeGrantInfo::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1PrivilegeGrantInfo" kindref="compound">PrivilegeGrantInfo</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1974" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1PrivilegeGrantInfo_1aac38c94383a90ebe96f0acd99942acd8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::PrivilegeGrantInfo::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot) override</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::PrivilegeGrantInfo::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1976" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="4508" bodyend="4581"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1PrivilegeGrantInfo_1a3f69122003639b9756d30e8506a42618" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::PrivilegeGrantInfo::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const override</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::PrivilegeGrantInfo::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1977" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="4583" bodyend="4611"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1PrivilegeGrantInfo_1a1d3f67456afba95e9076ad6e035f64bb" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::PrivilegeGrantInfo::printTo</definition>
+        <argsstring>(std::ostream &amp;out) const</argsstring>
+        <name>printTo</name>
+        <qualifiedname>Apache::Hadoop::Hive::PrivilegeGrantInfo::printTo</qualifiedname>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1979" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="4655" bodyend="4664"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::PrivilegeGrantInfo</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1PrivilegeGrantInfo"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::PrivilegeGrantInfo</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1PrivilegeGrantInfo"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>grantor</edgelabel>
+          <edgelabel>privilege</edgelabel>
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="5">
+        <label>Apache::Hadoop::Hive::_PrivilegeGrantInfo__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__PrivilegeGrantInfo____isset"/>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+      <node id="4">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="3">
+        <label>std::string</label>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1939" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="1939" bodyend="1980"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1PrivilegeGrantInfo_1ae17410e9c7b6706aac6f129af451bd3e" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::PrivilegeGrantInfo</scope><name>__isset</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1PrivilegeGrantInfo_1aca43b0a6bddf639f1fa75ba97c522457" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::PrivilegeGrantInfo</scope><name>__set_createTime</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1PrivilegeGrantInfo_1a6e79be9ca64b7c865d59992e32ad0089" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::PrivilegeGrantInfo</scope><name>__set_grantOption</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1PrivilegeGrantInfo_1a1dfff30df630e751ca5b2980cfcc5ff5" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::PrivilegeGrantInfo</scope><name>__set_grantor</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1PrivilegeGrantInfo_1afe437361d556d7bfc78a732a3142b692" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::PrivilegeGrantInfo</scope><name>__set_grantorType</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1PrivilegeGrantInfo_1a34490dc9b773baf5183c9e3c3e1af489" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::PrivilegeGrantInfo</scope><name>__set_privilege</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1PrivilegeGrantInfo_1a9509d95316442b5fc51ca8f1b3d26a27" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::PrivilegeGrantInfo</scope><name>createTime</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1PrivilegeGrantInfo_1aa55b0d4b7ca63b2163abb19ed74f2453" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::PrivilegeGrantInfo</scope><name>grantOption</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1PrivilegeGrantInfo_1a524fb129027062637b01e7c66e8b5ab7" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::PrivilegeGrantInfo</scope><name>grantor</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1PrivilegeGrantInfo_1a7967f2d569109ebb3d6584fb0e3fd3c0" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::PrivilegeGrantInfo</scope><name>grantorType</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1PrivilegeGrantInfo_1a213ab9c360ebcc6fa4bcfcd59502162f" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::PrivilegeGrantInfo</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1PrivilegeGrantInfo_1ada95c0c3ec859713db4d22f15162cb2a" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::PrivilegeGrantInfo</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1PrivilegeGrantInfo_1a3ca9e223d303b8af1e2e10b999545322" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::PrivilegeGrantInfo</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1PrivilegeGrantInfo_1a8ab359559b2a030bf29f4682c57edc02" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::PrivilegeGrantInfo</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1PrivilegeGrantInfo_1a1d3f67456afba95e9076ad6e035f64bb" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::PrivilegeGrantInfo</scope><name>printTo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1PrivilegeGrantInfo_1ad30cc8c295629f076885627dddaa4cdf" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::PrivilegeGrantInfo</scope><name>privilege</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1PrivilegeGrantInfo_1a8ac4a420665b47c4ba7bcfd63cba7fb6" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::PrivilegeGrantInfo</scope><name>PrivilegeGrantInfo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1PrivilegeGrantInfo_1a236c19beaba77bdb618a1785fd515b1d" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::PrivilegeGrantInfo</scope><name>PrivilegeGrantInfo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1PrivilegeGrantInfo_1aac38c94383a90ebe96f0acd99942acd8" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::PrivilegeGrantInfo</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1PrivilegeGrantInfo_1a3f69122003639b9756d30e8506a42618" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::PrivilegeGrantInfo</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1PrivilegeGrantInfo_1ad7619aba52b427c425e6187af684233f" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::PrivilegeGrantInfo</scope><name>~PrivilegeGrantInfo</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

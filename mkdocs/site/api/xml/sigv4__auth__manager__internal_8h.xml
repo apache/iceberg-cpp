@@ -1,0 +1,294 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="sigv4__auth__manager__internal_8h" kind="file" language="C++">
+    <compoundname>sigv4_auth_manager_internal.h</compoundname>
+    <includes local="no">memory</includes>
+    <includes local="no">string</includes>
+    <includes local="no">unordered_map</includes>
+    <includes refid="auth__manager_8h" local="yes">iceberg/catalog/rest/auth/auth_manager.h</includes>
+    <includes refid="auth__session_8h" local="yes">iceberg/catalog/rest/auth/auth_session.h</includes>
+    <includes refid="iceberg__rest__export_8h" local="yes">iceberg/catalog/rest/iceberg_rest_export.h</includes>
+    <includes refid="result_8h" local="yes">iceberg/result.h</includes>
+    <includedby refid="sigv4__manager_8cc" local="yes">iceberg/catalog/rest/auth/sigv4_manager.cc</includedby>
+    <incdepgraph>
+      <node id="5">
+        <label>iceberg/catalog/rest/auth/auth_manager.h</label>
+        <link refid="auth__manager_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+      </node>
+      <node id="15">
+        <label>iceberg/catalog/rest/auth/auth_session.h</label>
+        <link refid="auth__session_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg/catalog/rest/auth/sigv4_auth_manager_internal.h</label>
+        <link refid="sigv4__auth__manager__internal_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+      </node>
+      <node id="16">
+        <label>iceberg/catalog/rest/http_request.h</label>
+        <link refid="http__request_8h_source"/>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+      </node>
+      <node id="6">
+        <label>iceberg/catalog/rest/iceberg_rest_export.h</label>
+        <link refid="iceberg__rest__export_8h_source"/>
+      </node>
+      <node id="7">
+        <label>iceberg/catalog/rest/type_fwd.h</label>
+        <link refid="catalog_2rest_2type__fwd_8h"/>
+      </node>
+      <node id="13">
+        <label>iceberg/iceberg_export.h</label>
+        <link refid="iceberg__export_8h_source"/>
+      </node>
+      <node id="8">
+        <label>iceberg/result.h</label>
+        <link refid="result_8h_source"/>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+      </node>
+      <node id="14">
+        <label>iceberg/type_fwd.h</label>
+        <link refid="type__fwd_8h"/>
+      </node>
+      <node id="17">
+        <label>algorithm</label>
+      </node>
+      <node id="18">
+        <label>cctype</label>
+      </node>
+      <node id="9">
+        <label>concepts</label>
+      </node>
+      <node id="19">
+        <label>cstddef</label>
+      </node>
+      <node id="20">
+        <label>cstdint</label>
+      </node>
+      <node id="10">
+        <label>expected</label>
+      </node>
+      <node id="11">
+        <label>format</label>
+      </node>
+      <node id="21">
+        <label>map</label>
+      </node>
+      <node id="2">
+        <label>memory</label>
+      </node>
+      <node id="3">
+        <label>string</label>
+      </node>
+      <node id="22">
+        <label>string_view</label>
+      </node>
+      <node id="12">
+        <label>type_traits</label>
+      </node>
+      <node id="4">
+        <label>unordered_map</label>
+      </node>
+    </incdepgraph>
+    <innerclass refid="classiceberg_1_1rest_1_1auth_1_1SigV4AuthSession" prot="public">iceberg::rest::auth::SigV4AuthSession</innerclass>
+    <innerclass refid="classiceberg_1_1rest_1_1auth_1_1SigV4AuthManager" prot="public">iceberg::rest::auth::SigV4AuthManager</innerclass>
+    <innernamespace refid="namespaceAws">Aws</innernamespace>
+    <innernamespace refid="namespaceAws_1_1Auth">Aws::Auth</innernamespace>
+    <innernamespace refid="namespaceAws_1_1Client">Aws::Client</innernamespace>
+    <innernamespace refid="namespaceiceberg">iceberg</innernamespace>
+    <innernamespace refid="namespaceiceberg_1_1rest">iceberg::rest</innernamespace>
+    <innernamespace refid="namespaceiceberg_1_1rest_1_1auth">iceberg::rest::auth</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="comment">/*</highlight></codeline>
+<codeline lineno="2"><highlight class="comment"><sp/>*<sp/>Licensed<sp/>to<sp/>the<sp/>Apache<sp/>Software<sp/>Foundation<sp/>(ASF)<sp/>under<sp/>one</highlight></codeline>
+<codeline lineno="3"><highlight class="comment"><sp/>*<sp/>or<sp/>more<sp/>contributor<sp/>license<sp/>agreements.<sp/><sp/>See<sp/>the<sp/>NOTICE<sp/>file</highlight></codeline>
+<codeline lineno="4"><highlight class="comment"><sp/>*<sp/>distributed<sp/>with<sp/>this<sp/>work<sp/>for<sp/>additional<sp/>information</highlight></codeline>
+<codeline lineno="5"><highlight class="comment"><sp/>*<sp/>regarding<sp/>copyright<sp/>ownership.<sp/><sp/>The<sp/>ASF<sp/>licenses<sp/>this<sp/>file</highlight></codeline>
+<codeline lineno="6"><highlight class="comment"><sp/>*<sp/>to<sp/>you<sp/>under<sp/>the<sp/>Apache<sp/>License,<sp/>Version<sp/>2.0<sp/>(the</highlight></codeline>
+<codeline lineno="7"><highlight class="comment"><sp/>*<sp/>&quot;License&quot;);<sp/>you<sp/>may<sp/>not<sp/>use<sp/>this<sp/>file<sp/>except<sp/>in<sp/>compliance</highlight></codeline>
+<codeline lineno="8"><highlight class="comment"><sp/>*<sp/>with<sp/>the<sp/>License.<sp/><sp/>You<sp/>may<sp/>obtain<sp/>a<sp/>copy<sp/>of<sp/>the<sp/>License<sp/>at</highlight></codeline>
+<codeline lineno="9"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="10"><highlight class="comment"><sp/>*<sp/><sp/><sp/>http://www.apache.org/licenses/LICENSE-2.0</highlight></codeline>
+<codeline lineno="11"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="12"><highlight class="comment"><sp/>*<sp/>Unless<sp/>required<sp/>by<sp/>applicable<sp/>law<sp/>or<sp/>agreed<sp/>to<sp/>in<sp/>writing,</highlight></codeline>
+<codeline lineno="13"><highlight class="comment"><sp/>*<sp/>software<sp/>distributed<sp/>under<sp/>the<sp/>License<sp/>is<sp/>distributed<sp/>on<sp/>an</highlight></codeline>
+<codeline lineno="14"><highlight class="comment"><sp/>*<sp/>&quot;AS<sp/>IS&quot;<sp/>BASIS,<sp/>WITHOUT<sp/>WARRANTIES<sp/>OR<sp/>CONDITIONS<sp/>OF<sp/>ANY</highlight></codeline>
+<codeline lineno="15"><highlight class="comment"><sp/>*<sp/>KIND,<sp/>either<sp/>express<sp/>or<sp/>implied.<sp/><sp/>See<sp/>the<sp/>License<sp/>for<sp/>the</highlight></codeline>
+<codeline lineno="16"><highlight class="comment"><sp/>*<sp/>specific<sp/>language<sp/>governing<sp/>permissions<sp/>and<sp/>limitations</highlight></codeline>
+<codeline lineno="17"><highlight class="comment"><sp/>*<sp/>under<sp/>the<sp/>License.</highlight></codeline>
+<codeline lineno="18"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="19"><highlight class="normal"></highlight></codeline>
+<codeline lineno="20"><highlight class="normal"></highlight><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="21"><highlight class="normal"></highlight></codeline>
+<codeline lineno="22"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;memory&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="23"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;string&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="24"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;unordered_map&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="25"><highlight class="normal"></highlight></codeline>
+<codeline lineno="26"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="auth__manager_8h" kindref="compound">iceberg/catalog/rest/auth/auth_manager.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="27"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="auth__session_8h" kindref="compound">iceberg/catalog/rest/auth/auth_session.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="28"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;iceberg/catalog/rest/iceberg_rest_export.h&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="29"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;iceberg/result.h&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="30"><highlight class="normal"></highlight></codeline>
+<codeline lineno="31"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">Aws::Auth<sp/>{</highlight></codeline>
+<codeline lineno="32"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal">AWSCredentialsProvider;</highlight></codeline>
+<codeline lineno="33"><highlight class="normal">}<sp/><sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>Aws::Auth</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="34"><highlight class="normal"></highlight></codeline>
+<codeline lineno="35"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">Aws::Client<sp/>{</highlight></codeline>
+<codeline lineno="36"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal">AWSAuthV4Signer;</highlight></codeline>
+<codeline lineno="37"><highlight class="normal">}<sp/><sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>Aws::Client</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="38"><highlight class="normal"></highlight></codeline>
+<codeline lineno="39"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">iceberg::rest::auth<sp/>{</highlight></codeline>
+<codeline lineno="40"><highlight class="normal"></highlight></codeline>
+<codeline lineno="46"><highlight class="normal">ICEBERG_REST_EXPORT<sp/>Status<sp/>InitializeAwsSdk();</highlight></codeline>
+<codeline lineno="47"><highlight class="normal"></highlight></codeline>
+<codeline lineno="51"><highlight class="normal">ICEBERG_REST_EXPORT<sp/>Status<sp/>FinalizeAwsSdk();</highlight></codeline>
+<codeline lineno="52"><highlight class="normal"></highlight></codeline>
+<codeline lineno="53"><highlight class="normal">ICEBERG_REST_EXPORT<sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>IsAwsSdkInitialized();</highlight></codeline>
+<codeline lineno="54"><highlight class="normal">ICEBERG_REST_EXPORT<sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>IsAwsSdkFinalized();</highlight></codeline>
+<codeline lineno="55"><highlight class="normal"></highlight></codeline>
+<codeline lineno="67" refid="classiceberg_1_1rest_1_1auth_1_1SigV4AuthSession" refkind="compound"><highlight class="keyword">class<sp/></highlight><highlight class="normal">ICEBERG_REST_EXPORT<sp/><ref refid="classiceberg_1_1rest_1_1auth_1_1SigV4AuthSession" kindref="compound">SigV4AuthSession</ref><sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1rest_1_1auth_1_1AuthSession" kindref="compound">AuthSession</ref><sp/>{</highlight></codeline>
+<codeline lineno="68"><highlight class="normal"><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="70" refid="classiceberg_1_1rest_1_1auth_1_1SigV4AuthSession_1af3e63d26a3f20ad7c4e4c5d89cb72ef2" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/>std::string_view<sp/>kEmptyBodySha256<sp/>=</highlight></codeline>
+<codeline lineno="71"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="72"><highlight class="normal"></highlight></codeline>
+<codeline lineno="74" refid="classiceberg_1_1rest_1_1auth_1_1SigV4AuthSession_1a0654278ade0babc94fbca9ece8dfbdd9" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/>std::string_view<sp/>kRelocatedHeaderPrefix<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;Original-&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="75"><highlight class="normal"></highlight></codeline>
+<codeline lineno="80" refid="classiceberg_1_1rest_1_1auth_1_1SigV4AuthSession_1af454da6f7fd85a6e1374ba7ba0a926e4" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>Result&lt;std::shared_ptr&lt;SigV4AuthSession&gt;&gt;<sp/><ref refid="classiceberg_1_1rest_1_1auth_1_1SigV4AuthSession_1af454da6f7fd85a6e1374ba7ba0a926e4" kindref="member">Make</ref>(</highlight></codeline>
+<codeline lineno="81"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>std::shared_ptr&lt;AuthSession&gt;<sp/>delegate,<sp/>std::string<sp/>signing_region,</highlight></codeline>
+<codeline lineno="82"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>std::string<sp/>signing_name,</highlight></codeline>
+<codeline lineno="83"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>std::shared_ptr&lt;Aws::Auth::AWSCredentialsProvider&gt;<sp/>credentials_provider);</highlight></codeline>
+<codeline lineno="84"><highlight class="normal"></highlight></codeline>
+<codeline lineno="85"><highlight class="normal"><sp/><sp/><ref refid="classiceberg_1_1rest_1_1auth_1_1SigV4AuthSession" kindref="compound">~SigV4AuthSession</ref>()<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="86"><highlight class="normal"></highlight></codeline>
+<codeline lineno="87" refid="classiceberg_1_1rest_1_1auth_1_1SigV4AuthSession_1a04f0085438eddb1c623157a11073aa24" refkind="member"><highlight class="normal"><sp/><sp/>Result&lt;HttpRequest&gt;<sp/><ref refid="classiceberg_1_1rest_1_1auth_1_1SigV4AuthSession_1a04f0085438eddb1c623157a11073aa24" kindref="member">Authenticate</ref>(<ref refid="structiceberg_1_1rest_1_1HttpRequest" kindref="compound">HttpRequest</ref><sp/>request)<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="88"><highlight class="normal"></highlight></codeline>
+<codeline lineno="89" refid="classiceberg_1_1rest_1_1auth_1_1SigV4AuthSession_1a89b44d73c78ecacf3f695d1608da69c6" refkind="member"><highlight class="normal"><sp/><sp/>Status<sp/><ref refid="classiceberg_1_1rest_1_1auth_1_1SigV4AuthSession_1a89b44d73c78ecacf3f695d1608da69c6" kindref="member">Close</ref>()<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="90"><highlight class="normal"></highlight></codeline>
+<codeline lineno="91"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::shared_ptr&lt;AuthSession&gt;&amp;<sp/>delegate()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>delegate_;<sp/>}</highlight></codeline>
+<codeline lineno="92"><highlight class="normal"></highlight></codeline>
+<codeline lineno="95" refid="classiceberg_1_1rest_1_1auth_1_1SigV4AuthSession_1a649b027915af538ca2422ae7b964af30" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::shared_ptr&lt;Aws::Auth::AWSCredentialsProvider&gt;&amp;<sp/><ref refid="classiceberg_1_1rest_1_1auth_1_1SigV4AuthSession_1a649b027915af538ca2422ae7b964af30" kindref="member">credentials_provider</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="96"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>credentials_provider_;</highlight></codeline>
+<codeline lineno="97"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="98"><highlight class="normal"></highlight></codeline>
+<codeline lineno="99"><highlight class="normal"><sp/></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="100"><highlight class="normal"><sp/><sp/><ref refid="classiceberg_1_1rest_1_1auth_1_1SigV4AuthSession" kindref="compound">SigV4AuthSession</ref>(</highlight></codeline>
+<codeline lineno="101"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>std::shared_ptr&lt;AuthSession&gt;<sp/>delegate,<sp/>std::string<sp/>signing_region,</highlight></codeline>
+<codeline lineno="102"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>std::string<sp/>signing_name,</highlight></codeline>
+<codeline lineno="103"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>std::shared_ptr&lt;Aws::Auth::AWSCredentialsProvider&gt;<sp/>credentials_provider);</highlight></codeline>
+<codeline lineno="104"><highlight class="normal"></highlight></codeline>
+<codeline lineno="105"><highlight class="normal"><sp/><sp/>std::shared_ptr&lt;AuthSession&gt;<sp/>delegate_;</highlight></codeline>
+<codeline lineno="106"><highlight class="normal"><sp/><sp/>std::string<sp/>signing_region_;</highlight></codeline>
+<codeline lineno="107"><highlight class="normal"><sp/><sp/>std::string<sp/>signing_name_;</highlight></codeline>
+<codeline lineno="108"><highlight class="normal"><sp/><sp/>std::shared_ptr&lt;Aws::Auth::AWSCredentialsProvider&gt;<sp/>credentials_provider_;</highlight></codeline>
+<codeline lineno="109"><highlight class="normal"><sp/><sp/>std::unique_ptr&lt;Aws::Client::AWSAuthV4Signer&gt;<sp/>signer_;</highlight></codeline>
+<codeline lineno="110"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="111"><highlight class="normal"></highlight></codeline>
+<codeline lineno="115" refid="classiceberg_1_1rest_1_1auth_1_1SigV4AuthManager" refkind="compound"><highlight class="keyword">class<sp/></highlight><highlight class="normal">ICEBERG_REST_EXPORT<sp/><ref refid="classiceberg_1_1rest_1_1auth_1_1SigV4AuthManager" kindref="compound">SigV4AuthManager</ref><sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1rest_1_1auth_1_1AuthManager" kindref="compound">AuthManager</ref><sp/>{</highlight></codeline>
+<codeline lineno="116"><highlight class="normal"><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="117"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">explicit</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1rest_1_1auth_1_1SigV4AuthManager" kindref="compound">SigV4AuthManager</ref>(std::unique_ptr&lt;AuthManager&gt;<sp/>delegate);</highlight></codeline>
+<codeline lineno="118"><highlight class="normal"><sp/><sp/><ref refid="classiceberg_1_1rest_1_1auth_1_1SigV4AuthManager" kindref="compound">~SigV4AuthManager</ref>()<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="119"><highlight class="normal"></highlight></codeline>
+<codeline lineno="120" refid="classiceberg_1_1rest_1_1auth_1_1SigV4AuthManager_1a0372f509f456e081fbbbc024ca6c3289" refkind="member"><highlight class="normal"><sp/><sp/>Result&lt;std::shared_ptr&lt;AuthSession&gt;&gt;<sp/><ref refid="classiceberg_1_1rest_1_1auth_1_1SigV4AuthManager_1a0372f509f456e081fbbbc024ca6c3289" kindref="member">InitSession</ref>(</highlight></codeline>
+<codeline lineno="121"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classiceberg_1_1rest_1_1HttpClient" kindref="compound">HttpClient</ref>&amp;<sp/>init_client,</highlight></codeline>
+<codeline lineno="122"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::unordered_map&lt;std::string,<sp/>std::string&gt;&amp;<sp/>properties)<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="123"><highlight class="normal"></highlight></codeline>
+<codeline lineno="124" refid="classiceberg_1_1rest_1_1auth_1_1SigV4AuthManager_1a1dd2ec088c6e291b5a06b51c7e4cf9f1" refkind="member"><highlight class="normal"><sp/><sp/>Result&lt;std::shared_ptr&lt;AuthSession&gt;&gt;<sp/><ref refid="classiceberg_1_1rest_1_1auth_1_1SigV4AuthManager_1a1dd2ec088c6e291b5a06b51c7e4cf9f1" kindref="member">CatalogSession</ref>(</highlight></codeline>
+<codeline lineno="125"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classiceberg_1_1rest_1_1HttpClient" kindref="compound">HttpClient</ref>&amp;<sp/>shared_client,</highlight></codeline>
+<codeline lineno="126"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::unordered_map&lt;std::string,<sp/>std::string&gt;&amp;<sp/>properties)<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="127"><highlight class="normal"></highlight></codeline>
+<codeline lineno="128" refid="classiceberg_1_1rest_1_1auth_1_1SigV4AuthManager_1af03d6b6591731155d6e8ad6ac026a3c5" refkind="member"><highlight class="normal"><sp/><sp/>Result&lt;std::shared_ptr&lt;AuthSession&gt;&gt;<sp/><ref refid="classiceberg_1_1rest_1_1auth_1_1SigV4AuthManager_1af03d6b6591731155d6e8ad6ac026a3c5" kindref="member">ContextualSession</ref>(</highlight></codeline>
+<codeline lineno="129"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structiceberg_1_1SessionContext" kindref="compound">SessionContext</ref>&amp;<sp/>context,<sp/>std::shared_ptr&lt;AuthSession&gt;<sp/>parent)<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="130"><highlight class="normal"></highlight></codeline>
+<codeline lineno="131" refid="classiceberg_1_1rest_1_1auth_1_1SigV4AuthManager_1ae47b4d964476dffe5cbfe32ba724257c" refkind="member"><highlight class="normal"><sp/><sp/>Result&lt;std::shared_ptr&lt;AuthSession&gt;&gt;<sp/><ref refid="classiceberg_1_1rest_1_1auth_1_1SigV4AuthManager_1ae47b4d964476dffe5cbfe32ba724257c" kindref="member">TableSession</ref>(</highlight></codeline>
+<codeline lineno="132"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structiceberg_1_1TableIdentifier" kindref="compound">TableIdentifier</ref>&amp;<sp/>table,</highlight></codeline>
+<codeline lineno="133"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::unordered_map&lt;std::string,<sp/>std::string&gt;&amp;<sp/>properties,</highlight></codeline>
+<codeline lineno="134"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>std::shared_ptr&lt;AuthSession&gt;<sp/>parent)<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="135"><highlight class="normal"></highlight></codeline>
+<codeline lineno="136" refid="classiceberg_1_1rest_1_1auth_1_1SigV4AuthManager_1a1e14adf3688c1a3de4c680536f7d1bda" refkind="member"><highlight class="normal"><sp/><sp/>Status<sp/><ref refid="classiceberg_1_1rest_1_1auth_1_1SigV4AuthManager_1a1e14adf3688c1a3de4c680536f7d1bda" kindref="member">Close</ref>()<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="137"><highlight class="normal"></highlight></codeline>
+<codeline lineno="138"><highlight class="normal"><sp/></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="139"><highlight class="normal"><sp/><sp/>Result&lt;std::shared_ptr&lt;AuthSession&gt;&gt;<sp/>WrapSession(</highlight></codeline>
+<codeline lineno="140"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>std::shared_ptr&lt;AuthSession&gt;<sp/>delegate_session,</highlight></codeline>
+<codeline lineno="141"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::unordered_map&lt;std::string,<sp/>std::string&gt;&amp;<sp/>properties,</highlight></codeline>
+<codeline lineno="142"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>std::shared_ptr&lt;Aws::Auth::AWSCredentialsProvider&gt;<sp/>credentials_provider);</highlight></codeline>
+<codeline lineno="143"><highlight class="normal"></highlight></codeline>
+<codeline lineno="144"><highlight class="normal"><sp/><sp/>std::unique_ptr&lt;AuthManager&gt;<sp/>delegate_;</highlight></codeline>
+<codeline lineno="145"><highlight class="normal"><sp/><sp/>std::unordered_map&lt;std::string,<sp/>std::string&gt;<sp/>catalog_properties_;</highlight></codeline>
+<codeline lineno="146"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="147"><highlight class="normal"></highlight></codeline>
+<codeline lineno="148"><highlight class="normal">}<sp/><sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>iceberg::rest::auth</highlight><highlight class="normal"></highlight></codeline>
+    </programlisting>
+    <location file="iceberg/catalog/rest/auth/sigv4_auth_manager_internal.h"/>
+  </compounddef>
+</doxygen>

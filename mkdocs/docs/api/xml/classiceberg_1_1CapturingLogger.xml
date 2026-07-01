@@ -1,0 +1,205 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1CapturingLogger" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::CapturingLogger</compoundname>
+    <basecompoundref refid="classiceberg_1_1Logger" prot="public" virt="non-virtual">iceberg::Logger</basecompoundref>
+    <includes refid="logging__test__helpers_8h" local="no">logging_test_helpers.h</includes>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1CapturingLogger_1abd1ba4594a7b09f3d59ec03f15b68de5" prot="private" static="no" mutable="yes">
+        <type>std::mutex</type>
+        <definition>std::mutex iceberg::CapturingLogger::mutex_</definition>
+        <argsstring></argsstring>
+        <name>mutex_</name>
+        <qualifiedname>iceberg::CapturingLogger::mutex_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/logging_test_helpers.h" line="62" column="22" bodyfile="iceberg/test/logging_test_helpers.h" bodystart="62" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1CapturingLogger_1afc3a8de20deb984c9bf809dc938e70f5" prot="private" static="no" mutable="no">
+        <type>std::atomic&lt; <ref refid="log__level_8h_1ab9922ae0d07dc85678a1a86c872e387b" kindref="member">LogLevel</ref> &gt;</type>
+        <definition>std::atomic&lt;LogLevel&gt; iceberg::CapturingLogger::level_</definition>
+        <argsstring></argsstring>
+        <name>level_</name>
+        <qualifiedname>iceberg::CapturingLogger::level_</qualifiedname>
+        <initializer>= LogLevel::kTrace</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/logging_test_helpers.h" line="63" column="15" bodyfile="iceberg/test/logging_test_helpers.h" bodystart="63" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1CapturingLogger_1a96091436f192b909b9c24db3b2c1ec19" prot="private" static="no" mutable="no">
+        <type>std::vector&lt; <ref refid="structiceberg_1_1LogMessage" kindref="compound">LogMessage</ref> &gt;</type>
+        <definition>std::vector&lt;LogMessage&gt; iceberg::CapturingLogger::records_</definition>
+        <argsstring></argsstring>
+        <name>records_</name>
+        <qualifiedname>iceberg::CapturingLogger::records_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/logging_test_helpers.h" line="64" column="15" bodyfile="iceberg/test/logging_test_helpers.h" bodystart="64" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1CapturingLogger_1a0823e8445f8aafa255b48dd9caf0bdc5" prot="public" static="no" const="yes" explicit="no" inline="yes" noexcept="yes" virt="virtual">
+        <type>bool</type>
+        <definition>bool iceberg::CapturingLogger::ShouldLog</definition>
+        <argsstring>(LogLevel level) const noexcept override</argsstring>
+        <name>ShouldLog</name>
+        <qualifiedname>iceberg::CapturingLogger::ShouldLog</qualifiedname>
+        <reimplements refid="classiceberg_1_1Logger_1ae94e42dfc0fe122f056c54049f6b751f">ShouldLog</reimplements>
+        <param>
+          <type><ref refid="log__level_8h_1ab9922ae0d07dc85678a1a86c872e387b" kindref="member">LogLevel</ref></type>
+          <declname>level</declname>
+        </param>
+        <briefdescription>
+<para>Cheap check whether a record at <computeroutput>level</computeroutput> would be emitted. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/logging_test_helpers.h" line="35" column="8" bodyfile="iceberg/test/logging_test_helpers.h" bodystart="35" bodyend="37"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1CapturingLogger_1a350ebc9526f05a7b82a6283bb299e6ab" prot="public" static="no" const="no" explicit="no" inline="yes" noexcept="yes" virt="virtual">
+        <type>void</type>
+        <definition>void iceberg::CapturingLogger::Log</definition>
+        <argsstring>(LogMessage &amp;&amp;message) noexcept override</argsstring>
+        <name>Log</name>
+        <qualifiedname>iceberg::CapturingLogger::Log</qualifiedname>
+        <reimplements refid="classiceberg_1_1Logger_1a2cea7121351c84e8fe25a4fb2a1e52a3">Log</reimplements>
+        <param>
+          <type><ref refid="structiceberg_1_1LogMessage" kindref="compound">LogMessage</ref> &amp;&amp;</type>
+          <declname>message</declname>
+        </param>
+        <briefdescription>
+<para>Emit one (already-formatted) record, taking ownership. Must not throw. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/logging_test_helpers.h" line="39" column="8" bodyfile="iceberg/test/logging_test_helpers.h" bodystart="39" bodyend="42"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1CapturingLogger_1aaa05bfb4088646f5b0e409be353f8b93" prot="public" static="no" const="no" explicit="no" inline="yes" noexcept="yes" virt="virtual">
+        <type>void</type>
+        <definition>void iceberg::CapturingLogger::SetLevel</definition>
+        <argsstring>(LogLevel level) noexcept override</argsstring>
+        <name>SetLevel</name>
+        <qualifiedname>iceberg::CapturingLogger::SetLevel</qualifiedname>
+        <reimplements refid="classiceberg_1_1Logger_1a929efd366d31507b1d0fb0f20cc981ac">SetLevel</reimplements>
+        <param>
+          <type><ref refid="log__level_8h_1ab9922ae0d07dc85678a1a86c872e387b" kindref="member">LogLevel</ref></type>
+          <declname>level</declname>
+        </param>
+        <briefdescription>
+<para>Set the minimum level this logger emits. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/logging_test_helpers.h" line="44" column="8" bodyfile="iceberg/test/logging_test_helpers.h" bodystart="44" bodyend="46"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1CapturingLogger_1acffa117d675826caa03e932f2d0336e0" prot="public" static="no" const="yes" explicit="no" inline="yes" noexcept="yes" virt="virtual">
+        <type><ref refid="log__level_8h_1ab9922ae0d07dc85678a1a86c872e387b" kindref="member">LogLevel</ref></type>
+        <definition>LogLevel iceberg::CapturingLogger::level</definition>
+        <argsstring>() const noexcept override</argsstring>
+        <name>level</name>
+        <qualifiedname>iceberg::CapturingLogger::level</qualifiedname>
+        <reimplements refid="classiceberg_1_1Logger_1a8d7d6a59ecbb0a1ba0ca79cbbb079540">level</reimplements>
+        <briefdescription>
+<para>Return the minimum level this logger emits. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/logging_test_helpers.h" line="47" column="12" bodyfile="iceberg/test/logging_test_helpers.h" bodystart="47" bodyend="49"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1CapturingLogger_1a30abe925419e9d7438cf3545e50f13f9" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::vector&lt; <ref refid="structiceberg_1_1LogMessage" kindref="compound">LogMessage</ref> &gt;</type>
+        <definition>std::vector&lt; LogMessage &gt; iceberg::CapturingLogger::records</definition>
+        <argsstring>() const</argsstring>
+        <name>records</name>
+        <qualifiedname>iceberg::CapturingLogger::records</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/logging_test_helpers.h" line="51" column="15" bodyfile="iceberg/test/logging_test_helpers.h" bodystart="51" bodyend="54"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1CapturingLogger_1a8732e3be88a7831be77ae8ae36bee78c" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::size_t</type>
+        <definition>std::size_t iceberg::CapturingLogger::count</definition>
+        <argsstring>() const</argsstring>
+        <name>count</name>
+        <qualifiedname>iceberg::CapturingLogger::count</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/logging_test_helpers.h" line="56" column="15" bodyfile="iceberg/test/logging_test_helpers.h" bodystart="56" bodyend="59"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Test sink that records every emitted <ref refid="structiceberg_1_1LogMessage" kindref="compound">LogMessage</ref> under a mutex. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>iceberg::CapturingLogger</label>
+        <link refid="classiceberg_1_1CapturingLogger"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::Logger</label>
+        <link refid="classiceberg_1_1Logger"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::CapturingLogger</label>
+        <link refid="classiceberg_1_1CapturingLogger"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::Logger</label>
+        <link refid="classiceberg_1_1Logger"/>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/test/logging_test_helpers.h" line="33" column="1" bodyfile="iceberg/test/logging_test_helpers.h" bodystart="33" bodyend="65"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1CapturingLogger_1a8732e3be88a7831be77ae8ae36bee78c" prot="public" virt="non-virtual"><scope>iceberg::CapturingLogger</scope><name>count</name></member>
+      <member refid="classiceberg_1_1Logger_1a2a1b632c1d153e90cf3faef8a29e6419" prot="public" virt="virtual"><scope>iceberg::CapturingLogger</scope><name>Flush</name></member>
+      <member refid="classiceberg_1_1Logger_1afb2309f921f8ebb7aa88ada353f37877" prot="public" virt="virtual"><scope>iceberg::CapturingLogger</scope><name>Initialize</name></member>
+      <member refid="classiceberg_1_1Logger_1af869669496ecfff9c7de9b737bdbb404" prot="public" virt="virtual"><scope>iceberg::CapturingLogger</scope><name>IsNoop</name></member>
+      <member refid="classiceberg_1_1CapturingLogger_1acffa117d675826caa03e932f2d0336e0" prot="public" virt="virtual"><scope>iceberg::CapturingLogger</scope><name>level</name></member>
+      <member refid="classiceberg_1_1CapturingLogger_1afc3a8de20deb984c9bf809dc938e70f5" prot="private" virt="non-virtual"><scope>iceberg::CapturingLogger</scope><name>level_</name></member>
+      <member refid="classiceberg_1_1CapturingLogger_1a350ebc9526f05a7b82a6283bb299e6ab" prot="public" virt="virtual"><scope>iceberg::CapturingLogger</scope><name>Log</name></member>
+      <member refid="classiceberg_1_1CapturingLogger_1abd1ba4594a7b09f3d59ec03f15b68de5" prot="private" virt="non-virtual"><scope>iceberg::CapturingLogger</scope><name>mutex_</name></member>
+      <member refid="classiceberg_1_1Logger_1ac1cf661da575bc318994d4663eef0019" prot="public" virt="non-virtual"><scope>iceberg::CapturingLogger</scope><name>Noop</name></member>
+      <member refid="classiceberg_1_1CapturingLogger_1a30abe925419e9d7438cf3545e50f13f9" prot="public" virt="non-virtual"><scope>iceberg::CapturingLogger</scope><name>records</name></member>
+      <member refid="classiceberg_1_1CapturingLogger_1a96091436f192b909b9c24db3b2c1ec19" prot="private" virt="non-virtual"><scope>iceberg::CapturingLogger</scope><name>records_</name></member>
+      <member refid="classiceberg_1_1CapturingLogger_1aaa05bfb4088646f5b0e409be353f8b93" prot="public" virt="virtual"><scope>iceberg::CapturingLogger</scope><name>SetLevel</name></member>
+      <member refid="classiceberg_1_1CapturingLogger_1a0823e8445f8aafa255b48dd9caf0bdc5" prot="public" virt="virtual"><scope>iceberg::CapturingLogger</scope><name>ShouldLog</name></member>
+      <member refid="classiceberg_1_1Logger_1aadc6a4775fd35424936102100cc0ba2b" prot="public" virt="virtual"><scope>iceberg::CapturingLogger</scope><name>~Logger</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

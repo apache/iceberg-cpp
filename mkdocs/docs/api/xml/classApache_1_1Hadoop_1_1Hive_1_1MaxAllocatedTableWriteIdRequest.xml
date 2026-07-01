@@ -1,0 +1,301 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1MaxAllocatedTableWriteIdRequest" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::MaxAllocatedTableWriteIdRequest</compoundname>
+    <basecompoundref prot="public" virt="virtual">apache::thrift::TBase</basecompoundref>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1MaxAllocatedTableWriteIdRequest_1a085ce0779adf2c65d399fb79630d4fbb" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::MaxAllocatedTableWriteIdRequest::dbName</definition>
+        <argsstring></argsstring>
+        <name>dbName</name>
+        <qualifiedname>Apache::Hadoop::Hive::MaxAllocatedTableWriteIdRequest::dbName</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7467" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="7467" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1MaxAllocatedTableWriteIdRequest_1adb82b4569e516ac25c6edfc3107698ff" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::MaxAllocatedTableWriteIdRequest::tableName</definition>
+        <argsstring></argsstring>
+        <name>tableName</name>
+        <qualifiedname>Apache::Hadoop::Hive::MaxAllocatedTableWriteIdRequest::tableName</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7468" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="7468" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1MaxAllocatedTableWriteIdRequest_1ab10d884ed2fe486360d98a4907f4fb99" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::MaxAllocatedTableWriteIdRequest::MaxAllocatedTableWriteIdRequest</definition>
+        <argsstring>(const MaxAllocatedTableWriteIdRequest &amp;)</argsstring>
+        <name>MaxAllocatedTableWriteIdRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::MaxAllocatedTableWriteIdRequest::MaxAllocatedTableWriteIdRequest</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1MaxAllocatedTableWriteIdRequest" kindref="compound">MaxAllocatedTableWriteIdRequest</ref> &amp;</type>
+          <defname>other963</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7462" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="28439" bodyend="28442"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1MaxAllocatedTableWriteIdRequest_1ae651c365075f9d1ef0e59da2863967b8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1MaxAllocatedTableWriteIdRequest" kindref="compound">MaxAllocatedTableWriteIdRequest</ref> &amp;</type>
+        <definition>MaxAllocatedTableWriteIdRequest &amp; Apache::Hadoop::Hive::MaxAllocatedTableWriteIdRequest::operator=</definition>
+        <argsstring>(const MaxAllocatedTableWriteIdRequest &amp;)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::MaxAllocatedTableWriteIdRequest::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1MaxAllocatedTableWriteIdRequest" kindref="compound">MaxAllocatedTableWriteIdRequest</ref> &amp;</type>
+          <defname>other964</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7463" column="35" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="28443" bodyend="28447"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1MaxAllocatedTableWriteIdRequest_1adb66b4d6a8014fffb3049b956f8a05d9" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::MaxAllocatedTableWriteIdRequest::MaxAllocatedTableWriteIdRequest</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>MaxAllocatedTableWriteIdRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::MaxAllocatedTableWriteIdRequest::MaxAllocatedTableWriteIdRequest</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7464" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="28332" bodyend="28335"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1MaxAllocatedTableWriteIdRequest_1a697631a905450952f4209aea7e033774" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::MaxAllocatedTableWriteIdRequest::~MaxAllocatedTableWriteIdRequest</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~MaxAllocatedTableWriteIdRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::MaxAllocatedTableWriteIdRequest::~MaxAllocatedTableWriteIdRequest</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7466" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="28329" bodyend="28330"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1MaxAllocatedTableWriteIdRequest_1acce5c80c1183848e17c2981b4d7e4c11" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::MaxAllocatedTableWriteIdRequest::__set_dbName</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_dbName</name>
+        <qualifiedname>Apache::Hadoop::Hive::MaxAllocatedTableWriteIdRequest::__set_dbName</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7470" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="28337" bodyend="28339"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1MaxAllocatedTableWriteIdRequest_1a864e16cfe8303dcfe18372138f42fcba" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::MaxAllocatedTableWriteIdRequest::__set_tableName</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_tableName</name>
+        <qualifiedname>Apache::Hadoop::Hive::MaxAllocatedTableWriteIdRequest::__set_tableName</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7472" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="28341" bodyend="28343"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1MaxAllocatedTableWriteIdRequest_1a5d2161cb4e21bd856f721da2f977b992" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::MaxAllocatedTableWriteIdRequest::operator==</definition>
+        <argsstring>(const MaxAllocatedTableWriteIdRequest &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::MaxAllocatedTableWriteIdRequest::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1MaxAllocatedTableWriteIdRequest" kindref="compound">MaxAllocatedTableWriteIdRequest</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7474" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="28430" bodyend="28437"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1MaxAllocatedTableWriteIdRequest_1ae92a93bedd1718dcb85114d1fe73cac3" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::MaxAllocatedTableWriteIdRequest::operator!=</definition>
+        <argsstring>(const MaxAllocatedTableWriteIdRequest &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::MaxAllocatedTableWriteIdRequest::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1MaxAllocatedTableWriteIdRequest" kindref="compound">MaxAllocatedTableWriteIdRequest</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7475" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="7475" bodyend="7477"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1MaxAllocatedTableWriteIdRequest_1a1ca7aab5da04fabb5db6e6a259b122c6" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::MaxAllocatedTableWriteIdRequest::operator&lt;</definition>
+        <argsstring>(const MaxAllocatedTableWriteIdRequest &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::MaxAllocatedTableWriteIdRequest::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1MaxAllocatedTableWriteIdRequest" kindref="compound">MaxAllocatedTableWriteIdRequest</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7479" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1MaxAllocatedTableWriteIdRequest_1a662ff94baf5309af919b88fcf935ec9b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::MaxAllocatedTableWriteIdRequest::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot) override</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::MaxAllocatedTableWriteIdRequest::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7481" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="28351" bodyend="28404"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1MaxAllocatedTableWriteIdRequest_1acc7a07a3a986f6bc229da4791a13b63c" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::MaxAllocatedTableWriteIdRequest::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const override</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::MaxAllocatedTableWriteIdRequest::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7482" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="28406" bodyend="28422"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1MaxAllocatedTableWriteIdRequest_1a1d58bd91403ac5922ddca61a31388e01" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::MaxAllocatedTableWriteIdRequest::printTo</definition>
+        <argsstring>(std::ostream &amp;out) const</argsstring>
+        <name>printTo</name>
+        <qualifiedname>Apache::Hadoop::Hive::MaxAllocatedTableWriteIdRequest::printTo</qualifiedname>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7484" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="28448" bodyend="28454"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::MaxAllocatedTableWriteIdRequest</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1MaxAllocatedTableWriteIdRequest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::MaxAllocatedTableWriteIdRequest</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1MaxAllocatedTableWriteIdRequest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>dbName</edgelabel>
+          <edgelabel>tableName</edgelabel>
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+      <node id="4">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="3">
+        <label>std::string</label>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7459" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="7459" bodyend="7485"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1MaxAllocatedTableWriteIdRequest_1acce5c80c1183848e17c2981b4d7e4c11" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::MaxAllocatedTableWriteIdRequest</scope><name>__set_dbName</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1MaxAllocatedTableWriteIdRequest_1a864e16cfe8303dcfe18372138f42fcba" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::MaxAllocatedTableWriteIdRequest</scope><name>__set_tableName</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1MaxAllocatedTableWriteIdRequest_1a085ce0779adf2c65d399fb79630d4fbb" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::MaxAllocatedTableWriteIdRequest</scope><name>dbName</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1MaxAllocatedTableWriteIdRequest_1ab10d884ed2fe486360d98a4907f4fb99" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::MaxAllocatedTableWriteIdRequest</scope><name>MaxAllocatedTableWriteIdRequest</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1MaxAllocatedTableWriteIdRequest_1adb66b4d6a8014fffb3049b956f8a05d9" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::MaxAllocatedTableWriteIdRequest</scope><name>MaxAllocatedTableWriteIdRequest</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1MaxAllocatedTableWriteIdRequest_1ae92a93bedd1718dcb85114d1fe73cac3" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::MaxAllocatedTableWriteIdRequest</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1MaxAllocatedTableWriteIdRequest_1a1ca7aab5da04fabb5db6e6a259b122c6" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::MaxAllocatedTableWriteIdRequest</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1MaxAllocatedTableWriteIdRequest_1ae651c365075f9d1ef0e59da2863967b8" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::MaxAllocatedTableWriteIdRequest</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1MaxAllocatedTableWriteIdRequest_1a5d2161cb4e21bd856f721da2f977b992" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::MaxAllocatedTableWriteIdRequest</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1MaxAllocatedTableWriteIdRequest_1a1d58bd91403ac5922ddca61a31388e01" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::MaxAllocatedTableWriteIdRequest</scope><name>printTo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1MaxAllocatedTableWriteIdRequest_1a662ff94baf5309af919b88fcf935ec9b" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::MaxAllocatedTableWriteIdRequest</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1MaxAllocatedTableWriteIdRequest_1adb82b4569e516ac25c6edfc3107698ff" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::MaxAllocatedTableWriteIdRequest</scope><name>tableName</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1MaxAllocatedTableWriteIdRequest_1acc7a07a3a986f6bc229da4791a13b63c" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::MaxAllocatedTableWriteIdRequest</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1MaxAllocatedTableWriteIdRequest_1a697631a905450952f4209aea7e033774" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::MaxAllocatedTableWriteIdRequest</scope><name>~MaxAllocatedTableWriteIdRequest</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

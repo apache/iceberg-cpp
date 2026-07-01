@@ -1,0 +1,79 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1sql_1_1IcebergTables__" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::sql::IcebergTables_</compoundname>
+    <innerclass refid="structiceberg_1_1sql_1_1IcebergTables___1_1CatalogName" prot="public">iceberg::sql::IcebergTables_::CatalogName</innerclass>
+    <innerclass refid="structiceberg_1_1sql_1_1IcebergTables___1_1MetadataLocation" prot="public">iceberg::sql::IcebergTables_::MetadataLocation</innerclass>
+    <innerclass refid="structiceberg_1_1sql_1_1IcebergTables___1_1PreviousMetadataLocation" prot="public">iceberg::sql::IcebergTables_::PreviousMetadataLocation</innerclass>
+    <innerclass refid="structiceberg_1_1sql_1_1IcebergTables___1_1RecordType" prot="public">iceberg::sql::IcebergTables_::RecordType</innerclass>
+    <innerclass refid="structiceberg_1_1sql_1_1IcebergTables___1_1TableName" prot="public">iceberg::sql::IcebergTables_::TableName</innerclass>
+    <innerclass refid="structiceberg_1_1sql_1_1IcebergTables___1_1TableNamespace" prot="public">iceberg::sql::IcebergTables_::TableNamespace</innerclass>
+    <sectiondef kind="public-type">
+      <memberdef kind="typedef" id="structiceberg_1_1sql_1_1IcebergTables___1a2b1f34ed2910e0bbe31617c70938d97d" prot="public" static="no">
+        <templateparamlist>
+          <param>
+            <type>typename T</type>
+          </param>
+        </templateparamlist>
+        <type>sqlpp::table_columns&lt; T, <ref refid="structiceberg_1_1sql_1_1IcebergTables___1_1CatalogName" kindref="compound">CatalogName</ref>, <ref refid="structiceberg_1_1sql_1_1IcebergTables___1_1TableNamespace" kindref="compound">TableNamespace</ref>, <ref refid="structiceberg_1_1sql_1_1IcebergTables___1_1TableName" kindref="compound">TableName</ref>, <ref refid="structiceberg_1_1sql_1_1IcebergTables___1_1MetadataLocation" kindref="compound">MetadataLocation</ref>, <ref refid="structiceberg_1_1sql_1_1IcebergTables___1_1PreviousMetadataLocation" kindref="compound">PreviousMetadataLocation</ref>, <ref refid="structiceberg_1_1sql_1_1IcebergTables___1_1RecordType" kindref="compound">RecordType</ref> &gt;</type>
+        <definition>using iceberg::sql::IcebergTables_::_table_columns =  sqlpp::table_columns&lt;T, CatalogName, TableNamespace, TableName, MetadataLocation, PreviousMetadataLocation, RecordType&gt;</definition>
+        <argsstring></argsstring>
+        <name>_table_columns</name>
+        <qualifiedname>iceberg::sql::IcebergTables_::_table_columns</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/sql_catalog_tables_internal.h" line="82" column="3" bodyfile="iceberg/catalog/sql/sql_catalog_tables_internal.h" bodystart="88" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="structiceberg_1_1sql_1_1IcebergTables___1a9026e23c50cea80080cde494bd0db306" prot="public" static="no">
+        <type>sqlpp::detail::type_set&lt; sqlpp::column_t&lt; sqlpp::table_t&lt; <ref refid="structiceberg_1_1sql_1_1IcebergTables__" kindref="compound">IcebergTables_</ref> &gt;, <ref refid="structiceberg_1_1sql_1_1IcebergTables___1_1CatalogName" kindref="compound">CatalogName</ref> &gt;, sqlpp::column_t&lt; sqlpp::table_t&lt; <ref refid="structiceberg_1_1sql_1_1IcebergTables__" kindref="compound">IcebergTables_</ref> &gt;, <ref refid="structiceberg_1_1sql_1_1IcebergTables___1_1TableNamespace" kindref="compound">TableNamespace</ref> &gt;, sqlpp::column_t&lt; sqlpp::table_t&lt; <ref refid="structiceberg_1_1sql_1_1IcebergTables__" kindref="compound">IcebergTables_</ref> &gt;, <ref refid="structiceberg_1_1sql_1_1IcebergTables___1_1TableName" kindref="compound">TableName</ref> &gt; &gt;</type>
+        <definition>using iceberg::sql::IcebergTables_::_required_insert_columns =  sqlpp::detail::type_set&lt; sqlpp::column_t&lt;sqlpp::table_t&lt;IcebergTables_&gt;, CatalogName&gt;, sqlpp::column_t&lt;sqlpp::table_t&lt;IcebergTables_&gt;, TableNamespace&gt;, sqlpp::column_t&lt;sqlpp::table_t&lt;IcebergTables_&gt;, TableName&gt; &gt;</definition>
+        <argsstring></argsstring>
+        <name>_required_insert_columns</name>
+        <qualifiedname>iceberg::sql::IcebergTables_::_required_insert_columns</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/sql_catalog_tables_internal.h" line="89" column="3" bodyfile="iceberg/catalog/sql/sql_catalog_tables_internal.h" bodystart="92" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structiceberg_1_1sql_1_1IcebergTables___1aa08cb7d2b78cf18cc3d6162b52657402" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::sql::IcebergTables_::SQLPP_CREATE_NAME_TAG_FOR_SQL_AND_CPP</definition>
+        <argsstring>(iceberg_tables, icebergTables)</argsstring>
+        <name>SQLPP_CREATE_NAME_TAG_FOR_SQL_AND_CPP</name>
+        <qualifiedname>iceberg::sql::IcebergTables_::SQLPP_CREATE_NAME_TAG_FOR_SQL_AND_CPP</qualifiedname>
+        <param>
+          <type>iceberg_tables</type>
+        </param>
+        <param>
+          <type>icebergTables</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/sql_catalog_tables_internal.h" line="79" column="3"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/sql/sql_catalog_tables_internal.h" line="46" column="1" bodyfile="iceberg/catalog/sql/sql_catalog_tables_internal.h" bodystart="46" bodyend="93"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1sql_1_1IcebergTables___1a9026e23c50cea80080cde494bd0db306" prot="public" virt="non-virtual"><scope>iceberg::sql::IcebergTables_</scope><name>_required_insert_columns</name></member>
+      <member refid="structiceberg_1_1sql_1_1IcebergTables___1a2b1f34ed2910e0bbe31617c70938d97d" prot="public" virt="non-virtual"><scope>iceberg::sql::IcebergTables_</scope><name>_table_columns</name></member>
+      <member refid="structiceberg_1_1sql_1_1IcebergTables___1aa08cb7d2b78cf18cc3d6162b52657402" prot="public" virt="non-virtual"><scope>iceberg::sql::IcebergTables_</scope><name>SQLPP_CREATE_NAME_TAG_FOR_SQL_AND_CPP</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

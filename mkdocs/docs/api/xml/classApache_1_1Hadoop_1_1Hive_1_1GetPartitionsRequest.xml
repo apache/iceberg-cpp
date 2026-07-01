@@ -1,0 +1,685 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1GetPartitionsRequest" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::GetPartitionsRequest</compoundname>
+    <basecompoundref prot="public" virt="virtual">apache::thrift::TBase</basecompoundref>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1GetPartitionsRequest_1a479310b211dc36f47a16a3c01a93a3fe" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::GetPartitionsRequest::catName</definition>
+        <argsstring></argsstring>
+        <name>catName</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetPartitionsRequest::catName</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14044" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="14044" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1GetPartitionsRequest_1a2f47645696ccbe1048ced3afff656bc1" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::GetPartitionsRequest::dbName</definition>
+        <argsstring></argsstring>
+        <name>dbName</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetPartitionsRequest::dbName</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14045" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="14045" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1GetPartitionsRequest_1a695af96b0b6dbd959e7e4540fce964b8" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::GetPartitionsRequest::tblName</definition>
+        <argsstring></argsstring>
+        <name>tblName</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetPartitionsRequest::tblName</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14046" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="14046" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1GetPartitionsRequest_1a36d679baeefccbee655c30ebc88eacfb" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::GetPartitionsRequest::withAuth</definition>
+        <argsstring></argsstring>
+        <name>withAuth</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetPartitionsRequest::withAuth</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14047" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="14047" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1GetPartitionsRequest_1ad16dcfff56fd84ec5ba474ca83ade76a" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::GetPartitionsRequest::user</definition>
+        <argsstring></argsstring>
+        <name>user</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetPartitionsRequest::user</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14048" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="14048" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1GetPartitionsRequest_1a296823ae8d2358ef1f9447745f30021f" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; std::string &gt;</type>
+        <definition>std::vector&lt;std::string&gt; Apache::Hadoop::Hive::GetPartitionsRequest::groupNames</definition>
+        <argsstring></argsstring>
+        <name>groupNames</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetPartitionsRequest::groupNames</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14049" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="14049" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1GetPartitionsRequest_1a307bd9c46c62e829d7c4de71c84d7dd1" prot="public" static="no" mutable="no">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1GetProjectionsSpec" kindref="compound">GetProjectionsSpec</ref></type>
+        <definition>GetProjectionsSpec Apache::Hadoop::Hive::GetPartitionsRequest::projectionSpec</definition>
+        <argsstring></argsstring>
+        <name>projectionSpec</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetPartitionsRequest::projectionSpec</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14050" column="22" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="14050" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1GetPartitionsRequest_1a36c73a63c7a424447de3a71f169fcf59" prot="public" static="no" mutable="no">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1GetPartitionsFilterSpec" kindref="compound">GetPartitionsFilterSpec</ref></type>
+        <definition>GetPartitionsFilterSpec Apache::Hadoop::Hive::GetPartitionsRequest::filterSpec</definition>
+        <argsstring></argsstring>
+        <name>filterSpec</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetPartitionsRequest::filterSpec</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14051" column="27" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="14051" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1GetPartitionsRequest_1a60846fc6a4c9820baebe13e2b9538b18" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; std::string &gt;</type>
+        <definition>std::vector&lt;std::string&gt; Apache::Hadoop::Hive::GetPartitionsRequest::processorCapabilities</definition>
+        <argsstring></argsstring>
+        <name>processorCapabilities</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetPartitionsRequest::processorCapabilities</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14052" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="14052" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1GetPartitionsRequest_1a100f513d498767e1b257187d49249894" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::GetPartitionsRequest::processorIdentifier</definition>
+        <argsstring></argsstring>
+        <name>processorIdentifier</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetPartitionsRequest::processorIdentifier</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14053" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="14053" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1GetPartitionsRequest_1aca0347592326975313d14d85208cb8de" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::GetPartitionsRequest::validWriteIdList</definition>
+        <argsstring></argsstring>
+        <name>validWriteIdList</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetPartitionsRequest::validWriteIdList</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14054" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="14054" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1GetPartitionsRequest_1a4c281cdf2a74484703b7c7dbc90c4851" prot="public" static="no" mutable="no">
+        <type><ref refid="structApache_1_1Hadoop_1_1Hive_1_1__GetPartitionsRequest____isset" kindref="compound">_GetPartitionsRequest__isset</ref></type>
+        <definition>_GetPartitionsRequest__isset Apache::Hadoop::Hive::GetPartitionsRequest::__isset</definition>
+        <argsstring></argsstring>
+        <name>__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetPartitionsRequest::__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14056" column="32" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="14056" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetPartitionsRequest_1a57c848420317641aea9a93e12dea80a6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::GetPartitionsRequest::GetPartitionsRequest</definition>
+        <argsstring>(const GetPartitionsRequest &amp;)</argsstring>
+        <name>GetPartitionsRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetPartitionsRequest::GetPartitionsRequest</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1GetPartitionsRequest" kindref="compound">GetPartitionsRequest</ref> &amp;</type>
+          <defname>other1726</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14039" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="55384" bodyend="55397"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetPartitionsRequest_1a54ddecae9b0fa1d5a10a8c34bfc8b4c7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1GetPartitionsRequest" kindref="compound">GetPartitionsRequest</ref> &amp;</type>
+        <definition>GetPartitionsRequest &amp; Apache::Hadoop::Hive::GetPartitionsRequest::operator=</definition>
+        <argsstring>(const GetPartitionsRequest &amp;)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetPartitionsRequest::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1GetPartitionsRequest" kindref="compound">GetPartitionsRequest</ref> &amp;</type>
+          <defname>other1727</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14040" column="24" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="55398" bodyend="55412"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetPartitionsRequest_1a62af1e5156fc7c2285e8436f07b9eea2" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::GetPartitionsRequest::GetPartitionsRequest</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>GetPartitionsRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetPartitionsRequest::GetPartitionsRequest</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14041" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="55038" bodyend="55046"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetPartitionsRequest_1aaea86e0c59a324893a51ceaa60563cda" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::GetPartitionsRequest::~GetPartitionsRequest</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~GetPartitionsRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetPartitionsRequest::~GetPartitionsRequest</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14043" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="55035" bodyend="55036"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetPartitionsRequest_1a04cc16d1b4b889aed9f0e7817c418819" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::GetPartitionsRequest::__set_catName</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_catName</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetPartitionsRequest::__set_catName</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14058" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="55048" bodyend="55051"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetPartitionsRequest_1a32789cee2511ab4381fd00335f9bac5a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::GetPartitionsRequest::__set_dbName</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_dbName</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetPartitionsRequest::__set_dbName</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14060" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="55053" bodyend="55055"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetPartitionsRequest_1aadef12e8b5fd191a91880d490fe4fcd6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::GetPartitionsRequest::__set_tblName</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_tblName</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetPartitionsRequest::__set_tblName</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14062" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="55057" bodyend="55059"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetPartitionsRequest_1a63fce575a2ff8c1663c9983e1d295592" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::GetPartitionsRequest::__set_withAuth</definition>
+        <argsstring>(const bool val)</argsstring>
+        <name>__set_withAuth</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetPartitionsRequest::__set_withAuth</qualifiedname>
+        <param>
+          <type>const bool</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14064" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="55061" bodyend="55064"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetPartitionsRequest_1a960c0d92c2070e60f4bc6e448875ec6d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::GetPartitionsRequest::__set_user</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_user</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetPartitionsRequest::__set_user</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14066" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="55066" bodyend="55069"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetPartitionsRequest_1ad7b4296579ce6b9ed82271f9f213bec7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::GetPartitionsRequest::__set_groupNames</definition>
+        <argsstring>(const std::vector&lt; std::string &gt; &amp;val)</argsstring>
+        <name>__set_groupNames</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetPartitionsRequest::__set_groupNames</qualifiedname>
+        <param>
+          <type>const std::vector&lt; std::string &gt; &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14068" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="55071" bodyend="55074"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetPartitionsRequest_1a746b48c0b46c3fece09640d99528631e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::GetPartitionsRequest::__set_projectionSpec</definition>
+        <argsstring>(const GetProjectionsSpec &amp;val)</argsstring>
+        <name>__set_projectionSpec</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetPartitionsRequest::__set_projectionSpec</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1GetProjectionsSpec" kindref="compound">GetProjectionsSpec</ref> &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14070" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="55076" bodyend="55078"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetPartitionsRequest_1a204deda637e7ce9de1c35076b2ca7665" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::GetPartitionsRequest::__set_filterSpec</definition>
+        <argsstring>(const GetPartitionsFilterSpec &amp;val)</argsstring>
+        <name>__set_filterSpec</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetPartitionsRequest::__set_filterSpec</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1GetPartitionsFilterSpec" kindref="compound">GetPartitionsFilterSpec</ref> &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14072" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="55080" bodyend="55082"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetPartitionsRequest_1a8438cc0e74733b72399c2c586bb24a9d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::GetPartitionsRequest::__set_processorCapabilities</definition>
+        <argsstring>(const std::vector&lt; std::string &gt; &amp;val)</argsstring>
+        <name>__set_processorCapabilities</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetPartitionsRequest::__set_processorCapabilities</qualifiedname>
+        <param>
+          <type>const std::vector&lt; std::string &gt; &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14074" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="55084" bodyend="55087"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetPartitionsRequest_1a59074964a1e03906ea54e6b10d353b00" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::GetPartitionsRequest::__set_processorIdentifier</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_processorIdentifier</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetPartitionsRequest::__set_processorIdentifier</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14076" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="55089" bodyend="55092"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetPartitionsRequest_1a9a0ae2c477aec1e67e773d12792f2568" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::GetPartitionsRequest::__set_validWriteIdList</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_validWriteIdList</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetPartitionsRequest::__set_validWriteIdList</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14078" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="55094" bodyend="55097"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetPartitionsRequest_1a18241b9455ef6ffdcf1f717914e310ed" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::GetPartitionsRequest::operator==</definition>
+        <argsstring>(const GetPartitionsRequest &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetPartitionsRequest::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1GetPartitionsRequest" kindref="compound">GetPartitionsRequest</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14080" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="55343" bodyend="55382"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetPartitionsRequest_1a96a5d9f1b60ea4b64a8da5777a8cc273" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::GetPartitionsRequest::operator!=</definition>
+        <argsstring>(const GetPartitionsRequest &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetPartitionsRequest::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1GetPartitionsRequest" kindref="compound">GetPartitionsRequest</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14081" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="14081" bodyend="14083"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetPartitionsRequest_1ac1fe4047522b55ef4ba44a212f74b35a" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::GetPartitionsRequest::operator&lt;</definition>
+        <argsstring>(const GetPartitionsRequest &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetPartitionsRequest::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1GetPartitionsRequest" kindref="compound">GetPartitionsRequest</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14085" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetPartitionsRequest_1a7c369b2938fafc696cdb677586426ad9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::GetPartitionsRequest::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot) override</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetPartitionsRequest::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14087" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="55105" bodyend="55248"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetPartitionsRequest_1a952221b985da65ce6d9867831f2ebdb3" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::GetPartitionsRequest::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const override</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetPartitionsRequest::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14088" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="55250" bodyend="55325"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetPartitionsRequest_1a09666472485ef0911d33e6b20e0fc2fe" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::GetPartitionsRequest::printTo</definition>
+        <argsstring>(std::ostream &amp;out) const</argsstring>
+        <name>printTo</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetPartitionsRequest::printTo</qualifiedname>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14090" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="55413" bodyend="55428"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::GetPartitionsRequest</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1GetPartitionsRequest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="8">
+        <label>Apache::Hadoop::Hive::GetPartitionsFilterSpec</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1GetPartitionsFilterSpec"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>filters</edgelabel>
+        </childnode>
+        <childnode refid="9" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::GetPartitionsRequest</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1GetPartitionsRequest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>catName</edgelabel>
+          <edgelabel>dbName</edgelabel>
+          <edgelabel>processorIdentifier</edgelabel>
+          <edgelabel>tblName</edgelabel>
+          <edgelabel>user</edgelabel>
+          <edgelabel>validWriteIdList</edgelabel>
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>groupNames</edgelabel>
+          <edgelabel>processorCapabilities</edgelabel>
+        </childnode>
+        <childnode refid="6" relation="usage">
+          <edgelabel>projectionSpec</edgelabel>
+        </childnode>
+        <childnode refid="8" relation="usage">
+          <edgelabel>filterSpec</edgelabel>
+        </childnode>
+        <childnode refid="10" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="6">
+        <label>Apache::Hadoop::Hive::GetProjectionsSpec</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1GetProjectionsSpec"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>fieldList</edgelabel>
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>excludeParamKeyPattern</edgelabel>
+          <edgelabel>includeParamKeyPattern</edgelabel>
+        </childnode>
+        <childnode refid="7" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="9">
+        <label>Apache::Hadoop::Hive::_GetPartitionsFilterSpec__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__GetPartitionsFilterSpec____isset"/>
+      </node>
+      <node id="10">
+        <label>Apache::Hadoop::Hive::_GetPartitionsRequest__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__GetPartitionsRequest____isset"/>
+      </node>
+      <node id="7">
+        <label>Apache::Hadoop::Hive::_GetProjectionsSpec__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__GetProjectionsSpec____isset"/>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+      <node id="4">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="3">
+        <label>std::string</label>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>std::vector&lt; std::string &gt;</label>
+        <childnode refid="3" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14036" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="14036" bodyend="14091"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetPartitionsRequest_1a4c281cdf2a74484703b7c7dbc90c4851" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetPartitionsRequest</scope><name>__isset</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetPartitionsRequest_1a04cc16d1b4b889aed9f0e7817c418819" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetPartitionsRequest</scope><name>__set_catName</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetPartitionsRequest_1a32789cee2511ab4381fd00335f9bac5a" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetPartitionsRequest</scope><name>__set_dbName</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetPartitionsRequest_1a204deda637e7ce9de1c35076b2ca7665" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetPartitionsRequest</scope><name>__set_filterSpec</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetPartitionsRequest_1ad7b4296579ce6b9ed82271f9f213bec7" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetPartitionsRequest</scope><name>__set_groupNames</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetPartitionsRequest_1a8438cc0e74733b72399c2c586bb24a9d" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetPartitionsRequest</scope><name>__set_processorCapabilities</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetPartitionsRequest_1a59074964a1e03906ea54e6b10d353b00" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetPartitionsRequest</scope><name>__set_processorIdentifier</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetPartitionsRequest_1a746b48c0b46c3fece09640d99528631e" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetPartitionsRequest</scope><name>__set_projectionSpec</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetPartitionsRequest_1aadef12e8b5fd191a91880d490fe4fcd6" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetPartitionsRequest</scope><name>__set_tblName</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetPartitionsRequest_1a960c0d92c2070e60f4bc6e448875ec6d" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetPartitionsRequest</scope><name>__set_user</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetPartitionsRequest_1a9a0ae2c477aec1e67e773d12792f2568" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetPartitionsRequest</scope><name>__set_validWriteIdList</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetPartitionsRequest_1a63fce575a2ff8c1663c9983e1d295592" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetPartitionsRequest</scope><name>__set_withAuth</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetPartitionsRequest_1a479310b211dc36f47a16a3c01a93a3fe" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetPartitionsRequest</scope><name>catName</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetPartitionsRequest_1a2f47645696ccbe1048ced3afff656bc1" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetPartitionsRequest</scope><name>dbName</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetPartitionsRequest_1a36c73a63c7a424447de3a71f169fcf59" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetPartitionsRequest</scope><name>filterSpec</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetPartitionsRequest_1a57c848420317641aea9a93e12dea80a6" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetPartitionsRequest</scope><name>GetPartitionsRequest</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetPartitionsRequest_1a62af1e5156fc7c2285e8436f07b9eea2" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetPartitionsRequest</scope><name>GetPartitionsRequest</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetPartitionsRequest_1a296823ae8d2358ef1f9447745f30021f" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetPartitionsRequest</scope><name>groupNames</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetPartitionsRequest_1a96a5d9f1b60ea4b64a8da5777a8cc273" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetPartitionsRequest</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetPartitionsRequest_1ac1fe4047522b55ef4ba44a212f74b35a" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetPartitionsRequest</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetPartitionsRequest_1a54ddecae9b0fa1d5a10a8c34bfc8b4c7" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetPartitionsRequest</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetPartitionsRequest_1a18241b9455ef6ffdcf1f717914e310ed" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetPartitionsRequest</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetPartitionsRequest_1a09666472485ef0911d33e6b20e0fc2fe" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::GetPartitionsRequest</scope><name>printTo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetPartitionsRequest_1a60846fc6a4c9820baebe13e2b9538b18" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetPartitionsRequest</scope><name>processorCapabilities</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetPartitionsRequest_1a100f513d498767e1b257187d49249894" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetPartitionsRequest</scope><name>processorIdentifier</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetPartitionsRequest_1a307bd9c46c62e829d7c4de71c84d7dd1" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetPartitionsRequest</scope><name>projectionSpec</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetPartitionsRequest_1a7c369b2938fafc696cdb677586426ad9" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetPartitionsRequest</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetPartitionsRequest_1a695af96b0b6dbd959e7e4540fce964b8" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetPartitionsRequest</scope><name>tblName</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetPartitionsRequest_1ad16dcfff56fd84ec5ba474ca83ade76a" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetPartitionsRequest</scope><name>user</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetPartitionsRequest_1aca0347592326975313d14d85208cb8de" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetPartitionsRequest</scope><name>validWriteIdList</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetPartitionsRequest_1a36d679baeefccbee655c30ebc88eacfb" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetPartitionsRequest</scope><name>withAuth</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetPartitionsRequest_1a952221b985da65ce6d9867831f2ebdb3" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetPartitionsRequest</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetPartitionsRequest_1aaea86e0c59a324893a51ceaa60563cda" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::GetPartitionsRequest</scope><name>~GetPartitionsRequest</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,48 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structApache_1_1Hadoop_1_1Hive_1_1__NoSuchCompactionException____isset" kind="struct" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::_NoSuchCompactionException__isset</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__NoSuchCompactionException____isset_1acbb06f41dcb961099aa2cbd9ee67e461" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_NoSuchCompactionException__isset::message</definition>
+        <argsstring></argsstring>
+        <name>message</name>
+        <qualifiedname>Apache::Hadoop::Hive::_NoSuchCompactionException__isset::message</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15874" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="15874" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structApache_1_1Hadoop_1_1Hive_1_1__NoSuchCompactionException____isset_1a39eaff9bb27c9fd7f23c58237e04090b" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::_NoSuchCompactionException__isset::_NoSuchCompactionException__isset</definition>
+        <argsstring>()</argsstring>
+        <name>_NoSuchCompactionException__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::_NoSuchCompactionException__isset::_NoSuchCompactionException__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15873" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="15873" bodyend="15873"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15872" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="15872" bodyend="15875"/>
+    <listofallmembers>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__NoSuchCompactionException____isset_1a39eaff9bb27c9fd7f23c58237e04090b" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_NoSuchCompactionException__isset</scope><name>_NoSuchCompactionException__isset</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__NoSuchCompactionException____isset_1acbb06f41dcb961099aa2cbd9ee67e461" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_NoSuchCompactionException__isset</scope><name>message</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

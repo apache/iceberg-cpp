@@ -1,0 +1,394 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1ScheduledQueryProgressInfo" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::ScheduledQueryProgressInfo</compoundname>
+    <basecompoundref prot="public" virt="virtual">apache::thrift::TBase</basecompoundref>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ScheduledQueryProgressInfo_1ab23f534c370d5ec5e156647dba3d73bf" prot="public" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t Apache::Hadoop::Hive::ScheduledQueryProgressInfo::scheduledExecutionId</definition>
+        <argsstring></argsstring>
+        <name>scheduledExecutionId</name>
+        <qualifiedname>Apache::Hadoop::Hive::ScheduledQueryProgressInfo::scheduledExecutionId</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13572" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="13572" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ScheduledQueryProgressInfo_1a6faed37893a6a4a89dd8a4ef067dcf66" prot="public" static="no" mutable="no">
+        <type>QueryState::type</type>
+        <definition>QueryState::type Apache::Hadoop::Hive::ScheduledQueryProgressInfo::state</definition>
+        <argsstring></argsstring>
+        <name>state</name>
+        <qualifiedname>Apache::Hadoop::Hive::ScheduledQueryProgressInfo::state</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="see"><para><ref refid="structApache_1_1Hadoop_1_1Hive_1_1QueryState" kindref="compound">QueryState</ref> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13577" column="20" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="13577" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ScheduledQueryProgressInfo_1ab3693e6d7ab478b1b505a67d857e48d1" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::ScheduledQueryProgressInfo::executorQueryId</definition>
+        <argsstring></argsstring>
+        <name>executorQueryId</name>
+        <qualifiedname>Apache::Hadoop::Hive::ScheduledQueryProgressInfo::executorQueryId</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13578" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="13578" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ScheduledQueryProgressInfo_1a3e15fc8e7359ea4895029676c1ce54c4" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::ScheduledQueryProgressInfo::errorMessage</definition>
+        <argsstring></argsstring>
+        <name>errorMessage</name>
+        <qualifiedname>Apache::Hadoop::Hive::ScheduledQueryProgressInfo::errorMessage</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13579" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="13579" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ScheduledQueryProgressInfo_1a107808557a2730a371554d59f87c6b73" prot="public" static="no" mutable="no">
+        <type><ref refid="structApache_1_1Hadoop_1_1Hive_1_1__ScheduledQueryProgressInfo____isset" kindref="compound">_ScheduledQueryProgressInfo__isset</ref></type>
+        <definition>_ScheduledQueryProgressInfo__isset Apache::Hadoop::Hive::ScheduledQueryProgressInfo::__isset</definition>
+        <argsstring></argsstring>
+        <name>__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::ScheduledQueryProgressInfo::__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13581" column="38" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="13581" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ScheduledQueryProgressInfo_1a0d8fdaa8372d8e32d6779ecce753b946" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::ScheduledQueryProgressInfo::ScheduledQueryProgressInfo</definition>
+        <argsstring>(const ScheduledQueryProgressInfo &amp;)</argsstring>
+        <name>ScheduledQueryProgressInfo</name>
+        <qualifiedname>Apache::Hadoop::Hive::ScheduledQueryProgressInfo::ScheduledQueryProgressInfo</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ScheduledQueryProgressInfo" kindref="compound">ScheduledQueryProgressInfo</ref> &amp;</type>
+          <defname>other1651</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13567" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="53197" bodyend="53203"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ScheduledQueryProgressInfo_1a1f88bb345a4a9d1f49bd8f1d976210bd" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1ScheduledQueryProgressInfo" kindref="compound">ScheduledQueryProgressInfo</ref> &amp;</type>
+        <definition>ScheduledQueryProgressInfo &amp; Apache::Hadoop::Hive::ScheduledQueryProgressInfo::operator=</definition>
+        <argsstring>(const ScheduledQueryProgressInfo &amp;)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::ScheduledQueryProgressInfo::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ScheduledQueryProgressInfo" kindref="compound">ScheduledQueryProgressInfo</ref> &amp;</type>
+          <defname>other1652</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13568" column="30" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="53204" bodyend="53211"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ScheduledQueryProgressInfo_1a0dc3341643b63a73b76aadfcc78310ab" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::ScheduledQueryProgressInfo::ScheduledQueryProgressInfo</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>ScheduledQueryProgressInfo</name>
+        <qualifiedname>Apache::Hadoop::Hive::ScheduledQueryProgressInfo::ScheduledQueryProgressInfo</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13569" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="53040" bodyend="53045"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ScheduledQueryProgressInfo_1a87524c10aad38f685c306adc933390d8" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::ScheduledQueryProgressInfo::~ScheduledQueryProgressInfo</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~ScheduledQueryProgressInfo</name>
+        <qualifiedname>Apache::Hadoop::Hive::ScheduledQueryProgressInfo::~ScheduledQueryProgressInfo</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13571" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="53037" bodyend="53038"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ScheduledQueryProgressInfo_1a05f1f9c7603b5cd7d0588ffd9e75a1d0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::ScheduledQueryProgressInfo::__set_scheduledExecutionId</definition>
+        <argsstring>(const int64_t val)</argsstring>
+        <name>__set_scheduledExecutionId</name>
+        <qualifiedname>Apache::Hadoop::Hive::ScheduledQueryProgressInfo::__set_scheduledExecutionId</qualifiedname>
+        <param>
+          <type>const int64_t</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13583" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="53047" bodyend="53049"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ScheduledQueryProgressInfo_1ac37d262a70fca33cbf7f10ca25f5e700" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::ScheduledQueryProgressInfo::__set_state</definition>
+        <argsstring>(const QueryState::type val)</argsstring>
+        <name>__set_state</name>
+        <qualifiedname>Apache::Hadoop::Hive::ScheduledQueryProgressInfo::__set_state</qualifiedname>
+        <param>
+          <type>const QueryState::type</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13585" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="53051" bodyend="53053"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ScheduledQueryProgressInfo_1aebd9f248eb28412cd213478dfaaa5751" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::ScheduledQueryProgressInfo::__set_executorQueryId</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_executorQueryId</name>
+        <qualifiedname>Apache::Hadoop::Hive::ScheduledQueryProgressInfo::__set_executorQueryId</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13587" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="53055" bodyend="53057"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ScheduledQueryProgressInfo_1a5d1c3fbe1eb22da02987aeca9484fc72" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::ScheduledQueryProgressInfo::__set_errorMessage</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_errorMessage</name>
+        <qualifiedname>Apache::Hadoop::Hive::ScheduledQueryProgressInfo::__set_errorMessage</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13589" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="53059" bodyend="53062"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ScheduledQueryProgressInfo_1a8079c5fc56197f8aafffec2a15d03846" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::ScheduledQueryProgressInfo::operator==</definition>
+        <argsstring>(const ScheduledQueryProgressInfo &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::ScheduledQueryProgressInfo::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ScheduledQueryProgressInfo" kindref="compound">ScheduledQueryProgressInfo</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13591" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="53182" bodyend="53195"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ScheduledQueryProgressInfo_1ad1133f6a5587bb55330a1129e2a7bea7" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::ScheduledQueryProgressInfo::operator!=</definition>
+        <argsstring>(const ScheduledQueryProgressInfo &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::ScheduledQueryProgressInfo::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ScheduledQueryProgressInfo" kindref="compound">ScheduledQueryProgressInfo</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13592" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="13592" bodyend="13594"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ScheduledQueryProgressInfo_1a43a9c14fe2d117b91f5c46d241865dc6" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::ScheduledQueryProgressInfo::operator&lt;</definition>
+        <argsstring>(const ScheduledQueryProgressInfo &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::ScheduledQueryProgressInfo::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ScheduledQueryProgressInfo" kindref="compound">ScheduledQueryProgressInfo</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13596" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ScheduledQueryProgressInfo_1a50271cdd8796a98c10c5a2e1a14d3ede" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::ScheduledQueryProgressInfo::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot) override</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::ScheduledQueryProgressInfo::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13598" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="53070" bodyend="53144"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ScheduledQueryProgressInfo_1a6cf16f7f219059e42deb935d8e144966" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::ScheduledQueryProgressInfo::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const override</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::ScheduledQueryProgressInfo::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13599" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="53146" bodyend="53171"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ScheduledQueryProgressInfo_1a108f8bc90e2db4976d633f8bc0ecfff9" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::ScheduledQueryProgressInfo::printTo</definition>
+        <argsstring>(std::ostream &amp;out) const</argsstring>
+        <name>printTo</name>
+        <qualifiedname>Apache::Hadoop::Hive::ScheduledQueryProgressInfo::printTo</qualifiedname>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13601" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="53212" bodyend="53220"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::ScheduledQueryProgressInfo</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1ScheduledQueryProgressInfo"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::ScheduledQueryProgressInfo</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1ScheduledQueryProgressInfo"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>errorMessage</edgelabel>
+          <edgelabel>executorQueryId</edgelabel>
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="5">
+        <label>Apache::Hadoop::Hive::_ScheduledQueryProgressInfo__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__ScheduledQueryProgressInfo____isset"/>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+      <node id="4">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="3">
+        <label>std::string</label>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13564" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="13564" bodyend="13602"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ScheduledQueryProgressInfo_1a107808557a2730a371554d59f87c6b73" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ScheduledQueryProgressInfo</scope><name>__isset</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ScheduledQueryProgressInfo_1a5d1c3fbe1eb22da02987aeca9484fc72" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ScheduledQueryProgressInfo</scope><name>__set_errorMessage</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ScheduledQueryProgressInfo_1aebd9f248eb28412cd213478dfaaa5751" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ScheduledQueryProgressInfo</scope><name>__set_executorQueryId</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ScheduledQueryProgressInfo_1a05f1f9c7603b5cd7d0588ffd9e75a1d0" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ScheduledQueryProgressInfo</scope><name>__set_scheduledExecutionId</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ScheduledQueryProgressInfo_1ac37d262a70fca33cbf7f10ca25f5e700" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ScheduledQueryProgressInfo</scope><name>__set_state</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ScheduledQueryProgressInfo_1a3e15fc8e7359ea4895029676c1ce54c4" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ScheduledQueryProgressInfo</scope><name>errorMessage</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ScheduledQueryProgressInfo_1ab3693e6d7ab478b1b505a67d857e48d1" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ScheduledQueryProgressInfo</scope><name>executorQueryId</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ScheduledQueryProgressInfo_1ad1133f6a5587bb55330a1129e2a7bea7" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ScheduledQueryProgressInfo</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ScheduledQueryProgressInfo_1a43a9c14fe2d117b91f5c46d241865dc6" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ScheduledQueryProgressInfo</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ScheduledQueryProgressInfo_1a1f88bb345a4a9d1f49bd8f1d976210bd" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ScheduledQueryProgressInfo</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ScheduledQueryProgressInfo_1a8079c5fc56197f8aafffec2a15d03846" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ScheduledQueryProgressInfo</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ScheduledQueryProgressInfo_1a108f8bc90e2db4976d633f8bc0ecfff9" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::ScheduledQueryProgressInfo</scope><name>printTo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ScheduledQueryProgressInfo_1a50271cdd8796a98c10c5a2e1a14d3ede" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ScheduledQueryProgressInfo</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ScheduledQueryProgressInfo_1ab23f534c370d5ec5e156647dba3d73bf" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ScheduledQueryProgressInfo</scope><name>scheduledExecutionId</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ScheduledQueryProgressInfo_1a0d8fdaa8372d8e32d6779ecce753b946" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ScheduledQueryProgressInfo</scope><name>ScheduledQueryProgressInfo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ScheduledQueryProgressInfo_1a0dc3341643b63a73b76aadfcc78310ab" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ScheduledQueryProgressInfo</scope><name>ScheduledQueryProgressInfo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ScheduledQueryProgressInfo_1a6faed37893a6a4a89dd8a4ef067dcf66" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ScheduledQueryProgressInfo</scope><name>state</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ScheduledQueryProgressInfo_1a6cf16f7f219059e42deb935d8e144966" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ScheduledQueryProgressInfo</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ScheduledQueryProgressInfo_1a87524c10aad38f685c306adc933390d8" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::ScheduledQueryProgressInfo</scope><name>~ScheduledQueryProgressInfo</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

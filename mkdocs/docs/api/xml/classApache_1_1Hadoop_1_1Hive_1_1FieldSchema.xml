@@ -1,0 +1,358 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1FieldSchema" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::FieldSchema</compoundname>
+    <basecompoundref prot="public" virt="virtual">apache::thrift::TBase</basecompoundref>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1FieldSchema_1a54600352db0cf804d3966cc800e821f0" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::FieldSchema::name</definition>
+        <argsstring></argsstring>
+        <name>name</name>
+        <qualifiedname>Apache::Hadoop::Hive::FieldSchema::name</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1151" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="1151" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1FieldSchema_1a63237cb570186437291d4f267f5967c7" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::FieldSchema::type</definition>
+        <argsstring></argsstring>
+        <name>type</name>
+        <qualifiedname>Apache::Hadoop::Hive::FieldSchema::type</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1152" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="1152" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1FieldSchema_1ad8c4e0eb758077567981b99ff5153c93" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::FieldSchema::comment</definition>
+        <argsstring></argsstring>
+        <name>comment</name>
+        <qualifiedname>Apache::Hadoop::Hive::FieldSchema::comment</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1153" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="1153" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1FieldSchema_1ac38fb752d156562430e6612f1157dc8c" prot="public" static="no" mutable="no">
+        <type><ref refid="structApache_1_1Hadoop_1_1Hive_1_1__FieldSchema____isset" kindref="compound">_FieldSchema__isset</ref></type>
+        <definition>_FieldSchema__isset Apache::Hadoop::Hive::FieldSchema::__isset</definition>
+        <argsstring></argsstring>
+        <name>__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::FieldSchema::__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1155" column="23" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="1155" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1FieldSchema_1aad965ca3bbf58d8f104f9f774284b3a1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::FieldSchema::FieldSchema</definition>
+        <argsstring>(const FieldSchema &amp;)</argsstring>
+        <name>FieldSchema</name>
+        <qualifiedname>Apache::Hadoop::Hive::FieldSchema::FieldSchema</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1FieldSchema" kindref="compound">FieldSchema</ref> &amp;</type>
+          <defname>other2</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1146" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="1184" bodyend="1189"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1FieldSchema_1a78bc091fd32127efe1bc4335a09566b3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1FieldSchema" kindref="compound">FieldSchema</ref> &amp;</type>
+        <definition>FieldSchema &amp; Apache::Hadoop::Hive::FieldSchema::operator=</definition>
+        <argsstring>(const FieldSchema &amp;)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::FieldSchema::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1FieldSchema" kindref="compound">FieldSchema</ref> &amp;</type>
+          <defname>other3</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1147" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="1190" bodyend="1196"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1FieldSchema_1aaf0a42b49aee6d922805a6253a403694" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::FieldSchema::FieldSchema</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>FieldSchema</name>
+        <qualifiedname>Apache::Hadoop::Hive::FieldSchema::FieldSchema</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1148" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="1062" bodyend="1066"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1FieldSchema_1aad537bcc190ac3206709fde7466f4f50" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::FieldSchema::~FieldSchema</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~FieldSchema</name>
+        <qualifiedname>Apache::Hadoop::Hive::FieldSchema::~FieldSchema</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1150" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="1059" bodyend="1060"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1FieldSchema_1ac0ab5404751086cc33d6043518a34098" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::FieldSchema::__set_name</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_name</name>
+        <qualifiedname>Apache::Hadoop::Hive::FieldSchema::__set_name</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1157" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="1068" bodyend="1070"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1FieldSchema_1ac576b129d714be84de0ff254472e4ce0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::FieldSchema::__set_type</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_type</name>
+        <qualifiedname>Apache::Hadoop::Hive::FieldSchema::__set_type</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1159" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="1072" bodyend="1074"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1FieldSchema_1a45dd574a8c56d927d557dd932f420622" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::FieldSchema::__set_comment</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_comment</name>
+        <qualifiedname>Apache::Hadoop::Hive::FieldSchema::__set_comment</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1161" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="1076" bodyend="1078"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1FieldSchema_1a13d81b53f5938856f1e37d1dddeb3a6a" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::FieldSchema::operator==</definition>
+        <argsstring>(const FieldSchema &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::FieldSchema::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1FieldSchema" kindref="compound">FieldSchema</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1163" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="1173" bodyend="1182"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1FieldSchema_1ae162bd4132272f821770612858522a60" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::FieldSchema::operator!=</definition>
+        <argsstring>(const FieldSchema &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::FieldSchema::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1FieldSchema" kindref="compound">FieldSchema</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1164" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="1164" bodyend="1166"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1FieldSchema_1aab93a866ee80382064b9327ac6e32dc3" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::FieldSchema::operator&lt;</definition>
+        <argsstring>(const FieldSchema &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::FieldSchema::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1FieldSchema" kindref="compound">FieldSchema</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1168" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1FieldSchema_1ad8701db4165ca88b052e42aa5b4435a1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::FieldSchema::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot) override</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::FieldSchema::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1170" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="1086" bodyend="1141"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1FieldSchema_1a576e6d424ed1611ce4e8507c66e750d1" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::FieldSchema::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const override</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::FieldSchema::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1171" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="1143" bodyend="1163"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1FieldSchema_1a6f36dafa5c2fba50cbe71978a5dedaf6" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::FieldSchema::printTo</definition>
+        <argsstring>(std::ostream &amp;out) const</argsstring>
+        <name>printTo</name>
+        <qualifiedname>Apache::Hadoop::Hive::FieldSchema::printTo</qualifiedname>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1173" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="1197" bodyend="1204"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::FieldSchema</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1FieldSchema"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::FieldSchema</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1FieldSchema"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>comment</edgelabel>
+          <edgelabel>name</edgelabel>
+          <edgelabel>type</edgelabel>
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="5">
+        <label>Apache::Hadoop::Hive::_FieldSchema__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__FieldSchema____isset"/>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+      <node id="4">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="3">
+        <label>std::string</label>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1143" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="1143" bodyend="1174"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1FieldSchema_1ac38fb752d156562430e6612f1157dc8c" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::FieldSchema</scope><name>__isset</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1FieldSchema_1a45dd574a8c56d927d557dd932f420622" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::FieldSchema</scope><name>__set_comment</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1FieldSchema_1ac0ab5404751086cc33d6043518a34098" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::FieldSchema</scope><name>__set_name</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1FieldSchema_1ac576b129d714be84de0ff254472e4ce0" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::FieldSchema</scope><name>__set_type</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1FieldSchema_1ad8c4e0eb758077567981b99ff5153c93" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::FieldSchema</scope><name>comment</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1FieldSchema_1aad965ca3bbf58d8f104f9f774284b3a1" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::FieldSchema</scope><name>FieldSchema</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1FieldSchema_1aaf0a42b49aee6d922805a6253a403694" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::FieldSchema</scope><name>FieldSchema</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1FieldSchema_1a54600352db0cf804d3966cc800e821f0" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::FieldSchema</scope><name>name</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1FieldSchema_1ae162bd4132272f821770612858522a60" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::FieldSchema</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1FieldSchema_1aab93a866ee80382064b9327ac6e32dc3" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::FieldSchema</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1FieldSchema_1a78bc091fd32127efe1bc4335a09566b3" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::FieldSchema</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1FieldSchema_1a13d81b53f5938856f1e37d1dddeb3a6a" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::FieldSchema</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1FieldSchema_1a6f36dafa5c2fba50cbe71978a5dedaf6" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::FieldSchema</scope><name>printTo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1FieldSchema_1ad8701db4165ca88b052e42aa5b4435a1" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::FieldSchema</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1FieldSchema_1a63237cb570186437291d4f267f5967c7" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::FieldSchema</scope><name>type</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1FieldSchema_1a576e6d424ed1611ce4e8507c66e750d1" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::FieldSchema</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1FieldSchema_1aad537bcc190ac3206709fde7466f4f50" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::FieldSchema</scope><name>~FieldSchema</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

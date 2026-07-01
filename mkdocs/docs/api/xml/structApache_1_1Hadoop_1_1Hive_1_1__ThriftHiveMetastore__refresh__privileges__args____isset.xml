@@ -1,0 +1,80 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structApache_1_1Hadoop_1_1Hive_1_1__ThriftHiveMetastore__refresh__privileges__args____isset" kind="struct" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::_ThriftHiveMetastore_refresh_privileges_args__isset</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__ThriftHiveMetastore__refresh__privileges__args____isset_1acb89ba41c8d2a01f5e35b9c4a977f249" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_ThriftHiveMetastore_refresh_privileges_args__isset::objToRefresh</definition>
+        <argsstring></argsstring>
+        <name>objToRefresh</name>
+        <qualifiedname>Apache::Hadoop::Hive::_ThriftHiveMetastore_refresh_privileges_args__isset::objToRefresh</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="19050" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="19050" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__ThriftHiveMetastore__refresh__privileges__args____isset_1a6e380d8309dbdda151b5dbb604dcf3b4" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_ThriftHiveMetastore_refresh_privileges_args__isset::authorizer</definition>
+        <argsstring></argsstring>
+        <name>authorizer</name>
+        <qualifiedname>Apache::Hadoop::Hive::_ThriftHiveMetastore_refresh_privileges_args__isset::authorizer</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="19051" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="19051" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__ThriftHiveMetastore__refresh__privileges__args____isset_1af4dca817c4f7e723bceea6b1ae771e15" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_ThriftHiveMetastore_refresh_privileges_args__isset::grantRequest</definition>
+        <argsstring></argsstring>
+        <name>grantRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::_ThriftHiveMetastore_refresh_privileges_args__isset::grantRequest</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="19052" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="19052" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structApache_1_1Hadoop_1_1Hive_1_1__ThriftHiveMetastore__refresh__privileges__args____isset_1a1b25375a4f16a5e2380227b908087b16" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::_ThriftHiveMetastore_refresh_privileges_args__isset::_ThriftHiveMetastore_refresh_privileges_args__isset</definition>
+        <argsstring>()</argsstring>
+        <name>_ThriftHiveMetastore_refresh_privileges_args__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::_ThriftHiveMetastore_refresh_privileges_args__isset::_ThriftHiveMetastore_refresh_privileges_args__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="19049" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="19049" bodyend="19049"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="19048" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="19048" bodyend="19053"/>
+    <listofallmembers>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__ThriftHiveMetastore__refresh__privileges__args____isset_1a1b25375a4f16a5e2380227b908087b16" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_ThriftHiveMetastore_refresh_privileges_args__isset</scope><name>_ThriftHiveMetastore_refresh_privileges_args__isset</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__ThriftHiveMetastore__refresh__privileges__args____isset_1a6e380d8309dbdda151b5dbb604dcf3b4" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_ThriftHiveMetastore_refresh_privileges_args__isset</scope><name>authorizer</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__ThriftHiveMetastore__refresh__privileges__args____isset_1af4dca817c4f7e723bceea6b1ae771e15" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_ThriftHiveMetastore_refresh_privileges_args__isset</scope><name>grantRequest</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__ThriftHiveMetastore__refresh__privileges__args____isset_1acb89ba41c8d2a01f5e35b9c4a977f249" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_ThriftHiveMetastore_refresh_privileges_args__isset</scope><name>objToRefresh</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,328 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1FindSchemasByColsResp" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::FindSchemasByColsResp</compoundname>
+    <basecompoundref prot="public" virt="virtual">apache::thrift::TBase</basecompoundref>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1FindSchemasByColsResp_1a627967dfc43a847d7a98689d6e9bb90c" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; <ref refid="classApache_1_1Hadoop_1_1Hive_1_1SchemaVersionDescriptor" kindref="compound">SchemaVersionDescriptor</ref> &gt;</type>
+        <definition>std::vector&lt;SchemaVersionDescriptor&gt; Apache::Hadoop::Hive::FindSchemasByColsResp::schemaVersions</definition>
+        <argsstring></argsstring>
+        <name>schemaVersions</name>
+        <qualifiedname>Apache::Hadoop::Hive::FindSchemasByColsResp::schemaVersions</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12840" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="12840" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1FindSchemasByColsResp_1a8e53a44267e9afce8dcf7460e6c8ba29" prot="public" static="no" mutable="no">
+        <type><ref refid="structApache_1_1Hadoop_1_1Hive_1_1__FindSchemasByColsResp____isset" kindref="compound">_FindSchemasByColsResp__isset</ref></type>
+        <definition>_FindSchemasByColsResp__isset Apache::Hadoop::Hive::FindSchemasByColsResp::__isset</definition>
+        <argsstring></argsstring>
+        <name>__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::FindSchemasByColsResp::__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12842" column="33" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="12842" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1FindSchemasByColsResp_1a49fa866cc9c78975786ffbd7d42573a5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::FindSchemasByColsResp::FindSchemasByColsResp</definition>
+        <argsstring>(const FindSchemasByColsResp &amp;)</argsstring>
+        <name>FindSchemasByColsResp</name>
+        <qualifiedname>Apache::Hadoop::Hive::FindSchemasByColsResp::FindSchemasByColsResp</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1FindSchemasByColsResp" kindref="compound">FindSchemasByColsResp</ref> &amp;</type>
+          <defname>other1562</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12835" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="50175" bodyend="50178"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1FindSchemasByColsResp_1ac71e8eedb892c794c52ab63bb82ebfda" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1FindSchemasByColsResp" kindref="compound">FindSchemasByColsResp</ref> &amp;</type>
+        <definition>FindSchemasByColsResp &amp; Apache::Hadoop::Hive::FindSchemasByColsResp::operator=</definition>
+        <argsstring>(const FindSchemasByColsResp &amp;)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::FindSchemasByColsResp::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1FindSchemasByColsResp" kindref="compound">FindSchemasByColsResp</ref> &amp;</type>
+          <defname>other1563</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12836" column="25" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="50179" bodyend="50183"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1FindSchemasByColsResp_1a34a9d5feef120d0176bc9deae5ed2f0a" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::FindSchemasByColsResp::FindSchemasByColsResp</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>FindSchemasByColsResp</name>
+        <qualifiedname>Apache::Hadoop::Hive::FindSchemasByColsResp::FindSchemasByColsResp</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12837" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="50074" bodyend="50075"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1FindSchemasByColsResp_1a63c9fc453028d6fc0d998930e4d858bb" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::FindSchemasByColsResp::~FindSchemasByColsResp</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~FindSchemasByColsResp</name>
+        <qualifiedname>Apache::Hadoop::Hive::FindSchemasByColsResp::~FindSchemasByColsResp</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12839" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="50071" bodyend="50072"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1FindSchemasByColsResp_1ab8479f3f3825160757c37c132db86ae3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::FindSchemasByColsResp::__set_schemaVersions</definition>
+        <argsstring>(const std::vector&lt; SchemaVersionDescriptor &gt; &amp;val)</argsstring>
+        <name>__set_schemaVersions</name>
+        <qualifiedname>Apache::Hadoop::Hive::FindSchemasByColsResp::__set_schemaVersions</qualifiedname>
+        <param>
+          <type>const std::vector&lt; <ref refid="classApache_1_1Hadoop_1_1Hive_1_1SchemaVersionDescriptor" kindref="compound">SchemaVersionDescriptor</ref> &gt; &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12844" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="50077" bodyend="50079"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1FindSchemasByColsResp_1a1db8c4178063de44b8873f9c020c8c72" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::FindSchemasByColsResp::operator==</definition>
+        <argsstring>(const FindSchemasByColsResp &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::FindSchemasByColsResp::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1FindSchemasByColsResp" kindref="compound">FindSchemasByColsResp</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12846" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="50168" bodyend="50173"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1FindSchemasByColsResp_1acb34baac19cd09f3d75ba0792ff2ebc4" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::FindSchemasByColsResp::operator!=</definition>
+        <argsstring>(const FindSchemasByColsResp &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::FindSchemasByColsResp::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1FindSchemasByColsResp" kindref="compound">FindSchemasByColsResp</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12847" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="12847" bodyend="12849"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1FindSchemasByColsResp_1adc8ed0a7222d519baf5736af04fdc3ce" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::FindSchemasByColsResp::operator&lt;</definition>
+        <argsstring>(const FindSchemasByColsResp &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::FindSchemasByColsResp::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1FindSchemasByColsResp" kindref="compound">FindSchemasByColsResp</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12851" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1FindSchemasByColsResp_1a60ec25ca633ab8e72fb689365ec693c8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::FindSchemasByColsResp::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot) override</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::FindSchemasByColsResp::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12853" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="50087" bodyend="50138"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1FindSchemasByColsResp_1a630c5dc0c8bea5cb924b5e8e313a8481" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::FindSchemasByColsResp::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const override</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::FindSchemasByColsResp::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12854" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="50140" bodyend="50160"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1FindSchemasByColsResp_1a37fdb05c1962f93d49638947cdc3647f" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::FindSchemasByColsResp::printTo</definition>
+        <argsstring>(std::ostream &amp;out) const</argsstring>
+        <name>printTo</name>
+        <qualifiedname>Apache::Hadoop::Hive::FindSchemasByColsResp::printTo</qualifiedname>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12856" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="50184" bodyend="50189"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::FindSchemasByColsResp</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1FindSchemasByColsResp"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::FindSchemasByColsResp</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1FindSchemasByColsResp"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>schemaVersions</edgelabel>
+        </childnode>
+        <childnode refid="10" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="5">
+        <label>Apache::Hadoop::Hive::ISchemaName</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1ISchemaName"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="6" relation="usage">
+          <edgelabel>catName</edgelabel>
+          <edgelabel>dbName</edgelabel>
+          <edgelabel>schemaName</edgelabel>
+        </childnode>
+        <childnode refid="8" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="4">
+        <label>Apache::Hadoop::Hive::SchemaVersionDescriptor</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1SchemaVersionDescriptor"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>schema</edgelabel>
+        </childnode>
+        <childnode refid="9" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="10">
+        <label>Apache::Hadoop::Hive::_FindSchemasByColsResp__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__FindSchemasByColsResp____isset"/>
+      </node>
+      <node id="8">
+        <label>Apache::Hadoop::Hive::_ISchemaName__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__ISchemaName____isset"/>
+      </node>
+      <node id="9">
+        <label>Apache::Hadoop::Hive::_SchemaVersionDescriptor__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__SchemaVersionDescriptor____isset"/>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+      <node id="7">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="6">
+        <label>std::string</label>
+        <childnode refid="7" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::vector&lt; Apache::Hadoop::Hive::SchemaVersionDescriptor &gt;</label>
+        <childnode refid="4" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12832" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="12832" bodyend="12857"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1FindSchemasByColsResp_1a8e53a44267e9afce8dcf7460e6c8ba29" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::FindSchemasByColsResp</scope><name>__isset</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1FindSchemasByColsResp_1ab8479f3f3825160757c37c132db86ae3" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::FindSchemasByColsResp</scope><name>__set_schemaVersions</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1FindSchemasByColsResp_1a49fa866cc9c78975786ffbd7d42573a5" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::FindSchemasByColsResp</scope><name>FindSchemasByColsResp</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1FindSchemasByColsResp_1a34a9d5feef120d0176bc9deae5ed2f0a" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::FindSchemasByColsResp</scope><name>FindSchemasByColsResp</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1FindSchemasByColsResp_1acb34baac19cd09f3d75ba0792ff2ebc4" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::FindSchemasByColsResp</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1FindSchemasByColsResp_1adc8ed0a7222d519baf5736af04fdc3ce" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::FindSchemasByColsResp</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1FindSchemasByColsResp_1ac71e8eedb892c794c52ab63bb82ebfda" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::FindSchemasByColsResp</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1FindSchemasByColsResp_1a1db8c4178063de44b8873f9c020c8c72" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::FindSchemasByColsResp</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1FindSchemasByColsResp_1a37fdb05c1962f93d49638947cdc3647f" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::FindSchemasByColsResp</scope><name>printTo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1FindSchemasByColsResp_1a60ec25ca633ab8e72fb689365ec693c8" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::FindSchemasByColsResp</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1FindSchemasByColsResp_1a627967dfc43a847d7a98689d6e9bb90c" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::FindSchemasByColsResp</scope><name>schemaVersions</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1FindSchemasByColsResp_1a630c5dc0c8bea5cb924b5e8e313a8481" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::FindSchemasByColsResp</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1FindSchemasByColsResp_1a63c9fc453028d6fc0d998930e4d858bb" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::FindSchemasByColsResp</scope><name>~FindSchemasByColsResp</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

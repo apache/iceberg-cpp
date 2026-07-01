@@ -1,0 +1,400 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1ExtendedTableInfo" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::ExtendedTableInfo</compoundname>
+    <basecompoundref prot="public" virt="virtual">apache::thrift::TBase</basecompoundref>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ExtendedTableInfo_1a66657ccce0a41b562d0ffcb97c8ca543" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::ExtendedTableInfo::tblName</definition>
+        <argsstring></argsstring>
+        <name>tblName</name>
+        <qualifiedname>Apache::Hadoop::Hive::ExtendedTableInfo::tblName</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10483" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="10483" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ExtendedTableInfo_1a01fe4ca906e76f60d64512f13bddd7f9" prot="public" static="no" mutable="no">
+        <type>int32_t</type>
+        <definition>int32_t Apache::Hadoop::Hive::ExtendedTableInfo::accessType</definition>
+        <argsstring></argsstring>
+        <name>accessType</name>
+        <qualifiedname>Apache::Hadoop::Hive::ExtendedTableInfo::accessType</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10484" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="10484" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ExtendedTableInfo_1a86204d098d46ce93527763da30361f41" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; std::string &gt;</type>
+        <definition>std::vector&lt;std::string&gt; Apache::Hadoop::Hive::ExtendedTableInfo::requiredReadCapabilities</definition>
+        <argsstring></argsstring>
+        <name>requiredReadCapabilities</name>
+        <qualifiedname>Apache::Hadoop::Hive::ExtendedTableInfo::requiredReadCapabilities</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10485" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="10485" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ExtendedTableInfo_1aa88fe2b996d57fcabe9d3d1b2f5af1fa" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; std::string &gt;</type>
+        <definition>std::vector&lt;std::string&gt; Apache::Hadoop::Hive::ExtendedTableInfo::requiredWriteCapabilities</definition>
+        <argsstring></argsstring>
+        <name>requiredWriteCapabilities</name>
+        <qualifiedname>Apache::Hadoop::Hive::ExtendedTableInfo::requiredWriteCapabilities</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10486" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="10486" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ExtendedTableInfo_1a626bf54d7030ae0e93574f262ede2a40" prot="public" static="no" mutable="no">
+        <type><ref refid="structApache_1_1Hadoop_1_1Hive_1_1__ExtendedTableInfo____isset" kindref="compound">_ExtendedTableInfo__isset</ref></type>
+        <definition>_ExtendedTableInfo__isset Apache::Hadoop::Hive::ExtendedTableInfo::__isset</definition>
+        <argsstring></argsstring>
+        <name>__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::ExtendedTableInfo::__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10488" column="29" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="10488" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ExtendedTableInfo_1a680e583883f5cc29ce8e0e5bc4f2ffec" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::ExtendedTableInfo::ExtendedTableInfo</definition>
+        <argsstring>(const ExtendedTableInfo &amp;)</argsstring>
+        <name>ExtendedTableInfo</name>
+        <qualifiedname>Apache::Hadoop::Hive::ExtendedTableInfo::ExtendedTableInfo</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ExtendedTableInfo" kindref="compound">ExtendedTableInfo</ref> &amp;</type>
+          <defname>other1375</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10478" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="41571" bodyend="41577"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ExtendedTableInfo_1aafe64e9ed83a1a51b5e69bf2c5265c58" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1ExtendedTableInfo" kindref="compound">ExtendedTableInfo</ref> &amp;</type>
+        <definition>ExtendedTableInfo &amp; Apache::Hadoop::Hive::ExtendedTableInfo::operator=</definition>
+        <argsstring>(const ExtendedTableInfo &amp;)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::ExtendedTableInfo::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ExtendedTableInfo" kindref="compound">ExtendedTableInfo</ref> &amp;</type>
+          <defname>other1376</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10479" column="21" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="41578" bodyend="41585"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ExtendedTableInfo_1acb54face63ab44d718a24c6a1a930ffc" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::ExtendedTableInfo::ExtendedTableInfo</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>ExtendedTableInfo</name>
+        <qualifiedname>Apache::Hadoop::Hive::ExtendedTableInfo::ExtendedTableInfo</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10480" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="41376" bodyend="41379"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ExtendedTableInfo_1a52c1454f0add0d2489a7b57f24d03e23" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::ExtendedTableInfo::~ExtendedTableInfo</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~ExtendedTableInfo</name>
+        <qualifiedname>Apache::Hadoop::Hive::ExtendedTableInfo::~ExtendedTableInfo</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10482" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="41373" bodyend="41374"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ExtendedTableInfo_1a5afe9792aceb8d93dfa7974902e512c6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::ExtendedTableInfo::__set_tblName</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_tblName</name>
+        <qualifiedname>Apache::Hadoop::Hive::ExtendedTableInfo::__set_tblName</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10490" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="41381" bodyend="41383"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ExtendedTableInfo_1adea380d612404f2e0ce1801d32fa94fe" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::ExtendedTableInfo::__set_accessType</definition>
+        <argsstring>(const int32_t val)</argsstring>
+        <name>__set_accessType</name>
+        <qualifiedname>Apache::Hadoop::Hive::ExtendedTableInfo::__set_accessType</qualifiedname>
+        <param>
+          <type>const int32_t</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10492" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="41385" bodyend="41388"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ExtendedTableInfo_1a33ec8cf87039c3bb56c60e1b11f3ec9e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::ExtendedTableInfo::__set_requiredReadCapabilities</definition>
+        <argsstring>(const std::vector&lt; std::string &gt; &amp;val)</argsstring>
+        <name>__set_requiredReadCapabilities</name>
+        <qualifiedname>Apache::Hadoop::Hive::ExtendedTableInfo::__set_requiredReadCapabilities</qualifiedname>
+        <param>
+          <type>const std::vector&lt; std::string &gt; &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10494" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="41390" bodyend="41393"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ExtendedTableInfo_1a104f618249af217dd24d2dd21a95ad50" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::ExtendedTableInfo::__set_requiredWriteCapabilities</definition>
+        <argsstring>(const std::vector&lt; std::string &gt; &amp;val)</argsstring>
+        <name>__set_requiredWriteCapabilities</name>
+        <qualifiedname>Apache::Hadoop::Hive::ExtendedTableInfo::__set_requiredWriteCapabilities</qualifiedname>
+        <param>
+          <type>const std::vector&lt; std::string &gt; &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10496" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="41395" bodyend="41398"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ExtendedTableInfo_1af5596a0ebcd9ddc8b2bcbe980e170896" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::ExtendedTableInfo::operator==</definition>
+        <argsstring>(const ExtendedTableInfo &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::ExtendedTableInfo::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ExtendedTableInfo" kindref="compound">ExtendedTableInfo</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10498" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="41552" bodyend="41569"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ExtendedTableInfo_1ab157f42e3bf396ba2623228f5ebf7c74" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::ExtendedTableInfo::operator!=</definition>
+        <argsstring>(const ExtendedTableInfo &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::ExtendedTableInfo::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ExtendedTableInfo" kindref="compound">ExtendedTableInfo</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10499" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="10499" bodyend="10501"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ExtendedTableInfo_1aa620bc2f4399ba4e9f76680d14a48a73" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::ExtendedTableInfo::operator&lt;</definition>
+        <argsstring>(const ExtendedTableInfo &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::ExtendedTableInfo::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ExtendedTableInfo" kindref="compound">ExtendedTableInfo</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10503" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ExtendedTableInfo_1a32594134422abb646334579a4baabd0d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::ExtendedTableInfo::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot) override</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::ExtendedTableInfo::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10505" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="41406" bodyend="41496"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ExtendedTableInfo_1a138aff7500f880b58f7ca7913054bbb0" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::ExtendedTableInfo::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const override</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::ExtendedTableInfo::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10506" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="41498" bodyend="41541"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ExtendedTableInfo_1aa8d467be65b21e3046e1d729a0ad4858" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::ExtendedTableInfo::printTo</definition>
+        <argsstring>(std::ostream &amp;out) const</argsstring>
+        <name>printTo</name>
+        <qualifiedname>Apache::Hadoop::Hive::ExtendedTableInfo::printTo</qualifiedname>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10508" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="41586" bodyend="41594"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::ExtendedTableInfo</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1ExtendedTableInfo"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::ExtendedTableInfo</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1ExtendedTableInfo"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>tblName</edgelabel>
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>requiredReadCapabilities</edgelabel>
+          <edgelabel>requiredWriteCapabilities</edgelabel>
+        </childnode>
+        <childnode refid="6" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="6">
+        <label>Apache::Hadoop::Hive::_ExtendedTableInfo__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__ExtendedTableInfo____isset"/>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+      <node id="4">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="3">
+        <label>std::string</label>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>std::vector&lt; std::string &gt;</label>
+        <childnode refid="3" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10475" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="10475" bodyend="10509"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ExtendedTableInfo_1a626bf54d7030ae0e93574f262ede2a40" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ExtendedTableInfo</scope><name>__isset</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ExtendedTableInfo_1adea380d612404f2e0ce1801d32fa94fe" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ExtendedTableInfo</scope><name>__set_accessType</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ExtendedTableInfo_1a33ec8cf87039c3bb56c60e1b11f3ec9e" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ExtendedTableInfo</scope><name>__set_requiredReadCapabilities</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ExtendedTableInfo_1a104f618249af217dd24d2dd21a95ad50" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ExtendedTableInfo</scope><name>__set_requiredWriteCapabilities</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ExtendedTableInfo_1a5afe9792aceb8d93dfa7974902e512c6" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ExtendedTableInfo</scope><name>__set_tblName</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ExtendedTableInfo_1a01fe4ca906e76f60d64512f13bddd7f9" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ExtendedTableInfo</scope><name>accessType</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ExtendedTableInfo_1a680e583883f5cc29ce8e0e5bc4f2ffec" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ExtendedTableInfo</scope><name>ExtendedTableInfo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ExtendedTableInfo_1acb54face63ab44d718a24c6a1a930ffc" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ExtendedTableInfo</scope><name>ExtendedTableInfo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ExtendedTableInfo_1ab157f42e3bf396ba2623228f5ebf7c74" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ExtendedTableInfo</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ExtendedTableInfo_1aa620bc2f4399ba4e9f76680d14a48a73" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ExtendedTableInfo</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ExtendedTableInfo_1aafe64e9ed83a1a51b5e69bf2c5265c58" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ExtendedTableInfo</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ExtendedTableInfo_1af5596a0ebcd9ddc8b2bcbe980e170896" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ExtendedTableInfo</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ExtendedTableInfo_1aa8d467be65b21e3046e1d729a0ad4858" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::ExtendedTableInfo</scope><name>printTo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ExtendedTableInfo_1a32594134422abb646334579a4baabd0d" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ExtendedTableInfo</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ExtendedTableInfo_1a86204d098d46ce93527763da30361f41" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ExtendedTableInfo</scope><name>requiredReadCapabilities</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ExtendedTableInfo_1aa88fe2b996d57fcabe9d3d1b2f5af1fa" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ExtendedTableInfo</scope><name>requiredWriteCapabilities</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ExtendedTableInfo_1a66657ccce0a41b562d0ffcb97c8ca543" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ExtendedTableInfo</scope><name>tblName</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ExtendedTableInfo_1a138aff7500f880b58f7ca7913054bbb0" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ExtendedTableInfo</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ExtendedTableInfo_1a52c1454f0add0d2489a7b57f24d03e23" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::ExtendedTableInfo</scope><name>~ExtendedTableInfo</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

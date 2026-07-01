@@ -1,0 +1,96 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structApache_1_1Hadoop_1_1Hive_1_1__RenamePartitionRequest____isset" kind="struct" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::_RenamePartitionRequest__isset</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__RenamePartitionRequest____isset_1af7e4c904860265a2f16bae747b6cc171" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_RenamePartitionRequest__isset::catName</definition>
+        <argsstring></argsstring>
+        <name>catName</name>
+        <qualifiedname>Apache::Hadoop::Hive::_RenamePartitionRequest__isset::catName</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13756" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="13756" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__RenamePartitionRequest____isset_1af8783166f29148a659fcb193a0d31feb" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_RenamePartitionRequest__isset::validWriteIdList</definition>
+        <argsstring></argsstring>
+        <name>validWriteIdList</name>
+        <qualifiedname>Apache::Hadoop::Hive::_RenamePartitionRequest__isset::validWriteIdList</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13757" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="13757" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__RenamePartitionRequest____isset_1a17b0451a1fcff5c8e45c3044979fcf94" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_RenamePartitionRequest__isset::txnId</definition>
+        <argsstring></argsstring>
+        <name>txnId</name>
+        <qualifiedname>Apache::Hadoop::Hive::_RenamePartitionRequest__isset::txnId</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13758" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="13758" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__RenamePartitionRequest____isset_1aeebfe605060302dacc04828fd131c3a1" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_RenamePartitionRequest__isset::clonePart</definition>
+        <argsstring></argsstring>
+        <name>clonePart</name>
+        <qualifiedname>Apache::Hadoop::Hive::_RenamePartitionRequest__isset::clonePart</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13759" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="13759" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structApache_1_1Hadoop_1_1Hive_1_1__RenamePartitionRequest____isset_1ad9b0ae93b1af76cde18e40dd80446b9e" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::_RenamePartitionRequest__isset::_RenamePartitionRequest__isset</definition>
+        <argsstring>()</argsstring>
+        <name>_RenamePartitionRequest__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::_RenamePartitionRequest__isset::_RenamePartitionRequest__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13755" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="13755" bodyend="13755"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13754" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="13754" bodyend="13760"/>
+    <listofallmembers>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__RenamePartitionRequest____isset_1ad9b0ae93b1af76cde18e40dd80446b9e" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_RenamePartitionRequest__isset</scope><name>_RenamePartitionRequest__isset</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__RenamePartitionRequest____isset_1af7e4c904860265a2f16bae747b6cc171" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_RenamePartitionRequest__isset</scope><name>catName</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__RenamePartitionRequest____isset_1aeebfe605060302dacc04828fd131c3a1" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_RenamePartitionRequest__isset</scope><name>clonePart</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__RenamePartitionRequest____isset_1a17b0451a1fcff5c8e45c3044979fcf94" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_RenamePartitionRequest__isset</scope><name>txnId</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__RenamePartitionRequest____isset_1af8783166f29148a659fcb193a0d31feb" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_RenamePartitionRequest__isset</scope><name>validWriteIdList</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

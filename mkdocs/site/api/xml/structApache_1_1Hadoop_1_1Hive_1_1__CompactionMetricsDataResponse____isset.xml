@@ -1,0 +1,48 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structApache_1_1Hadoop_1_1Hive_1_1__CompactionMetricsDataResponse____isset" kind="struct" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::_CompactionMetricsDataResponse__isset</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__CompactionMetricsDataResponse____isset_1aa04dd92dd6fc49ca5663607c184c4931" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_CompactionMetricsDataResponse__isset::data</definition>
+        <argsstring></argsstring>
+        <name>data</name>
+        <qualifiedname>Apache::Hadoop::Hive::_CompactionMetricsDataResponse__isset::data</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8412" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="8412" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structApache_1_1Hadoop_1_1Hive_1_1__CompactionMetricsDataResponse____isset_1a73c5b7ddc4e62572453ceae8d0e5e633" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::_CompactionMetricsDataResponse__isset::_CompactionMetricsDataResponse__isset</definition>
+        <argsstring>()</argsstring>
+        <name>_CompactionMetricsDataResponse__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::_CompactionMetricsDataResponse__isset::_CompactionMetricsDataResponse__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8411" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="8411" bodyend="8411"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8410" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="8410" bodyend="8413"/>
+    <listofallmembers>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__CompactionMetricsDataResponse____isset_1a73c5b7ddc4e62572453ceae8d0e5e633" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_CompactionMetricsDataResponse__isset</scope><name>_CompactionMetricsDataResponse__isset</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__CompactionMetricsDataResponse____isset_1aa04dd92dd6fc49ca5663607c184c4931" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_CompactionMetricsDataResponse__isset</scope><name>data</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

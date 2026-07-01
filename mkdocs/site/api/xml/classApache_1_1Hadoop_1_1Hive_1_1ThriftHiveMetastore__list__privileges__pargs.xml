@@ -1,0 +1,150 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__list__privileges__pargs" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::ThriftHiveMetastore_list_privileges_pargs</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__list__privileges__pargs_1a81fde063708170a8ca1ec36f19e76341" prot="public" static="no" mutable="no">
+        <type>const std::string *</type>
+        <definition>const std::string* Apache::Hadoop::Hive::ThriftHiveMetastore_list_privileges_pargs::principal_name</definition>
+        <argsstring></argsstring>
+        <name>principal_name</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_list_privileges_pargs::principal_name</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="18687" column="21" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="18687" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__list__privileges__pargs_1ac3efef641f8650ec2433b4a99c26289f" prot="public" static="no" mutable="no">
+        <type>const PrincipalType::type *</type>
+        <definition>const PrincipalType::type* Apache::Hadoop::Hive::ThriftHiveMetastore_list_privileges_pargs::principal_type</definition>
+        <argsstring></argsstring>
+        <name>principal_type</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_list_privileges_pargs::principal_type</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="see"><para><ref refid="structApache_1_1Hadoop_1_1Hive_1_1PrincipalType" kindref="compound">PrincipalType</ref> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="18692" column="29" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="18692" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__list__privileges__pargs_1a5443a6b0ab71065a3562a28153df62f7" prot="public" static="no" mutable="no">
+        <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1HiveObjectRef" kindref="compound">HiveObjectRef</ref> *</type>
+        <definition>const HiveObjectRef* Apache::Hadoop::Hive::ThriftHiveMetastore_list_privileges_pargs::hiveObject</definition>
+        <argsstring></argsstring>
+        <name>hiveObject</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_list_privileges_pargs::hiveObject</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="18693" column="23" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="18693" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__list__privileges__pargs_1abfae45c2e4356686354e4576f1e546b9" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::ThriftHiveMetastore_list_privileges_pargs::~ThriftHiveMetastore_list_privileges_pargs</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~ThriftHiveMetastore_list_privileges_pargs</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_list_privileges_pargs::~ThriftHiveMetastore_list_privileges_pargs</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="18686" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.cpp" bodystart="41755" bodyend="41756"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__list__privileges__pargs_1afe9476d8958772ef961ba813a1e040a9" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::ThriftHiveMetastore_list_privileges_pargs::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_list_privileges_pargs::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="18695" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.cpp" bodystart="41759" bodyend="41779"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="4">
+        <label>Apache::Hadoop::Hive::HiveObjectRef</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1HiveObjectRef"/>
+        <childnode refid="5" relation="public-inheritance">
+        </childnode>
+        <childnode refid="2" relation="usage">
+          <edgelabel>catName</edgelabel>
+          <edgelabel>columnName</edgelabel>
+          <edgelabel>dbName</edgelabel>
+          <edgelabel>objectName</edgelabel>
+        </childnode>
+        <childnode refid="6" relation="usage">
+          <edgelabel>partValues</edgelabel>
+        </childnode>
+        <childnode refid="7" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::ThriftHiveMetastore_list_privileges_pargs</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__list__privileges__pargs"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>principal_name</edgelabel>
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>hiveObject</edgelabel>
+        </childnode>
+      </node>
+      <node id="7">
+        <label>Apache::Hadoop::Hive::_HiveObjectRef__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__HiveObjectRef____isset"/>
+      </node>
+      <node id="5">
+        <label>apache::thrift::TBase</label>
+      </node>
+      <node id="3">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="2">
+        <label>std::string</label>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="6">
+        <label>std::vector&lt; std::string &gt;</label>
+        <childnode refid="2" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="18682" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="18682" bodyend="18697"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__list__privileges__pargs_1a5443a6b0ab71065a3562a28153df62f7" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_list_privileges_pargs</scope><name>hiveObject</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__list__privileges__pargs_1a81fde063708170a8ca1ec36f19e76341" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_list_privileges_pargs</scope><name>principal_name</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__list__privileges__pargs_1ac3efef641f8650ec2433b4a99c26289f" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_list_privileges_pargs</scope><name>principal_type</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__list__privileges__pargs_1afe9476d8958772ef961ba813a1e040a9" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_list_privileges_pargs</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__list__privileges__pargs_1abfae45c2e4356686354e4576f1e546b9" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_list_privileges_pargs</scope><name>~ThriftHiveMetastore_list_privileges_pargs</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,270 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__scheduled__query__progress__args" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::ThriftHiveMetastore_scheduled_query_progress_args</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__scheduled__query__progress__args_1aabe4ff3f282fb931d4f119c8ea1afb41" prot="public" static="no" mutable="no">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1ScheduledQueryProgressInfo" kindref="compound">ScheduledQueryProgressInfo</ref></type>
+        <definition>ScheduledQueryProgressInfo Apache::Hadoop::Hive::ThriftHiveMetastore_scheduled_query_progress_args::info</definition>
+        <argsstring></argsstring>
+        <name>info</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_scheduled_query_progress_args::info</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="29012" column="30" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="29012" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__scheduled__query__progress__args_1a1057d9a2d03cae88e861561a0e28c1b7" prot="public" static="no" mutable="no">
+        <type><ref refid="structApache_1_1Hadoop_1_1Hive_1_1__ThriftHiveMetastore__scheduled__query__progress__args____isset" kindref="compound">_ThriftHiveMetastore_scheduled_query_progress_args__isset</ref></type>
+        <definition>_ThriftHiveMetastore_scheduled_query_progress_args__isset Apache::Hadoop::Hive::ThriftHiveMetastore_scheduled_query_progress_args::__isset</definition>
+        <argsstring></argsstring>
+        <name>__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_scheduled_query_progress_args::__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="29014" column="61" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="29014" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__scheduled__query__progress__args_1ac5662cc611859aad7fd1306fd0270286" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::ThriftHiveMetastore_scheduled_query_progress_args::ThriftHiveMetastore_scheduled_query_progress_args</definition>
+        <argsstring>(const ThriftHiveMetastore_scheduled_query_progress_args &amp;)</argsstring>
+        <name>ThriftHiveMetastore_scheduled_query_progress_args</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_scheduled_query_progress_args::ThriftHiveMetastore_scheduled_query_progress_args</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__scheduled__query__progress__args" kindref="compound">ThriftHiveMetastore_scheduled_query_progress_args</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="29007" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__scheduled__query__progress__args_1a02cf34951816f85fd5255545351819d7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__scheduled__query__progress__args" kindref="compound">ThriftHiveMetastore_scheduled_query_progress_args</ref> &amp;</type>
+        <definition>ThriftHiveMetastore_scheduled_query_progress_args &amp; Apache::Hadoop::Hive::ThriftHiveMetastore_scheduled_query_progress_args::operator=</definition>
+        <argsstring>(const ThriftHiveMetastore_scheduled_query_progress_args &amp;)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_scheduled_query_progress_args::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__scheduled__query__progress__args" kindref="compound">ThriftHiveMetastore_scheduled_query_progress_args</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="29008" column="53"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__scheduled__query__progress__args_1a3eb31dac72932f5674c8dbb92420db17" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::ThriftHiveMetastore_scheduled_query_progress_args::ThriftHiveMetastore_scheduled_query_progress_args</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>ThriftHiveMetastore_scheduled_query_progress_args</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_scheduled_query_progress_args::ThriftHiveMetastore_scheduled_query_progress_args</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="29009" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.cpp" bodystart="64435" bodyend="64436"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__scheduled__query__progress__args_1aa1991f781e0ea236cad4b97c76d136bd" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::ThriftHiveMetastore_scheduled_query_progress_args::~ThriftHiveMetastore_scheduled_query_progress_args</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~ThriftHiveMetastore_scheduled_query_progress_args</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_scheduled_query_progress_args::~ThriftHiveMetastore_scheduled_query_progress_args</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="29011" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.cpp" bodystart="64432" bodyend="64433"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__scheduled__query__progress__args_1a012cd6545d9fa154f56b0ccae58cec72" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::ThriftHiveMetastore_scheduled_query_progress_args::__set_info</definition>
+        <argsstring>(const ScheduledQueryProgressInfo &amp;val)</argsstring>
+        <name>__set_info</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_scheduled_query_progress_args::__set_info</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ScheduledQueryProgressInfo" kindref="compound">ScheduledQueryProgressInfo</ref> &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="29016" column="8"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__scheduled__query__progress__args_1a7c088c9025e5a440ea925b32746fd020" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::ThriftHiveMetastore_scheduled_query_progress_args::operator==</definition>
+        <argsstring>(const ThriftHiveMetastore_scheduled_query_progress_args &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_scheduled_query_progress_args::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__scheduled__query__progress__args" kindref="compound">ThriftHiveMetastore_scheduled_query_progress_args</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="29018" column="8"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__scheduled__query__progress__args_1a98fe9db71bb2ca39d80523b7231edcf5" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::ThriftHiveMetastore_scheduled_query_progress_args::operator!=</definition>
+        <argsstring>(const ThriftHiveMetastore_scheduled_query_progress_args &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_scheduled_query_progress_args::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__scheduled__query__progress__args" kindref="compound">ThriftHiveMetastore_scheduled_query_progress_args</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="29019" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="29019" bodyend="29021"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__scheduled__query__progress__args_1ac404f999731d21905aefff6cb2fdc510" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::ThriftHiveMetastore_scheduled_query_progress_args::operator&lt;</definition>
+        <argsstring>(const ThriftHiveMetastore_scheduled_query_progress_args &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_scheduled_query_progress_args::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__scheduled__query__progress__args" kindref="compound">ThriftHiveMetastore_scheduled_query_progress_args</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="29023" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__scheduled__query__progress__args_1a3cd6d3b19643b9e7708b369080a486fd" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::ThriftHiveMetastore_scheduled_query_progress_args::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot)</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_scheduled_query_progress_args::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="29025" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.cpp" bodystart="64438" bodyend="64477"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__scheduled__query__progress__args_1ad71e98e678b9d8940cca23fa19b14d3d" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::ThriftHiveMetastore_scheduled_query_progress_args::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_scheduled_query_progress_args::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="29026" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.cpp" bodystart="64479" bodyend="64491"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="2">
+        <label>Apache::Hadoop::Hive::ScheduledQueryProgressInfo</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1ScheduledQueryProgressInfo"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>errorMessage</edgelabel>
+          <edgelabel>executorQueryId</edgelabel>
+        </childnode>
+        <childnode refid="6" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::ThriftHiveMetastore_scheduled_query_progress_args</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__scheduled__query__progress__args"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>info</edgelabel>
+        </childnode>
+        <childnode refid="7" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="6">
+        <label>Apache::Hadoop::Hive::_ScheduledQueryProgressInfo__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__ScheduledQueryProgressInfo____isset"/>
+      </node>
+      <node id="7">
+        <label>Apache::Hadoop::Hive::_ThriftHiveMetastore_scheduled_query_progress_args__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__ThriftHiveMetastore__scheduled__query__progress__args____isset"/>
+      </node>
+      <node id="3">
+        <label>apache::thrift::TBase</label>
+      </node>
+      <node id="5">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="4">
+        <label>std::string</label>
+        <childnode refid="5" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="29004" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="29004" bodyend="29028"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__scheduled__query__progress__args_1a1057d9a2d03cae88e861561a0e28c1b7" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_scheduled_query_progress_args</scope><name>__isset</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__scheduled__query__progress__args_1a012cd6545d9fa154f56b0ccae58cec72" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_scheduled_query_progress_args</scope><name>__set_info</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__scheduled__query__progress__args_1aabe4ff3f282fb931d4f119c8ea1afb41" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_scheduled_query_progress_args</scope><name>info</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__scheduled__query__progress__args_1a98fe9db71bb2ca39d80523b7231edcf5" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_scheduled_query_progress_args</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__scheduled__query__progress__args_1ac404f999731d21905aefff6cb2fdc510" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_scheduled_query_progress_args</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__scheduled__query__progress__args_1a02cf34951816f85fd5255545351819d7" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_scheduled_query_progress_args</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__scheduled__query__progress__args_1a7c088c9025e5a440ea925b32746fd020" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_scheduled_query_progress_args</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__scheduled__query__progress__args_1a3cd6d3b19643b9e7708b369080a486fd" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_scheduled_query_progress_args</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__scheduled__query__progress__args_1ac5662cc611859aad7fd1306fd0270286" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_scheduled_query_progress_args</scope><name>ThriftHiveMetastore_scheduled_query_progress_args</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__scheduled__query__progress__args_1a3eb31dac72932f5674c8dbb92420db17" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_scheduled_query_progress_args</scope><name>ThriftHiveMetastore_scheduled_query_progress_args</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__scheduled__query__progress__args_1ad71e98e678b9d8940cca23fa19b14d3d" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_scheduled_query_progress_args</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__scheduled__query__progress__args_1aa1991f781e0ea236cad4b97c76d136bd" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_scheduled_query_progress_args</scope><name>~ThriftHiveMetastore_scheduled_query_progress_args</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

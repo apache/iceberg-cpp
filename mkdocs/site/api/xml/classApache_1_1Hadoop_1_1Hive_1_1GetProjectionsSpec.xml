@@ -1,0 +1,366 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1GetProjectionsSpec" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::GetProjectionsSpec</compoundname>
+    <basecompoundref prot="public" virt="virtual">apache::thrift::TBase</basecompoundref>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1GetProjectionsSpec_1a7a5e5aeaa1b59c4343dfd6e69a54e14b" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; std::string &gt;</type>
+        <definition>std::vector&lt;std::string&gt; Apache::Hadoop::Hive::GetProjectionsSpec::fieldList</definition>
+        <argsstring></argsstring>
+        <name>fieldList</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetProjectionsSpec::fieldList</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10181" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="10181" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1GetProjectionsSpec_1ad9f2cd2686316dd8d05235d7b92f497e" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::GetProjectionsSpec::includeParamKeyPattern</definition>
+        <argsstring></argsstring>
+        <name>includeParamKeyPattern</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetProjectionsSpec::includeParamKeyPattern</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10182" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="10182" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1GetProjectionsSpec_1ac0679f98526969d8c3ef547ac9b734e0" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::GetProjectionsSpec::excludeParamKeyPattern</definition>
+        <argsstring></argsstring>
+        <name>excludeParamKeyPattern</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetProjectionsSpec::excludeParamKeyPattern</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10183" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="10183" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1GetProjectionsSpec_1aa5d5e48079986bb0d99cb7aa698c3f0a" prot="public" static="no" mutable="no">
+        <type><ref refid="structApache_1_1Hadoop_1_1Hive_1_1__GetProjectionsSpec____isset" kindref="compound">_GetProjectionsSpec__isset</ref></type>
+        <definition>_GetProjectionsSpec__isset Apache::Hadoop::Hive::GetProjectionsSpec::__isset</definition>
+        <argsstring></argsstring>
+        <name>__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetProjectionsSpec::__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10185" column="30" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="10185" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetProjectionsSpec_1ad66620aab94a2999538a54f7cf741ca8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::GetProjectionsSpec::GetProjectionsSpec</definition>
+        <argsstring>(const GetProjectionsSpec &amp;)</argsstring>
+        <name>GetProjectionsSpec</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetProjectionsSpec::GetProjectionsSpec</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1GetProjectionsSpec" kindref="compound">GetProjectionsSpec</ref> &amp;</type>
+          <defname>other1321</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10176" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="40121" bodyend="40126"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetProjectionsSpec_1a345d0b3568721a16eaeee255c01ea397" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1GetProjectionsSpec" kindref="compound">GetProjectionsSpec</ref> &amp;</type>
+        <definition>GetProjectionsSpec &amp; Apache::Hadoop::Hive::GetProjectionsSpec::operator=</definition>
+        <argsstring>(const GetProjectionsSpec &amp;)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetProjectionsSpec::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1GetProjectionsSpec" kindref="compound">GetProjectionsSpec</ref> &amp;</type>
+          <defname>other1322</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10177" column="22" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="40127" bodyend="40133"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetProjectionsSpec_1a9836aaca2f29b10978ff2ed394bd7f33" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::GetProjectionsSpec::GetProjectionsSpec</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>GetProjectionsSpec</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetProjectionsSpec::GetProjectionsSpec</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10178" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="39980" bodyend="39983"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetProjectionsSpec_1ae704591eb48cd50c4f164bdc064c14a1" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::GetProjectionsSpec::~GetProjectionsSpec</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~GetProjectionsSpec</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetProjectionsSpec::~GetProjectionsSpec</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10180" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="39977" bodyend="39978"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetProjectionsSpec_1a483901024ccf4877073bf99b80465631" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::GetProjectionsSpec::__set_fieldList</definition>
+        <argsstring>(const std::vector&lt; std::string &gt; &amp;val)</argsstring>
+        <name>__set_fieldList</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetProjectionsSpec::__set_fieldList</qualifiedname>
+        <param>
+          <type>const std::vector&lt; std::string &gt; &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10187" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="39985" bodyend="39987"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetProjectionsSpec_1ae80d0a5075a99b017ea6853a61af8d7a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::GetProjectionsSpec::__set_includeParamKeyPattern</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_includeParamKeyPattern</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetProjectionsSpec::__set_includeParamKeyPattern</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10189" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="39989" bodyend="39991"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetProjectionsSpec_1a12a5b19b3d857707efd1c000f8f6ade5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::GetProjectionsSpec::__set_excludeParamKeyPattern</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_excludeParamKeyPattern</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetProjectionsSpec::__set_excludeParamKeyPattern</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10191" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="39993" bodyend="39995"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetProjectionsSpec_1a86448cef90bb2cdc185a6811be10eca2" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::GetProjectionsSpec::operator==</definition>
+        <argsstring>(const GetProjectionsSpec &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetProjectionsSpec::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1GetProjectionsSpec" kindref="compound">GetProjectionsSpec</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10193" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="40110" bodyend="40119"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetProjectionsSpec_1a1239f78d3d4a9031d68a8d64007b1b82" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::GetProjectionsSpec::operator!=</definition>
+        <argsstring>(const GetProjectionsSpec &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetProjectionsSpec::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1GetProjectionsSpec" kindref="compound">GetProjectionsSpec</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10194" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="10194" bodyend="10196"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetProjectionsSpec_1a51eada36bc440e5256950c0939338b9a" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::GetProjectionsSpec::operator&lt;</definition>
+        <argsstring>(const GetProjectionsSpec &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetProjectionsSpec::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1GetProjectionsSpec" kindref="compound">GetProjectionsSpec</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10198" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetProjectionsSpec_1a1134a0f15bb7316dd256f7d42a458900" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::GetProjectionsSpec::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot) override</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetProjectionsSpec::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10200" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="40003" bodyend="40070"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetProjectionsSpec_1a75fdc301447f93514a1700a269aec9c5" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::GetProjectionsSpec::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const override</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetProjectionsSpec::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10201" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="40072" bodyend="40100"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetProjectionsSpec_1a27a5a51fbf865fe0522c65e63b2a9a57" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::GetProjectionsSpec::printTo</definition>
+        <argsstring>(std::ostream &amp;out) const</argsstring>
+        <name>printTo</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetProjectionsSpec::printTo</qualifiedname>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10203" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="40134" bodyend="40141"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::GetProjectionsSpec</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1GetProjectionsSpec"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::GetProjectionsSpec</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1GetProjectionsSpec"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>fieldList</edgelabel>
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>excludeParamKeyPattern</edgelabel>
+          <edgelabel>includeParamKeyPattern</edgelabel>
+        </childnode>
+        <childnode refid="6" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="6">
+        <label>Apache::Hadoop::Hive::_GetProjectionsSpec__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__GetProjectionsSpec____isset"/>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+      <node id="5">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="4">
+        <label>std::string</label>
+        <childnode refid="5" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::vector&lt; std::string &gt;</label>
+        <childnode refid="4" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10173" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="10173" bodyend="10204"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetProjectionsSpec_1aa5d5e48079986bb0d99cb7aa698c3f0a" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetProjectionsSpec</scope><name>__isset</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetProjectionsSpec_1a12a5b19b3d857707efd1c000f8f6ade5" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetProjectionsSpec</scope><name>__set_excludeParamKeyPattern</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetProjectionsSpec_1a483901024ccf4877073bf99b80465631" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetProjectionsSpec</scope><name>__set_fieldList</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetProjectionsSpec_1ae80d0a5075a99b017ea6853a61af8d7a" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetProjectionsSpec</scope><name>__set_includeParamKeyPattern</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetProjectionsSpec_1ac0679f98526969d8c3ef547ac9b734e0" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetProjectionsSpec</scope><name>excludeParamKeyPattern</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetProjectionsSpec_1a7a5e5aeaa1b59c4343dfd6e69a54e14b" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetProjectionsSpec</scope><name>fieldList</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetProjectionsSpec_1ad66620aab94a2999538a54f7cf741ca8" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetProjectionsSpec</scope><name>GetProjectionsSpec</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetProjectionsSpec_1a9836aaca2f29b10978ff2ed394bd7f33" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetProjectionsSpec</scope><name>GetProjectionsSpec</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetProjectionsSpec_1ad9f2cd2686316dd8d05235d7b92f497e" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetProjectionsSpec</scope><name>includeParamKeyPattern</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetProjectionsSpec_1a1239f78d3d4a9031d68a8d64007b1b82" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetProjectionsSpec</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetProjectionsSpec_1a51eada36bc440e5256950c0939338b9a" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetProjectionsSpec</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetProjectionsSpec_1a345d0b3568721a16eaeee255c01ea397" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetProjectionsSpec</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetProjectionsSpec_1a86448cef90bb2cdc185a6811be10eca2" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetProjectionsSpec</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetProjectionsSpec_1a27a5a51fbf865fe0522c65e63b2a9a57" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::GetProjectionsSpec</scope><name>printTo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetProjectionsSpec_1a1134a0f15bb7316dd256f7d42a458900" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetProjectionsSpec</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetProjectionsSpec_1a75fdc301447f93514a1700a269aec9c5" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetProjectionsSpec</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetProjectionsSpec_1ae704591eb48cd50c4f164bdc064c14a1" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::GetProjectionsSpec</scope><name>~GetProjectionsSpec</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

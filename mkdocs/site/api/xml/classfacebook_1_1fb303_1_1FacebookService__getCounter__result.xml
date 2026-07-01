@@ -1,0 +1,239 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classfacebook_1_1fb303_1_1FacebookService__getCounter__result" kind="class" language="C++" prot="public">
+    <compoundname>facebook::fb303::FacebookService_getCounter_result</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classfacebook_1_1fb303_1_1FacebookService__getCounter__result_1adde4049835396c6c9f43c19b12867662" prot="public" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t facebook::fb303::FacebookService_getCounter_result::success</definition>
+        <argsstring></argsstring>
+        <name>success</name>
+        <qualifiedname>facebook::fb303::FacebookService_getCounter_result::success</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="651" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.h" bodystart="651" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classfacebook_1_1fb303_1_1FacebookService__getCounter__result_1ae062e7deadffabfdf3b7cdd4a2b257a0" prot="public" static="no" mutable="no">
+        <type><ref refid="structfacebook_1_1fb303_1_1__FacebookService__getCounter__result____isset" kindref="compound">_FacebookService_getCounter_result__isset</ref></type>
+        <definition>_FacebookService_getCounter_result__isset facebook::fb303::FacebookService_getCounter_result::__isset</definition>
+        <argsstring></argsstring>
+        <name>__isset</name>
+        <qualifiedname>facebook::fb303::FacebookService_getCounter_result::__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="653" column="45" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.h" bodystart="653" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookService__getCounter__result_1aab541c87d54a77041473bb17c09af339" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>facebook::fb303::FacebookService_getCounter_result::FacebookService_getCounter_result</definition>
+        <argsstring>(const FacebookService_getCounter_result &amp;) noexcept</argsstring>
+        <name>FacebookService_getCounter_result</name>
+        <qualifiedname>facebook::fb303::FacebookService_getCounter_result::FacebookService_getCounter_result</qualifiedname>
+        <param>
+          <type>const <ref refid="classfacebook_1_1fb303_1_1FacebookService__getCounter__result" kindref="compound">FacebookService_getCounter_result</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="646" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookService__getCounter__result_1adc743175bf83b0ad60cb6c530c9ad7e1" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type><ref refid="classfacebook_1_1fb303_1_1FacebookService__getCounter__result" kindref="compound">FacebookService_getCounter_result</ref> &amp;</type>
+        <definition>FacebookService_getCounter_result &amp; facebook::fb303::FacebookService_getCounter_result::operator=</definition>
+        <argsstring>(const FacebookService_getCounter_result &amp;) noexcept</argsstring>
+        <name>operator=</name>
+        <qualifiedname>facebook::fb303::FacebookService_getCounter_result::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classfacebook_1_1fb303_1_1FacebookService__getCounter__result" kindref="compound">FacebookService_getCounter_result</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="647" column="37"/>
+      </memberdef>
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookService__getCounter__result_1aa612395944c0aa416e6e9dfc39f19fc1" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>facebook::fb303::FacebookService_getCounter_result::FacebookService_getCounter_result</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>FacebookService_getCounter_result</name>
+        <qualifiedname>facebook::fb303::FacebookService_getCounter_result::FacebookService_getCounter_result</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="648" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.cpp" bodystart="994" bodyend="996"/>
+      </memberdef>
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookService__getCounter__result_1af74fcddd446a61500ba9ebbedb2ee251" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>facebook::fb303::FacebookService_getCounter_result::~FacebookService_getCounter_result</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~FacebookService_getCounter_result</name>
+        <qualifiedname>facebook::fb303::FacebookService_getCounter_result::~FacebookService_getCounter_result</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="650" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.cpp" bodystart="991" bodyend="992"/>
+      </memberdef>
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookService__getCounter__result_1ad0c114f7fc10648295dac5a6b1504bd0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void facebook::fb303::FacebookService_getCounter_result::__set_success</definition>
+        <argsstring>(const int64_t val)</argsstring>
+        <name>__set_success</name>
+        <qualifiedname>facebook::fb303::FacebookService_getCounter_result::__set_success</qualifiedname>
+        <param>
+          <type>const int64_t</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="655" column="8"/>
+      </memberdef>
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookService__getCounter__result_1a5ad3ce2ccf25b6328dc9a9004460ffdc" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool facebook::fb303::FacebookService_getCounter_result::operator==</definition>
+        <argsstring>(const FacebookService_getCounter_result &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>facebook::fb303::FacebookService_getCounter_result::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classfacebook_1_1fb303_1_1FacebookService__getCounter__result" kindref="compound">FacebookService_getCounter_result</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="657" column="8"/>
+      </memberdef>
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookService__getCounter__result_1a162fd2c5ab669f51da16b27c7082707f" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool facebook::fb303::FacebookService_getCounter_result::operator!=</definition>
+        <argsstring>(const FacebookService_getCounter_result &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>facebook::fb303::FacebookService_getCounter_result::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classfacebook_1_1fb303_1_1FacebookService__getCounter__result" kindref="compound">FacebookService_getCounter_result</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="658" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.h" bodystart="658" bodyend="660"/>
+      </memberdef>
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookService__getCounter__result_1a8b71ecb3820c29b36fa045fb2b625d28" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool facebook::fb303::FacebookService_getCounter_result::operator&lt;</definition>
+        <argsstring>(const FacebookService_getCounter_result &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>facebook::fb303::FacebookService_getCounter_result::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classfacebook_1_1fb303_1_1FacebookService__getCounter__result" kindref="compound">FacebookService_getCounter_result</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="662" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookService__getCounter__result_1a01c822d9e5e8520b79bee0dc1ce9c56d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t facebook::fb303::FacebookService_getCounter_result::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot)</argsstring>
+        <name>read</name>
+        <qualifiedname>facebook::fb303::FacebookService_getCounter_result::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="664" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.cpp" bodystart="998" bodyend="1037"/>
+      </memberdef>
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookService__getCounter__result_1a60d8b9e004e42e241752d71a579bbcc5" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t facebook::fb303::FacebookService_getCounter_result::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const</argsstring>
+        <name>write</name>
+        <qualifiedname>facebook::fb303::FacebookService_getCounter_result::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="665" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.cpp" bodystart="1039" bodyend="1053"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>facebook::fb303::FacebookService_getCounter_result</label>
+        <link refid="classfacebook_1_1fb303_1_1FacebookService__getCounter__result"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="2">
+        <label>facebook::fb303::_FacebookService_getCounter_result__isset</label>
+        <link refid="structfacebook_1_1fb303_1_1__FacebookService__getCounter__result____isset"/>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="643" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.h" bodystart="643" bodyend="667"/>
+    <listofallmembers>
+      <member refid="classfacebook_1_1fb303_1_1FacebookService__getCounter__result_1ae062e7deadffabfdf3b7cdd4a2b257a0" prot="public" virt="non-virtual"><scope>facebook::fb303::FacebookService_getCounter_result</scope><name>__isset</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookService__getCounter__result_1ad0c114f7fc10648295dac5a6b1504bd0" prot="public" virt="non-virtual"><scope>facebook::fb303::FacebookService_getCounter_result</scope><name>__set_success</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookService__getCounter__result_1aab541c87d54a77041473bb17c09af339" prot="public" virt="non-virtual"><scope>facebook::fb303::FacebookService_getCounter_result</scope><name>FacebookService_getCounter_result</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookService__getCounter__result_1aa612395944c0aa416e6e9dfc39f19fc1" prot="public" virt="non-virtual"><scope>facebook::fb303::FacebookService_getCounter_result</scope><name>FacebookService_getCounter_result</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookService__getCounter__result_1a162fd2c5ab669f51da16b27c7082707f" prot="public" virt="non-virtual"><scope>facebook::fb303::FacebookService_getCounter_result</scope><name>operator!=</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookService__getCounter__result_1a8b71ecb3820c29b36fa045fb2b625d28" prot="public" virt="non-virtual"><scope>facebook::fb303::FacebookService_getCounter_result</scope><name>operator&lt;</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookService__getCounter__result_1adc743175bf83b0ad60cb6c530c9ad7e1" prot="public" virt="non-virtual"><scope>facebook::fb303::FacebookService_getCounter_result</scope><name>operator=</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookService__getCounter__result_1a5ad3ce2ccf25b6328dc9a9004460ffdc" prot="public" virt="non-virtual"><scope>facebook::fb303::FacebookService_getCounter_result</scope><name>operator==</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookService__getCounter__result_1a01c822d9e5e8520b79bee0dc1ce9c56d" prot="public" virt="non-virtual"><scope>facebook::fb303::FacebookService_getCounter_result</scope><name>read</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookService__getCounter__result_1adde4049835396c6c9f43c19b12867662" prot="public" virt="non-virtual"><scope>facebook::fb303::FacebookService_getCounter_result</scope><name>success</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookService__getCounter__result_1a60d8b9e004e42e241752d71a579bbcc5" prot="public" virt="non-virtual"><scope>facebook::fb303::FacebookService_getCounter_result</scope><name>write</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookService__getCounter__result_1af74fcddd446a61500ba9ebbedb2ee251" prot="public" virt="virtual"><scope>facebook::fb303::FacebookService_getCounter_result</scope><name>~FacebookService_getCounter_result</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

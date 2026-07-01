@@ -1,0 +1,93 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1CollectorParam" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::CollectorParam</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1CollectorParam_1a55ce409b684f2aeffa9c55ddc0e72ea4" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::CollectorParam::test_name</definition>
+        <argsstring></argsstring>
+        <name>test_name</name>
+        <qualifiedname>iceberg::CollectorParam::test_name</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/metrics_reporter_test.cc" line="155" column="15" bodyfile="iceberg/test/metrics_reporter_test.cc" bodystart="155" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1CollectorParam_1a8aeec4aa280ffc7b9d11d387f93140e2" prot="public" static="no" mutable="no">
+        <type>MetricsReport</type>
+        <definition>MetricsReport iceberg::CollectorParam::report</definition>
+        <argsstring></argsstring>
+        <name>report</name>
+        <qualifiedname>iceberg::CollectorParam::report</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/metrics_reporter_test.cc" line="156" column="17" bodyfile="iceberg/test/metrics_reporter_test.cc" bodystart="156" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1CollectorParam_1a5576f88f7bc71e1ddd2d58a26b4f3747" prot="public" static="no" mutable="no">
+        <type>MetricsReportType</type>
+        <definition>MetricsReportType iceberg::CollectorParam::expected_type</definition>
+        <argsstring></argsstring>
+        <name>expected_type</name>
+        <qualifiedname>iceberg::CollectorParam::expected_type</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/metrics_reporter_test.cc" line="157" column="21" bodyfile="iceberg/test/metrics_reporter_test.cc" bodystart="157" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1CollectorParam_1a6d124b22283464e7c0ed4b99c53da46f" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::CollectorParam::expected_table_name</definition>
+        <argsstring></argsstring>
+        <name>expected_table_name</name>
+        <qualifiedname>iceberg::CollectorParam::expected_table_name</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/metrics_reporter_test.cc" line="158" column="15" bodyfile="iceberg/test/metrics_reporter_test.cc" bodystart="158" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::CollectorParam</label>
+        <link refid="structiceberg_1_1CollectorParam"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>expected_table_name</edgelabel>
+          <edgelabel>test_name</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="2">
+        <label>std::string</label>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/test/metrics_reporter_test.cc" line="154" column="1" bodyfile="iceberg/test/metrics_reporter_test.cc" bodystart="154" bodyend="159"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1CollectorParam_1a6d124b22283464e7c0ed4b99c53da46f" prot="public" virt="non-virtual"><scope>iceberg::CollectorParam</scope><name>expected_table_name</name></member>
+      <member refid="structiceberg_1_1CollectorParam_1a5576f88f7bc71e1ddd2d58a26b4f3747" prot="public" virt="non-virtual"><scope>iceberg::CollectorParam</scope><name>expected_type</name></member>
+      <member refid="structiceberg_1_1CollectorParam_1a8aeec4aa280ffc7b9d11d387f93140e2" prot="public" virt="non-virtual"><scope>iceberg::CollectorParam</scope><name>report</name></member>
+      <member refid="structiceberg_1_1CollectorParam_1a55ce409b684f2aeffa9c55ddc0e72ea4" prot="public" virt="non-virtual"><scope>iceberg::CollectorParam</scope><name>test_name</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

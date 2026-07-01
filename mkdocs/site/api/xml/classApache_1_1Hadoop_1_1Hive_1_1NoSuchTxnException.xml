@@ -1,0 +1,319 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1NoSuchTxnException" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::NoSuchTxnException</compoundname>
+    <basecompoundref prot="public" virt="non-virtual">apache::thrift::TException</basecompoundref>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1NoSuchTxnException_1aaf552e7c8e5bd77b04314fcaeb53b1bc" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::NoSuchTxnException::message</definition>
+        <argsstring></argsstring>
+        <name>message</name>
+        <qualifiedname>Apache::Hadoop::Hive::NoSuchTxnException::message</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15695" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="15695" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1NoSuchTxnException_1ab6e96dc7c45621acb7fb18f083020402" prot="public" static="no" mutable="no">
+        <type><ref refid="structApache_1_1Hadoop_1_1Hive_1_1__NoSuchTxnException____isset" kindref="compound">_NoSuchTxnException__isset</ref></type>
+        <definition>_NoSuchTxnException__isset Apache::Hadoop::Hive::NoSuchTxnException::__isset</definition>
+        <argsstring></argsstring>
+        <name>__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::NoSuchTxnException::__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15697" column="30" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="15697" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1NoSuchTxnException_1a053e0cdee98588b49dfc2d9cf22be4a0" prot="public" static="no" mutable="yes">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::NoSuchTxnException::thriftTExceptionMessageHolder_</definition>
+        <argsstring></argsstring>
+        <name>thriftTExceptionMessageHolder_</name>
+        <qualifiedname>Apache::Hadoop::Hive::NoSuchTxnException::thriftTExceptionMessageHolder_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15712" column="23" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="15712" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1NoSuchTxnException_1a68169942299c156c68ddf4c837aac5ea" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::NoSuchTxnException::NoSuchTxnException</definition>
+        <argsstring>(const NoSuchTxnException &amp;)</argsstring>
+        <name>NoSuchTxnException</name>
+        <qualifiedname>Apache::Hadoop::Hive::NoSuchTxnException::NoSuchTxnException</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1NoSuchTxnException" kindref="compound">NoSuchTxnException</ref> &amp;</type>
+          <defname>other1875</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15690" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="61730" bodyend="61733"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1NoSuchTxnException_1a1a2a78ab51c39c292b3fbf609e82e28a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1NoSuchTxnException" kindref="compound">NoSuchTxnException</ref> &amp;</type>
+        <definition>NoSuchTxnException &amp; Apache::Hadoop::Hive::NoSuchTxnException::operator=</definition>
+        <argsstring>(const NoSuchTxnException &amp;)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::NoSuchTxnException::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1NoSuchTxnException" kindref="compound">NoSuchTxnException</ref> &amp;</type>
+          <defname>other1876</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15691" column="22" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="61734" bodyend="61738"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1NoSuchTxnException_1a29e6b1f10d58918ad43e9c97ee36bf67" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::NoSuchTxnException::NoSuchTxnException</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>NoSuchTxnException</name>
+        <qualifiedname>Apache::Hadoop::Hive::NoSuchTxnException::NoSuchTxnException</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15692" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="61648" bodyend="61650"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1NoSuchTxnException_1af229d3514d119673c7834f48add782ae" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::NoSuchTxnException::~NoSuchTxnException</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~NoSuchTxnException</name>
+        <qualifiedname>Apache::Hadoop::Hive::NoSuchTxnException::~NoSuchTxnException</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15694" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="61645" bodyend="61646"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1NoSuchTxnException_1ae5790bb3ac0f73a951e46235ab610489" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::NoSuchTxnException::__set_message</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_message</name>
+        <qualifiedname>Apache::Hadoop::Hive::NoSuchTxnException::__set_message</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15699" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="61652" bodyend="61654"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1NoSuchTxnException_1ae58593c323fa33fd64aa6d550319e92a" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::NoSuchTxnException::operator==</definition>
+        <argsstring>(const NoSuchTxnException &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::NoSuchTxnException::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1NoSuchTxnException" kindref="compound">NoSuchTxnException</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15701" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="61723" bodyend="61728"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1NoSuchTxnException_1a7f53d9c9cc46cb9c6b2cd5a8209b71bb" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::NoSuchTxnException::operator!=</definition>
+        <argsstring>(const NoSuchTxnException &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::NoSuchTxnException::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1NoSuchTxnException" kindref="compound">NoSuchTxnException</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15702" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="15702" bodyend="15704"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1NoSuchTxnException_1a9dbdc8b4836ac6457152a11fc88bdff3" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::NoSuchTxnException::operator&lt;</definition>
+        <argsstring>(const NoSuchTxnException &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::NoSuchTxnException::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1NoSuchTxnException" kindref="compound">NoSuchTxnException</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15706" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1NoSuchTxnException_1ac584dc73a8f3c3d07fdf6f7343632df5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::NoSuchTxnException::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot)</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::NoSuchTxnException::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15708" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="61662" bodyend="61701"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1NoSuchTxnException_1a5bb6a8d4e10db2034ae1dfd7d3772e7a" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::NoSuchTxnException::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::NoSuchTxnException::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15709" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="61703" bodyend="61715"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1NoSuchTxnException_1af084cdabd7f64d6cfb0ae56d695a64ab" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::NoSuchTxnException::printTo</definition>
+        <argsstring>(std::ostream &amp;out) const</argsstring>
+        <name>printTo</name>
+        <qualifiedname>Apache::Hadoop::Hive::NoSuchTxnException::printTo</qualifiedname>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15711" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="61739" bodyend="61744"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1NoSuchTxnException_1ac4231dfd21b833395122f1d88f8e6838" prot="public" static="no" const="yes" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type>const char *</type>
+        <definition>const char * Apache::Hadoop::Hive::NoSuchTxnException::what</definition>
+        <argsstring>() const noexcept override</argsstring>
+        <name>what</name>
+        <qualifiedname>Apache::Hadoop::Hive::NoSuchTxnException::what</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15713" column="14" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="61746" bodyend="61755"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::NoSuchTxnException</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1NoSuchTxnException"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TException</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::NoSuchTxnException</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1NoSuchTxnException"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>message</edgelabel>
+          <edgelabel>thriftTExceptionMessageHolder_</edgelabel>
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="5">
+        <label>Apache::Hadoop::Hive::_NoSuchTxnException__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__NoSuchTxnException____isset"/>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TException</label>
+      </node>
+      <node id="4">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="3">
+        <label>std::string</label>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15687" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="15687" bodyend="15714"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1NoSuchTxnException_1ab6e96dc7c45621acb7fb18f083020402" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::NoSuchTxnException</scope><name>__isset</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1NoSuchTxnException_1ae5790bb3ac0f73a951e46235ab610489" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::NoSuchTxnException</scope><name>__set_message</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1NoSuchTxnException_1aaf552e7c8e5bd77b04314fcaeb53b1bc" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::NoSuchTxnException</scope><name>message</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1NoSuchTxnException_1a68169942299c156c68ddf4c837aac5ea" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::NoSuchTxnException</scope><name>NoSuchTxnException</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1NoSuchTxnException_1a29e6b1f10d58918ad43e9c97ee36bf67" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::NoSuchTxnException</scope><name>NoSuchTxnException</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1NoSuchTxnException_1a7f53d9c9cc46cb9c6b2cd5a8209b71bb" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::NoSuchTxnException</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1NoSuchTxnException_1a9dbdc8b4836ac6457152a11fc88bdff3" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::NoSuchTxnException</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1NoSuchTxnException_1a1a2a78ab51c39c292b3fbf609e82e28a" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::NoSuchTxnException</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1NoSuchTxnException_1ae58593c323fa33fd64aa6d550319e92a" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::NoSuchTxnException</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1NoSuchTxnException_1af084cdabd7f64d6cfb0ae56d695a64ab" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::NoSuchTxnException</scope><name>printTo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1NoSuchTxnException_1ac584dc73a8f3c3d07fdf6f7343632df5" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::NoSuchTxnException</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1NoSuchTxnException_1a053e0cdee98588b49dfc2d9cf22be4a0" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::NoSuchTxnException</scope><name>thriftTExceptionMessageHolder_</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1NoSuchTxnException_1ac4231dfd21b833395122f1d88f8e6838" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::NoSuchTxnException</scope><name>what</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1NoSuchTxnException_1a5bb6a8d4e10db2034ae1dfd7d3772e7a" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::NoSuchTxnException</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1NoSuchTxnException_1af229d3514d119673c7834f48add782ae" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::NoSuchTxnException</scope><name>~NoSuchTxnException</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

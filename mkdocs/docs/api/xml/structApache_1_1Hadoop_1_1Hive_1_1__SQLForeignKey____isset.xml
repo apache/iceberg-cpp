@@ -1,0 +1,272 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structApache_1_1Hadoop_1_1Hive_1_1__SQLForeignKey____isset" kind="struct" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::_SQLForeignKey__isset</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__SQLForeignKey____isset_1a9091abf1773f8c9ecbc64774058914b5" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_SQLForeignKey__isset::pktable_db</definition>
+        <argsstring></argsstring>
+        <name>pktable_db</name>
+        <qualifiedname>Apache::Hadoop::Hive::_SQLForeignKey__isset::pktable_db</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1286" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="1286" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__SQLForeignKey____isset_1a747f083edcbf7d228637f0b09221e488" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_SQLForeignKey__isset::pktable_name</definition>
+        <argsstring></argsstring>
+        <name>pktable_name</name>
+        <qualifiedname>Apache::Hadoop::Hive::_SQLForeignKey__isset::pktable_name</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1287" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="1287" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__SQLForeignKey____isset_1ac6113dfd42cacaa3e0b930e6d798ef48" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_SQLForeignKey__isset::pkcolumn_name</definition>
+        <argsstring></argsstring>
+        <name>pkcolumn_name</name>
+        <qualifiedname>Apache::Hadoop::Hive::_SQLForeignKey__isset::pkcolumn_name</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1288" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="1288" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__SQLForeignKey____isset_1a88723481c6b5a67aa71a2241d6decfea" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_SQLForeignKey__isset::fktable_db</definition>
+        <argsstring></argsstring>
+        <name>fktable_db</name>
+        <qualifiedname>Apache::Hadoop::Hive::_SQLForeignKey__isset::fktable_db</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1289" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="1289" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__SQLForeignKey____isset_1afd5b5982da4e34371b7387495d381130" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_SQLForeignKey__isset::fktable_name</definition>
+        <argsstring></argsstring>
+        <name>fktable_name</name>
+        <qualifiedname>Apache::Hadoop::Hive::_SQLForeignKey__isset::fktable_name</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1290" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="1290" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__SQLForeignKey____isset_1ad121ff1a7161e8d55dceb0aca1644678" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_SQLForeignKey__isset::fkcolumn_name</definition>
+        <argsstring></argsstring>
+        <name>fkcolumn_name</name>
+        <qualifiedname>Apache::Hadoop::Hive::_SQLForeignKey__isset::fkcolumn_name</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1291" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="1291" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__SQLForeignKey____isset_1abebf646bf4330e8ce49707bdf5461c70" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_SQLForeignKey__isset::key_seq</definition>
+        <argsstring></argsstring>
+        <name>key_seq</name>
+        <qualifiedname>Apache::Hadoop::Hive::_SQLForeignKey__isset::key_seq</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1292" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="1292" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__SQLForeignKey____isset_1a0d491389f6ac8c65cce1467204288f46" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_SQLForeignKey__isset::update_rule</definition>
+        <argsstring></argsstring>
+        <name>update_rule</name>
+        <qualifiedname>Apache::Hadoop::Hive::_SQLForeignKey__isset::update_rule</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1293" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="1293" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__SQLForeignKey____isset_1a02990a815acdf1244b33fd49813fbdb1" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_SQLForeignKey__isset::delete_rule</definition>
+        <argsstring></argsstring>
+        <name>delete_rule</name>
+        <qualifiedname>Apache::Hadoop::Hive::_SQLForeignKey__isset::delete_rule</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1294" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="1294" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__SQLForeignKey____isset_1a3af6484af7f2ce195eb31f960af834d2" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_SQLForeignKey__isset::fk_name</definition>
+        <argsstring></argsstring>
+        <name>fk_name</name>
+        <qualifiedname>Apache::Hadoop::Hive::_SQLForeignKey__isset::fk_name</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1295" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="1295" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__SQLForeignKey____isset_1afc1895d4809db4423d5504879b5f6140" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_SQLForeignKey__isset::pk_name</definition>
+        <argsstring></argsstring>
+        <name>pk_name</name>
+        <qualifiedname>Apache::Hadoop::Hive::_SQLForeignKey__isset::pk_name</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1296" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="1296" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__SQLForeignKey____isset_1a6df956786d1a95a66c03193cd8d34859" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_SQLForeignKey__isset::enable_cstr</definition>
+        <argsstring></argsstring>
+        <name>enable_cstr</name>
+        <qualifiedname>Apache::Hadoop::Hive::_SQLForeignKey__isset::enable_cstr</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1297" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="1297" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__SQLForeignKey____isset_1a6eb1d5e609c75638b3926d95153cb047" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_SQLForeignKey__isset::validate_cstr</definition>
+        <argsstring></argsstring>
+        <name>validate_cstr</name>
+        <qualifiedname>Apache::Hadoop::Hive::_SQLForeignKey__isset::validate_cstr</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1298" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="1298" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__SQLForeignKey____isset_1a326f83fc76f4950f0cd2026a50ae7101" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_SQLForeignKey__isset::rely_cstr</definition>
+        <argsstring></argsstring>
+        <name>rely_cstr</name>
+        <qualifiedname>Apache::Hadoop::Hive::_SQLForeignKey__isset::rely_cstr</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1299" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="1299" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__SQLForeignKey____isset_1ad1fc82f106ee19eedf38254f59e47ff9" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_SQLForeignKey__isset::catName</definition>
+        <argsstring></argsstring>
+        <name>catName</name>
+        <qualifiedname>Apache::Hadoop::Hive::_SQLForeignKey__isset::catName</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1300" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="1300" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structApache_1_1Hadoop_1_1Hive_1_1__SQLForeignKey____isset_1aa005dce60192b1e7d3c24785b9df8963" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::_SQLForeignKey__isset::_SQLForeignKey__isset</definition>
+        <argsstring>()</argsstring>
+        <name>_SQLForeignKey__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::_SQLForeignKey__isset::_SQLForeignKey__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1285" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="1285" bodyend="1285"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1284" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="1284" bodyend="1301"/>
+    <listofallmembers>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__SQLForeignKey____isset_1aa005dce60192b1e7d3c24785b9df8963" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_SQLForeignKey__isset</scope><name>_SQLForeignKey__isset</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__SQLForeignKey____isset_1ad1fc82f106ee19eedf38254f59e47ff9" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_SQLForeignKey__isset</scope><name>catName</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__SQLForeignKey____isset_1a02990a815acdf1244b33fd49813fbdb1" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_SQLForeignKey__isset</scope><name>delete_rule</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__SQLForeignKey____isset_1a6df956786d1a95a66c03193cd8d34859" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_SQLForeignKey__isset</scope><name>enable_cstr</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__SQLForeignKey____isset_1a3af6484af7f2ce195eb31f960af834d2" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_SQLForeignKey__isset</scope><name>fk_name</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__SQLForeignKey____isset_1ad121ff1a7161e8d55dceb0aca1644678" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_SQLForeignKey__isset</scope><name>fkcolumn_name</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__SQLForeignKey____isset_1a88723481c6b5a67aa71a2241d6decfea" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_SQLForeignKey__isset</scope><name>fktable_db</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__SQLForeignKey____isset_1afd5b5982da4e34371b7387495d381130" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_SQLForeignKey__isset</scope><name>fktable_name</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__SQLForeignKey____isset_1abebf646bf4330e8ce49707bdf5461c70" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_SQLForeignKey__isset</scope><name>key_seq</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__SQLForeignKey____isset_1afc1895d4809db4423d5504879b5f6140" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_SQLForeignKey__isset</scope><name>pk_name</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__SQLForeignKey____isset_1ac6113dfd42cacaa3e0b930e6d798ef48" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_SQLForeignKey__isset</scope><name>pkcolumn_name</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__SQLForeignKey____isset_1a9091abf1773f8c9ecbc64774058914b5" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_SQLForeignKey__isset</scope><name>pktable_db</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__SQLForeignKey____isset_1a747f083edcbf7d228637f0b09221e488" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_SQLForeignKey__isset</scope><name>pktable_name</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__SQLForeignKey____isset_1a326f83fc76f4950f0cd2026a50ae7101" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_SQLForeignKey__isset</scope><name>rely_cstr</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__SQLForeignKey____isset_1a0d491389f6ac8c65cce1467204288f46" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_SQLForeignKey__isset</scope><name>update_rule</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__SQLForeignKey____isset_1a6eb1d5e609c75638b3926d95153cb047" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_SQLForeignKey__isset</scope><name>validate_cstr</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

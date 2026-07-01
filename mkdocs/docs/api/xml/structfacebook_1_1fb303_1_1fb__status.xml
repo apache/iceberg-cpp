@@ -1,0 +1,84 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structfacebook_1_1fb303_1_1fb__status" kind="struct" language="C++" prot="public">
+    <compoundname>facebook::fb303::fb_status</compoundname>
+    <includes refid="fb303__types_8h" local="no">fb303_types.h</includes>
+    <sectiondef kind="public-type">
+      <memberdef kind="enum" id="structfacebook_1_1fb303_1_1fb__status_1aad0598bca5b07d533afcc1a57c76dc3d" prot="public" static="no" strong="no">
+        <type></type>
+        <name>type</name>
+        <qualifiedname>facebook::fb303::fb_status::type</qualifiedname>
+        <enumvalue id="structfacebook_1_1fb303_1_1fb__status_1aad0598bca5b07d533afcc1a57c76dc3da4fbfd2cbfbba051d6e1af660a0427e9a" prot="public">
+          <name>DEAD</name>
+          <initializer>= 0</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="structfacebook_1_1fb303_1_1fb__status_1aad0598bca5b07d533afcc1a57c76dc3da06bbb8730aa3c3acd608cba9688275f3" prot="public">
+          <name>STARTING</name>
+          <initializer>= 1</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="structfacebook_1_1fb303_1_1fb__status_1aad0598bca5b07d533afcc1a57c76dc3daebbca2ebd0b37adc87920371592987ef" prot="public">
+          <name>ALIVE</name>
+          <initializer>= 2</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="structfacebook_1_1fb303_1_1fb__status_1aad0598bca5b07d533afcc1a57c76dc3daf76cc8afdb149e22298c67375dd52ce5" prot="public">
+          <name>STOPPING</name>
+          <initializer>= 3</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="structfacebook_1_1fb303_1_1fb__status_1aad0598bca5b07d533afcc1a57c76dc3da6ab087b516be7e4f9de22fd145815d97" prot="public">
+          <name>STOPPED</name>
+          <initializer>= 4</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="structfacebook_1_1fb303_1_1fb__status_1aad0598bca5b07d533afcc1a57c76dc3da37209a723536b2d28954a13e580b6b50" prot="public">
+          <name>WARNING</name>
+          <initializer>= 5</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/fb303_types.h" line="28" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/fb303_types.h" bodystart="28" bodyend="35"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para>Common status reporting mechanism across all services </para>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/fb303_types.h" line="27" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/fb303_types.h" bodystart="27" bodyend="36"/>
+    <listofallmembers>
+      <member refid="structfacebook_1_1fb303_1_1fb__status_1aad0598bca5b07d533afcc1a57c76dc3daebbca2ebd0b37adc87920371592987ef" prot="public" virt="non-virtual"><scope>facebook::fb303::fb_status</scope><name>ALIVE</name></member>
+      <member refid="structfacebook_1_1fb303_1_1fb__status_1aad0598bca5b07d533afcc1a57c76dc3da4fbfd2cbfbba051d6e1af660a0427e9a" prot="public" virt="non-virtual"><scope>facebook::fb303::fb_status</scope><name>DEAD</name></member>
+      <member refid="structfacebook_1_1fb303_1_1fb__status_1aad0598bca5b07d533afcc1a57c76dc3da06bbb8730aa3c3acd608cba9688275f3" prot="public" virt="non-virtual"><scope>facebook::fb303::fb_status</scope><name>STARTING</name></member>
+      <member refid="structfacebook_1_1fb303_1_1fb__status_1aad0598bca5b07d533afcc1a57c76dc3da6ab087b516be7e4f9de22fd145815d97" prot="public" virt="non-virtual"><scope>facebook::fb303::fb_status</scope><name>STOPPED</name></member>
+      <member refid="structfacebook_1_1fb303_1_1fb__status_1aad0598bca5b07d533afcc1a57c76dc3daf76cc8afdb149e22298c67375dd52ce5" prot="public" virt="non-virtual"><scope>facebook::fb303::fb_status</scope><name>STOPPING</name></member>
+      <member refid="structfacebook_1_1fb303_1_1fb__status_1aad0598bca5b07d533afcc1a57c76dc3d" prot="public" virt="non-virtual"><scope>facebook::fb303::fb_status</scope><name>type</name></member>
+      <member refid="structfacebook_1_1fb303_1_1fb__status_1aad0598bca5b07d533afcc1a57c76dc3da37209a723536b2d28954a13e580b6b50" prot="public" virt="non-virtual"><scope>facebook::fb303::fb_status</scope><name>WARNING</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

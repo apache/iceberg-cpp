@@ -1,0 +1,108 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structScanRequestFromJsonInvalidParam" kind="struct" language="C++" prot="public">
+    <compoundname>ScanRequestFromJsonInvalidParam</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structScanRequestFromJsonInvalidParam_1a05ec9a8d501a51b80db99524d66509b5" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string ScanRequestFromJsonInvalidParam::test_name</definition>
+        <argsstring></argsstring>
+        <name>test_name</name>
+        <qualifiedname>ScanRequestFromJsonInvalidParam::test_name</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/rest_json_serde_test.cc" line="1918" column="15" bodyfile="iceberg/test/rest_json_serde_test.cc" bodystart="1918" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structScanRequestFromJsonInvalidParam_1a18ed26df25e9760d257c8d1b73f056a9" prot="public" static="no" mutable="no">
+        <type>nlohmann::json</type>
+        <definition>nlohmann::json ScanRequestFromJsonInvalidParam::json</definition>
+        <argsstring></argsstring>
+        <name>json</name>
+        <qualifiedname>ScanRequestFromJsonInvalidParam::json</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/rest_json_serde_test.cc" line="1919" column="18" bodyfile="iceberg/test/rest_json_serde_test.cc" bodystart="1919" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structScanRequestFromJsonInvalidParam_1a02b6145f83184e5383008b6f6d556e17" prot="public" static="no" mutable="no">
+        <type>std::function&lt; Result&lt; void &gt;(const nlohmann::json &amp;)&gt;</type>
+        <definition>std::function&lt;Result&lt;void&gt;(const nlohmann::json&amp;)&gt; ScanRequestFromJsonInvalidParam::parse</definition>
+        <argsstring></argsstring>
+        <name>parse</name>
+        <qualifiedname>ScanRequestFromJsonInvalidParam::parse</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/rest_json_serde_test.cc" line="1920" column="19" bodyfile="iceberg/test/rest_json_serde_test.cc" bodystart="1920" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structScanRequestFromJsonInvalidParam_1a7221c04907ed7d5676c59b7c94451af1" prot="public" static="no" mutable="no">
+        <type>ErrorKind</type>
+        <definition>ErrorKind ScanRequestFromJsonInvalidParam::expected_error_kind</definition>
+        <argsstring></argsstring>
+        <name>expected_error_kind</name>
+        <qualifiedname>ScanRequestFromJsonInvalidParam::expected_error_kind</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/rest_json_serde_test.cc" line="1921" column="13" bodyfile="iceberg/test/rest_json_serde_test.cc" bodystart="1921" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structScanRequestFromJsonInvalidParam_1a50c6603132f7b5a9ccc97ac120cf5330" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string ScanRequestFromJsonInvalidParam::expected_error_msg</definition>
+        <argsstring></argsstring>
+        <name>expected_error_msg</name>
+        <qualifiedname>ScanRequestFromJsonInvalidParam::expected_error_msg</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/rest_json_serde_test.cc" line="1922" column="15" bodyfile="iceberg/test/rest_json_serde_test.cc" bodystart="1922" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>ScanRequestFromJsonInvalidParam</label>
+        <link refid="structScanRequestFromJsonInvalidParam"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>expected_error_msg</edgelabel>
+          <edgelabel>test_name</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="2">
+        <label>std::string</label>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/test/rest_json_serde_test.cc" line="1917" column="1" bodyfile="iceberg/test/rest_json_serde_test.cc" bodystart="1917" bodyend="1923"/>
+    <listofallmembers>
+      <member refid="structScanRequestFromJsonInvalidParam_1a7221c04907ed7d5676c59b7c94451af1" prot="public" virt="non-virtual"><scope>ScanRequestFromJsonInvalidParam</scope><name>expected_error_kind</name></member>
+      <member refid="structScanRequestFromJsonInvalidParam_1a50c6603132f7b5a9ccc97ac120cf5330" prot="public" virt="non-virtual"><scope>ScanRequestFromJsonInvalidParam</scope><name>expected_error_msg</name></member>
+      <member refid="structScanRequestFromJsonInvalidParam_1a18ed26df25e9760d257c8d1b73f056a9" prot="public" virt="non-virtual"><scope>ScanRequestFromJsonInvalidParam</scope><name>json</name></member>
+      <member refid="structScanRequestFromJsonInvalidParam_1a02b6145f83184e5383008b6f6d556e17" prot="public" virt="non-virtual"><scope>ScanRequestFromJsonInvalidParam</scope><name>parse</name></member>
+      <member refid="structScanRequestFromJsonInvalidParam_1a05ec9a8d501a51b80db99524d66509b5" prot="public" virt="non-virtual"><scope>ScanRequestFromJsonInvalidParam</scope><name>test_name</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

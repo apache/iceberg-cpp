@@ -1,0 +1,207 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="token__refresh__scheduler_8cc" kind="file" language="C++">
+    <compoundname>token_refresh_scheduler.cc</compoundname>
+    <includes refid="token__refresh__scheduler_8h" local="yes">iceberg/catalog/rest/auth/token_refresh_scheduler.h</includes>
+    <includes local="no">algorithm</includes>
+    <includes local="no">ranges</includes>
+    <incdepgraph>
+      <node id="1">
+        <label>iceberg/catalog/rest/auth/token_refresh_scheduler.cc</label>
+        <link refid="token__refresh__scheduler_8cc"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg/catalog/rest/auth/token_refresh_scheduler.h</label>
+        <link refid="token__refresh__scheduler_8h"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+      </node>
+      <node id="10">
+        <label>iceberg/catalog/rest/iceberg_rest_export.h</label>
+        <link refid="iceberg__rest__export_8h_source"/>
+      </node>
+      <node id="11">
+        <label>algorithm</label>
+      </node>
+      <node id="3">
+        <label>chrono</label>
+      </node>
+      <node id="4">
+        <label>condition_variable</label>
+      </node>
+      <node id="5">
+        <label>cstdint</label>
+      </node>
+      <node id="6">
+        <label>functional</label>
+      </node>
+      <node id="7">
+        <label>mutex</label>
+      </node>
+      <node id="12">
+        <label>ranges</label>
+      </node>
+      <node id="8">
+        <label>thread</label>
+      </node>
+      <node id="9">
+        <label>vector</label>
+      </node>
+    </incdepgraph>
+    <innernamespace refid="namespaceiceberg">iceberg</innernamespace>
+    <innernamespace refid="namespaceiceberg_1_1rest">iceberg::rest</innernamespace>
+    <innernamespace refid="namespaceiceberg_1_1rest_1_1auth">iceberg::rest::auth</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="comment">/*</highlight></codeline>
+<codeline lineno="2"><highlight class="comment"><sp/>*<sp/>Licensed<sp/>to<sp/>the<sp/>Apache<sp/>Software<sp/>Foundation<sp/>(ASF)<sp/>under<sp/>one</highlight></codeline>
+<codeline lineno="3"><highlight class="comment"><sp/>*<sp/>or<sp/>more<sp/>contributor<sp/>license<sp/>agreements.<sp/><sp/>See<sp/>the<sp/>NOTICE<sp/>file</highlight></codeline>
+<codeline lineno="4"><highlight class="comment"><sp/>*<sp/>distributed<sp/>with<sp/>this<sp/>work<sp/>for<sp/>additional<sp/>information</highlight></codeline>
+<codeline lineno="5"><highlight class="comment"><sp/>*<sp/>regarding<sp/>copyright<sp/>ownership.<sp/><sp/>The<sp/>ASF<sp/>licenses<sp/>this<sp/>file</highlight></codeline>
+<codeline lineno="6"><highlight class="comment"><sp/>*<sp/>to<sp/>you<sp/>under<sp/>the<sp/>Apache<sp/>License,<sp/>Version<sp/>2.0<sp/>(the</highlight></codeline>
+<codeline lineno="7"><highlight class="comment"><sp/>*<sp/>&quot;License&quot;);<sp/>you<sp/>may<sp/>not<sp/>use<sp/>this<sp/>file<sp/>except<sp/>in<sp/>compliance</highlight></codeline>
+<codeline lineno="8"><highlight class="comment"><sp/>*<sp/>with<sp/>the<sp/>License.<sp/><sp/>You<sp/>may<sp/>obtain<sp/>a<sp/>copy<sp/>of<sp/>the<sp/>License<sp/>at</highlight></codeline>
+<codeline lineno="9"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="10"><highlight class="comment"><sp/>*<sp/><sp/><sp/>http://www.apache.org/licenses/LICENSE-2.0</highlight></codeline>
+<codeline lineno="11"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="12"><highlight class="comment"><sp/>*<sp/>Unless<sp/>required<sp/>by<sp/>applicable<sp/>law<sp/>or<sp/>agreed<sp/>to<sp/>in<sp/>writing,</highlight></codeline>
+<codeline lineno="13"><highlight class="comment"><sp/>*<sp/>software<sp/>distributed<sp/>under<sp/>the<sp/>License<sp/>is<sp/>distributed<sp/>on<sp/>an</highlight></codeline>
+<codeline lineno="14"><highlight class="comment"><sp/>*<sp/>&quot;AS<sp/>IS&quot;<sp/>BASIS,<sp/>WITHOUT<sp/>WARRANTIES<sp/>OR<sp/>CONDITIONS<sp/>OF<sp/>ANY</highlight></codeline>
+<codeline lineno="15"><highlight class="comment"><sp/>*<sp/>KIND,<sp/>either<sp/>express<sp/>or<sp/>implied.<sp/><sp/>See<sp/>the<sp/>License<sp/>for<sp/>the</highlight></codeline>
+<codeline lineno="16"><highlight class="comment"><sp/>*<sp/>specific<sp/>language<sp/>governing<sp/>permissions<sp/>and<sp/>limitations</highlight></codeline>
+<codeline lineno="17"><highlight class="comment"><sp/>*<sp/>under<sp/>the<sp/>License.</highlight></codeline>
+<codeline lineno="18"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="19"><highlight class="normal"></highlight></codeline>
+<codeline lineno="20"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="token__refresh__scheduler_8h" kindref="compound">iceberg/catalog/rest/auth/token_refresh_scheduler.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="21"><highlight class="normal"></highlight></codeline>
+<codeline lineno="22"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;algorithm&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="23"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;ranges&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="24"><highlight class="normal"></highlight></codeline>
+<codeline lineno="25"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">iceberg::rest::auth<sp/>{</highlight></codeline>
+<codeline lineno="26"><highlight class="normal"></highlight></codeline>
+<codeline lineno="27"><highlight class="normal">TokenRefreshScheduler&amp;<sp/><ref refid="classiceberg_1_1rest_1_1auth_1_1TokenRefreshScheduler_1a540656fb0140ee3660a1a1e326e1c336" kindref="member">TokenRefreshScheduler::Instance</ref>()<sp/>{</highlight></codeline>
+<codeline lineno="28"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>Intentionally<sp/>leaked<sp/>to<sp/>avoid<sp/>destruction-order<sp/>races<sp/>at<sp/>process<sp/>exit.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="29"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal">*<sp/>instance<sp/>=<sp/></highlight><highlight class="keyword">new</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1rest_1_1auth_1_1TokenRefreshScheduler_1a6a5eb72b84bb76c944c7a27c530ffdeb" kindref="member">TokenRefreshScheduler</ref>();</highlight></codeline>
+<codeline lineno="30"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>*instance;</highlight></codeline>
+<codeline lineno="31"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="32"><highlight class="normal"></highlight></codeline>
+<codeline lineno="33"><highlight class="normal"><ref refid="classiceberg_1_1rest_1_1auth_1_1TokenRefreshScheduler_1a6a5eb72b84bb76c944c7a27c530ffdeb" kindref="member">TokenRefreshScheduler::TokenRefreshScheduler</ref>()<sp/>:<sp/>worker_([this]<sp/>{<sp/>Run();<sp/>})<sp/>{}</highlight></codeline>
+<codeline lineno="34"><highlight class="normal"></highlight></codeline>
+<codeline lineno="35"><highlight class="normal">TokenRefreshScheduler::~TokenRefreshScheduler()<sp/>{<sp/>Shutdown();<sp/>}</highlight></codeline>
+<codeline lineno="36"><highlight class="normal"></highlight></codeline>
+<codeline lineno="37"><highlight class="normal">uint64_t<sp/>TokenRefreshScheduler::Schedule(std::chrono::milliseconds<sp/>delay,</highlight></codeline>
+<codeline lineno="38"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::function&lt;</highlight><highlight class="keywordtype">void</highlight><highlight class="normal">()&gt;<sp/>callback)<sp/>{</highlight></codeline>
+<codeline lineno="39"><highlight class="normal"><sp/><sp/>std::lock_guard<sp/>lock(mutex_);</highlight></codeline>
+<codeline lineno="40"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(shutdown_)<sp/>{</highlight></codeline>
+<codeline lineno="41"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>0;</highlight></codeline>
+<codeline lineno="42"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="43"><highlight class="normal"><sp/><sp/>uint64_t<sp/></highlight><highlight class="keywordtype">id</highlight><highlight class="normal"><sp/>=<sp/>next_id_++;</highlight></codeline>
+<codeline lineno="44"><highlight class="normal"><sp/><sp/>tasks_.push_back(Task{.id<sp/>=<sp/>id,</highlight></codeline>
+<codeline lineno="45"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>.fire_at<sp/>=<sp/>std::chrono::steady_clock::now()<sp/>+<sp/>delay,</highlight></codeline>
+<codeline lineno="46"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>.callback<sp/>=<sp/>std::move(callback)});</highlight></codeline>
+<codeline lineno="47"><highlight class="normal"><sp/><sp/>cv_.notify_one();</highlight></codeline>
+<codeline lineno="48"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>id;</highlight></codeline>
+<codeline lineno="49"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="50"><highlight class="normal"></highlight></codeline>
+<codeline lineno="51"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>TokenRefreshScheduler::Cancel(uint64_t<sp/>handle)<sp/>{</highlight></codeline>
+<codeline lineno="52"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(handle<sp/>==<sp/>0)<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="53"><highlight class="normal"><sp/><sp/>std::lock_guard<sp/>lock(mutex_);</highlight></codeline>
+<codeline lineno="54"><highlight class="normal"><sp/><sp/>std::erase_if(tasks_,<sp/>[handle](</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>Task&amp;<sp/>t)<sp/>{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>t.id<sp/>==<sp/>handle;<sp/>});</highlight></codeline>
+<codeline lineno="55"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="56"><highlight class="normal"></highlight></codeline>
+<codeline lineno="57"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>TokenRefreshScheduler::Shutdown()<sp/>{</highlight></codeline>
+<codeline lineno="58"><highlight class="normal"><sp/><sp/>{</highlight></codeline>
+<codeline lineno="59"><highlight class="normal"><sp/><sp/><sp/><sp/>std::lock_guard<sp/>lock(mutex_);</highlight></codeline>
+<codeline lineno="60"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(shutdown_)<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="61"><highlight class="normal"><sp/><sp/><sp/><sp/>shutdown_<sp/>=<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="62"><highlight class="normal"><sp/><sp/><sp/><sp/>tasks_.clear();</highlight></codeline>
+<codeline lineno="63"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="64"><highlight class="normal"><sp/><sp/>cv_.notify_one();</highlight></codeline>
+<codeline lineno="65"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(worker_.joinable())<sp/>{</highlight></codeline>
+<codeline lineno="66"><highlight class="normal"><sp/><sp/><sp/><sp/>worker_.join();</highlight></codeline>
+<codeline lineno="67"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="68"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="69"><highlight class="normal"></highlight></codeline>
+<codeline lineno="70"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>TokenRefreshScheduler::Run()<sp/>{</highlight></codeline>
+<codeline lineno="71"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">while</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keyword">true</highlight><highlight class="normal">)<sp/>{</highlight></codeline>
+<codeline lineno="72"><highlight class="normal"><sp/><sp/><sp/><sp/>std::function&lt;void()&gt;<sp/>callback;</highlight></codeline>
+<codeline lineno="73"><highlight class="normal"></highlight></codeline>
+<codeline lineno="74"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="75"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>std::unique_lock<sp/>lock(mutex_);</highlight></codeline>
+<codeline lineno="76"><highlight class="normal"></highlight></codeline>
+<codeline lineno="77"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(tasks_.empty()<sp/>&amp;&amp;<sp/>!shutdown_)<sp/>{</highlight></codeline>
+<codeline lineno="78"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Wait<sp/>until<sp/>a<sp/>task<sp/>is<sp/>added<sp/>or<sp/>shutdown<sp/>is<sp/>requested</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="79"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cv_.wait(lock,<sp/>[</highlight><highlight class="keyword">this</highlight><highlight class="normal">]<sp/>{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>!tasks_.empty()<sp/>||<sp/>shutdown_;<sp/>});</highlight></codeline>
+<codeline lineno="80"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="81"><highlight class="normal"></highlight></codeline>
+<codeline lineno="82"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(shutdown_)<sp/></highlight><highlight class="keywordflow">break</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="83"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(tasks_.empty())<sp/></highlight><highlight class="keywordflow">continue</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="84"><highlight class="normal"></highlight></codeline>
+<codeline lineno="85"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Find<sp/>the<sp/>task<sp/>with<sp/>the<sp/>earliest<sp/>fire_at</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="86"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>earliest_it<sp/>=<sp/>std::ranges::min_element(</highlight></codeline>
+<codeline lineno="87"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>tasks_,<sp/>[](</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>Task&amp;<sp/>a,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>Task&amp;<sp/>b)<sp/>{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>a.fire_at<sp/>&lt;<sp/>b.fire_at;<sp/>});</highlight></codeline>
+<codeline lineno="88"><highlight class="normal"></highlight></codeline>
+<codeline lineno="89"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>fire_at<sp/>=<sp/>earliest_it-&gt;fire_at;</highlight></codeline>
+<codeline lineno="90"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>target_id<sp/>=<sp/>earliest_it-&gt;id;</highlight></codeline>
+<codeline lineno="91"><highlight class="normal"></highlight></codeline>
+<codeline lineno="92"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Wait<sp/>until<sp/>fire_at<sp/>or<sp/>until<sp/>woken<sp/>(new<sp/>task,<sp/>cancel,<sp/>or<sp/>shutdown).</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="93"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Note:<sp/>The<sp/>predicate<sp/>does<sp/>O(n)<sp/>scan<sp/>on<sp/>each<sp/>spurious<sp/>wakeup.<sp/>This<sp/>is</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="94"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>acceptable<sp/>for<sp/>the<sp/>expected<sp/>task<sp/>count<sp/>(&lt;<sp/>10).<sp/>If<sp/>task<sp/>count<sp/>grows</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="95"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>significantly,<sp/>consider<sp/>replacing<sp/>vector<sp/>with<sp/>a<sp/>priority<sp/>queue.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="96"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>cv_.wait_until(lock,<sp/>fire_at,<sp/>[&amp;]<sp/>{</highlight></codeline>
+<codeline lineno="97"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Wake<sp/>up<sp/>if:<sp/>shutdown,<sp/>task<sp/>list<sp/>changed,<sp/>or<sp/>time<sp/>is<sp/>up</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="98"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(shutdown_)<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="99"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(tasks_.empty())<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="100"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Check<sp/>if<sp/>the<sp/>earliest<sp/>task<sp/>has<sp/>changed<sp/>(new<sp/>task<sp/>added<sp/>or<sp/>cancelled)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="101"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>new_earliest<sp/>=<sp/>std::ranges::min_element(</highlight></codeline>
+<codeline lineno="102"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>tasks_,<sp/>[](</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>Task&amp;<sp/>a,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>Task&amp;<sp/>b)<sp/>{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>a.fire_at<sp/>&lt;<sp/>b.fire_at;<sp/>});</highlight></codeline>
+<codeline lineno="103"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>new_earliest-&gt;id<sp/>!=<sp/>target_id;</highlight></codeline>
+<codeline lineno="104"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>});</highlight></codeline>
+<codeline lineno="105"><highlight class="normal"></highlight></codeline>
+<codeline lineno="106"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(shutdown_)<sp/></highlight><highlight class="keywordflow">break</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="107"><highlight class="normal"></highlight></codeline>
+<codeline lineno="108"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>If<sp/>we<sp/>were<sp/>woken<sp/>because<sp/>the<sp/>earliest<sp/>task<sp/>changed,<sp/>loop<sp/>again</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="109"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>now<sp/>=<sp/>std::chrono::steady_clock::now();</highlight></codeline>
+<codeline lineno="110"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>due_it<sp/>=</highlight></codeline>
+<codeline lineno="111"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::ranges::find_if(tasks_,<sp/>[now](</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>Task&amp;<sp/>t)<sp/>{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>t.fire_at<sp/>&lt;=<sp/>now;<sp/>});</highlight></codeline>
+<codeline lineno="112"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(due_it<sp/>==<sp/>tasks_.end())<sp/></highlight><highlight class="keywordflow">continue</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="113"><highlight class="normal"></highlight></codeline>
+<codeline lineno="114"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>callback<sp/>=<sp/>std::move(due_it-&gt;callback);</highlight></codeline>
+<codeline lineno="115"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>tasks_.erase(due_it);</highlight></codeline>
+<codeline lineno="116"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="117"><highlight class="normal"></highlight></codeline>
+<codeline lineno="118"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Execute<sp/>callback<sp/>outside<sp/>the<sp/>lock</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="119"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(callback)<sp/>{</highlight></codeline>
+<codeline lineno="120"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>callback();</highlight></codeline>
+<codeline lineno="121"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="122"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="123"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="124"><highlight class="normal"></highlight></codeline>
+<codeline lineno="125"><highlight class="normal">}<sp/><sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>iceberg::rest::auth</highlight><highlight class="normal"></highlight></codeline>
+    </programlisting>
+    <location file="iceberg/catalog/rest/auth/token_refresh_scheduler.cc"/>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,22 @@
+var searchData=
+[
+  ['record_5fcount_0',['record_count',['../structiceberg_1_1DataFile.html#a45beea978f69e41e67719c532c935141',1,'iceberg::DataFile']]],
+  ['referenced_5fdata_5ffile_1',['referenced_data_file',['../structiceberg_1_1DataFile.html#a83d38ba4f28a89228d7b28a2b4923b74',1,'iceberg::DataFile']]],
+  ['refs_2',['refs',['../structiceberg_1_1TableMetadata.html#a4729379ffb32fd8b8046165482718b81',1,'iceberg::TableMetadata']]],
+  ['removed_5fdata_5ffiles_3',['removed_data_files',['../structiceberg_1_1CommitMetricsResult.html#ae3dbc89756d2a3dca3493bd2f37eae93',1,'iceberg::CommitMetricsResult']]],
+  ['removed_5fdelete_5ffiles_4',['removed_delete_files',['../structiceberg_1_1CommitMetricsResult.html#acbdae00a258a82d65577ca4ed5c388d2',1,'iceberg::CommitMetricsResult']]],
+  ['removed_5fdvs_5',['removed_dvs',['../structiceberg_1_1CommitMetricsResult.html#a481b36b244511204d3139473e8e745ea',1,'iceberg::CommitMetricsResult']]],
+  ['removed_5fequality_5fdelete_5ffiles_6',['removed_equality_delete_files',['../structiceberg_1_1CommitMetricsResult.html#a5af6cbcb5beaf5bc3a0791de9494d0f3',1,'iceberg::CommitMetricsResult']]],
+  ['removed_5fequality_5fdeletes_7',['removed_equality_deletes',['../structiceberg_1_1CommitMetricsResult.html#a1408ff4a954f5809559db34feb616a9d',1,'iceberg::CommitMetricsResult']]],
+  ['removed_5ffiles_5fsize_5fbytes_8',['removed_files_size_bytes',['../structiceberg_1_1CommitMetricsResult.html#a18104cf3e581487c99928223cca7905e',1,'iceberg::CommitMetricsResult']]],
+  ['removed_5fpositional_5fdelete_5ffiles_9',['removed_positional_delete_files',['../structiceberg_1_1CommitMetricsResult.html#a7a0396a2cc446414a983f3b572870668',1,'iceberg::CommitMetricsResult']]],
+  ['removed_5fpositional_5fdeletes_10',['removed_positional_deletes',['../structiceberg_1_1CommitMetricsResult.html#ae46cba3ea65a2494f4f57e7a981f2478',1,'iceberg::CommitMetricsResult']]],
+  ['removed_5frecords_11',['removed_records',['../structiceberg_1_1CommitMetricsResult.html#afabc51a2e920398c8f83fec5df759f88',1,'iceberg::CommitMetricsResult']]],
+  ['replaced_5fmanifest_5fcount_12',['replaced_manifest_count',['../structiceberg_1_1CommitMetricsResult.html#a63a1f07045ed6f9c750f5657792f4fdc',1,'iceberg::CommitMetricsResult']]],
+  ['requested_5fcompression_13',['requested_compression',['../structiceberg_1_1puffin_1_1Blob.html#ac624cbd7745bef9a4df537f167b9435e',1,'iceberg::puffin::Blob']]],
+  ['requesttype_14',['requesttype',['../classApache_1_1Hadoop_1_1Hive_1_1GrantRevokePrivilegeRequest.html#ad2465dc76167c28248e53f394e6b094a',1,'Apache::Hadoop::Hive::GrantRevokePrivilegeRequest::requestType'],['../classApache_1_1Hadoop_1_1Hive_1_1GrantRevokeRoleRequest.html#a8666db075882fbdafc4812e5e0eac4f9',1,'Apache::Hadoop::Hive::GrantRevokeRoleRequest::requestType']]],
+  ['resourcetype_15',['resourceType',['../classApache_1_1Hadoop_1_1Hive_1_1ResourceUri.html#afc9518827419295cfc811e5126981e8b',1,'Apache::Hadoop::Hive::ResourceUri']]],
+  ['result_5fdata_5ffiles_16',['result_data_files',['../structiceberg_1_1ScanMetricsResult.html#aa0d265681bf064b1e1f9d16ceb8984b3',1,'iceberg::ScanMetricsResult']]],
+  ['result_5fdelete_5ffiles_17',['result_delete_files',['../structiceberg_1_1ScanMetricsResult.html#abae2ba65e6efdc9b3da9ef23a835bd41',1,'iceberg::ScanMetricsResult']]],
+  ['retention_18',['retention',['../structiceberg_1_1SnapshotRef.html#ae89f6fb03dacc07e6cde3c81a133add1',1,'iceberg::SnapshotRef']]]
+];

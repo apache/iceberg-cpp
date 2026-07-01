@@ -1,0 +1,218 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1WMDropResourcePlanResponse" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::WMDropResourcePlanResponse</compoundname>
+    <basecompoundref prot="public" virt="virtual">apache::thrift::TBase</basecompoundref>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMDropResourcePlanResponse_1a5a74ab62453c3083836df92760b672a8" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::WMDropResourcePlanResponse::WMDropResourcePlanResponse</definition>
+        <argsstring>(const WMDropResourcePlanResponse &amp;) noexcept</argsstring>
+        <name>WMDropResourcePlanResponse</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMDropResourcePlanResponse::WMDropResourcePlanResponse</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1WMDropResourcePlanResponse" kindref="compound">WMDropResourcePlanResponse</ref> &amp;</type>
+          <defname>other1486</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11797" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="46699" bodyend="46701"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMDropResourcePlanResponse_1a882b9664be2e30d99581fd2df51a7b04" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1WMDropResourcePlanResponse" kindref="compound">WMDropResourcePlanResponse</ref> &amp;</type>
+        <definition>WMDropResourcePlanResponse &amp; Apache::Hadoop::Hive::WMDropResourcePlanResponse::operator=</definition>
+        <argsstring>(const WMDropResourcePlanResponse &amp;) noexcept</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMDropResourcePlanResponse::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1WMDropResourcePlanResponse" kindref="compound">WMDropResourcePlanResponse</ref> &amp;</type>
+          <defname>other1487</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11798" column="30" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="46702" bodyend="46705"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMDropResourcePlanResponse_1a19f8b4e9ad6c6fe3d375906d6bd56c7c" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::WMDropResourcePlanResponse::WMDropResourcePlanResponse</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>WMDropResourcePlanResponse</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMDropResourcePlanResponse::WMDropResourcePlanResponse</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11799" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="46641" bodyend="46642"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMDropResourcePlanResponse_1a46f0df17021951871bca10bf765c91df" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::WMDropResourcePlanResponse::~WMDropResourcePlanResponse</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~WMDropResourcePlanResponse</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMDropResourcePlanResponse::~WMDropResourcePlanResponse</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11801" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="46638" bodyend="46639"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMDropResourcePlanResponse_1ad4148b32054c7ee3e175e040bb416105" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::WMDropResourcePlanResponse::operator==</definition>
+        <argsstring>(const WMDropResourcePlanResponse &amp;) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMDropResourcePlanResponse::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1WMDropResourcePlanResponse" kindref="compound">WMDropResourcePlanResponse</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11803" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="46694" bodyend="46697"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMDropResourcePlanResponse_1a9830067e01d769131abd4455c95b9e69" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::WMDropResourcePlanResponse::operator!=</definition>
+        <argsstring>(const WMDropResourcePlanResponse &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMDropResourcePlanResponse::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1WMDropResourcePlanResponse" kindref="compound">WMDropResourcePlanResponse</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11804" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="11804" bodyend="11806"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMDropResourcePlanResponse_1ab2d1eb6ac5ad75abb65d0e67263c849a" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::WMDropResourcePlanResponse::operator&lt;</definition>
+        <argsstring>(const WMDropResourcePlanResponse &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMDropResourcePlanResponse::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1WMDropResourcePlanResponse" kindref="compound">WMDropResourcePlanResponse</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11808" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMDropResourcePlanResponse_1ac0b4c4cca72a4235c693983929e4d89f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::WMDropResourcePlanResponse::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot) override</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMDropResourcePlanResponse::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11810" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="46650" bodyend="46676"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMDropResourcePlanResponse_1af3fc80082c44032240c13fba846018ae" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::WMDropResourcePlanResponse::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const override</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMDropResourcePlanResponse::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11811" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="46678" bodyend="46686"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMDropResourcePlanResponse_1ac29236641f84e96c5d8d6e99ca2a9ee1" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::WMDropResourcePlanResponse::printTo</definition>
+        <argsstring>(std::ostream &amp;out) const</argsstring>
+        <name>printTo</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMDropResourcePlanResponse::printTo</qualifiedname>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11813" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="46706" bodyend="46710"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::WMDropResourcePlanResponse</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1WMDropResourcePlanResponse"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::WMDropResourcePlanResponse</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1WMDropResourcePlanResponse"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11794" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="11794" bodyend="11814"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMDropResourcePlanResponse_1a9830067e01d769131abd4455c95b9e69" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMDropResourcePlanResponse</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMDropResourcePlanResponse_1ab2d1eb6ac5ad75abb65d0e67263c849a" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMDropResourcePlanResponse</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMDropResourcePlanResponse_1a882b9664be2e30d99581fd2df51a7b04" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMDropResourcePlanResponse</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMDropResourcePlanResponse_1ad4148b32054c7ee3e175e040bb416105" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMDropResourcePlanResponse</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMDropResourcePlanResponse_1ac29236641f84e96c5d8d6e99ca2a9ee1" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::WMDropResourcePlanResponse</scope><name>printTo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMDropResourcePlanResponse_1ac0b4c4cca72a4235c693983929e4d89f" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMDropResourcePlanResponse</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMDropResourcePlanResponse_1a5a74ab62453c3083836df92760b672a8" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMDropResourcePlanResponse</scope><name>WMDropResourcePlanResponse</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMDropResourcePlanResponse_1a19f8b4e9ad6c6fe3d375906d6bd56c7c" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMDropResourcePlanResponse</scope><name>WMDropResourcePlanResponse</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMDropResourcePlanResponse_1af3fc80082c44032240c13fba846018ae" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMDropResourcePlanResponse</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMDropResourcePlanResponse_1a46f0df17021951871bca10bf765c91df" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::WMDropResourcePlanResponse</scope><name>~WMDropResourcePlanResponse</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

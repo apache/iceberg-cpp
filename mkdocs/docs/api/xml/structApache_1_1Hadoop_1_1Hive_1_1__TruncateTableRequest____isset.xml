@@ -1,0 +1,96 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structApache_1_1Hadoop_1_1Hive_1_1__TruncateTableRequest____isset" kind="struct" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::_TruncateTableRequest__isset</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__TruncateTableRequest____isset_1a9da21f4e3ff380b575b29db3a9f6b4d0" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_TruncateTableRequest__isset::partNames</definition>
+        <argsstring></argsstring>
+        <name>partNames</name>
+        <qualifiedname>Apache::Hadoop::Hive::_TruncateTableRequest__isset::partNames</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="2208" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="2208" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__TruncateTableRequest____isset_1aca61920c116196b2a5f288398bd37334" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_TruncateTableRequest__isset::writeId</definition>
+        <argsstring></argsstring>
+        <name>writeId</name>
+        <qualifiedname>Apache::Hadoop::Hive::_TruncateTableRequest__isset::writeId</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="2209" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="2209" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__TruncateTableRequest____isset_1a0df4d83b3ec52e62952844292a6bf610" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_TruncateTableRequest__isset::validWriteIdList</definition>
+        <argsstring></argsstring>
+        <name>validWriteIdList</name>
+        <qualifiedname>Apache::Hadoop::Hive::_TruncateTableRequest__isset::validWriteIdList</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="2210" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="2210" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__TruncateTableRequest____isset_1ad94317685370032ac86a18f26a4c1fc8" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_TruncateTableRequest__isset::environmentContext</definition>
+        <argsstring></argsstring>
+        <name>environmentContext</name>
+        <qualifiedname>Apache::Hadoop::Hive::_TruncateTableRequest__isset::environmentContext</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="2211" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="2211" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structApache_1_1Hadoop_1_1Hive_1_1__TruncateTableRequest____isset_1a1d6e0a1d9311aed64c2dc9cd72da37ff" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::_TruncateTableRequest__isset::_TruncateTableRequest__isset</definition>
+        <argsstring>()</argsstring>
+        <name>_TruncateTableRequest__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::_TruncateTableRequest__isset::_TruncateTableRequest__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="2207" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="2207" bodyend="2207"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="2206" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="2206" bodyend="2212"/>
+    <listofallmembers>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__TruncateTableRequest____isset_1a1d6e0a1d9311aed64c2dc9cd72da37ff" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_TruncateTableRequest__isset</scope><name>_TruncateTableRequest__isset</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__TruncateTableRequest____isset_1ad94317685370032ac86a18f26a4c1fc8" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_TruncateTableRequest__isset</scope><name>environmentContext</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__TruncateTableRequest____isset_1a9da21f4e3ff380b575b29db3a9f6b4d0" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_TruncateTableRequest__isset</scope><name>partNames</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__TruncateTableRequest____isset_1a0df4d83b3ec52e62952844292a6bf610" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_TruncateTableRequest__isset</scope><name>validWriteIdList</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__TruncateTableRequest____isset_1aca61920c116196b2a5f288398bd37334" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_TruncateTableRequest__isset</scope><name>writeId</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

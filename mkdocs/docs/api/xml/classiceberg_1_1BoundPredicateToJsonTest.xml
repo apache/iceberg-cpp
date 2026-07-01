@@ -1,0 +1,154 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1BoundPredicateToJsonTest" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::BoundPredicateToJsonTest</compoundname>
+    <basecompoundref prot="public" virt="non-virtual">testing::TestWithParam&lt; BoundPredicateToJsonParam &gt;</basecompoundref>
+    <sectiondef kind="protected-static-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1BoundPredicateToJsonTest_1ae6ac027f0b836675dbec53dd19a21416" prot="protected" static="yes" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &gt;</type>
+        <definition>std::shared_ptr&lt; Schema &gt; iceberg::BoundPredicateToJsonTest::schema_</definition>
+        <argsstring></argsstring>
+        <name>schema_</name>
+        <qualifiedname>iceberg::BoundPredicateToJsonTest::schema_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/expression_json_test.cc" line="292" column="26" bodyfile="iceberg/test/expression_json_test.cc" bodystart="292" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="protected-static-func">
+      <memberdef kind="function" id="classiceberg_1_1BoundPredicateToJsonTest_1acd0181e4448dc353c38c4e3f659e8a02" prot="protected" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>static void iceberg::BoundPredicateToJsonTest::SetUpTestSuite</definition>
+        <argsstring>()</argsstring>
+        <name>SetUpTestSuite</name>
+        <qualifiedname>iceberg::BoundPredicateToJsonTest::SetUpTestSuite</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/expression_json_test.cc" line="284" column="15" bodyfile="iceberg/test/expression_json_test.cc" bodystart="284" bodyend="291"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>iceberg::BoundPredicateToJsonTest</label>
+        <link refid="classiceberg_1_1BoundPredicateToJsonTest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>testing::TestWithParam&lt; BoundPredicateToJsonParam &gt;</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="11">
+        <label>iceberg::Lazy&lt; InitFieldById &gt;</label>
+        <link refid="classiceberg_1_1Lazy"/>
+      </node>
+      <node id="13">
+        <label>iceberg::Lazy&lt; InitFieldByLowerCaseName &gt;</label>
+        <link refid="classiceberg_1_1Lazy"/>
+      </node>
+      <node id="12">
+        <label>iceberg::Lazy&lt; InitFieldByName &gt;</label>
+        <link refid="classiceberg_1_1Lazy"/>
+      </node>
+      <node id="1">
+        <label>iceberg::BoundPredicateToJsonTest</label>
+        <link refid="classiceberg_1_1BoundPredicateToJsonTest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>schema_</edgelabel>
+        </childnode>
+      </node>
+      <node id="6">
+        <label>iceberg::NestedType</label>
+        <link refid="classiceberg_1_1NestedType"/>
+        <childnode refid="7" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>iceberg::Schema</label>
+        <link refid="classiceberg_1_1Schema"/>
+        <childnode refid="5" relation="public-inheritance">
+        </childnode>
+        <childnode refid="14" relation="usage">
+          <edgelabel>kAllColumns</edgelabel>
+        </childnode>
+      </node>
+      <node id="10">
+        <label>iceberg::SchemaField</label>
+        <link refid="classiceberg_1_1SchemaField"/>
+        <childnode refid="8" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>iceberg::StructType</label>
+        <link refid="classiceberg_1_1StructType"/>
+        <childnode refid="6" relation="public-inheritance">
+        </childnode>
+        <childnode refid="9" relation="usage">
+          <edgelabel>fields_</edgelabel>
+        </childnode>
+        <childnode refid="11" relation="usage">
+          <edgelabel>field_by_id_</edgelabel>
+        </childnode>
+        <childnode refid="12" relation="usage">
+          <edgelabel>field_by_name_</edgelabel>
+        </childnode>
+        <childnode refid="13" relation="usage">
+          <edgelabel>field_by_lowercase_name_</edgelabel>
+        </childnode>
+      </node>
+      <node id="7">
+        <label>iceberg::Type</label>
+        <link refid="classiceberg_1_1Type"/>
+        <childnode refid="8" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="8">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+      <node id="3">
+        <label>std::shared_ptr&lt; iceberg::Schema &gt;</label>
+        <childnode refid="4" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="15">
+        <label>std::basic_string_view&lt; Char &gt;</label>
+      </node>
+      <node id="14">
+        <label>std::string_view</label>
+        <childnode refid="15" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>testing::TestWithParam&lt; BoundPredicateToJsonParam &gt;</label>
+      </node>
+      <node id="9">
+        <label>std::vector&lt; iceberg::SchemaField &gt;</label>
+        <childnode refid="10" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/test/expression_json_test.cc" line="281" column="1" bodyfile="iceberg/test/expression_json_test.cc" bodystart="282" bodyend="293"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1BoundPredicateToJsonTest_1ae6ac027f0b836675dbec53dd19a21416" prot="protected" virt="non-virtual"><scope>iceberg::BoundPredicateToJsonTest</scope><name>schema_</name></member>
+      <member refid="classiceberg_1_1BoundPredicateToJsonTest_1acd0181e4448dc353c38c4e3f659e8a02" prot="protected" virt="non-virtual"><scope>iceberg::BoundPredicateToJsonTest</scope><name>SetUpTestSuite</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

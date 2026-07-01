@@ -1,0 +1,289 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1GetRuntimeStatsRequest" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::GetRuntimeStatsRequest</compoundname>
+    <basecompoundref prot="public" virt="virtual">apache::thrift::TBase</basecompoundref>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1GetRuntimeStatsRequest_1aebd1d76119d7152298df645bae45962f" prot="public" static="no" mutable="no">
+        <type>int32_t</type>
+        <definition>int32_t Apache::Hadoop::Hive::GetRuntimeStatsRequest::maxWeight</definition>
+        <argsstring></argsstring>
+        <name>maxWeight</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetRuntimeStatsRequest::maxWeight</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13034" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="13034" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1GetRuntimeStatsRequest_1a8bd37b7328a33367360e2eb09123605e" prot="public" static="no" mutable="no">
+        <type>int32_t</type>
+        <definition>int32_t Apache::Hadoop::Hive::GetRuntimeStatsRequest::maxCreateTime</definition>
+        <argsstring></argsstring>
+        <name>maxCreateTime</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetRuntimeStatsRequest::maxCreateTime</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13035" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="13035" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetRuntimeStatsRequest_1a489ee50aee2d9542d03dae8e43c78f0f" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::GetRuntimeStatsRequest::GetRuntimeStatsRequest</definition>
+        <argsstring>(const GetRuntimeStatsRequest &amp;) noexcept</argsstring>
+        <name>GetRuntimeStatsRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetRuntimeStatsRequest::GetRuntimeStatsRequest</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1GetRuntimeStatsRequest" kindref="compound">GetRuntimeStatsRequest</ref> &amp;</type>
+          <defname>other1573</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13029" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="50812" bodyend="50815"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetRuntimeStatsRequest_1aa6511c8abbd9d37f3bad44042c897247" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1GetRuntimeStatsRequest" kindref="compound">GetRuntimeStatsRequest</ref> &amp;</type>
+        <definition>GetRuntimeStatsRequest &amp; Apache::Hadoop::Hive::GetRuntimeStatsRequest::operator=</definition>
+        <argsstring>(const GetRuntimeStatsRequest &amp;) noexcept</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetRuntimeStatsRequest::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1GetRuntimeStatsRequest" kindref="compound">GetRuntimeStatsRequest</ref> &amp;</type>
+          <defname>other1574</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13030" column="26" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="50816" bodyend="50820"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetRuntimeStatsRequest_1a8f29b2db64792c2ce724f0d4f09e1735" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::GetRuntimeStatsRequest::GetRuntimeStatsRequest</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>GetRuntimeStatsRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetRuntimeStatsRequest::GetRuntimeStatsRequest</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13031" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="50705" bodyend="50708"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetRuntimeStatsRequest_1af1b8c5eb46c03de0239f89f477966acb" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::GetRuntimeStatsRequest::~GetRuntimeStatsRequest</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~GetRuntimeStatsRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetRuntimeStatsRequest::~GetRuntimeStatsRequest</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13033" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="50702" bodyend="50703"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetRuntimeStatsRequest_1a84a4f88e1624906ec1a4880cba9ae137" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::GetRuntimeStatsRequest::__set_maxWeight</definition>
+        <argsstring>(const int32_t val)</argsstring>
+        <name>__set_maxWeight</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetRuntimeStatsRequest::__set_maxWeight</qualifiedname>
+        <param>
+          <type>const int32_t</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13037" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="50710" bodyend="50712"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetRuntimeStatsRequest_1a5b43a361e7c22095901be7711e99afa8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::GetRuntimeStatsRequest::__set_maxCreateTime</definition>
+        <argsstring>(const int32_t val)</argsstring>
+        <name>__set_maxCreateTime</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetRuntimeStatsRequest::__set_maxCreateTime</qualifiedname>
+        <param>
+          <type>const int32_t</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13039" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="50714" bodyend="50716"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetRuntimeStatsRequest_1a6f9da788ca5adb9a96ece02d6e399d1f" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::GetRuntimeStatsRequest::operator==</definition>
+        <argsstring>(const GetRuntimeStatsRequest &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetRuntimeStatsRequest::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1GetRuntimeStatsRequest" kindref="compound">GetRuntimeStatsRequest</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13041" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="50803" bodyend="50810"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetRuntimeStatsRequest_1a5062b0939d024034221b830f517d4343" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::GetRuntimeStatsRequest::operator!=</definition>
+        <argsstring>(const GetRuntimeStatsRequest &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetRuntimeStatsRequest::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1GetRuntimeStatsRequest" kindref="compound">GetRuntimeStatsRequest</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13042" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="13042" bodyend="13044"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetRuntimeStatsRequest_1aa7cfae920846ecf8a4fd9535d05f81d6" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::GetRuntimeStatsRequest::operator&lt;</definition>
+        <argsstring>(const GetRuntimeStatsRequest &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetRuntimeStatsRequest::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1GetRuntimeStatsRequest" kindref="compound">GetRuntimeStatsRequest</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13046" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetRuntimeStatsRequest_1a9e9cbea985d6b30a9b1c435ed8e7b25d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::GetRuntimeStatsRequest::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot) override</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetRuntimeStatsRequest::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13048" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="50724" bodyend="50777"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetRuntimeStatsRequest_1ad62c8168a3d8f152a662fc318464cd74" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::GetRuntimeStatsRequest::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const override</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetRuntimeStatsRequest::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13049" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="50779" bodyend="50795"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetRuntimeStatsRequest_1a5755e7a0c89c3518e67501a9a3ca893a" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::GetRuntimeStatsRequest::printTo</definition>
+        <argsstring>(std::ostream &amp;out) const</argsstring>
+        <name>printTo</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetRuntimeStatsRequest::printTo</qualifiedname>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13051" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="50821" bodyend="50827"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::GetRuntimeStatsRequest</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1GetRuntimeStatsRequest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::GetRuntimeStatsRequest</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1GetRuntimeStatsRequest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13026" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="13026" bodyend="13052"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetRuntimeStatsRequest_1a5b43a361e7c22095901be7711e99afa8" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetRuntimeStatsRequest</scope><name>__set_maxCreateTime</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetRuntimeStatsRequest_1a84a4f88e1624906ec1a4880cba9ae137" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetRuntimeStatsRequest</scope><name>__set_maxWeight</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetRuntimeStatsRequest_1a489ee50aee2d9542d03dae8e43c78f0f" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetRuntimeStatsRequest</scope><name>GetRuntimeStatsRequest</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetRuntimeStatsRequest_1a8f29b2db64792c2ce724f0d4f09e1735" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetRuntimeStatsRequest</scope><name>GetRuntimeStatsRequest</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetRuntimeStatsRequest_1a8bd37b7328a33367360e2eb09123605e" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetRuntimeStatsRequest</scope><name>maxCreateTime</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetRuntimeStatsRequest_1aebd1d76119d7152298df645bae45962f" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetRuntimeStatsRequest</scope><name>maxWeight</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetRuntimeStatsRequest_1a5062b0939d024034221b830f517d4343" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetRuntimeStatsRequest</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetRuntimeStatsRequest_1aa7cfae920846ecf8a4fd9535d05f81d6" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetRuntimeStatsRequest</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetRuntimeStatsRequest_1aa6511c8abbd9d37f3bad44042c897247" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetRuntimeStatsRequest</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetRuntimeStatsRequest_1a6f9da788ca5adb9a96ece02d6e399d1f" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetRuntimeStatsRequest</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetRuntimeStatsRequest_1a5755e7a0c89c3518e67501a9a3ca893a" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::GetRuntimeStatsRequest</scope><name>printTo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetRuntimeStatsRequest_1a9e9cbea985d6b30a9b1c435ed8e7b25d" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetRuntimeStatsRequest</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetRuntimeStatsRequest_1ad62c8168a3d8f152a662fc318464cd74" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetRuntimeStatsRequest</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetRuntimeStatsRequest_1af1b8c5eb46c03de0239f89f477966acb" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::GetRuntimeStatsRequest</scope><name>~GetRuntimeStatsRequest</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

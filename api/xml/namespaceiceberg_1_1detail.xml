@@ -1,0 +1,123 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="namespaceiceberg_1_1detail" kind="namespace" language="C++">
+    <compoundname>iceberg::detail</compoundname>
+    <innerclass refid="structiceberg_1_1detail_1_1ArrowArrayStreamPrivateData" prot="private">iceberg::detail::ArrowArrayStreamPrivateData</innerclass>
+    <innerclass refid="classiceberg_1_1detail_1_1RetryRunnerBase" prot="public">iceberg::detail::RetryRunnerBase</innerclass>
+    <sectiondef kind="func">
+      <memberdef kind="function" id="arrow__c__data__util__internal_8h_1a5c5d83abed5900043e9bbc7f7fdf4272" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>ArrowArrayStreamProvider</type>
+            <declname>Source</declname>
+            <defname>Source</defname>
+          </param>
+        </templateparamlist>
+        <type>int</type>
+        <definition>int iceberg::detail::GetSchema</definition>
+        <argsstring>(struct ArrowArrayStream *stream, struct ArrowSchema *out)</argsstring>
+        <name>GetSchema</name>
+        <qualifiedname>iceberg::detail::GetSchema</qualifiedname>
+        <param>
+          <type>struct <ref refid="structArrowArrayStream" kindref="compound">ArrowArrayStream</ref> *</type>
+          <declname>stream</declname>
+        </param>
+        <param>
+          <type>struct <ref refid="structArrowSchema" kindref="compound">ArrowSchema</ref> *</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/arrow_c_data_util_internal.h" line="140" column="5" bodyfile="iceberg/arrow_c_data_util_internal.h" bodystart="140" bodyend="156"/>
+      </memberdef>
+      <memberdef kind="function" id="arrow__c__data__util__internal_8h_1a67b4a399c9861cb6423e936b6bd80b0b" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>ArrowArrayStreamProvider</type>
+            <declname>Source</declname>
+            <defname>Source</defname>
+          </param>
+        </templateparamlist>
+        <type>int</type>
+        <definition>int iceberg::detail::GetNext</definition>
+        <argsstring>(struct ArrowArrayStream *stream, struct ArrowArray *out)</argsstring>
+        <name>GetNext</name>
+        <qualifiedname>iceberg::detail::GetNext</qualifiedname>
+        <param>
+          <type>struct <ref refid="structArrowArrayStream" kindref="compound">ArrowArrayStream</ref> *</type>
+          <declname>stream</declname>
+        </param>
+        <param>
+          <type>struct <ref refid="structArrowArray" kindref="compound">ArrowArray</ref> *</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/arrow_c_data_util_internal.h" line="159" column="5" bodyfile="iceberg/arrow_c_data_util_internal.h" bodystart="159" bodyend="181"/>
+      </memberdef>
+      <memberdef kind="function" id="arrow__c__data__util__internal_8h_1a034e50bbd306313dd303f3f8aaa3985c" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>ArrowArrayStreamProvider</type>
+            <declname>Source</declname>
+            <defname>Source</defname>
+          </param>
+        </templateparamlist>
+        <type>const char *</type>
+        <definition>const char * iceberg::detail::GetLastError</definition>
+        <argsstring>(struct ArrowArrayStream *stream)</argsstring>
+        <name>GetLastError</name>
+        <qualifiedname>iceberg::detail::GetLastError</qualifiedname>
+        <param>
+          <type>struct <ref refid="structArrowArrayStream" kindref="compound">ArrowArrayStream</ref> *</type>
+          <declname>stream</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/arrow_c_data_util_internal.h" line="184" column="12" bodyfile="iceberg/arrow_c_data_util_internal.h" bodystart="184" bodyend="192"/>
+      </memberdef>
+      <memberdef kind="function" id="arrow__c__data__util__internal_8h_1a13026f752d5136a9b99bd513449f6820" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>ArrowArrayStreamProvider</type>
+            <declname>Source</declname>
+            <defname>Source</defname>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void iceberg::detail::Release</definition>
+        <argsstring>(struct ArrowArrayStream *stream)</argsstring>
+        <name>Release</name>
+        <qualifiedname>iceberg::detail::Release</qualifiedname>
+        <param>
+          <type>struct <ref refid="structArrowArrayStream" kindref="compound">ArrowArrayStream</ref> *</type>
+          <declname>stream</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/arrow_c_data_util_internal.h" line="195" column="6" bodyfile="iceberg/arrow_c_data_util_internal.h" bodystart="195" bodyend="203"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/arrow_c_data_util_internal.h" line="122" column="1"/>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,96 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structApache_1_1Hadoop_1_1Hive_1_1__NotificationEvent____isset" kind="struct" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::_NotificationEvent__isset</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__NotificationEvent____isset_1a8f15097f20cf5407a44807d2795d43b2" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_NotificationEvent__isset::dbName</definition>
+        <argsstring></argsstring>
+        <name>dbName</name>
+        <qualifiedname>Apache::Hadoop::Hive::_NotificationEvent__isset::dbName</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9173" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="9173" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__NotificationEvent____isset_1a6c89a0b6fcdf3611b6b41618d6190d3a" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_NotificationEvent__isset::tableName</definition>
+        <argsstring></argsstring>
+        <name>tableName</name>
+        <qualifiedname>Apache::Hadoop::Hive::_NotificationEvent__isset::tableName</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9174" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="9174" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__NotificationEvent____isset_1aad6dafdbcaeb74180e72ef6f65dcc47a" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_NotificationEvent__isset::messageFormat</definition>
+        <argsstring></argsstring>
+        <name>messageFormat</name>
+        <qualifiedname>Apache::Hadoop::Hive::_NotificationEvent__isset::messageFormat</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9175" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="9175" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__NotificationEvent____isset_1a6ba607b03fd9bf841820db0237d065ff" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_NotificationEvent__isset::catName</definition>
+        <argsstring></argsstring>
+        <name>catName</name>
+        <qualifiedname>Apache::Hadoop::Hive::_NotificationEvent__isset::catName</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9176" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="9176" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structApache_1_1Hadoop_1_1Hive_1_1__NotificationEvent____isset_1acbbdbc6784cf91bd1103b7e68178b0e9" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::_NotificationEvent__isset::_NotificationEvent__isset</definition>
+        <argsstring>()</argsstring>
+        <name>_NotificationEvent__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::_NotificationEvent__isset::_NotificationEvent__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9172" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="9172" bodyend="9172"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9171" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="9171" bodyend="9177"/>
+    <listofallmembers>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__NotificationEvent____isset_1acbbdbc6784cf91bd1103b7e68178b0e9" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_NotificationEvent__isset</scope><name>_NotificationEvent__isset</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__NotificationEvent____isset_1a6ba607b03fd9bf841820db0237d065ff" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_NotificationEvent__isset</scope><name>catName</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__NotificationEvent____isset_1a8f15097f20cf5407a44807d2795d43b2" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_NotificationEvent__isset</scope><name>dbName</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__NotificationEvent____isset_1aad6dafdbcaeb74180e72ef6f65dcc47a" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_NotificationEvent__isset</scope><name>messageFormat</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__NotificationEvent____isset_1a6c89a0b6fcdf3611b6b41618d6190d3a" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_NotificationEvent__isset</scope><name>tableName</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

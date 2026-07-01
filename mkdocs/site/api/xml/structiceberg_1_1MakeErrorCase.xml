@@ -1,0 +1,45 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1MakeErrorCase" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::MakeErrorCase</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1MakeErrorCase_1ae46587775ee23664e4e396b856afbc78" prot="public" static="no" mutable="no">
+        <type>const char *</type>
+        <definition>const char* iceberg::MakeErrorCase::name</definition>
+        <argsstring></argsstring>
+        <name>name</name>
+        <qualifiedname>iceberg::MakeErrorCase::name</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/delete_filter_test.cc" line="1204" column="14" bodyfile="iceberg/test/delete_filter_test.cc" bodystart="1204" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1MakeErrorCase_1a85743da1a376614eebbf349335e8e836" prot="public" static="no" mutable="no">
+        <type>MakeErrorDeleteKind</type>
+        <definition>MakeErrorDeleteKind iceberg::MakeErrorCase::delete_kind</definition>
+        <argsstring></argsstring>
+        <name>delete_kind</name>
+        <qualifiedname>iceberg::MakeErrorCase::delete_kind</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/delete_filter_test.cc" line="1205" column="23" bodyfile="iceberg/test/delete_filter_test.cc" bodystart="1205" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/test/delete_filter_test.cc" line="1203" column="1" bodyfile="iceberg/test/delete_filter_test.cc" bodystart="1203" bodyend="1206"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1MakeErrorCase_1a85743da1a376614eebbf349335e8e836" prot="public" virt="non-virtual"><scope>iceberg::MakeErrorCase</scope><name>delete_kind</name></member>
+      <member refid="structiceberg_1_1MakeErrorCase_1ae46587775ee23664e4e396b856afbc78" prot="public" virt="non-virtual"><scope>iceberg::MakeErrorCase</scope><name>name</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

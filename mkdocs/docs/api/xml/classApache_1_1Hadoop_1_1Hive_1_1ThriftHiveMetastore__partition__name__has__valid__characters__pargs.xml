@@ -1,0 +1,104 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__partition__name__has__valid__characters__pargs" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::ThriftHiveMetastore_partition_name_has_valid_characters_pargs</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__partition__name__has__valid__characters__pargs_1a9c5f26af1b32df56a57af3e5b60a75e5" prot="public" static="no" mutable="no">
+        <type>const std::vector&lt; std::string &gt; *</type>
+        <definition>const std::vector&lt;std::string&gt;* Apache::Hadoop::Hive::ThriftHiveMetastore_partition_name_has_valid_characters_pargs::part_vals</definition>
+        <argsstring></argsstring>
+        <name>part_vals</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_partition_name_has_valid_characters_pargs::part_vals</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="14072" column="22" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="14072" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__partition__name__has__valid__characters__pargs_1afeab0ab9706ad69e23c8e3be62e4c693" prot="public" static="no" mutable="no">
+        <type>const bool *</type>
+        <definition>const bool* Apache::Hadoop::Hive::ThriftHiveMetastore_partition_name_has_valid_characters_pargs::throw_exception</definition>
+        <argsstring></argsstring>
+        <name>throw_exception</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_partition_name_has_valid_characters_pargs::throw_exception</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="14073" column="14" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="14073" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__partition__name__has__valid__characters__pargs_1a40cbc5f064a0916acb9f99bbb5f6ad98" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::ThriftHiveMetastore_partition_name_has_valid_characters_pargs::~ThriftHiveMetastore_partition_name_has_valid_characters_pargs</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~ThriftHiveMetastore_partition_name_has_valid_characters_pargs</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_partition_name_has_valid_characters_pargs::~ThriftHiveMetastore_partition_name_has_valid_characters_pargs</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="14071" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.cpp" bodystart="31059" bodyend="31060"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__partition__name__has__valid__characters__pargs_1a6f516aec25e608d6e3588a43f7f30fc1" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::ThriftHiveMetastore_partition_name_has_valid_characters_pargs::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_partition_name_has_valid_characters_pargs::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="14075" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.cpp" bodystart="31063" bodyend="31087"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::ThriftHiveMetastore_partition_name_has_valid_characters_pargs</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__partition__name__has__valid__characters__pargs"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>part_vals</edgelabel>
+        </childnode>
+      </node>
+      <node id="4">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="3">
+        <label>std::string</label>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>std::vector&lt; std::string &gt;</label>
+        <childnode refid="3" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="14067" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="14067" bodyend="14077"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__partition__name__has__valid__characters__pargs_1a9c5f26af1b32df56a57af3e5b60a75e5" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_partition_name_has_valid_characters_pargs</scope><name>part_vals</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__partition__name__has__valid__characters__pargs_1afeab0ab9706ad69e23c8e3be62e4c693" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_partition_name_has_valid_characters_pargs</scope><name>throw_exception</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__partition__name__has__valid__characters__pargs_1a6f516aec25e608d6e3588a43f7f30fc1" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_partition_name_has_valid_characters_pargs</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__partition__name__has__valid__characters__pargs_1a40cbc5f064a0916acb9f99bbb5f6ad98" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_partition_name_has_valid_characters_pargs</scope><name>~ThriftHiveMetastore_partition_name_has_valid_characters_pargs</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

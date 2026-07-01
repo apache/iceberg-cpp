@@ -1,0 +1,100 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structApache_1_1Hadoop_1_1Hive_1_1SchemaVersionState" kind="struct" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::SchemaVersionState</compoundname>
+    <sectiondef kind="public-type">
+      <memberdef kind="enum" id="structApache_1_1Hadoop_1_1Hive_1_1SchemaVersionState_1a6477b52148233f0c14e05454f431ab4a" prot="public" static="no" strong="no">
+        <type></type>
+        <name>type</name>
+        <qualifiedname>Apache::Hadoop::Hive::SchemaVersionState::type</qualifiedname>
+        <enumvalue id="structApache_1_1Hadoop_1_1Hive_1_1SchemaVersionState_1a6477b52148233f0c14e05454f431ab4aaacc855b548202a8b0080424c960173b2" prot="public">
+          <name>INITIATED</name>
+          <initializer>= 1</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="structApache_1_1Hadoop_1_1Hive_1_1SchemaVersionState_1a6477b52148233f0c14e05454f431ab4aa941c856881a5be54869829fdb6df9a0d" prot="public">
+          <name>START_REVIEW</name>
+          <initializer>= 2</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="structApache_1_1Hadoop_1_1Hive_1_1SchemaVersionState_1a6477b52148233f0c14e05454f431ab4aac1ea0794d39388188ecbf93e7c81b683" prot="public">
+          <name>CHANGES_REQUIRED</name>
+          <initializer>= 3</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="structApache_1_1Hadoop_1_1Hive_1_1SchemaVersionState_1a6477b52148233f0c14e05454f431ab4aa4968b0a146482778303985f9ce920167" prot="public">
+          <name>REVIEWED</name>
+          <initializer>= 4</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="structApache_1_1Hadoop_1_1Hive_1_1SchemaVersionState_1a6477b52148233f0c14e05454f431ab4aab9e2bce780679d333b1f9e334fb337ca" prot="public">
+          <name>ENABLED</name>
+          <initializer>= 5</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="structApache_1_1Hadoop_1_1Hive_1_1SchemaVersionState_1a6477b52148233f0c14e05454f431ab4aaeb759e6a1f212ee416f43b74c4240c18" prot="public">
+          <name>DISABLED</name>
+          <initializer>= 6</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="structApache_1_1Hadoop_1_1Hive_1_1SchemaVersionState_1a6477b52148233f0c14e05454f431ab4aa93a577494fe3a7fea2f5b815f955d2fb" prot="public">
+          <name>ARCHIVED</name>
+          <initializer>= 7</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="structApache_1_1Hadoop_1_1Hive_1_1SchemaVersionState_1a6477b52148233f0c14e05454f431ab4aaeacadec1776d57848f050a33084ec9d7" prot="public">
+          <name>DELETED</name>
+          <initializer>= 8</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="240" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="240" bodyend="249"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="239" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="239" bodyend="250"/>
+    <listofallmembers>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1SchemaVersionState_1a6477b52148233f0c14e05454f431ab4aa93a577494fe3a7fea2f5b815f955d2fb" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::SchemaVersionState</scope><name>ARCHIVED</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1SchemaVersionState_1a6477b52148233f0c14e05454f431ab4aac1ea0794d39388188ecbf93e7c81b683" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::SchemaVersionState</scope><name>CHANGES_REQUIRED</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1SchemaVersionState_1a6477b52148233f0c14e05454f431ab4aaeacadec1776d57848f050a33084ec9d7" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::SchemaVersionState</scope><name>DELETED</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1SchemaVersionState_1a6477b52148233f0c14e05454f431ab4aaeb759e6a1f212ee416f43b74c4240c18" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::SchemaVersionState</scope><name>DISABLED</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1SchemaVersionState_1a6477b52148233f0c14e05454f431ab4aab9e2bce780679d333b1f9e334fb337ca" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::SchemaVersionState</scope><name>ENABLED</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1SchemaVersionState_1a6477b52148233f0c14e05454f431ab4aaacc855b548202a8b0080424c960173b2" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::SchemaVersionState</scope><name>INITIATED</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1SchemaVersionState_1a6477b52148233f0c14e05454f431ab4aa4968b0a146482778303985f9ce920167" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::SchemaVersionState</scope><name>REVIEWED</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1SchemaVersionState_1a6477b52148233f0c14e05454f431ab4aa941c856881a5be54869829fdb6df9a0d" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::SchemaVersionState</scope><name>START_REVIEW</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1SchemaVersionState_1a6477b52148233f0c14e05454f431ab4a" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::SchemaVersionState</scope><name>type</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,319 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1NoSuchCompactionException" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::NoSuchCompactionException</compoundname>
+    <basecompoundref prot="public" virt="non-virtual">apache::thrift::TException</basecompoundref>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1NoSuchCompactionException_1ab1093cc0db339d4f8c99cde3006ba8ce" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::NoSuchCompactionException::message</definition>
+        <argsstring></argsstring>
+        <name>message</name>
+        <qualifiedname>Apache::Hadoop::Hive::NoSuchCompactionException::message</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15885" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="15885" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1NoSuchCompactionException_1a58ba03aa368562ce15dfb3d013ea0a70" prot="public" static="no" mutable="no">
+        <type><ref refid="structApache_1_1Hadoop_1_1Hive_1_1__NoSuchCompactionException____isset" kindref="compound">_NoSuchCompactionException__isset</ref></type>
+        <definition>_NoSuchCompactionException__isset Apache::Hadoop::Hive::NoSuchCompactionException::__isset</definition>
+        <argsstring></argsstring>
+        <name>__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::NoSuchCompactionException::__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15887" column="37" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="15887" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1NoSuchCompactionException_1ad2d4c57adfbb38c0e5d73bd28c8a8ad8" prot="public" static="no" mutable="yes">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::NoSuchCompactionException::thriftTExceptionMessageHolder_</definition>
+        <argsstring></argsstring>
+        <name>thriftTExceptionMessageHolder_</name>
+        <qualifiedname>Apache::Hadoop::Hive::NoSuchCompactionException::thriftTExceptionMessageHolder_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15902" column="23" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="15902" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1NoSuchCompactionException_1a581ed67a27415f31102afacd267eb7f0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::NoSuchCompactionException::NoSuchCompactionException</definition>
+        <argsstring>(const NoSuchCompactionException &amp;)</argsstring>
+        <name>NoSuchCompactionException</name>
+        <qualifiedname>Apache::Hadoop::Hive::NoSuchCompactionException::NoSuchCompactionException</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1NoSuchCompactionException" kindref="compound">NoSuchCompactionException</ref> &amp;</type>
+          <defname>other1885</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15880" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="62295" bodyend="62298"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1NoSuchCompactionException_1aafd6b4306638d5218d452446dc97566a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1NoSuchCompactionException" kindref="compound">NoSuchCompactionException</ref> &amp;</type>
+        <definition>NoSuchCompactionException &amp; Apache::Hadoop::Hive::NoSuchCompactionException::operator=</definition>
+        <argsstring>(const NoSuchCompactionException &amp;)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::NoSuchCompactionException::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1NoSuchCompactionException" kindref="compound">NoSuchCompactionException</ref> &amp;</type>
+          <defname>other1886</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15881" column="29" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="62299" bodyend="62303"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1NoSuchCompactionException_1a9a122bf7a30181a77e743ac601ec8720" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::NoSuchCompactionException::NoSuchCompactionException</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>NoSuchCompactionException</name>
+        <qualifiedname>Apache::Hadoop::Hive::NoSuchCompactionException::NoSuchCompactionException</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15882" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="62213" bodyend="62215"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1NoSuchCompactionException_1a0c596860522dbb35e0afd2ef2438001a" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::NoSuchCompactionException::~NoSuchCompactionException</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~NoSuchCompactionException</name>
+        <qualifiedname>Apache::Hadoop::Hive::NoSuchCompactionException::~NoSuchCompactionException</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15884" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="62210" bodyend="62211"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1NoSuchCompactionException_1a9cb8db3735f8a844474dff086da882aa" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::NoSuchCompactionException::__set_message</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_message</name>
+        <qualifiedname>Apache::Hadoop::Hive::NoSuchCompactionException::__set_message</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15889" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="62217" bodyend="62219"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1NoSuchCompactionException_1ad7de8523c0b654074b07b50d5de29c9f" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::NoSuchCompactionException::operator==</definition>
+        <argsstring>(const NoSuchCompactionException &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::NoSuchCompactionException::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1NoSuchCompactionException" kindref="compound">NoSuchCompactionException</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15891" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="62288" bodyend="62293"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1NoSuchCompactionException_1ab37ebadcc020b002d611bd969a2cb39f" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::NoSuchCompactionException::operator!=</definition>
+        <argsstring>(const NoSuchCompactionException &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::NoSuchCompactionException::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1NoSuchCompactionException" kindref="compound">NoSuchCompactionException</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15892" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="15892" bodyend="15894"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1NoSuchCompactionException_1a59b4864084bceb0051a1db79916936fb" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::NoSuchCompactionException::operator&lt;</definition>
+        <argsstring>(const NoSuchCompactionException &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::NoSuchCompactionException::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1NoSuchCompactionException" kindref="compound">NoSuchCompactionException</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15896" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1NoSuchCompactionException_1a9b4647bc1afdeaeec78df4ce099df171" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::NoSuchCompactionException::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot)</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::NoSuchCompactionException::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15898" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="62227" bodyend="62266"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1NoSuchCompactionException_1a23fd94b05897a800d54651198e71b021" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::NoSuchCompactionException::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::NoSuchCompactionException::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15899" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="62268" bodyend="62280"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1NoSuchCompactionException_1a4ca221b90022fa8b894e534134d63488" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::NoSuchCompactionException::printTo</definition>
+        <argsstring>(std::ostream &amp;out) const</argsstring>
+        <name>printTo</name>
+        <qualifiedname>Apache::Hadoop::Hive::NoSuchCompactionException::printTo</qualifiedname>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15901" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="62304" bodyend="62309"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1NoSuchCompactionException_1ad3c57c856e94d80562b552538004d2ce" prot="public" static="no" const="yes" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type>const char *</type>
+        <definition>const char * Apache::Hadoop::Hive::NoSuchCompactionException::what</definition>
+        <argsstring>() const noexcept override</argsstring>
+        <name>what</name>
+        <qualifiedname>Apache::Hadoop::Hive::NoSuchCompactionException::what</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15903" column="14" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="62311" bodyend="62320"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::NoSuchCompactionException</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1NoSuchCompactionException"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TException</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::NoSuchCompactionException</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1NoSuchCompactionException"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>message</edgelabel>
+          <edgelabel>thriftTExceptionMessageHolder_</edgelabel>
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="5">
+        <label>Apache::Hadoop::Hive::_NoSuchCompactionException__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__NoSuchCompactionException____isset"/>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TException</label>
+      </node>
+      <node id="4">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="3">
+        <label>std::string</label>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15877" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="15877" bodyend="15904"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1NoSuchCompactionException_1a58ba03aa368562ce15dfb3d013ea0a70" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::NoSuchCompactionException</scope><name>__isset</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1NoSuchCompactionException_1a9cb8db3735f8a844474dff086da882aa" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::NoSuchCompactionException</scope><name>__set_message</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1NoSuchCompactionException_1ab1093cc0db339d4f8c99cde3006ba8ce" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::NoSuchCompactionException</scope><name>message</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1NoSuchCompactionException_1a581ed67a27415f31102afacd267eb7f0" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::NoSuchCompactionException</scope><name>NoSuchCompactionException</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1NoSuchCompactionException_1a9a122bf7a30181a77e743ac601ec8720" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::NoSuchCompactionException</scope><name>NoSuchCompactionException</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1NoSuchCompactionException_1ab37ebadcc020b002d611bd969a2cb39f" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::NoSuchCompactionException</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1NoSuchCompactionException_1a59b4864084bceb0051a1db79916936fb" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::NoSuchCompactionException</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1NoSuchCompactionException_1aafd6b4306638d5218d452446dc97566a" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::NoSuchCompactionException</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1NoSuchCompactionException_1ad7de8523c0b654074b07b50d5de29c9f" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::NoSuchCompactionException</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1NoSuchCompactionException_1a4ca221b90022fa8b894e534134d63488" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::NoSuchCompactionException</scope><name>printTo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1NoSuchCompactionException_1a9b4647bc1afdeaeec78df4ce099df171" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::NoSuchCompactionException</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1NoSuchCompactionException_1ad2d4c57adfbb38c0e5d73bd28c8a8ad8" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::NoSuchCompactionException</scope><name>thriftTExceptionMessageHolder_</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1NoSuchCompactionException_1ad3c57c856e94d80562b552538004d2ce" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::NoSuchCompactionException</scope><name>what</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1NoSuchCompactionException_1a23fd94b05897a800d54651198e71b021" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::NoSuchCompactionException</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1NoSuchCompactionException_1a0c596860522dbb35e0afd2ef2438001a" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::NoSuchCompactionException</scope><name>~NoSuchCompactionException</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

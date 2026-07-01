@@ -1,0 +1,154 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1SetOpRoundTripParam" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::SetOpRoundTripParam</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1SetOpRoundTripParam_1a974f43ba51d0dcfee851ee077eb48544" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::SetOpRoundTripParam::name</definition>
+        <argsstring></argsstring>
+        <name>name</name>
+        <qualifiedname>iceberg::SetOpRoundTripParam::name</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/expression_json_test.cc" line="345" column="15" bodyfile="iceberg/test/expression_json_test.cc" bodystart="345" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1SetOpRoundTripParam_1ace4464411274bb5e8bb3cab57db29603" prot="public" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1UnboundPredicate" kindref="compound">UnboundPredicate</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;UnboundPredicate&gt; iceberg::SetOpRoundTripParam::pred</definition>
+        <argsstring></argsstring>
+        <name>pred</name>
+        <qualifiedname>iceberg::SetOpRoundTripParam::pred</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/expression_json_test.cc" line="346" column="19" bodyfile="iceberg/test/expression_json_test.cc" bodystart="346" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1SetOpRoundTripParam_1af60046a64ec96f50be7cfe6ffd02d7f5" prot="public" static="no" mutable="no">
+        <type><ref refid="classiceberg_1_1Expression_1a433076bdc34ce0b6d359313c6c7b8a9c" kindref="member">Expression::Operation</ref></type>
+        <definition>Expression::Operation iceberg::SetOpRoundTripParam::expected_op</definition>
+        <argsstring></argsstring>
+        <name>expected_op</name>
+        <qualifiedname>iceberg::SetOpRoundTripParam::expected_op</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/expression_json_test.cc" line="347" column="25" bodyfile="iceberg/test/expression_json_test.cc" bodystart="347" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1SetOpRoundTripParam_1a346d43e2458c8ad0f84e595439b096bb" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::SetOpRoundTripParam::expected_term</definition>
+        <argsstring></argsstring>
+        <name>expected_term</name>
+        <qualifiedname>iceberg::SetOpRoundTripParam::expected_term</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/expression_json_test.cc" line="348" column="15" bodyfile="iceberg/test/expression_json_test.cc" bodystart="348" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1SetOpRoundTripParam_1a35baf2986cbb260fa2e233e333a4f87c" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &gt;</type>
+        <definition>std::vector&lt;Literal&gt; iceberg::SetOpRoundTripParam::expected_values</definition>
+        <argsstring></argsstring>
+        <name>expected_values</name>
+        <qualifiedname>iceberg::SetOpRoundTripParam::expected_values</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/expression_json_test.cc" line="349" column="15" bodyfile="iceberg/test/expression_json_test.cc" bodystart="349" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="8">
+        <label>iceberg::Unbound&lt; Expression &gt;</label>
+        <link refid="classiceberg_1_1Unbound"/>
+      </node>
+      <node id="6">
+        <label>iceberg::Expression</label>
+        <link refid="classiceberg_1_1Expression"/>
+        <childnode refid="7" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="10">
+        <label>iceberg::Literal</label>
+        <link refid="classiceberg_1_1Literal"/>
+        <childnode refid="7" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::SetOpRoundTripParam</label>
+        <link refid="structiceberg_1_1SetOpRoundTripParam"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>expected_term</edgelabel>
+          <edgelabel>name</edgelabel>
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>pred</edgelabel>
+        </childnode>
+        <childnode refid="9" relation="usage">
+          <edgelabel>expected_values</edgelabel>
+        </childnode>
+      </node>
+      <node id="5">
+        <label>iceberg::UnboundPredicate</label>
+        <link refid="classiceberg_1_1UnboundPredicate"/>
+        <childnode refid="6" relation="public-inheritance">
+        </childnode>
+        <childnode refid="8" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="7">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+      <node id="4">
+        <label>std::shared_ptr&lt; iceberg::UnboundPredicate &gt;</label>
+        <childnode refid="5" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="2">
+        <label>std::string</label>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="9">
+        <label>std::vector&lt; iceberg::Literal &gt;</label>
+        <childnode refid="10" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/test/expression_json_test.cc" line="344" column="1" bodyfile="iceberg/test/expression_json_test.cc" bodystart="344" bodyend="350"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1SetOpRoundTripParam_1af60046a64ec96f50be7cfe6ffd02d7f5" prot="public" virt="non-virtual"><scope>iceberg::SetOpRoundTripParam</scope><name>expected_op</name></member>
+      <member refid="structiceberg_1_1SetOpRoundTripParam_1a346d43e2458c8ad0f84e595439b096bb" prot="public" virt="non-virtual"><scope>iceberg::SetOpRoundTripParam</scope><name>expected_term</name></member>
+      <member refid="structiceberg_1_1SetOpRoundTripParam_1a35baf2986cbb260fa2e233e333a4f87c" prot="public" virt="non-virtual"><scope>iceberg::SetOpRoundTripParam</scope><name>expected_values</name></member>
+      <member refid="structiceberg_1_1SetOpRoundTripParam_1a974f43ba51d0dcfee851ee077eb48544" prot="public" virt="non-virtual"><scope>iceberg::SetOpRoundTripParam</scope><name>name</name></member>
+      <member refid="structiceberg_1_1SetOpRoundTripParam_1ace4464411274bb5e8bb3cab57db29603" prot="public" virt="non-virtual"><scope>iceberg::SetOpRoundTripParam</scope><name>pred</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

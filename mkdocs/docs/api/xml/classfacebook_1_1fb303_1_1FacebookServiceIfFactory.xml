@@ -1,0 +1,114 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classfacebook_1_1fb303_1_1FacebookServiceIfFactory" kind="class" language="C++" prot="public" abstract="yes">
+    <compoundname>facebook::fb303::FacebookServiceIfFactory</compoundname>
+    <derivedcompoundref refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastoreIfFactory" prot="public" virt="virtual">Apache::Hadoop::Hive::ThriftHiveMetastoreIfFactory</derivedcompoundref>
+    <derivedcompoundref refid="classfacebook_1_1fb303_1_1FacebookServiceIfSingletonFactory" prot="public" virt="virtual">facebook::fb303::FacebookServiceIfSingletonFactory</derivedcompoundref>
+    <sectiondef kind="public-type">
+      <memberdef kind="typedef" id="classfacebook_1_1fb303_1_1FacebookServiceIfFactory_1a3c6879d4b7a0f295e0d86486a125dfb8" prot="public" static="no">
+        <type><ref refid="classfacebook_1_1fb303_1_1FacebookServiceIf" kindref="compound">FacebookServiceIf</ref></type>
+        <definition>typedef FacebookServiceIf facebook::fb303::FacebookServiceIfFactory::Handler</definition>
+        <argsstring></argsstring>
+        <name>Handler</name>
+        <qualifiedname>facebook::fb303::FacebookServiceIfFactory::Handler</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="108" column="29" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.h" bodystart="108" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookServiceIfFactory_1a7476282b6cbfb1400ac917ecdb61cdef" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type></type>
+        <definition>virtual facebook::fb303::FacebookServiceIfFactory::~FacebookServiceIfFactory</definition>
+        <argsstring>()</argsstring>
+        <name>~FacebookServiceIfFactory</name>
+        <qualifiedname>facebook::fb303::FacebookServiceIfFactory::~FacebookServiceIfFactory</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="110" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.h" bodystart="110" bodyend="110"/>
+      </memberdef>
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookServiceIfFactory_1afdae5750e51013a1d55e3518a4bf47f7" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type><ref refid="classfacebook_1_1fb303_1_1FacebookServiceIf" kindref="compound">FacebookServiceIf</ref> *</type>
+        <definition>virtual FacebookServiceIf * facebook::fb303::FacebookServiceIfFactory::getHandler</definition>
+        <argsstring>(const ::apache::thrift::TConnectionInfo &amp;connInfo)=0</argsstring>
+        <name>getHandler</name>
+        <qualifiedname>facebook::fb303::FacebookServiceIfFactory::getHandler</qualifiedname>
+        <reimplementedby refid="classfacebook_1_1fb303_1_1FacebookServiceIfSingletonFactory_1a44350006adf933a4cd291e78eaa998c3">getHandler</reimplementedby>
+        <reimplementedby refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastoreIfSingletonFactory_1af307012a195a4f01e9670aede23f3445">getHandler</reimplementedby>
+        <reimplementedby refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastoreIfFactory_1ab167d28390e4c9a9771e5016d03318d0">getHandler</reimplementedby>
+        <param>
+          <type>const ::apache::thrift::TConnectionInfo &amp;</type>
+          <declname>connInfo</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="112" column="29"/>
+      </memberdef>
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookServiceIfFactory_1a01bd1c10ccfceaa9f89002b8ed25fc99" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type>void</type>
+        <definition>virtual void facebook::fb303::FacebookServiceIfFactory::releaseHandler</definition>
+        <argsstring>(FacebookServiceIf *)=0</argsstring>
+        <name>releaseHandler</name>
+        <qualifiedname>facebook::fb303::FacebookServiceIfFactory::releaseHandler</qualifiedname>
+        <reimplementedby refid="classfacebook_1_1fb303_1_1FacebookServiceIfSingletonFactory_1a22f631b7e76b7c49b1f6cee4ba9e5a33">releaseHandler</reimplementedby>
+        <param>
+          <type><ref refid="classfacebook_1_1fb303_1_1FacebookServiceIf" kindref="compound">FacebookServiceIf</ref> *</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="113" column="16"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>Apache::Hadoop::Hive::ThriftHiveMetastoreIfFactory</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastoreIfFactory"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>Apache::Hadoop::Hive::ThriftHiveMetastoreIfSingletonFactory</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastoreIfSingletonFactory"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>facebook::fb303::FacebookServiceIfFactory</label>
+        <link refid="classfacebook_1_1fb303_1_1FacebookServiceIfFactory"/>
+      </node>
+      <node id="4">
+        <label>facebook::fb303::FacebookServiceIfSingletonFactory</label>
+        <link refid="classfacebook_1_1fb303_1_1FacebookServiceIfSingletonFactory"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="106" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.h" bodystart="106" bodyend="114"/>
+    <listofallmembers>
+      <member refid="classfacebook_1_1fb303_1_1FacebookServiceIfFactory_1afdae5750e51013a1d55e3518a4bf47f7" prot="public" virt="pure-virtual"><scope>facebook::fb303::FacebookServiceIfFactory</scope><name>getHandler</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookServiceIfFactory_1a3c6879d4b7a0f295e0d86486a125dfb8" prot="public" virt="non-virtual"><scope>facebook::fb303::FacebookServiceIfFactory</scope><name>Handler</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookServiceIfFactory_1a01bd1c10ccfceaa9f89002b8ed25fc99" prot="public" virt="pure-virtual"><scope>facebook::fb303::FacebookServiceIfFactory</scope><name>releaseHandler</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookServiceIfFactory_1a7476282b6cbfb1400ac917ecdb61cdef" prot="public" virt="virtual"><scope>facebook::fb303::FacebookServiceIfFactory</scope><name>~FacebookServiceIfFactory</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

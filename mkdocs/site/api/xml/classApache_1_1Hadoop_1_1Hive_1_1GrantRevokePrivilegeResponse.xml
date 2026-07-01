@@ -1,0 +1,277 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1GrantRevokePrivilegeResponse" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::GrantRevokePrivilegeResponse</compoundname>
+    <basecompoundref prot="public" virt="virtual">apache::thrift::TBase</basecompoundref>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1GrantRevokePrivilegeResponse_1a78564fdab9e5977fcbb436ab7d81cf44" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::GrantRevokePrivilegeResponse::success</definition>
+        <argsstring></argsstring>
+        <name>success</name>
+        <qualifiedname>Apache::Hadoop::Hive::GrantRevokePrivilegeResponse::success</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="2183" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="2183" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1GrantRevokePrivilegeResponse_1ad0769b7781df35db80dbbb803507a62b" prot="public" static="no" mutable="no">
+        <type><ref refid="structApache_1_1Hadoop_1_1Hive_1_1__GrantRevokePrivilegeResponse____isset" kindref="compound">_GrantRevokePrivilegeResponse__isset</ref></type>
+        <definition>_GrantRevokePrivilegeResponse__isset Apache::Hadoop::Hive::GrantRevokePrivilegeResponse::__isset</definition>
+        <argsstring></argsstring>
+        <name>__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::GrantRevokePrivilegeResponse::__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="2185" column="40" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="2185" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GrantRevokePrivilegeResponse_1a032f9df720606e477b6f98992aa9597b" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::GrantRevokePrivilegeResponse::GrantRevokePrivilegeResponse</definition>
+        <argsstring>(const GrantRevokePrivilegeResponse &amp;) noexcept</argsstring>
+        <name>GrantRevokePrivilegeResponse</name>
+        <qualifiedname>Apache::Hadoop::Hive::GrantRevokePrivilegeResponse::GrantRevokePrivilegeResponse</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1GrantRevokePrivilegeResponse" kindref="compound">GrantRevokePrivilegeResponse</ref> &amp;</type>
+          <defname>other178</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="2178" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="5501" bodyend="5504"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GrantRevokePrivilegeResponse_1a90a3ea0965675443e73758cde002cc4a" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1GrantRevokePrivilegeResponse" kindref="compound">GrantRevokePrivilegeResponse</ref> &amp;</type>
+        <definition>GrantRevokePrivilegeResponse &amp; Apache::Hadoop::Hive::GrantRevokePrivilegeResponse::operator=</definition>
+        <argsstring>(const GrantRevokePrivilegeResponse &amp;) noexcept</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::GrantRevokePrivilegeResponse::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1GrantRevokePrivilegeResponse" kindref="compound">GrantRevokePrivilegeResponse</ref> &amp;</type>
+          <defname>other179</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="2179" column="32" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="5505" bodyend="5509"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GrantRevokePrivilegeResponse_1a3053ffb680126aea12eae1978a2d549d" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::GrantRevokePrivilegeResponse::GrantRevokePrivilegeResponse</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>GrantRevokePrivilegeResponse</name>
+        <qualifiedname>Apache::Hadoop::Hive::GrantRevokePrivilegeResponse::GrantRevokePrivilegeResponse</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="2180" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="5415" bodyend="5417"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GrantRevokePrivilegeResponse_1ad959d53f7bfa15719851a2b67506d6a1" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::GrantRevokePrivilegeResponse::~GrantRevokePrivilegeResponse</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~GrantRevokePrivilegeResponse</name>
+        <qualifiedname>Apache::Hadoop::Hive::GrantRevokePrivilegeResponse::~GrantRevokePrivilegeResponse</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="2182" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="5412" bodyend="5413"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GrantRevokePrivilegeResponse_1a579474626166cfa1a048859893e685af" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::GrantRevokePrivilegeResponse::__set_success</definition>
+        <argsstring>(const bool val)</argsstring>
+        <name>__set_success</name>
+        <qualifiedname>Apache::Hadoop::Hive::GrantRevokePrivilegeResponse::__set_success</qualifiedname>
+        <param>
+          <type>const bool</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="2187" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="5419" bodyend="5422"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GrantRevokePrivilegeResponse_1a66990d6a9bf7448f95c81b58ed2cf1b6" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::GrantRevokePrivilegeResponse::operator==</definition>
+        <argsstring>(const GrantRevokePrivilegeResponse &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::GrantRevokePrivilegeResponse::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1GrantRevokePrivilegeResponse" kindref="compound">GrantRevokePrivilegeResponse</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="2189" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="5492" bodyend="5499"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GrantRevokePrivilegeResponse_1a150e52fdee0d9f4625eef58e22b8ea9d" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::GrantRevokePrivilegeResponse::operator!=</definition>
+        <argsstring>(const GrantRevokePrivilegeResponse &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::GrantRevokePrivilegeResponse::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1GrantRevokePrivilegeResponse" kindref="compound">GrantRevokePrivilegeResponse</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="2190" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="2190" bodyend="2192"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GrantRevokePrivilegeResponse_1a134f03350b6acec95642633b04ab21f7" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::GrantRevokePrivilegeResponse::operator&lt;</definition>
+        <argsstring>(const GrantRevokePrivilegeResponse &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::GrantRevokePrivilegeResponse::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1GrantRevokePrivilegeResponse" kindref="compound">GrantRevokePrivilegeResponse</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="2194" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GrantRevokePrivilegeResponse_1a46f33952109f6d846534dcaf180af075" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::GrantRevokePrivilegeResponse::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot) override</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::GrantRevokePrivilegeResponse::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="2196" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="5430" bodyend="5469"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GrantRevokePrivilegeResponse_1a544913749c1f7e02eed1c0663145dd0e" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::GrantRevokePrivilegeResponse::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const override</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::GrantRevokePrivilegeResponse::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="2197" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="5471" bodyend="5484"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GrantRevokePrivilegeResponse_1a30f2e07b5b48fbf4197a7d4c9830e0a6" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::GrantRevokePrivilegeResponse::printTo</definition>
+        <argsstring>(std::ostream &amp;out) const</argsstring>
+        <name>printTo</name>
+        <qualifiedname>Apache::Hadoop::Hive::GrantRevokePrivilegeResponse::printTo</qualifiedname>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="2199" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="5510" bodyend="5515"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::GrantRevokePrivilegeResponse</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1GrantRevokePrivilegeResponse"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::GrantRevokePrivilegeResponse</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1GrantRevokePrivilegeResponse"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>Apache::Hadoop::Hive::_GrantRevokePrivilegeResponse__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__GrantRevokePrivilegeResponse____isset"/>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="2175" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="2175" bodyend="2200"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GrantRevokePrivilegeResponse_1ad0769b7781df35db80dbbb803507a62b" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GrantRevokePrivilegeResponse</scope><name>__isset</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GrantRevokePrivilegeResponse_1a579474626166cfa1a048859893e685af" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GrantRevokePrivilegeResponse</scope><name>__set_success</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GrantRevokePrivilegeResponse_1a032f9df720606e477b6f98992aa9597b" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GrantRevokePrivilegeResponse</scope><name>GrantRevokePrivilegeResponse</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GrantRevokePrivilegeResponse_1a3053ffb680126aea12eae1978a2d549d" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GrantRevokePrivilegeResponse</scope><name>GrantRevokePrivilegeResponse</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GrantRevokePrivilegeResponse_1a150e52fdee0d9f4625eef58e22b8ea9d" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GrantRevokePrivilegeResponse</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GrantRevokePrivilegeResponse_1a134f03350b6acec95642633b04ab21f7" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GrantRevokePrivilegeResponse</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GrantRevokePrivilegeResponse_1a90a3ea0965675443e73758cde002cc4a" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GrantRevokePrivilegeResponse</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GrantRevokePrivilegeResponse_1a66990d6a9bf7448f95c81b58ed2cf1b6" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GrantRevokePrivilegeResponse</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GrantRevokePrivilegeResponse_1a30f2e07b5b48fbf4197a7d4c9830e0a6" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::GrantRevokePrivilegeResponse</scope><name>printTo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GrantRevokePrivilegeResponse_1a46f33952109f6d846534dcaf180af075" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GrantRevokePrivilegeResponse</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GrantRevokePrivilegeResponse_1a78564fdab9e5977fcbb436ab7d81cf44" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GrantRevokePrivilegeResponse</scope><name>success</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GrantRevokePrivilegeResponse_1a544913749c1f7e02eed1c0663145dd0e" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GrantRevokePrivilegeResponse</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GrantRevokePrivilegeResponse_1ad959d53f7bfa15719851a2b67506d6a1" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::GrantRevokePrivilegeResponse</scope><name>~GrantRevokePrivilegeResponse</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

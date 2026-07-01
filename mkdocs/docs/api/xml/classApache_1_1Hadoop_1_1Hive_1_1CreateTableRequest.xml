@@ -1,0 +1,1397 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1CreateTableRequest" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::CreateTableRequest</compoundname>
+    <basecompoundref prot="public" virt="virtual">apache::thrift::TBase</basecompoundref>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1CreateTableRequest_1a3da87c0fb5b24a16b1de62cff98c6746" prot="public" static="no" mutable="no">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1Table" kindref="compound">Table</ref></type>
+        <definition>Table Apache::Hadoop::Hive::CreateTableRequest::table</definition>
+        <argsstring></argsstring>
+        <name>table</name>
+        <qualifiedname>Apache::Hadoop::Hive::CreateTableRequest::table</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13079" column="9" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="13079" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1CreateTableRequest_1a652e28ab49c4506fd0abece1b69e3182" prot="public" static="no" mutable="no">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1EnvironmentContext" kindref="compound">EnvironmentContext</ref></type>
+        <definition>EnvironmentContext Apache::Hadoop::Hive::CreateTableRequest::envContext</definition>
+        <argsstring></argsstring>
+        <name>envContext</name>
+        <qualifiedname>Apache::Hadoop::Hive::CreateTableRequest::envContext</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13080" column="22" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="13080" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1CreateTableRequest_1ac1509f452ade8c9356c7d5dfc4868bc7" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; <ref refid="classApache_1_1Hadoop_1_1Hive_1_1SQLPrimaryKey" kindref="compound">SQLPrimaryKey</ref> &gt;</type>
+        <definition>std::vector&lt;SQLPrimaryKey&gt; Apache::Hadoop::Hive::CreateTableRequest::primaryKeys</definition>
+        <argsstring></argsstring>
+        <name>primaryKeys</name>
+        <qualifiedname>Apache::Hadoop::Hive::CreateTableRequest::primaryKeys</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13081" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="13081" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1CreateTableRequest_1ab6c7b0be0d6a0f8840f662f6b46b85dd" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; <ref refid="classApache_1_1Hadoop_1_1Hive_1_1SQLForeignKey" kindref="compound">SQLForeignKey</ref> &gt;</type>
+        <definition>std::vector&lt;SQLForeignKey&gt; Apache::Hadoop::Hive::CreateTableRequest::foreignKeys</definition>
+        <argsstring></argsstring>
+        <name>foreignKeys</name>
+        <qualifiedname>Apache::Hadoop::Hive::CreateTableRequest::foreignKeys</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13082" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="13082" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1CreateTableRequest_1a6aac85f9ec093a97e235aa78a8482e29" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; <ref refid="classApache_1_1Hadoop_1_1Hive_1_1SQLUniqueConstraint" kindref="compound">SQLUniqueConstraint</ref> &gt;</type>
+        <definition>std::vector&lt;SQLUniqueConstraint&gt; Apache::Hadoop::Hive::CreateTableRequest::uniqueConstraints</definition>
+        <argsstring></argsstring>
+        <name>uniqueConstraints</name>
+        <qualifiedname>Apache::Hadoop::Hive::CreateTableRequest::uniqueConstraints</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13083" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="13083" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1CreateTableRequest_1aef9cc61abf0559a1e6e89ed17e8aac3f" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; <ref refid="classApache_1_1Hadoop_1_1Hive_1_1SQLNotNullConstraint" kindref="compound">SQLNotNullConstraint</ref> &gt;</type>
+        <definition>std::vector&lt;SQLNotNullConstraint&gt; Apache::Hadoop::Hive::CreateTableRequest::notNullConstraints</definition>
+        <argsstring></argsstring>
+        <name>notNullConstraints</name>
+        <qualifiedname>Apache::Hadoop::Hive::CreateTableRequest::notNullConstraints</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13084" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="13084" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1CreateTableRequest_1a1cc0af4784d1c81598d153d78351137d" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; <ref refid="classApache_1_1Hadoop_1_1Hive_1_1SQLDefaultConstraint" kindref="compound">SQLDefaultConstraint</ref> &gt;</type>
+        <definition>std::vector&lt;SQLDefaultConstraint&gt; Apache::Hadoop::Hive::CreateTableRequest::defaultConstraints</definition>
+        <argsstring></argsstring>
+        <name>defaultConstraints</name>
+        <qualifiedname>Apache::Hadoop::Hive::CreateTableRequest::defaultConstraints</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13085" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="13085" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1CreateTableRequest_1a5beee561df34ebc37d17ae5e8bece010" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; <ref refid="classApache_1_1Hadoop_1_1Hive_1_1SQLCheckConstraint" kindref="compound">SQLCheckConstraint</ref> &gt;</type>
+        <definition>std::vector&lt;SQLCheckConstraint&gt; Apache::Hadoop::Hive::CreateTableRequest::checkConstraints</definition>
+        <argsstring></argsstring>
+        <name>checkConstraints</name>
+        <qualifiedname>Apache::Hadoop::Hive::CreateTableRequest::checkConstraints</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13086" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="13086" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1CreateTableRequest_1a3493bd68fcb3813f0a892f0f9a7383ea" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; std::string &gt;</type>
+        <definition>std::vector&lt;std::string&gt; Apache::Hadoop::Hive::CreateTableRequest::processorCapabilities</definition>
+        <argsstring></argsstring>
+        <name>processorCapabilities</name>
+        <qualifiedname>Apache::Hadoop::Hive::CreateTableRequest::processorCapabilities</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13087" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="13087" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1CreateTableRequest_1a829a49903d6bb8cf56067dea3fcf6651" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::CreateTableRequest::processorIdentifier</definition>
+        <argsstring></argsstring>
+        <name>processorIdentifier</name>
+        <qualifiedname>Apache::Hadoop::Hive::CreateTableRequest::processorIdentifier</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13088" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="13088" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1CreateTableRequest_1a64e814f0aa21fe02c76b680537705f63" prot="public" static="no" mutable="no">
+        <type><ref refid="structApache_1_1Hadoop_1_1Hive_1_1__CreateTableRequest____isset" kindref="compound">_CreateTableRequest__isset</ref></type>
+        <definition>_CreateTableRequest__isset Apache::Hadoop::Hive::CreateTableRequest::__isset</definition>
+        <argsstring></argsstring>
+        <name>__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::CreateTableRequest::__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13090" column="30" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="13090" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CreateTableRequest_1acb427b6a580b961a082cca9bc281c217" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::CreateTableRequest::CreateTableRequest</definition>
+        <argsstring>(const CreateTableRequest &amp;)</argsstring>
+        <name>CreateTableRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::CreateTableRequest::CreateTableRequest</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1CreateTableRequest" kindref="compound">CreateTableRequest</ref> &amp;</type>
+          <defname>other1617</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13074" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="51265" bodyend="51277"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CreateTableRequest_1af29238d356194614d03577a114bb9c52" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1CreateTableRequest" kindref="compound">CreateTableRequest</ref> &amp;</type>
+        <definition>CreateTableRequest &amp; Apache::Hadoop::Hive::CreateTableRequest::operator=</definition>
+        <argsstring>(const CreateTableRequest &amp;)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::CreateTableRequest::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1CreateTableRequest" kindref="compound">CreateTableRequest</ref> &amp;</type>
+          <defname>other1618</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13075" column="22" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="51278" bodyend="51291"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CreateTableRequest_1a23f3db712109d75533d8fe9d807cecbb" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::CreateTableRequest::CreateTableRequest</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>CreateTableRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::CreateTableRequest::CreateTableRequest</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13076" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="50833" bodyend="50835"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CreateTableRequest_1a104fa65b3635c2bcbd6297da850daf62" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::CreateTableRequest::~CreateTableRequest</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~CreateTableRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::CreateTableRequest::~CreateTableRequest</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13078" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="50830" bodyend="50831"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CreateTableRequest_1a3ad3aced8e5374bdba13ac133dfbdbd6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::CreateTableRequest::__set_table</definition>
+        <argsstring>(const Table &amp;val)</argsstring>
+        <name>__set_table</name>
+        <qualifiedname>Apache::Hadoop::Hive::CreateTableRequest::__set_table</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1Table" kindref="compound">Table</ref> &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13092" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="50837" bodyend="50839"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CreateTableRequest_1a6806764b62cc7a22d16a8332e00fb9e4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::CreateTableRequest::__set_envContext</definition>
+        <argsstring>(const EnvironmentContext &amp;val)</argsstring>
+        <name>__set_envContext</name>
+        <qualifiedname>Apache::Hadoop::Hive::CreateTableRequest::__set_envContext</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1EnvironmentContext" kindref="compound">EnvironmentContext</ref> &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13094" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="50841" bodyend="50844"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CreateTableRequest_1a2081336133cb9411e11149da5cc58655" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::CreateTableRequest::__set_primaryKeys</definition>
+        <argsstring>(const std::vector&lt; SQLPrimaryKey &gt; &amp;val)</argsstring>
+        <name>__set_primaryKeys</name>
+        <qualifiedname>Apache::Hadoop::Hive::CreateTableRequest::__set_primaryKeys</qualifiedname>
+        <param>
+          <type>const std::vector&lt; <ref refid="classApache_1_1Hadoop_1_1Hive_1_1SQLPrimaryKey" kindref="compound">SQLPrimaryKey</ref> &gt; &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13096" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="50846" bodyend="50849"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CreateTableRequest_1a1e32f5be385dc56436cb7662c6bde86e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::CreateTableRequest::__set_foreignKeys</definition>
+        <argsstring>(const std::vector&lt; SQLForeignKey &gt; &amp;val)</argsstring>
+        <name>__set_foreignKeys</name>
+        <qualifiedname>Apache::Hadoop::Hive::CreateTableRequest::__set_foreignKeys</qualifiedname>
+        <param>
+          <type>const std::vector&lt; <ref refid="classApache_1_1Hadoop_1_1Hive_1_1SQLForeignKey" kindref="compound">SQLForeignKey</ref> &gt; &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13098" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="50851" bodyend="50854"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CreateTableRequest_1a441ca9bc92be6ef5602556ea34826477" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::CreateTableRequest::__set_uniqueConstraints</definition>
+        <argsstring>(const std::vector&lt; SQLUniqueConstraint &gt; &amp;val)</argsstring>
+        <name>__set_uniqueConstraints</name>
+        <qualifiedname>Apache::Hadoop::Hive::CreateTableRequest::__set_uniqueConstraints</qualifiedname>
+        <param>
+          <type>const std::vector&lt; <ref refid="classApache_1_1Hadoop_1_1Hive_1_1SQLUniqueConstraint" kindref="compound">SQLUniqueConstraint</ref> &gt; &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13100" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="50856" bodyend="50859"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CreateTableRequest_1a8f3bdde2738b08120510663dc374aa24" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::CreateTableRequest::__set_notNullConstraints</definition>
+        <argsstring>(const std::vector&lt; SQLNotNullConstraint &gt; &amp;val)</argsstring>
+        <name>__set_notNullConstraints</name>
+        <qualifiedname>Apache::Hadoop::Hive::CreateTableRequest::__set_notNullConstraints</qualifiedname>
+        <param>
+          <type>const std::vector&lt; <ref refid="classApache_1_1Hadoop_1_1Hive_1_1SQLNotNullConstraint" kindref="compound">SQLNotNullConstraint</ref> &gt; &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13102" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="50861" bodyend="50864"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CreateTableRequest_1a7f447f4446e5cfe15dbdcdd725c823bf" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::CreateTableRequest::__set_defaultConstraints</definition>
+        <argsstring>(const std::vector&lt; SQLDefaultConstraint &gt; &amp;val)</argsstring>
+        <name>__set_defaultConstraints</name>
+        <qualifiedname>Apache::Hadoop::Hive::CreateTableRequest::__set_defaultConstraints</qualifiedname>
+        <param>
+          <type>const std::vector&lt; <ref refid="classApache_1_1Hadoop_1_1Hive_1_1SQLDefaultConstraint" kindref="compound">SQLDefaultConstraint</ref> &gt; &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13104" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="50866" bodyend="50869"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CreateTableRequest_1af56d6723b844c2fe5e7049ab7895bbd9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::CreateTableRequest::__set_checkConstraints</definition>
+        <argsstring>(const std::vector&lt; SQLCheckConstraint &gt; &amp;val)</argsstring>
+        <name>__set_checkConstraints</name>
+        <qualifiedname>Apache::Hadoop::Hive::CreateTableRequest::__set_checkConstraints</qualifiedname>
+        <param>
+          <type>const std::vector&lt; <ref refid="classApache_1_1Hadoop_1_1Hive_1_1SQLCheckConstraint" kindref="compound">SQLCheckConstraint</ref> &gt; &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13106" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="50871" bodyend="50874"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CreateTableRequest_1a2c181872f4c5f082366202d163cc2602" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::CreateTableRequest::__set_processorCapabilities</definition>
+        <argsstring>(const std::vector&lt; std::string &gt; &amp;val)</argsstring>
+        <name>__set_processorCapabilities</name>
+        <qualifiedname>Apache::Hadoop::Hive::CreateTableRequest::__set_processorCapabilities</qualifiedname>
+        <param>
+          <type>const std::vector&lt; std::string &gt; &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13108" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="50876" bodyend="50879"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CreateTableRequest_1ab441afd8ad942f59531a2c36d076f684" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::CreateTableRequest::__set_processorIdentifier</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_processorIdentifier</name>
+        <qualifiedname>Apache::Hadoop::Hive::CreateTableRequest::__set_processorIdentifier</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13110" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="50881" bodyend="50884"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CreateTableRequest_1a54c4f89ed46d3704b432e4b100d3fc7b" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::CreateTableRequest::operator==</definition>
+        <argsstring>(const CreateTableRequest &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::CreateTableRequest::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1CreateTableRequest" kindref="compound">CreateTableRequest</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13112" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="51222" bodyend="51263"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CreateTableRequest_1a963bec925b60e148c70aa4000bea960e" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::CreateTableRequest::operator!=</definition>
+        <argsstring>(const CreateTableRequest &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::CreateTableRequest::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1CreateTableRequest" kindref="compound">CreateTableRequest</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13113" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="13113" bodyend="13115"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CreateTableRequest_1a384e84dbc44a858845286a26b61d1921" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::CreateTableRequest::operator&lt;</definition>
+        <argsstring>(const CreateTableRequest &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::CreateTableRequest::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1CreateTableRequest" kindref="compound">CreateTableRequest</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13117" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CreateTableRequest_1a90599c4f70f4366cfd50d20ed699dc92" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::CreateTableRequest::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot) override</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::CreateTableRequest::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13119" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="50892" bodyend="51090"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CreateTableRequest_1ab953e2d071731ab0c75b8b315e510d38" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::CreateTableRequest::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const override</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::CreateTableRequest::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13120" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="51092" bodyend="51205"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CreateTableRequest_1a4c2579ae5ece0ef5266e93baf0ff24f5" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::CreateTableRequest::printTo</definition>
+        <argsstring>(std::ostream &amp;out) const</argsstring>
+        <name>printTo</name>
+        <qualifiedname>Apache::Hadoop::Hive::CreateTableRequest::printTo</qualifiedname>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13122" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="51292" bodyend="51306"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::CreateTableRequest</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1CreateTableRequest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="47">
+        <label>Apache::Hadoop::Hive::BinaryColumnStatsData</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1BinaryColumnStatsData"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>bitVectors</edgelabel>
+        </childnode>
+        <childnode refid="48" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="39">
+        <label>Apache::Hadoop::Hive::BooleanColumnStatsData</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1BooleanColumnStatsData"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>bitVectors</edgelabel>
+        </childnode>
+        <childnode refid="40" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="33">
+        <label>Apache::Hadoop::Hive::ColumnStatistics</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1ColumnStatistics"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="34" relation="usage">
+          <edgelabel>statsDesc</edgelabel>
+        </childnode>
+        <childnode refid="36" relation="usage">
+          <edgelabel>statsObj</edgelabel>
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>engine</edgelabel>
+        </childnode>
+        <childnode refid="59" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="38">
+        <label>Apache::Hadoop::Hive::ColumnStatisticsData</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1ColumnStatisticsData"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="39" relation="usage">
+          <edgelabel>booleanStats</edgelabel>
+        </childnode>
+        <childnode refid="41" relation="usage">
+          <edgelabel>longStats</edgelabel>
+        </childnode>
+        <childnode refid="43" relation="usage">
+          <edgelabel>doubleStats</edgelabel>
+        </childnode>
+        <childnode refid="45" relation="usage">
+          <edgelabel>stringStats</edgelabel>
+        </childnode>
+        <childnode refid="47" relation="usage">
+          <edgelabel>binaryStats</edgelabel>
+        </childnode>
+        <childnode refid="49" relation="usage">
+          <edgelabel>decimalStats</edgelabel>
+        </childnode>
+        <childnode refid="52" relation="usage">
+          <edgelabel>dateStats</edgelabel>
+        </childnode>
+        <childnode refid="55" relation="usage">
+          <edgelabel>timestampStats</edgelabel>
+        </childnode>
+        <childnode refid="58" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="34">
+        <label>Apache::Hadoop::Hive::ColumnStatisticsDesc</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1ColumnStatisticsDesc"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>catName</edgelabel>
+          <edgelabel>dbName</edgelabel>
+          <edgelabel>partName</edgelabel>
+          <edgelabel>tableName</edgelabel>
+        </childnode>
+        <childnode refid="35" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="37">
+        <label>Apache::Hadoop::Hive::ColumnStatisticsObj</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1ColumnStatisticsObj"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>colName</edgelabel>
+          <edgelabel>colType</edgelabel>
+        </childnode>
+        <childnode refid="38" relation="usage">
+          <edgelabel>statsData</edgelabel>
+        </childnode>
+      </node>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::CreateTableRequest</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1CreateTableRequest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>table</edgelabel>
+        </childnode>
+        <childnode refid="65" relation="usage">
+          <edgelabel>envContext</edgelabel>
+        </childnode>
+        <childnode refid="67" relation="usage">
+          <edgelabel>primaryKeys</edgelabel>
+        </childnode>
+        <childnode refid="70" relation="usage">
+          <edgelabel>foreignKeys</edgelabel>
+        </childnode>
+        <childnode refid="73" relation="usage">
+          <edgelabel>uniqueConstraints</edgelabel>
+        </childnode>
+        <childnode refid="76" relation="usage">
+          <edgelabel>notNullConstraints</edgelabel>
+        </childnode>
+        <childnode refid="79" relation="usage">
+          <edgelabel>defaultConstraints</edgelabel>
+        </childnode>
+        <childnode refid="82" relation="usage">
+          <edgelabel>checkConstraints</edgelabel>
+        </childnode>
+        <childnode refid="13" relation="usage">
+          <edgelabel>processorCapabilities</edgelabel>
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>processorIdentifier</edgelabel>
+        </childnode>
+        <childnode refid="85" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="28">
+        <label>Apache::Hadoop::Hive::CreationMetadata</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1CreationMetadata"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>catName</edgelabel>
+          <edgelabel>dbName</edgelabel>
+          <edgelabel>tblName</edgelabel>
+          <edgelabel>validTxnList</edgelabel>
+        </childnode>
+        <childnode refid="29" relation="usage">
+          <edgelabel>tablesUsed</edgelabel>
+        </childnode>
+        <childnode refid="30" relation="usage">
+          <edgelabel>sourceTables</edgelabel>
+        </childnode>
+        <childnode refid="32" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="53">
+        <label>Apache::Hadoop::Hive::Date</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1Date"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="52">
+        <label>Apache::Hadoop::Hive::DateColumnStatsData</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1DateColumnStatsData"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="53" relation="usage">
+          <edgelabel>highValue</edgelabel>
+          <edgelabel>lowValue</edgelabel>
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>bitVectors</edgelabel>
+          <edgelabel>histogram</edgelabel>
+        </childnode>
+        <childnode refid="54" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="50">
+        <label>Apache::Hadoop::Hive::Decimal</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1Decimal"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>unscaled</edgelabel>
+        </childnode>
+      </node>
+      <node id="49">
+        <label>Apache::Hadoop::Hive::DecimalColumnStatsData</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1DecimalColumnStatsData"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="50" relation="usage">
+          <edgelabel>highValue</edgelabel>
+          <edgelabel>lowValue</edgelabel>
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>bitVectors</edgelabel>
+          <edgelabel>histogram</edgelabel>
+        </childnode>
+        <childnode refid="51" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="43">
+        <label>Apache::Hadoop::Hive::DoubleColumnStatsData</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1DoubleColumnStatsData"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>bitVectors</edgelabel>
+          <edgelabel>histogram</edgelabel>
+        </childnode>
+        <childnode refid="44" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="65">
+        <label>Apache::Hadoop::Hive::EnvironmentContext</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1EnvironmentContext"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="11" relation="usage">
+          <edgelabel>properties</edgelabel>
+        </childnode>
+        <childnode refid="66" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="8">
+        <label>Apache::Hadoop::Hive::FieldSchema</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1FieldSchema"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>comment</edgelabel>
+          <edgelabel>name</edgelabel>
+          <edgelabel>type</edgelabel>
+        </childnode>
+        <childnode refid="9" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="60">
+        <label>Apache::Hadoop::Hive::FileMetadata</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1FileMetadata"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="13" relation="usage">
+          <edgelabel>data</edgelabel>
+        </childnode>
+        <childnode refid="61" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="41">
+        <label>Apache::Hadoop::Hive::LongColumnStatsData</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1LongColumnStatsData"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>bitVectors</edgelabel>
+          <edgelabel>histogram</edgelabel>
+        </childnode>
+        <childnode refid="42" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="62">
+        <label>Apache::Hadoop::Hive::ObjectDictionary</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1ObjectDictionary"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="63" relation="usage">
+          <edgelabel>values</edgelabel>
+        </childnode>
+      </node>
+      <node id="15">
+        <label>Apache::Hadoop::Hive::Order</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1Order"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>col</edgelabel>
+        </childnode>
+        <childnode refid="16" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="22">
+        <label>Apache::Hadoop::Hive::PrincipalPrivilegeSet</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1PrincipalPrivilegeSet"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="23" relation="usage">
+          <edgelabel>groupPrivileges</edgelabel>
+          <edgelabel>rolePrivileges</edgelabel>
+          <edgelabel>userPrivileges</edgelabel>
+        </childnode>
+        <childnode refid="27" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="25">
+        <label>Apache::Hadoop::Hive::PrivilegeGrantInfo</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1PrivilegeGrantInfo"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>grantor</edgelabel>
+          <edgelabel>privilege</edgelabel>
+        </childnode>
+        <childnode refid="26" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="83">
+        <label>Apache::Hadoop::Hive::SQLCheckConstraint</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1SQLCheckConstraint"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>catName</edgelabel>
+          <edgelabel>check_expression</edgelabel>
+          <edgelabel>column_name</edgelabel>
+          <edgelabel>dc_name</edgelabel>
+          <edgelabel>table_db</edgelabel>
+          <edgelabel>table_name</edgelabel>
+        </childnode>
+        <childnode refid="84" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="80">
+        <label>Apache::Hadoop::Hive::SQLDefaultConstraint</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1SQLDefaultConstraint"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>catName</edgelabel>
+          <edgelabel>column_name</edgelabel>
+          <edgelabel>dc_name</edgelabel>
+          <edgelabel>default_value</edgelabel>
+          <edgelabel>table_db</edgelabel>
+          <edgelabel>table_name</edgelabel>
+        </childnode>
+        <childnode refid="81" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="71">
+        <label>Apache::Hadoop::Hive::SQLForeignKey</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1SQLForeignKey"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>catName</edgelabel>
+          <edgelabel>fk_name</edgelabel>
+          <edgelabel>fkcolumn_name</edgelabel>
+          <edgelabel>fktable_db</edgelabel>
+          <edgelabel>fktable_name</edgelabel>
+          <edgelabel>pk_name</edgelabel>
+          <edgelabel>pkcolumn_name</edgelabel>
+          <edgelabel>pktable_db</edgelabel>
+          <edgelabel>pktable_name</edgelabel>
+        </childnode>
+        <childnode refid="72" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="77">
+        <label>Apache::Hadoop::Hive::SQLNotNullConstraint</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1SQLNotNullConstraint"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>catName</edgelabel>
+          <edgelabel>column_name</edgelabel>
+          <edgelabel>nn_name</edgelabel>
+          <edgelabel>table_db</edgelabel>
+          <edgelabel>table_name</edgelabel>
+        </childnode>
+        <childnode refid="78" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="68">
+        <label>Apache::Hadoop::Hive::SQLPrimaryKey</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1SQLPrimaryKey"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>catName</edgelabel>
+          <edgelabel>column_name</edgelabel>
+          <edgelabel>pk_name</edgelabel>
+          <edgelabel>table_db</edgelabel>
+          <edgelabel>table_name</edgelabel>
+        </childnode>
+        <childnode refid="69" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="74">
+        <label>Apache::Hadoop::Hive::SQLUniqueConstraint</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1SQLUniqueConstraint"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>catName</edgelabel>
+          <edgelabel>column_name</edgelabel>
+          <edgelabel>table_db</edgelabel>
+          <edgelabel>table_name</edgelabel>
+          <edgelabel>uk_name</edgelabel>
+        </childnode>
+        <childnode refid="75" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="10">
+        <label>Apache::Hadoop::Hive::SerDeInfo</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1SerDeInfo"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>description</edgelabel>
+          <edgelabel>deserializerClass</edgelabel>
+          <edgelabel>name</edgelabel>
+          <edgelabel>serializationLib</edgelabel>
+          <edgelabel>serializerClass</edgelabel>
+        </childnode>
+        <childnode refid="11" relation="usage">
+          <edgelabel>parameters</edgelabel>
+        </childnode>
+        <childnode refid="12" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="17">
+        <label>Apache::Hadoop::Hive::SkewedInfo</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1SkewedInfo"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="13" relation="usage">
+          <edgelabel>skewedColNames</edgelabel>
+        </childnode>
+        <childnode refid="18" relation="usage">
+          <edgelabel>skewedColValues</edgelabel>
+        </childnode>
+        <childnode refid="19" relation="usage">
+          <edgelabel>skewedColValueLocationMaps</edgelabel>
+        </childnode>
+        <childnode refid="20" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="31">
+        <label>Apache::Hadoop::Hive::SourceTable</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1SourceTable"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>table</edgelabel>
+        </childnode>
+      </node>
+      <node id="6">
+        <label>Apache::Hadoop::Hive::StorageDescriptor</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1StorageDescriptor"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="7" relation="usage">
+          <edgelabel>cols</edgelabel>
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>inputFormat</edgelabel>
+          <edgelabel>location</edgelabel>
+          <edgelabel>outputFormat</edgelabel>
+        </childnode>
+        <childnode refid="10" relation="usage">
+          <edgelabel>serdeInfo</edgelabel>
+        </childnode>
+        <childnode refid="13" relation="usage">
+          <edgelabel>bucketCols</edgelabel>
+        </childnode>
+        <childnode refid="14" relation="usage">
+          <edgelabel>sortCols</edgelabel>
+        </childnode>
+        <childnode refid="11" relation="usage">
+          <edgelabel>parameters</edgelabel>
+        </childnode>
+        <childnode refid="17" relation="usage">
+          <edgelabel>skewedInfo</edgelabel>
+        </childnode>
+        <childnode refid="21" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="45">
+        <label>Apache::Hadoop::Hive::StringColumnStatsData</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1StringColumnStatsData"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>bitVectors</edgelabel>
+        </childnode>
+        <childnode refid="46" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>Apache::Hadoop::Hive::Table</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1Table"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>catName</edgelabel>
+          <edgelabel>dbName</edgelabel>
+          <edgelabel>owner</edgelabel>
+          <edgelabel>tableName</edgelabel>
+          <edgelabel>tableType</edgelabel>
+          <edgelabel>viewExpandedText</edgelabel>
+          <edgelabel>viewOriginalText</edgelabel>
+        </childnode>
+        <childnode refid="6" relation="usage">
+          <edgelabel>sd</edgelabel>
+        </childnode>
+        <childnode refid="7" relation="usage">
+          <edgelabel>partitionKeys</edgelabel>
+        </childnode>
+        <childnode refid="11" relation="usage">
+          <edgelabel>parameters</edgelabel>
+        </childnode>
+        <childnode refid="22" relation="usage">
+          <edgelabel>privileges</edgelabel>
+        </childnode>
+        <childnode refid="28" relation="usage">
+          <edgelabel>creationMetadata</edgelabel>
+        </childnode>
+        <childnode refid="33" relation="usage">
+          <edgelabel>colStats</edgelabel>
+        </childnode>
+        <childnode refid="13" relation="usage">
+          <edgelabel>requiredReadCapabilities</edgelabel>
+          <edgelabel>requiredWriteCapabilities</edgelabel>
+        </childnode>
+        <childnode refid="60" relation="usage">
+          <edgelabel>fileMetadata</edgelabel>
+        </childnode>
+        <childnode refid="62" relation="usage">
+          <edgelabel>dictionary</edgelabel>
+        </childnode>
+        <childnode refid="64" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="56">
+        <label>Apache::Hadoop::Hive::Timestamp</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1Timestamp"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="55">
+        <label>Apache::Hadoop::Hive::TimestampColumnStatsData</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1TimestampColumnStatsData"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="56" relation="usage">
+          <edgelabel>highValue</edgelabel>
+          <edgelabel>lowValue</edgelabel>
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>bitVectors</edgelabel>
+          <edgelabel>histogram</edgelabel>
+        </childnode>
+        <childnode refid="57" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="48">
+        <label>Apache::Hadoop::Hive::_BinaryColumnStatsData__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__BinaryColumnStatsData____isset"/>
+      </node>
+      <node id="40">
+        <label>Apache::Hadoop::Hive::_BooleanColumnStatsData__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__BooleanColumnStatsData____isset"/>
+      </node>
+      <node id="58">
+        <label>Apache::Hadoop::Hive::_ColumnStatisticsData__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__ColumnStatisticsData____isset"/>
+      </node>
+      <node id="35">
+        <label>Apache::Hadoop::Hive::_ColumnStatisticsDesc__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__ColumnStatisticsDesc____isset"/>
+      </node>
+      <node id="59">
+        <label>Apache::Hadoop::Hive::_ColumnStatistics__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__ColumnStatistics____isset"/>
+      </node>
+      <node id="85">
+        <label>Apache::Hadoop::Hive::_CreateTableRequest__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__CreateTableRequest____isset"/>
+      </node>
+      <node id="32">
+        <label>Apache::Hadoop::Hive::_CreationMetadata__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__CreationMetadata____isset"/>
+      </node>
+      <node id="54">
+        <label>Apache::Hadoop::Hive::_DateColumnStatsData__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__DateColumnStatsData____isset"/>
+      </node>
+      <node id="51">
+        <label>Apache::Hadoop::Hive::_DecimalColumnStatsData__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__DecimalColumnStatsData____isset"/>
+      </node>
+      <node id="44">
+        <label>Apache::Hadoop::Hive::_DoubleColumnStatsData__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__DoubleColumnStatsData____isset"/>
+      </node>
+      <node id="66">
+        <label>Apache::Hadoop::Hive::_EnvironmentContext__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__EnvironmentContext____isset"/>
+      </node>
+      <node id="9">
+        <label>Apache::Hadoop::Hive::_FieldSchema__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__FieldSchema____isset"/>
+      </node>
+      <node id="61">
+        <label>Apache::Hadoop::Hive::_FileMetadata__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__FileMetadata____isset"/>
+      </node>
+      <node id="42">
+        <label>Apache::Hadoop::Hive::_LongColumnStatsData__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__LongColumnStatsData____isset"/>
+      </node>
+      <node id="16">
+        <label>Apache::Hadoop::Hive::_Order__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__Order____isset"/>
+      </node>
+      <node id="27">
+        <label>Apache::Hadoop::Hive::_PrincipalPrivilegeSet__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__PrincipalPrivilegeSet____isset"/>
+      </node>
+      <node id="26">
+        <label>Apache::Hadoop::Hive::_PrivilegeGrantInfo__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__PrivilegeGrantInfo____isset"/>
+      </node>
+      <node id="84">
+        <label>Apache::Hadoop::Hive::_SQLCheckConstraint__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__SQLCheckConstraint____isset"/>
+      </node>
+      <node id="81">
+        <label>Apache::Hadoop::Hive::_SQLDefaultConstraint__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__SQLDefaultConstraint____isset"/>
+      </node>
+      <node id="72">
+        <label>Apache::Hadoop::Hive::_SQLForeignKey__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__SQLForeignKey____isset"/>
+      </node>
+      <node id="78">
+        <label>Apache::Hadoop::Hive::_SQLNotNullConstraint__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__SQLNotNullConstraint____isset"/>
+      </node>
+      <node id="69">
+        <label>Apache::Hadoop::Hive::_SQLPrimaryKey__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__SQLPrimaryKey____isset"/>
+      </node>
+      <node id="75">
+        <label>Apache::Hadoop::Hive::_SQLUniqueConstraint__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__SQLUniqueConstraint____isset"/>
+      </node>
+      <node id="12">
+        <label>Apache::Hadoop::Hive::_SerDeInfo__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__SerDeInfo____isset"/>
+      </node>
+      <node id="20">
+        <label>Apache::Hadoop::Hive::_SkewedInfo__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__SkewedInfo____isset"/>
+      </node>
+      <node id="21">
+        <label>Apache::Hadoop::Hive::_StorageDescriptor__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__StorageDescriptor____isset"/>
+      </node>
+      <node id="46">
+        <label>Apache::Hadoop::Hive::_StringColumnStatsData__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__StringColumnStatsData____isset"/>
+      </node>
+      <node id="64">
+        <label>Apache::Hadoop::Hive::_Table__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__Table____isset"/>
+      </node>
+      <node id="57">
+        <label>Apache::Hadoop::Hive::_TimestampColumnStatsData__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__TimestampColumnStatsData____isset"/>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+      <node id="11">
+        <label>std::map&lt; std::string, std::string &gt;</label>
+        <childnode refid="4" relation="usage">
+          <edgelabel>elements</edgelabel>
+          <edgelabel>keys</edgelabel>
+        </childnode>
+      </node>
+      <node id="23">
+        <label>std::map&lt; std::string, std::vector&lt; Apache::Hadoop::Hive::PrivilegeGrantInfo &gt; &gt;</label>
+        <childnode refid="4" relation="usage">
+          <edgelabel>keys</edgelabel>
+        </childnode>
+        <childnode refid="24" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="63">
+        <label>std::map&lt; std::string, std::vector&lt; std::string &gt; &gt;</label>
+        <childnode refid="4" relation="usage">
+          <edgelabel>keys</edgelabel>
+        </childnode>
+        <childnode refid="13" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="19">
+        <label>std::map&lt; std::vector&lt; std::string &gt;, std::string &gt;</label>
+        <childnode refid="13" relation="usage">
+          <edgelabel>keys</edgelabel>
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="29">
+        <label>std::set&lt; std::string &gt;</label>
+        <childnode refid="4" relation="usage">
+          <edgelabel>keys</edgelabel>
+        </childnode>
+      </node>
+      <node id="5">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="4">
+        <label>std::string</label>
+        <childnode refid="5" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="36">
+        <label>std::vector&lt; Apache::Hadoop::Hive::ColumnStatisticsObj &gt;</label>
+        <childnode refid="37" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="7">
+        <label>std::vector&lt; Apache::Hadoop::Hive::FieldSchema &gt;</label>
+        <childnode refid="8" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="14">
+        <label>std::vector&lt; Apache::Hadoop::Hive::Order &gt;</label>
+        <childnode refid="15" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="24">
+        <label>std::vector&lt; Apache::Hadoop::Hive::PrivilegeGrantInfo &gt;</label>
+        <childnode refid="25" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="82">
+        <label>std::vector&lt; Apache::Hadoop::Hive::SQLCheckConstraint &gt;</label>
+        <childnode refid="83" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="79">
+        <label>std::vector&lt; Apache::Hadoop::Hive::SQLDefaultConstraint &gt;</label>
+        <childnode refid="80" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="70">
+        <label>std::vector&lt; Apache::Hadoop::Hive::SQLForeignKey &gt;</label>
+        <childnode refid="71" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="76">
+        <label>std::vector&lt; Apache::Hadoop::Hive::SQLNotNullConstraint &gt;</label>
+        <childnode refid="77" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="67">
+        <label>std::vector&lt; Apache::Hadoop::Hive::SQLPrimaryKey &gt;</label>
+        <childnode refid="68" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="73">
+        <label>std::vector&lt; Apache::Hadoop::Hive::SQLUniqueConstraint &gt;</label>
+        <childnode refid="74" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="30">
+        <label>std::vector&lt; Apache::Hadoop::Hive::SourceTable &gt;</label>
+        <childnode refid="31" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="13">
+        <label>std::vector&lt; std::string &gt;</label>
+        <childnode refid="4" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="18">
+        <label>std::vector&lt; std::vector&lt; std::string &gt; &gt;</label>
+        <childnode refid="13" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13071" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="13071" bodyend="13123"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CreateTableRequest_1a64e814f0aa21fe02c76b680537705f63" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CreateTableRequest</scope><name>__isset</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CreateTableRequest_1af56d6723b844c2fe5e7049ab7895bbd9" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CreateTableRequest</scope><name>__set_checkConstraints</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CreateTableRequest_1a7f447f4446e5cfe15dbdcdd725c823bf" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CreateTableRequest</scope><name>__set_defaultConstraints</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CreateTableRequest_1a6806764b62cc7a22d16a8332e00fb9e4" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CreateTableRequest</scope><name>__set_envContext</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CreateTableRequest_1a1e32f5be385dc56436cb7662c6bde86e" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CreateTableRequest</scope><name>__set_foreignKeys</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CreateTableRequest_1a8f3bdde2738b08120510663dc374aa24" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CreateTableRequest</scope><name>__set_notNullConstraints</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CreateTableRequest_1a2081336133cb9411e11149da5cc58655" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CreateTableRequest</scope><name>__set_primaryKeys</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CreateTableRequest_1a2c181872f4c5f082366202d163cc2602" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CreateTableRequest</scope><name>__set_processorCapabilities</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CreateTableRequest_1ab441afd8ad942f59531a2c36d076f684" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CreateTableRequest</scope><name>__set_processorIdentifier</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CreateTableRequest_1a3ad3aced8e5374bdba13ac133dfbdbd6" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CreateTableRequest</scope><name>__set_table</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CreateTableRequest_1a441ca9bc92be6ef5602556ea34826477" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CreateTableRequest</scope><name>__set_uniqueConstraints</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CreateTableRequest_1a5beee561df34ebc37d17ae5e8bece010" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CreateTableRequest</scope><name>checkConstraints</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CreateTableRequest_1acb427b6a580b961a082cca9bc281c217" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CreateTableRequest</scope><name>CreateTableRequest</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CreateTableRequest_1a23f3db712109d75533d8fe9d807cecbb" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CreateTableRequest</scope><name>CreateTableRequest</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CreateTableRequest_1a1cc0af4784d1c81598d153d78351137d" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CreateTableRequest</scope><name>defaultConstraints</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CreateTableRequest_1a652e28ab49c4506fd0abece1b69e3182" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CreateTableRequest</scope><name>envContext</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CreateTableRequest_1ab6c7b0be0d6a0f8840f662f6b46b85dd" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CreateTableRequest</scope><name>foreignKeys</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CreateTableRequest_1aef9cc61abf0559a1e6e89ed17e8aac3f" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CreateTableRequest</scope><name>notNullConstraints</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CreateTableRequest_1a963bec925b60e148c70aa4000bea960e" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CreateTableRequest</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CreateTableRequest_1a384e84dbc44a858845286a26b61d1921" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CreateTableRequest</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CreateTableRequest_1af29238d356194614d03577a114bb9c52" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CreateTableRequest</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CreateTableRequest_1a54c4f89ed46d3704b432e4b100d3fc7b" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CreateTableRequest</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CreateTableRequest_1ac1509f452ade8c9356c7d5dfc4868bc7" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CreateTableRequest</scope><name>primaryKeys</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CreateTableRequest_1a4c2579ae5ece0ef5266e93baf0ff24f5" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::CreateTableRequest</scope><name>printTo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CreateTableRequest_1a3493bd68fcb3813f0a892f0f9a7383ea" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CreateTableRequest</scope><name>processorCapabilities</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CreateTableRequest_1a829a49903d6bb8cf56067dea3fcf6651" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CreateTableRequest</scope><name>processorIdentifier</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CreateTableRequest_1a90599c4f70f4366cfd50d20ed699dc92" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CreateTableRequest</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CreateTableRequest_1a3da87c0fb5b24a16b1de62cff98c6746" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CreateTableRequest</scope><name>table</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CreateTableRequest_1a6aac85f9ec093a97e235aa78a8482e29" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CreateTableRequest</scope><name>uniqueConstraints</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CreateTableRequest_1ab953e2d071731ab0c75b8b315e510d38" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CreateTableRequest</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CreateTableRequest_1a104fa65b3635c2bcbd6297da850daf62" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::CreateTableRequest</scope><name>~CreateTableRequest</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

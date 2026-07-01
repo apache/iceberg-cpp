@@ -1,0 +1,290 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1GetFieldsResponse" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::GetFieldsResponse</compoundname>
+    <basecompoundref prot="public" virt="virtual">apache::thrift::TBase</basecompoundref>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1GetFieldsResponse_1a928df0d667607c0f77355caf2b31a6ce" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; <ref refid="classApache_1_1Hadoop_1_1Hive_1_1FieldSchema" kindref="compound">FieldSchema</ref> &gt;</type>
+        <definition>std::vector&lt;FieldSchema&gt; Apache::Hadoop::Hive::GetFieldsResponse::fields</definition>
+        <argsstring></argsstring>
+        <name>fields</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetFieldsResponse::fields</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14160" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="14160" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetFieldsResponse_1a9a8ecf93a9611882a92d825c90886a02" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::GetFieldsResponse::GetFieldsResponse</definition>
+        <argsstring>(const GetFieldsResponse &amp;)</argsstring>
+        <name>GetFieldsResponse</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetFieldsResponse::GetFieldsResponse</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1GetFieldsResponse" kindref="compound">GetFieldsResponse</ref> &amp;</type>
+          <defname>other1736</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14155" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="55775" bodyend="55777"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetFieldsResponse_1a1b58fdd7f0b1069c6aa40162b520b5d4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1GetFieldsResponse" kindref="compound">GetFieldsResponse</ref> &amp;</type>
+        <definition>GetFieldsResponse &amp; Apache::Hadoop::Hive::GetFieldsResponse::operator=</definition>
+        <argsstring>(const GetFieldsResponse &amp;)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetFieldsResponse::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1GetFieldsResponse" kindref="compound">GetFieldsResponse</ref> &amp;</type>
+          <defname>other1737</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14156" column="21" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="55778" bodyend="55781"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetFieldsResponse_1a2693fd33cc6790ddb6cc8b7eeed48c42" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::GetFieldsResponse::GetFieldsResponse</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>GetFieldsResponse</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetFieldsResponse::GetFieldsResponse</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14157" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="55672" bodyend="55673"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetFieldsResponse_1ac34d9d0a191a9287ca4a6e5344aef6eb" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::GetFieldsResponse::~GetFieldsResponse</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~GetFieldsResponse</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetFieldsResponse::~GetFieldsResponse</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14159" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="55669" bodyend="55670"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetFieldsResponse_1a47a4259dfbb3fe430ae2a3937bb2f073" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::GetFieldsResponse::__set_fields</definition>
+        <argsstring>(const std::vector&lt; FieldSchema &gt; &amp;val)</argsstring>
+        <name>__set_fields</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetFieldsResponse::__set_fields</qualifiedname>
+        <param>
+          <type>const std::vector&lt; <ref refid="classApache_1_1Hadoop_1_1Hive_1_1FieldSchema" kindref="compound">FieldSchema</ref> &gt; &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14162" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="55675" bodyend="55677"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetFieldsResponse_1a1a97a037101e23f3ce8c175e582c8c1a" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::GetFieldsResponse::operator==</definition>
+        <argsstring>(const GetFieldsResponse &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetFieldsResponse::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1GetFieldsResponse" kindref="compound">GetFieldsResponse</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14164" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="55768" bodyend="55773"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetFieldsResponse_1af8ee8d61d444583f26ce13cfc5b9af34" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::GetFieldsResponse::operator!=</definition>
+        <argsstring>(const GetFieldsResponse &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetFieldsResponse::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1GetFieldsResponse" kindref="compound">GetFieldsResponse</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14165" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="14165" bodyend="14167"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetFieldsResponse_1a94fd7eb07fcd8e9111c73632ba2380c1" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::GetFieldsResponse::operator&lt;</definition>
+        <argsstring>(const GetFieldsResponse &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetFieldsResponse::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1GetFieldsResponse" kindref="compound">GetFieldsResponse</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14169" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetFieldsResponse_1aa77176b9af72f2b4ee2927e96501d045" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::GetFieldsResponse::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot) override</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetFieldsResponse::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14171" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="55685" bodyend="55739"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetFieldsResponse_1a936c329b80c1ea8af471317c0b02d1d3" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::GetFieldsResponse::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const override</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetFieldsResponse::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14172" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="55741" bodyend="55761"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetFieldsResponse_1a937937031da80d5b3519c4e936298267" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::GetFieldsResponse::printTo</definition>
+        <argsstring>(std::ostream &amp;out) const</argsstring>
+        <name>printTo</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetFieldsResponse::printTo</qualifiedname>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14174" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="55782" bodyend="55787"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::GetFieldsResponse</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1GetFieldsResponse"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="4">
+        <label>Apache::Hadoop::Hive::FieldSchema</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1FieldSchema"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>comment</edgelabel>
+          <edgelabel>name</edgelabel>
+          <edgelabel>type</edgelabel>
+        </childnode>
+        <childnode refid="7" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::GetFieldsResponse</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1GetFieldsResponse"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>fields</edgelabel>
+        </childnode>
+      </node>
+      <node id="7">
+        <label>Apache::Hadoop::Hive::_FieldSchema__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__FieldSchema____isset"/>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+      <node id="6">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="5">
+        <label>std::string</label>
+        <childnode refid="6" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::vector&lt; Apache::Hadoop::Hive::FieldSchema &gt;</label>
+        <childnode refid="4" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="14152" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="14152" bodyend="14175"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetFieldsResponse_1a47a4259dfbb3fe430ae2a3937bb2f073" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetFieldsResponse</scope><name>__set_fields</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetFieldsResponse_1a928df0d667607c0f77355caf2b31a6ce" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetFieldsResponse</scope><name>fields</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetFieldsResponse_1a9a8ecf93a9611882a92d825c90886a02" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetFieldsResponse</scope><name>GetFieldsResponse</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetFieldsResponse_1a2693fd33cc6790ddb6cc8b7eeed48c42" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetFieldsResponse</scope><name>GetFieldsResponse</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetFieldsResponse_1af8ee8d61d444583f26ce13cfc5b9af34" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetFieldsResponse</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetFieldsResponse_1a94fd7eb07fcd8e9111c73632ba2380c1" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetFieldsResponse</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetFieldsResponse_1a1b58fdd7f0b1069c6aa40162b520b5d4" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetFieldsResponse</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetFieldsResponse_1a1a97a037101e23f3ce8c175e582c8c1a" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetFieldsResponse</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetFieldsResponse_1a937937031da80d5b3519c4e936298267" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::GetFieldsResponse</scope><name>printTo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetFieldsResponse_1aa77176b9af72f2b4ee2927e96501d045" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetFieldsResponse</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetFieldsResponse_1a936c329b80c1ea8af471317c0b02d1d3" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetFieldsResponse</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetFieldsResponse_1ac34d9d0a191a9287ca4a6e5344aef6eb" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::GetFieldsResponse</scope><name>~GetFieldsResponse</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

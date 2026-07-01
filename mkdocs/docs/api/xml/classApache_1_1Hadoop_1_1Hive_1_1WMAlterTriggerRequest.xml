@@ -1,0 +1,308 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1WMAlterTriggerRequest" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::WMAlterTriggerRequest</compoundname>
+    <basecompoundref prot="public" virt="virtual">apache::thrift::TBase</basecompoundref>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1WMAlterTriggerRequest_1a2aa2607a63c54e0c0c9971d8b1417a46" prot="public" static="no" mutable="no">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1WMTrigger" kindref="compound">WMTrigger</ref></type>
+        <definition>WMTrigger Apache::Hadoop::Hive::WMAlterTriggerRequest::trigger</definition>
+        <argsstring></argsstring>
+        <name>trigger</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMAlterTriggerRequest::trigger</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11896" column="13" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="11896" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1WMAlterTriggerRequest_1a699233aa393e483db711721a98c5846c" prot="public" static="no" mutable="no">
+        <type><ref refid="structApache_1_1Hadoop_1_1Hive_1_1__WMAlterTriggerRequest____isset" kindref="compound">_WMAlterTriggerRequest__isset</ref></type>
+        <definition>_WMAlterTriggerRequest__isset Apache::Hadoop::Hive::WMAlterTriggerRequest::__isset</definition>
+        <argsstring></argsstring>
+        <name>__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMAlterTriggerRequest::__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11898" column="33" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="11898" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMAlterTriggerRequest_1ad2aa96fdf647967b620d1a5e559ede3e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::WMAlterTriggerRequest::WMAlterTriggerRequest</definition>
+        <argsstring>(const WMAlterTriggerRequest &amp;)</argsstring>
+        <name>WMAlterTriggerRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMAlterTriggerRequest::WMAlterTriggerRequest</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1WMAlterTriggerRequest" kindref="compound">WMAlterTriggerRequest</ref> &amp;</type>
+          <defname>other1492</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11891" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="46981" bodyend="46984"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMAlterTriggerRequest_1a806c7e8edc069d07d9c9afaf263ddf58" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1WMAlterTriggerRequest" kindref="compound">WMAlterTriggerRequest</ref> &amp;</type>
+        <definition>WMAlterTriggerRequest &amp; Apache::Hadoop::Hive::WMAlterTriggerRequest::operator=</definition>
+        <argsstring>(const WMAlterTriggerRequest &amp;)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMAlterTriggerRequest::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1WMAlterTriggerRequest" kindref="compound">WMAlterTriggerRequest</ref> &amp;</type>
+          <defname>other1493</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11892" column="25" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="46985" bodyend="46989"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMAlterTriggerRequest_1a1240799c9a7db92e821885eac564c92e" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::WMAlterTriggerRequest::WMAlterTriggerRequest</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>WMAlterTriggerRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMAlterTriggerRequest::WMAlterTriggerRequest</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11893" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="46896" bodyend="46897"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMAlterTriggerRequest_1a99fa13e817d41d1b6e3b01a765676d43" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::WMAlterTriggerRequest::~WMAlterTriggerRequest</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~WMAlterTriggerRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMAlterTriggerRequest::~WMAlterTriggerRequest</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11895" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="46893" bodyend="46894"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMAlterTriggerRequest_1ac5c3dda4ba570dc51010238ac1bb2441" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::WMAlterTriggerRequest::__set_trigger</definition>
+        <argsstring>(const WMTrigger &amp;val)</argsstring>
+        <name>__set_trigger</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMAlterTriggerRequest::__set_trigger</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1WMTrigger" kindref="compound">WMTrigger</ref> &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11900" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="46899" bodyend="46902"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMAlterTriggerRequest_1a87929fd7c5ea33370d623e29ded374af" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::WMAlterTriggerRequest::operator==</definition>
+        <argsstring>(const WMAlterTriggerRequest &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMAlterTriggerRequest::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1WMAlterTriggerRequest" kindref="compound">WMAlterTriggerRequest</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11902" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="46972" bodyend="46979"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMAlterTriggerRequest_1a10f4d103508b7682e522bf2fa2578ad8" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::WMAlterTriggerRequest::operator!=</definition>
+        <argsstring>(const WMAlterTriggerRequest &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMAlterTriggerRequest::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1WMAlterTriggerRequest" kindref="compound">WMAlterTriggerRequest</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11903" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="11903" bodyend="11905"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMAlterTriggerRequest_1a1ee9d9b376baf046b642d7d6fb4c4c84" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::WMAlterTriggerRequest::operator&lt;</definition>
+        <argsstring>(const WMAlterTriggerRequest &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMAlterTriggerRequest::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1WMAlterTriggerRequest" kindref="compound">WMAlterTriggerRequest</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11907" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMAlterTriggerRequest_1a4700aeba1bb4e05d2b996320740fdd46" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::WMAlterTriggerRequest::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot) override</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMAlterTriggerRequest::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11909" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="46910" bodyend="46949"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMAlterTriggerRequest_1aac45e24dacb7d367e636c1804515df8f" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::WMAlterTriggerRequest::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const override</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMAlterTriggerRequest::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11910" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="46951" bodyend="46964"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMAlterTriggerRequest_1abc481a13ae772bc5b3ba7ade07f0195d" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::WMAlterTriggerRequest::printTo</definition>
+        <argsstring>(std::ostream &amp;out) const</argsstring>
+        <name>printTo</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMAlterTriggerRequest::printTo</qualifiedname>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11912" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="46990" bodyend="46995"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::WMAlterTriggerRequest</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1WMAlterTriggerRequest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::WMAlterTriggerRequest</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1WMAlterTriggerRequest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>trigger</edgelabel>
+        </childnode>
+        <childnode refid="7" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>Apache::Hadoop::Hive::WMTrigger</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1WMTrigger"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>actionExpression</edgelabel>
+          <edgelabel>ns</edgelabel>
+          <edgelabel>resourcePlanName</edgelabel>
+          <edgelabel>triggerExpression</edgelabel>
+          <edgelabel>triggerName</edgelabel>
+        </childnode>
+        <childnode refid="6" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="7">
+        <label>Apache::Hadoop::Hive::_WMAlterTriggerRequest__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__WMAlterTriggerRequest____isset"/>
+      </node>
+      <node id="6">
+        <label>Apache::Hadoop::Hive::_WMTrigger__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__WMTrigger____isset"/>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+      <node id="5">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="4">
+        <label>std::string</label>
+        <childnode refid="5" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11888" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="11888" bodyend="11913"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMAlterTriggerRequest_1a699233aa393e483db711721a98c5846c" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMAlterTriggerRequest</scope><name>__isset</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMAlterTriggerRequest_1ac5c3dda4ba570dc51010238ac1bb2441" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMAlterTriggerRequest</scope><name>__set_trigger</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMAlterTriggerRequest_1a10f4d103508b7682e522bf2fa2578ad8" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMAlterTriggerRequest</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMAlterTriggerRequest_1a1ee9d9b376baf046b642d7d6fb4c4c84" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMAlterTriggerRequest</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMAlterTriggerRequest_1a806c7e8edc069d07d9c9afaf263ddf58" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMAlterTriggerRequest</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMAlterTriggerRequest_1a87929fd7c5ea33370d623e29ded374af" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMAlterTriggerRequest</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMAlterTriggerRequest_1abc481a13ae772bc5b3ba7ade07f0195d" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::WMAlterTriggerRequest</scope><name>printTo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMAlterTriggerRequest_1a4700aeba1bb4e05d2b996320740fdd46" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMAlterTriggerRequest</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMAlterTriggerRequest_1a2aa2607a63c54e0c0c9971d8b1417a46" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMAlterTriggerRequest</scope><name>trigger</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMAlterTriggerRequest_1ad2aa96fdf647967b620d1a5e559ede3e" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMAlterTriggerRequest</scope><name>WMAlterTriggerRequest</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMAlterTriggerRequest_1a1240799c9a7db92e821885eac564c92e" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMAlterTriggerRequest</scope><name>WMAlterTriggerRequest</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMAlterTriggerRequest_1aac45e24dacb7d367e636c1804515df8f" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMAlterTriggerRequest</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMAlterTriggerRequest_1a99fa13e817d41d1b6e3b01a765676d43" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::WMAlterTriggerRequest</scope><name>~WMAlterTriggerRequest</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

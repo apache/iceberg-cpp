@@ -1,0 +1,96 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structApache_1_1Hadoop_1_1Hive_1_1__DecimalColumnStatsData____isset" kind="struct" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::_DecimalColumnStatsData__isset</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__DecimalColumnStatsData____isset_1a035e812d58e73c6ceb6d43bd6e298787" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_DecimalColumnStatsData__isset::lowValue</definition>
+        <argsstring></argsstring>
+        <name>lowValue</name>
+        <qualifiedname>Apache::Hadoop::Hive::_DecimalColumnStatsData__isset::lowValue</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3559" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="3559" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__DecimalColumnStatsData____isset_1ac8910eb2c8103cd971cdbd9a04ed40cf" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_DecimalColumnStatsData__isset::highValue</definition>
+        <argsstring></argsstring>
+        <name>highValue</name>
+        <qualifiedname>Apache::Hadoop::Hive::_DecimalColumnStatsData__isset::highValue</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3560" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="3560" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__DecimalColumnStatsData____isset_1a004c26f9bde565c19b1f493968f8c972" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_DecimalColumnStatsData__isset::bitVectors</definition>
+        <argsstring></argsstring>
+        <name>bitVectors</name>
+        <qualifiedname>Apache::Hadoop::Hive::_DecimalColumnStatsData__isset::bitVectors</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3561" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="3561" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__DecimalColumnStatsData____isset_1a79efe4d44a37ff8960c8cace9c380315" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_DecimalColumnStatsData__isset::histogram</definition>
+        <argsstring></argsstring>
+        <name>histogram</name>
+        <qualifiedname>Apache::Hadoop::Hive::_DecimalColumnStatsData__isset::histogram</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3562" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="3562" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structApache_1_1Hadoop_1_1Hive_1_1__DecimalColumnStatsData____isset_1a968ac6cc73ab7fda5e036c6c5b0a5ea8" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::_DecimalColumnStatsData__isset::_DecimalColumnStatsData__isset</definition>
+        <argsstring>()</argsstring>
+        <name>_DecimalColumnStatsData__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::_DecimalColumnStatsData__isset::_DecimalColumnStatsData__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3558" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="3558" bodyend="3558"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3557" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="3557" bodyend="3563"/>
+    <listofallmembers>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__DecimalColumnStatsData____isset_1a968ac6cc73ab7fda5e036c6c5b0a5ea8" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_DecimalColumnStatsData__isset</scope><name>_DecimalColumnStatsData__isset</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__DecimalColumnStatsData____isset_1a004c26f9bde565c19b1f493968f8c972" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_DecimalColumnStatsData__isset</scope><name>bitVectors</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__DecimalColumnStatsData____isset_1ac8910eb2c8103cd971cdbd9a04ed40cf" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_DecimalColumnStatsData__isset</scope><name>highValue</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__DecimalColumnStatsData____isset_1a79efe4d44a37ff8960c8cace9c380315" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_DecimalColumnStatsData__isset</scope><name>histogram</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__DecimalColumnStatsData____isset_1a035e812d58e73c6ceb6d43bd6e298787" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_DecimalColumnStatsData__isset</scope><name>lowValue</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

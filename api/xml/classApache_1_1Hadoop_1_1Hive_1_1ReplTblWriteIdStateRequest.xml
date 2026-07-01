@@ -1,0 +1,471 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1ReplTblWriteIdStateRequest" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::ReplTblWriteIdStateRequest</compoundname>
+    <basecompoundref prot="public" virt="virtual">apache::thrift::TBase</basecompoundref>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ReplTblWriteIdStateRequest_1aadcf4311fee1d040d4cacf4bb791362b" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::ReplTblWriteIdStateRequest::validWriteIdlist</definition>
+        <argsstring></argsstring>
+        <name>validWriteIdlist</name>
+        <qualifiedname>Apache::Hadoop::Hive::ReplTblWriteIdStateRequest::validWriteIdlist</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7182" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="7182" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ReplTblWriteIdStateRequest_1a2cb44c513ded1bfbc351993f95b5aa9e" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::ReplTblWriteIdStateRequest::user</definition>
+        <argsstring></argsstring>
+        <name>user</name>
+        <qualifiedname>Apache::Hadoop::Hive::ReplTblWriteIdStateRequest::user</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7183" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="7183" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ReplTblWriteIdStateRequest_1a4422fcb8d7a6ee75cb70f50acea33d08" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::ReplTblWriteIdStateRequest::hostName</definition>
+        <argsstring></argsstring>
+        <name>hostName</name>
+        <qualifiedname>Apache::Hadoop::Hive::ReplTblWriteIdStateRequest::hostName</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7184" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="7184" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ReplTblWriteIdStateRequest_1a9571d29b781eafddaf24bd26fd23c8dd" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::ReplTblWriteIdStateRequest::dbName</definition>
+        <argsstring></argsstring>
+        <name>dbName</name>
+        <qualifiedname>Apache::Hadoop::Hive::ReplTblWriteIdStateRequest::dbName</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7185" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="7185" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ReplTblWriteIdStateRequest_1afbc67358be4597fc6459058362280dc3" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::ReplTblWriteIdStateRequest::tableName</definition>
+        <argsstring></argsstring>
+        <name>tableName</name>
+        <qualifiedname>Apache::Hadoop::Hive::ReplTblWriteIdStateRequest::tableName</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7186" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="7186" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ReplTblWriteIdStateRequest_1aaefca3bb23a3d141edfe978c80c70d62" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; std::string &gt;</type>
+        <definition>std::vector&lt;std::string&gt; Apache::Hadoop::Hive::ReplTblWriteIdStateRequest::partNames</definition>
+        <argsstring></argsstring>
+        <name>partNames</name>
+        <qualifiedname>Apache::Hadoop::Hive::ReplTblWriteIdStateRequest::partNames</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7187" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="7187" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ReplTblWriteIdStateRequest_1ac79fe55a8eb3dd1f07377ea4b30242a7" prot="public" static="no" mutable="no">
+        <type><ref refid="structApache_1_1Hadoop_1_1Hive_1_1__ReplTblWriteIdStateRequest____isset" kindref="compound">_ReplTblWriteIdStateRequest__isset</ref></type>
+        <definition>_ReplTblWriteIdStateRequest__isset Apache::Hadoop::Hive::ReplTblWriteIdStateRequest::__isset</definition>
+        <argsstring></argsstring>
+        <name>__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::ReplTblWriteIdStateRequest::__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7189" column="38" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="7189" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ReplTblWriteIdStateRequest_1ada67d4a330bca6db6e0cc6109c4f4c2d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::ReplTblWriteIdStateRequest::ReplTblWriteIdStateRequest</definition>
+        <argsstring>(const ReplTblWriteIdStateRequest &amp;)</argsstring>
+        <name>ReplTblWriteIdStateRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::ReplTblWriteIdStateRequest::ReplTblWriteIdStateRequest</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ReplTblWriteIdStateRequest" kindref="compound">ReplTblWriteIdStateRequest</ref> &amp;</type>
+          <defname>other913</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7177" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="27243" bodyend="27251"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ReplTblWriteIdStateRequest_1a720b9545024386680acf10df0c1169fb" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1ReplTblWriteIdStateRequest" kindref="compound">ReplTblWriteIdStateRequest</ref> &amp;</type>
+        <definition>ReplTblWriteIdStateRequest &amp; Apache::Hadoop::Hive::ReplTblWriteIdStateRequest::operator=</definition>
+        <argsstring>(const ReplTblWriteIdStateRequest &amp;)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::ReplTblWriteIdStateRequest::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ReplTblWriteIdStateRequest" kindref="compound">ReplTblWriteIdStateRequest</ref> &amp;</type>
+          <defname>other914</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7178" column="30" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="27252" bodyend="27261"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ReplTblWriteIdStateRequest_1a6ccbc43467c18a7b69c1d43463215ab2" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::ReplTblWriteIdStateRequest::ReplTblWriteIdStateRequest</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>ReplTblWriteIdStateRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::ReplTblWriteIdStateRequest::ReplTblWriteIdStateRequest</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7179" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="27023" bodyend="27029"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ReplTblWriteIdStateRequest_1a48f05ea11a8213f48897bf101f711300" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::ReplTblWriteIdStateRequest::~ReplTblWriteIdStateRequest</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~ReplTblWriteIdStateRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::ReplTblWriteIdStateRequest::~ReplTblWriteIdStateRequest</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7181" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="27020" bodyend="27021"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ReplTblWriteIdStateRequest_1af5e4ac4233fb17c2c03c517d04e4624a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::ReplTblWriteIdStateRequest::__set_validWriteIdlist</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_validWriteIdlist</name>
+        <qualifiedname>Apache::Hadoop::Hive::ReplTblWriteIdStateRequest::__set_validWriteIdlist</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7191" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="27031" bodyend="27033"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ReplTblWriteIdStateRequest_1ab211c7d0f976a4afce07d79be17b291e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::ReplTblWriteIdStateRequest::__set_user</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_user</name>
+        <qualifiedname>Apache::Hadoop::Hive::ReplTblWriteIdStateRequest::__set_user</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7193" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="27035" bodyend="27037"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ReplTblWriteIdStateRequest_1a986b3da25c8b3af4517e6f31b04a383f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::ReplTblWriteIdStateRequest::__set_hostName</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_hostName</name>
+        <qualifiedname>Apache::Hadoop::Hive::ReplTblWriteIdStateRequest::__set_hostName</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7195" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="27039" bodyend="27041"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ReplTblWriteIdStateRequest_1a8eca10e099e2c640e1419427fa588b2d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::ReplTblWriteIdStateRequest::__set_dbName</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_dbName</name>
+        <qualifiedname>Apache::Hadoop::Hive::ReplTblWriteIdStateRequest::__set_dbName</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7197" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="27043" bodyend="27045"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ReplTblWriteIdStateRequest_1a7928a2c2f81003092a9a3555816be0c8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::ReplTblWriteIdStateRequest::__set_tableName</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_tableName</name>
+        <qualifiedname>Apache::Hadoop::Hive::ReplTblWriteIdStateRequest::__set_tableName</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7199" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="27047" bodyend="27049"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ReplTblWriteIdStateRequest_1a4ab146cd5b79552b0fc1e941c183af0f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::ReplTblWriteIdStateRequest::__set_partNames</definition>
+        <argsstring>(const std::vector&lt; std::string &gt; &amp;val)</argsstring>
+        <name>__set_partNames</name>
+        <qualifiedname>Apache::Hadoop::Hive::ReplTblWriteIdStateRequest::__set_partNames</qualifiedname>
+        <param>
+          <type>const std::vector&lt; std::string &gt; &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7201" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="27051" bodyend="27054"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ReplTblWriteIdStateRequest_1acce03e28915539eaed95dba78df5e119" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::ReplTblWriteIdStateRequest::operator==</definition>
+        <argsstring>(const ReplTblWriteIdStateRequest &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::ReplTblWriteIdStateRequest::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ReplTblWriteIdStateRequest" kindref="compound">ReplTblWriteIdStateRequest</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7203" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="27224" bodyend="27241"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ReplTblWriteIdStateRequest_1a0aea2fe43358ae5709c310d5849328fb" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::ReplTblWriteIdStateRequest::operator!=</definition>
+        <argsstring>(const ReplTblWriteIdStateRequest &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::ReplTblWriteIdStateRequest::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ReplTblWriteIdStateRequest" kindref="compound">ReplTblWriteIdStateRequest</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7204" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="7204" bodyend="7206"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ReplTblWriteIdStateRequest_1ae92e08046273f31dcbf55f17f64bb970" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::ReplTblWriteIdStateRequest::operator&lt;</definition>
+        <argsstring>(const ReplTblWriteIdStateRequest &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::ReplTblWriteIdStateRequest::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ReplTblWriteIdStateRequest" kindref="compound">ReplTblWriteIdStateRequest</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7208" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ReplTblWriteIdStateRequest_1ab5ad369e8eb8af76abdaf2991170535c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::ReplTblWriteIdStateRequest::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot) override</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::ReplTblWriteIdStateRequest::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7210" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="27062" bodyend="27168"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ReplTblWriteIdStateRequest_1ae2336cc113dac1f30a645aa94a7fea16" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::ReplTblWriteIdStateRequest::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const override</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::ReplTblWriteIdStateRequest::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7211" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="27170" bodyend="27211"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ReplTblWriteIdStateRequest_1abddba1717b7d27eb9ee6639df2d2c6c0" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::ReplTblWriteIdStateRequest::printTo</definition>
+        <argsstring>(std::ostream &amp;out) const</argsstring>
+        <name>printTo</name>
+        <qualifiedname>Apache::Hadoop::Hive::ReplTblWriteIdStateRequest::printTo</qualifiedname>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7213" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="27262" bodyend="27272"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::ReplTblWriteIdStateRequest</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1ReplTblWriteIdStateRequest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::ReplTblWriteIdStateRequest</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1ReplTblWriteIdStateRequest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>dbName</edgelabel>
+          <edgelabel>hostName</edgelabel>
+          <edgelabel>tableName</edgelabel>
+          <edgelabel>user</edgelabel>
+          <edgelabel>validWriteIdlist</edgelabel>
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>partNames</edgelabel>
+        </childnode>
+        <childnode refid="6" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="6">
+        <label>Apache::Hadoop::Hive::_ReplTblWriteIdStateRequest__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__ReplTblWriteIdStateRequest____isset"/>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+      <node id="4">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="3">
+        <label>std::string</label>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>std::vector&lt; std::string &gt;</label>
+        <childnode refid="3" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7174" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="7174" bodyend="7214"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ReplTblWriteIdStateRequest_1ac79fe55a8eb3dd1f07377ea4b30242a7" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ReplTblWriteIdStateRequest</scope><name>__isset</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ReplTblWriteIdStateRequest_1a8eca10e099e2c640e1419427fa588b2d" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ReplTblWriteIdStateRequest</scope><name>__set_dbName</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ReplTblWriteIdStateRequest_1a986b3da25c8b3af4517e6f31b04a383f" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ReplTblWriteIdStateRequest</scope><name>__set_hostName</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ReplTblWriteIdStateRequest_1a4ab146cd5b79552b0fc1e941c183af0f" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ReplTblWriteIdStateRequest</scope><name>__set_partNames</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ReplTblWriteIdStateRequest_1a7928a2c2f81003092a9a3555816be0c8" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ReplTblWriteIdStateRequest</scope><name>__set_tableName</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ReplTblWriteIdStateRequest_1ab211c7d0f976a4afce07d79be17b291e" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ReplTblWriteIdStateRequest</scope><name>__set_user</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ReplTblWriteIdStateRequest_1af5e4ac4233fb17c2c03c517d04e4624a" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ReplTblWriteIdStateRequest</scope><name>__set_validWriteIdlist</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ReplTblWriteIdStateRequest_1a9571d29b781eafddaf24bd26fd23c8dd" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ReplTblWriteIdStateRequest</scope><name>dbName</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ReplTblWriteIdStateRequest_1a4422fcb8d7a6ee75cb70f50acea33d08" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ReplTblWriteIdStateRequest</scope><name>hostName</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ReplTblWriteIdStateRequest_1a0aea2fe43358ae5709c310d5849328fb" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ReplTblWriteIdStateRequest</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ReplTblWriteIdStateRequest_1ae92e08046273f31dcbf55f17f64bb970" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ReplTblWriteIdStateRequest</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ReplTblWriteIdStateRequest_1a720b9545024386680acf10df0c1169fb" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ReplTblWriteIdStateRequest</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ReplTblWriteIdStateRequest_1acce03e28915539eaed95dba78df5e119" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ReplTblWriteIdStateRequest</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ReplTblWriteIdStateRequest_1aaefca3bb23a3d141edfe978c80c70d62" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ReplTblWriteIdStateRequest</scope><name>partNames</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ReplTblWriteIdStateRequest_1abddba1717b7d27eb9ee6639df2d2c6c0" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::ReplTblWriteIdStateRequest</scope><name>printTo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ReplTblWriteIdStateRequest_1ab5ad369e8eb8af76abdaf2991170535c" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ReplTblWriteIdStateRequest</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ReplTblWriteIdStateRequest_1ada67d4a330bca6db6e0cc6109c4f4c2d" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ReplTblWriteIdStateRequest</scope><name>ReplTblWriteIdStateRequest</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ReplTblWriteIdStateRequest_1a6ccbc43467c18a7b69c1d43463215ab2" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ReplTblWriteIdStateRequest</scope><name>ReplTblWriteIdStateRequest</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ReplTblWriteIdStateRequest_1afbc67358be4597fc6459058362280dc3" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ReplTblWriteIdStateRequest</scope><name>tableName</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ReplTblWriteIdStateRequest_1a2cb44c513ded1bfbc351993f95b5aa9e" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ReplTblWriteIdStateRequest</scope><name>user</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ReplTblWriteIdStateRequest_1aadcf4311fee1d040d4cacf4bb791362b" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ReplTblWriteIdStateRequest</scope><name>validWriteIdlist</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ReplTblWriteIdStateRequest_1ae2336cc113dac1f30a645aa94a7fea16" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ReplTblWriteIdStateRequest</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ReplTblWriteIdStateRequest_1a48f05ea11a8213f48897bf101f711300" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::ReplTblWriteIdStateRequest</scope><name>~ReplTblWriteIdStateRequest</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

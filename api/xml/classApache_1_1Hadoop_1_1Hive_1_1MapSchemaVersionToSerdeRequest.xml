@@ -1,0 +1,359 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1MapSchemaVersionToSerdeRequest" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::MapSchemaVersionToSerdeRequest</compoundname>
+    <basecompoundref prot="public" virt="virtual">apache::thrift::TBase</basecompoundref>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1MapSchemaVersionToSerdeRequest_1a19a8e2cfd42db503c1c0b30bde32ca08" prot="public" static="no" mutable="no">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1SchemaVersionDescriptor" kindref="compound">SchemaVersionDescriptor</ref></type>
+        <definition>SchemaVersionDescriptor Apache::Hadoop::Hive::MapSchemaVersionToSerdeRequest::schemaVersion</definition>
+        <argsstring></argsstring>
+        <name>schemaVersion</name>
+        <qualifiedname>Apache::Hadoop::Hive::MapSchemaVersionToSerdeRequest::schemaVersion</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12877" column="27" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="12877" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1MapSchemaVersionToSerdeRequest_1af3458e5defdd71e7d87a1f6ad66adb3a" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::MapSchemaVersionToSerdeRequest::serdeName</definition>
+        <argsstring></argsstring>
+        <name>serdeName</name>
+        <qualifiedname>Apache::Hadoop::Hive::MapSchemaVersionToSerdeRequest::serdeName</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12878" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="12878" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1MapSchemaVersionToSerdeRequest_1abd0897b837eb883cf12b0330dc31288f" prot="public" static="no" mutable="no">
+        <type><ref refid="structApache_1_1Hadoop_1_1Hive_1_1__MapSchemaVersionToSerdeRequest____isset" kindref="compound">_MapSchemaVersionToSerdeRequest__isset</ref></type>
+        <definition>_MapSchemaVersionToSerdeRequest__isset Apache::Hadoop::Hive::MapSchemaVersionToSerdeRequest::__isset</definition>
+        <argsstring></argsstring>
+        <name>__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::MapSchemaVersionToSerdeRequest::__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12880" column="42" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="12880" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1MapSchemaVersionToSerdeRequest_1ad33c5af70990586ac1ec07fcd9762ec3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::MapSchemaVersionToSerdeRequest::MapSchemaVersionToSerdeRequest</definition>
+        <argsstring>(const MapSchemaVersionToSerdeRequest &amp;)</argsstring>
+        <name>MapSchemaVersionToSerdeRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::MapSchemaVersionToSerdeRequest::MapSchemaVersionToSerdeRequest</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1MapSchemaVersionToSerdeRequest" kindref="compound">MapSchemaVersionToSerdeRequest</ref> &amp;</type>
+          <defname>other1564</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12872" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="50296" bodyend="50300"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1MapSchemaVersionToSerdeRequest_1a5918c891eed805cce8ad823657620699" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1MapSchemaVersionToSerdeRequest" kindref="compound">MapSchemaVersionToSerdeRequest</ref> &amp;</type>
+        <definition>MapSchemaVersionToSerdeRequest &amp; Apache::Hadoop::Hive::MapSchemaVersionToSerdeRequest::operator=</definition>
+        <argsstring>(const MapSchemaVersionToSerdeRequest &amp;)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::MapSchemaVersionToSerdeRequest::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1MapSchemaVersionToSerdeRequest" kindref="compound">MapSchemaVersionToSerdeRequest</ref> &amp;</type>
+          <defname>other1565</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12873" column="34" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="50301" bodyend="50306"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1MapSchemaVersionToSerdeRequest_1a559c533b3a397c5613d0cd044e2a099d" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::MapSchemaVersionToSerdeRequest::MapSchemaVersionToSerdeRequest</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>MapSchemaVersionToSerdeRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::MapSchemaVersionToSerdeRequest::MapSchemaVersionToSerdeRequest</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12874" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="50195" bodyend="50197"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1MapSchemaVersionToSerdeRequest_1a3ec88fb38ecdcead0013d5b75566b83b" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::MapSchemaVersionToSerdeRequest::~MapSchemaVersionToSerdeRequest</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~MapSchemaVersionToSerdeRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::MapSchemaVersionToSerdeRequest::~MapSchemaVersionToSerdeRequest</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12876" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="50192" bodyend="50193"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1MapSchemaVersionToSerdeRequest_1a39e650e35d05309610d74217ead64d24" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::MapSchemaVersionToSerdeRequest::__set_schemaVersion</definition>
+        <argsstring>(const SchemaVersionDescriptor &amp;val)</argsstring>
+        <name>__set_schemaVersion</name>
+        <qualifiedname>Apache::Hadoop::Hive::MapSchemaVersionToSerdeRequest::__set_schemaVersion</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1SchemaVersionDescriptor" kindref="compound">SchemaVersionDescriptor</ref> &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12882" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="50199" bodyend="50201"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1MapSchemaVersionToSerdeRequest_1aa538b202dec22ac0bdd41079918dc8c7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::MapSchemaVersionToSerdeRequest::__set_serdeName</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_serdeName</name>
+        <qualifiedname>Apache::Hadoop::Hive::MapSchemaVersionToSerdeRequest::__set_serdeName</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12884" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="50203" bodyend="50205"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1MapSchemaVersionToSerdeRequest_1ab77644bb63d5927cf89f95d6079bfba3" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::MapSchemaVersionToSerdeRequest::operator==</definition>
+        <argsstring>(const MapSchemaVersionToSerdeRequest &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::MapSchemaVersionToSerdeRequest::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1MapSchemaVersionToSerdeRequest" kindref="compound">MapSchemaVersionToSerdeRequest</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12886" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="50287" bodyend="50294"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1MapSchemaVersionToSerdeRequest_1acc875fb75c97f6a4f6f47954cba9ef0c" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::MapSchemaVersionToSerdeRequest::operator!=</definition>
+        <argsstring>(const MapSchemaVersionToSerdeRequest &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::MapSchemaVersionToSerdeRequest::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1MapSchemaVersionToSerdeRequest" kindref="compound">MapSchemaVersionToSerdeRequest</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12887" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="12887" bodyend="12889"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1MapSchemaVersionToSerdeRequest_1a60c3d0e676c891dae32e6647070b7425" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::MapSchemaVersionToSerdeRequest::operator&lt;</definition>
+        <argsstring>(const MapSchemaVersionToSerdeRequest &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::MapSchemaVersionToSerdeRequest::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1MapSchemaVersionToSerdeRequest" kindref="compound">MapSchemaVersionToSerdeRequest</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12891" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1MapSchemaVersionToSerdeRequest_1aebf6e727bf3ca5502d75244fdc910c86" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::MapSchemaVersionToSerdeRequest::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot) override</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::MapSchemaVersionToSerdeRequest::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12893" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="50213" bodyend="50260"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1MapSchemaVersionToSerdeRequest_1ae060af583fb844cb7f6fdf7856afa5d4" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::MapSchemaVersionToSerdeRequest::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const override</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::MapSchemaVersionToSerdeRequest::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12894" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="50262" bodyend="50278"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1MapSchemaVersionToSerdeRequest_1ae63c4cbdc66da3c931d5f6d987505f7c" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::MapSchemaVersionToSerdeRequest::printTo</definition>
+        <argsstring>(std::ostream &amp;out) const</argsstring>
+        <name>printTo</name>
+        <qualifiedname>Apache::Hadoop::Hive::MapSchemaVersionToSerdeRequest::printTo</qualifiedname>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12896" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="50307" bodyend="50313"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::MapSchemaVersionToSerdeRequest</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1MapSchemaVersionToSerdeRequest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="4">
+        <label>Apache::Hadoop::Hive::ISchemaName</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1ISchemaName"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>catName</edgelabel>
+          <edgelabel>dbName</edgelabel>
+          <edgelabel>schemaName</edgelabel>
+        </childnode>
+        <childnode refid="7" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::MapSchemaVersionToSerdeRequest</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1MapSchemaVersionToSerdeRequest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>schemaVersion</edgelabel>
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>serdeName</edgelabel>
+        </childnode>
+        <childnode refid="9" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>Apache::Hadoop::Hive::SchemaVersionDescriptor</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1SchemaVersionDescriptor"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>schema</edgelabel>
+        </childnode>
+        <childnode refid="8" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="7">
+        <label>Apache::Hadoop::Hive::_ISchemaName__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__ISchemaName____isset"/>
+      </node>
+      <node id="9">
+        <label>Apache::Hadoop::Hive::_MapSchemaVersionToSerdeRequest__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__MapSchemaVersionToSerdeRequest____isset"/>
+      </node>
+      <node id="8">
+        <label>Apache::Hadoop::Hive::_SchemaVersionDescriptor__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__SchemaVersionDescriptor____isset"/>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+      <node id="6">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="5">
+        <label>std::string</label>
+        <childnode refid="6" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12869" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="12869" bodyend="12897"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1MapSchemaVersionToSerdeRequest_1abd0897b837eb883cf12b0330dc31288f" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::MapSchemaVersionToSerdeRequest</scope><name>__isset</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1MapSchemaVersionToSerdeRequest_1a39e650e35d05309610d74217ead64d24" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::MapSchemaVersionToSerdeRequest</scope><name>__set_schemaVersion</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1MapSchemaVersionToSerdeRequest_1aa538b202dec22ac0bdd41079918dc8c7" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::MapSchemaVersionToSerdeRequest</scope><name>__set_serdeName</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1MapSchemaVersionToSerdeRequest_1ad33c5af70990586ac1ec07fcd9762ec3" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::MapSchemaVersionToSerdeRequest</scope><name>MapSchemaVersionToSerdeRequest</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1MapSchemaVersionToSerdeRequest_1a559c533b3a397c5613d0cd044e2a099d" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::MapSchemaVersionToSerdeRequest</scope><name>MapSchemaVersionToSerdeRequest</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1MapSchemaVersionToSerdeRequest_1acc875fb75c97f6a4f6f47954cba9ef0c" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::MapSchemaVersionToSerdeRequest</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1MapSchemaVersionToSerdeRequest_1a60c3d0e676c891dae32e6647070b7425" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::MapSchemaVersionToSerdeRequest</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1MapSchemaVersionToSerdeRequest_1a5918c891eed805cce8ad823657620699" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::MapSchemaVersionToSerdeRequest</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1MapSchemaVersionToSerdeRequest_1ab77644bb63d5927cf89f95d6079bfba3" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::MapSchemaVersionToSerdeRequest</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1MapSchemaVersionToSerdeRequest_1ae63c4cbdc66da3c931d5f6d987505f7c" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::MapSchemaVersionToSerdeRequest</scope><name>printTo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1MapSchemaVersionToSerdeRequest_1aebf6e727bf3ca5502d75244fdc910c86" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::MapSchemaVersionToSerdeRequest</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1MapSchemaVersionToSerdeRequest_1a19a8e2cfd42db503c1c0b30bde32ca08" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::MapSchemaVersionToSerdeRequest</scope><name>schemaVersion</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1MapSchemaVersionToSerdeRequest_1af3458e5defdd71e7d87a1f6ad66adb3a" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::MapSchemaVersionToSerdeRequest</scope><name>serdeName</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1MapSchemaVersionToSerdeRequest_1ae060af583fb844cb7f6fdf7856afa5d4" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::MapSchemaVersionToSerdeRequest</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1MapSchemaVersionToSerdeRequest_1a3ec88fb38ecdcead0013d5b75566b83b" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::MapSchemaVersionToSerdeRequest</scope><name>~MapSchemaVersionToSerdeRequest</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

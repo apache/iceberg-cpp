@@ -1,0 +1,296 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1ForeignKeysResponse" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::ForeignKeysResponse</compoundname>
+    <basecompoundref prot="public" virt="virtual">apache::thrift::TBase</basecompoundref>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ForeignKeysResponse_1ae90a8a0c4c5d825c24c5758453e2534c" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; <ref refid="classApache_1_1Hadoop_1_1Hive_1_1SQLForeignKey" kindref="compound">SQLForeignKey</ref> &gt;</type>
+        <definition>std::vector&lt;SQLForeignKey&gt; Apache::Hadoop::Hive::ForeignKeysResponse::foreignKeys</definition>
+        <argsstring></argsstring>
+        <name>foreignKeys</name>
+        <qualifiedname>Apache::Hadoop::Hive::ForeignKeysResponse::foreignKeys</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="4831" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="4831" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ForeignKeysResponse_1a0036327ddcd2949ed863a0bc5d347757" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::ForeignKeysResponse::ForeignKeysResponse</definition>
+        <argsstring>(const ForeignKeysResponse &amp;)</argsstring>
+        <name>ForeignKeysResponse</name>
+        <qualifiedname>Apache::Hadoop::Hive::ForeignKeysResponse::ForeignKeysResponse</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ForeignKeysResponse" kindref="compound">ForeignKeysResponse</ref> &amp;</type>
+          <defname>other539</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="4826" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="16697" bodyend="16699"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ForeignKeysResponse_1a61624d9f39f4ddd56bcae1cea1992072" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1ForeignKeysResponse" kindref="compound">ForeignKeysResponse</ref> &amp;</type>
+        <definition>ForeignKeysResponse &amp; Apache::Hadoop::Hive::ForeignKeysResponse::operator=</definition>
+        <argsstring>(const ForeignKeysResponse &amp;)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::ForeignKeysResponse::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ForeignKeysResponse" kindref="compound">ForeignKeysResponse</ref> &amp;</type>
+          <defname>other540</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="4827" column="23" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="16700" bodyend="16703"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ForeignKeysResponse_1a4b7d9d9349c8b664a49eae306fb03d3f" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::ForeignKeysResponse::ForeignKeysResponse</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>ForeignKeysResponse</name>
+        <qualifiedname>Apache::Hadoop::Hive::ForeignKeysResponse::ForeignKeysResponse</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="4828" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="16594" bodyend="16595"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ForeignKeysResponse_1af73f22a70b1080181aeff966d7a28f60" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::ForeignKeysResponse::~ForeignKeysResponse</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~ForeignKeysResponse</name>
+        <qualifiedname>Apache::Hadoop::Hive::ForeignKeysResponse::~ForeignKeysResponse</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="4830" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="16591" bodyend="16592"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ForeignKeysResponse_1a8757d8a41a34a51e7b5600f730f4bc5e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::ForeignKeysResponse::__set_foreignKeys</definition>
+        <argsstring>(const std::vector&lt; SQLForeignKey &gt; &amp;val)</argsstring>
+        <name>__set_foreignKeys</name>
+        <qualifiedname>Apache::Hadoop::Hive::ForeignKeysResponse::__set_foreignKeys</qualifiedname>
+        <param>
+          <type>const std::vector&lt; <ref refid="classApache_1_1Hadoop_1_1Hive_1_1SQLForeignKey" kindref="compound">SQLForeignKey</ref> &gt; &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="4833" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="16597" bodyend="16599"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ForeignKeysResponse_1a30560cec67703b4d7032bee68d063fda" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::ForeignKeysResponse::operator==</definition>
+        <argsstring>(const ForeignKeysResponse &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::ForeignKeysResponse::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ForeignKeysResponse" kindref="compound">ForeignKeysResponse</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="4835" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="16690" bodyend="16695"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ForeignKeysResponse_1acc79a1f43b707e65b48ed7d36914ed39" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::ForeignKeysResponse::operator!=</definition>
+        <argsstring>(const ForeignKeysResponse &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::ForeignKeysResponse::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ForeignKeysResponse" kindref="compound">ForeignKeysResponse</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="4836" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="4836" bodyend="4838"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ForeignKeysResponse_1a966a7776de725ad1900ba719ecea12aa" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::ForeignKeysResponse::operator&lt;</definition>
+        <argsstring>(const ForeignKeysResponse &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::ForeignKeysResponse::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ForeignKeysResponse" kindref="compound">ForeignKeysResponse</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="4840" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ForeignKeysResponse_1ae491cabd4c1422846a5022610afeafa1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::ForeignKeysResponse::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot) override</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::ForeignKeysResponse::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="4842" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="16607" bodyend="16661"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ForeignKeysResponse_1a9d255f7513517c025c941dd6177b1e49" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::ForeignKeysResponse::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const override</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::ForeignKeysResponse::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="4843" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="16663" bodyend="16683"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ForeignKeysResponse_1a4b8d8b0994056bc64b1c14c3640d457a" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::ForeignKeysResponse::printTo</definition>
+        <argsstring>(std::ostream &amp;out) const</argsstring>
+        <name>printTo</name>
+        <qualifiedname>Apache::Hadoop::Hive::ForeignKeysResponse::printTo</qualifiedname>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="4845" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="16704" bodyend="16709"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::ForeignKeysResponse</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1ForeignKeysResponse"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::ForeignKeysResponse</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1ForeignKeysResponse"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>foreignKeys</edgelabel>
+        </childnode>
+      </node>
+      <node id="4">
+        <label>Apache::Hadoop::Hive::SQLForeignKey</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1SQLForeignKey"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>catName</edgelabel>
+          <edgelabel>fk_name</edgelabel>
+          <edgelabel>fkcolumn_name</edgelabel>
+          <edgelabel>fktable_db</edgelabel>
+          <edgelabel>fktable_name</edgelabel>
+          <edgelabel>pk_name</edgelabel>
+          <edgelabel>pkcolumn_name</edgelabel>
+          <edgelabel>pktable_db</edgelabel>
+          <edgelabel>pktable_name</edgelabel>
+        </childnode>
+        <childnode refid="7" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="7">
+        <label>Apache::Hadoop::Hive::_SQLForeignKey__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__SQLForeignKey____isset"/>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+      <node id="6">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="5">
+        <label>std::string</label>
+        <childnode refid="6" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::vector&lt; Apache::Hadoop::Hive::SQLForeignKey &gt;</label>
+        <childnode refid="4" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="4823" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="4823" bodyend="4846"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ForeignKeysResponse_1a8757d8a41a34a51e7b5600f730f4bc5e" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ForeignKeysResponse</scope><name>__set_foreignKeys</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ForeignKeysResponse_1ae90a8a0c4c5d825c24c5758453e2534c" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ForeignKeysResponse</scope><name>foreignKeys</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ForeignKeysResponse_1a0036327ddcd2949ed863a0bc5d347757" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ForeignKeysResponse</scope><name>ForeignKeysResponse</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ForeignKeysResponse_1a4b7d9d9349c8b664a49eae306fb03d3f" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ForeignKeysResponse</scope><name>ForeignKeysResponse</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ForeignKeysResponse_1acc79a1f43b707e65b48ed7d36914ed39" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ForeignKeysResponse</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ForeignKeysResponse_1a966a7776de725ad1900ba719ecea12aa" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ForeignKeysResponse</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ForeignKeysResponse_1a61624d9f39f4ddd56bcae1cea1992072" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ForeignKeysResponse</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ForeignKeysResponse_1a30560cec67703b4d7032bee68d063fda" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ForeignKeysResponse</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ForeignKeysResponse_1a4b8d8b0994056bc64b1c14c3640d457a" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::ForeignKeysResponse</scope><name>printTo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ForeignKeysResponse_1ae491cabd4c1422846a5022610afeafa1" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ForeignKeysResponse</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ForeignKeysResponse_1a9d255f7513517c025c941dd6177b1e49" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ForeignKeysResponse</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ForeignKeysResponse_1af73f22a70b1080181aeff966d7a28f60" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::ForeignKeysResponse</scope><name>~ForeignKeysResponse</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

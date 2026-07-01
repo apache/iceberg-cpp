@@ -1,0 +1,313 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__update__compactor__state__args" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::ThriftHiveMetastore_update_compactor_state_args</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__update__compactor__state__args_1aa773017e5c44137edd2a4098fa51c909" prot="public" static="no" mutable="no">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionInfoStruct" kindref="compound">CompactionInfoStruct</ref></type>
+        <definition>CompactionInfoStruct Apache::Hadoop::Hive::ThriftHiveMetastore_update_compactor_state_args::cr</definition>
+        <argsstring></argsstring>
+        <name>cr</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_update_compactor_state_args::cr</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="22871" column="24" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="22871" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__update__compactor__state__args_1a3750ef15553bd0695b90b3c00c12c0d3" prot="public" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t Apache::Hadoop::Hive::ThriftHiveMetastore_update_compactor_state_args::txn_id</definition>
+        <argsstring></argsstring>
+        <name>txn_id</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_update_compactor_state_args::txn_id</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="22872" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="22872" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__update__compactor__state__args_1a2b515c05fcb36530e69a159c262d4a1e" prot="public" static="no" mutable="no">
+        <type><ref refid="structApache_1_1Hadoop_1_1Hive_1_1__ThriftHiveMetastore__update__compactor__state__args____isset" kindref="compound">_ThriftHiveMetastore_update_compactor_state_args__isset</ref></type>
+        <definition>_ThriftHiveMetastore_update_compactor_state_args__isset Apache::Hadoop::Hive::ThriftHiveMetastore_update_compactor_state_args::__isset</definition>
+        <argsstring></argsstring>
+        <name>__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_update_compactor_state_args::__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="22874" column="59" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="22874" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__update__compactor__state__args_1a48083fc9447d6b4a380f998f8aa11aa2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::ThriftHiveMetastore_update_compactor_state_args::ThriftHiveMetastore_update_compactor_state_args</definition>
+        <argsstring>(const ThriftHiveMetastore_update_compactor_state_args &amp;)</argsstring>
+        <name>ThriftHiveMetastore_update_compactor_state_args</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_update_compactor_state_args::ThriftHiveMetastore_update_compactor_state_args</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__update__compactor__state__args" kindref="compound">ThriftHiveMetastore_update_compactor_state_args</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="22866" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__update__compactor__state__args_1aba70fe64972a83ef0cdd2b1e7c4daf7f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__update__compactor__state__args" kindref="compound">ThriftHiveMetastore_update_compactor_state_args</ref> &amp;</type>
+        <definition>ThriftHiveMetastore_update_compactor_state_args &amp; Apache::Hadoop::Hive::ThriftHiveMetastore_update_compactor_state_args::operator=</definition>
+        <argsstring>(const ThriftHiveMetastore_update_compactor_state_args &amp;)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_update_compactor_state_args::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__update__compactor__state__args" kindref="compound">ThriftHiveMetastore_update_compactor_state_args</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="22867" column="51"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__update__compactor__state__args_1a83433f1eb55d93baf6dc75211e63727c" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::ThriftHiveMetastore_update_compactor_state_args::ThriftHiveMetastore_update_compactor_state_args</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>ThriftHiveMetastore_update_compactor_state_args</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_update_compactor_state_args::ThriftHiveMetastore_update_compactor_state_args</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="22868" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.cpp" bodystart="50925" bodyend="50927"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__update__compactor__state__args_1a3973dfe434a01e77d4a06f776c2425ab" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::ThriftHiveMetastore_update_compactor_state_args::~ThriftHiveMetastore_update_compactor_state_args</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~ThriftHiveMetastore_update_compactor_state_args</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_update_compactor_state_args::~ThriftHiveMetastore_update_compactor_state_args</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="22870" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.cpp" bodystart="50922" bodyend="50923"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__update__compactor__state__args_1adbc16e938603f55ebd7f5221b648ef28" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::ThriftHiveMetastore_update_compactor_state_args::__set_cr</definition>
+        <argsstring>(const CompactionInfoStruct &amp;val)</argsstring>
+        <name>__set_cr</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_update_compactor_state_args::__set_cr</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionInfoStruct" kindref="compound">CompactionInfoStruct</ref> &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="22876" column="8"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__update__compactor__state__args_1a574d1aee71223c251fb92963dcc52e90" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::ThriftHiveMetastore_update_compactor_state_args::__set_txn_id</definition>
+        <argsstring>(const int64_t val)</argsstring>
+        <name>__set_txn_id</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_update_compactor_state_args::__set_txn_id</qualifiedname>
+        <param>
+          <type>const int64_t</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="22878" column="8"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__update__compactor__state__args_1a05eabc35fbca8fde917b1ce81e7a76a3" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::ThriftHiveMetastore_update_compactor_state_args::operator==</definition>
+        <argsstring>(const ThriftHiveMetastore_update_compactor_state_args &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_update_compactor_state_args::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__update__compactor__state__args" kindref="compound">ThriftHiveMetastore_update_compactor_state_args</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="22880" column="8"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__update__compactor__state__args_1aa797e2cb42b4600f2b1772106051df49" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::ThriftHiveMetastore_update_compactor_state_args::operator!=</definition>
+        <argsstring>(const ThriftHiveMetastore_update_compactor_state_args &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_update_compactor_state_args::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__update__compactor__state__args" kindref="compound">ThriftHiveMetastore_update_compactor_state_args</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="22881" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="22881" bodyend="22883"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__update__compactor__state__args_1ad2d6d95bb7727e75c737d6ec4f3480f9" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::ThriftHiveMetastore_update_compactor_state_args::operator&lt;</definition>
+        <argsstring>(const ThriftHiveMetastore_update_compactor_state_args &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_update_compactor_state_args::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__update__compactor__state__args" kindref="compound">ThriftHiveMetastore_update_compactor_state_args</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="22885" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__update__compactor__state__args_1a6c69a8cd28e754e4e61211b0a3b66647" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::ThriftHiveMetastore_update_compactor_state_args::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot)</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_update_compactor_state_args::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="22887" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.cpp" bodystart="50929" bodyend="50976"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__update__compactor__state__args_1aec1a78bfcedf6a8ad86fdd7138f564bc" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::ThriftHiveMetastore_update_compactor_state_args::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_update_compactor_state_args::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="22888" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.cpp" bodystart="50978" bodyend="50994"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="2">
+        <label>Apache::Hadoop::Hive::CompactionInfoStruct</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionInfoStruct"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>dbname</edgelabel>
+          <edgelabel>errorMessage</edgelabel>
+          <edgelabel>orderByClause</edgelabel>
+          <edgelabel>partitionname</edgelabel>
+          <edgelabel>poolname</edgelabel>
+          <edgelabel>properties</edgelabel>
+          <edgelabel>runas</edgelabel>
+          <edgelabel>state</edgelabel>
+          <edgelabel>tablename</edgelabel>
+          <edgelabel>workerId</edgelabel>
+          <edgelabel>...</edgelabel>
+        </childnode>
+        <childnode refid="6" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::ThriftHiveMetastore_update_compactor_state_args</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__update__compactor__state__args"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>cr</edgelabel>
+        </childnode>
+        <childnode refid="7" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="6">
+        <label>Apache::Hadoop::Hive::_CompactionInfoStruct__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__CompactionInfoStruct____isset"/>
+      </node>
+      <node id="7">
+        <label>Apache::Hadoop::Hive::_ThriftHiveMetastore_update_compactor_state_args__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__ThriftHiveMetastore__update__compactor__state__args____isset"/>
+      </node>
+      <node id="3">
+        <label>apache::thrift::TBase</label>
+      </node>
+      <node id="5">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="4">
+        <label>std::string</label>
+        <childnode refid="5" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="22863" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="22863" bodyend="22890"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__update__compactor__state__args_1a2b515c05fcb36530e69a159c262d4a1e" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_update_compactor_state_args</scope><name>__isset</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__update__compactor__state__args_1adbc16e938603f55ebd7f5221b648ef28" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_update_compactor_state_args</scope><name>__set_cr</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__update__compactor__state__args_1a574d1aee71223c251fb92963dcc52e90" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_update_compactor_state_args</scope><name>__set_txn_id</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__update__compactor__state__args_1aa773017e5c44137edd2a4098fa51c909" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_update_compactor_state_args</scope><name>cr</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__update__compactor__state__args_1aa797e2cb42b4600f2b1772106051df49" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_update_compactor_state_args</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__update__compactor__state__args_1ad2d6d95bb7727e75c737d6ec4f3480f9" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_update_compactor_state_args</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__update__compactor__state__args_1aba70fe64972a83ef0cdd2b1e7c4daf7f" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_update_compactor_state_args</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__update__compactor__state__args_1a05eabc35fbca8fde917b1ce81e7a76a3" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_update_compactor_state_args</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__update__compactor__state__args_1a6c69a8cd28e754e4e61211b0a3b66647" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_update_compactor_state_args</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__update__compactor__state__args_1a48083fc9447d6b4a380f998f8aa11aa2" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_update_compactor_state_args</scope><name>ThriftHiveMetastore_update_compactor_state_args</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__update__compactor__state__args_1a83433f1eb55d93baf6dc75211e63727c" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_update_compactor_state_args</scope><name>ThriftHiveMetastore_update_compactor_state_args</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__update__compactor__state__args_1a3750ef15553bd0695b90b3c00c12c0d3" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_update_compactor_state_args</scope><name>txn_id</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__update__compactor__state__args_1aec1a78bfcedf6a8ad86fdd7138f564bc" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_update_compactor_state_args</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__update__compactor__state__args_1a3973dfe434a01e77d4a06f776c2425ab" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_update_compactor_state_args</scope><name>~ThriftHiveMetastore_update_compactor_state_args</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

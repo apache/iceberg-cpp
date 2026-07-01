@@ -1,0 +1,96 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structApache_1_1Hadoop_1_1Hive_1_1__Type____isset" kind="struct" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::_Type__isset</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__Type____isset_1a74fd25744f1360163563b1609665869a" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_Type__isset::name</definition>
+        <argsstring></argsstring>
+        <name>name</name>
+        <qualifiedname>Apache::Hadoop::Hive::_Type__isset::name</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1702" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="1702" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__Type____isset_1a54cb1cce47c836d5c2fd8fc033d9781c" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_Type__isset::type1</definition>
+        <argsstring></argsstring>
+        <name>type1</name>
+        <qualifiedname>Apache::Hadoop::Hive::_Type__isset::type1</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1703" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="1703" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__Type____isset_1afbdaa8c805713e07e9cb1d4594ac9585" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_Type__isset::type2</definition>
+        <argsstring></argsstring>
+        <name>type2</name>
+        <qualifiedname>Apache::Hadoop::Hive::_Type__isset::type2</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1704" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="1704" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__Type____isset_1a33e60fb8bec74ade45af84182a8ee2ae" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_Type__isset::fields</definition>
+        <argsstring></argsstring>
+        <name>fields</name>
+        <qualifiedname>Apache::Hadoop::Hive::_Type__isset::fields</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1705" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="1705" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structApache_1_1Hadoop_1_1Hive_1_1__Type____isset_1ab823e309a2a147dbfe0bff2dc71d499d" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::_Type__isset::_Type__isset</definition>
+        <argsstring>()</argsstring>
+        <name>_Type__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::_Type__isset::_Type__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1701" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="1701" bodyend="1701"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1700" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="1700" bodyend="1706"/>
+    <listofallmembers>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__Type____isset_1ab823e309a2a147dbfe0bff2dc71d499d" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_Type__isset</scope><name>_Type__isset</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__Type____isset_1a33e60fb8bec74ade45af84182a8ee2ae" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_Type__isset</scope><name>fields</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__Type____isset_1a74fd25744f1360163563b1609665869a" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_Type__isset</scope><name>name</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__Type____isset_1a54cb1cce47c836d5c2fd8fc033d9781c" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_Type__isset</scope><name>type1</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__Type____isset_1afbdaa8c805713e07e9cb1d4594ac9585" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_Type__isset</scope><name>type2</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

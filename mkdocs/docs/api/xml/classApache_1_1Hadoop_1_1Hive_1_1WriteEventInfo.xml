@@ -1,0 +1,497 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1WriteEventInfo" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::WriteEventInfo</compoundname>
+    <basecompoundref prot="public" virt="virtual">apache::thrift::TBase</basecompoundref>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1WriteEventInfo_1a7b856c958b3e469cf1c341c1ddf233c2" prot="public" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t Apache::Hadoop::Hive::WriteEventInfo::writeId</definition>
+        <argsstring></argsstring>
+        <name>writeId</name>
+        <qualifiedname>Apache::Hadoop::Hive::WriteEventInfo::writeId</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6976" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="6976" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1WriteEventInfo_1a8ed7cfa9ccd77108522fddd9f0f0790b" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::WriteEventInfo::database</definition>
+        <argsstring></argsstring>
+        <name>database</name>
+        <qualifiedname>Apache::Hadoop::Hive::WriteEventInfo::database</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6977" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="6977" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1WriteEventInfo_1ab20a1db598de29440bb5a78640cb84c7" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::WriteEventInfo::table</definition>
+        <argsstring></argsstring>
+        <name>table</name>
+        <qualifiedname>Apache::Hadoop::Hive::WriteEventInfo::table</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6978" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="6978" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1WriteEventInfo_1a1f26b304f56b2384153bd0acb5ce2e73" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::WriteEventInfo::files</definition>
+        <argsstring></argsstring>
+        <name>files</name>
+        <qualifiedname>Apache::Hadoop::Hive::WriteEventInfo::files</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6979" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="6979" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1WriteEventInfo_1ad357020856d2f3e836e68093c0ca2e98" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::WriteEventInfo::partition</definition>
+        <argsstring></argsstring>
+        <name>partition</name>
+        <qualifiedname>Apache::Hadoop::Hive::WriteEventInfo::partition</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6980" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="6980" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1WriteEventInfo_1a5d1bf8ce061219b1070cbdf3041d765a" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::WriteEventInfo::tableObj</definition>
+        <argsstring></argsstring>
+        <name>tableObj</name>
+        <qualifiedname>Apache::Hadoop::Hive::WriteEventInfo::tableObj</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6981" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="6981" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1WriteEventInfo_1a3b5f73c8b436379abca80513eb7e019c" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::WriteEventInfo::partitionObj</definition>
+        <argsstring></argsstring>
+        <name>partitionObj</name>
+        <qualifiedname>Apache::Hadoop::Hive::WriteEventInfo::partitionObj</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6982" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="6982" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1WriteEventInfo_1aed0355cd777aee12959f41027e8b860e" prot="public" static="no" mutable="no">
+        <type><ref refid="structApache_1_1Hadoop_1_1Hive_1_1__WriteEventInfo____isset" kindref="compound">_WriteEventInfo__isset</ref></type>
+        <definition>_WriteEventInfo__isset Apache::Hadoop::Hive::WriteEventInfo::__isset</definition>
+        <argsstring></argsstring>
+        <name>__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::WriteEventInfo::__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6984" column="26" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="6984" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WriteEventInfo_1aa4f8cec7a8733040c77a956e71509845" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::WriteEventInfo::WriteEventInfo</definition>
+        <argsstring>(const WriteEventInfo &amp;)</argsstring>
+        <name>WriteEventInfo</name>
+        <qualifiedname>Apache::Hadoop::Hive::WriteEventInfo::WriteEventInfo</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1WriteEventInfo" kindref="compound">WriteEventInfo</ref> &amp;</type>
+          <defname>other886</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6971" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="26288" bodyend="26297"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WriteEventInfo_1aa153030c477e21a239df78952621110e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1WriteEventInfo" kindref="compound">WriteEventInfo</ref> &amp;</type>
+        <definition>WriteEventInfo &amp; Apache::Hadoop::Hive::WriteEventInfo::operator=</definition>
+        <argsstring>(const WriteEventInfo &amp;)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::WriteEventInfo::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1WriteEventInfo" kindref="compound">WriteEventInfo</ref> &amp;</type>
+          <defname>other887</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6972" column="18" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="26298" bodyend="26308"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WriteEventInfo_1a5324bd4fcb463544083e0a27f5690d5d" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::WriteEventInfo::WriteEventInfo</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>WriteEventInfo</name>
+        <qualifiedname>Apache::Hadoop::Hive::WriteEventInfo::WriteEventInfo</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6973" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="26062" bodyend="26070"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WriteEventInfo_1aeb65c49b73f6f5bf7c1e4c71849b6766" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::WriteEventInfo::~WriteEventInfo</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~WriteEventInfo</name>
+        <qualifiedname>Apache::Hadoop::Hive::WriteEventInfo::~WriteEventInfo</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6975" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="26059" bodyend="26060"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WriteEventInfo_1afe14425160962c1c6ed8e770f952060c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::WriteEventInfo::__set_writeId</definition>
+        <argsstring>(const int64_t val)</argsstring>
+        <name>__set_writeId</name>
+        <qualifiedname>Apache::Hadoop::Hive::WriteEventInfo::__set_writeId</qualifiedname>
+        <param>
+          <type>const int64_t</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6986" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="26072" bodyend="26074"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WriteEventInfo_1a417976419e5a7b741dda019e00986870" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::WriteEventInfo::__set_database</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_database</name>
+        <qualifiedname>Apache::Hadoop::Hive::WriteEventInfo::__set_database</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6988" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="26076" bodyend="26078"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WriteEventInfo_1a932bae11edb025c545331a2ecf728347" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::WriteEventInfo::__set_table</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_table</name>
+        <qualifiedname>Apache::Hadoop::Hive::WriteEventInfo::__set_table</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6990" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="26080" bodyend="26082"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WriteEventInfo_1a24753b1c4e5f3f1038b2e79dd5d784ba" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::WriteEventInfo::__set_files</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_files</name>
+        <qualifiedname>Apache::Hadoop::Hive::WriteEventInfo::__set_files</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6992" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="26084" bodyend="26086"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WriteEventInfo_1a2306c1f67f74aed4c6b6158af2a49ae2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::WriteEventInfo::__set_partition</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_partition</name>
+        <qualifiedname>Apache::Hadoop::Hive::WriteEventInfo::__set_partition</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6994" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="26088" bodyend="26091"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WriteEventInfo_1af103f2435334876bdccc6c8e10bc03f0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::WriteEventInfo::__set_tableObj</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_tableObj</name>
+        <qualifiedname>Apache::Hadoop::Hive::WriteEventInfo::__set_tableObj</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6996" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="26093" bodyend="26096"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WriteEventInfo_1a579664c86b615c9fd936a1ebeb5dea1e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::WriteEventInfo::__set_partitionObj</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_partitionObj</name>
+        <qualifiedname>Apache::Hadoop::Hive::WriteEventInfo::__set_partitionObj</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6998" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="26098" bodyend="26101"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WriteEventInfo_1a497ea5f2c2ddc697fe1202702dc0f0f0" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::WriteEventInfo::operator==</definition>
+        <argsstring>(const WriteEventInfo &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::WriteEventInfo::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1WriteEventInfo" kindref="compound">WriteEventInfo</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7000" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="26263" bodyend="26286"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WriteEventInfo_1a56daca36cee514cadfa254a040b37e2a" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::WriteEventInfo::operator!=</definition>
+        <argsstring>(const WriteEventInfo &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::WriteEventInfo::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1WriteEventInfo" kindref="compound">WriteEventInfo</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7001" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="7001" bodyend="7003"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WriteEventInfo_1acecf357cb6bc4b539d04a3c536b35334" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::WriteEventInfo::operator&lt;</definition>
+        <argsstring>(const WriteEventInfo &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::WriteEventInfo::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1WriteEventInfo" kindref="compound">WriteEventInfo</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7005" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WriteEventInfo_1a0e0e5d0b30146861607420b1aa210993" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::WriteEventInfo::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot) override</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::WriteEventInfo::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7007" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="26109" bodyend="26208"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WriteEventInfo_1a5c4b0fa575c8223726dd0da9e59b6adf" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::WriteEventInfo::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const override</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::WriteEventInfo::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7008" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="26210" bodyend="26249"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WriteEventInfo_1ab89a87ab477fc8213e262e8ce57c2148" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::WriteEventInfo::printTo</definition>
+        <argsstring>(std::ostream &amp;out) const</argsstring>
+        <name>printTo</name>
+        <qualifiedname>Apache::Hadoop::Hive::WriteEventInfo::printTo</qualifiedname>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7010" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="26309" bodyend="26320"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::WriteEventInfo</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1WriteEventInfo"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::WriteEventInfo</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1WriteEventInfo"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>database</edgelabel>
+          <edgelabel>files</edgelabel>
+          <edgelabel>partition</edgelabel>
+          <edgelabel>partitionObj</edgelabel>
+          <edgelabel>table</edgelabel>
+          <edgelabel>tableObj</edgelabel>
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="5">
+        <label>Apache::Hadoop::Hive::_WriteEventInfo__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__WriteEventInfo____isset"/>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+      <node id="4">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="3">
+        <label>std::string</label>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6968" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="6968" bodyend="7011"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WriteEventInfo_1aed0355cd777aee12959f41027e8b860e" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WriteEventInfo</scope><name>__isset</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WriteEventInfo_1a417976419e5a7b741dda019e00986870" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WriteEventInfo</scope><name>__set_database</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WriteEventInfo_1a24753b1c4e5f3f1038b2e79dd5d784ba" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WriteEventInfo</scope><name>__set_files</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WriteEventInfo_1a2306c1f67f74aed4c6b6158af2a49ae2" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WriteEventInfo</scope><name>__set_partition</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WriteEventInfo_1a579664c86b615c9fd936a1ebeb5dea1e" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WriteEventInfo</scope><name>__set_partitionObj</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WriteEventInfo_1a932bae11edb025c545331a2ecf728347" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WriteEventInfo</scope><name>__set_table</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WriteEventInfo_1af103f2435334876bdccc6c8e10bc03f0" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WriteEventInfo</scope><name>__set_tableObj</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WriteEventInfo_1afe14425160962c1c6ed8e770f952060c" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WriteEventInfo</scope><name>__set_writeId</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WriteEventInfo_1a8ed7cfa9ccd77108522fddd9f0f0790b" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WriteEventInfo</scope><name>database</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WriteEventInfo_1a1f26b304f56b2384153bd0acb5ce2e73" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WriteEventInfo</scope><name>files</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WriteEventInfo_1a56daca36cee514cadfa254a040b37e2a" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WriteEventInfo</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WriteEventInfo_1acecf357cb6bc4b539d04a3c536b35334" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WriteEventInfo</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WriteEventInfo_1aa153030c477e21a239df78952621110e" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WriteEventInfo</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WriteEventInfo_1a497ea5f2c2ddc697fe1202702dc0f0f0" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WriteEventInfo</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WriteEventInfo_1ad357020856d2f3e836e68093c0ca2e98" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WriteEventInfo</scope><name>partition</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WriteEventInfo_1a3b5f73c8b436379abca80513eb7e019c" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WriteEventInfo</scope><name>partitionObj</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WriteEventInfo_1ab89a87ab477fc8213e262e8ce57c2148" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::WriteEventInfo</scope><name>printTo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WriteEventInfo_1a0e0e5d0b30146861607420b1aa210993" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WriteEventInfo</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WriteEventInfo_1ab20a1db598de29440bb5a78640cb84c7" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WriteEventInfo</scope><name>table</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WriteEventInfo_1a5d1bf8ce061219b1070cbdf3041d765a" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WriteEventInfo</scope><name>tableObj</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WriteEventInfo_1a5c4b0fa575c8223726dd0da9e59b6adf" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WriteEventInfo</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WriteEventInfo_1aa4f8cec7a8733040c77a956e71509845" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WriteEventInfo</scope><name>WriteEventInfo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WriteEventInfo_1a5324bd4fcb463544083e0a27f5690d5d" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WriteEventInfo</scope><name>WriteEventInfo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WriteEventInfo_1a7b856c958b3e469cf1c341c1ddf233c2" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WriteEventInfo</scope><name>writeId</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WriteEventInfo_1aeb65c49b73f6f5bf7c1e4c71849b6766" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::WriteEventInfo</scope><name>~WriteEventInfo</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

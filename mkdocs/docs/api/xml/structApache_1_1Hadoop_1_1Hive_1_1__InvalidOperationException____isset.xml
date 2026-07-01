@@ -1,0 +1,48 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structApache_1_1Hadoop_1_1Hive_1_1__InvalidOperationException____isset" kind="struct" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::_InvalidOperationException__isset</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__InvalidOperationException____isset_1aaa906f8bfa0c07378f9bbe3ae7713499" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_InvalidOperationException__isset::message</definition>
+        <argsstring></argsstring>
+        <name>message</name>
+        <qualifiedname>Apache::Hadoop::Hive::_InvalidOperationException__isset::message</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15570" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="15570" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structApache_1_1Hadoop_1_1Hive_1_1__InvalidOperationException____isset_1ae15c970e9220daed53ac0473397e3892" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::_InvalidOperationException__isset::_InvalidOperationException__isset</definition>
+        <argsstring>()</argsstring>
+        <name>_InvalidOperationException__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::_InvalidOperationException__isset::_InvalidOperationException__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15569" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="15569" bodyend="15569"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15568" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="15568" bodyend="15571"/>
+    <listofallmembers>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__InvalidOperationException____isset_1ae15c970e9220daed53ac0473397e3892" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_InvalidOperationException__isset</scope><name>_InvalidOperationException__isset</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__InvalidOperationException____isset_1aaa906f8bfa0c07378f9bbe3ae7713499" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_InvalidOperationException__isset</scope><name>message</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

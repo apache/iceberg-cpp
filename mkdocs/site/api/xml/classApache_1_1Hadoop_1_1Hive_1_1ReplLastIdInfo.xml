@@ -1,0 +1,435 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1ReplLastIdInfo" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::ReplLastIdInfo</compoundname>
+    <basecompoundref prot="public" virt="virtual">apache::thrift::TBase</basecompoundref>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ReplLastIdInfo_1a847f60d1a0f133bd21aa6aac6bace61b" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::ReplLastIdInfo::database</definition>
+        <argsstring></argsstring>
+        <name>database</name>
+        <qualifiedname>Apache::Hadoop::Hive::ReplLastIdInfo::database</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7032" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="7032" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ReplLastIdInfo_1a5ca2978e067eb9ee93ccd93e030a7ec7" prot="public" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t Apache::Hadoop::Hive::ReplLastIdInfo::lastReplId</definition>
+        <argsstring></argsstring>
+        <name>lastReplId</name>
+        <qualifiedname>Apache::Hadoop::Hive::ReplLastIdInfo::lastReplId</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7033" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="7033" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ReplLastIdInfo_1a6221a45bfd12d3a9fef12766e9225d26" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::ReplLastIdInfo::table</definition>
+        <argsstring></argsstring>
+        <name>table</name>
+        <qualifiedname>Apache::Hadoop::Hive::ReplLastIdInfo::table</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7034" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="7034" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ReplLastIdInfo_1a121f69302cd27ebf7c1e4c83b8015222" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::ReplLastIdInfo::catalog</definition>
+        <argsstring></argsstring>
+        <name>catalog</name>
+        <qualifiedname>Apache::Hadoop::Hive::ReplLastIdInfo::catalog</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7035" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="7035" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ReplLastIdInfo_1a8e2ca6afbcdfa341afb3f23a79a4a48c" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; std::string &gt;</type>
+        <definition>std::vector&lt;std::string&gt; Apache::Hadoop::Hive::ReplLastIdInfo::partitionList</definition>
+        <argsstring></argsstring>
+        <name>partitionList</name>
+        <qualifiedname>Apache::Hadoop::Hive::ReplLastIdInfo::partitionList</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7036" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="7036" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ReplLastIdInfo_1a09e7cb267544c1b25e4dc16427ddc877" prot="public" static="no" mutable="no">
+        <type><ref refid="structApache_1_1Hadoop_1_1Hive_1_1__ReplLastIdInfo____isset" kindref="compound">_ReplLastIdInfo__isset</ref></type>
+        <definition>_ReplLastIdInfo__isset Apache::Hadoop::Hive::ReplLastIdInfo::__isset</definition>
+        <argsstring></argsstring>
+        <name>__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::ReplLastIdInfo::__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7038" column="26" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="7038" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ReplLastIdInfo_1aea56e2ad6a1896c29a233a156def4293" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::ReplLastIdInfo::ReplLastIdInfo</definition>
+        <argsstring>(const ReplLastIdInfo &amp;)</argsstring>
+        <name>ReplLastIdInfo</name>
+        <qualifiedname>Apache::Hadoop::Hive::ReplLastIdInfo::ReplLastIdInfo</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ReplLastIdInfo" kindref="compound">ReplLastIdInfo</ref> &amp;</type>
+          <defname>other894</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7027" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="26525" bodyend="26532"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ReplLastIdInfo_1a7039f54f71fb4a3f5bc136a1204aac41" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1ReplLastIdInfo" kindref="compound">ReplLastIdInfo</ref> &amp;</type>
+        <definition>ReplLastIdInfo &amp; Apache::Hadoop::Hive::ReplLastIdInfo::operator=</definition>
+        <argsstring>(const ReplLastIdInfo &amp;)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::ReplLastIdInfo::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ReplLastIdInfo" kindref="compound">ReplLastIdInfo</ref> &amp;</type>
+          <defname>other895</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7028" column="18" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="26533" bodyend="26541"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ReplLastIdInfo_1a039afaa6f0a2a59f14c0bc89d3073732" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::ReplLastIdInfo::ReplLastIdInfo</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>ReplLastIdInfo</name>
+        <qualifiedname>Apache::Hadoop::Hive::ReplLastIdInfo::ReplLastIdInfo</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7029" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="26326" bodyend="26331"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ReplLastIdInfo_1aa1da61dfe911d16d7be3e192c9e216f2" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::ReplLastIdInfo::~ReplLastIdInfo</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~ReplLastIdInfo</name>
+        <qualifiedname>Apache::Hadoop::Hive::ReplLastIdInfo::~ReplLastIdInfo</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7031" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="26323" bodyend="26324"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ReplLastIdInfo_1aec7019b48a2352fe3decd462848ca939" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::ReplLastIdInfo::__set_database</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_database</name>
+        <qualifiedname>Apache::Hadoop::Hive::ReplLastIdInfo::__set_database</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7040" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="26333" bodyend="26335"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ReplLastIdInfo_1a477fec0311cc24e41e666f2a0a5f1510" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::ReplLastIdInfo::__set_lastReplId</definition>
+        <argsstring>(const int64_t val)</argsstring>
+        <name>__set_lastReplId</name>
+        <qualifiedname>Apache::Hadoop::Hive::ReplLastIdInfo::__set_lastReplId</qualifiedname>
+        <param>
+          <type>const int64_t</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7042" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="26337" bodyend="26339"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ReplLastIdInfo_1ab53602dac3aa1bbc1077dce7c881333c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::ReplLastIdInfo::__set_table</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_table</name>
+        <qualifiedname>Apache::Hadoop::Hive::ReplLastIdInfo::__set_table</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7044" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="26341" bodyend="26344"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ReplLastIdInfo_1aed36f2699a17f7eda4de726ac0c13c3b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::ReplLastIdInfo::__set_catalog</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_catalog</name>
+        <qualifiedname>Apache::Hadoop::Hive::ReplLastIdInfo::__set_catalog</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7046" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="26346" bodyend="26349"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ReplLastIdInfo_1aabb1f77c38368b3c4c229756aba740b2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::ReplLastIdInfo::__set_partitionList</definition>
+        <argsstring>(const std::vector&lt; std::string &gt; &amp;val)</argsstring>
+        <name>__set_partitionList</name>
+        <qualifiedname>Apache::Hadoop::Hive::ReplLastIdInfo::__set_partitionList</qualifiedname>
+        <param>
+          <type>const std::vector&lt; std::string &gt; &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7048" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="26351" bodyend="26354"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ReplLastIdInfo_1a045d8116dd99b1cd9aa074dd634fb6ca" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::ReplLastIdInfo::operator==</definition>
+        <argsstring>(const ReplLastIdInfo &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::ReplLastIdInfo::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ReplLastIdInfo" kindref="compound">ReplLastIdInfo</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7050" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="26504" bodyend="26523"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ReplLastIdInfo_1a4f2e518f21edd90da8fe18fa5351535e" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::ReplLastIdInfo::operator!=</definition>
+        <argsstring>(const ReplLastIdInfo &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::ReplLastIdInfo::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ReplLastIdInfo" kindref="compound">ReplLastIdInfo</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7051" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="7051" bodyend="7053"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ReplLastIdInfo_1aac88eb843ac8b5d8237d2fdaa0f21b30" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::ReplLastIdInfo::operator&lt;</definition>
+        <argsstring>(const ReplLastIdInfo &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::ReplLastIdInfo::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ReplLastIdInfo" kindref="compound">ReplLastIdInfo</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7055" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ReplLastIdInfo_1a9a5aa24b84a68daa907e5cabe255f92d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::ReplLastIdInfo::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot) override</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::ReplLastIdInfo::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7057" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="26362" bodyend="26451"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ReplLastIdInfo_1ae331144b36dd0b177d39c2b751d8daf0" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::ReplLastIdInfo::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const override</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::ReplLastIdInfo::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7058" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="26453" bodyend="26492"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ReplLastIdInfo_1aabca771a8a37803e0d122afb2a327d35" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::ReplLastIdInfo::printTo</definition>
+        <argsstring>(std::ostream &amp;out) const</argsstring>
+        <name>printTo</name>
+        <qualifiedname>Apache::Hadoop::Hive::ReplLastIdInfo::printTo</qualifiedname>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7060" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="26542" bodyend="26551"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::ReplLastIdInfo</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1ReplLastIdInfo"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::ReplLastIdInfo</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1ReplLastIdInfo"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>catalog</edgelabel>
+          <edgelabel>database</edgelabel>
+          <edgelabel>table</edgelabel>
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>partitionList</edgelabel>
+        </childnode>
+        <childnode refid="6" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="6">
+        <label>Apache::Hadoop::Hive::_ReplLastIdInfo__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__ReplLastIdInfo____isset"/>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+      <node id="4">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="3">
+        <label>std::string</label>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>std::vector&lt; std::string &gt;</label>
+        <childnode refid="3" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7024" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="7024" bodyend="7061"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ReplLastIdInfo_1a09e7cb267544c1b25e4dc16427ddc877" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ReplLastIdInfo</scope><name>__isset</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ReplLastIdInfo_1aed36f2699a17f7eda4de726ac0c13c3b" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ReplLastIdInfo</scope><name>__set_catalog</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ReplLastIdInfo_1aec7019b48a2352fe3decd462848ca939" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ReplLastIdInfo</scope><name>__set_database</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ReplLastIdInfo_1a477fec0311cc24e41e666f2a0a5f1510" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ReplLastIdInfo</scope><name>__set_lastReplId</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ReplLastIdInfo_1aabb1f77c38368b3c4c229756aba740b2" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ReplLastIdInfo</scope><name>__set_partitionList</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ReplLastIdInfo_1ab53602dac3aa1bbc1077dce7c881333c" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ReplLastIdInfo</scope><name>__set_table</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ReplLastIdInfo_1a121f69302cd27ebf7c1e4c83b8015222" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ReplLastIdInfo</scope><name>catalog</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ReplLastIdInfo_1a847f60d1a0f133bd21aa6aac6bace61b" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ReplLastIdInfo</scope><name>database</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ReplLastIdInfo_1a5ca2978e067eb9ee93ccd93e030a7ec7" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ReplLastIdInfo</scope><name>lastReplId</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ReplLastIdInfo_1a4f2e518f21edd90da8fe18fa5351535e" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ReplLastIdInfo</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ReplLastIdInfo_1aac88eb843ac8b5d8237d2fdaa0f21b30" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ReplLastIdInfo</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ReplLastIdInfo_1a7039f54f71fb4a3f5bc136a1204aac41" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ReplLastIdInfo</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ReplLastIdInfo_1a045d8116dd99b1cd9aa074dd634fb6ca" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ReplLastIdInfo</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ReplLastIdInfo_1a8e2ca6afbcdfa341afb3f23a79a4a48c" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ReplLastIdInfo</scope><name>partitionList</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ReplLastIdInfo_1aabca771a8a37803e0d122afb2a327d35" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::ReplLastIdInfo</scope><name>printTo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ReplLastIdInfo_1a9a5aa24b84a68daa907e5cabe255f92d" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ReplLastIdInfo</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ReplLastIdInfo_1aea56e2ad6a1896c29a233a156def4293" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ReplLastIdInfo</scope><name>ReplLastIdInfo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ReplLastIdInfo_1a039afaa6f0a2a59f14c0bc89d3073732" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ReplLastIdInfo</scope><name>ReplLastIdInfo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ReplLastIdInfo_1a6221a45bfd12d3a9fef12766e9225d26" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ReplLastIdInfo</scope><name>table</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ReplLastIdInfo_1ae331144b36dd0b177d39c2b751d8daf0" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ReplLastIdInfo</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ReplLastIdInfo_1aa1da61dfe911d16d7be3e192c9e216f2" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::ReplLastIdInfo</scope><name>~ReplLastIdInfo</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,58 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1SchemaReassignIdContext" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::SchemaReassignIdContext</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1SchemaReassignIdContext_1a14e69198a6140698318a67830bc975a1" prot="public" static="no" mutable="no">
+        <type>Schema::IdMap</type>
+        <definition>Schema::IdMap iceberg::SchemaReassignIdContext::ids_to_reassigned</definition>
+        <argsstring></argsstring>
+        <name>ids_to_reassigned</name>
+        <qualifiedname>iceberg::SchemaReassignIdContext::ids_to_reassigned</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/schema.cc" line="39" column="17" bodyfile="iceberg/schema.cc" bodystart="39" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1SchemaReassignIdContext_1a21e864737ce28f74ea91ec862e01d696" prot="public" static="no" mutable="no">
+        <type>Schema::IdMap</type>
+        <definition>Schema::IdMap iceberg::SchemaReassignIdContext::ids_to_original</definition>
+        <argsstring></argsstring>
+        <name>ids_to_original</name>
+        <qualifiedname>iceberg::SchemaReassignIdContext::ids_to_original</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/schema.cc" line="40" column="17" bodyfile="iceberg/schema.cc" bodystart="40" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::SchemaReassignIdContext</label>
+        <link refid="structiceberg_1_1SchemaReassignIdContext"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>ids_to_original</edgelabel>
+          <edgelabel>ids_to_reassigned</edgelabel>
+        </childnode>
+      </node>
+      <node id="2">
+        <label>std::unordered_map&lt; int32_t, int32_t &gt;</label>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/schema.cc" line="38" column="1" bodyfile="iceberg/schema.cc" bodystart="38" bodyend="41"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1SchemaReassignIdContext_1a21e864737ce28f74ea91ec862e01d696" prot="public" virt="non-virtual"><scope>iceberg::SchemaReassignIdContext</scope><name>ids_to_original</name></member>
+      <member refid="structiceberg_1_1SchemaReassignIdContext_1a14e69198a6140698318a67830bc975a1" prot="public" virt="non-virtual"><scope>iceberg::SchemaReassignIdContext</scope><name>ids_to_reassigned</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

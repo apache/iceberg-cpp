@@ -1,0 +1,164 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastoreIfSingletonFactory" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::ThriftHiveMetastoreIfSingletonFactory</compoundname>
+    <basecompoundref refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastoreIfFactory" prot="public" virt="virtual">Apache::Hadoop::Hive::ThriftHiveMetastoreIfFactory</basecompoundref>
+    <sectiondef kind="protected-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastoreIfSingletonFactory_1a08df6c4528b24ce94613854c27e0180a" prot="protected" static="no" mutable="no">
+        <type>::std::shared_ptr&lt; <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastoreIf" kindref="compound">ThriftHiveMetastoreIf</ref> &gt;</type>
+        <definition>::std::shared_ptr&lt;ThriftHiveMetastoreIf&gt; Apache::Hadoop::Hive::ThriftHiveMetastoreIfSingletonFactory::iface_</definition>
+        <argsstring></argsstring>
+        <name>iface_</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastoreIfSingletonFactory::iface_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="332" column="21" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="332" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastoreIfSingletonFactory_1ae3b37bad9f935df4369ad371e3ba7cef" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::ThriftHiveMetastoreIfSingletonFactory::ThriftHiveMetastoreIfSingletonFactory</definition>
+        <argsstring>(const ::std::shared_ptr&lt; ThriftHiveMetastoreIf &gt; &amp;iface)</argsstring>
+        <name>ThriftHiveMetastoreIfSingletonFactory</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastoreIfSingletonFactory::ThriftHiveMetastoreIfSingletonFactory</qualifiedname>
+        <param>
+          <type>const ::std::shared_ptr&lt; <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastoreIf" kindref="compound">ThriftHiveMetastoreIf</ref> &gt; &amp;</type>
+          <declname>iface</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="323" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="323" bodyend="323"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastoreIfSingletonFactory_1a063af538a6fa1e2756317270b0376440" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type></type>
+        <definition>virtual Apache::Hadoop::Hive::ThriftHiveMetastoreIfSingletonFactory::~ThriftHiveMetastoreIfSingletonFactory</definition>
+        <argsstring>()</argsstring>
+        <name>~ThriftHiveMetastoreIfSingletonFactory</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastoreIfSingletonFactory::~ThriftHiveMetastoreIfSingletonFactory</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="324" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="324" bodyend="324"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastoreIfSingletonFactory_1af307012a195a4f01e9670aede23f3445" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastoreIf" kindref="compound">ThriftHiveMetastoreIf</ref> *</type>
+        <definition>virtual ThriftHiveMetastoreIf * Apache::Hadoop::Hive::ThriftHiveMetastoreIfSingletonFactory::getHandler</definition>
+        <argsstring>(const ::apache::thrift::TConnectionInfo &amp;) override</argsstring>
+        <name>getHandler</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastoreIfSingletonFactory::getHandler</qualifiedname>
+        <reimplements refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastoreIfFactory_1ab167d28390e4c9a9771e5016d03318d0">getHandler</reimplements>
+        <param>
+          <type>const ::apache::thrift::TConnectionInfo &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="326" column="33" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="326" bodyend="328"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastoreIfSingletonFactory_1a0f3f210ef7398f971ce253146f7b0c7d" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>void</type>
+        <definition>virtual void Apache::Hadoop::Hive::ThriftHiveMetastoreIfSingletonFactory::releaseHandler</definition>
+        <argsstring>(::facebook::fb303::FacebookServiceIf *) override</argsstring>
+        <name>releaseHandler</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastoreIfSingletonFactory::releaseHandler</qualifiedname>
+        <reimplements refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastoreIfFactory_1ad3138bd0a2e32acbe04d1d4c9d68746f">releaseHandler</reimplements>
+        <param>
+          <type><ref refid="classfacebook_1_1fb303_1_1FacebookServiceIf" kindref="compound">::facebook::fb303::FacebookServiceIf</ref> *</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="329" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="329" bodyend="329"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>Apache::Hadoop::Hive::ThriftHiveMetastoreIfFactory</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastoreIfFactory"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::ThriftHiveMetastoreIfSingletonFactory</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastoreIfSingletonFactory"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>facebook::fb303::FacebookServiceIfFactory</label>
+        <link refid="classfacebook_1_1fb303_1_1FacebookServiceIfFactory"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="5">
+        <label>Apache::Hadoop::Hive::ThriftHiveMetastoreIf</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastoreIf"/>
+        <childnode refid="6" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>Apache::Hadoop::Hive::ThriftHiveMetastoreIfFactory</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastoreIfFactory"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::ThriftHiveMetastoreIfSingletonFactory</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastoreIfSingletonFactory"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>iface_</edgelabel>
+        </childnode>
+      </node>
+      <node id="6">
+        <label>facebook::fb303::FacebookServiceIf</label>
+        <link refid="classfacebook_1_1fb303_1_1FacebookServiceIf"/>
+      </node>
+      <node id="3">
+        <label>facebook::fb303::FacebookServiceIfFactory</label>
+        <link refid="classfacebook_1_1fb303_1_1FacebookServiceIfFactory"/>
+      </node>
+      <node id="4">
+        <label>std::shared_ptr&lt; Apache::Hadoop::Hive::ThriftHiveMetastoreIf &gt;</label>
+        <childnode refid="5" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="321" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="321" bodyend="333"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastoreIfSingletonFactory_1af307012a195a4f01e9670aede23f3445" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastoreIfSingletonFactory</scope><name>getHandler</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastoreIfFactory_1abc1d7d8e064a4470131897d1439f838b" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastoreIfSingletonFactory</scope><name>Handler</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastoreIfSingletonFactory_1a08df6c4528b24ce94613854c27e0180a" prot="protected" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastoreIfSingletonFactory</scope><name>iface_</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastoreIfSingletonFactory_1a0f3f210ef7398f971ce253146f7b0c7d" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastoreIfSingletonFactory</scope><name>releaseHandler</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookServiceIfFactory_1a01bd1c10ccfceaa9f89002b8ed25fc99" prot="public" virt="pure-virtual" ambiguityscope="facebook::fb303::FacebookServiceIfFactory::"><scope>Apache::Hadoop::Hive::ThriftHiveMetastoreIfSingletonFactory</scope><name>releaseHandler</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastoreIfSingletonFactory_1ae3b37bad9f935df4369ad371e3ba7cef" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastoreIfSingletonFactory</scope><name>ThriftHiveMetastoreIfSingletonFactory</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookServiceIfFactory_1a7476282b6cbfb1400ac917ecdb61cdef" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastoreIfSingletonFactory</scope><name>~FacebookServiceIfFactory</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastoreIfFactory_1ae5b0b160895a552bfd50eb19b3910fdb" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastoreIfSingletonFactory</scope><name>~ThriftHiveMetastoreIfFactory</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastoreIfSingletonFactory_1a063af538a6fa1e2756317270b0376440" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastoreIfSingletonFactory</scope><name>~ThriftHiveMetastoreIfSingletonFactory</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,174 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classfacebook_1_1fb303_1_1FacebookService__shutdown__args" kind="class" language="C++" prot="public">
+    <compoundname>facebook::fb303::FacebookService_shutdown_args</compoundname>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookService__shutdown__args_1a57a494de392adfdfacc5350dc5ca8fab" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>facebook::fb303::FacebookService_shutdown_args::FacebookService_shutdown_args</definition>
+        <argsstring>(const FacebookService_shutdown_args &amp;) noexcept</argsstring>
+        <name>FacebookService_shutdown_args</name>
+        <qualifiedname>facebook::fb303::FacebookService_shutdown_args::FacebookService_shutdown_args</qualifiedname>
+        <param>
+          <type>const <ref refid="classfacebook_1_1fb303_1_1FacebookService__shutdown__args" kindref="compound">FacebookService_shutdown_args</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="1153" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookService__shutdown__args_1ae58a9795630f5576af49b63aab4a1ab7" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type><ref refid="classfacebook_1_1fb303_1_1FacebookService__shutdown__args" kindref="compound">FacebookService_shutdown_args</ref> &amp;</type>
+        <definition>FacebookService_shutdown_args &amp; facebook::fb303::FacebookService_shutdown_args::operator=</definition>
+        <argsstring>(const FacebookService_shutdown_args &amp;) noexcept</argsstring>
+        <name>operator=</name>
+        <qualifiedname>facebook::fb303::FacebookService_shutdown_args::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classfacebook_1_1fb303_1_1FacebookService__shutdown__args" kindref="compound">FacebookService_shutdown_args</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="1154" column="33"/>
+      </memberdef>
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookService__shutdown__args_1a823876af2354d7bbd91f25c46f861c9b" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>facebook::fb303::FacebookService_shutdown_args::FacebookService_shutdown_args</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>FacebookService_shutdown_args</name>
+        <qualifiedname>facebook::fb303::FacebookService_shutdown_args::FacebookService_shutdown_args</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="1155" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.cpp" bodystart="2109" bodyend="2110"/>
+      </memberdef>
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookService__shutdown__args_1a35edfe618151805d7f03e5bef9d5201e" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>facebook::fb303::FacebookService_shutdown_args::~FacebookService_shutdown_args</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~FacebookService_shutdown_args</name>
+        <qualifiedname>facebook::fb303::FacebookService_shutdown_args::~FacebookService_shutdown_args</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="1157" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.cpp" bodystart="2106" bodyend="2107"/>
+      </memberdef>
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookService__shutdown__args_1a8ff502811ab722eac0c56413b7a35f2c" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool facebook::fb303::FacebookService_shutdown_args::operator==</definition>
+        <argsstring>(const FacebookService_shutdown_args &amp;) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>facebook::fb303::FacebookService_shutdown_args::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classfacebook_1_1fb303_1_1FacebookService__shutdown__args" kindref="compound">FacebookService_shutdown_args</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="1159" column="8"/>
+      </memberdef>
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookService__shutdown__args_1a5f33431f3416b3c5da1c23256415e2ee" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool facebook::fb303::FacebookService_shutdown_args::operator!=</definition>
+        <argsstring>(const FacebookService_shutdown_args &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>facebook::fb303::FacebookService_shutdown_args::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classfacebook_1_1fb303_1_1FacebookService__shutdown__args" kindref="compound">FacebookService_shutdown_args</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="1160" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.h" bodystart="1160" bodyend="1162"/>
+      </memberdef>
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookService__shutdown__args_1a30f471348b23f1050c623db9f25d2f5f" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool facebook::fb303::FacebookService_shutdown_args::operator&lt;</definition>
+        <argsstring>(const FacebookService_shutdown_args &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>facebook::fb303::FacebookService_shutdown_args::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classfacebook_1_1fb303_1_1FacebookService__shutdown__args" kindref="compound">FacebookService_shutdown_args</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="1164" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookService__shutdown__args_1a8621607dae65a533ddb3138477ebd5b1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t facebook::fb303::FacebookService_shutdown_args::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot)</argsstring>
+        <name>read</name>
+        <qualifiedname>facebook::fb303::FacebookService_shutdown_args::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="1166" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.cpp" bodystart="2112" bodyend="2138"/>
+      </memberdef>
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookService__shutdown__args_1a409e09d37c3077050a3363bab6d128ca" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t facebook::fb303::FacebookService_shutdown_args::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const</argsstring>
+        <name>write</name>
+        <qualifiedname>facebook::fb303::FacebookService_shutdown_args::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="1167" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.cpp" bodystart="2140" bodyend="2148"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="1150" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.h" bodystart="1150" bodyend="1169"/>
+    <listofallmembers>
+      <member refid="classfacebook_1_1fb303_1_1FacebookService__shutdown__args_1a57a494de392adfdfacc5350dc5ca8fab" prot="public" virt="non-virtual"><scope>facebook::fb303::FacebookService_shutdown_args</scope><name>FacebookService_shutdown_args</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookService__shutdown__args_1a823876af2354d7bbd91f25c46f861c9b" prot="public" virt="non-virtual"><scope>facebook::fb303::FacebookService_shutdown_args</scope><name>FacebookService_shutdown_args</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookService__shutdown__args_1a5f33431f3416b3c5da1c23256415e2ee" prot="public" virt="non-virtual"><scope>facebook::fb303::FacebookService_shutdown_args</scope><name>operator!=</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookService__shutdown__args_1a30f471348b23f1050c623db9f25d2f5f" prot="public" virt="non-virtual"><scope>facebook::fb303::FacebookService_shutdown_args</scope><name>operator&lt;</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookService__shutdown__args_1ae58a9795630f5576af49b63aab4a1ab7" prot="public" virt="non-virtual"><scope>facebook::fb303::FacebookService_shutdown_args</scope><name>operator=</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookService__shutdown__args_1a8ff502811ab722eac0c56413b7a35f2c" prot="public" virt="non-virtual"><scope>facebook::fb303::FacebookService_shutdown_args</scope><name>operator==</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookService__shutdown__args_1a8621607dae65a533ddb3138477ebd5b1" prot="public" virt="non-virtual"><scope>facebook::fb303::FacebookService_shutdown_args</scope><name>read</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookService__shutdown__args_1a409e09d37c3077050a3363bab6d128ca" prot="public" virt="non-virtual"><scope>facebook::fb303::FacebookService_shutdown_args</scope><name>write</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookService__shutdown__args_1a35edfe618151805d7f03e5bef9d5201e" prot="public" virt="virtual"><scope>facebook::fb303::FacebookService_shutdown_args</scope><name>~FacebookService_shutdown_args</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

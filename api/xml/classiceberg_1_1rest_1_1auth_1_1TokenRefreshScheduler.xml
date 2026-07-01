@@ -1,0 +1,349 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1rest_1_1auth_1_1TokenRefreshScheduler" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::rest::auth::TokenRefreshScheduler</compoundname>
+    <includes refid="token__refresh__scheduler_8h" local="no">token_refresh_scheduler.h</includes>
+    <innerclass refid="structiceberg_1_1rest_1_1auth_1_1TokenRefreshScheduler_1_1Task" prot="private">iceberg::rest::auth::TokenRefreshScheduler::Task</innerclass>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1rest_1_1auth_1_1TokenRefreshScheduler_1a01dc18a34a60927a96418de0679c5ca6" prot="private" static="no" mutable="no">
+        <type>std::mutex</type>
+        <definition>std::mutex iceberg::rest::auth::TokenRefreshScheduler::mutex_</definition>
+        <argsstring></argsstring>
+        <name>mutex_</name>
+        <qualifiedname>iceberg::rest::auth::TokenRefreshScheduler::mutex_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/auth/token_refresh_scheduler.h" line="104" column="14" bodyfile="iceberg/catalog/rest/auth/token_refresh_scheduler.h" bodystart="104" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1rest_1_1auth_1_1TokenRefreshScheduler_1ad9e4f82fba4ca5d17ade27cbb9f727e8" prot="private" static="no" mutable="no">
+        <type>std::condition_variable</type>
+        <definition>std::condition_variable iceberg::rest::auth::TokenRefreshScheduler::cv_</definition>
+        <argsstring></argsstring>
+        <name>cv_</name>
+        <qualifiedname>iceberg::rest::auth::TokenRefreshScheduler::cv_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/auth/token_refresh_scheduler.h" line="105" column="27" bodyfile="iceberg/catalog/rest/auth/token_refresh_scheduler.h" bodystart="105" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1rest_1_1auth_1_1TokenRefreshScheduler_1a7280eb025650a44befe9c1ec09b59018" prot="private" static="no" mutable="no">
+        <type>std::vector&lt; Task &gt;</type>
+        <definition>std::vector&lt;Task&gt; iceberg::rest::auth::TokenRefreshScheduler::tasks_</definition>
+        <argsstring></argsstring>
+        <name>tasks_</name>
+        <qualifiedname>iceberg::rest::auth::TokenRefreshScheduler::tasks_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/auth/token_refresh_scheduler.h" line="106" column="15" bodyfile="iceberg/catalog/rest/auth/token_refresh_scheduler.h" bodystart="106" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1rest_1_1auth_1_1TokenRefreshScheduler_1ab1907f98c45f90d57f75ac7ddedd019a" prot="private" static="no" mutable="no">
+        <type>uint64_t</type>
+        <definition>uint64_t iceberg::rest::auth::TokenRefreshScheduler::next_id_</definition>
+        <argsstring></argsstring>
+        <name>next_id_</name>
+        <qualifiedname>iceberg::rest::auth::TokenRefreshScheduler::next_id_</qualifiedname>
+        <initializer>= 1</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/auth/token_refresh_scheduler.h" line="107" column="12" bodyfile="iceberg/catalog/rest/auth/token_refresh_scheduler.h" bodystart="107" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1rest_1_1auth_1_1TokenRefreshScheduler_1ac33f1fdc3840e7b40b85e65ef2c9cf32" prot="private" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool iceberg::rest::auth::TokenRefreshScheduler::shutdown_</definition>
+        <argsstring></argsstring>
+        <name>shutdown_</name>
+        <qualifiedname>iceberg::rest::auth::TokenRefreshScheduler::shutdown_</qualifiedname>
+        <initializer>= false</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/auth/token_refresh_scheduler.h" line="108" column="8" bodyfile="iceberg/catalog/rest/auth/token_refresh_scheduler.h" bodystart="108" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1rest_1_1auth_1_1TokenRefreshScheduler_1ab1719a0777f98ec11f8bb40cfc59edf6" prot="private" static="no" mutable="no">
+        <type>std::thread</type>
+        <definition>std::thread iceberg::rest::auth::TokenRefreshScheduler::worker_</definition>
+        <argsstring></argsstring>
+        <name>worker_</name>
+        <qualifiedname>iceberg::rest::auth::TokenRefreshScheduler::worker_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/auth/token_refresh_scheduler.h" line="109" column="15" bodyfile="iceberg/catalog/rest/auth/token_refresh_scheduler.h" bodystart="109" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1auth_1_1TokenRefreshScheduler_1a540656fb0140ee3660a1a1e326e1c336" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1rest_1_1auth_1_1TokenRefreshScheduler" kindref="compound">TokenRefreshScheduler</ref> &amp;</type>
+        <definition>TokenRefreshScheduler &amp; iceberg::rest::auth::TokenRefreshScheduler::Instance</definition>
+        <argsstring>()</argsstring>
+        <name>Instance</name>
+        <qualifiedname>iceberg::rest::auth::TokenRefreshScheduler::Instance</qualifiedname>
+        <briefdescription>
+<para>Get the global singleton instance. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Lazily created on first access and intentionally leaked: the worker thread is reclaimed by the OS at process exit. Tests needing deterministic shutdown should use a local instance. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/auth/token_refresh_scheduler.h" line="54" column="32" bodyfile="iceberg/catalog/rest/auth/token_refresh_scheduler.cc" bodystart="27" bodyend="31"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1auth_1_1TokenRefreshScheduler_1a1fbe3cca9a30faca076d92dd8fdf5892" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint64_t</type>
+        <definition>uint64_t iceberg::rest::auth::TokenRefreshScheduler::Schedule</definition>
+        <argsstring>(std::chrono::milliseconds delay, std::function&lt; void()&gt; callback)</argsstring>
+        <name>Schedule</name>
+        <qualifiedname>iceberg::rest::auth::TokenRefreshScheduler::Schedule</qualifiedname>
+        <param>
+          <type>std::chrono::milliseconds</type>
+          <declname>delay</declname>
+        </param>
+        <param>
+          <type>std::function&lt; void()&gt;</type>
+          <declname>callback</declname>
+        </param>
+        <briefdescription>
+<para>Schedule a callback to run after a delay. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>delay</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Time to wait before executing the callback. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>callback</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Function to execute when the delay expires. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A unique handle that can be used to cancel the task. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/auth/token_refresh_scheduler.h" line="61" column="12" bodyfile="iceberg/catalog/rest/auth/token_refresh_scheduler.cc" bodystart="37" bodyend="49"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1auth_1_1TokenRefreshScheduler_1aca19f17b23d0856e91a0f2e3bcda199d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::rest::auth::TokenRefreshScheduler::Cancel</definition>
+        <argsstring>(uint64_t handle)</argsstring>
+        <name>Cancel</name>
+        <qualifiedname>iceberg::rest::auth::TokenRefreshScheduler::Cancel</qualifiedname>
+        <param>
+          <type>uint64_t</type>
+          <declname>handle</declname>
+        </param>
+        <briefdescription>
+<para>Cancel a previously scheduled task. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>If the task has already fired or does not exist, this is a no-op.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>handle</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The handle returned by <ref refid="classiceberg_1_1rest_1_1auth_1_1TokenRefreshScheduler_1a1fbe3cca9a30faca076d92dd8fdf5892" kindref="member">Schedule()</ref>. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/auth/token_refresh_scheduler.h" line="68" column="8" bodyfile="iceberg/catalog/rest/auth/token_refresh_scheduler.cc" bodystart="51" bodyend="55"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1auth_1_1TokenRefreshScheduler_1ad06e6355dba76b033df41616e62cf777" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::rest::auth::TokenRefreshScheduler::Shutdown</definition>
+        <argsstring>()</argsstring>
+        <name>Shutdown</name>
+        <qualifiedname>iceberg::rest::auth::TokenRefreshScheduler::Shutdown</qualifiedname>
+        <briefdescription>
+<para>Shutdown the scheduler, cancelling all pending tasks. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>After shutdown, <ref refid="classiceberg_1_1rest_1_1auth_1_1TokenRefreshScheduler_1a1fbe3cca9a30faca076d92dd8fdf5892" kindref="member">Schedule()</ref> calls are no-ops (return 0). This is called automatically on destruction.</para>
+<para>WARNING: Do not call this on the global <ref refid="classiceberg_1_1rest_1_1auth_1_1TokenRefreshScheduler_1a540656fb0140ee3660a1a1e326e1c336" kindref="member">Instance()</ref> unless you intend to permanently stop all token refresh for the entire process. This is mainly useful for testing with locally-constructed scheduler instances. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/auth/token_refresh_scheduler.h" line="78" column="8" bodyfile="iceberg/catalog/rest/auth/token_refresh_scheduler.cc" bodystart="57" bodyend="68"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1auth_1_1TokenRefreshScheduler_1a50528500da581fcb45e550404dda9258" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::rest::auth::TokenRefreshScheduler::~TokenRefreshScheduler</definition>
+        <argsstring>()</argsstring>
+        <name>~TokenRefreshScheduler</name>
+        <qualifiedname>iceberg::rest::auth::TokenRefreshScheduler::~TokenRefreshScheduler</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/auth/token_refresh_scheduler.h" line="80" column="3" bodyfile="iceberg/catalog/rest/auth/token_refresh_scheduler.cc" bodystart="35" bodyend="35"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1auth_1_1TokenRefreshScheduler_1aebb4c4c5b4a690352f3afafcdc53389f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::rest::auth::TokenRefreshScheduler::TokenRefreshScheduler</definition>
+        <argsstring>(const TokenRefreshScheduler &amp;)=delete</argsstring>
+        <name>TokenRefreshScheduler</name>
+        <qualifiedname>iceberg::rest::auth::TokenRefreshScheduler::TokenRefreshScheduler</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1rest_1_1auth_1_1TokenRefreshScheduler" kindref="compound">TokenRefreshScheduler</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/auth/token_refresh_scheduler.h" line="83" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1auth_1_1TokenRefreshScheduler_1ab55fe0493b490910275203fb5d17c41c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1rest_1_1auth_1_1TokenRefreshScheduler" kindref="compound">TokenRefreshScheduler</ref> &amp;</type>
+        <definition>TokenRefreshScheduler &amp; iceberg::rest::auth::TokenRefreshScheduler::operator=</definition>
+        <argsstring>(const TokenRefreshScheduler &amp;)=delete</argsstring>
+        <name>operator=</name>
+        <qualifiedname>iceberg::rest::auth::TokenRefreshScheduler::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1rest_1_1auth_1_1TokenRefreshScheduler" kindref="compound">TokenRefreshScheduler</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/auth/token_refresh_scheduler.h" line="84" column="25"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1auth_1_1TokenRefreshScheduler_1a299e2e3d86e55411cbc549eaabde735b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::rest::auth::TokenRefreshScheduler::TokenRefreshScheduler</definition>
+        <argsstring>(TokenRefreshScheduler &amp;&amp;)=delete</argsstring>
+        <name>TokenRefreshScheduler</name>
+        <qualifiedname>iceberg::rest::auth::TokenRefreshScheduler::TokenRefreshScheduler</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1rest_1_1auth_1_1TokenRefreshScheduler" kindref="compound">TokenRefreshScheduler</ref> &amp;&amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/auth/token_refresh_scheduler.h" line="85" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1auth_1_1TokenRefreshScheduler_1a3e8c79b270566a74f3b0321b4fc5c005" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1rest_1_1auth_1_1TokenRefreshScheduler" kindref="compound">TokenRefreshScheduler</ref> &amp;</type>
+        <definition>TokenRefreshScheduler &amp; iceberg::rest::auth::TokenRefreshScheduler::operator=</definition>
+        <argsstring>(TokenRefreshScheduler &amp;&amp;)=delete</argsstring>
+        <name>operator=</name>
+        <qualifiedname>iceberg::rest::auth::TokenRefreshScheduler::operator=</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1rest_1_1auth_1_1TokenRefreshScheduler" kindref="compound">TokenRefreshScheduler</ref> &amp;&amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/auth/token_refresh_scheduler.h" line="86" column="25"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1auth_1_1TokenRefreshScheduler_1a6a5eb72b84bb76c944c7a27c530ffdeb" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::rest::auth::TokenRefreshScheduler::TokenRefreshScheduler</definition>
+        <argsstring>()</argsstring>
+        <name>TokenRefreshScheduler</name>
+        <qualifiedname>iceberg::rest::auth::TokenRefreshScheduler::TokenRefreshScheduler</qualifiedname>
+        <briefdescription>
+<para>Construct a scheduler (prefer <ref refid="classiceberg_1_1rest_1_1auth_1_1TokenRefreshScheduler_1a540656fb0140ee3660a1a1e326e1c336" kindref="member">Instance()</ref> for production use). </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This constructor is public to allow testing with isolated instances. In production code, use <ref refid="classiceberg_1_1rest_1_1auth_1_1TokenRefreshScheduler_1a540656fb0140ee3660a1a1e326e1c336" kindref="member">Instance()</ref> to get the global singleton. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/auth/token_refresh_scheduler.h" line="92" column="3" bodyfile="iceberg/catalog/rest/auth/token_refresh_scheduler.cc" bodystart="33" bodyend="33"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1auth_1_1TokenRefreshScheduler_1aec51bb98ec2dbc6b98d4f1cfa75e1547" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::rest::auth::TokenRefreshScheduler::Run</definition>
+        <argsstring>()</argsstring>
+        <name>Run</name>
+        <qualifiedname>iceberg::rest::auth::TokenRefreshScheduler::Run</qualifiedname>
+        <briefdescription>
+<para>Worker loop that processes tasks. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/auth/token_refresh_scheduler.h" line="96" column="8" bodyfile="iceberg/catalog/rest/auth/token_refresh_scheduler.cc" bodystart="70" bodyend="123"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>A process-global scheduler for delayed token refresh tasks. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>Uses a single background thread that sleeps until the next task is due. All OAuth2AuthSession instances share this scheduler. Tasks are lightweight (a single HTTP POST to refresh a token), so one thread is sufficient.</para>
+<para>Thread safety: All public methods are thread-safe.</para>
+<para>TODO(lishuxu): Migrate to the shared thread pool abstraction once available (see <ulink url="https://github.com/apache/iceberg-cpp/pull/646#discussion_r3304315308">https://github.com/apache/iceberg-cpp/pull/646#discussion_r3304315308</ulink>). </para>
+    </detaileddescription>
+    <location file="iceberg/catalog/rest/auth/token_refresh_scheduler.h" line="47" column="1" bodyfile="iceberg/catalog/rest/auth/token_refresh_scheduler.h" bodystart="47" bodyend="110"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1rest_1_1auth_1_1TokenRefreshScheduler_1aca19f17b23d0856e91a0f2e3bcda199d" prot="public" virt="non-virtual"><scope>iceberg::rest::auth::TokenRefreshScheduler</scope><name>Cancel</name></member>
+      <member refid="classiceberg_1_1rest_1_1auth_1_1TokenRefreshScheduler_1ad9e4f82fba4ca5d17ade27cbb9f727e8" prot="private" virt="non-virtual"><scope>iceberg::rest::auth::TokenRefreshScheduler</scope><name>cv_</name></member>
+      <member refid="classiceberg_1_1rest_1_1auth_1_1TokenRefreshScheduler_1a540656fb0140ee3660a1a1e326e1c336" prot="public" virt="non-virtual"><scope>iceberg::rest::auth::TokenRefreshScheduler</scope><name>Instance</name></member>
+      <member refid="classiceberg_1_1rest_1_1auth_1_1TokenRefreshScheduler_1a01dc18a34a60927a96418de0679c5ca6" prot="private" virt="non-virtual"><scope>iceberg::rest::auth::TokenRefreshScheduler</scope><name>mutex_</name></member>
+      <member refid="classiceberg_1_1rest_1_1auth_1_1TokenRefreshScheduler_1ab1907f98c45f90d57f75ac7ddedd019a" prot="private" virt="non-virtual"><scope>iceberg::rest::auth::TokenRefreshScheduler</scope><name>next_id_</name></member>
+      <member refid="classiceberg_1_1rest_1_1auth_1_1TokenRefreshScheduler_1ab55fe0493b490910275203fb5d17c41c" prot="public" virt="non-virtual"><scope>iceberg::rest::auth::TokenRefreshScheduler</scope><name>operator=</name></member>
+      <member refid="classiceberg_1_1rest_1_1auth_1_1TokenRefreshScheduler_1a3e8c79b270566a74f3b0321b4fc5c005" prot="public" virt="non-virtual"><scope>iceberg::rest::auth::TokenRefreshScheduler</scope><name>operator=</name></member>
+      <member refid="classiceberg_1_1rest_1_1auth_1_1TokenRefreshScheduler_1aec51bb98ec2dbc6b98d4f1cfa75e1547" prot="private" virt="non-virtual"><scope>iceberg::rest::auth::TokenRefreshScheduler</scope><name>Run</name></member>
+      <member refid="classiceberg_1_1rest_1_1auth_1_1TokenRefreshScheduler_1a1fbe3cca9a30faca076d92dd8fdf5892" prot="public" virt="non-virtual"><scope>iceberg::rest::auth::TokenRefreshScheduler</scope><name>Schedule</name></member>
+      <member refid="classiceberg_1_1rest_1_1auth_1_1TokenRefreshScheduler_1ad06e6355dba76b033df41616e62cf777" prot="public" virt="non-virtual"><scope>iceberg::rest::auth::TokenRefreshScheduler</scope><name>Shutdown</name></member>
+      <member refid="classiceberg_1_1rest_1_1auth_1_1TokenRefreshScheduler_1ac33f1fdc3840e7b40b85e65ef2c9cf32" prot="private" virt="non-virtual"><scope>iceberg::rest::auth::TokenRefreshScheduler</scope><name>shutdown_</name></member>
+      <member refid="classiceberg_1_1rest_1_1auth_1_1TokenRefreshScheduler_1a7280eb025650a44befe9c1ec09b59018" prot="private" virt="non-virtual"><scope>iceberg::rest::auth::TokenRefreshScheduler</scope><name>tasks_</name></member>
+      <member refid="classiceberg_1_1rest_1_1auth_1_1TokenRefreshScheduler_1aebb4c4c5b4a690352f3afafcdc53389f" prot="public" virt="non-virtual"><scope>iceberg::rest::auth::TokenRefreshScheduler</scope><name>TokenRefreshScheduler</name></member>
+      <member refid="classiceberg_1_1rest_1_1auth_1_1TokenRefreshScheduler_1a299e2e3d86e55411cbc549eaabde735b" prot="public" virt="non-virtual"><scope>iceberg::rest::auth::TokenRefreshScheduler</scope><name>TokenRefreshScheduler</name></member>
+      <member refid="classiceberg_1_1rest_1_1auth_1_1TokenRefreshScheduler_1a6a5eb72b84bb76c944c7a27c530ffdeb" prot="public" virt="non-virtual"><scope>iceberg::rest::auth::TokenRefreshScheduler</scope><name>TokenRefreshScheduler</name></member>
+      <member refid="classiceberg_1_1rest_1_1auth_1_1TokenRefreshScheduler_1ab1719a0777f98ec11f8bb40cfc59edf6" prot="private" virt="non-virtual"><scope>iceberg::rest::auth::TokenRefreshScheduler</scope><name>worker_</name></member>
+      <member refid="classiceberg_1_1rest_1_1auth_1_1TokenRefreshScheduler_1a50528500da581fcb45e550404dda9258" prot="public" virt="non-virtual"><scope>iceberg::rest::auth::TokenRefreshScheduler</scope><name>~TokenRefreshScheduler</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

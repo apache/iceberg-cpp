@@ -1,0 +1,462 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1WMMapping" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::WMMapping</compoundname>
+    <basecompoundref prot="public" virt="virtual">apache::thrift::TBase</basecompoundref>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1WMMapping_1a322b2a9567ddb60957b09a3071a77b00" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::WMMapping::resourcePlanName</definition>
+        <argsstring></argsstring>
+        <name>resourcePlanName</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMMapping::resourcePlanName</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11164" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="11164" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1WMMapping_1a708bca805a13eaa8457c8ca55d7d35b0" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::WMMapping::entityType</definition>
+        <argsstring></argsstring>
+        <name>entityType</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMMapping::entityType</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11165" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="11165" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1WMMapping_1a56e53bfbdcc5503b7dd0ecc7503c316a" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::WMMapping::entityName</definition>
+        <argsstring></argsstring>
+        <name>entityName</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMMapping::entityName</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11166" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="11166" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1WMMapping_1a4a445c39947b6fe6dc1a9bec924d3434" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::WMMapping::poolPath</definition>
+        <argsstring></argsstring>
+        <name>poolPath</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMMapping::poolPath</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11167" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="11167" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1WMMapping_1a1b1a357c3f5cd1f6ce2fdf01441b981e" prot="public" static="no" mutable="no">
+        <type>int32_t</type>
+        <definition>int32_t Apache::Hadoop::Hive::WMMapping::ordering</definition>
+        <argsstring></argsstring>
+        <name>ordering</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMMapping::ordering</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11168" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="11168" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1WMMapping_1a8a1297d8645fa374460b50181988043b" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::WMMapping::ns</definition>
+        <argsstring></argsstring>
+        <name>ns</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMMapping::ns</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11169" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="11169" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1WMMapping_1ad49cedb9d4424590722c17e151441581" prot="public" static="no" mutable="no">
+        <type><ref refid="structApache_1_1Hadoop_1_1Hive_1_1__WMMapping____isset" kindref="compound">_WMMapping__isset</ref></type>
+        <definition>_WMMapping__isset Apache::Hadoop::Hive::WMMapping::__isset</definition>
+        <argsstring></argsstring>
+        <name>__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMMapping::__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11171" column="21" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="11171" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMMapping_1a1856d1e875bf7f0b81eaf8eee2dd4d19" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::WMMapping::WMMapping</definition>
+        <argsstring>(const WMMapping &amp;)</argsstring>
+        <name>WMMapping</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMMapping::WMMapping</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1WMMapping" kindref="compound">WMMapping</ref> &amp;</type>
+          <defname>other1412</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11159" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="44492" bodyend="44500"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMMapping_1a0d57f817341adf349e3819c8debf0fa2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1WMMapping" kindref="compound">WMMapping</ref> &amp;</type>
+        <definition>WMMapping &amp; Apache::Hadoop::Hive::WMMapping::operator=</definition>
+        <argsstring>(const WMMapping &amp;)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMMapping::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1WMMapping" kindref="compound">WMMapping</ref> &amp;</type>
+          <defname>other1413</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11160" column="13" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="44501" bodyend="44510"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMMapping_1a59764828fdf0b8e5672f79c6d2a1db34" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::WMMapping::WMMapping</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>WMMapping</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMMapping::WMMapping</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11161" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="44289" bodyend="44296"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMMapping_1ab3995b03e8f0e3bd7dd2d35200f3a938" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::WMMapping::~WMMapping</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~WMMapping</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMMapping::~WMMapping</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11163" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="44286" bodyend="44287"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMMapping_1a7c161db141d05a93e94380ef08b18521" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::WMMapping::__set_resourcePlanName</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_resourcePlanName</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMMapping::__set_resourcePlanName</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11173" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="44298" bodyend="44300"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMMapping_1a81bf92b290258f6a1ca1328bc6ad0a76" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::WMMapping::__set_entityType</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_entityType</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMMapping::__set_entityType</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11175" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="44302" bodyend="44304"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMMapping_1a9af2a8a24912cf986f98aa416e4b9a83" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::WMMapping::__set_entityName</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_entityName</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMMapping::__set_entityName</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11177" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="44306" bodyend="44308"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMMapping_1ac8fca9e2dae153bebf5c0fee5cd6a352" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::WMMapping::__set_poolPath</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_poolPath</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMMapping::__set_poolPath</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11179" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="44310" bodyend="44313"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMMapping_1a160116b23f2908cccf2c313fb36d6d82" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::WMMapping::__set_ordering</definition>
+        <argsstring>(const int32_t val)</argsstring>
+        <name>__set_ordering</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMMapping::__set_ordering</qualifiedname>
+        <param>
+          <type>const int32_t</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11181" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="44315" bodyend="44318"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMMapping_1a368e65cb9d1f10c1a16d9b4eeeb6bde9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::WMMapping::__set_ns</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_ns</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMMapping::__set_ns</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11183" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="44320" bodyend="44323"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMMapping_1a67c92d83a48a22839c3ee804037988ab" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::WMMapping::operator==</definition>
+        <argsstring>(const WMMapping &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMMapping::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1WMMapping" kindref="compound">WMMapping</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11185" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="44469" bodyend="44490"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMMapping_1acb5a47bd98b4d30992aece834ea7cc63" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::WMMapping::operator!=</definition>
+        <argsstring>(const WMMapping &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMMapping::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1WMMapping" kindref="compound">WMMapping</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11186" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="11186" bodyend="11188"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMMapping_1a4e27a2fc21c102247838ccde7aa22a37" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::WMMapping::operator&lt;</definition>
+        <argsstring>(const WMMapping &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMMapping::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1WMMapping" kindref="compound">WMMapping</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11190" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMMapping_1a7e2be2379b2cae8fc80fe7d8f0115e30" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::WMMapping::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot) override</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMMapping::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11192" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="44331" bodyend="44419"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMMapping_1aebf85ee7b9bc40f6fb086cda86fe8794" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::WMMapping::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const override</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMMapping::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11193" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="44421" bodyend="44456"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1WMMapping_1a8c2317713a164cc1682db3c84c090c5e" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::WMMapping::printTo</definition>
+        <argsstring>(std::ostream &amp;out) const</argsstring>
+        <name>printTo</name>
+        <qualifiedname>Apache::Hadoop::Hive::WMMapping::printTo</qualifiedname>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11195" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="44511" bodyend="44521"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::WMMapping</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1WMMapping"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::WMMapping</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1WMMapping"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>entityName</edgelabel>
+          <edgelabel>entityType</edgelabel>
+          <edgelabel>ns</edgelabel>
+          <edgelabel>poolPath</edgelabel>
+          <edgelabel>resourcePlanName</edgelabel>
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="5">
+        <label>Apache::Hadoop::Hive::_WMMapping__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__WMMapping____isset"/>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+      <node id="4">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="3">
+        <label>std::string</label>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11156" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="11156" bodyend="11196"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMMapping_1ad49cedb9d4424590722c17e151441581" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMMapping</scope><name>__isset</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMMapping_1a9af2a8a24912cf986f98aa416e4b9a83" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMMapping</scope><name>__set_entityName</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMMapping_1a81bf92b290258f6a1ca1328bc6ad0a76" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMMapping</scope><name>__set_entityType</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMMapping_1a368e65cb9d1f10c1a16d9b4eeeb6bde9" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMMapping</scope><name>__set_ns</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMMapping_1a160116b23f2908cccf2c313fb36d6d82" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMMapping</scope><name>__set_ordering</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMMapping_1ac8fca9e2dae153bebf5c0fee5cd6a352" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMMapping</scope><name>__set_poolPath</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMMapping_1a7c161db141d05a93e94380ef08b18521" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMMapping</scope><name>__set_resourcePlanName</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMMapping_1a56e53bfbdcc5503b7dd0ecc7503c316a" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMMapping</scope><name>entityName</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMMapping_1a708bca805a13eaa8457c8ca55d7d35b0" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMMapping</scope><name>entityType</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMMapping_1a8a1297d8645fa374460b50181988043b" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMMapping</scope><name>ns</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMMapping_1acb5a47bd98b4d30992aece834ea7cc63" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMMapping</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMMapping_1a4e27a2fc21c102247838ccde7aa22a37" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMMapping</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMMapping_1a0d57f817341adf349e3819c8debf0fa2" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMMapping</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMMapping_1a67c92d83a48a22839c3ee804037988ab" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMMapping</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMMapping_1a1b1a357c3f5cd1f6ce2fdf01441b981e" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMMapping</scope><name>ordering</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMMapping_1a4a445c39947b6fe6dc1a9bec924d3434" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMMapping</scope><name>poolPath</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMMapping_1a8c2317713a164cc1682db3c84c090c5e" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::WMMapping</scope><name>printTo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMMapping_1a7e2be2379b2cae8fc80fe7d8f0115e30" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMMapping</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMMapping_1a322b2a9567ddb60957b09a3071a77b00" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMMapping</scope><name>resourcePlanName</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMMapping_1a1856d1e875bf7f0b81eaf8eee2dd4d19" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMMapping</scope><name>WMMapping</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMMapping_1a59764828fdf0b8e5672f79c6d2a1db34" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMMapping</scope><name>WMMapping</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMMapping_1aebf85ee7b9bc40f6fb086cda86fe8794" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::WMMapping</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1WMMapping_1ab3995b03e8f0e3bd7dd2d35200f3a938" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::WMMapping</scope><name>~WMMapping</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

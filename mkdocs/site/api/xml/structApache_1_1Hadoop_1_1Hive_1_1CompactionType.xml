@@ -1,0 +1,64 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structApache_1_1Hadoop_1_1Hive_1_1CompactionType" kind="struct" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::CompactionType</compoundname>
+    <sectiondef kind="public-type">
+      <memberdef kind="enum" id="structApache_1_1Hadoop_1_1Hive_1_1CompactionType_1a38fd14a74d6584d51c9eb53db02f17ad" prot="public" static="no" strong="no">
+        <type></type>
+        <name>type</name>
+        <qualifiedname>Apache::Hadoop::Hive::CompactionType::type</qualifiedname>
+        <enumvalue id="structApache_1_1Hadoop_1_1Hive_1_1CompactionType_1a38fd14a74d6584d51c9eb53db02f17ada203ca56382b49533081d46d267de941c" prot="public">
+          <name>MINOR</name>
+          <initializer>= 1</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="structApache_1_1Hadoop_1_1Hive_1_1CompactionType_1a38fd14a74d6584d51c9eb53db02f17adab5216b8e6b5949f037ca5b1da99291b1" prot="public">
+          <name>MAJOR</name>
+          <initializer>= 2</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="structApache_1_1Hadoop_1_1Hive_1_1CompactionType_1a38fd14a74d6584d51c9eb53db02f17adafeec39f298d36138c8a7c05853b23952" prot="public">
+          <name>REBALANCE</name>
+          <initializer>= 3</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="structApache_1_1Hadoop_1_1Hive_1_1CompactionType_1a38fd14a74d6584d51c9eb53db02f17ada3f9e92491e82d4320687eaa914a8bbdf" prot="public">
+          <name>ABORT_TXN_CLEANUP</name>
+          <initializer>= 4</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="127" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="127" bodyend="132"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="126" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="126" bodyend="133"/>
+    <listofallmembers>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1CompactionType_1a38fd14a74d6584d51c9eb53db02f17ada3f9e92491e82d4320687eaa914a8bbdf" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CompactionType</scope><name>ABORT_TXN_CLEANUP</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1CompactionType_1a38fd14a74d6584d51c9eb53db02f17adab5216b8e6b5949f037ca5b1da99291b1" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CompactionType</scope><name>MAJOR</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1CompactionType_1a38fd14a74d6584d51c9eb53db02f17ada203ca56382b49533081d46d267de941c" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CompactionType</scope><name>MINOR</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1CompactionType_1a38fd14a74d6584d51c9eb53db02f17adafeec39f298d36138c8a7c05853b23952" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CompactionType</scope><name>REBALANCE</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1CompactionType_1a38fd14a74d6584d51c9eb53db02f17ad" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CompactionType</scope><name>type</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

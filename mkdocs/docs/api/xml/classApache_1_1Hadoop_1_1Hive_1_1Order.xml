@@ -1,0 +1,322 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1Order" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::Order</compoundname>
+    <basecompoundref prot="public" virt="virtual">apache::thrift::TBase</basecompoundref>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1Order_1ae79868d2868bc522f8473d7eda2e4673" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::Order::col</definition>
+        <argsstring></argsstring>
+        <name>col</name>
+        <qualifiedname>Apache::Hadoop::Hive::Order::col</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3072" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="3072" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1Order_1a031fce00393b6dec12fdf9e661394dde" prot="public" static="no" mutable="no">
+        <type>int32_t</type>
+        <definition>int32_t Apache::Hadoop::Hive::Order::order</definition>
+        <argsstring></argsstring>
+        <name>order</name>
+        <qualifiedname>Apache::Hadoop::Hive::Order::order</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3073" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="3073" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1Order_1a0bff3624e2f66a2cc9afbbbacf36d96a" prot="public" static="no" mutable="no">
+        <type><ref refid="structApache_1_1Hadoop_1_1Hive_1_1__Order____isset" kindref="compound">_Order__isset</ref></type>
+        <definition>_Order__isset Apache::Hadoop::Hive::Order::__isset</definition>
+        <argsstring></argsstring>
+        <name>__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::Order::__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3075" column="17" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="3075" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1Order_1a0de789a675bbbe1a0b2f4d43fdab544d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::Order::Order</definition>
+        <argsstring>(const Order &amp;)</argsstring>
+        <name>Order</name>
+        <qualifiedname>Apache::Hadoop::Hive::Order::Order</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1Order" kindref="compound">Order</ref> &amp;</type>
+          <defname>other267</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3067" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="8736" bodyend="8740"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1Order_1ab1c2643624905982bad5dea6d9311cee" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1Order" kindref="compound">Order</ref> &amp;</type>
+        <definition>Order &amp; Apache::Hadoop::Hive::Order::operator=</definition>
+        <argsstring>(const Order &amp;)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::Order::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1Order" kindref="compound">Order</ref> &amp;</type>
+          <defname>other268</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3068" column="9" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="8741" bodyend="8746"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1Order_1afd0de71e59bfd945e2f5cbea665ea560" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::Order::Order</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>Order</name>
+        <qualifiedname>Apache::Hadoop::Hive::Order::Order</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3069" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="8634" bodyend="8637"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1Order_1a5c18d97d47f8b61040c57f855789d9a0" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::Order::~Order</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~Order</name>
+        <qualifiedname>Apache::Hadoop::Hive::Order::~Order</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3071" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="8631" bodyend="8632"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1Order_1a3d65faf2629ce7bdaddbad3d283a3246" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::Order::__set_col</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_col</name>
+        <qualifiedname>Apache::Hadoop::Hive::Order::__set_col</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3077" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="8639" bodyend="8641"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1Order_1a278c1baa75eec6975c176f9c6e944e29" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::Order::__set_order</definition>
+        <argsstring>(const int32_t val)</argsstring>
+        <name>__set_order</name>
+        <qualifiedname>Apache::Hadoop::Hive::Order::__set_order</qualifiedname>
+        <param>
+          <type>const int32_t</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3079" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="8643" bodyend="8645"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1Order_1a51891c2e3b2727ddb11b3a65422ab4b9" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::Order::operator==</definition>
+        <argsstring>(const Order &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::Order::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1Order" kindref="compound">Order</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3081" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="8727" bodyend="8734"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1Order_1a2d937bb1c87aeac38e8c15c4e522345c" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::Order::operator!=</definition>
+        <argsstring>(const Order &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::Order::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1Order" kindref="compound">Order</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3082" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="3082" bodyend="3084"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1Order_1a6c8a1861c21c937a718cfb5e0e79f595" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::Order::operator&lt;</definition>
+        <argsstring>(const Order &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::Order::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1Order" kindref="compound">Order</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3086" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1Order_1ac491fb86c4a8e06598a66e7c0c199e20" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::Order::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot) override</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::Order::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3088" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="8653" bodyend="8700"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1Order_1af54cafbb2e6e24df488a89a94a87864c" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::Order::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const override</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::Order::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3089" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="8702" bodyend="8718"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1Order_1aecec6e102bc7d97f4643ed45a8669b98" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::Order::printTo</definition>
+        <argsstring>(std::ostream &amp;out) const</argsstring>
+        <name>printTo</name>
+        <qualifiedname>Apache::Hadoop::Hive::Order::printTo</qualifiedname>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3091" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="8747" bodyend="8753"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::Order</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1Order"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::Order</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1Order"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>col</edgelabel>
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="5">
+        <label>Apache::Hadoop::Hive::_Order__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__Order____isset"/>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+      <node id="4">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="3">
+        <label>std::string</label>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3064" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="3064" bodyend="3092"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1Order_1a0bff3624e2f66a2cc9afbbbacf36d96a" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::Order</scope><name>__isset</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1Order_1a3d65faf2629ce7bdaddbad3d283a3246" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::Order</scope><name>__set_col</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1Order_1a278c1baa75eec6975c176f9c6e944e29" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::Order</scope><name>__set_order</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1Order_1ae79868d2868bc522f8473d7eda2e4673" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::Order</scope><name>col</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1Order_1a2d937bb1c87aeac38e8c15c4e522345c" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::Order</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1Order_1a6c8a1861c21c937a718cfb5e0e79f595" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::Order</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1Order_1ab1c2643624905982bad5dea6d9311cee" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::Order</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1Order_1a51891c2e3b2727ddb11b3a65422ab4b9" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::Order</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1Order_1a031fce00393b6dec12fdf9e661394dde" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::Order</scope><name>order</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1Order_1a0de789a675bbbe1a0b2f4d43fdab544d" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::Order</scope><name>Order</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1Order_1afd0de71e59bfd945e2f5cbea665ea560" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::Order</scope><name>Order</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1Order_1aecec6e102bc7d97f4643ed45a8669b98" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::Order</scope><name>printTo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1Order_1ac491fb86c4a8e06598a66e7c0c199e20" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::Order</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1Order_1af54cafbb2e6e24df488a89a94a87864c" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::Order</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1Order_1a5c18d97d47f8b61040c57f855789d9a0" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::Order</scope><name>~Order</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

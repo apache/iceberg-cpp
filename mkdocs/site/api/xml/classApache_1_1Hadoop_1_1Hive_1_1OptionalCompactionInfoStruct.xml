@@ -1,0 +1,314 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1OptionalCompactionInfoStruct" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::OptionalCompactionInfoStruct</compoundname>
+    <basecompoundref prot="public" virt="virtual">apache::thrift::TBase</basecompoundref>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1OptionalCompactionInfoStruct_1a2a611a039be4f41a277eb66ccf8de8fb" prot="public" static="no" mutable="no">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionInfoStruct" kindref="compound">CompactionInfoStruct</ref></type>
+        <definition>CompactionInfoStruct Apache::Hadoop::Hive::OptionalCompactionInfoStruct::ci</definition>
+        <argsstring></argsstring>
+        <name>ci</name>
+        <qualifiedname>Apache::Hadoop::Hive::OptionalCompactionInfoStruct::ci</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8329" column="24" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="8329" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1OptionalCompactionInfoStruct_1a0cf557a8caa1907a0cd51996bc44aab3" prot="public" static="no" mutable="no">
+        <type><ref refid="structApache_1_1Hadoop_1_1Hive_1_1__OptionalCompactionInfoStruct____isset" kindref="compound">_OptionalCompactionInfoStruct__isset</ref></type>
+        <definition>_OptionalCompactionInfoStruct__isset Apache::Hadoop::Hive::OptionalCompactionInfoStruct::__isset</definition>
+        <argsstring></argsstring>
+        <name>__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::OptionalCompactionInfoStruct::__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8331" column="40" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="8331" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1OptionalCompactionInfoStruct_1a33859fc4ecabf0b14cae0b0108282b46" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::OptionalCompactionInfoStruct::OptionalCompactionInfoStruct</definition>
+        <argsstring>(const OptionalCompactionInfoStruct &amp;)</argsstring>
+        <name>OptionalCompactionInfoStruct</name>
+        <qualifiedname>Apache::Hadoop::Hive::OptionalCompactionInfoStruct::OptionalCompactionInfoStruct</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1OptionalCompactionInfoStruct" kindref="compound">OptionalCompactionInfoStruct</ref> &amp;</type>
+          <defname>other1039</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8324" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="32192" bodyend="32195"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1OptionalCompactionInfoStruct_1a84fea4f2a619072fc6755209c497f711" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1OptionalCompactionInfoStruct" kindref="compound">OptionalCompactionInfoStruct</ref> &amp;</type>
+        <definition>OptionalCompactionInfoStruct &amp; Apache::Hadoop::Hive::OptionalCompactionInfoStruct::operator=</definition>
+        <argsstring>(const OptionalCompactionInfoStruct &amp;)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::OptionalCompactionInfoStruct::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1OptionalCompactionInfoStruct" kindref="compound">OptionalCompactionInfoStruct</ref> &amp;</type>
+          <defname>other1040</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8325" column="32" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="32196" bodyend="32200"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1OptionalCompactionInfoStruct_1ad69abcd018a4c6223db533274380fca4" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::OptionalCompactionInfoStruct::OptionalCompactionInfoStruct</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>OptionalCompactionInfoStruct</name>
+        <qualifiedname>Apache::Hadoop::Hive::OptionalCompactionInfoStruct::OptionalCompactionInfoStruct</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8326" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="32107" bodyend="32108"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1OptionalCompactionInfoStruct_1ac5dc89c8384a8c0bff96051192ca10a2" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::OptionalCompactionInfoStruct::~OptionalCompactionInfoStruct</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~OptionalCompactionInfoStruct</name>
+        <qualifiedname>Apache::Hadoop::Hive::OptionalCompactionInfoStruct::~OptionalCompactionInfoStruct</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8328" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="32104" bodyend="32105"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1OptionalCompactionInfoStruct_1a9827622492e2a0d586e5982bd2a76f41" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::OptionalCompactionInfoStruct::__set_ci</definition>
+        <argsstring>(const CompactionInfoStruct &amp;val)</argsstring>
+        <name>__set_ci</name>
+        <qualifiedname>Apache::Hadoop::Hive::OptionalCompactionInfoStruct::__set_ci</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionInfoStruct" kindref="compound">CompactionInfoStruct</ref> &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8333" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="32110" bodyend="32113"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1OptionalCompactionInfoStruct_1a99120825e73da307d0b3e9055cf450cd" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::OptionalCompactionInfoStruct::operator==</definition>
+        <argsstring>(const OptionalCompactionInfoStruct &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::OptionalCompactionInfoStruct::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1OptionalCompactionInfoStruct" kindref="compound">OptionalCompactionInfoStruct</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8335" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="32183" bodyend="32190"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1OptionalCompactionInfoStruct_1a2e833a2792bff3763593bbc82f70399e" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::OptionalCompactionInfoStruct::operator!=</definition>
+        <argsstring>(const OptionalCompactionInfoStruct &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::OptionalCompactionInfoStruct::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1OptionalCompactionInfoStruct" kindref="compound">OptionalCompactionInfoStruct</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8336" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="8336" bodyend="8338"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1OptionalCompactionInfoStruct_1aaddda75559e48f01ec8ef668aaf5f95c" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::OptionalCompactionInfoStruct::operator&lt;</definition>
+        <argsstring>(const OptionalCompactionInfoStruct &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::OptionalCompactionInfoStruct::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1OptionalCompactionInfoStruct" kindref="compound">OptionalCompactionInfoStruct</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8340" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1OptionalCompactionInfoStruct_1a840d25e52a0d91ea766373c6c65a6815" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::OptionalCompactionInfoStruct::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot) override</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::OptionalCompactionInfoStruct::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8342" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="32121" bodyend="32160"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1OptionalCompactionInfoStruct_1a190f90742e5b469d532cecff4f35020a" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::OptionalCompactionInfoStruct::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const override</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::OptionalCompactionInfoStruct::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8343" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="32162" bodyend="32175"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1OptionalCompactionInfoStruct_1a383258ae9e455282f8078ca5685e5fc6" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::OptionalCompactionInfoStruct::printTo</definition>
+        <argsstring>(std::ostream &amp;out) const</argsstring>
+        <name>printTo</name>
+        <qualifiedname>Apache::Hadoop::Hive::OptionalCompactionInfoStruct::printTo</qualifiedname>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8345" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="32201" bodyend="32206"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::OptionalCompactionInfoStruct</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1OptionalCompactionInfoStruct"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="3">
+        <label>Apache::Hadoop::Hive::CompactionInfoStruct</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionInfoStruct"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>dbname</edgelabel>
+          <edgelabel>errorMessage</edgelabel>
+          <edgelabel>orderByClause</edgelabel>
+          <edgelabel>partitionname</edgelabel>
+          <edgelabel>poolname</edgelabel>
+          <edgelabel>properties</edgelabel>
+          <edgelabel>runas</edgelabel>
+          <edgelabel>state</edgelabel>
+          <edgelabel>tablename</edgelabel>
+          <edgelabel>workerId</edgelabel>
+          <edgelabel>...</edgelabel>
+        </childnode>
+        <childnode refid="6" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::OptionalCompactionInfoStruct</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1OptionalCompactionInfoStruct"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>ci</edgelabel>
+        </childnode>
+        <childnode refid="7" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="6">
+        <label>Apache::Hadoop::Hive::_CompactionInfoStruct__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__CompactionInfoStruct____isset"/>
+      </node>
+      <node id="7">
+        <label>Apache::Hadoop::Hive::_OptionalCompactionInfoStruct__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__OptionalCompactionInfoStruct____isset"/>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+      <node id="5">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="4">
+        <label>std::string</label>
+        <childnode refid="5" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8321" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="8321" bodyend="8346"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1OptionalCompactionInfoStruct_1a0cf557a8caa1907a0cd51996bc44aab3" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::OptionalCompactionInfoStruct</scope><name>__isset</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1OptionalCompactionInfoStruct_1a9827622492e2a0d586e5982bd2a76f41" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::OptionalCompactionInfoStruct</scope><name>__set_ci</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1OptionalCompactionInfoStruct_1a2a611a039be4f41a277eb66ccf8de8fb" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::OptionalCompactionInfoStruct</scope><name>ci</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1OptionalCompactionInfoStruct_1a2e833a2792bff3763593bbc82f70399e" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::OptionalCompactionInfoStruct</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1OptionalCompactionInfoStruct_1aaddda75559e48f01ec8ef668aaf5f95c" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::OptionalCompactionInfoStruct</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1OptionalCompactionInfoStruct_1a84fea4f2a619072fc6755209c497f711" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::OptionalCompactionInfoStruct</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1OptionalCompactionInfoStruct_1a99120825e73da307d0b3e9055cf450cd" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::OptionalCompactionInfoStruct</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1OptionalCompactionInfoStruct_1a33859fc4ecabf0b14cae0b0108282b46" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::OptionalCompactionInfoStruct</scope><name>OptionalCompactionInfoStruct</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1OptionalCompactionInfoStruct_1ad69abcd018a4c6223db533274380fca4" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::OptionalCompactionInfoStruct</scope><name>OptionalCompactionInfoStruct</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1OptionalCompactionInfoStruct_1a383258ae9e455282f8078ca5685e5fc6" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::OptionalCompactionInfoStruct</scope><name>printTo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1OptionalCompactionInfoStruct_1a840d25e52a0d91ea766373c6c65a6815" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::OptionalCompactionInfoStruct</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1OptionalCompactionInfoStruct_1a190f90742e5b469d532cecff4f35020a" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::OptionalCompactionInfoStruct</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1OptionalCompactionInfoStruct_1ac5dc89c8384a8c0bff96051192ca10a2" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::OptionalCompactionInfoStruct</scope><name>~OptionalCompactionInfoStruct</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

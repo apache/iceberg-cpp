@@ -1,0 +1,160 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structApache_1_1Hadoop_1_1Hive_1_1__DataConnector____isset" kind="struct" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::_DataConnector__isset</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__DataConnector____isset_1a54a7575c65ff419d52707ddf034b0822" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_DataConnector__isset::name</definition>
+        <argsstring></argsstring>
+        <name>name</name>
+        <qualifiedname>Apache::Hadoop::Hive::_DataConnector__isset::name</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6412" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="6412" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__DataConnector____isset_1a8a61c4801de9797e071a455b5bfed6c5" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_DataConnector__isset::type</definition>
+        <argsstring></argsstring>
+        <name>type</name>
+        <qualifiedname>Apache::Hadoop::Hive::_DataConnector__isset::type</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6413" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="6413" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__DataConnector____isset_1a4cbf4b13575576c93508694622ea6a2d" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_DataConnector__isset::url</definition>
+        <argsstring></argsstring>
+        <name>url</name>
+        <qualifiedname>Apache::Hadoop::Hive::_DataConnector__isset::url</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6414" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="6414" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__DataConnector____isset_1a2e87c97b9956fd1f9486192aa5655eed" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_DataConnector__isset::description</definition>
+        <argsstring></argsstring>
+        <name>description</name>
+        <qualifiedname>Apache::Hadoop::Hive::_DataConnector__isset::description</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6415" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="6415" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__DataConnector____isset_1a1cbc3ac09539cdae5cedecb6385ca375" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_DataConnector__isset::parameters</definition>
+        <argsstring></argsstring>
+        <name>parameters</name>
+        <qualifiedname>Apache::Hadoop::Hive::_DataConnector__isset::parameters</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6416" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="6416" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__DataConnector____isset_1a1057517d520014f16f55a3dcb1a0da42" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_DataConnector__isset::ownerName</definition>
+        <argsstring></argsstring>
+        <name>ownerName</name>
+        <qualifiedname>Apache::Hadoop::Hive::_DataConnector__isset::ownerName</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6417" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="6417" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__DataConnector____isset_1a139c41cf1b66b215f4f59159c3dcc955" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_DataConnector__isset::ownerType</definition>
+        <argsstring></argsstring>
+        <name>ownerType</name>
+        <qualifiedname>Apache::Hadoop::Hive::_DataConnector__isset::ownerType</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6418" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="6418" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__DataConnector____isset_1a073aa195003a52ddfd9b8a8ad383cb87" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_DataConnector__isset::createTime</definition>
+        <argsstring></argsstring>
+        <name>createTime</name>
+        <qualifiedname>Apache::Hadoop::Hive::_DataConnector__isset::createTime</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6419" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="6419" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structApache_1_1Hadoop_1_1Hive_1_1__DataConnector____isset_1a3716a313c496c95339bfc2891d1e7a49" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::_DataConnector__isset::_DataConnector__isset</definition>
+        <argsstring>()</argsstring>
+        <name>_DataConnector__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::_DataConnector__isset::_DataConnector__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6411" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="6411" bodyend="6411"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6410" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="6410" bodyend="6420"/>
+    <listofallmembers>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__DataConnector____isset_1a3716a313c496c95339bfc2891d1e7a49" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_DataConnector__isset</scope><name>_DataConnector__isset</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__DataConnector____isset_1a073aa195003a52ddfd9b8a8ad383cb87" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_DataConnector__isset</scope><name>createTime</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__DataConnector____isset_1a2e87c97b9956fd1f9486192aa5655eed" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_DataConnector__isset</scope><name>description</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__DataConnector____isset_1a54a7575c65ff419d52707ddf034b0822" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_DataConnector__isset</scope><name>name</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__DataConnector____isset_1a1057517d520014f16f55a3dcb1a0da42" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_DataConnector__isset</scope><name>ownerName</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__DataConnector____isset_1a139c41cf1b66b215f4f59159c3dcc955" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_DataConnector__isset</scope><name>ownerType</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__DataConnector____isset_1a1cbc3ac09539cdae5cedecb6385ca375" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_DataConnector__isset</scope><name>parameters</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__DataConnector____isset_1a8a61c4801de9797e071a455b5bfed6c5" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_DataConnector__isset</scope><name>type</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__DataConnector____isset_1a4cbf4b13575576c93508694622ea6a2d" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_DataConnector__isset</scope><name>url</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

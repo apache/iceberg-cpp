@@ -1,0 +1,218 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1AlterTableResponse" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::AlterTableResponse</compoundname>
+    <basecompoundref prot="public" virt="virtual">apache::thrift::TBase</basecompoundref>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AlterTableResponse_1aac24d6291adea78f1f6e1ab43f72f32d" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::AlterTableResponse::AlterTableResponse</definition>
+        <argsstring>(const AlterTableResponse &amp;) noexcept</argsstring>
+        <name>AlterTableResponse</name>
+        <qualifiedname>Apache::Hadoop::Hive::AlterTableResponse::AlterTableResponse</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1AlterTableResponse" kindref="compound">AlterTableResponse</ref> &amp;</type>
+          <defname>other1695</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13918" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="54746" bodyend="54748"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AlterTableResponse_1a869bc035c3d12520929e8ae05ccc3703" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1AlterTableResponse" kindref="compound">AlterTableResponse</ref> &amp;</type>
+        <definition>AlterTableResponse &amp; Apache::Hadoop::Hive::AlterTableResponse::operator=</definition>
+        <argsstring>(const AlterTableResponse &amp;) noexcept</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::AlterTableResponse::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1AlterTableResponse" kindref="compound">AlterTableResponse</ref> &amp;</type>
+          <defname>other1696</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13919" column="22" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="54749" bodyend="54752"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AlterTableResponse_1a0b21c76f42b6bd672653a0942d5055b2" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::AlterTableResponse::AlterTableResponse</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>AlterTableResponse</name>
+        <qualifiedname>Apache::Hadoop::Hive::AlterTableResponse::AlterTableResponse</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13920" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="54688" bodyend="54689"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AlterTableResponse_1a414cbf4ac38385ce86b4f7c4937e00a0" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::AlterTableResponse::~AlterTableResponse</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~AlterTableResponse</name>
+        <qualifiedname>Apache::Hadoop::Hive::AlterTableResponse::~AlterTableResponse</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13922" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="54685" bodyend="54686"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AlterTableResponse_1abc1da608dd72b6b88821b7aa47b89fca" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::AlterTableResponse::operator==</definition>
+        <argsstring>(const AlterTableResponse &amp;) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::AlterTableResponse::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1AlterTableResponse" kindref="compound">AlterTableResponse</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13924" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="54741" bodyend="54744"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AlterTableResponse_1ac33aff91cb724284ef8ccc9d642d0f70" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::AlterTableResponse::operator!=</definition>
+        <argsstring>(const AlterTableResponse &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::AlterTableResponse::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1AlterTableResponse" kindref="compound">AlterTableResponse</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13925" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="13925" bodyend="13927"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AlterTableResponse_1a758295f39ec3ec18979c6d7731b9a3b4" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::AlterTableResponse::operator&lt;</definition>
+        <argsstring>(const AlterTableResponse &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::AlterTableResponse::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1AlterTableResponse" kindref="compound">AlterTableResponse</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13929" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AlterTableResponse_1afdb76869709c4e9c1ae5d62e764e6617" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::AlterTableResponse::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot) override</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::AlterTableResponse::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13931" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="54697" bodyend="54723"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AlterTableResponse_1ae5f44b167d607b4147163952bc9e6bc3" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::AlterTableResponse::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const override</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::AlterTableResponse::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13932" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="54725" bodyend="54733"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AlterTableResponse_1ac3105a88942f579f5229176046bda996" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::AlterTableResponse::printTo</definition>
+        <argsstring>(std::ostream &amp;out) const</argsstring>
+        <name>printTo</name>
+        <qualifiedname>Apache::Hadoop::Hive::AlterTableResponse::printTo</qualifiedname>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13934" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="54753" bodyend="54757"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::AlterTableResponse</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1AlterTableResponse"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::AlterTableResponse</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1AlterTableResponse"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13915" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="13915" bodyend="13935"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AlterTableResponse_1aac24d6291adea78f1f6e1ab43f72f32d" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AlterTableResponse</scope><name>AlterTableResponse</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AlterTableResponse_1a0b21c76f42b6bd672653a0942d5055b2" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AlterTableResponse</scope><name>AlterTableResponse</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AlterTableResponse_1ac33aff91cb724284ef8ccc9d642d0f70" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AlterTableResponse</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AlterTableResponse_1a758295f39ec3ec18979c6d7731b9a3b4" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AlterTableResponse</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AlterTableResponse_1a869bc035c3d12520929e8ae05ccc3703" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AlterTableResponse</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AlterTableResponse_1abc1da608dd72b6b88821b7aa47b89fca" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AlterTableResponse</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AlterTableResponse_1ac3105a88942f579f5229176046bda996" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::AlterTableResponse</scope><name>printTo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AlterTableResponse_1afdb76869709c4e9c1ae5d62e764e6617" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AlterTableResponse</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AlterTableResponse_1ae5f44b167d607b4147163952bc9e6bc3" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AlterTableResponse</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AlterTableResponse_1a414cbf4ac38385ce86b4f7c4937e00a0" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::AlterTableResponse</scope><name>~AlterTableResponse</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

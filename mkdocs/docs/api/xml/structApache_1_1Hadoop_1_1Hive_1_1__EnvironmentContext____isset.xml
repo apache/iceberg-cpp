@@ -1,0 +1,30 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structApache_1_1Hadoop_1_1Hive_1_1__EnvironmentContext____isset" kind="struct" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::_EnvironmentContext__isset</compoundname>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structApache_1_1Hadoop_1_1Hive_1_1__EnvironmentContext____isset_1a5fff10e4b623b9e22d4bd6451f5cb97a" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::_EnvironmentContext__isset::_EnvironmentContext__isset</definition>
+        <argsstring>()</argsstring>
+        <name>_EnvironmentContext__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::_EnvironmentContext__isset::_EnvironmentContext__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1181" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="1181" bodyend="1181"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1180" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="1180" bodyend="1183"/>
+    <listofallmembers>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__EnvironmentContext____isset_1a5fff10e4b623b9e22d4bd6451f5cb97a" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_EnvironmentContext__isset</scope><name>_EnvironmentContext__isset</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

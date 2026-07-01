@@ -1,0 +1,48 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structApache_1_1Hadoop_1_1Hive_1_1__BooleanColumnStatsData____isset" kind="struct" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::_BooleanColumnStatsData__isset</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__BooleanColumnStatsData____isset_1aa02044270393a1b13e40587d1e7ed032" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_BooleanColumnStatsData__isset::bitVectors</definition>
+        <argsstring></argsstring>
+        <name>bitVectors</name>
+        <qualifiedname>Apache::Hadoop::Hive::_BooleanColumnStatsData__isset::bitVectors</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3280" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="3280" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structApache_1_1Hadoop_1_1Hive_1_1__BooleanColumnStatsData____isset_1aed5e62f48c079e5d99747e0b16b3cd51" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::_BooleanColumnStatsData__isset::_BooleanColumnStatsData__isset</definition>
+        <argsstring>()</argsstring>
+        <name>_BooleanColumnStatsData__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::_BooleanColumnStatsData__isset::_BooleanColumnStatsData__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3279" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="3279" bodyend="3279"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3278" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="3278" bodyend="3281"/>
+    <listofallmembers>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__BooleanColumnStatsData____isset_1aed5e62f48c079e5d99747e0b16b3cd51" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_BooleanColumnStatsData__isset</scope><name>_BooleanColumnStatsData__isset</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__BooleanColumnStatsData____isset_1aa02044270393a1b13e40587d1e7ed032" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_BooleanColumnStatsData__isset</scope><name>bitVectors</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

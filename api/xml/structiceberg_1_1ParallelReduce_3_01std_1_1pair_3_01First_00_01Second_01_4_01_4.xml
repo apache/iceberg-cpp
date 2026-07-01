@@ -1,0 +1,66 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1ParallelReduce_3_01std_1_1pair_3_01First_00_01Second_01_4_01_4" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::ParallelReduce&lt; std::pair&lt; First, Second &gt; &gt;</compoundname>
+    <templateparamlist>
+      <param>
+        <type>typename First</type>
+      </param>
+      <param>
+        <type>typename Second</type>
+      </param>
+    </templateparamlist>
+    <sectiondef kind="public-type">
+      <memberdef kind="typedef" id="structiceberg_1_1ParallelReduce_3_01std_1_1pair_3_01First_00_01Second_01_4_01_4_1a9e9a4d784ceb40e645ebe2db66eca54b" prot="public" static="no">
+        <type>std::pair&lt; typename <ref refid="structiceberg_1_1ParallelReduce" kindref="compound">ParallelReduce</ref>&lt; First &gt;::result_type, typename <ref refid="structiceberg_1_1ParallelReduce" kindref="compound">ParallelReduce</ref>&lt; Second &gt;::result_type &gt;</type>
+        <definition>using iceberg::ParallelReduce&lt; std::pair&lt; First, Second &gt; &gt;::result_type =  std::pair&lt;typename ParallelReduce&lt;First&gt;::result_type, typename ParallelReduce&lt;Second&gt;::result_type&gt;</definition>
+        <argsstring></argsstring>
+        <name>result_type</name>
+        <qualifiedname>iceberg::ParallelReduce&lt; std::pair&lt; First, Second &gt; &gt;::result_type</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/executor_util_internal.h" line="133" column="3" bodyfile="iceberg/util/executor_util_internal.h" bodystart="134" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="structiceberg_1_1ParallelReduce_3_01std_1_1pair_3_01First_00_01Second_01_4_01_4_1ae9f26f6028442219d23a629c8d36a1db" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>std::ranges::forward_range</type>
+            <declname>Values</declname>
+            <defname>Values</defname>
+          </param>
+        </templateparamlist>
+        <type>result_type</type>
+        <definition>static result_type iceberg::ParallelReduce&lt; std::pair&lt; First, Second &gt; &gt;::Reduce</definition>
+        <argsstring>(Values &amp;&amp;values)</argsstring>
+        <name>Reduce</name>
+        <qualifiedname>iceberg::ParallelReduce&lt; std::pair&lt; First, Second &gt; &gt;::Reduce</qualifiedname>
+        <param>
+          <type>Values &amp;&amp;</type>
+          <declname>values</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/executor_util_internal.h" line="137" column="22" bodyfile="iceberg/util/executor_util_internal.h" bodystart="137" bodyend="140"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/util/executor_util_internal.h" line="132" column="1" bodyfile="iceberg/util/executor_util_internal.h" bodystart="132" bodyend="141"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1ParallelReduce_3_01std_1_1pair_3_01First_00_01Second_01_4_01_4_1ae9f26f6028442219d23a629c8d36a1db" prot="public" virt="non-virtual"><scope>iceberg::ParallelReduce&lt; std::pair&lt; First, Second &gt; &gt;</scope><name>Reduce</name></member>
+      <member refid="structiceberg_1_1ParallelReduce_3_01std_1_1pair_3_01First_00_01Second_01_4_01_4_1a9e9a4d784ceb40e645ebe2db66eca54b" prot="public" virt="non-virtual"><scope>iceberg::ParallelReduce&lt; std::pair&lt; First, Second &gt; &gt;</scope><name>result_type</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

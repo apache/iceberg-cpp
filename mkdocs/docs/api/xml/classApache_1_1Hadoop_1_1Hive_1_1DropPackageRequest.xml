@@ -1,0 +1,336 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1DropPackageRequest" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::DropPackageRequest</compoundname>
+    <basecompoundref prot="public" virt="virtual">apache::thrift::TBase</basecompoundref>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1DropPackageRequest_1a92c1205814034acc6dc3078b77ac4401" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::DropPackageRequest::catName</definition>
+        <argsstring></argsstring>
+        <name>catName</name>
+        <qualifiedname>Apache::Hadoop::Hive::DropPackageRequest::catName</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15099" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="15099" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1DropPackageRequest_1a96e6ab2ffccf4ac56a291d3497173712" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::DropPackageRequest::dbName</definition>
+        <argsstring></argsstring>
+        <name>dbName</name>
+        <qualifiedname>Apache::Hadoop::Hive::DropPackageRequest::dbName</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15100" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="15100" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1DropPackageRequest_1a1cf55a00381794fe46d1a3daa07ed6e1" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::DropPackageRequest::packageName</definition>
+        <argsstring></argsstring>
+        <name>packageName</name>
+        <qualifiedname>Apache::Hadoop::Hive::DropPackageRequest::packageName</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15101" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="15101" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1DropPackageRequest_1af40079f96873c6c7131af79bbfefb54e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::DropPackageRequest::DropPackageRequest</definition>
+        <argsstring>(const DropPackageRequest &amp;)</argsstring>
+        <name>DropPackageRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::DropPackageRequest::DropPackageRequest</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1DropPackageRequest" kindref="compound">DropPackageRequest</ref> &amp;</type>
+          <defname>other1845</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15094" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="59873" bodyend="59877"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1DropPackageRequest_1a39a45d03419a42ac04d1c89d6aae26a3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1DropPackageRequest" kindref="compound">DropPackageRequest</ref> &amp;</type>
+        <definition>DropPackageRequest &amp; Apache::Hadoop::Hive::DropPackageRequest::operator=</definition>
+        <argsstring>(const DropPackageRequest &amp;)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::DropPackageRequest::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1DropPackageRequest" kindref="compound">DropPackageRequest</ref> &amp;</type>
+          <defname>other1846</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15095" column="22" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="59878" bodyend="59883"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1DropPackageRequest_1ac9c06b6cccdeb27f0dbb9af168eda42b" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::DropPackageRequest::DropPackageRequest</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>DropPackageRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::DropPackageRequest::DropPackageRequest</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15096" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="59743" bodyend="59747"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1DropPackageRequest_1a5f2a6b30137db9e3de50540184e0300d" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::DropPackageRequest::~DropPackageRequest</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~DropPackageRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::DropPackageRequest::~DropPackageRequest</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15098" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="59740" bodyend="59741"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1DropPackageRequest_1a4bc5f9a360485ca7876c05d4e72fe367" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::DropPackageRequest::__set_catName</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_catName</name>
+        <qualifiedname>Apache::Hadoop::Hive::DropPackageRequest::__set_catName</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15103" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="59749" bodyend="59751"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1DropPackageRequest_1a1ce0bc27572bfad643db53c3968dfebe" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::DropPackageRequest::__set_dbName</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_dbName</name>
+        <qualifiedname>Apache::Hadoop::Hive::DropPackageRequest::__set_dbName</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15105" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="59753" bodyend="59755"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1DropPackageRequest_1a8d6ac4fe42485b7bb40c15874f979760" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::DropPackageRequest::__set_packageName</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_packageName</name>
+        <qualifiedname>Apache::Hadoop::Hive::DropPackageRequest::__set_packageName</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15107" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="59757" bodyend="59759"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1DropPackageRequest_1ae0505f4695fdf568f1383d1e9fb777ab" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::DropPackageRequest::operator==</definition>
+        <argsstring>(const DropPackageRequest &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::DropPackageRequest::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1DropPackageRequest" kindref="compound">DropPackageRequest</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15109" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="59862" bodyend="59871"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1DropPackageRequest_1af2a8e611d454b9e1b9e0bf101a2f7df6" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::DropPackageRequest::operator!=</definition>
+        <argsstring>(const DropPackageRequest &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::DropPackageRequest::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1DropPackageRequest" kindref="compound">DropPackageRequest</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15110" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="15110" bodyend="15112"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1DropPackageRequest_1aa40dbf9a06f039cf3684eb83849bb7a7" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::DropPackageRequest::operator&lt;</definition>
+        <argsstring>(const DropPackageRequest &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::DropPackageRequest::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1DropPackageRequest" kindref="compound">DropPackageRequest</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15114" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1DropPackageRequest_1a74db12ff6323a7d1c2219ff9f71774e2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::DropPackageRequest::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot) override</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::DropPackageRequest::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15116" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="59767" bodyend="59831"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1DropPackageRequest_1a93856872451d8a6bea2444d6b11ebba7" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::DropPackageRequest::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const override</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::DropPackageRequest::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15117" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="59833" bodyend="59853"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1DropPackageRequest_1a0a36683a4e718acb19db14827787c2cd" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::DropPackageRequest::printTo</definition>
+        <argsstring>(std::ostream &amp;out) const</argsstring>
+        <name>printTo</name>
+        <qualifiedname>Apache::Hadoop::Hive::DropPackageRequest::printTo</qualifiedname>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15119" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="59884" bodyend="59891"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::DropPackageRequest</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1DropPackageRequest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::DropPackageRequest</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1DropPackageRequest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>catName</edgelabel>
+          <edgelabel>dbName</edgelabel>
+          <edgelabel>packageName</edgelabel>
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+      <node id="4">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="3">
+        <label>std::string</label>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15091" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="15091" bodyend="15120"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1DropPackageRequest_1a4bc5f9a360485ca7876c05d4e72fe367" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::DropPackageRequest</scope><name>__set_catName</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1DropPackageRequest_1a1ce0bc27572bfad643db53c3968dfebe" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::DropPackageRequest</scope><name>__set_dbName</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1DropPackageRequest_1a8d6ac4fe42485b7bb40c15874f979760" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::DropPackageRequest</scope><name>__set_packageName</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1DropPackageRequest_1a92c1205814034acc6dc3078b77ac4401" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::DropPackageRequest</scope><name>catName</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1DropPackageRequest_1a96e6ab2ffccf4ac56a291d3497173712" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::DropPackageRequest</scope><name>dbName</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1DropPackageRequest_1af40079f96873c6c7131af79bbfefb54e" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::DropPackageRequest</scope><name>DropPackageRequest</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1DropPackageRequest_1ac9c06b6cccdeb27f0dbb9af168eda42b" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::DropPackageRequest</scope><name>DropPackageRequest</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1DropPackageRequest_1af2a8e611d454b9e1b9e0bf101a2f7df6" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::DropPackageRequest</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1DropPackageRequest_1aa40dbf9a06f039cf3684eb83849bb7a7" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::DropPackageRequest</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1DropPackageRequest_1a39a45d03419a42ac04d1c89d6aae26a3" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::DropPackageRequest</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1DropPackageRequest_1ae0505f4695fdf568f1383d1e9fb777ab" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::DropPackageRequest</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1DropPackageRequest_1a1cf55a00381794fe46d1a3daa07ed6e1" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::DropPackageRequest</scope><name>packageName</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1DropPackageRequest_1a0a36683a4e718acb19db14827787c2cd" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::DropPackageRequest</scope><name>printTo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1DropPackageRequest_1a74db12ff6323a7d1c2219ff9f71774e2" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::DropPackageRequest</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1DropPackageRequest_1a93856872451d8a6bea2444d6b11ebba7" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::DropPackageRequest</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1DropPackageRequest_1a5f2a6b30137db9e3de50540184e0300d" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::DropPackageRequest</scope><name>~DropPackageRequest</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,48 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structApache_1_1Hadoop_1_1Hive_1_1__WMCreatePoolRequest____isset" kind="struct" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::_WMCreatePoolRequest__isset</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__WMCreatePoolRequest____isset_1ab9d5d75115d1b659595483e98acded4f" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_WMCreatePoolRequest__isset::pool</definition>
+        <argsstring></argsstring>
+        <name>pool</name>
+        <qualifiedname>Apache::Hadoop::Hive::_WMCreatePoolRequest__isset::pool</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12095" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="12095" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structApache_1_1Hadoop_1_1Hive_1_1__WMCreatePoolRequest____isset_1a1e124afb4fb6d2c8d50bb96b2e7ebffd" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::_WMCreatePoolRequest__isset::_WMCreatePoolRequest__isset</definition>
+        <argsstring>()</argsstring>
+        <name>_WMCreatePoolRequest__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::_WMCreatePoolRequest__isset::_WMCreatePoolRequest__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12094" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="12094" bodyend="12094"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12093" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="12093" bodyend="12096"/>
+    <listofallmembers>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__WMCreatePoolRequest____isset_1a1e124afb4fb6d2c8d50bb96b2e7ebffd" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_WMCreatePoolRequest__isset</scope><name>_WMCreatePoolRequest__isset</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__WMCreatePoolRequest____isset_1ab9d5d75115d1b659595483e98acded4f" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_WMCreatePoolRequest__isset</scope><name>pool</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

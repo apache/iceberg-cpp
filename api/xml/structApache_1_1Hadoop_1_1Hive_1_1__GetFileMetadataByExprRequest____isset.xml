@@ -1,0 +1,64 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structApache_1_1Hadoop_1_1Hive_1_1__GetFileMetadataByExprRequest____isset" kind="struct" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::_GetFileMetadataByExprRequest__isset</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__GetFileMetadataByExprRequest____isset_1a77365d7c1f5e6cce5335ca58c098737d" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_GetFileMetadataByExprRequest__isset::doGetFooters</definition>
+        <argsstring></argsstring>
+        <name>doGetFooters</name>
+        <qualifiedname>Apache::Hadoop::Hive::_GetFileMetadataByExprRequest__isset::doGetFooters</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9783" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="9783" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__GetFileMetadataByExprRequest____isset_1ae41b76f51d7f2392537dfb5de15aa51d" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_GetFileMetadataByExprRequest__isset::type</definition>
+        <argsstring></argsstring>
+        <name>type</name>
+        <qualifiedname>Apache::Hadoop::Hive::_GetFileMetadataByExprRequest__isset::type</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9784" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="9784" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structApache_1_1Hadoop_1_1Hive_1_1__GetFileMetadataByExprRequest____isset_1a1b2929b85793bc0b07722f50e8599497" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::_GetFileMetadataByExprRequest__isset::_GetFileMetadataByExprRequest__isset</definition>
+        <argsstring>()</argsstring>
+        <name>_GetFileMetadataByExprRequest__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::_GetFileMetadataByExprRequest__isset::_GetFileMetadataByExprRequest__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9782" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="9782" bodyend="9782"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9781" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="9781" bodyend="9785"/>
+    <listofallmembers>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__GetFileMetadataByExprRequest____isset_1a1b2929b85793bc0b07722f50e8599497" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_GetFileMetadataByExprRequest__isset</scope><name>_GetFileMetadataByExprRequest__isset</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__GetFileMetadataByExprRequest____isset_1a77365d7c1f5e6cce5335ca58c098737d" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_GetFileMetadataByExprRequest__isset</scope><name>doGetFooters</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__GetFileMetadataByExprRequest____isset_1ae41b76f51d7f2392537dfb5de15aa51d" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_GetFileMetadataByExprRequest__isset</scope><name>type</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

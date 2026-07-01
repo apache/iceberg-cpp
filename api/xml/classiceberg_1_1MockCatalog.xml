@@ -1,0 +1,519 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1MockCatalog" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::MockCatalog</compoundname>
+    <basecompoundref refid="classiceberg_1_1Catalog" prot="public" virt="non-virtual">iceberg::Catalog</basecompoundref>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1MockCatalog_1ad858617941889f0fab36e52bd6522e8d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::MockCatalog::MockCatalog</definition>
+        <argsstring>()=default</argsstring>
+        <name>MockCatalog</name>
+        <qualifiedname>iceberg::MockCatalog::MockCatalog</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/mock_catalog.h" line="31" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1MockCatalog_1ae2ad38a956b864a2209c0970d751e84f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::MockCatalog::~MockCatalog</definition>
+        <argsstring>() override=default</argsstring>
+        <name>~MockCatalog</name>
+        <qualifiedname>iceberg::MockCatalog::~MockCatalog</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/mock_catalog.h" line="32" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1MockCatalog_1a3b23309916cecc98b947a22176527790" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::MockCatalog::MOCK_METHOD</definition>
+        <argsstring>(std::string_view, name,(),(const, override))</argsstring>
+        <name>MOCK_METHOD</name>
+        <qualifiedname>iceberg::MockCatalog::MOCK_METHOD</qualifiedname>
+        <param>
+          <type>std::string_view</type>
+        </param>
+        <param>
+          <type><ref refid="classiceberg_1_1Catalog_1a6ca1f4412051d707d228c34716f0df77" kindref="member">name</ref></type>
+        </param>
+        <param>
+          <type>()</type>
+        </param>
+        <param>
+          <type>(const, override)</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/mock_catalog.h" line="34" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1MockCatalog_1ac6fed5e4b77610d1e65ad5bf5cb03226" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::MockCatalog::MOCK_METHOD</definition>
+        <argsstring>(Status, CreateNamespace,(const Namespace &amp;,(const std::unordered_map&lt; std::string, std::string &gt; &amp;)),(override))</argsstring>
+        <name>MOCK_METHOD</name>
+        <qualifiedname>iceberg::MockCatalog::MOCK_METHOD</qualifiedname>
+        <param>
+          <type>Status</type>
+        </param>
+        <param>
+          <type><ref refid="classiceberg_1_1Catalog_1afe33407448157e9f930c6c59857674ad" kindref="member">CreateNamespace</ref></type>
+        </param>
+        <param>
+          <type>(const <ref refid="structiceberg_1_1Namespace" kindref="compound">Namespace</ref> &amp;,(const std::unordered_map&lt; std::string, std::string &gt; &amp;))</type>
+        </param>
+        <param>
+          <type>(override)</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/mock_catalog.h" line="36" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1MockCatalog_1a8970973ab41c0012920b4d4bee3aef00" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::MockCatalog::MOCK_METHOD</definition>
+        <argsstring>((Result&lt; std::vector&lt; Namespace &gt; &gt;), ListNamespaces,(const Namespace &amp;),(const, override))</argsstring>
+        <name>MOCK_METHOD</name>
+        <qualifiedname>iceberg::MockCatalog::MOCK_METHOD</qualifiedname>
+        <param>
+          <type>(Result&lt; std::vector&lt; <ref refid="structiceberg_1_1Namespace" kindref="compound">Namespace</ref> &gt; &gt;)</type>
+        </param>
+        <param>
+          <type><ref refid="classiceberg_1_1Catalog_1ad952c6a9e417565a982719c94a071f4c" kindref="member">ListNamespaces</ref></type>
+        </param>
+        <param>
+          <type>(const <ref refid="structiceberg_1_1Namespace" kindref="compound">Namespace</ref> &amp;)</type>
+        </param>
+        <param>
+          <type>(const, override)</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/mock_catalog.h" line="40" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1MockCatalog_1ac7b0fe6853bc2018c2d060fef3221e7f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::MockCatalog::MOCK_METHOD</definition>
+        <argsstring>((Result&lt; std::unordered_map&lt; std::string, std::string &gt; &gt;), GetNamespaceProperties,(const Namespace &amp;),(const, override))</argsstring>
+        <name>MOCK_METHOD</name>
+        <qualifiedname>iceberg::MockCatalog::MOCK_METHOD</qualifiedname>
+        <param>
+          <type>(Result&lt; std::unordered_map&lt; std::string, std::string &gt; &gt;)</type>
+        </param>
+        <param>
+          <type><ref refid="classiceberg_1_1Catalog_1afc973b299c5cf15f745e85954e343702" kindref="member">GetNamespaceProperties</ref></type>
+        </param>
+        <param>
+          <type>(const <ref refid="structiceberg_1_1Namespace" kindref="compound">Namespace</ref> &amp;)</type>
+        </param>
+        <param>
+          <type>(const, override)</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/mock_catalog.h" line="43" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1MockCatalog_1aecbd467e9804e05ba61f067bf2aabb8d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::MockCatalog::MOCK_METHOD</definition>
+        <argsstring>(Status, UpdateNamespaceProperties,(const Namespace &amp;,(const std::unordered_map&lt; std::string, std::string &gt; &amp;),(const std::unordered_set&lt; std::string &gt; &amp;)),(override))</argsstring>
+        <name>MOCK_METHOD</name>
+        <qualifiedname>iceberg::MockCatalog::MOCK_METHOD</qualifiedname>
+        <param>
+          <type>Status</type>
+        </param>
+        <param>
+          <type><ref refid="classiceberg_1_1Catalog_1a45740f35337266cce1dcf7257e561e0d" kindref="member">UpdateNamespaceProperties</ref></type>
+        </param>
+        <param>
+          <type>(const <ref refid="structiceberg_1_1Namespace" kindref="compound">Namespace</ref> &amp;,(const std::unordered_map&lt; std::string, std::string &gt; &amp;),(const std::unordered_set&lt; std::string &gt; &amp;))</type>
+        </param>
+        <param>
+          <type>(override)</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/mock_catalog.h" line="46" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1MockCatalog_1aedf216afe141c9cfc1314e1811e3e95f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::MockCatalog::MOCK_METHOD</definition>
+        <argsstring>(Status, DropNamespace,(const Namespace &amp;),(override))</argsstring>
+        <name>MOCK_METHOD</name>
+        <qualifiedname>iceberg::MockCatalog::MOCK_METHOD</qualifiedname>
+        <param>
+          <type>Status</type>
+        </param>
+        <param>
+          <type><ref refid="classiceberg_1_1Catalog_1a7a4ed5b2fb8eaa877792e2a8effa2f08" kindref="member">DropNamespace</ref></type>
+        </param>
+        <param>
+          <type>(const <ref refid="structiceberg_1_1Namespace" kindref="compound">Namespace</ref> &amp;)</type>
+        </param>
+        <param>
+          <type>(override)</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/mock_catalog.h" line="51" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1MockCatalog_1a9e7217a763fa3b8a0fd090da9334b8ef" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::MockCatalog::MOCK_METHOD</definition>
+        <argsstring>(Result&lt; bool &gt;, NamespaceExists,(const Namespace &amp;),(const, override))</argsstring>
+        <name>MOCK_METHOD</name>
+        <qualifiedname>iceberg::MockCatalog::MOCK_METHOD</qualifiedname>
+        <param>
+          <type>Result&lt; bool &gt;</type>
+        </param>
+        <param>
+          <type><ref refid="classiceberg_1_1Catalog_1a10b42f8d47abcaf04e4af1e112dbb5ff" kindref="member">NamespaceExists</ref></type>
+        </param>
+        <param>
+          <type>(const <ref refid="structiceberg_1_1Namespace" kindref="compound">Namespace</ref> &amp;)</type>
+        </param>
+        <param>
+          <type>(const, override)</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/mock_catalog.h" line="53" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1MockCatalog_1a10c0712533acb08827e904b07d728346" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::MockCatalog::MOCK_METHOD</definition>
+        <argsstring>((Result&lt; std::vector&lt; TableIdentifier &gt; &gt;), ListTables,(const Namespace &amp;),(const, override))</argsstring>
+        <name>MOCK_METHOD</name>
+        <qualifiedname>iceberg::MockCatalog::MOCK_METHOD</qualifiedname>
+        <param>
+          <type>(Result&lt; std::vector&lt; <ref refid="structiceberg_1_1TableIdentifier" kindref="compound">TableIdentifier</ref> &gt; &gt;)</type>
+        </param>
+        <param>
+          <type><ref refid="classiceberg_1_1Catalog_1acc91fba906944a22b3c9eb279335150f" kindref="member">ListTables</ref></type>
+        </param>
+        <param>
+          <type>(const <ref refid="structiceberg_1_1Namespace" kindref="compound">Namespace</ref> &amp;)</type>
+        </param>
+        <param>
+          <type>(const, override)</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/mock_catalog.h" line="55" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1MockCatalog_1a3c9f730cf1922f197e9139e42f155d5e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::MockCatalog::MOCK_METHOD</definition>
+        <argsstring>((Result&lt; std::shared_ptr&lt; Table &gt; &gt;), CreateTable,(const TableIdentifier &amp;, const std::shared_ptr&lt; Schema &gt; &amp;, const std::shared_ptr&lt; PartitionSpec &gt; &amp;, const std::shared_ptr&lt; SortOrder &gt; &amp;, const std::string &amp;,(const std::unordered_map&lt; std::string, std::string &gt; &amp;)),(override))</argsstring>
+        <name>MOCK_METHOD</name>
+        <qualifiedname>iceberg::MockCatalog::MOCK_METHOD</qualifiedname>
+        <param>
+          <type>(Result&lt; std::shared_ptr&lt; <ref refid="classiceberg_1_1Table" kindref="compound">Table</ref> &gt; &gt;)</type>
+        </param>
+        <param>
+          <type><ref refid="classiceberg_1_1Catalog_1a2061c315402a11ac7ecc1921513588db" kindref="member">CreateTable</ref></type>
+        </param>
+        <param>
+          <type>(const <ref refid="structiceberg_1_1TableIdentifier" kindref="compound">TableIdentifier</ref> &amp;, const std::shared_ptr&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &gt; &amp;, const std::shared_ptr&lt; <ref refid="classiceberg_1_1PartitionSpec" kindref="compound">PartitionSpec</ref> &gt; &amp;, const std::shared_ptr&lt; <ref refid="classiceberg_1_1SortOrder" kindref="compound">SortOrder</ref> &gt; &amp;, const std::string &amp;,(const std::unordered_map&lt; std::string, std::string &gt; &amp;))</type>
+        </param>
+        <param>
+          <type>(override)</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/mock_catalog.h" line="58" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1MockCatalog_1a4f4aa68724517c4129492d22d5a74bdf" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::MockCatalog::MOCK_METHOD</definition>
+        <argsstring>((Result&lt; std::shared_ptr&lt; Table &gt; &gt;), UpdateTable,(const TableIdentifier &amp;,(const std::vector&lt; std::unique_ptr&lt; TableRequirement &gt; &gt; &amp;),(const std::vector&lt; std::unique_ptr&lt; TableUpdate &gt; &gt; &amp;)),(override))</argsstring>
+        <name>MOCK_METHOD</name>
+        <qualifiedname>iceberg::MockCatalog::MOCK_METHOD</qualifiedname>
+        <param>
+          <type>(Result&lt; std::shared_ptr&lt; <ref refid="classiceberg_1_1Table" kindref="compound">Table</ref> &gt; &gt;)</type>
+        </param>
+        <param>
+          <type><ref refid="classiceberg_1_1Catalog_1a6af4029f0916dea3671d54c45ead31e5" kindref="member">UpdateTable</ref></type>
+        </param>
+        <param>
+          <type>(const <ref refid="structiceberg_1_1TableIdentifier" kindref="compound">TableIdentifier</ref> &amp;,(const std::vector&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1TableRequirement" kindref="compound">TableRequirement</ref> &gt; &gt; &amp;),(const std::vector&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1TableUpdate" kindref="compound">TableUpdate</ref> &gt; &gt; &amp;))</type>
+        </param>
+        <param>
+          <type>(override)</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/mock_catalog.h" line="64" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1MockCatalog_1a0f54f2323031a26c4bfd6e51eed2e88e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::MockCatalog::MOCK_METHOD</definition>
+        <argsstring>((Result&lt; std::shared_ptr&lt; Transaction &gt; &gt;), StageCreateTable,(const TableIdentifier &amp;, const std::shared_ptr&lt; Schema &gt; &amp;, const std::shared_ptr&lt; PartitionSpec &gt; &amp;, const std::shared_ptr&lt; SortOrder &gt; &amp;, const std::string &amp;,(const std::unordered_map&lt; std::string, std::string &gt; &amp;)),(override))</argsstring>
+        <name>MOCK_METHOD</name>
+        <qualifiedname>iceberg::MockCatalog::MOCK_METHOD</qualifiedname>
+        <param>
+          <type>(Result&lt; std::shared_ptr&lt; <ref refid="classiceberg_1_1Transaction" kindref="compound">Transaction</ref> &gt; &gt;)</type>
+        </param>
+        <param>
+          <type><ref refid="classiceberg_1_1Catalog_1a26a46a17e3553c82ad4979562f4f05d5" kindref="member">StageCreateTable</ref></type>
+        </param>
+        <param>
+          <type>(const <ref refid="structiceberg_1_1TableIdentifier" kindref="compound">TableIdentifier</ref> &amp;, const std::shared_ptr&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &gt; &amp;, const std::shared_ptr&lt; <ref refid="classiceberg_1_1PartitionSpec" kindref="compound">PartitionSpec</ref> &gt; &amp;, const std::shared_ptr&lt; <ref refid="classiceberg_1_1SortOrder" kindref="compound">SortOrder</ref> &gt; &amp;, const std::string &amp;,(const std::unordered_map&lt; std::string, std::string &gt; &amp;))</type>
+        </param>
+        <param>
+          <type>(override)</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/mock_catalog.h" line="70" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1MockCatalog_1a7dc7266e22aa476c047271688b453208" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::MockCatalog::MOCK_METHOD</definition>
+        <argsstring>(Result&lt; bool &gt;, TableExists,(const TableIdentifier &amp;),(const, override))</argsstring>
+        <name>MOCK_METHOD</name>
+        <qualifiedname>iceberg::MockCatalog::MOCK_METHOD</qualifiedname>
+        <param>
+          <type>Result&lt; bool &gt;</type>
+        </param>
+        <param>
+          <type><ref refid="classiceberg_1_1Catalog_1ab66f167fbdf318d497bd9f41e740e7cd" kindref="member">TableExists</ref></type>
+        </param>
+        <param>
+          <type>(const <ref refid="structiceberg_1_1TableIdentifier" kindref="compound">TableIdentifier</ref> &amp;)</type>
+        </param>
+        <param>
+          <type>(const, override)</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/mock_catalog.h" line="76" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1MockCatalog_1a7890cc3a9e8f7c6204289968b20fe0aa" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::MockCatalog::MOCK_METHOD</definition>
+        <argsstring>(Status, DropTable,(const TableIdentifier &amp;, bool),(override))</argsstring>
+        <name>MOCK_METHOD</name>
+        <qualifiedname>iceberg::MockCatalog::MOCK_METHOD</qualifiedname>
+        <param>
+          <type>Status</type>
+        </param>
+        <param>
+          <type><ref refid="classiceberg_1_1Catalog_1a12fe952356fb24be53f753cb1b4cf380" kindref="member">DropTable</ref></type>
+        </param>
+        <param>
+          <type>(const <ref refid="structiceberg_1_1TableIdentifier" kindref="compound">TableIdentifier</ref> &amp;, bool)</type>
+        </param>
+        <param>
+          <type>(override)</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/mock_catalog.h" line="78" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1MockCatalog_1a495bdc5bbc7c71cc9057b9e55cc15935" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::MockCatalog::MOCK_METHOD</definition>
+        <argsstring>(Status, RenameTable,(const TableIdentifier &amp;, const TableIdentifier &amp;),(override))</argsstring>
+        <name>MOCK_METHOD</name>
+        <qualifiedname>iceberg::MockCatalog::MOCK_METHOD</qualifiedname>
+        <param>
+          <type>Status</type>
+        </param>
+        <param>
+          <type><ref refid="classiceberg_1_1Catalog_1afab77ea12f9a8d2db3fa6e0f731656d1" kindref="member">RenameTable</ref></type>
+        </param>
+        <param>
+          <type>(const <ref refid="structiceberg_1_1TableIdentifier" kindref="compound">TableIdentifier</ref> &amp;, const <ref refid="structiceberg_1_1TableIdentifier" kindref="compound">TableIdentifier</ref> &amp;)</type>
+        </param>
+        <param>
+          <type>(override)</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/mock_catalog.h" line="80" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1MockCatalog_1a1920e1f85f31114d249575b55b571269" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::MockCatalog::MOCK_METHOD</definition>
+        <argsstring>((Result&lt; std::shared_ptr&lt; Table &gt; &gt;), LoadTable,(const TableIdentifier &amp;),(override))</argsstring>
+        <name>MOCK_METHOD</name>
+        <qualifiedname>iceberg::MockCatalog::MOCK_METHOD</qualifiedname>
+        <param>
+          <type>(Result&lt; std::shared_ptr&lt; <ref refid="classiceberg_1_1Table" kindref="compound">Table</ref> &gt; &gt;)</type>
+        </param>
+        <param>
+          <type><ref refid="classiceberg_1_1Catalog_1ab82d66ec150bb58007b9ece678461260" kindref="member">LoadTable</ref></type>
+        </param>
+        <param>
+          <type>(const <ref refid="structiceberg_1_1TableIdentifier" kindref="compound">TableIdentifier</ref> &amp;)</type>
+        </param>
+        <param>
+          <type>(override)</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/mock_catalog.h" line="83" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1MockCatalog_1a7d7539ea6ea02ee1a693e2a7b3fb6762" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::MockCatalog::MOCK_METHOD</definition>
+        <argsstring>((Result&lt; std::shared_ptr&lt; Table &gt; &gt;), RegisterTable,(const TableIdentifier &amp;, const std::string &amp;),(override))</argsstring>
+        <name>MOCK_METHOD</name>
+        <qualifiedname>iceberg::MockCatalog::MOCK_METHOD</qualifiedname>
+        <param>
+          <type>(Result&lt; std::shared_ptr&lt; <ref refid="classiceberg_1_1Table" kindref="compound">Table</ref> &gt; &gt;)</type>
+        </param>
+        <param>
+          <type><ref refid="classiceberg_1_1Catalog_1af51de918a47128398c0c5dcabb9ae781" kindref="member">RegisterTable</ref></type>
+        </param>
+        <param>
+          <type>(const <ref refid="structiceberg_1_1TableIdentifier" kindref="compound">TableIdentifier</ref> &amp;, const std::string &amp;)</type>
+        </param>
+        <param>
+          <type>(override)</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/mock_catalog.h" line="86" column="3"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>iceberg::Catalog</label>
+        <link refid="classiceberg_1_1Catalog"/>
+      </node>
+      <node id="1">
+        <label>iceberg::MockCatalog</label>
+        <link refid="classiceberg_1_1MockCatalog"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="2">
+        <label>iceberg::Catalog</label>
+        <link refid="classiceberg_1_1Catalog"/>
+      </node>
+      <node id="1">
+        <label>iceberg::MockCatalog</label>
+        <link refid="classiceberg_1_1MockCatalog"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/test/mock_catalog.h" line="29" column="1" bodyfile="iceberg/test/mock_catalog.h" bodystart="29" bodyend="88"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1Catalog_1afe33407448157e9f930c6c59857674ad" prot="public" virt="pure-virtual"><scope>iceberg::MockCatalog</scope><name>CreateNamespace</name></member>
+      <member refid="classiceberg_1_1Catalog_1a2061c315402a11ac7ecc1921513588db" prot="public" virt="pure-virtual"><scope>iceberg::MockCatalog</scope><name>CreateTable</name></member>
+      <member refid="classiceberg_1_1Catalog_1a7a4ed5b2fb8eaa877792e2a8effa2f08" prot="public" virt="pure-virtual"><scope>iceberg::MockCatalog</scope><name>DropNamespace</name></member>
+      <member refid="classiceberg_1_1Catalog_1a12fe952356fb24be53f753cb1b4cf380" prot="public" virt="pure-virtual"><scope>iceberg::MockCatalog</scope><name>DropTable</name></member>
+      <member refid="classiceberg_1_1Catalog_1afc973b299c5cf15f745e85954e343702" prot="public" virt="pure-virtual"><scope>iceberg::MockCatalog</scope><name>GetNamespaceProperties</name></member>
+      <member refid="classiceberg_1_1Catalog_1ad952c6a9e417565a982719c94a071f4c" prot="public" virt="pure-virtual"><scope>iceberg::MockCatalog</scope><name>ListNamespaces</name></member>
+      <member refid="classiceberg_1_1Catalog_1acc91fba906944a22b3c9eb279335150f" prot="public" virt="pure-virtual"><scope>iceberg::MockCatalog</scope><name>ListTables</name></member>
+      <member refid="classiceberg_1_1Catalog_1ab82d66ec150bb58007b9ece678461260" prot="public" virt="pure-virtual"><scope>iceberg::MockCatalog</scope><name>LoadTable</name></member>
+      <member refid="classiceberg_1_1MockCatalog_1a3b23309916cecc98b947a22176527790" prot="public" virt="non-virtual"><scope>iceberg::MockCatalog</scope><name>MOCK_METHOD</name></member>
+      <member refid="classiceberg_1_1MockCatalog_1ac6fed5e4b77610d1e65ad5bf5cb03226" prot="public" virt="non-virtual"><scope>iceberg::MockCatalog</scope><name>MOCK_METHOD</name></member>
+      <member refid="classiceberg_1_1MockCatalog_1a8970973ab41c0012920b4d4bee3aef00" prot="public" virt="non-virtual"><scope>iceberg::MockCatalog</scope><name>MOCK_METHOD</name></member>
+      <member refid="classiceberg_1_1MockCatalog_1ac7b0fe6853bc2018c2d060fef3221e7f" prot="public" virt="non-virtual"><scope>iceberg::MockCatalog</scope><name>MOCK_METHOD</name></member>
+      <member refid="classiceberg_1_1MockCatalog_1aecbd467e9804e05ba61f067bf2aabb8d" prot="public" virt="non-virtual"><scope>iceberg::MockCatalog</scope><name>MOCK_METHOD</name></member>
+      <member refid="classiceberg_1_1MockCatalog_1aedf216afe141c9cfc1314e1811e3e95f" prot="public" virt="non-virtual"><scope>iceberg::MockCatalog</scope><name>MOCK_METHOD</name></member>
+      <member refid="classiceberg_1_1MockCatalog_1a9e7217a763fa3b8a0fd090da9334b8ef" prot="public" virt="non-virtual"><scope>iceberg::MockCatalog</scope><name>MOCK_METHOD</name></member>
+      <member refid="classiceberg_1_1MockCatalog_1a10c0712533acb08827e904b07d728346" prot="public" virt="non-virtual"><scope>iceberg::MockCatalog</scope><name>MOCK_METHOD</name></member>
+      <member refid="classiceberg_1_1MockCatalog_1a3c9f730cf1922f197e9139e42f155d5e" prot="public" virt="non-virtual"><scope>iceberg::MockCatalog</scope><name>MOCK_METHOD</name></member>
+      <member refid="classiceberg_1_1MockCatalog_1a4f4aa68724517c4129492d22d5a74bdf" prot="public" virt="non-virtual"><scope>iceberg::MockCatalog</scope><name>MOCK_METHOD</name></member>
+      <member refid="classiceberg_1_1MockCatalog_1a0f54f2323031a26c4bfd6e51eed2e88e" prot="public" virt="non-virtual"><scope>iceberg::MockCatalog</scope><name>MOCK_METHOD</name></member>
+      <member refid="classiceberg_1_1MockCatalog_1a7dc7266e22aa476c047271688b453208" prot="public" virt="non-virtual"><scope>iceberg::MockCatalog</scope><name>MOCK_METHOD</name></member>
+      <member refid="classiceberg_1_1MockCatalog_1a7890cc3a9e8f7c6204289968b20fe0aa" prot="public" virt="non-virtual"><scope>iceberg::MockCatalog</scope><name>MOCK_METHOD</name></member>
+      <member refid="classiceberg_1_1MockCatalog_1a495bdc5bbc7c71cc9057b9e55cc15935" prot="public" virt="non-virtual"><scope>iceberg::MockCatalog</scope><name>MOCK_METHOD</name></member>
+      <member refid="classiceberg_1_1MockCatalog_1a1920e1f85f31114d249575b55b571269" prot="public" virt="non-virtual"><scope>iceberg::MockCatalog</scope><name>MOCK_METHOD</name></member>
+      <member refid="classiceberg_1_1MockCatalog_1a7d7539ea6ea02ee1a693e2a7b3fb6762" prot="public" virt="non-virtual"><scope>iceberg::MockCatalog</scope><name>MOCK_METHOD</name></member>
+      <member refid="classiceberg_1_1MockCatalog_1ad858617941889f0fab36e52bd6522e8d" prot="public" virt="non-virtual"><scope>iceberg::MockCatalog</scope><name>MockCatalog</name></member>
+      <member refid="classiceberg_1_1Catalog_1a6ca1f4412051d707d228c34716f0df77" prot="public" virt="pure-virtual"><scope>iceberg::MockCatalog</scope><name>name</name></member>
+      <member refid="classiceberg_1_1Catalog_1a10b42f8d47abcaf04e4af1e112dbb5ff" prot="public" virt="pure-virtual"><scope>iceberg::MockCatalog</scope><name>NamespaceExists</name></member>
+      <member refid="classiceberg_1_1Catalog_1af51de918a47128398c0c5dcabb9ae781" prot="public" virt="pure-virtual"><scope>iceberg::MockCatalog</scope><name>RegisterTable</name></member>
+      <member refid="classiceberg_1_1Catalog_1afab77ea12f9a8d2db3fa6e0f731656d1" prot="public" virt="pure-virtual"><scope>iceberg::MockCatalog</scope><name>RenameTable</name></member>
+      <member refid="classiceberg_1_1Catalog_1a26a46a17e3553c82ad4979562f4f05d5" prot="public" virt="pure-virtual"><scope>iceberg::MockCatalog</scope><name>StageCreateTable</name></member>
+      <member refid="classiceberg_1_1Catalog_1ab66f167fbdf318d497bd9f41e740e7cd" prot="public" virt="pure-virtual"><scope>iceberg::MockCatalog</scope><name>TableExists</name></member>
+      <member refid="classiceberg_1_1Catalog_1a45740f35337266cce1dcf7257e561e0d" prot="public" virt="pure-virtual"><scope>iceberg::MockCatalog</scope><name>UpdateNamespaceProperties</name></member>
+      <member refid="classiceberg_1_1Catalog_1a6af4029f0916dea3671d54c45ead31e5" prot="public" virt="pure-virtual"><scope>iceberg::MockCatalog</scope><name>UpdateTable</name></member>
+      <member refid="classiceberg_1_1Catalog_1aa4682426cafc01734008ca9be9acb6f6" prot="public" virt="virtual"><scope>iceberg::MockCatalog</scope><name>~Catalog</name></member>
+      <member refid="classiceberg_1_1MockCatalog_1ae2ad38a956b864a2209c0970d751e84f" prot="public" virt="non-virtual"><scope>iceberg::MockCatalog</scope><name>~MockCatalog</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

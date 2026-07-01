@@ -1,0 +1,218 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1RenamePartitionResponse" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::RenamePartitionResponse</compoundname>
+    <basecompoundref prot="public" virt="virtual">apache::thrift::TBase</basecompoundref>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1RenamePartitionResponse_1a1c74f06e7866cafa2f579bbff2218adb" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::RenamePartitionResponse::RenamePartitionResponse</definition>
+        <argsstring>(const RenamePartitionResponse &amp;) noexcept</argsstring>
+        <name>RenamePartitionResponse</name>
+        <qualifiedname>Apache::Hadoop::Hive::RenamePartitionResponse::RenamePartitionResponse</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1RenamePartitionResponse" kindref="compound">RenamePartitionResponse</ref> &amp;</type>
+          <defname>other1685</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13818" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="54281" bodyend="54283"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1RenamePartitionResponse_1af6883e956a3ab6668f7c506e37b84076" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1RenamePartitionResponse" kindref="compound">RenamePartitionResponse</ref> &amp;</type>
+        <definition>RenamePartitionResponse &amp; Apache::Hadoop::Hive::RenamePartitionResponse::operator=</definition>
+        <argsstring>(const RenamePartitionResponse &amp;) noexcept</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::RenamePartitionResponse::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1RenamePartitionResponse" kindref="compound">RenamePartitionResponse</ref> &amp;</type>
+          <defname>other1686</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13819" column="27" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="54284" bodyend="54287"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1RenamePartitionResponse_1a1275a6c954e83de32918f8196e3eef52" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::RenamePartitionResponse::RenamePartitionResponse</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>RenamePartitionResponse</name>
+        <qualifiedname>Apache::Hadoop::Hive::RenamePartitionResponse::RenamePartitionResponse</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13820" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="54223" bodyend="54224"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1RenamePartitionResponse_1a60093cea7558c464e1d463cfdc14ad4f" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::RenamePartitionResponse::~RenamePartitionResponse</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~RenamePartitionResponse</name>
+        <qualifiedname>Apache::Hadoop::Hive::RenamePartitionResponse::~RenamePartitionResponse</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13822" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="54220" bodyend="54221"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1RenamePartitionResponse_1a960f4af6ec391a8d8f471c7ce8e5a0ed" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::RenamePartitionResponse::operator==</definition>
+        <argsstring>(const RenamePartitionResponse &amp;) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::RenamePartitionResponse::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1RenamePartitionResponse" kindref="compound">RenamePartitionResponse</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13824" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="54276" bodyend="54279"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1RenamePartitionResponse_1ab251e5a24d0cef71c81975172a36594b" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::RenamePartitionResponse::operator!=</definition>
+        <argsstring>(const RenamePartitionResponse &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::RenamePartitionResponse::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1RenamePartitionResponse" kindref="compound">RenamePartitionResponse</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13825" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="13825" bodyend="13827"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1RenamePartitionResponse_1a2c321745c8b265725fbc81bb193ca9ae" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::RenamePartitionResponse::operator&lt;</definition>
+        <argsstring>(const RenamePartitionResponse &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::RenamePartitionResponse::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1RenamePartitionResponse" kindref="compound">RenamePartitionResponse</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13829" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1RenamePartitionResponse_1a069972b9d62f6fb67fe11c92abd2def5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::RenamePartitionResponse::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot) override</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::RenamePartitionResponse::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13831" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="54232" bodyend="54258"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1RenamePartitionResponse_1ae6cda1f33918ea8ecffb66ed2728ae48" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::RenamePartitionResponse::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const override</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::RenamePartitionResponse::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13832" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="54260" bodyend="54268"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1RenamePartitionResponse_1afe58fe0016fd93e78589f61a75a0b0b4" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::RenamePartitionResponse::printTo</definition>
+        <argsstring>(std::ostream &amp;out) const</argsstring>
+        <name>printTo</name>
+        <qualifiedname>Apache::Hadoop::Hive::RenamePartitionResponse::printTo</qualifiedname>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13834" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="54288" bodyend="54292"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::RenamePartitionResponse</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1RenamePartitionResponse"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::RenamePartitionResponse</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1RenamePartitionResponse"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13815" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="13815" bodyend="13835"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1RenamePartitionResponse_1ab251e5a24d0cef71c81975172a36594b" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::RenamePartitionResponse</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1RenamePartitionResponse_1a2c321745c8b265725fbc81bb193ca9ae" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::RenamePartitionResponse</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1RenamePartitionResponse_1af6883e956a3ab6668f7c506e37b84076" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::RenamePartitionResponse</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1RenamePartitionResponse_1a960f4af6ec391a8d8f471c7ce8e5a0ed" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::RenamePartitionResponse</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1RenamePartitionResponse_1afe58fe0016fd93e78589f61a75a0b0b4" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::RenamePartitionResponse</scope><name>printTo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1RenamePartitionResponse_1a069972b9d62f6fb67fe11c92abd2def5" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::RenamePartitionResponse</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1RenamePartitionResponse_1a1c74f06e7866cafa2f579bbff2218adb" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::RenamePartitionResponse</scope><name>RenamePartitionResponse</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1RenamePartitionResponse_1a1275a6c954e83de32918f8196e3eef52" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::RenamePartitionResponse</scope><name>RenamePartitionResponse</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1RenamePartitionResponse_1ae6cda1f33918ea8ecffb66ed2728ae48" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::RenamePartitionResponse</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1RenamePartitionResponse_1a60093cea7558c464e1d463cfdc14ad4f" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::RenamePartitionResponse</scope><name>~RenamePartitionResponse</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

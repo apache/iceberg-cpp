@@ -1,0 +1,925 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1sql_1_1Sqlpp23CatalogStore" kind="class" language="C++" prot="public" final="yes">
+    <compoundname>iceberg::sql::Sqlpp23CatalogStore</compoundname>
+    <basecompoundref refid="classiceberg_1_1sql_1_1CatalogStore" prot="public" virt="non-virtual">iceberg::sql::CatalogStore</basecompoundref>
+    <includes refid="catalog__store__sqlpp23__internal_8h" local="no">catalog_store_sqlpp23_internal.h</includes>
+    <templateparamlist>
+      <param>
+        <type>typename ConnectionSource</type>
+      </param>
+      <param>
+        <type>typename Traits</type>
+      </param>
+    </templateparamlist>
+    <sectiondef kind="private-static-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1sql_1_1Sqlpp23CatalogStore_1a103448cc40137b52783e49f14efaec2b" prot="private" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr std::string_view</type>
+        <definition>constexpr std::string_view iceberg::sql::Sqlpp23CatalogStore&lt; ConnectionSource, Traits &gt;::kTableRecordType</definition>
+        <argsstring></argsstring>
+        <name>kTableRecordType</name>
+        <qualifiedname>iceberg::sql::Sqlpp23CatalogStore::kTableRecordType</qualifiedname>
+        <initializer>= &quot;TABLE&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/catalog_store_sqlpp23_internal.h" line="477" column="37" bodyfile="iceberg/catalog/sql/catalog_store_sqlpp23_internal.h" bodystart="477" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1sql_1_1Sqlpp23CatalogStore_1aadf1ada0a98aab05790556deecfd22ab" prot="private" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr std::string_view</type>
+        <definition>constexpr std::string_view iceberg::sql::Sqlpp23CatalogStore&lt; ConnectionSource, Traits &gt;::kCreateTablesSql</definition>
+        <argsstring></argsstring>
+        <name>kCreateTablesSql</name>
+        <qualifiedname>iceberg::sql::Sqlpp23CatalogStore::kCreateTablesSql</qualifiedname>
+        <initializer>=
+      &quot;CREATE TABLE IF NOT EXISTS iceberg_tables (&quot;
+      &quot;catalog_name VARCHAR(255) NOT NULL, &quot;
+      &quot;table_namespace VARCHAR(255) NOT NULL, &quot;
+      &quot;table_name VARCHAR(255) NOT NULL, &quot;
+      &quot;metadata_location VARCHAR(1000), &quot;
+      &quot;previous_metadata_location VARCHAR(1000), &quot;
+      &quot;iceberg_type VARCHAR(5), &quot;
+      &quot;PRIMARY KEY (catalog_name, table_namespace, table_name))&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/catalog_store_sqlpp23_internal.h" line="485" column="37" bodyfile="iceberg/catalog/sql/catalog_store_sqlpp23_internal.h" bodystart="485" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1sql_1_1Sqlpp23CatalogStore_1a307ffab222b1fc2e02aefa9d3f354041" prot="private" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr std::string_view</type>
+        <definition>constexpr std::string_view iceberg::sql::Sqlpp23CatalogStore&lt; ConnectionSource, Traits &gt;::kAddRecordTypeSql</definition>
+        <argsstring></argsstring>
+        <name>kAddRecordTypeSql</name>
+        <qualifiedname>iceberg::sql::Sqlpp23CatalogStore::kAddRecordTypeSql</qualifiedname>
+        <initializer>=
+      &quot;ALTER TABLE iceberg_tables ADD COLUMN iceberg_type VARCHAR(5)&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/catalog_store_sqlpp23_internal.h" line="495" column="37" bodyfile="iceberg/catalog/sql/catalog_store_sqlpp23_internal.h" bodystart="495" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1sql_1_1Sqlpp23CatalogStore_1a20271af78aef2b7e2915df69fccc3881" prot="private" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr std::string_view</type>
+        <definition>constexpr std::string_view iceberg::sql::Sqlpp23CatalogStore&lt; ConnectionSource, Traits &gt;::kCreateNamespacePropertiesSql</definition>
+        <argsstring></argsstring>
+        <name>kCreateNamespacePropertiesSql</name>
+        <qualifiedname>iceberg::sql::Sqlpp23CatalogStore::kCreateNamespacePropertiesSql</qualifiedname>
+        <initializer>=
+      &quot;CREATE TABLE IF NOT EXISTS iceberg_namespace_properties (&quot;
+      &quot;catalog_name VARCHAR(255) NOT NULL, &quot;
+      &quot;namespace VARCHAR(255) NOT NULL, &quot;
+      &quot;property_key VARCHAR(255) NOT NULL, &quot;
+      &quot;property_value VARCHAR(1000), &quot;
+      &quot;PRIMARY KEY (catalog_name, namespace, property_key))&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/catalog_store_sqlpp23_internal.h" line="498" column="37" bodyfile="iceberg/catalog/sql/catalog_store_sqlpp23_internal.h" bodystart="498" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1sql_1_1Sqlpp23CatalogStore_1a3ba536e8fe0fbf093ef03b62150c16a1" prot="private" static="no" mutable="no">
+        <type>ConnectionSource</type>
+        <definition>ConnectionSource iceberg::sql::Sqlpp23CatalogStore&lt; ConnectionSource, Traits &gt;::source_</definition>
+        <argsstring></argsstring>
+        <name>source_</name>
+        <qualifiedname>iceberg::sql::Sqlpp23CatalogStore::source_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/catalog_store_sqlpp23_internal.h" line="531" column="20" bodyfile="iceberg/catalog/sql/catalog_store_sqlpp23_internal.h" bodystart="531" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1sql_1_1Sqlpp23CatalogStore_1a83a9648d14217b76f2bb24d5ecabdfed" prot="private" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::sql::Sqlpp23CatalogStore&lt; ConnectionSource, Traits &gt;::catalog_</definition>
+        <argsstring></argsstring>
+        <name>catalog_</name>
+        <qualifiedname>iceberg::sql::Sqlpp23CatalogStore::catalog_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/catalog_store_sqlpp23_internal.h" line="532" column="15" bodyfile="iceberg/catalog/sql/catalog_store_sqlpp23_internal.h" bodystart="532" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1sql_1_1Sqlpp23CatalogStore_1ad7aba5b1417b4edc78daf0d6a066f0f6" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename...</type>
+            <declname>SourceArgs</declname>
+            <defname>SourceArgs</defname>
+          </param>
+        </templateparamlist>
+        <type></type>
+        <definition>iceberg::sql::Sqlpp23CatalogStore&lt; ConnectionSource, Traits &gt;::Sqlpp23CatalogStore</definition>
+        <argsstring>(std::string catalog_name, SourceArgs &amp;&amp;... source_args)</argsstring>
+        <name>Sqlpp23CatalogStore</name>
+        <qualifiedname>iceberg::sql::Sqlpp23CatalogStore::Sqlpp23CatalogStore</qualifiedname>
+        <param>
+          <type>std::string</type>
+          <declname>catalog_name</declname>
+        </param>
+        <param>
+          <type>SourceArgs &amp;&amp;...</type>
+          <declname>source_args</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/catalog_store_sqlpp23_internal.h" line="217" column="12" bodyfile="iceberg/catalog/sql/catalog_store_sqlpp23_internal.h" bodystart="217" bodyend="219"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1sql_1_1Sqlpp23CatalogStore_1a214e6d11da8ce57b787c3699ef8d42fa" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>Status</type>
+        <definition>Status iceberg::sql::Sqlpp23CatalogStore&lt; ConnectionSource, Traits &gt;::Initialize</definition>
+        <argsstring>() override</argsstring>
+        <name>Initialize</name>
+        <qualifiedname>iceberg::sql::Sqlpp23CatalogStore::Initialize</qualifiedname>
+        <reimplements refid="classiceberg_1_1sql_1_1CatalogStore_1ae56f64bd20de171ac60a6b5540f4f7a9">Initialize</reimplements>
+        <briefdescription>
+<para>Create the backing tables if they do not already exist. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>Status indicating success if the tables are ready. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/catalog_store_sqlpp23_internal.h" line="221" column="10" bodyfile="iceberg/catalog/sql/catalog_store_sqlpp23_internal.h" bodystart="221" bodyend="235"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1sql_1_1Sqlpp23CatalogStore_1a89d48e3e24db245a5dd888559ece2b7d" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>Result&lt; std::vector&lt; std::string &gt; &gt;</type>
+        <definition>Result&lt; std::vector&lt; std::string &gt; &gt; iceberg::sql::Sqlpp23CatalogStore&lt; ConnectionSource, Traits &gt;::ListNamespaceNames</definition>
+        <argsstring>() override</argsstring>
+        <name>ListNamespaceNames</name>
+        <qualifiedname>iceberg::sql::Sqlpp23CatalogStore::ListNamespaceNames</qualifiedname>
+        <reimplements refid="classiceberg_1_1sql_1_1CatalogStore_1aef850caa1650a3bf7b3942089ac56727">ListNamespaceNames</reimplements>
+        <briefdescription>
+<para>Return the distinct namespace identifiers known to this catalog. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>A list of namespace identifiers in the store&apos;s string form. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/catalog_store_sqlpp23_internal.h" line="239" column="10" bodyfile="iceberg/catalog/sql/catalog_store_sqlpp23_internal.h" bodystart="239" bodyend="262"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1sql_1_1Sqlpp23CatalogStore_1aad679d5425cd6457bbf5ccb2f55fd6b8" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>Result&lt; std::vector&lt; <ref refid="structiceberg_1_1sql_1_1NamespaceProperty" kindref="compound">NamespaceProperty</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::vector&lt; NamespaceProperty &gt; &gt; iceberg::sql::Sqlpp23CatalogStore&lt; ConnectionSource, Traits &gt;::GetNamespaceProperties</definition>
+        <argsstring>(std::string_view ns) override</argsstring>
+        <name>GetNamespaceProperties</name>
+        <qualifiedname>iceberg::sql::Sqlpp23CatalogStore::GetNamespaceProperties</qualifiedname>
+        <reimplements refid="classiceberg_1_1sql_1_1CatalogStore_1a6a9fbcc42c6934308313ddf7577fcb88">GetNamespaceProperties</reimplements>
+        <param>
+          <type>std::string_view</type>
+          <declname>ns</declname>
+        </param>
+        <briefdescription>
+<para>Return all property rows stored for <computeroutput>ns</computeroutput>. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>ns</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>A namespace identifier in the store&apos;s string form. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The property rows stored for the namespace. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/catalog_store_sqlpp23_internal.h" line="264" column="10" bodyfile="iceberg/catalog/sql/catalog_store_sqlpp23_internal.h" bodystart="264" bodyend="285"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1sql_1_1Sqlpp23CatalogStore_1a3ccba45f8dca4899dcffbc92232c97a6" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>Status</type>
+        <definition>Status iceberg::sql::Sqlpp23CatalogStore&lt; ConnectionSource, Traits &gt;::InsertNamespaceProperty</definition>
+        <argsstring>(std::string_view ns, std::string_view key, std::optional&lt; std::string_view &gt; value) override</argsstring>
+        <name>InsertNamespaceProperty</name>
+        <qualifiedname>iceberg::sql::Sqlpp23CatalogStore::InsertNamespaceProperty</qualifiedname>
+        <reimplements refid="classiceberg_1_1sql_1_1CatalogStore_1a85ade7cc91c5f1db1ea9b5ab4f993ab7">InsertNamespaceProperty</reimplements>
+        <param>
+          <type>std::string_view</type>
+          <declname>ns</declname>
+        </param>
+        <param>
+          <type>std::string_view</type>
+          <declname>key</declname>
+        </param>
+        <param>
+          <type>std::optional&lt; std::string_view &gt;</type>
+          <declname>value</declname>
+        </param>
+        <briefdescription>
+<para>Insert one property row for <computeroutput>ns</computeroutput>. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>A primary-key collision (same namespace + key) must be reported as <computeroutput>ErrorKind::kAlreadyExists</computeroutput>.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>ns</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>A namespace identifier in the store&apos;s string form. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>key</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Property key. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>value</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Property value, or <computeroutput>std::nullopt</computeroutput> for SQL NULL. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Status indicating success if the row was inserted. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/catalog_store_sqlpp23_internal.h" line="287" column="10" bodyfile="iceberg/catalog/sql/catalog_store_sqlpp23_internal.h" bodystart="287" bodyend="299"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1sql_1_1Sqlpp23CatalogStore_1ae7bbd2b0a03da34b93f57431d46eac30" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>Status</type>
+        <definition>Status iceberg::sql::Sqlpp23CatalogStore&lt; ConnectionSource, Traits &gt;::DeleteNamespaceProperty</definition>
+        <argsstring>(std::string_view ns, std::string_view key) override</argsstring>
+        <name>DeleteNamespaceProperty</name>
+        <qualifiedname>iceberg::sql::Sqlpp23CatalogStore::DeleteNamespaceProperty</qualifiedname>
+        <reimplements refid="classiceberg_1_1sql_1_1CatalogStore_1a6093a2b131cf6553f26167813357c83b">DeleteNamespaceProperty</reimplements>
+        <param>
+          <type>std::string_view</type>
+          <declname>ns</declname>
+        </param>
+        <param>
+          <type>std::string_view</type>
+          <declname>key</declname>
+        </param>
+        <briefdescription>
+<para>Delete the property row identified by (<computeroutput>ns</computeroutput>, <computeroutput>key</computeroutput>), if present. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>ns</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>A namespace identifier in the store&apos;s string form. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>key</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Property key. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Status indicating success if the row was deleted or did not exist. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/catalog_store_sqlpp23_internal.h" line="301" column="10" bodyfile="iceberg/catalog/sql/catalog_store_sqlpp23_internal.h" bodystart="301" bodyend="310"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1sql_1_1Sqlpp23CatalogStore_1a9b20194e613729272e014e2f8c1dc765" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>Result&lt; int64_t &gt;</type>
+        <definition>Result&lt; int64_t &gt; iceberg::sql::Sqlpp23CatalogStore&lt; ConnectionSource, Traits &gt;::DeleteNamespace</definition>
+        <argsstring>(std::string_view ns) override</argsstring>
+        <name>DeleteNamespace</name>
+        <qualifiedname>iceberg::sql::Sqlpp23CatalogStore::DeleteNamespace</qualifiedname>
+        <reimplements refid="classiceberg_1_1sql_1_1CatalogStore_1a7f898b5381a60b8caca41f97a2eedddb">DeleteNamespace</reimplements>
+        <param>
+          <type>std::string_view</type>
+          <declname>ns</declname>
+        </param>
+        <briefdescription>
+<para>Delete all property rows for <computeroutput>ns</computeroutput>. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>ns</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>A namespace identifier in the store&apos;s string form. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The number of rows deleted. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/catalog_store_sqlpp23_internal.h" line="312" column="10" bodyfile="iceberg/catalog/sql/catalog_store_sqlpp23_internal.h" bodystart="312" bodyend="325"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1sql_1_1Sqlpp23CatalogStore_1a15fe16634a3c59290b3ca0305e857f84" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>Result&lt; std::vector&lt; std::string &gt; &gt;</type>
+        <definition>Result&lt; std::vector&lt; std::string &gt; &gt; iceberg::sql::Sqlpp23CatalogStore&lt; ConnectionSource, Traits &gt;::ListTableNames</definition>
+        <argsstring>(std::string_view ns) override</argsstring>
+        <name>ListTableNames</name>
+        <qualifiedname>iceberg::sql::Sqlpp23CatalogStore::ListTableNames</qualifiedname>
+        <reimplements refid="classiceberg_1_1sql_1_1CatalogStore_1ab0cfe85e5003d43edb4ff05c7b53acbd">ListTableNames</reimplements>
+        <param>
+          <type>std::string_view</type>
+          <declname>ns</declname>
+        </param>
+        <briefdescription>
+<para>Return the table names stored directly under <computeroutput>ns</computeroutput>. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>ns</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>A namespace identifier in the store&apos;s string form. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A list of table names. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/catalog_store_sqlpp23_internal.h" line="329" column="10" bodyfile="iceberg/catalog/sql/catalog_store_sqlpp23_internal.h" bodystart="329" bodyend="346"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1sql_1_1Sqlpp23CatalogStore_1ab4b62099060e4243a2f4a4ddd18f7e3e" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>Result&lt; bool &gt;</type>
+        <definition>Result&lt; bool &gt; iceberg::sql::Sqlpp23CatalogStore&lt; ConnectionSource, Traits &gt;::TableExists</definition>
+        <argsstring>(std::string_view ns, std::string_view name) override</argsstring>
+        <name>TableExists</name>
+        <qualifiedname>iceberg::sql::Sqlpp23CatalogStore::TableExists</qualifiedname>
+        <reimplements refid="classiceberg_1_1sql_1_1CatalogStore_1a8efafbd14e65aab9f3f876ca1843cda6">TableExists</reimplements>
+        <param>
+          <type>std::string_view</type>
+          <declname>ns</declname>
+        </param>
+        <param>
+          <type>std::string_view</type>
+          <declname>name</declname>
+        </param>
+        <briefdescription>
+<para>Whether a row exists for the table (<computeroutput>ns</computeroutput>, <computeroutput>name</computeroutput>). </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>ns</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>A namespace identifier in the store&apos;s string form. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>name</parametername>
+</parameternamelist>
+<parameterdescription>
+<para><ref refid="classiceberg_1_1Table" kindref="compound">Table</ref> name. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>true if the table row exists, false otherwise. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/catalog_store_sqlpp23_internal.h" line="348" column="10" bodyfile="iceberg/catalog/sql/catalog_store_sqlpp23_internal.h" bodystart="348" bodyend="364"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1sql_1_1Sqlpp23CatalogStore_1aa710a95d3a21281c73d97b77483a273c" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>Result&lt; std::optional&lt; std::string &gt; &gt;</type>
+        <definition>Result&lt; std::optional&lt; std::string &gt; &gt; iceberg::sql::Sqlpp23CatalogStore&lt; ConnectionSource, Traits &gt;::GetTableMetadataLocation</definition>
+        <argsstring>(std::string_view ns, std::string_view name) override</argsstring>
+        <name>GetTableMetadataLocation</name>
+        <qualifiedname>iceberg::sql::Sqlpp23CatalogStore::GetTableMetadataLocation</qualifiedname>
+        <reimplements refid="classiceberg_1_1sql_1_1CatalogStore_1a047c2b1353469bfdda8739b846fbde46">GetTableMetadataLocation</reimplements>
+        <param>
+          <type>std::string_view</type>
+          <declname>ns</declname>
+        </param>
+        <param>
+          <type>std::string_view</type>
+          <declname>name</declname>
+        </param>
+        <briefdescription>
+<para>Return the current metadata location of (<computeroutput>ns</computeroutput>, <computeroutput>name</computeroutput>). </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>ns</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>A namespace identifier in the store&apos;s string form. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>name</parametername>
+</parameternamelist>
+<parameterdescription>
+<para><ref refid="classiceberg_1_1Table" kindref="compound">Table</ref> name. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The metadata location, or <computeroutput>std::nullopt</computeroutput> if the table has no row or its <computeroutput>metadata_location</computeroutput> column is NULL. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/catalog_store_sqlpp23_internal.h" line="366" column="10" bodyfile="iceberg/catalog/sql/catalog_store_sqlpp23_internal.h" bodystart="366" bodyend="388"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1sql_1_1Sqlpp23CatalogStore_1a97923abfc961c38f637ecbfa593294c1" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>Status</type>
+        <definition>Status iceberg::sql::Sqlpp23CatalogStore&lt; ConnectionSource, Traits &gt;::InsertTable</definition>
+        <argsstring>(std::string_view ns, std::string_view name, std::string_view metadata_location) override</argsstring>
+        <name>InsertTable</name>
+        <qualifiedname>iceberg::sql::Sqlpp23CatalogStore::InsertTable</qualifiedname>
+        <reimplements refid="classiceberg_1_1sql_1_1CatalogStore_1a393d3119d8b17efa36f7021189fd02e4">InsertTable</reimplements>
+        <param>
+          <type>std::string_view</type>
+          <declname>ns</declname>
+        </param>
+        <param>
+          <type>std::string_view</type>
+          <declname>name</declname>
+        </param>
+        <param>
+          <type>std::string_view</type>
+          <declname>metadata_location</declname>
+        </param>
+        <briefdescription>
+<para>Insert a new table row with the given metadata location. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>The <computeroutput>previous_metadata_location</computeroutput> column is set to NULL. A primary-key collision must be reported as <computeroutput>ErrorKind::kAlreadyExists</computeroutput>.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>ns</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>A namespace identifier in the store&apos;s string form. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>name</parametername>
+</parameternamelist>
+<parameterdescription>
+<para><ref refid="classiceberg_1_1Table" kindref="compound">Table</ref> name. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>metadata_location</parametername>
+</parameternamelist>
+<parameterdescription>
+<para><ref refid="classiceberg_1_1Table" kindref="compound">Table</ref> metadata location. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Status indicating success if the row was inserted. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/catalog_store_sqlpp23_internal.h" line="390" column="10" bodyfile="iceberg/catalog/sql/catalog_store_sqlpp23_internal.h" bodystart="390" bodyend="402"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1sql_1_1Sqlpp23CatalogStore_1a1792b47ab51895bcd2a4c20b77cd6d28" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>Result&lt; int64_t &gt;</type>
+        <definition>Result&lt; int64_t &gt; iceberg::sql::Sqlpp23CatalogStore&lt; ConnectionSource, Traits &gt;::UpdateTableMetadataLocation</definition>
+        <argsstring>(std::string_view ns, std::string_view name, std::string_view new_location, std::string_view new_previous_location, std::string_view expected_current_location) override</argsstring>
+        <name>UpdateTableMetadataLocation</name>
+        <qualifiedname>iceberg::sql::Sqlpp23CatalogStore::UpdateTableMetadataLocation</qualifiedname>
+        <reimplements refid="classiceberg_1_1sql_1_1CatalogStore_1a56167796110713ca46b7b6980b7e6949">UpdateTableMetadataLocation</reimplements>
+        <param>
+          <type>std::string_view</type>
+          <declname>ns</declname>
+        </param>
+        <param>
+          <type>std::string_view</type>
+          <declname>name</declname>
+        </param>
+        <param>
+          <type>std::string_view</type>
+          <declname>new_location</declname>
+        </param>
+        <param>
+          <type>std::string_view</type>
+          <declname>new_previous_location</declname>
+        </param>
+        <param>
+          <type>std::string_view</type>
+          <declname>expected_current_location</declname>
+        </param>
+        <briefdescription>
+<para>Conditionally update a table&apos;s metadata location (optimistic CAS). </para>
+        </briefdescription>
+        <detaileddescription>
+<para>The update only applies when the stored <computeroutput>metadata_location</computeroutput> still equals <computeroutput>expected_current_location</computeroutput>.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>ns</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>A namespace identifier in the store&apos;s string form. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>name</parametername>
+</parameternamelist>
+<parameterdescription>
+<para><ref refid="classiceberg_1_1Table" kindref="compound">Table</ref> name. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>new_location</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>New table metadata location. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>new_previous_location</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>New previous metadata location. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>expected_current_location</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Expected current metadata location. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The number of rows updated (1 on success, 0 on a stale base). </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/catalog_store_sqlpp23_internal.h" line="404" column="10" bodyfile="iceberg/catalog/sql/catalog_store_sqlpp23_internal.h" bodystart="404" bodyend="428"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1sql_1_1Sqlpp23CatalogStore_1ac4c51431da566c42e3f1f1e069f936cb" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>Result&lt; int64_t &gt;</type>
+        <definition>Result&lt; int64_t &gt; iceberg::sql::Sqlpp23CatalogStore&lt; ConnectionSource, Traits &gt;::DeleteTable</definition>
+        <argsstring>(std::string_view ns, std::string_view name) override</argsstring>
+        <name>DeleteTable</name>
+        <qualifiedname>iceberg::sql::Sqlpp23CatalogStore::DeleteTable</qualifiedname>
+        <reimplements refid="classiceberg_1_1sql_1_1CatalogStore_1a1371ff43f19636a8ff2a287e330eeb11">DeleteTable</reimplements>
+        <param>
+          <type>std::string_view</type>
+          <declname>ns</declname>
+        </param>
+        <param>
+          <type>std::string_view</type>
+          <declname>name</declname>
+        </param>
+        <briefdescription>
+<para>Delete the table row (<computeroutput>ns</computeroutput>, <computeroutput>name</computeroutput>), if present. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>ns</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>A namespace identifier in the store&apos;s string form. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>name</parametername>
+</parameternamelist>
+<parameterdescription>
+<para><ref refid="classiceberg_1_1Table" kindref="compound">Table</ref> name. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The number of rows deleted. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/catalog_store_sqlpp23_internal.h" line="430" column="10" bodyfile="iceberg/catalog/sql/catalog_store_sqlpp23_internal.h" bodystart="430" bodyend="445"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1sql_1_1Sqlpp23CatalogStore_1a00b063c4ea9d73a622d1a3f584c0150f" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>Result&lt; int64_t &gt;</type>
+        <definition>Result&lt; int64_t &gt; iceberg::sql::Sqlpp23CatalogStore&lt; ConnectionSource, Traits &gt;::RenameTable</definition>
+        <argsstring>(std::string_view from_ns, std::string_view from_name, std::string_view to_ns, std::string_view to_name) override</argsstring>
+        <name>RenameTable</name>
+        <qualifiedname>iceberg::sql::Sqlpp23CatalogStore::RenameTable</qualifiedname>
+        <reimplements refid="classiceberg_1_1sql_1_1CatalogStore_1a1756e757adccb1f7315e5645c3496516">RenameTable</reimplements>
+        <param>
+          <type>std::string_view</type>
+          <declname>from_ns</declname>
+        </param>
+        <param>
+          <type>std::string_view</type>
+          <declname>from_name</declname>
+        </param>
+        <param>
+          <type>std::string_view</type>
+          <declname>to_ns</declname>
+        </param>
+        <param>
+          <type>std::string_view</type>
+          <declname>to_name</declname>
+        </param>
+        <briefdescription>
+<para>Move a table row to a new namespace and/or name. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>A primary-key collision with an existing target must be reported as <computeroutput>ErrorKind::kAlreadyExists</computeroutput>.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>from_ns</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Source namespace identifier in the store&apos;s string form. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>from_name</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Source table name. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>to_ns</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Target namespace identifier in the store&apos;s string form. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>to_name</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Target table name. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The number of rows updated (1 on success, 0 if the source is gone). </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/catalog_store_sqlpp23_internal.h" line="447" column="10" bodyfile="iceberg/catalog/sql/catalog_store_sqlpp23_internal.h" bodystart="447" bodyend="466"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1sql_1_1Sqlpp23CatalogStore_1a1fbe6c3a8234db94e00b6cc3c7fce94f" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>Status</type>
+        <definition>Status iceberg::sql::Sqlpp23CatalogStore&lt; ConnectionSource, Traits &gt;::RunInTransaction</definition>
+        <argsstring>(const std::function&lt; Status()&gt; &amp;body) override</argsstring>
+        <name>RunInTransaction</name>
+        <qualifiedname>iceberg::sql::Sqlpp23CatalogStore::RunInTransaction</qualifiedname>
+        <reimplements refid="classiceberg_1_1sql_1_1CatalogStore_1aa8662070d94c72e3671367a726f7427e">RunInTransaction</reimplements>
+        <param>
+          <type>const std::function&lt; Status()&gt; &amp;</type>
+          <declname>body</declname>
+        </param>
+        <briefdescription>
+<para>Execute <computeroutput>body</computeroutput> atomically inside a single transaction. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>The implementation begins a transaction, invokes <computeroutput>body</computeroutput> (which issues store operations on this same instance), then commits if <computeroutput>body</computeroutput> returns success or rolls back otherwise. Implementations are not required to support nesting.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>body</parametername>
+</parameternamelist>
+<parameterdescription>
+<para><ref refid="classiceberg_1_1Transaction" kindref="compound">Transaction</ref> body to execute. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Status returned by <computeroutput>body</computeroutput>, or a transaction error. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/catalog_store_sqlpp23_internal.h" line="468" column="10" bodyfile="iceberg/catalog/sql/catalog_store_sqlpp23_internal.h" bodystart="468" bodyend="474"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classiceberg_1_1sql_1_1Sqlpp23CatalogStore_1a277a74b064d9c6c58d09b11a40dc061f" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>auto</type>
+        <definition>auto iceberg::sql::Sqlpp23CatalogStore&lt; ConnectionSource, Traits &gt;::TableRecordFilter</definition>
+        <argsstring>(const IcebergTables &amp;t) const</argsstring>
+        <name>TableRecordFilter</name>
+        <qualifiedname>iceberg::sql::Sqlpp23CatalogStore::TableRecordFilter</qualifiedname>
+        <param>
+          <type>const IcebergTables &amp;</type>
+          <declname>t</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/catalog_store_sqlpp23_internal.h" line="479" column="8" bodyfile="iceberg/catalog/sql/catalog_store_sqlpp23_internal.h" bodystart="479" bodyend="481"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1sql_1_1Sqlpp23CatalogStore_1a09e90aab4170578d0bfc99039aafe526" prot="private" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename Fn</type>
+          </param>
+        </templateparamlist>
+        <type>Status</type>
+        <definition>Status iceberg::sql::Sqlpp23CatalogStore&lt; ConnectionSource, Traits &gt;::Guard</definition>
+        <argsstring>(std::string_view op, Fn &amp;&amp;fn)</argsstring>
+        <name>Guard</name>
+        <qualifiedname>iceberg::sql::Sqlpp23CatalogStore::Guard</qualifiedname>
+        <param>
+          <type>std::string_view</type>
+          <declname>op</declname>
+        </param>
+        <param>
+          <type>Fn &amp;&amp;</type>
+          <declname>fn</declname>
+        </param>
+        <briefdescription>
+<para>Run <computeroutput>fn</computeroutput>, translating any thrown exception into a <computeroutput>Status</computeroutput>. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/catalog_store_sqlpp23_internal.h" line="508" column="10" bodyfile="iceberg/catalog/sql/catalog_store_sqlpp23_internal.h" bodystart="508" bodyend="515"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1sql_1_1Sqlpp23CatalogStore_1a4cd77d36615e1e90eb4f2556a4853367" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::sql::Sqlpp23CatalogStore&lt; ConnectionSource, Traits &gt;::Translate</definition>
+        <argsstring>(const std::exception &amp;e, std::string_view op) const</argsstring>
+        <name>Translate</name>
+        <qualifiedname>iceberg::sql::Sqlpp23CatalogStore::Translate</qualifiedname>
+        <param>
+          <type>const std::exception &amp;</type>
+          <declname>e</declname>
+        </param>
+        <param>
+          <type>std::string_view</type>
+          <declname>op</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/catalog_store_sqlpp23_internal.h" line="517" column="10" bodyfile="iceberg/catalog/sql/catalog_store_sqlpp23_internal.h" bodystart="517" bodyend="522"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1sql_1_1Sqlpp23CatalogStore_1a0c52ee8a44c52995ccf4910c41f68e64" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::sql::Sqlpp23CatalogStore&lt; ConnectionSource, Traits &gt;::IsDuplicateColumn</definition>
+        <argsstring>(const std::exception &amp;e) const</argsstring>
+        <name>IsDuplicateColumn</name>
+        <qualifiedname>iceberg::sql::Sqlpp23CatalogStore::IsDuplicateColumn</qualifiedname>
+        <param>
+          <type>const std::exception &amp;</type>
+          <declname>e</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/catalog_store_sqlpp23_internal.h" line="524" column="8" bodyfile="iceberg/catalog/sql/catalog_store_sqlpp23_internal.h" bodystart="524" bodyend="529"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para><computeroutput><ref refid="classiceberg_1_1sql_1_1CatalogStore" kindref="compound">CatalogStore</ref></computeroutput> backed by a concrete sqlpp23 connection source. </para>
+    </briefdescription>
+    <detaileddescription>
+<para><parameterlist kind="templateparam"><parameteritem>
+<parameternamelist>
+<parametername>ConnectionSource</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>A single connection or pooled connection source. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>Traits</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>A policy type providing <computeroutput>static bool IsUniqueViolation(const std::exception&amp;)</computeroutput> and optionally <computeroutput>static bool IsDuplicateColumn(const std::exception&amp;)</computeroutput>. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>iceberg::sql::CatalogStore</label>
+        <link refid="classiceberg_1_1sql_1_1CatalogStore"/>
+      </node>
+      <node id="1">
+        <label>iceberg::sql::Sqlpp23CatalogStore&lt; ConnectionSource, Traits &gt;</label>
+        <link refid="classiceberg_1_1sql_1_1Sqlpp23CatalogStore"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="2">
+        <label>iceberg::sql::CatalogStore</label>
+        <link refid="classiceberg_1_1sql_1_1CatalogStore"/>
+      </node>
+      <node id="1">
+        <label>iceberg::sql::Sqlpp23CatalogStore&lt; ConnectionSource, Traits &gt;</label>
+        <link refid="classiceberg_1_1sql_1_1Sqlpp23CatalogStore"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/sql/catalog_store_sqlpp23_internal.h" line="214" column="1" bodyfile="iceberg/catalog/sql/catalog_store_sqlpp23_internal.h" bodystart="214" bodyend="533"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1sql_1_1Sqlpp23CatalogStore_1a83a9648d14217b76f2bb24d5ecabdfed" prot="private" virt="non-virtual"><scope>iceberg::sql::Sqlpp23CatalogStore</scope><name>catalog_</name></member>
+      <member refid="classiceberg_1_1sql_1_1Sqlpp23CatalogStore_1a9b20194e613729272e014e2f8c1dc765" prot="public" virt="virtual"><scope>iceberg::sql::Sqlpp23CatalogStore</scope><name>DeleteNamespace</name></member>
+      <member refid="classiceberg_1_1sql_1_1Sqlpp23CatalogStore_1ae7bbd2b0a03da34b93f57431d46eac30" prot="public" virt="virtual"><scope>iceberg::sql::Sqlpp23CatalogStore</scope><name>DeleteNamespaceProperty</name></member>
+      <member refid="classiceberg_1_1sql_1_1Sqlpp23CatalogStore_1ac4c51431da566c42e3f1f1e069f936cb" prot="public" virt="virtual"><scope>iceberg::sql::Sqlpp23CatalogStore</scope><name>DeleteTable</name></member>
+      <member refid="classiceberg_1_1sql_1_1Sqlpp23CatalogStore_1aad679d5425cd6457bbf5ccb2f55fd6b8" prot="public" virt="virtual"><scope>iceberg::sql::Sqlpp23CatalogStore</scope><name>GetNamespaceProperties</name></member>
+      <member refid="classiceberg_1_1sql_1_1Sqlpp23CatalogStore_1aa710a95d3a21281c73d97b77483a273c" prot="public" virt="virtual"><scope>iceberg::sql::Sqlpp23CatalogStore</scope><name>GetTableMetadataLocation</name></member>
+      <member refid="classiceberg_1_1sql_1_1Sqlpp23CatalogStore_1a09e90aab4170578d0bfc99039aafe526" prot="private" virt="non-virtual"><scope>iceberg::sql::Sqlpp23CatalogStore</scope><name>Guard</name></member>
+      <member refid="classiceberg_1_1sql_1_1Sqlpp23CatalogStore_1a214e6d11da8ce57b787c3699ef8d42fa" prot="public" virt="virtual"><scope>iceberg::sql::Sqlpp23CatalogStore</scope><name>Initialize</name></member>
+      <member refid="classiceberg_1_1sql_1_1Sqlpp23CatalogStore_1a3ccba45f8dca4899dcffbc92232c97a6" prot="public" virt="virtual"><scope>iceberg::sql::Sqlpp23CatalogStore</scope><name>InsertNamespaceProperty</name></member>
+      <member refid="classiceberg_1_1sql_1_1Sqlpp23CatalogStore_1a97923abfc961c38f637ecbfa593294c1" prot="public" virt="virtual"><scope>iceberg::sql::Sqlpp23CatalogStore</scope><name>InsertTable</name></member>
+      <member refid="classiceberg_1_1sql_1_1Sqlpp23CatalogStore_1a0c52ee8a44c52995ccf4910c41f68e64" prot="private" virt="non-virtual"><scope>iceberg::sql::Sqlpp23CatalogStore</scope><name>IsDuplicateColumn</name></member>
+      <member refid="classiceberg_1_1sql_1_1Sqlpp23CatalogStore_1a307ffab222b1fc2e02aefa9d3f354041" prot="private" virt="non-virtual"><scope>iceberg::sql::Sqlpp23CatalogStore</scope><name>kAddRecordTypeSql</name></member>
+      <member refid="classiceberg_1_1sql_1_1Sqlpp23CatalogStore_1a20271af78aef2b7e2915df69fccc3881" prot="private" virt="non-virtual"><scope>iceberg::sql::Sqlpp23CatalogStore</scope><name>kCreateNamespacePropertiesSql</name></member>
+      <member refid="classiceberg_1_1sql_1_1Sqlpp23CatalogStore_1aadf1ada0a98aab05790556deecfd22ab" prot="private" virt="non-virtual"><scope>iceberg::sql::Sqlpp23CatalogStore</scope><name>kCreateTablesSql</name></member>
+      <member refid="classiceberg_1_1sql_1_1Sqlpp23CatalogStore_1a103448cc40137b52783e49f14efaec2b" prot="private" virt="non-virtual"><scope>iceberg::sql::Sqlpp23CatalogStore</scope><name>kTableRecordType</name></member>
+      <member refid="classiceberg_1_1sql_1_1Sqlpp23CatalogStore_1a89d48e3e24db245a5dd888559ece2b7d" prot="public" virt="virtual"><scope>iceberg::sql::Sqlpp23CatalogStore</scope><name>ListNamespaceNames</name></member>
+      <member refid="classiceberg_1_1sql_1_1Sqlpp23CatalogStore_1a15fe16634a3c59290b3ca0305e857f84" prot="public" virt="virtual"><scope>iceberg::sql::Sqlpp23CatalogStore</scope><name>ListTableNames</name></member>
+      <member refid="classiceberg_1_1sql_1_1Sqlpp23CatalogStore_1a00b063c4ea9d73a622d1a3f584c0150f" prot="public" virt="virtual"><scope>iceberg::sql::Sqlpp23CatalogStore</scope><name>RenameTable</name></member>
+      <member refid="classiceberg_1_1sql_1_1Sqlpp23CatalogStore_1a1fbe6c3a8234db94e00b6cc3c7fce94f" prot="public" virt="virtual"><scope>iceberg::sql::Sqlpp23CatalogStore</scope><name>RunInTransaction</name></member>
+      <member refid="classiceberg_1_1sql_1_1Sqlpp23CatalogStore_1a3ba536e8fe0fbf093ef03b62150c16a1" prot="private" virt="non-virtual"><scope>iceberg::sql::Sqlpp23CatalogStore</scope><name>source_</name></member>
+      <member refid="classiceberg_1_1sql_1_1Sqlpp23CatalogStore_1ad7aba5b1417b4edc78daf0d6a066f0f6" prot="public" virt="non-virtual"><scope>iceberg::sql::Sqlpp23CatalogStore</scope><name>Sqlpp23CatalogStore</name></member>
+      <member refid="classiceberg_1_1sql_1_1Sqlpp23CatalogStore_1ab4b62099060e4243a2f4a4ddd18f7e3e" prot="public" virt="virtual"><scope>iceberg::sql::Sqlpp23CatalogStore</scope><name>TableExists</name></member>
+      <member refid="classiceberg_1_1sql_1_1Sqlpp23CatalogStore_1a277a74b064d9c6c58d09b11a40dc061f" prot="private" virt="non-virtual"><scope>iceberg::sql::Sqlpp23CatalogStore</scope><name>TableRecordFilter</name></member>
+      <member refid="classiceberg_1_1sql_1_1Sqlpp23CatalogStore_1a4cd77d36615e1e90eb4f2556a4853367" prot="private" virt="non-virtual"><scope>iceberg::sql::Sqlpp23CatalogStore</scope><name>Translate</name></member>
+      <member refid="classiceberg_1_1sql_1_1Sqlpp23CatalogStore_1a1792b47ab51895bcd2a4c20b77cd6d28" prot="public" virt="virtual"><scope>iceberg::sql::Sqlpp23CatalogStore</scope><name>UpdateTableMetadataLocation</name></member>
+      <member refid="classiceberg_1_1sql_1_1CatalogStore_1a08a39e4547955cb30035f8ba5caadd29" prot="public" virt="virtual"><scope>iceberg::sql::Sqlpp23CatalogStore</scope><name>~CatalogStore</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

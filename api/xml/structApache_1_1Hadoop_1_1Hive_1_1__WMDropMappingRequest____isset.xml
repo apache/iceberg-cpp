@@ -1,0 +1,48 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structApache_1_1Hadoop_1_1Hive_1_1__WMDropMappingRequest____isset" kind="struct" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::_WMDropMappingRequest__isset</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__WMDropMappingRequest____isset_1a563450f1881c4ea50ca9d649e657981b" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_WMDropMappingRequest__isset::mapping</definition>
+        <argsstring></argsstring>
+        <name>mapping</name>
+        <qualifiedname>Apache::Hadoop::Hive::_WMDropMappingRequest__isset::mapping</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12363" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="12363" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structApache_1_1Hadoop_1_1Hive_1_1__WMDropMappingRequest____isset_1ade6fb6308c958c55285854a2957a81a7" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::_WMDropMappingRequest__isset::_WMDropMappingRequest__isset</definition>
+        <argsstring>()</argsstring>
+        <name>_WMDropMappingRequest__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::_WMDropMappingRequest__isset::_WMDropMappingRequest__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12362" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="12362" bodyend="12362"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12361" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="12361" bodyend="12364"/>
+    <listofallmembers>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__WMDropMappingRequest____isset_1ade6fb6308c958c55285854a2957a81a7" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_WMDropMappingRequest__isset</scope><name>_WMDropMappingRequest__isset</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__WMDropMappingRequest____isset_1a563450f1881c4ea50ca9d649e657981b" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_WMDropMappingRequest__isset</scope><name>mapping</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

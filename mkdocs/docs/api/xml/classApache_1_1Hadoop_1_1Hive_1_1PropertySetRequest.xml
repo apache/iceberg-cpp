@@ -1,0 +1,332 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1PropertySetRequest" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::PropertySetRequest</compoundname>
+    <basecompoundref prot="public" virt="virtual">apache::thrift::TBase</basecompoundref>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1PropertySetRequest_1af43fb1f09e9fb0acbac655edb24bb9a2" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::PropertySetRequest::nameSpace</definition>
+        <argsstring></argsstring>
+        <name>nameSpace</name>
+        <qualifiedname>Apache::Hadoop::Hive::PropertySetRequest::nameSpace</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1761" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="1761" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1PropertySetRequest_1af3ba8c85da01c4e383429cdeade75480" prot="public" static="no" mutable="no">
+        <type>std::map&lt; std::string, std::string &gt;</type>
+        <definition>std::map&lt;std::string, std::string&gt; Apache::Hadoop::Hive::PropertySetRequest::propertyMap</definition>
+        <argsstring></argsstring>
+        <name>propertyMap</name>
+        <qualifiedname>Apache::Hadoop::Hive::PropertySetRequest::propertyMap</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1762" column="13" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="1762" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1PropertySetRequest_1aa12d4750b86abe4e9e1065bf0ed1c89b" prot="public" static="no" mutable="no">
+        <type><ref refid="structApache_1_1Hadoop_1_1Hive_1_1__PropertySetRequest____isset" kindref="compound">_PropertySetRequest__isset</ref></type>
+        <definition>_PropertySetRequest__isset Apache::Hadoop::Hive::PropertySetRequest::__isset</definition>
+        <argsstring></argsstring>
+        <name>__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::PropertySetRequest::__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1764" column="30" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="1764" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1PropertySetRequest_1aad972b82a0b6f860d1e53958c7feb761" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::PropertySetRequest::PropertySetRequest</definition>
+        <argsstring>(const PropertySetRequest &amp;)</argsstring>
+        <name>PropertySetRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::PropertySetRequest::PropertySetRequest</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1PropertySetRequest" kindref="compound">PropertySetRequest</ref> &amp;</type>
+          <defname>other80</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1756" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="3859" bodyend="3863"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1PropertySetRequest_1a4f942915cb1735a1c94d3b6ecb5403e7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1PropertySetRequest" kindref="compound">PropertySetRequest</ref> &amp;</type>
+        <definition>PropertySetRequest &amp; Apache::Hadoop::Hive::PropertySetRequest::operator=</definition>
+        <argsstring>(const PropertySetRequest &amp;)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::PropertySetRequest::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1PropertySetRequest" kindref="compound">PropertySetRequest</ref> &amp;</type>
+          <defname>other81</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1757" column="22" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="3864" bodyend="3869"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1PropertySetRequest_1a85188cc6f4da8fd23ccf9ffbd1742f98" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::PropertySetRequest::PropertySetRequest</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>PropertySetRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::PropertySetRequest::PropertySetRequest</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1758" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="3731" bodyend="3733"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1PropertySetRequest_1af41f85830106e3b9ceb3ba8e90e701ee" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::PropertySetRequest::~PropertySetRequest</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~PropertySetRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::PropertySetRequest::~PropertySetRequest</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1760" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="3728" bodyend="3729"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1PropertySetRequest_1aef0f45faae8e8684bf2f47fd8dd93df5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::PropertySetRequest::__set_nameSpace</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_nameSpace</name>
+        <qualifiedname>Apache::Hadoop::Hive::PropertySetRequest::__set_nameSpace</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1766" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="3735" bodyend="3737"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1PropertySetRequest_1a7a17cfb0165fe9cb9b4b2d10bed61ab7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::PropertySetRequest::__set_propertyMap</definition>
+        <argsstring>(const std::map&lt; std::string, std::string &gt; &amp;val)</argsstring>
+        <name>__set_propertyMap</name>
+        <qualifiedname>Apache::Hadoop::Hive::PropertySetRequest::__set_propertyMap</qualifiedname>
+        <param>
+          <type>const std::map&lt; std::string, std::string &gt; &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1768" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="3739" bodyend="3741"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1PropertySetRequest_1a3fede37896258cc3e4fe98ba897c7bbc" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::PropertySetRequest::operator==</definition>
+        <argsstring>(const PropertySetRequest &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::PropertySetRequest::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1PropertySetRequest" kindref="compound">PropertySetRequest</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1770" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="3850" bodyend="3857"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1PropertySetRequest_1a91c653dd63d321f37f7ece3961100793" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::PropertySetRequest::operator!=</definition>
+        <argsstring>(const PropertySetRequest &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::PropertySetRequest::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1PropertySetRequest" kindref="compound">PropertySetRequest</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1771" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="1771" bodyend="1773"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1PropertySetRequest_1a36e4bf548e0846d12abbe404594e56c7" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::PropertySetRequest::operator&lt;</definition>
+        <argsstring>(const PropertySetRequest &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::PropertySetRequest::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1PropertySetRequest" kindref="compound">PropertySetRequest</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1775" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1PropertySetRequest_1a629469a4631b48a3c318c2fc000ca313" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::PropertySetRequest::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot) override</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::PropertySetRequest::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1777" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="3749" bodyend="3814"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1PropertySetRequest_1a4410600a6696df77728f8ee4dbdb8fd6" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::PropertySetRequest::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const override</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::PropertySetRequest::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1778" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="3816" bodyend="3841"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1PropertySetRequest_1acdc9625f15dde687069e211b3f570f2d" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::PropertySetRequest::printTo</definition>
+        <argsstring>(std::ostream &amp;out) const</argsstring>
+        <name>printTo</name>
+        <qualifiedname>Apache::Hadoop::Hive::PropertySetRequest::printTo</qualifiedname>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1780" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="3870" bodyend="3876"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::PropertySetRequest</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1PropertySetRequest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::PropertySetRequest</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1PropertySetRequest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>nameSpace</edgelabel>
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>propertyMap</edgelabel>
+        </childnode>
+        <childnode refid="6" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="6">
+        <label>Apache::Hadoop::Hive::_PropertySetRequest__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__PropertySetRequest____isset"/>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+      <node id="5">
+        <label>std::map&lt; std::string, std::string &gt;</label>
+        <childnode refid="3" relation="usage">
+          <edgelabel>elements</edgelabel>
+          <edgelabel>keys</edgelabel>
+        </childnode>
+      </node>
+      <node id="4">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="3">
+        <label>std::string</label>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1753" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="1753" bodyend="1781"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1PropertySetRequest_1aa12d4750b86abe4e9e1065bf0ed1c89b" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::PropertySetRequest</scope><name>__isset</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1PropertySetRequest_1aef0f45faae8e8684bf2f47fd8dd93df5" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::PropertySetRequest</scope><name>__set_nameSpace</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1PropertySetRequest_1a7a17cfb0165fe9cb9b4b2d10bed61ab7" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::PropertySetRequest</scope><name>__set_propertyMap</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1PropertySetRequest_1af43fb1f09e9fb0acbac655edb24bb9a2" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::PropertySetRequest</scope><name>nameSpace</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1PropertySetRequest_1a91c653dd63d321f37f7ece3961100793" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::PropertySetRequest</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1PropertySetRequest_1a36e4bf548e0846d12abbe404594e56c7" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::PropertySetRequest</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1PropertySetRequest_1a4f942915cb1735a1c94d3b6ecb5403e7" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::PropertySetRequest</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1PropertySetRequest_1a3fede37896258cc3e4fe98ba897c7bbc" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::PropertySetRequest</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1PropertySetRequest_1acdc9625f15dde687069e211b3f570f2d" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::PropertySetRequest</scope><name>printTo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1PropertySetRequest_1af3ba8c85da01c4e383429cdeade75480" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::PropertySetRequest</scope><name>propertyMap</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1PropertySetRequest_1aad972b82a0b6f860d1e53958c7feb761" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::PropertySetRequest</scope><name>PropertySetRequest</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1PropertySetRequest_1a85188cc6f4da8fd23ccf9ffbd1742f98" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::PropertySetRequest</scope><name>PropertySetRequest</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1PropertySetRequest_1a629469a4631b48a3c318c2fc000ca313" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::PropertySetRequest</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1PropertySetRequest_1a4410600a6696df77728f8ee4dbdb8fd6" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::PropertySetRequest</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1PropertySetRequest_1af41f85830106e3b9ceb3ba8e90e701ee" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::PropertySetRequest</scope><name>~PropertySetRequest</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

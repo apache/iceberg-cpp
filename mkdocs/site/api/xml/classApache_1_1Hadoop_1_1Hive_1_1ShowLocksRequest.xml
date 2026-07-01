@@ -1,0 +1,426 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1ShowLocksRequest" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::ShowLocksRequest</compoundname>
+    <basecompoundref prot="public" virt="virtual">apache::thrift::TBase</basecompoundref>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ShowLocksRequest_1aebfd67f8a2f122fb8f2489cae04ab061" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::ShowLocksRequest::dbname</definition>
+        <argsstring></argsstring>
+        <name>dbname</name>
+        <qualifiedname>Apache::Hadoop::Hive::ShowLocksRequest::dbname</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7857" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="7857" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ShowLocksRequest_1abfb43a7d4d4c55447b219c680e924cc7" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::ShowLocksRequest::tablename</definition>
+        <argsstring></argsstring>
+        <name>tablename</name>
+        <qualifiedname>Apache::Hadoop::Hive::ShowLocksRequest::tablename</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7858" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="7858" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ShowLocksRequest_1a7f87b030cbd871fdbe47370be92d8a6e" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::ShowLocksRequest::partname</definition>
+        <argsstring></argsstring>
+        <name>partname</name>
+        <qualifiedname>Apache::Hadoop::Hive::ShowLocksRequest::partname</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7859" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="7859" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ShowLocksRequest_1a9bbd6822e053536d8e68e3e951a8e3b3" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::ShowLocksRequest::isExtended</definition>
+        <argsstring></argsstring>
+        <name>isExtended</name>
+        <qualifiedname>Apache::Hadoop::Hive::ShowLocksRequest::isExtended</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7860" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="7860" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ShowLocksRequest_1a92c7e5fcaa6c01412c456bb47ac0867b" prot="public" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t Apache::Hadoop::Hive::ShowLocksRequest::txnid</definition>
+        <argsstring></argsstring>
+        <name>txnid</name>
+        <qualifiedname>Apache::Hadoop::Hive::ShowLocksRequest::txnid</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7861" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="7861" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ShowLocksRequest_1a9276918eba375ac55b069aef4ebb4c06" prot="public" static="no" mutable="no">
+        <type><ref refid="structApache_1_1Hadoop_1_1Hive_1_1__ShowLocksRequest____isset" kindref="compound">_ShowLocksRequest__isset</ref></type>
+        <definition>_ShowLocksRequest__isset Apache::Hadoop::Hive::ShowLocksRequest::__isset</definition>
+        <argsstring></argsstring>
+        <name>__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::ShowLocksRequest::__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7863" column="28" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="7863" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ShowLocksRequest_1aaddcbe0fe1c67e291c9409c6972b2709" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::ShowLocksRequest::ShowLocksRequest</definition>
+        <argsstring>(const ShowLocksRequest &amp;)</argsstring>
+        <name>ShowLocksRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::ShowLocksRequest::ShowLocksRequest</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ShowLocksRequest" kindref="compound">ShowLocksRequest</ref> &amp;</type>
+          <defname>other991</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7852" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="30029" bodyend="30036"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ShowLocksRequest_1af30b04554309491e6c85a1158893fbed" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1ShowLocksRequest" kindref="compound">ShowLocksRequest</ref> &amp;</type>
+        <definition>ShowLocksRequest &amp; Apache::Hadoop::Hive::ShowLocksRequest::operator=</definition>
+        <argsstring>(const ShowLocksRequest &amp;)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::ShowLocksRequest::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ShowLocksRequest" kindref="compound">ShowLocksRequest</ref> &amp;</type>
+          <defname>other992</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7853" column="20" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="30037" bodyend="30045"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ShowLocksRequest_1a48dffa212e86636e2afca1b1ba2acaaa" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::ShowLocksRequest::ShowLocksRequest</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>ShowLocksRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::ShowLocksRequest::ShowLocksRequest</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7854" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="29847" bodyend="29853"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ShowLocksRequest_1a1979621d65fa08d6c3d67ffaec4d490d" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::ShowLocksRequest::~ShowLocksRequest</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~ShowLocksRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::ShowLocksRequest::~ShowLocksRequest</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7856" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="29844" bodyend="29845"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ShowLocksRequest_1ac0de35dc193e7dcbf6edb31489a84983" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::ShowLocksRequest::__set_dbname</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_dbname</name>
+        <qualifiedname>Apache::Hadoop::Hive::ShowLocksRequest::__set_dbname</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7865" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="29855" bodyend="29858"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ShowLocksRequest_1a8286eb7b9734897186364bceac22d65f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::ShowLocksRequest::__set_tablename</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_tablename</name>
+        <qualifiedname>Apache::Hadoop::Hive::ShowLocksRequest::__set_tablename</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7867" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="29860" bodyend="29863"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ShowLocksRequest_1ab054b20dc0983f8837a4536a0081a1a1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::ShowLocksRequest::__set_partname</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_partname</name>
+        <qualifiedname>Apache::Hadoop::Hive::ShowLocksRequest::__set_partname</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7869" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="29865" bodyend="29868"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ShowLocksRequest_1a40ce0b5e7828c7e0200fc249e1f82370" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::ShowLocksRequest::__set_isExtended</definition>
+        <argsstring>(const bool val)</argsstring>
+        <name>__set_isExtended</name>
+        <qualifiedname>Apache::Hadoop::Hive::ShowLocksRequest::__set_isExtended</qualifiedname>
+        <param>
+          <type>const bool</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7871" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="29870" bodyend="29873"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ShowLocksRequest_1a0e090db6d015ca7efb0bbba9585f0436" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::ShowLocksRequest::__set_txnid</definition>
+        <argsstring>(const int64_t val)</argsstring>
+        <name>__set_txnid</name>
+        <qualifiedname>Apache::Hadoop::Hive::ShowLocksRequest::__set_txnid</qualifiedname>
+        <param>
+          <type>const int64_t</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7873" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="29875" bodyend="29878"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ShowLocksRequest_1aecedfd1d2d63a25a143cf374902199a8" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::ShowLocksRequest::operator==</definition>
+        <argsstring>(const ShowLocksRequest &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::ShowLocksRequest::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ShowLocksRequest" kindref="compound">ShowLocksRequest</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7875" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="30004" bodyend="30027"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ShowLocksRequest_1a446ef74c0b8e417a95b87b1cf1d4123d" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::ShowLocksRequest::operator!=</definition>
+        <argsstring>(const ShowLocksRequest &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::ShowLocksRequest::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ShowLocksRequest" kindref="compound">ShowLocksRequest</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7876" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="7876" bodyend="7878"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ShowLocksRequest_1a23aee3615cd556d1878df721bd14fcda" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::ShowLocksRequest::operator&lt;</definition>
+        <argsstring>(const ShowLocksRequest &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::ShowLocksRequest::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ShowLocksRequest" kindref="compound">ShowLocksRequest</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7880" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ShowLocksRequest_1a1cc17857a552050973a8ffd3203abdc2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::ShowLocksRequest::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot) override</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::ShowLocksRequest::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7882" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="29886" bodyend="29957"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ShowLocksRequest_1acd8cd340e9ea6cdd42a4a60b28bffa93" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::ShowLocksRequest::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const override</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::ShowLocksRequest::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7883" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="29959" bodyend="29992"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ShowLocksRequest_1a097cecda194da64e22ab6f4f094386a5" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::ShowLocksRequest::printTo</definition>
+        <argsstring>(std::ostream &amp;out) const</argsstring>
+        <name>printTo</name>
+        <qualifiedname>Apache::Hadoop::Hive::ShowLocksRequest::printTo</qualifiedname>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7885" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="30046" bodyend="30055"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::ShowLocksRequest</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1ShowLocksRequest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::ShowLocksRequest</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1ShowLocksRequest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>dbname</edgelabel>
+          <edgelabel>partname</edgelabel>
+          <edgelabel>tablename</edgelabel>
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="5">
+        <label>Apache::Hadoop::Hive::_ShowLocksRequest__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__ShowLocksRequest____isset"/>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+      <node id="4">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="3">
+        <label>std::string</label>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7849" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="7849" bodyend="7886"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ShowLocksRequest_1a9276918eba375ac55b069aef4ebb4c06" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ShowLocksRequest</scope><name>__isset</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ShowLocksRequest_1ac0de35dc193e7dcbf6edb31489a84983" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ShowLocksRequest</scope><name>__set_dbname</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ShowLocksRequest_1a40ce0b5e7828c7e0200fc249e1f82370" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ShowLocksRequest</scope><name>__set_isExtended</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ShowLocksRequest_1ab054b20dc0983f8837a4536a0081a1a1" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ShowLocksRequest</scope><name>__set_partname</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ShowLocksRequest_1a8286eb7b9734897186364bceac22d65f" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ShowLocksRequest</scope><name>__set_tablename</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ShowLocksRequest_1a0e090db6d015ca7efb0bbba9585f0436" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ShowLocksRequest</scope><name>__set_txnid</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ShowLocksRequest_1aebfd67f8a2f122fb8f2489cae04ab061" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ShowLocksRequest</scope><name>dbname</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ShowLocksRequest_1a9bbd6822e053536d8e68e3e951a8e3b3" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ShowLocksRequest</scope><name>isExtended</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ShowLocksRequest_1a446ef74c0b8e417a95b87b1cf1d4123d" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ShowLocksRequest</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ShowLocksRequest_1a23aee3615cd556d1878df721bd14fcda" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ShowLocksRequest</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ShowLocksRequest_1af30b04554309491e6c85a1158893fbed" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ShowLocksRequest</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ShowLocksRequest_1aecedfd1d2d63a25a143cf374902199a8" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ShowLocksRequest</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ShowLocksRequest_1a7f87b030cbd871fdbe47370be92d8a6e" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ShowLocksRequest</scope><name>partname</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ShowLocksRequest_1a097cecda194da64e22ab6f4f094386a5" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::ShowLocksRequest</scope><name>printTo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ShowLocksRequest_1a1cc17857a552050973a8ffd3203abdc2" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ShowLocksRequest</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ShowLocksRequest_1aaddcbe0fe1c67e291c9409c6972b2709" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ShowLocksRequest</scope><name>ShowLocksRequest</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ShowLocksRequest_1a48dffa212e86636e2afca1b1ba2acaaa" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ShowLocksRequest</scope><name>ShowLocksRequest</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ShowLocksRequest_1abfb43a7d4d4c55447b219c680e924cc7" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ShowLocksRequest</scope><name>tablename</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ShowLocksRequest_1a92c7e5fcaa6c01412c456bb47ac0867b" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ShowLocksRequest</scope><name>txnid</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ShowLocksRequest_1acd8cd340e9ea6cdd42a4a60b28bffa93" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ShowLocksRequest</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ShowLocksRequest_1a1979621d65fa08d6c3d67ffaec4d490d" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::ShowLocksRequest</scope><name>~ShowLocksRequest</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

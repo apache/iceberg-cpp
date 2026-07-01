@@ -1,0 +1,80 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structApache_1_1Hadoop_1_1Hive_1_1__ExtendedTableInfo____isset" kind="struct" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::_ExtendedTableInfo__isset</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__ExtendedTableInfo____isset_1a7e588f522d4ebc13da93503baa0b3f02" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_ExtendedTableInfo__isset::accessType</definition>
+        <argsstring></argsstring>
+        <name>accessType</name>
+        <qualifiedname>Apache::Hadoop::Hive::_ExtendedTableInfo__isset::accessType</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10470" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="10470" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__ExtendedTableInfo____isset_1abee5bdff78f4d85783a2bcc1a0f2efc4" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_ExtendedTableInfo__isset::requiredReadCapabilities</definition>
+        <argsstring></argsstring>
+        <name>requiredReadCapabilities</name>
+        <qualifiedname>Apache::Hadoop::Hive::_ExtendedTableInfo__isset::requiredReadCapabilities</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10471" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="10471" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__ExtendedTableInfo____isset_1af5538374757dcdd6bad28c6dbff73897" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_ExtendedTableInfo__isset::requiredWriteCapabilities</definition>
+        <argsstring></argsstring>
+        <name>requiredWriteCapabilities</name>
+        <qualifiedname>Apache::Hadoop::Hive::_ExtendedTableInfo__isset::requiredWriteCapabilities</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10472" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="10472" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structApache_1_1Hadoop_1_1Hive_1_1__ExtendedTableInfo____isset_1a685ab8892839627a6d45a2ca3746354f" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::_ExtendedTableInfo__isset::_ExtendedTableInfo__isset</definition>
+        <argsstring>()</argsstring>
+        <name>_ExtendedTableInfo__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::_ExtendedTableInfo__isset::_ExtendedTableInfo__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10469" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="10469" bodyend="10469"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10468" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="10468" bodyend="10473"/>
+    <listofallmembers>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__ExtendedTableInfo____isset_1a685ab8892839627a6d45a2ca3746354f" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_ExtendedTableInfo__isset</scope><name>_ExtendedTableInfo__isset</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__ExtendedTableInfo____isset_1a7e588f522d4ebc13da93503baa0b3f02" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_ExtendedTableInfo__isset</scope><name>accessType</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__ExtendedTableInfo____isset_1abee5bdff78f4d85783a2bcc1a0f2efc4" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_ExtendedTableInfo__isset</scope><name>requiredReadCapabilities</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__ExtendedTableInfo____isset_1af5538374757dcdd6bad28c6dbff73897" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_ExtendedTableInfo__isset</scope><name>requiredWriteCapabilities</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

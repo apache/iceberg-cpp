@@ -1,0 +1,471 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1AddDynamicPartitions" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::AddDynamicPartitions</compoundname>
+    <basecompoundref prot="public" virt="virtual">apache::thrift::TBase</basecompoundref>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1AddDynamicPartitions_1a03f3d1806fdad9d79ca2ec8d92b89e80" prot="public" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t Apache::Hadoop::Hive::AddDynamicPartitions::txnid</definition>
+        <argsstring></argsstring>
+        <name>txnid</name>
+        <qualifiedname>Apache::Hadoop::Hive::AddDynamicPartitions::txnid</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9019" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="9019" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1AddDynamicPartitions_1ac9dcec8e7d6c74463cb21d359decc271" prot="public" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t Apache::Hadoop::Hive::AddDynamicPartitions::writeid</definition>
+        <argsstring></argsstring>
+        <name>writeid</name>
+        <qualifiedname>Apache::Hadoop::Hive::AddDynamicPartitions::writeid</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9020" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="9020" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1AddDynamicPartitions_1a3b7e16942cb6993be18b51f95e7225f8" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::AddDynamicPartitions::dbname</definition>
+        <argsstring></argsstring>
+        <name>dbname</name>
+        <qualifiedname>Apache::Hadoop::Hive::AddDynamicPartitions::dbname</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9021" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="9021" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1AddDynamicPartitions_1a766eef8a6ea093e17e6eb913250dadec" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::AddDynamicPartitions::tablename</definition>
+        <argsstring></argsstring>
+        <name>tablename</name>
+        <qualifiedname>Apache::Hadoop::Hive::AddDynamicPartitions::tablename</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9022" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="9022" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1AddDynamicPartitions_1a40cbd22221f8867a391a7004e6007375" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; std::string &gt;</type>
+        <definition>std::vector&lt;std::string&gt; Apache::Hadoop::Hive::AddDynamicPartitions::partitionnames</definition>
+        <argsstring></argsstring>
+        <name>partitionnames</name>
+        <qualifiedname>Apache::Hadoop::Hive::AddDynamicPartitions::partitionnames</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9023" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="9023" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1AddDynamicPartitions_1a092a60da687393cab9ebc1d66d8c18df" prot="public" static="no" mutable="no">
+        <type>DataOperationType::type</type>
+        <definition>DataOperationType::type Apache::Hadoop::Hive::AddDynamicPartitions::operationType</definition>
+        <argsstring></argsstring>
+        <name>operationType</name>
+        <qualifiedname>Apache::Hadoop::Hive::AddDynamicPartitions::operationType</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="see"><para><ref refid="structApache_1_1Hadoop_1_1Hive_1_1DataOperationType" kindref="compound">DataOperationType</ref> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9028" column="27" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="9028" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1AddDynamicPartitions_1adf9c8ac9d2325eaacd7c7a9e42bab4a1" prot="public" static="no" mutable="no">
+        <type><ref refid="structApache_1_1Hadoop_1_1Hive_1_1__AddDynamicPartitions____isset" kindref="compound">_AddDynamicPartitions__isset</ref></type>
+        <definition>_AddDynamicPartitions__isset Apache::Hadoop::Hive::AddDynamicPartitions::__isset</definition>
+        <argsstring></argsstring>
+        <name>__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::AddDynamicPartitions::__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9030" column="32" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="9030" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AddDynamicPartitions_1a2dba7996e7ee56c9abb2ed22397f5ba1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::AddDynamicPartitions::AddDynamicPartitions</definition>
+        <argsstring>(const AddDynamicPartitions &amp;)</argsstring>
+        <name>AddDynamicPartitions</name>
+        <qualifiedname>Apache::Hadoop::Hive::AddDynamicPartitions::AddDynamicPartitions</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1AddDynamicPartitions" kindref="compound">AddDynamicPartitions</ref> &amp;</type>
+          <defname>other1110</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9014" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="35289" bodyend="35297"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AddDynamicPartitions_1a5b7019a7ee244bc48d51bb41825ca853" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1AddDynamicPartitions" kindref="compound">AddDynamicPartitions</ref> &amp;</type>
+        <definition>AddDynamicPartitions &amp; Apache::Hadoop::Hive::AddDynamicPartitions::operator=</definition>
+        <argsstring>(const AddDynamicPartitions &amp;)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::AddDynamicPartitions::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1AddDynamicPartitions" kindref="compound">AddDynamicPartitions</ref> &amp;</type>
+          <defname>other1111</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9015" column="24" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="35298" bodyend="35307"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AddDynamicPartitions_1a337045bf4056b784cebf1ec5fafa4c4a" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::AddDynamicPartitions::AddDynamicPartitions</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>AddDynamicPartitions</name>
+        <qualifiedname>Apache::Hadoop::Hive::AddDynamicPartitions::AddDynamicPartitions</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9016" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="35067" bodyend="35073"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AddDynamicPartitions_1a374688bb1d45eb5ab1774d5663e784f3" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::AddDynamicPartitions::~AddDynamicPartitions</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~AddDynamicPartitions</name>
+        <qualifiedname>Apache::Hadoop::Hive::AddDynamicPartitions::~AddDynamicPartitions</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9018" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="35064" bodyend="35065"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AddDynamicPartitions_1a062992dc9373d84fd22b04843aa4678f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::AddDynamicPartitions::__set_txnid</definition>
+        <argsstring>(const int64_t val)</argsstring>
+        <name>__set_txnid</name>
+        <qualifiedname>Apache::Hadoop::Hive::AddDynamicPartitions::__set_txnid</qualifiedname>
+        <param>
+          <type>const int64_t</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9032" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="35075" bodyend="35077"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AddDynamicPartitions_1a51b8e7adf26931c24a13e1e35d73766c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::AddDynamicPartitions::__set_writeid</definition>
+        <argsstring>(const int64_t val)</argsstring>
+        <name>__set_writeid</name>
+        <qualifiedname>Apache::Hadoop::Hive::AddDynamicPartitions::__set_writeid</qualifiedname>
+        <param>
+          <type>const int64_t</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9034" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="35079" bodyend="35081"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AddDynamicPartitions_1a57bc5ab5f701bc4b05e0e63cb3fdc75b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::AddDynamicPartitions::__set_dbname</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_dbname</name>
+        <qualifiedname>Apache::Hadoop::Hive::AddDynamicPartitions::__set_dbname</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9036" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="35083" bodyend="35085"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AddDynamicPartitions_1a8beb8da6bcdc04aaf5f60a1b6f50933b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::AddDynamicPartitions::__set_tablename</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_tablename</name>
+        <qualifiedname>Apache::Hadoop::Hive::AddDynamicPartitions::__set_tablename</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9038" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="35087" bodyend="35089"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AddDynamicPartitions_1a8e9a232da6efd86adfaee592a17388c7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::AddDynamicPartitions::__set_partitionnames</definition>
+        <argsstring>(const std::vector&lt; std::string &gt; &amp;val)</argsstring>
+        <name>__set_partitionnames</name>
+        <qualifiedname>Apache::Hadoop::Hive::AddDynamicPartitions::__set_partitionnames</qualifiedname>
+        <param>
+          <type>const std::vector&lt; std::string &gt; &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9040" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="35091" bodyend="35093"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AddDynamicPartitions_1ad3d5a5d88a36cd7c5d6421d6823d9b83" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::AddDynamicPartitions::__set_operationType</definition>
+        <argsstring>(const DataOperationType::type val)</argsstring>
+        <name>__set_operationType</name>
+        <qualifiedname>Apache::Hadoop::Hive::AddDynamicPartitions::__set_operationType</qualifiedname>
+        <param>
+          <type>const DataOperationType::type</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9042" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="35095" bodyend="35098"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AddDynamicPartitions_1a9d84979609c1851df09f381ec6a22333" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::AddDynamicPartitions::operator==</definition>
+        <argsstring>(const AddDynamicPartitions &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::AddDynamicPartitions::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1AddDynamicPartitions" kindref="compound">AddDynamicPartitions</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9044" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="35270" bodyend="35287"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AddDynamicPartitions_1a2370cdd933115bd37b7e0d872cae6d26" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::AddDynamicPartitions::operator!=</definition>
+        <argsstring>(const AddDynamicPartitions &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::AddDynamicPartitions::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1AddDynamicPartitions" kindref="compound">AddDynamicPartitions</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9045" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="9045" bodyend="9047"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AddDynamicPartitions_1ace94d72526ff2c9c275b108443612cd3" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::AddDynamicPartitions::operator&lt;</definition>
+        <argsstring>(const AddDynamicPartitions &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::AddDynamicPartitions::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1AddDynamicPartitions" kindref="compound">AddDynamicPartitions</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9049" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AddDynamicPartitions_1a17db7a2446ad8ae9ed56400b8324561b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::AddDynamicPartitions::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot) override</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::AddDynamicPartitions::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9051" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="35106" bodyend="35214"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AddDynamicPartitions_1adc117bbef9cd0147d133bf4f1c7bcd51" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::AddDynamicPartitions::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const override</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::AddDynamicPartitions::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9052" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="35216" bodyend="35257"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1AddDynamicPartitions_1aff61434ac39da05fc166fa1c17c4b6bf" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::AddDynamicPartitions::printTo</definition>
+        <argsstring>(std::ostream &amp;out) const</argsstring>
+        <name>printTo</name>
+        <qualifiedname>Apache::Hadoop::Hive::AddDynamicPartitions::printTo</qualifiedname>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9054" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="35308" bodyend="35318"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::AddDynamicPartitions</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1AddDynamicPartitions"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::AddDynamicPartitions</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1AddDynamicPartitions"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>dbname</edgelabel>
+          <edgelabel>tablename</edgelabel>
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>partitionnames</edgelabel>
+        </childnode>
+        <childnode refid="6" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="6">
+        <label>Apache::Hadoop::Hive::_AddDynamicPartitions__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__AddDynamicPartitions____isset"/>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+      <node id="4">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="3">
+        <label>std::string</label>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>std::vector&lt; std::string &gt;</label>
+        <childnode refid="3" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9011" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="9011" bodyend="9055"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AddDynamicPartitions_1adf9c8ac9d2325eaacd7c7a9e42bab4a1" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AddDynamicPartitions</scope><name>__isset</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AddDynamicPartitions_1a57bc5ab5f701bc4b05e0e63cb3fdc75b" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AddDynamicPartitions</scope><name>__set_dbname</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AddDynamicPartitions_1ad3d5a5d88a36cd7c5d6421d6823d9b83" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AddDynamicPartitions</scope><name>__set_operationType</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AddDynamicPartitions_1a8e9a232da6efd86adfaee592a17388c7" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AddDynamicPartitions</scope><name>__set_partitionnames</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AddDynamicPartitions_1a8beb8da6bcdc04aaf5f60a1b6f50933b" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AddDynamicPartitions</scope><name>__set_tablename</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AddDynamicPartitions_1a062992dc9373d84fd22b04843aa4678f" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AddDynamicPartitions</scope><name>__set_txnid</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AddDynamicPartitions_1a51b8e7adf26931c24a13e1e35d73766c" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AddDynamicPartitions</scope><name>__set_writeid</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AddDynamicPartitions_1a2dba7996e7ee56c9abb2ed22397f5ba1" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AddDynamicPartitions</scope><name>AddDynamicPartitions</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AddDynamicPartitions_1a337045bf4056b784cebf1ec5fafa4c4a" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AddDynamicPartitions</scope><name>AddDynamicPartitions</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AddDynamicPartitions_1a3b7e16942cb6993be18b51f95e7225f8" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AddDynamicPartitions</scope><name>dbname</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AddDynamicPartitions_1a092a60da687393cab9ebc1d66d8c18df" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AddDynamicPartitions</scope><name>operationType</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AddDynamicPartitions_1a2370cdd933115bd37b7e0d872cae6d26" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AddDynamicPartitions</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AddDynamicPartitions_1ace94d72526ff2c9c275b108443612cd3" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AddDynamicPartitions</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AddDynamicPartitions_1a5b7019a7ee244bc48d51bb41825ca853" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AddDynamicPartitions</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AddDynamicPartitions_1a9d84979609c1851df09f381ec6a22333" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AddDynamicPartitions</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AddDynamicPartitions_1a40cbd22221f8867a391a7004e6007375" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AddDynamicPartitions</scope><name>partitionnames</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AddDynamicPartitions_1aff61434ac39da05fc166fa1c17c4b6bf" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::AddDynamicPartitions</scope><name>printTo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AddDynamicPartitions_1a17db7a2446ad8ae9ed56400b8324561b" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AddDynamicPartitions</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AddDynamicPartitions_1a766eef8a6ea093e17e6eb913250dadec" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AddDynamicPartitions</scope><name>tablename</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AddDynamicPartitions_1a03f3d1806fdad9d79ca2ec8d92b89e80" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AddDynamicPartitions</scope><name>txnid</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AddDynamicPartitions_1adc117bbef9cd0147d133bf4f1c7bcd51" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AddDynamicPartitions</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AddDynamicPartitions_1ac9dcec8e7d6c74463cb21d359decc271" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::AddDynamicPartitions</scope><name>writeid</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1AddDynamicPartitions_1a374688bb1d45eb5ab1774d5663e784f3" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::AddDynamicPartitions</scope><name>~AddDynamicPartitions</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

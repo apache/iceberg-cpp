@@ -1,0 +1,127 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__update__compactor__state__pargs" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::ThriftHiveMetastore_update_compactor_state_pargs</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__update__compactor__state__pargs_1a7d9cee77cca35a9f8e83218903c8209b" prot="public" static="no" mutable="no">
+        <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionInfoStruct" kindref="compound">CompactionInfoStruct</ref> *</type>
+        <definition>const CompactionInfoStruct* Apache::Hadoop::Hive::ThriftHiveMetastore_update_compactor_state_pargs::cr</definition>
+        <argsstring></argsstring>
+        <name>cr</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_update_compactor_state_pargs::cr</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="22898" column="30" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="22898" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__update__compactor__state__pargs_1a135acfb36a2f08c87f5e8df07a7f2fab" prot="public" static="no" mutable="no">
+        <type>const int64_t *</type>
+        <definition>const int64_t* Apache::Hadoop::Hive::ThriftHiveMetastore_update_compactor_state_pargs::txn_id</definition>
+        <argsstring></argsstring>
+        <name>txn_id</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_update_compactor_state_pargs::txn_id</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="22899" column="17" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="22899" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__update__compactor__state__pargs_1a87469837705e6145218750e363aeb0b8" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::ThriftHiveMetastore_update_compactor_state_pargs::~ThriftHiveMetastore_update_compactor_state_pargs</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~ThriftHiveMetastore_update_compactor_state_pargs</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_update_compactor_state_pargs::~ThriftHiveMetastore_update_compactor_state_pargs</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="22897" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.cpp" bodystart="50997" bodyend="50998"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__update__compactor__state__pargs_1a1485f87a34192a6bf6295a3509da0013" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::ThriftHiveMetastore_update_compactor_state_pargs::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::ThriftHiveMetastore_update_compactor_state_pargs::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="22901" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.cpp" bodystart="51001" bodyend="51017"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="2">
+        <label>Apache::Hadoop::Hive::CompactionInfoStruct</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionInfoStruct"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>dbname</edgelabel>
+          <edgelabel>errorMessage</edgelabel>
+          <edgelabel>orderByClause</edgelabel>
+          <edgelabel>partitionname</edgelabel>
+          <edgelabel>poolname</edgelabel>
+          <edgelabel>properties</edgelabel>
+          <edgelabel>runas</edgelabel>
+          <edgelabel>state</edgelabel>
+          <edgelabel>tablename</edgelabel>
+          <edgelabel>workerId</edgelabel>
+          <edgelabel>...</edgelabel>
+        </childnode>
+        <childnode refid="6" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::ThriftHiveMetastore_update_compactor_state_pargs</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__update__compactor__state__pargs"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>cr</edgelabel>
+        </childnode>
+      </node>
+      <node id="6">
+        <label>Apache::Hadoop::Hive::_CompactionInfoStruct__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__CompactionInfoStruct____isset"/>
+      </node>
+      <node id="3">
+        <label>apache::thrift::TBase</label>
+      </node>
+      <node id="5">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="4">
+        <label>std::string</label>
+        <childnode refid="5" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="22893" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="22893" bodyend="22903"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__update__compactor__state__pargs_1a7d9cee77cca35a9f8e83218903c8209b" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_update_compactor_state_pargs</scope><name>cr</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__update__compactor__state__pargs_1a135acfb36a2f08c87f5e8df07a7f2fab" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_update_compactor_state_pargs</scope><name>txn_id</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__update__compactor__state__pargs_1a1485f87a34192a6bf6295a3509da0013" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_update_compactor_state_pargs</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastore__update__compactor__state__pargs_1a87469837705e6145218750e363aeb0b8" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::ThriftHiveMetastore_update_compactor_state_pargs</scope><name>~ThriftHiveMetastore_update_compactor_state_pargs</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

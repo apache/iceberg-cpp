@@ -1,0 +1,305 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1hive_1_1HiveCatalogProperties" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::hive::HiveCatalogProperties</compoundname>
+    <basecompoundref refid="classiceberg_1_1ConfigBase" prot="public" virt="non-virtual">iceberg::ConfigBase&lt; HiveCatalogProperties &gt;</basecompoundref>
+    <includes refid="hive__catalog__properties_8h" local="no">hive_catalog_properties.h</includes>
+    <sectiondef kind="public-type">
+      <memberdef kind="typedef" id="classiceberg_1_1hive_1_1HiveCatalogProperties_1a2e397f52f1b48ae12a526509ed4bd13d" prot="public" static="no">
+        <templateparamlist>
+          <param>
+            <type>typename T</type>
+          </param>
+        </templateparamlist>
+        <type>const <ref refid="classiceberg_1_1ConfigBase" kindref="compound">ConfigBase</ref>&lt; <ref refid="classiceberg_1_1hive_1_1HiveCatalogProperties" kindref="compound">HiveCatalogProperties</ref> &gt;::Entry&lt; T &gt;</type>
+        <definition>using iceberg::hive::HiveCatalogProperties::Entry =  const ConfigBase&lt;HiveCatalogProperties&gt;::Entry&lt;T&gt;</definition>
+        <argsstring></argsstring>
+        <name>Entry</name>
+        <qualifiedname>iceberg::hive::HiveCatalogProperties::Entry</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/hive_catalog_properties.h" line="50" column="3" bodyfile="iceberg/catalog/hive/hive_catalog_properties.h" bodystart="50" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1hive_1_1HiveCatalogProperties_1aad7f35a7cfb577d6a5969862c2c98ef2" prot="public" static="yes" mutable="no">
+        <type>Entry&lt; std::string &gt;</type>
+        <definition>Entry&lt;std::string&gt; iceberg::hive::HiveCatalogProperties::kUri</definition>
+        <argsstring></argsstring>
+        <name>kUri</name>
+        <qualifiedname>iceberg::hive::HiveCatalogProperties::kUri</qualifiedname>
+        <initializer>{&quot;uri&quot;, &quot;&quot;}</initializer>
+        <briefdescription>
+<para>The URI of the Hive Metastore Thrift endpoint. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Accepted forms (matching the conventions used by iceberg-java and iceberg-rust):<itemizedlist>
+<listitem><para><computeroutput>thrift://host:port</computeroutput></para>
+</listitem><listitem><para><computeroutput>host:port</computeroutput></para>
+</listitem><listitem><para>comma-separated list of either form for HA failover </para>
+</listitem></itemizedlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/hive_catalog_properties.h" line="59" column="23" bodyfile="iceberg/catalog/hive/hive_catalog_properties.h" bodystart="59" bodyend="59"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1hive_1_1HiveCatalogProperties_1a63aed4d8a591476473a64bd9f78c18f7" prot="public" static="yes" mutable="no">
+        <type>Entry&lt; std::string &gt;</type>
+        <definition>Entry&lt;std::string&gt; iceberg::hive::HiveCatalogProperties::kName</definition>
+        <argsstring></argsstring>
+        <name>kName</name>
+        <qualifiedname>iceberg::hive::HiveCatalogProperties::kName</qualifiedname>
+        <initializer>{&quot;name&quot;, &quot;hive&quot;}</initializer>
+        <briefdescription>
+<para>The catalog name reported by <computeroutput>name()</computeroutput>. Defaults to &quot;hive&quot;. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/hive_catalog_properties.h" line="62" column="23" bodyfile="iceberg/catalog/hive/hive_catalog_properties.h" bodystart="62" bodyend="62"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1hive_1_1HiveCatalogProperties_1a809b60c4e714a19679af3b9a8441780b" prot="public" static="yes" mutable="no">
+        <type>Entry&lt; std::string &gt;</type>
+        <definition>Entry&lt;std::string&gt; iceberg::hive::HiveCatalogProperties::kWarehouse</definition>
+        <argsstring></argsstring>
+        <name>kWarehouse</name>
+        <qualifiedname>iceberg::hive::HiveCatalogProperties::kWarehouse</qualifiedname>
+        <initializer>{&quot;warehouse&quot;, &quot;&quot;}</initializer>
+        <briefdescription>
+<para>The warehouse root path (for example, <computeroutput>s3://bucket/warehouse</computeroutput> or <computeroutput>hdfs://nn/path</computeroutput>). Used as the default base location for new tables that do not specify their own location. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/hive_catalog_properties.h" line="67" column="23" bodyfile="iceberg/catalog/hive/hive_catalog_properties.h" bodystart="67" bodyend="67"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1hive_1_1HiveCatalogProperties_1aa92fa347a973aa702b855e8cff2ba21b" prot="public" static="yes" mutable="no">
+        <type>Entry&lt; std::string &gt;</type>
+        <definition>Entry&lt;std::string&gt; iceberg::hive::HiveCatalogProperties::kIOImpl</definition>
+        <argsstring></argsstring>
+        <name>kIOImpl</name>
+        <qualifiedname>iceberg::hive::HiveCatalogProperties::kIOImpl</qualifiedname>
+        <initializer>{&quot;io-impl&quot;, &quot;&quot;}</initializer>
+        <briefdescription>
+<para>The <ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref> implementation name used to read and write Iceberg metadata files. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/hive_catalog_properties.h" line="71" column="23" bodyfile="iceberg/catalog/hive/hive_catalog_properties.h" bodystart="71" bodyend="71"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1hive_1_1HiveCatalogProperties_1a0da597b51d4cde7100ba12c2252b6b48" prot="public" static="yes" mutable="no">
+        <type>Entry&lt; std::string &gt;</type>
+        <definition>Entry&lt;std::string&gt; iceberg::hive::HiveCatalogProperties::kThriftTransport</definition>
+        <argsstring></argsstring>
+        <name>kThriftTransport</name>
+        <qualifiedname>iceberg::hive::HiveCatalogProperties::kThriftTransport</qualifiedname>
+        <initializer>{&quot;thrift-transport&quot;, &quot;buffered&quot;}</initializer>
+        <briefdescription>
+<para>Thrift framing for the HMS connection (&quot;buffered&quot; or &quot;framed&quot;). </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/hive_catalog_properties.h" line="74" column="23" bodyfile="iceberg/catalog/hive/hive_catalog_properties.h" bodystart="74" bodyend="74"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1hive_1_1HiveCatalogProperties_1a11513dfcec98aa849076b73ea35ba94c" prot="public" static="yes" mutable="no">
+        <type>Entry&lt; int &gt;</type>
+        <definition>Entry&lt;int&gt; iceberg::hive::HiveCatalogProperties::kConnectTimeoutMs</definition>
+        <argsstring></argsstring>
+        <name>kConnectTimeoutMs</name>
+        <qualifiedname>iceberg::hive::HiveCatalogProperties::kConnectTimeoutMs</qualifiedname>
+        <initializer>{&quot;connect-timeout-ms&quot;, 30000}</initializer>
+        <briefdescription>
+<para>HMS connect timeout, in milliseconds. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/hive_catalog_properties.h" line="77" column="23" bodyfile="iceberg/catalog/hive/hive_catalog_properties.h" bodystart="77" bodyend="77"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1hive_1_1HiveCatalogProperties_1ad6f56e634f0bdd830f286da2938e28f7" prot="public" static="yes" mutable="no">
+        <type>Entry&lt; int &gt;</type>
+        <definition>Entry&lt;int&gt; iceberg::hive::HiveCatalogProperties::kSocketTimeoutMs</definition>
+        <argsstring></argsstring>
+        <name>kSocketTimeoutMs</name>
+        <qualifiedname>iceberg::hive::HiveCatalogProperties::kSocketTimeoutMs</qualifiedname>
+        <initializer>{&quot;socket-timeout-ms&quot;, 60000}</initializer>
+        <briefdescription>
+<para>HMS socket / RPC timeout, in milliseconds. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/hive_catalog_properties.h" line="80" column="23" bodyfile="iceberg/catalog/hive/hive_catalog_properties.h" bodystart="80" bodyend="80"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1hive_1_1HiveCatalogProperties_1a42aba3af230c50066e7f09a7828cab7d" prot="public" static="yes" mutable="no">
+        <type>Entry&lt; bool &gt;</type>
+        <definition>Entry&lt;bool&gt; iceberg::hive::HiveCatalogProperties::kLockEnabled</definition>
+        <argsstring></argsstring>
+        <name>kLockEnabled</name>
+        <qualifiedname>iceberg::hive::HiveCatalogProperties::kLockEnabled</qualifiedname>
+        <initializer>{&quot;hive.lock-enabled&quot;, false}</initializer>
+        <briefdescription>
+<para>When true, wrap the commit path with HMS <computeroutput>lock</computeroutput> / <computeroutput>unlock</computeroutput> for extra safety on top of the metadata_location CAS. Defaults to false because CAS already handles single-writer correctness; turn this on for environments with high write concurrency. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/hive_catalog_properties.h" line="86" column="23" bodyfile="iceberg/catalog/hive/hive_catalog_properties.h" bodystart="86" bodyend="86"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classiceberg_1_1hive_1_1HiveCatalogProperties_1a2d03453932fc1ce88f6a9eb06884eaa6" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1hive_1_1HiveCatalogProperties" kindref="compound">HiveCatalogProperties</ref></type>
+        <definition>HiveCatalogProperties iceberg::hive::HiveCatalogProperties::default_properties</definition>
+        <argsstring>()</argsstring>
+        <name>default_properties</name>
+        <qualifiedname>iceberg::hive::HiveCatalogProperties::default_properties</qualifiedname>
+        <briefdescription>
+<para>Build a <ref refid="classiceberg_1_1hive_1_1HiveCatalogProperties" kindref="compound">HiveCatalogProperties</ref> with defaults applied. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/hive_catalog_properties.h" line="89" column="32" bodyfile="iceberg/catalog/hive/hive_catalog_properties.cc" bodystart="29" bodyend="29"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1hive_1_1HiveCatalogProperties_1a5a57856fe72945c8b7083e9adf5526e7" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1hive_1_1HiveCatalogProperties" kindref="compound">HiveCatalogProperties</ref></type>
+        <definition>HiveCatalogProperties iceberg::hive::HiveCatalogProperties::FromMap</definition>
+        <argsstring>(std::unordered_map&lt; std::string, std::string &gt; properties)</argsstring>
+        <name>FromMap</name>
+        <qualifiedname>iceberg::hive::HiveCatalogProperties::FromMap</qualifiedname>
+        <param>
+          <type>std::unordered_map&lt; std::string, std::string &gt;</type>
+          <declname>properties</declname>
+        </param>
+        <briefdescription>
+<para>Build a <ref refid="classiceberg_1_1hive_1_1HiveCatalogProperties" kindref="compound">HiveCatalogProperties</ref> from a property map. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/hive_catalog_properties.h" line="92" column="32" bodyfile="iceberg/catalog/hive/hive_catalog_properties.cc" bodystart="31" bodyend="36"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1hive_1_1HiveCatalogProperties_1a580be1f476acdcb1abebca0a6cd3d141" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::string_view &gt;</type>
+        <definition>Result&lt; std::string_view &gt; iceberg::hive::HiveCatalogProperties::Uri</definition>
+        <argsstring>() const</argsstring>
+        <name>Uri</name>
+        <qualifiedname>iceberg::hive::HiveCatalogProperties::Uri</qualifiedname>
+        <briefdescription>
+<para>Resolve <computeroutput>kUri</computeroutput>. Returns an error if the URI is unset or empty. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/hive_catalog_properties.h" line="96" column="10" bodyfile="iceberg/catalog/hive/hive_catalog_properties.cc" bodystart="38" bodyend="44"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1hive_1_1HiveCatalogProperties_1a7154a2c800f6324c50d535cf8d469710" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; <ref refid="hive__catalog__properties_8h_1a3960254acbead9ea013f258192c6cb9e" kindref="member">HiveThriftTransport</ref> &gt;</type>
+        <definition>Result&lt; HiveThriftTransport &gt; iceberg::hive::HiveCatalogProperties::ThriftTransport</definition>
+        <argsstring>() const</argsstring>
+        <name>ThriftTransport</name>
+        <qualifiedname>iceberg::hive::HiveCatalogProperties::ThriftTransport</qualifiedname>
+        <briefdescription>
+<para>Parse <computeroutput>kThriftTransport</computeroutput> into a HiveThriftTransport. Comparison is case-insensitive to match the conventions used by other Iceberg language ports. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/hive_catalog_properties.h" line="101" column="10" bodyfile="iceberg/catalog/hive/hive_catalog_properties.cc" bodystart="46" bodyend="55"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Configuration for the iceberg_hive <ref refid="classiceberg_1_1hive_1_1HiveCatalog" kindref="compound">HiveCatalog</ref>. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>HMS connection settings (URI, transport, timeouts) plus warehouse / <ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref> metadata. Authentication (SASL/Kerberos) and HMS-side locking are introduced in follow-up changes. </para>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>iceberg::ConfigBase&lt; HiveCatalogProperties &gt;</label>
+        <link refid="classiceberg_1_1ConfigBase"/>
+      </node>
+      <node id="1">
+        <label>iceberg::hive::HiveCatalogProperties</label>
+        <link refid="classiceberg_1_1hive_1_1HiveCatalogProperties"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="2">
+        <label>iceberg::ConfigBase&lt; HiveCatalogProperties &gt;</label>
+        <link refid="classiceberg_1_1ConfigBase"/>
+        <childnode refid="3" relation="usage">
+          <edgelabel>configs_</edgelabel>
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::hive::HiveCatalogProperties</label>
+        <link refid="classiceberg_1_1hive_1_1HiveCatalogProperties"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="4">
+        <label>std::string</label>
+        <childnode refid="5" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::unordered_map&lt; std::string, std::string &gt;</label>
+        <childnode refid="4" relation="usage">
+          <edgelabel>elements</edgelabel>
+          <edgelabel>keys</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/hive_catalog_properties.h" line="46" column="1" bodyfile="iceberg/catalog/hive/hive_catalog_properties.h" bodystart="47" bodyend="102"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1ConfigBase_1a464281576df4a683611d8319e578257c" prot="public" virt="non-virtual"><scope>iceberg::hive::HiveCatalogProperties</scope><name>configs</name></member>
+      <member refid="classiceberg_1_1ConfigBase_1a5988dbb52a6ce914c88ef10c66e5bba7" prot="protected" virt="non-virtual"><scope>iceberg::hive::HiveCatalogProperties</scope><name>configs_</name></member>
+      <member refid="classiceberg_1_1hive_1_1HiveCatalogProperties_1a2d03453932fc1ce88f6a9eb06884eaa6" prot="public" virt="non-virtual"><scope>iceberg::hive::HiveCatalogProperties</scope><name>default_properties</name></member>
+      <member refid="classiceberg_1_1hive_1_1HiveCatalogProperties_1a2e397f52f1b48ae12a526509ed4bd13d" prot="public" virt="non-virtual"><scope>iceberg::hive::HiveCatalogProperties</scope><name>Entry</name></member>
+      <member refid="classiceberg_1_1ConfigBase_1a78dc1c7d65af1e096a19fc77d2c9ed39" prot="public" virt="non-virtual"><scope>iceberg::hive::HiveCatalogProperties</scope><name>Extract</name></member>
+      <member refid="classiceberg_1_1hive_1_1HiveCatalogProperties_1a5a57856fe72945c8b7083e9adf5526e7" prot="public" virt="non-virtual"><scope>iceberg::hive::HiveCatalogProperties</scope><name>FromMap</name></member>
+      <member refid="classiceberg_1_1ConfigBase_1a793c5c7e230dac7b87c16200f8263db6" prot="public" virt="non-virtual"><scope>iceberg::hive::HiveCatalogProperties</scope><name>Get</name></member>
+      <member refid="classiceberg_1_1hive_1_1HiveCatalogProperties_1a11513dfcec98aa849076b73ea35ba94c" prot="public" virt="non-virtual"><scope>iceberg::hive::HiveCatalogProperties</scope><name>kConnectTimeoutMs</name></member>
+      <member refid="classiceberg_1_1hive_1_1HiveCatalogProperties_1aa92fa347a973aa702b855e8cff2ba21b" prot="public" virt="non-virtual"><scope>iceberg::hive::HiveCatalogProperties</scope><name>kIOImpl</name></member>
+      <member refid="classiceberg_1_1hive_1_1HiveCatalogProperties_1a42aba3af230c50066e7f09a7828cab7d" prot="public" virt="non-virtual"><scope>iceberg::hive::HiveCatalogProperties</scope><name>kLockEnabled</name></member>
+      <member refid="classiceberg_1_1hive_1_1HiveCatalogProperties_1a63aed4d8a591476473a64bd9f78c18f7" prot="public" virt="non-virtual"><scope>iceberg::hive::HiveCatalogProperties</scope><name>kName</name></member>
+      <member refid="classiceberg_1_1hive_1_1HiveCatalogProperties_1ad6f56e634f0bdd830f286da2938e28f7" prot="public" virt="non-virtual"><scope>iceberg::hive::HiveCatalogProperties</scope><name>kSocketTimeoutMs</name></member>
+      <member refid="classiceberg_1_1hive_1_1HiveCatalogProperties_1a0da597b51d4cde7100ba12c2252b6b48" prot="public" virt="non-virtual"><scope>iceberg::hive::HiveCatalogProperties</scope><name>kThriftTransport</name></member>
+      <member refid="classiceberg_1_1hive_1_1HiveCatalogProperties_1aad7f35a7cfb577d6a5969862c2c98ef2" prot="public" virt="non-virtual"><scope>iceberg::hive::HiveCatalogProperties</scope><name>kUri</name></member>
+      <member refid="classiceberg_1_1hive_1_1HiveCatalogProperties_1a809b60c4e714a19679af3b9a8441780b" prot="public" virt="non-virtual"><scope>iceberg::hive::HiveCatalogProperties</scope><name>kWarehouse</name></member>
+      <member refid="classiceberg_1_1ConfigBase_1a75f09e1cd2bb55b4df854298ed678313" prot="public" virt="non-virtual"><scope>iceberg::hive::HiveCatalogProperties</scope><name>mutable_configs</name></member>
+      <member refid="classiceberg_1_1ConfigBase_1a95b58a9275880fc2437210f42e8946f2" prot="public" virt="non-virtual"><scope>iceberg::hive::HiveCatalogProperties</scope><name>Reset</name></member>
+      <member refid="classiceberg_1_1ConfigBase_1a3c626ca9dd5adf5a1f2e72d3f751059c" prot="public" virt="non-virtual"><scope>iceberg::hive::HiveCatalogProperties</scope><name>Set</name></member>
+      <member refid="classiceberg_1_1hive_1_1HiveCatalogProperties_1a7154a2c800f6324c50d535cf8d469710" prot="public" virt="non-virtual"><scope>iceberg::hive::HiveCatalogProperties</scope><name>ThriftTransport</name></member>
+      <member refid="classiceberg_1_1ConfigBase_1a1fe814df79a9ed72e34fa9d7e6e8d443" prot="public" virt="non-virtual"><scope>iceberg::hive::HiveCatalogProperties</scope><name>Unset</name></member>
+      <member refid="classiceberg_1_1hive_1_1HiveCatalogProperties_1a580be1f476acdcb1abebca0a6cd3d141" prot="public" virt="non-virtual"><scope>iceberg::hive::HiveCatalogProperties</scope><name>Uri</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

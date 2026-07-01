@@ -1,0 +1,144 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structApache_1_1Hadoop_1_1Hive_1_1__RolePrincipalGrant____isset" kind="struct" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::_RolePrincipalGrant__isset</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__RolePrincipalGrant____isset_1a5d139baef0d7e98188dbafcde133ee38" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_RolePrincipalGrant__isset::roleName</definition>
+        <argsstring></argsstring>
+        <name>roleName</name>
+        <qualifiedname>Apache::Hadoop::Hive::_RolePrincipalGrant__isset::roleName</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="2333" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="2333" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__RolePrincipalGrant____isset_1a88072b8736619d6d595603da657e9401" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_RolePrincipalGrant__isset::principalName</definition>
+        <argsstring></argsstring>
+        <name>principalName</name>
+        <qualifiedname>Apache::Hadoop::Hive::_RolePrincipalGrant__isset::principalName</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="2334" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="2334" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__RolePrincipalGrant____isset_1af1343ccb92883bfce35eb1a1d1172a1d" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_RolePrincipalGrant__isset::principalType</definition>
+        <argsstring></argsstring>
+        <name>principalType</name>
+        <qualifiedname>Apache::Hadoop::Hive::_RolePrincipalGrant__isset::principalType</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="2335" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="2335" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__RolePrincipalGrant____isset_1a6d88984f95054bd99b0bcc18e72d073b" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_RolePrincipalGrant__isset::grantOption</definition>
+        <argsstring></argsstring>
+        <name>grantOption</name>
+        <qualifiedname>Apache::Hadoop::Hive::_RolePrincipalGrant__isset::grantOption</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="2336" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="2336" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__RolePrincipalGrant____isset_1ad3112f67c9633a982868b36017e5ad35" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_RolePrincipalGrant__isset::grantTime</definition>
+        <argsstring></argsstring>
+        <name>grantTime</name>
+        <qualifiedname>Apache::Hadoop::Hive::_RolePrincipalGrant__isset::grantTime</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="2337" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="2337" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__RolePrincipalGrant____isset_1ac64b678be70e547dc00ed6c934ce6d49" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_RolePrincipalGrant__isset::grantorName</definition>
+        <argsstring></argsstring>
+        <name>grantorName</name>
+        <qualifiedname>Apache::Hadoop::Hive::_RolePrincipalGrant__isset::grantorName</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="2338" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="2338" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__RolePrincipalGrant____isset_1a146078416cf6c7d600d4fef55fc948ae" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_RolePrincipalGrant__isset::grantorPrincipalType</definition>
+        <argsstring></argsstring>
+        <name>grantorPrincipalType</name>
+        <qualifiedname>Apache::Hadoop::Hive::_RolePrincipalGrant__isset::grantorPrincipalType</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="2339" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="2339" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structApache_1_1Hadoop_1_1Hive_1_1__RolePrincipalGrant____isset_1a37e56fbca7e41a155873bdb67fc4d036" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::_RolePrincipalGrant__isset::_RolePrincipalGrant__isset</definition>
+        <argsstring>()</argsstring>
+        <name>_RolePrincipalGrant__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::_RolePrincipalGrant__isset::_RolePrincipalGrant__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="2332" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="2332" bodyend="2332"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="2331" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="2331" bodyend="2340"/>
+    <listofallmembers>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__RolePrincipalGrant____isset_1a37e56fbca7e41a155873bdb67fc4d036" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_RolePrincipalGrant__isset</scope><name>_RolePrincipalGrant__isset</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__RolePrincipalGrant____isset_1a6d88984f95054bd99b0bcc18e72d073b" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_RolePrincipalGrant__isset</scope><name>grantOption</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__RolePrincipalGrant____isset_1ac64b678be70e547dc00ed6c934ce6d49" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_RolePrincipalGrant__isset</scope><name>grantorName</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__RolePrincipalGrant____isset_1a146078416cf6c7d600d4fef55fc948ae" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_RolePrincipalGrant__isset</scope><name>grantorPrincipalType</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__RolePrincipalGrant____isset_1ad3112f67c9633a982868b36017e5ad35" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_RolePrincipalGrant__isset</scope><name>grantTime</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__RolePrincipalGrant____isset_1a88072b8736619d6d595603da657e9401" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_RolePrincipalGrant__isset</scope><name>principalName</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__RolePrincipalGrant____isset_1af1343ccb92883bfce35eb1a1d1172a1d" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_RolePrincipalGrant__isset</scope><name>principalType</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__RolePrincipalGrant____isset_1a5d139baef0d7e98188dbafcde133ee38" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_RolePrincipalGrant__isset</scope><name>roleName</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

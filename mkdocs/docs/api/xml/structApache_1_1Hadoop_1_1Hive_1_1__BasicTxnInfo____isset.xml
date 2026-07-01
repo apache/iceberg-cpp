@@ -1,0 +1,112 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structApache_1_1Hadoop_1_1Hive_1_1__BasicTxnInfo____isset" kind="struct" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::_BasicTxnInfo__isset</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__BasicTxnInfo____isset_1a4bc85593bd2d70e602a72ab9fa2fe4a4" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_BasicTxnInfo__isset::time</definition>
+        <argsstring></argsstring>
+        <name>time</name>
+        <qualifiedname>Apache::Hadoop::Hive::_BasicTxnInfo__isset::time</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9063" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="9063" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__BasicTxnInfo____isset_1ad2ff452859bcd8e511d04c951be47b32" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_BasicTxnInfo__isset::txnid</definition>
+        <argsstring></argsstring>
+        <name>txnid</name>
+        <qualifiedname>Apache::Hadoop::Hive::_BasicTxnInfo__isset::txnid</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9064" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="9064" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__BasicTxnInfo____isset_1abfc90dbab9ffa18ada2f4c0f6fe33a05" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_BasicTxnInfo__isset::dbname</definition>
+        <argsstring></argsstring>
+        <name>dbname</name>
+        <qualifiedname>Apache::Hadoop::Hive::_BasicTxnInfo__isset::dbname</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9065" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="9065" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__BasicTxnInfo____isset_1a154dd17870a76167bd38b55a961e90be" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_BasicTxnInfo__isset::tablename</definition>
+        <argsstring></argsstring>
+        <name>tablename</name>
+        <qualifiedname>Apache::Hadoop::Hive::_BasicTxnInfo__isset::tablename</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9066" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="9066" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__BasicTxnInfo____isset_1abbe37ff3e36a27dadc057cce73ee3b95" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_BasicTxnInfo__isset::partitionname</definition>
+        <argsstring></argsstring>
+        <name>partitionname</name>
+        <qualifiedname>Apache::Hadoop::Hive::_BasicTxnInfo__isset::partitionname</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9067" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="9067" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structApache_1_1Hadoop_1_1Hive_1_1__BasicTxnInfo____isset_1a125bc832c8ffb0228fabaeaa253a858f" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::_BasicTxnInfo__isset::_BasicTxnInfo__isset</definition>
+        <argsstring>()</argsstring>
+        <name>_BasicTxnInfo__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::_BasicTxnInfo__isset::_BasicTxnInfo__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9062" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="9062" bodyend="9062"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9061" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="9061" bodyend="9068"/>
+    <listofallmembers>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__BasicTxnInfo____isset_1a125bc832c8ffb0228fabaeaa253a858f" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_BasicTxnInfo__isset</scope><name>_BasicTxnInfo__isset</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__BasicTxnInfo____isset_1abfc90dbab9ffa18ada2f4c0f6fe33a05" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_BasicTxnInfo__isset</scope><name>dbname</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__BasicTxnInfo____isset_1abbe37ff3e36a27dadc057cce73ee3b95" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_BasicTxnInfo__isset</scope><name>partitionname</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__BasicTxnInfo____isset_1a154dd17870a76167bd38b55a961e90be" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_BasicTxnInfo__isset</scope><name>tablename</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__BasicTxnInfo____isset_1a4bc85593bd2d70e602a72ab9fa2fe4a4" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_BasicTxnInfo__isset</scope><name>time</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__BasicTxnInfo____isset_1ad2ff452859bcd8e511d04c951be47b32" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_BasicTxnInfo__isset</scope><name>txnid</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,266 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1GetDataConnectorRequest" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::GetDataConnectorRequest</compoundname>
+    <basecompoundref prot="public" virt="virtual">apache::thrift::TBase</basecompoundref>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1GetDataConnectorRequest_1a13950e0778d0ad00f273dde6168cc1f2" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::GetDataConnectorRequest::connectorName</definition>
+        <argsstring></argsstring>
+        <name>connectorName</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetDataConnectorRequest::connectorName</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13259" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="13259" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetDataConnectorRequest_1a783fd70043f9cc92854baff51c7c4cd9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::GetDataConnectorRequest::GetDataConnectorRequest</definition>
+        <argsstring>(const GetDataConnectorRequest &amp;)</argsstring>
+        <name>GetDataConnectorRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetDataConnectorRequest::GetDataConnectorRequest</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1GetDataConnectorRequest" kindref="compound">GetDataConnectorRequest</ref> &amp;</type>
+          <defname>other1633</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13254" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="51952" bodyend="51954"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetDataConnectorRequest_1a8c53ebaf8e6096123846bd20a89a1e7a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1GetDataConnectorRequest" kindref="compound">GetDataConnectorRequest</ref> &amp;</type>
+        <definition>GetDataConnectorRequest &amp; Apache::Hadoop::Hive::GetDataConnectorRequest::operator=</definition>
+        <argsstring>(const GetDataConnectorRequest &amp;)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetDataConnectorRequest::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1GetDataConnectorRequest" kindref="compound">GetDataConnectorRequest</ref> &amp;</type>
+          <defname>other1634</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13255" column="27" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="51955" bodyend="51958"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetDataConnectorRequest_1a0454f062a12114b1ffa83b4f82902a6c" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::GetDataConnectorRequest::GetDataConnectorRequest</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>GetDataConnectorRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetDataConnectorRequest::GetDataConnectorRequest</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13256" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="51868" bodyend="51870"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetDataConnectorRequest_1add5447a3f6e670319006c9438a77f02b" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::GetDataConnectorRequest::~GetDataConnectorRequest</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~GetDataConnectorRequest</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetDataConnectorRequest::~GetDataConnectorRequest</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13258" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="51865" bodyend="51866"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetDataConnectorRequest_1a444bd033a0a5b0942a2664abc127efb3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::GetDataConnectorRequest::__set_connectorName</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_connectorName</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetDataConnectorRequest::__set_connectorName</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13261" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="51872" bodyend="51874"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetDataConnectorRequest_1a249592c382cbe4e316aaa134aa0802d7" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::GetDataConnectorRequest::operator==</definition>
+        <argsstring>(const GetDataConnectorRequest &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetDataConnectorRequest::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1GetDataConnectorRequest" kindref="compound">GetDataConnectorRequest</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13263" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="51945" bodyend="51950"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetDataConnectorRequest_1a688864a95cca2c8fc1c14773d6c451c5" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::GetDataConnectorRequest::operator!=</definition>
+        <argsstring>(const GetDataConnectorRequest &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetDataConnectorRequest::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1GetDataConnectorRequest" kindref="compound">GetDataConnectorRequest</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13264" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="13264" bodyend="13266"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetDataConnectorRequest_1af55a3762ba396f72af0ac21c9e6ff172" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::GetDataConnectorRequest::operator&lt;</definition>
+        <argsstring>(const GetDataConnectorRequest &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetDataConnectorRequest::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1GetDataConnectorRequest" kindref="compound">GetDataConnectorRequest</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13268" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetDataConnectorRequest_1a188c197158642eac96c04779933dcc4d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::GetDataConnectorRequest::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot) override</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetDataConnectorRequest::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13270" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="51882" bodyend="51924"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetDataConnectorRequest_1a38d2677a8327a733c42e7d37626d4691" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::GetDataConnectorRequest::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const override</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetDataConnectorRequest::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13271" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="51926" bodyend="51938"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetDataConnectorRequest_1a9682b283eb8e18703dfb5839c7539f45" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::GetDataConnectorRequest::printTo</definition>
+        <argsstring>(std::ostream &amp;out) const</argsstring>
+        <name>printTo</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetDataConnectorRequest::printTo</qualifiedname>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13273" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="51959" bodyend="51964"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::GetDataConnectorRequest</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1GetDataConnectorRequest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::GetDataConnectorRequest</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1GetDataConnectorRequest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>connectorName</edgelabel>
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+      <node id="4">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="3">
+        <label>std::string</label>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13251" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="13251" bodyend="13274"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetDataConnectorRequest_1a444bd033a0a5b0942a2664abc127efb3" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetDataConnectorRequest</scope><name>__set_connectorName</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetDataConnectorRequest_1a13950e0778d0ad00f273dde6168cc1f2" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetDataConnectorRequest</scope><name>connectorName</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetDataConnectorRequest_1a783fd70043f9cc92854baff51c7c4cd9" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetDataConnectorRequest</scope><name>GetDataConnectorRequest</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetDataConnectorRequest_1a0454f062a12114b1ffa83b4f82902a6c" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetDataConnectorRequest</scope><name>GetDataConnectorRequest</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetDataConnectorRequest_1a688864a95cca2c8fc1c14773d6c451c5" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetDataConnectorRequest</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetDataConnectorRequest_1af55a3762ba396f72af0ac21c9e6ff172" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetDataConnectorRequest</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetDataConnectorRequest_1a8c53ebaf8e6096123846bd20a89a1e7a" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetDataConnectorRequest</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetDataConnectorRequest_1a249592c382cbe4e316aaa134aa0802d7" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetDataConnectorRequest</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetDataConnectorRequest_1a9682b283eb8e18703dfb5839c7539f45" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::GetDataConnectorRequest</scope><name>printTo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetDataConnectorRequest_1a188c197158642eac96c04779933dcc4d" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetDataConnectorRequest</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetDataConnectorRequest_1a38d2677a8327a733c42e7d37626d4691" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetDataConnectorRequest</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetDataConnectorRequest_1add5447a3f6e670319006c9438a77f02b" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::GetDataConnectorRequest</scope><name>~GetDataConnectorRequest</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

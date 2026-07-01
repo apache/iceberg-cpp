@@ -1,0 +1,289 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1Materialization" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::Materialization</compoundname>
+    <basecompoundref prot="public" virt="virtual">apache::thrift::TBase</basecompoundref>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1Materialization_1a3699905df19af635ecfce5e1b07b99ea" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::Materialization::sourceTablesUpdateDeleteModified</definition>
+        <argsstring></argsstring>
+        <name>sourceTablesUpdateDeleteModified</name>
+        <qualifiedname>Apache::Hadoop::Hive::Materialization::sourceTablesUpdateDeleteModified</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10840" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="10840" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1Materialization_1ab3b42ff21ea7d8865d19fa8b76dc2065" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::Materialization::sourceTablesCompacted</definition>
+        <argsstring></argsstring>
+        <name>sourceTablesCompacted</name>
+        <qualifiedname>Apache::Hadoop::Hive::Materialization::sourceTablesCompacted</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10841" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="10841" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1Materialization_1a7f85b14396074c99ec8e8da527f45311" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::Materialization::Materialization</definition>
+        <argsstring>(const Materialization &amp;) noexcept</argsstring>
+        <name>Materialization</name>
+        <qualifiedname>Apache::Hadoop::Hive::Materialization::Materialization</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1Materialization" kindref="compound">Materialization</ref> &amp;</type>
+          <defname>other1398</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10835" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="43039" bodyend="43042"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1Materialization_1a65e4d244c9d7b942707504c8db950366" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1Materialization" kindref="compound">Materialization</ref> &amp;</type>
+        <definition>Materialization &amp; Apache::Hadoop::Hive::Materialization::operator=</definition>
+        <argsstring>(const Materialization &amp;) noexcept</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::Materialization::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1Materialization" kindref="compound">Materialization</ref> &amp;</type>
+          <defname>other1399</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10836" column="19" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="43043" bodyend="43047"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1Materialization_1a17fa79c26fdc96ca3207370b8d9a52c1" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::Materialization::Materialization</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>Materialization</name>
+        <qualifiedname>Apache::Hadoop::Hive::Materialization::Materialization</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10837" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="42932" bodyend="42935"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1Materialization_1a8695c0996335f1aafeac5c2cbb407845" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::Materialization::~Materialization</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~Materialization</name>
+        <qualifiedname>Apache::Hadoop::Hive::Materialization::~Materialization</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10839" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="42929" bodyend="42930"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1Materialization_1aafe638643cb9c72aa253641cd2420ebe" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::Materialization::__set_sourceTablesUpdateDeleteModified</definition>
+        <argsstring>(const bool val)</argsstring>
+        <name>__set_sourceTablesUpdateDeleteModified</name>
+        <qualifiedname>Apache::Hadoop::Hive::Materialization::__set_sourceTablesUpdateDeleteModified</qualifiedname>
+        <param>
+          <type>const bool</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10843" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="42937" bodyend="42939"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1Materialization_1a4c37fd8bb5933bf3c5f27d5299c1c8f2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::Materialization::__set_sourceTablesCompacted</definition>
+        <argsstring>(const bool val)</argsstring>
+        <name>__set_sourceTablesCompacted</name>
+        <qualifiedname>Apache::Hadoop::Hive::Materialization::__set_sourceTablesCompacted</qualifiedname>
+        <param>
+          <type>const bool</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10845" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="42941" bodyend="42943"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1Materialization_1a9ac6aa0f89fbcfdb5394b7dc8017be16" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::Materialization::operator==</definition>
+        <argsstring>(const Materialization &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::Materialization::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1Materialization" kindref="compound">Materialization</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10847" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="43030" bodyend="43037"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1Materialization_1a335ab165b2f4fbe31da3477764729561" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::Materialization::operator!=</definition>
+        <argsstring>(const Materialization &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::Materialization::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1Materialization" kindref="compound">Materialization</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10848" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="10848" bodyend="10850"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1Materialization_1a12706453f421a12786c74a92c4c43343" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::Materialization::operator&lt;</definition>
+        <argsstring>(const Materialization &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::Materialization::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1Materialization" kindref="compound">Materialization</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10852" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1Materialization_1a3a36162bebcdd88c462fd33cf39a7366" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::Materialization::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot) override</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::Materialization::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10854" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="42951" bodyend="43004"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1Materialization_1ac666905ab7513f334d3f952dce72dd2e" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::Materialization::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const override</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::Materialization::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10855" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="43006" bodyend="43022"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1Materialization_1abdd8c48cd836ab8d7e5261084abd1c5a" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::Materialization::printTo</definition>
+        <argsstring>(std::ostream &amp;out) const</argsstring>
+        <name>printTo</name>
+        <qualifiedname>Apache::Hadoop::Hive::Materialization::printTo</qualifiedname>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10857" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="43048" bodyend="43054"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::Materialization</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1Materialization"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::Materialization</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1Materialization"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10832" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="10832" bodyend="10858"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1Materialization_1a4c37fd8bb5933bf3c5f27d5299c1c8f2" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::Materialization</scope><name>__set_sourceTablesCompacted</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1Materialization_1aafe638643cb9c72aa253641cd2420ebe" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::Materialization</scope><name>__set_sourceTablesUpdateDeleteModified</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1Materialization_1a7f85b14396074c99ec8e8da527f45311" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::Materialization</scope><name>Materialization</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1Materialization_1a17fa79c26fdc96ca3207370b8d9a52c1" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::Materialization</scope><name>Materialization</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1Materialization_1a335ab165b2f4fbe31da3477764729561" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::Materialization</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1Materialization_1a12706453f421a12786c74a92c4c43343" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::Materialization</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1Materialization_1a65e4d244c9d7b942707504c8db950366" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::Materialization</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1Materialization_1a9ac6aa0f89fbcfdb5394b7dc8017be16" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::Materialization</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1Materialization_1abdd8c48cd836ab8d7e5261084abd1c5a" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::Materialization</scope><name>printTo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1Materialization_1a3a36162bebcdd88c462fd33cf39a7366" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::Materialization</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1Materialization_1ab3b42ff21ea7d8865d19fa8b76dc2065" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::Materialization</scope><name>sourceTablesCompacted</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1Materialization_1a3699905df19af635ecfce5e1b07b99ea" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::Materialization</scope><name>sourceTablesUpdateDeleteModified</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1Materialization_1ac666905ab7513f334d3f952dce72dd2e" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::Materialization</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1Materialization_1a8695c0996335f1aafeac5c2cbb407845" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::Materialization</scope><name>~Materialization</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

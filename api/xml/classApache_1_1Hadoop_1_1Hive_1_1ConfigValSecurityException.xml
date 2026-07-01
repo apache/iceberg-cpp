@@ -1,0 +1,319 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1ConfigValSecurityException" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::ConfigValSecurityException</compoundname>
+    <basecompoundref prot="public" virt="non-virtual">apache::thrift::TException</basecompoundref>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ConfigValSecurityException_1afd116465a1b32c87c5cf91dfbbb3e128" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::ConfigValSecurityException::message</definition>
+        <argsstring></argsstring>
+        <name>message</name>
+        <qualifiedname>Apache::Hadoop::Hive::ConfigValSecurityException::message</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15619" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="15619" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ConfigValSecurityException_1a57f0dcc8827eddf2267437dd8fe6c27b" prot="public" static="no" mutable="no">
+        <type><ref refid="structApache_1_1Hadoop_1_1Hive_1_1__ConfigValSecurityException____isset" kindref="compound">_ConfigValSecurityException__isset</ref></type>
+        <definition>_ConfigValSecurityException__isset Apache::Hadoop::Hive::ConfigValSecurityException::__isset</definition>
+        <argsstring></argsstring>
+        <name>__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::ConfigValSecurityException::__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15621" column="38" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="15621" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ConfigValSecurityException_1a09297be3e93162f41775e2888eb859ef" prot="public" static="no" mutable="yes">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::ConfigValSecurityException::thriftTExceptionMessageHolder_</definition>
+        <argsstring></argsstring>
+        <name>thriftTExceptionMessageHolder_</name>
+        <qualifiedname>Apache::Hadoop::Hive::ConfigValSecurityException::thriftTExceptionMessageHolder_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15636" column="23" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="15636" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ConfigValSecurityException_1a38557a5ecf9b3d655ba6549fa1e68f24" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::ConfigValSecurityException::ConfigValSecurityException</definition>
+        <argsstring>(const ConfigValSecurityException &amp;)</argsstring>
+        <name>ConfigValSecurityException</name>
+        <qualifiedname>Apache::Hadoop::Hive::ConfigValSecurityException::ConfigValSecurityException</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ConfigValSecurityException" kindref="compound">ConfigValSecurityException</ref> &amp;</type>
+          <defname>other1871</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15614" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="61504" bodyend="61507"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ConfigValSecurityException_1a3dd30bebf75859733a9916fef48cf5e0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1ConfigValSecurityException" kindref="compound">ConfigValSecurityException</ref> &amp;</type>
+        <definition>ConfigValSecurityException &amp; Apache::Hadoop::Hive::ConfigValSecurityException::operator=</definition>
+        <argsstring>(const ConfigValSecurityException &amp;)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::ConfigValSecurityException::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ConfigValSecurityException" kindref="compound">ConfigValSecurityException</ref> &amp;</type>
+          <defname>other1872</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15615" column="30" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="61508" bodyend="61512"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ConfigValSecurityException_1a2de4db1e4f17207c8839a5effd0b4d36" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::ConfigValSecurityException::ConfigValSecurityException</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>ConfigValSecurityException</name>
+        <qualifiedname>Apache::Hadoop::Hive::ConfigValSecurityException::ConfigValSecurityException</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15616" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="61422" bodyend="61424"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ConfigValSecurityException_1a6919021c05144f6b2891e5c349af198a" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::ConfigValSecurityException::~ConfigValSecurityException</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~ConfigValSecurityException</name>
+        <qualifiedname>Apache::Hadoop::Hive::ConfigValSecurityException::~ConfigValSecurityException</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15618" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="61419" bodyend="61420"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ConfigValSecurityException_1adec1d9f3638976878b4c53d5d6641b4d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::ConfigValSecurityException::__set_message</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_message</name>
+        <qualifiedname>Apache::Hadoop::Hive::ConfigValSecurityException::__set_message</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15623" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="61426" bodyend="61428"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ConfigValSecurityException_1a1942a7de63292f8a5bb20df4762c72dc" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::ConfigValSecurityException::operator==</definition>
+        <argsstring>(const ConfigValSecurityException &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::ConfigValSecurityException::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ConfigValSecurityException" kindref="compound">ConfigValSecurityException</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15625" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="61497" bodyend="61502"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ConfigValSecurityException_1acc456604037ab394f2762e31abf6ea4f" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::ConfigValSecurityException::operator!=</definition>
+        <argsstring>(const ConfigValSecurityException &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::ConfigValSecurityException::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ConfigValSecurityException" kindref="compound">ConfigValSecurityException</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15626" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="15626" bodyend="15628"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ConfigValSecurityException_1a2786c1f97ede08adc1a52abf026fbf06" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::ConfigValSecurityException::operator&lt;</definition>
+        <argsstring>(const ConfigValSecurityException &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::ConfigValSecurityException::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ConfigValSecurityException" kindref="compound">ConfigValSecurityException</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15630" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ConfigValSecurityException_1ade0c3d12cfe3d593932a87324425d378" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::ConfigValSecurityException::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot)</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::ConfigValSecurityException::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15632" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="61436" bodyend="61475"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ConfigValSecurityException_1a55623c4990b617f198fee7da82c80ffe" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::ConfigValSecurityException::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::ConfigValSecurityException::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15633" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="61477" bodyend="61489"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ConfigValSecurityException_1a71487b33b4615202a67a781b7e7e2ade" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::ConfigValSecurityException::printTo</definition>
+        <argsstring>(std::ostream &amp;out) const</argsstring>
+        <name>printTo</name>
+        <qualifiedname>Apache::Hadoop::Hive::ConfigValSecurityException::printTo</qualifiedname>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15635" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="61513" bodyend="61518"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ConfigValSecurityException_1a1188e50f463f2f3956f4d3b68c0cdb26" prot="public" static="no" const="yes" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type>const char *</type>
+        <definition>const char * Apache::Hadoop::Hive::ConfigValSecurityException::what</definition>
+        <argsstring>() const noexcept override</argsstring>
+        <name>what</name>
+        <qualifiedname>Apache::Hadoop::Hive::ConfigValSecurityException::what</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15637" column="14" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="61520" bodyend="61529"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::ConfigValSecurityException</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1ConfigValSecurityException"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TException</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::ConfigValSecurityException</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1ConfigValSecurityException"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>message</edgelabel>
+          <edgelabel>thriftTExceptionMessageHolder_</edgelabel>
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="5">
+        <label>Apache::Hadoop::Hive::_ConfigValSecurityException__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__ConfigValSecurityException____isset"/>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TException</label>
+      </node>
+      <node id="4">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="3">
+        <label>std::string</label>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="15611" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="15611" bodyend="15638"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ConfigValSecurityException_1a57f0dcc8827eddf2267437dd8fe6c27b" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ConfigValSecurityException</scope><name>__isset</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ConfigValSecurityException_1adec1d9f3638976878b4c53d5d6641b4d" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ConfigValSecurityException</scope><name>__set_message</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ConfigValSecurityException_1a38557a5ecf9b3d655ba6549fa1e68f24" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ConfigValSecurityException</scope><name>ConfigValSecurityException</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ConfigValSecurityException_1a2de4db1e4f17207c8839a5effd0b4d36" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ConfigValSecurityException</scope><name>ConfigValSecurityException</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ConfigValSecurityException_1afd116465a1b32c87c5cf91dfbbb3e128" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ConfigValSecurityException</scope><name>message</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ConfigValSecurityException_1acc456604037ab394f2762e31abf6ea4f" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ConfigValSecurityException</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ConfigValSecurityException_1a2786c1f97ede08adc1a52abf026fbf06" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ConfigValSecurityException</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ConfigValSecurityException_1a3dd30bebf75859733a9916fef48cf5e0" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ConfigValSecurityException</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ConfigValSecurityException_1a1942a7de63292f8a5bb20df4762c72dc" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ConfigValSecurityException</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ConfigValSecurityException_1a71487b33b4615202a67a781b7e7e2ade" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::ConfigValSecurityException</scope><name>printTo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ConfigValSecurityException_1ade0c3d12cfe3d593932a87324425d378" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ConfigValSecurityException</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ConfigValSecurityException_1a09297be3e93162f41775e2888eb859ef" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ConfigValSecurityException</scope><name>thriftTExceptionMessageHolder_</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ConfigValSecurityException_1a1188e50f463f2f3956f4d3b68c0cdb26" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ConfigValSecurityException</scope><name>what</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ConfigValSecurityException_1a55623c4990b617f198fee7da82c80ffe" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ConfigValSecurityException</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ConfigValSecurityException_1a6919021c05144f6b2891e5c349af198a" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::ConfigValSecurityException</scope><name>~ConfigValSecurityException</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

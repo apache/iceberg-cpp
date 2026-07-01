@@ -1,0 +1,433 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1InsertEventRequestData" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::InsertEventRequestData</compoundname>
+    <basecompoundref prot="public" virt="virtual">apache::thrift::TBase</basecompoundref>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1InsertEventRequestData_1aae3598c9d1b796b0d365a65ab1192a24" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::InsertEventRequestData::replace</definition>
+        <argsstring></argsstring>
+        <name>replace</name>
+        <qualifiedname>Apache::Hadoop::Hive::InsertEventRequestData::replace</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9391" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="9391" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1InsertEventRequestData_1a26f4b45d4ac952a05530ab90f7967e1d" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; std::string &gt;</type>
+        <definition>std::vector&lt;std::string&gt; Apache::Hadoop::Hive::InsertEventRequestData::filesAdded</definition>
+        <argsstring></argsstring>
+        <name>filesAdded</name>
+        <qualifiedname>Apache::Hadoop::Hive::InsertEventRequestData::filesAdded</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9392" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="9392" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1InsertEventRequestData_1a5e266ae88f13666092efaf422c639e32" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; std::string &gt;</type>
+        <definition>std::vector&lt;std::string&gt; Apache::Hadoop::Hive::InsertEventRequestData::filesAddedChecksum</definition>
+        <argsstring></argsstring>
+        <name>filesAddedChecksum</name>
+        <qualifiedname>Apache::Hadoop::Hive::InsertEventRequestData::filesAddedChecksum</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9393" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="9393" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1InsertEventRequestData_1a4278c2e976f82d30c70d4593fe09df7a" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; std::string &gt;</type>
+        <definition>std::vector&lt;std::string&gt; Apache::Hadoop::Hive::InsertEventRequestData::subDirectoryList</definition>
+        <argsstring></argsstring>
+        <name>subDirectoryList</name>
+        <qualifiedname>Apache::Hadoop::Hive::InsertEventRequestData::subDirectoryList</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9394" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="9394" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1InsertEventRequestData_1a59187b8fdaeb261418b4aa31641c28af" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; std::string &gt;</type>
+        <definition>std::vector&lt;std::string&gt; Apache::Hadoop::Hive::InsertEventRequestData::partitionVal</definition>
+        <argsstring></argsstring>
+        <name>partitionVal</name>
+        <qualifiedname>Apache::Hadoop::Hive::InsertEventRequestData::partitionVal</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9395" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="9395" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1InsertEventRequestData_1a7d1466a1b05e17a2159c931f60ee86e4" prot="public" static="no" mutable="no">
+        <type><ref refid="structApache_1_1Hadoop_1_1Hive_1_1__InsertEventRequestData____isset" kindref="compound">_InsertEventRequestData__isset</ref></type>
+        <definition>_InsertEventRequestData__isset Apache::Hadoop::Hive::InsertEventRequestData::__isset</definition>
+        <argsstring></argsstring>
+        <name>__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::InsertEventRequestData::__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9397" column="34" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="9397" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1InsertEventRequestData_1afe6ef422852c93e12c74e7e33cb54de9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::InsertEventRequestData::InsertEventRequestData</definition>
+        <argsstring>(const InsertEventRequestData &amp;)</argsstring>
+        <name>InsertEventRequestData</name>
+        <qualifiedname>Apache::Hadoop::Hive::InsertEventRequestData::InsertEventRequestData</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1InsertEventRequestData" kindref="compound">InsertEventRequestData</ref> &amp;</type>
+          <defname>other1174</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9386" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="36973" bodyend="36980"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1InsertEventRequestData_1a98aadce9dfc0d73e882a32353083ab86" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1InsertEventRequestData" kindref="compound">InsertEventRequestData</ref> &amp;</type>
+        <definition>InsertEventRequestData &amp; Apache::Hadoop::Hive::InsertEventRequestData::operator=</definition>
+        <argsstring>(const InsertEventRequestData &amp;)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::InsertEventRequestData::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1InsertEventRequestData" kindref="compound">InsertEventRequestData</ref> &amp;</type>
+          <defname>other1175</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9387" column="26" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="36981" bodyend="36989"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1InsertEventRequestData_1ad341ad8b9c461ff8717406588a42f82b" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::InsertEventRequestData::InsertEventRequestData</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>InsertEventRequestData</name>
+        <qualifiedname>Apache::Hadoop::Hive::InsertEventRequestData::InsertEventRequestData</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9388" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="36716" bodyend="36718"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1InsertEventRequestData_1afcca48d3ea2b73be7072de287a18f8f8" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::InsertEventRequestData::~InsertEventRequestData</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~InsertEventRequestData</name>
+        <qualifiedname>Apache::Hadoop::Hive::InsertEventRequestData::~InsertEventRequestData</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9390" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="36713" bodyend="36714"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1InsertEventRequestData_1a02c32ae90004ee445f0732cd9fa5f119" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::InsertEventRequestData::__set_replace</definition>
+        <argsstring>(const bool val)</argsstring>
+        <name>__set_replace</name>
+        <qualifiedname>Apache::Hadoop::Hive::InsertEventRequestData::__set_replace</qualifiedname>
+        <param>
+          <type>const bool</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9399" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="36720" bodyend="36723"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1InsertEventRequestData_1a457c7dba4a9a90c2f870f2f54180b39c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::InsertEventRequestData::__set_filesAdded</definition>
+        <argsstring>(const std::vector&lt; std::string &gt; &amp;val)</argsstring>
+        <name>__set_filesAdded</name>
+        <qualifiedname>Apache::Hadoop::Hive::InsertEventRequestData::__set_filesAdded</qualifiedname>
+        <param>
+          <type>const std::vector&lt; std::string &gt; &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9401" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="36725" bodyend="36727"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1InsertEventRequestData_1a5a84e4e1008144a8634c192a3f742198" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::InsertEventRequestData::__set_filesAddedChecksum</definition>
+        <argsstring>(const std::vector&lt; std::string &gt; &amp;val)</argsstring>
+        <name>__set_filesAddedChecksum</name>
+        <qualifiedname>Apache::Hadoop::Hive::InsertEventRequestData::__set_filesAddedChecksum</qualifiedname>
+        <param>
+          <type>const std::vector&lt; std::string &gt; &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9403" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="36729" bodyend="36732"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1InsertEventRequestData_1ada90888fca7d2a79395617ddc63c481b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::InsertEventRequestData::__set_subDirectoryList</definition>
+        <argsstring>(const std::vector&lt; std::string &gt; &amp;val)</argsstring>
+        <name>__set_subDirectoryList</name>
+        <qualifiedname>Apache::Hadoop::Hive::InsertEventRequestData::__set_subDirectoryList</qualifiedname>
+        <param>
+          <type>const std::vector&lt; std::string &gt; &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9405" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="36734" bodyend="36737"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1InsertEventRequestData_1add89b22401c210a5877b51c3b3f4590e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::InsertEventRequestData::__set_partitionVal</definition>
+        <argsstring>(const std::vector&lt; std::string &gt; &amp;val)</argsstring>
+        <name>__set_partitionVal</name>
+        <qualifiedname>Apache::Hadoop::Hive::InsertEventRequestData::__set_partitionVal</qualifiedname>
+        <param>
+          <type>const std::vector&lt; std::string &gt; &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9407" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="36739" bodyend="36742"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1InsertEventRequestData_1a53a03bd33b675d9577401485f949907b" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::InsertEventRequestData::operator==</definition>
+        <argsstring>(const InsertEventRequestData &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::InsertEventRequestData::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1InsertEventRequestData" kindref="compound">InsertEventRequestData</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9409" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="36950" bodyend="36971"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1InsertEventRequestData_1a8c4b1c444f27b20b1448694b2d643e0d" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::InsertEventRequestData::operator!=</definition>
+        <argsstring>(const InsertEventRequestData &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::InsertEventRequestData::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1InsertEventRequestData" kindref="compound">InsertEventRequestData</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9410" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="9410" bodyend="9412"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1InsertEventRequestData_1ad251ce589a81d046375f41985c87b4b5" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::InsertEventRequestData::operator&lt;</definition>
+        <argsstring>(const InsertEventRequestData &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::InsertEventRequestData::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1InsertEventRequestData" kindref="compound">InsertEventRequestData</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9414" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1InsertEventRequestData_1a42506804f2d192830f0d5561290082d4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::InsertEventRequestData::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot) override</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::InsertEventRequestData::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9416" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="36750" bodyend="36872"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1InsertEventRequestData_1a9e9aabab3830f40512952570167b66b8" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::InsertEventRequestData::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const override</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::InsertEventRequestData::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9417" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="36874" bodyend="36938"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1InsertEventRequestData_1ab34204d50c32ebf4e045e2336bd3ff19" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::InsertEventRequestData::printTo</definition>
+        <argsstring>(std::ostream &amp;out) const</argsstring>
+        <name>printTo</name>
+        <qualifiedname>Apache::Hadoop::Hive::InsertEventRequestData::printTo</qualifiedname>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9419" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="36990" bodyend="36999"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::InsertEventRequestData</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1InsertEventRequestData"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::InsertEventRequestData</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1InsertEventRequestData"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>filesAdded</edgelabel>
+          <edgelabel>filesAddedChecksum</edgelabel>
+          <edgelabel>partitionVal</edgelabel>
+          <edgelabel>subDirectoryList</edgelabel>
+        </childnode>
+        <childnode refid="6" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="6">
+        <label>Apache::Hadoop::Hive::_InsertEventRequestData__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__InsertEventRequestData____isset"/>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+      <node id="5">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="4">
+        <label>std::string</label>
+        <childnode refid="5" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::vector&lt; std::string &gt;</label>
+        <childnode refid="4" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9383" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="9383" bodyend="9420"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1InsertEventRequestData_1a7d1466a1b05e17a2159c931f60ee86e4" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::InsertEventRequestData</scope><name>__isset</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1InsertEventRequestData_1a457c7dba4a9a90c2f870f2f54180b39c" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::InsertEventRequestData</scope><name>__set_filesAdded</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1InsertEventRequestData_1a5a84e4e1008144a8634c192a3f742198" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::InsertEventRequestData</scope><name>__set_filesAddedChecksum</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1InsertEventRequestData_1add89b22401c210a5877b51c3b3f4590e" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::InsertEventRequestData</scope><name>__set_partitionVal</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1InsertEventRequestData_1a02c32ae90004ee445f0732cd9fa5f119" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::InsertEventRequestData</scope><name>__set_replace</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1InsertEventRequestData_1ada90888fca7d2a79395617ddc63c481b" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::InsertEventRequestData</scope><name>__set_subDirectoryList</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1InsertEventRequestData_1a26f4b45d4ac952a05530ab90f7967e1d" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::InsertEventRequestData</scope><name>filesAdded</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1InsertEventRequestData_1a5e266ae88f13666092efaf422c639e32" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::InsertEventRequestData</scope><name>filesAddedChecksum</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1InsertEventRequestData_1afe6ef422852c93e12c74e7e33cb54de9" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::InsertEventRequestData</scope><name>InsertEventRequestData</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1InsertEventRequestData_1ad341ad8b9c461ff8717406588a42f82b" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::InsertEventRequestData</scope><name>InsertEventRequestData</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1InsertEventRequestData_1a8c4b1c444f27b20b1448694b2d643e0d" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::InsertEventRequestData</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1InsertEventRequestData_1ad251ce589a81d046375f41985c87b4b5" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::InsertEventRequestData</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1InsertEventRequestData_1a98aadce9dfc0d73e882a32353083ab86" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::InsertEventRequestData</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1InsertEventRequestData_1a53a03bd33b675d9577401485f949907b" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::InsertEventRequestData</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1InsertEventRequestData_1a59187b8fdaeb261418b4aa31641c28af" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::InsertEventRequestData</scope><name>partitionVal</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1InsertEventRequestData_1ab34204d50c32ebf4e045e2336bd3ff19" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::InsertEventRequestData</scope><name>printTo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1InsertEventRequestData_1a42506804f2d192830f0d5561290082d4" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::InsertEventRequestData</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1InsertEventRequestData_1aae3598c9d1b796b0d365a65ab1192a24" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::InsertEventRequestData</scope><name>replace</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1InsertEventRequestData_1a4278c2e976f82d30c70d4593fe09df7a" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::InsertEventRequestData</scope><name>subDirectoryList</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1InsertEventRequestData_1a9e9aabab3830f40512952570167b66b8" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::InsertEventRequestData</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1InsertEventRequestData_1afcca48d3ea2b73be7072de287a18f8f8" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::InsertEventRequestData</scope><name>~InsertEventRequestData</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

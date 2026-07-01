@@ -1,0 +1,45 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1avro_1_1EncodeContext" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::avro::EncodeContext</compoundname>
+    <includes refid="avro__direct__encoder__internal_8h" local="no">avro_direct_encoder_internal.h</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1avro_1_1EncodeContext_1a65f8cca1eeb7f965179a19573f55bcd1" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; uint8_t &gt;</type>
+        <definition>std::vector&lt;uint8_t&gt; iceberg::avro::EncodeContext::bytes_scratch</definition>
+        <argsstring></argsstring>
+        <name>bytes_scratch</name>
+        <qualifiedname>iceberg::avro::EncodeContext::bytes_scratch</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_direct_encoder_internal.h" line="40" column="15" bodyfile="iceberg/avro/avro_direct_encoder_internal.h" bodystart="40" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Context for reusing scratch buffers during Avro encoding. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>Avoids frequent small allocations by reusing temporary buffers across multiple encode operations. This is particularly important for string, binary, and fixed-size data types. </para>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::avro::EncodeContext</label>
+        <link refid="structiceberg_1_1avro_1_1EncodeContext"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>bytes_scratch</edgelabel>
+        </childnode>
+      </node>
+      <node id="2">
+        <label>std::vector&lt; uint8_t &gt;</label>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/avro/avro_direct_encoder_internal.h" line="38" column="1" bodyfile="iceberg/avro/avro_direct_encoder_internal.h" bodystart="38" bodyend="41"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1avro_1_1EncodeContext_1a65f8cca1eeb7f965179a19573f55bcd1" prot="public" virt="non-virtual"><scope>iceberg::avro::EncodeContext</scope><name>bytes_scratch</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

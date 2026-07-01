@@ -1,0 +1,310 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1DeleteLoaderTest" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::DeleteLoaderTest</compoundname>
+    <basecompoundref prot="public" virt="non-virtual">testing::Test</basecompoundref>
+    <sectiondef kind="protected-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1DeleteLoaderTest_1a4e638a913089d8c344e3ded93ec414c2" prot="protected" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;FileIO&gt; iceberg::DeleteLoaderTest::file_io_</definition>
+        <argsstring></argsstring>
+        <name>file_io_</name>
+        <qualifiedname>iceberg::DeleteLoaderTest::file_io_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/delete_loader_test.cc" line="113" column="19" bodyfile="iceberg/test/delete_loader_test.cc" bodystart="113" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1DeleteLoaderTest_1a8e5b71abf0e9c5914573418c7b366f63" prot="protected" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;Schema&gt; iceberg::DeleteLoaderTest::schema_</definition>
+        <argsstring></argsstring>
+        <name>schema_</name>
+        <qualifiedname>iceberg::DeleteLoaderTest::schema_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/delete_loader_test.cc" line="114" column="19" bodyfile="iceberg/test/delete_loader_test.cc" bodystart="114" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1DeleteLoaderTest_1ab95c89064fae3bb78b27d7cffae91bd6" prot="protected" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1PartitionSpec" kindref="compound">PartitionSpec</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;PartitionSpec&gt; iceberg::DeleteLoaderTest::partition_spec_</definition>
+        <argsstring></argsstring>
+        <name>partition_spec_</name>
+        <qualifiedname>iceberg::DeleteLoaderTest::partition_spec_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/delete_loader_test.cc" line="115" column="19" bodyfile="iceberg/test/delete_loader_test.cc" bodystart="115" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1DeleteLoaderTest_1ab816c764bd8521cb355f7a00809cb5d2" prot="protected" static="no" mutable="no">
+        <type>std::unique_ptr&lt; <ref refid="classiceberg_1_1DeleteLoader" kindref="compound">DeleteLoader</ref> &gt;</type>
+        <definition>std::unique_ptr&lt;DeleteLoader&gt; iceberg::DeleteLoaderTest::loader_</definition>
+        <argsstring></argsstring>
+        <name>loader_</name>
+        <qualifiedname>iceberg::DeleteLoaderTest::loader_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/delete_loader_test.cc" line="116" column="19" bodyfile="iceberg/test/delete_loader_test.cc" bodystart="116" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="protected-static-func">
+      <memberdef kind="function" id="classiceberg_1_1DeleteLoaderTest_1a3f531b7f5f4dc20135e35a552d61b7cc" prot="protected" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>static void iceberg::DeleteLoaderTest::SetUpTestSuite</definition>
+        <argsstring>()</argsstring>
+        <name>SetUpTestSuite</name>
+        <qualifiedname>iceberg::DeleteLoaderTest::SetUpTestSuite</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/delete_loader_test.cc" line="48" column="15" bodyfile="iceberg/test/delete_loader_test.cc" bodystart="48" bodyend="48"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="protected-func">
+      <memberdef kind="function" id="classiceberg_1_1DeleteLoaderTest_1a752038c27fe57d6e336e4609f69de9ed" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::DeleteLoaderTest::SetUp</definition>
+        <argsstring>() override</argsstring>
+        <name>SetUp</name>
+        <qualifiedname>iceberg::DeleteLoaderTest::SetUp</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/delete_loader_test.cc" line="50" column="8" bodyfile="iceberg/test/delete_loader_test.cc" bodystart="50" bodyend="57"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1DeleteLoaderTest_1a6cf60656a9643344b89a2db0d29ad87a" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::shared_ptr&lt; <ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref> &gt;</type>
+        <definition>std::shared_ptr&lt; DataFile &gt; iceberg::DeleteLoaderTest::WritePositionDeletes</definition>
+        <argsstring>(const std::string &amp;path, const std::vector&lt; std::pair&lt; std::string, int64_t &gt; &gt; &amp;deletes)</argsstring>
+        <name>WritePositionDeletes</name>
+        <qualifiedname>iceberg::DeleteLoaderTest::WritePositionDeletes</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>path</declname>
+        </param>
+        <param>
+          <type>const std::vector&lt; std::pair&lt; std::string, int64_t &gt; &gt; &amp;</type>
+          <declname>deletes</declname>
+        </param>
+        <briefdescription>
+<para>Write position deletes using WriteDelete API and return the <ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref> metadata. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/delete_loader_test.cc" line="60" column="19" bodyfile="iceberg/test/delete_loader_test.cc" bodystart="60" bodyend="80"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1DeleteLoaderTest_1a643be7a9ee0a2d86ead08c03d38ae097" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::shared_ptr&lt; <ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref> &gt;</type>
+        <definition>std::shared_ptr&lt; DataFile &gt; iceberg::DeleteLoaderTest::WriteEqualityDeletes</definition>
+        <argsstring>(const std::string &amp;path, const std::string &amp;json_data, std::vector&lt; int32_t &gt; equality_field_ids={1, 2})</argsstring>
+        <name>WriteEqualityDeletes</name>
+        <qualifiedname>iceberg::DeleteLoaderTest::WriteEqualityDeletes</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>path</declname>
+        </param>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>json_data</declname>
+        </param>
+        <param>
+          <type>std::vector&lt; int32_t &gt;</type>
+          <declname>equality_field_ids</declname>
+          <defval>{1, 2}</defval>
+        </param>
+        <briefdescription>
+<para>Write equality deletes and return the <ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref> metadata. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/delete_loader_test.cc" line="83" column="19" bodyfile="iceberg/test/delete_loader_test.cc" bodystart="83" bodyend="111"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>iceberg::DeleteLoaderTest</label>
+        <link refid="classiceberg_1_1DeleteLoaderTest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>testing::Test</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="13">
+        <label>iceberg::Lazy&lt; InitFieldById &gt;</label>
+        <link refid="classiceberg_1_1Lazy"/>
+      </node>
+      <node id="15">
+        <label>iceberg::Lazy&lt; InitFieldByLowerCaseName &gt;</label>
+        <link refid="classiceberg_1_1Lazy"/>
+      </node>
+      <node id="14">
+        <label>iceberg::Lazy&lt; InitFieldByName &gt;</label>
+        <link refid="classiceberg_1_1Lazy"/>
+      </node>
+      <node id="21">
+        <label>iceberg::DeleteLoader</label>
+        <link refid="classiceberg_1_1DeleteLoader"/>
+      </node>
+      <node id="1">
+        <label>iceberg::DeleteLoaderTest</label>
+        <link refid="classiceberg_1_1DeleteLoaderTest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>file_io_</edgelabel>
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>schema_</edgelabel>
+        </childnode>
+        <childnode refid="18" relation="usage">
+          <edgelabel>partition_spec_</edgelabel>
+        </childnode>
+        <childnode refid="20" relation="usage">
+          <edgelabel>loader_</edgelabel>
+        </childnode>
+      </node>
+      <node id="4">
+        <label>iceberg::FileIO</label>
+        <link refid="classiceberg_1_1FileIO"/>
+      </node>
+      <node id="8">
+        <label>iceberg::NestedType</label>
+        <link refid="classiceberg_1_1NestedType"/>
+        <childnode refid="9" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="19">
+        <label>iceberg::PartitionSpec</label>
+        <link refid="classiceberg_1_1PartitionSpec"/>
+        <childnode refid="10" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="6">
+        <label>iceberg::Schema</label>
+        <link refid="classiceberg_1_1Schema"/>
+        <childnode refid="7" relation="public-inheritance">
+        </childnode>
+        <childnode refid="16" relation="usage">
+          <edgelabel>kAllColumns</edgelabel>
+        </childnode>
+      </node>
+      <node id="12">
+        <label>iceberg::SchemaField</label>
+        <link refid="classiceberg_1_1SchemaField"/>
+        <childnode refid="10" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="7">
+        <label>iceberg::StructType</label>
+        <link refid="classiceberg_1_1StructType"/>
+        <childnode refid="8" relation="public-inheritance">
+        </childnode>
+        <childnode refid="11" relation="usage">
+          <edgelabel>fields_</edgelabel>
+        </childnode>
+        <childnode refid="13" relation="usage">
+          <edgelabel>field_by_id_</edgelabel>
+        </childnode>
+        <childnode refid="14" relation="usage">
+          <edgelabel>field_by_name_</edgelabel>
+        </childnode>
+        <childnode refid="15" relation="usage">
+          <edgelabel>field_by_lowercase_name_</edgelabel>
+        </childnode>
+      </node>
+      <node id="9">
+        <label>iceberg::Type</label>
+        <link refid="classiceberg_1_1Type"/>
+        <childnode refid="10" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="10">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+      <node id="3">
+        <label>std::shared_ptr&lt; iceberg::FileIO &gt;</label>
+        <childnode refid="4" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="18">
+        <label>std::shared_ptr&lt; iceberg::PartitionSpec &gt;</label>
+        <childnode refid="19" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="5">
+        <label>std::shared_ptr&lt; iceberg::Schema &gt;</label>
+        <childnode refid="6" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="17">
+        <label>std::basic_string_view&lt; Char &gt;</label>
+      </node>
+      <node id="16">
+        <label>std::string_view</label>
+        <childnode refid="17" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>testing::Test</label>
+      </node>
+      <node id="20">
+        <label>std::unique_ptr&lt; iceberg::DeleteLoader &gt;</label>
+        <childnode refid="21" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="11">
+        <label>std::vector&lt; iceberg::SchemaField &gt;</label>
+        <childnode refid="12" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/test/delete_loader_test.cc" line="46" column="1" bodyfile="iceberg/test/delete_loader_test.cc" bodystart="46" bodyend="117"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1DeleteLoaderTest_1a4e638a913089d8c344e3ded93ec414c2" prot="protected" virt="non-virtual"><scope>iceberg::DeleteLoaderTest</scope><name>file_io_</name></member>
+      <member refid="classiceberg_1_1DeleteLoaderTest_1ab816c764bd8521cb355f7a00809cb5d2" prot="protected" virt="non-virtual"><scope>iceberg::DeleteLoaderTest</scope><name>loader_</name></member>
+      <member refid="classiceberg_1_1DeleteLoaderTest_1ab95c89064fae3bb78b27d7cffae91bd6" prot="protected" virt="non-virtual"><scope>iceberg::DeleteLoaderTest</scope><name>partition_spec_</name></member>
+      <member refid="classiceberg_1_1DeleteLoaderTest_1a8e5b71abf0e9c5914573418c7b366f63" prot="protected" virt="non-virtual"><scope>iceberg::DeleteLoaderTest</scope><name>schema_</name></member>
+      <member refid="classiceberg_1_1DeleteLoaderTest_1a752038c27fe57d6e336e4609f69de9ed" prot="protected" virt="non-virtual"><scope>iceberg::DeleteLoaderTest</scope><name>SetUp</name></member>
+      <member refid="classiceberg_1_1DeleteLoaderTest_1a3f531b7f5f4dc20135e35a552d61b7cc" prot="protected" virt="non-virtual"><scope>iceberg::DeleteLoaderTest</scope><name>SetUpTestSuite</name></member>
+      <member refid="classiceberg_1_1DeleteLoaderTest_1a643be7a9ee0a2d86ead08c03d38ae097" prot="protected" virt="non-virtual"><scope>iceberg::DeleteLoaderTest</scope><name>WriteEqualityDeletes</name></member>
+      <member refid="classiceberg_1_1DeleteLoaderTest_1a6cf60656a9643344b89a2db0d29ad87a" prot="protected" virt="non-virtual"><scope>iceberg::DeleteLoaderTest</scope><name>WritePositionDeletes</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

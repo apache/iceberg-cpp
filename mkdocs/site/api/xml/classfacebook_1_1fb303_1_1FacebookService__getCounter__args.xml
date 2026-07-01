@@ -1,0 +1,250 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classfacebook_1_1fb303_1_1FacebookService__getCounter__args" kind="class" language="C++" prot="public">
+    <compoundname>facebook::fb303::FacebookService_getCounter_args</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classfacebook_1_1fb303_1_1FacebookService__getCounter__args_1a6d9b99bcdd0dc45b5fb4b31b215bfcc1" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string facebook::fb303::FacebookService_getCounter_args::key</definition>
+        <argsstring></argsstring>
+        <name>key</name>
+        <qualifiedname>facebook::fb303::FacebookService_getCounter_args::key</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="608" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.h" bodystart="608" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classfacebook_1_1fb303_1_1FacebookService__getCounter__args_1a7fd727e782c3f8ccbaee36974c6c30e5" prot="public" static="no" mutable="no">
+        <type><ref refid="structfacebook_1_1fb303_1_1__FacebookService__getCounter__args____isset" kindref="compound">_FacebookService_getCounter_args__isset</ref></type>
+        <definition>_FacebookService_getCounter_args__isset facebook::fb303::FacebookService_getCounter_args::__isset</definition>
+        <argsstring></argsstring>
+        <name>__isset</name>
+        <qualifiedname>facebook::fb303::FacebookService_getCounter_args::__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="610" column="43" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.h" bodystart="610" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookService__getCounter__args_1a113a9af52bbfcaf57db9381e1c55aed1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>facebook::fb303::FacebookService_getCounter_args::FacebookService_getCounter_args</definition>
+        <argsstring>(const FacebookService_getCounter_args &amp;)</argsstring>
+        <name>FacebookService_getCounter_args</name>
+        <qualifiedname>facebook::fb303::FacebookService_getCounter_args::FacebookService_getCounter_args</qualifiedname>
+        <param>
+          <type>const <ref refid="classfacebook_1_1fb303_1_1FacebookService__getCounter__args" kindref="compound">FacebookService_getCounter_args</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="603" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookService__getCounter__args_1a54f69376099b9c85c7b6ceeec7b5782e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classfacebook_1_1fb303_1_1FacebookService__getCounter__args" kindref="compound">FacebookService_getCounter_args</ref> &amp;</type>
+        <definition>FacebookService_getCounter_args &amp; facebook::fb303::FacebookService_getCounter_args::operator=</definition>
+        <argsstring>(const FacebookService_getCounter_args &amp;)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>facebook::fb303::FacebookService_getCounter_args::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classfacebook_1_1fb303_1_1FacebookService__getCounter__args" kindref="compound">FacebookService_getCounter_args</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="604" column="35"/>
+      </memberdef>
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookService__getCounter__args_1abb6411b37292ddd5c0aebf0c86f5cea9" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>facebook::fb303::FacebookService_getCounter_args::FacebookService_getCounter_args</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>FacebookService_getCounter_args</name>
+        <qualifiedname>facebook::fb303::FacebookService_getCounter_args::FacebookService_getCounter_args</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="605" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.cpp" bodystart="912" bodyend="914"/>
+      </memberdef>
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookService__getCounter__args_1a7503f4ecfb6e36956a1111a52d185a96" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>facebook::fb303::FacebookService_getCounter_args::~FacebookService_getCounter_args</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~FacebookService_getCounter_args</name>
+        <qualifiedname>facebook::fb303::FacebookService_getCounter_args::~FacebookService_getCounter_args</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="607" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.cpp" bodystart="909" bodyend="910"/>
+      </memberdef>
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookService__getCounter__args_1a5b5ce043336ca2c7945bb2489b57db76" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void facebook::fb303::FacebookService_getCounter_args::__set_key</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_key</name>
+        <qualifiedname>facebook::fb303::FacebookService_getCounter_args::__set_key</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="612" column="8"/>
+      </memberdef>
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookService__getCounter__args_1aaa2cbffe710c41c3dd0fa6b2cfb444e8" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool facebook::fb303::FacebookService_getCounter_args::operator==</definition>
+        <argsstring>(const FacebookService_getCounter_args &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>facebook::fb303::FacebookService_getCounter_args::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classfacebook_1_1fb303_1_1FacebookService__getCounter__args" kindref="compound">FacebookService_getCounter_args</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="614" column="8"/>
+      </memberdef>
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookService__getCounter__args_1a05f87dea5d15768f71499d69eef90776" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool facebook::fb303::FacebookService_getCounter_args::operator!=</definition>
+        <argsstring>(const FacebookService_getCounter_args &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>facebook::fb303::FacebookService_getCounter_args::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classfacebook_1_1fb303_1_1FacebookService__getCounter__args" kindref="compound">FacebookService_getCounter_args</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="615" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.h" bodystart="615" bodyend="617"/>
+      </memberdef>
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookService__getCounter__args_1a7090aca9e40821909b143793d12c0609" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool facebook::fb303::FacebookService_getCounter_args::operator&lt;</definition>
+        <argsstring>(const FacebookService_getCounter_args &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>facebook::fb303::FacebookService_getCounter_args::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classfacebook_1_1fb303_1_1FacebookService__getCounter__args" kindref="compound">FacebookService_getCounter_args</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="619" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookService__getCounter__args_1a0be33e9c659feb969a7f8c04117bb11b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t facebook::fb303::FacebookService_getCounter_args::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot)</argsstring>
+        <name>read</name>
+        <qualifiedname>facebook::fb303::FacebookService_getCounter_args::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="621" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.cpp" bodystart="916" bodyend="955"/>
+      </memberdef>
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookService__getCounter__args_1aae3aaffe1d2db3b6048760c8e8775714" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t facebook::fb303::FacebookService_getCounter_args::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const</argsstring>
+        <name>write</name>
+        <qualifiedname>facebook::fb303::FacebookService_getCounter_args::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="622" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.cpp" bodystart="957" bodyend="969"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>facebook::fb303::FacebookService_getCounter_args</label>
+        <link refid="classfacebook_1_1fb303_1_1FacebookService__getCounter__args"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>key</edgelabel>
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="4">
+        <label>facebook::fb303::_FacebookService_getCounter_args__isset</label>
+        <link refid="structfacebook_1_1fb303_1_1__FacebookService__getCounter__args____isset"/>
+      </node>
+      <node id="3">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="2">
+        <label>std::string</label>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="600" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.h" bodystart="600" bodyend="624"/>
+    <listofallmembers>
+      <member refid="classfacebook_1_1fb303_1_1FacebookService__getCounter__args_1a7fd727e782c3f8ccbaee36974c6c30e5" prot="public" virt="non-virtual"><scope>facebook::fb303::FacebookService_getCounter_args</scope><name>__isset</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookService__getCounter__args_1a5b5ce043336ca2c7945bb2489b57db76" prot="public" virt="non-virtual"><scope>facebook::fb303::FacebookService_getCounter_args</scope><name>__set_key</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookService__getCounter__args_1a113a9af52bbfcaf57db9381e1c55aed1" prot="public" virt="non-virtual"><scope>facebook::fb303::FacebookService_getCounter_args</scope><name>FacebookService_getCounter_args</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookService__getCounter__args_1abb6411b37292ddd5c0aebf0c86f5cea9" prot="public" virt="non-virtual"><scope>facebook::fb303::FacebookService_getCounter_args</scope><name>FacebookService_getCounter_args</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookService__getCounter__args_1a6d9b99bcdd0dc45b5fb4b31b215bfcc1" prot="public" virt="non-virtual"><scope>facebook::fb303::FacebookService_getCounter_args</scope><name>key</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookService__getCounter__args_1a05f87dea5d15768f71499d69eef90776" prot="public" virt="non-virtual"><scope>facebook::fb303::FacebookService_getCounter_args</scope><name>operator!=</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookService__getCounter__args_1a7090aca9e40821909b143793d12c0609" prot="public" virt="non-virtual"><scope>facebook::fb303::FacebookService_getCounter_args</scope><name>operator&lt;</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookService__getCounter__args_1a54f69376099b9c85c7b6ceeec7b5782e" prot="public" virt="non-virtual"><scope>facebook::fb303::FacebookService_getCounter_args</scope><name>operator=</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookService__getCounter__args_1aaa2cbffe710c41c3dd0fa6b2cfb444e8" prot="public" virt="non-virtual"><scope>facebook::fb303::FacebookService_getCounter_args</scope><name>operator==</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookService__getCounter__args_1a0be33e9c659feb969a7f8c04117bb11b" prot="public" virt="non-virtual"><scope>facebook::fb303::FacebookService_getCounter_args</scope><name>read</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookService__getCounter__args_1aae3aaffe1d2db3b6048760c8e8775714" prot="public" virt="non-virtual"><scope>facebook::fb303::FacebookService_getCounter_args</scope><name>write</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookService__getCounter__args_1a7503f4ecfb6e36956a1111a52d185a96" prot="public" virt="virtual"><scope>facebook::fb303::FacebookService_getCounter_args</scope><name>~FacebookService_getCounter_args</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

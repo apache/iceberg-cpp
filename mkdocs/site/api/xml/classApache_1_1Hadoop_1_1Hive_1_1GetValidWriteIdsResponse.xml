@@ -1,0 +1,295 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1GetValidWriteIdsResponse" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::GetValidWriteIdsResponse</compoundname>
+    <basecompoundref prot="public" virt="virtual">apache::thrift::TBase</basecompoundref>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1GetValidWriteIdsResponse_1a038cf75729da2ec38da0d9669cf4f3db" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; <ref refid="classApache_1_1Hadoop_1_1Hive_1_1TableValidWriteIds" kindref="compound">TableValidWriteIds</ref> &gt;</type>
+        <definition>std::vector&lt;TableValidWriteIds&gt; Apache::Hadoop::Hive::GetValidWriteIdsResponse::tblValidWriteIds</definition>
+        <argsstring></argsstring>
+        <name>tblValidWriteIds</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetValidWriteIdsResponse::tblValidWriteIds</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7320" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="7320" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetValidWriteIdsResponse_1a4f9d2336a2ad459cf599e88fc9246e58" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::GetValidWriteIdsResponse::GetValidWriteIdsResponse</definition>
+        <argsstring>(const GetValidWriteIdsResponse &amp;)</argsstring>
+        <name>GetValidWriteIdsResponse</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetValidWriteIdsResponse::GetValidWriteIdsResponse</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1GetValidWriteIdsResponse" kindref="compound">GetValidWriteIdsResponse</ref> &amp;</type>
+          <defname>other937</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7315" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="27788" bodyend="27790"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetValidWriteIdsResponse_1adf15f69636f73013998377972af5810c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1GetValidWriteIdsResponse" kindref="compound">GetValidWriteIdsResponse</ref> &amp;</type>
+        <definition>GetValidWriteIdsResponse &amp; Apache::Hadoop::Hive::GetValidWriteIdsResponse::operator=</definition>
+        <argsstring>(const GetValidWriteIdsResponse &amp;)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetValidWriteIdsResponse::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1GetValidWriteIdsResponse" kindref="compound">GetValidWriteIdsResponse</ref> &amp;</type>
+          <defname>other938</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7316" column="28" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="27791" bodyend="27794"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetValidWriteIdsResponse_1ad22fb6730093733d464de651156133ea" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::GetValidWriteIdsResponse::GetValidWriteIdsResponse</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>GetValidWriteIdsResponse</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetValidWriteIdsResponse::GetValidWriteIdsResponse</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7317" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="27685" bodyend="27686"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetValidWriteIdsResponse_1a8962cb01bbef7278db1f7ffbf79036fa" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::GetValidWriteIdsResponse::~GetValidWriteIdsResponse</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~GetValidWriteIdsResponse</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetValidWriteIdsResponse::~GetValidWriteIdsResponse</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7319" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="27682" bodyend="27683"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetValidWriteIdsResponse_1a84f7cd2196ed0749a65aa0e59fa639ac" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::GetValidWriteIdsResponse::__set_tblValidWriteIds</definition>
+        <argsstring>(const std::vector&lt; TableValidWriteIds &gt; &amp;val)</argsstring>
+        <name>__set_tblValidWriteIds</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetValidWriteIdsResponse::__set_tblValidWriteIds</qualifiedname>
+        <param>
+          <type>const std::vector&lt; <ref refid="classApache_1_1Hadoop_1_1Hive_1_1TableValidWriteIds" kindref="compound">TableValidWriteIds</ref> &gt; &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7322" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="27688" bodyend="27690"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetValidWriteIdsResponse_1ae26ce225da22581885de7759d93aa155" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::GetValidWriteIdsResponse::operator==</definition>
+        <argsstring>(const GetValidWriteIdsResponse &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetValidWriteIdsResponse::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1GetValidWriteIdsResponse" kindref="compound">GetValidWriteIdsResponse</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7324" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="27781" bodyend="27786"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetValidWriteIdsResponse_1ab1e552e24ef73d1c2c316cfd2e6f2d4e" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::GetValidWriteIdsResponse::operator!=</definition>
+        <argsstring>(const GetValidWriteIdsResponse &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetValidWriteIdsResponse::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1GetValidWriteIdsResponse" kindref="compound">GetValidWriteIdsResponse</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7325" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="7325" bodyend="7327"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetValidWriteIdsResponse_1a0c12a5001bbc89da34f91ea02f0cfea2" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::GetValidWriteIdsResponse::operator&lt;</definition>
+        <argsstring>(const GetValidWriteIdsResponse &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetValidWriteIdsResponse::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1GetValidWriteIdsResponse" kindref="compound">GetValidWriteIdsResponse</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7329" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetValidWriteIdsResponse_1ada77b52587e5808aa738819efb9012a8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::GetValidWriteIdsResponse::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot) override</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetValidWriteIdsResponse::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7331" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="27698" bodyend="27752"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetValidWriteIdsResponse_1a287935b783887f2321825098fa1c0085" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::GetValidWriteIdsResponse::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const override</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetValidWriteIdsResponse::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7332" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="27754" bodyend="27774"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1GetValidWriteIdsResponse_1a1d8e8b355b53009e8792290cbfde9076" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::GetValidWriteIdsResponse::printTo</definition>
+        <argsstring>(std::ostream &amp;out) const</argsstring>
+        <name>printTo</name>
+        <qualifiedname>Apache::Hadoop::Hive::GetValidWriteIdsResponse::printTo</qualifiedname>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7334" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="27795" bodyend="27800"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::GetValidWriteIdsResponse</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1GetValidWriteIdsResponse"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::GetValidWriteIdsResponse</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1GetValidWriteIdsResponse"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>tblValidWriteIds</edgelabel>
+        </childnode>
+      </node>
+      <node id="4">
+        <label>Apache::Hadoop::Hive::TableValidWriteIds</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1TableValidWriteIds"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>abortedBits</edgelabel>
+          <edgelabel>fullTableName</edgelabel>
+        </childnode>
+        <childnode refid="7" relation="usage">
+          <edgelabel>invalidWriteIds</edgelabel>
+        </childnode>
+        <childnode refid="8" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="8">
+        <label>Apache::Hadoop::Hive::_TableValidWriteIds__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__TableValidWriteIds____isset"/>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+      <node id="6">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="5">
+        <label>std::string</label>
+        <childnode refid="6" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::vector&lt; Apache::Hadoop::Hive::TableValidWriteIds &gt;</label>
+        <childnode refid="4" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="7">
+        <label>std::vector&lt; int64_t &gt;</label>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="7312" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="7312" bodyend="7335"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetValidWriteIdsResponse_1a84f7cd2196ed0749a65aa0e59fa639ac" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetValidWriteIdsResponse</scope><name>__set_tblValidWriteIds</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetValidWriteIdsResponse_1a4f9d2336a2ad459cf599e88fc9246e58" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetValidWriteIdsResponse</scope><name>GetValidWriteIdsResponse</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetValidWriteIdsResponse_1ad22fb6730093733d464de651156133ea" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetValidWriteIdsResponse</scope><name>GetValidWriteIdsResponse</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetValidWriteIdsResponse_1ab1e552e24ef73d1c2c316cfd2e6f2d4e" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetValidWriteIdsResponse</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetValidWriteIdsResponse_1a0c12a5001bbc89da34f91ea02f0cfea2" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetValidWriteIdsResponse</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetValidWriteIdsResponse_1adf15f69636f73013998377972af5810c" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetValidWriteIdsResponse</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetValidWriteIdsResponse_1ae26ce225da22581885de7759d93aa155" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetValidWriteIdsResponse</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetValidWriteIdsResponse_1a1d8e8b355b53009e8792290cbfde9076" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::GetValidWriteIdsResponse</scope><name>printTo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetValidWriteIdsResponse_1ada77b52587e5808aa738819efb9012a8" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetValidWriteIdsResponse</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetValidWriteIdsResponse_1a038cf75729da2ec38da0d9669cf4f3db" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetValidWriteIdsResponse</scope><name>tblValidWriteIds</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetValidWriteIdsResponse_1a287935b783887f2321825098fa1c0085" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::GetValidWriteIdsResponse</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1GetValidWriteIdsResponse_1a8962cb01bbef7278db1f7ffbf79036fa" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::GetValidWriteIdsResponse</scope><name>~GetValidWriteIdsResponse</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

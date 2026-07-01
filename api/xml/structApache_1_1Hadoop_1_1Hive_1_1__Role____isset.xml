@@ -1,0 +1,80 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structApache_1_1Hadoop_1_1Hive_1_1__Role____isset" kind="struct" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::_Role__isset</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__Role____isset_1aa96932867c19ad64f0c09f2db81a711a" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_Role__isset::roleName</definition>
+        <argsstring></argsstring>
+        <name>roleName</name>
+        <qualifiedname>Apache::Hadoop::Hive::_Role__isset::roleName</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="2289" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="2289" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__Role____isset_1aa99248804c888606896afbe15750d4b2" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_Role__isset::createTime</definition>
+        <argsstring></argsstring>
+        <name>createTime</name>
+        <qualifiedname>Apache::Hadoop::Hive::_Role__isset::createTime</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="2290" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="2290" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__Role____isset_1a586790c0015e1a5da287ffe328829efb" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_Role__isset::ownerName</definition>
+        <argsstring></argsstring>
+        <name>ownerName</name>
+        <qualifiedname>Apache::Hadoop::Hive::_Role__isset::ownerName</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="2291" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="2291" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structApache_1_1Hadoop_1_1Hive_1_1__Role____isset_1add6b99da067cd5d19d603f929cda54ba" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::_Role__isset::_Role__isset</definition>
+        <argsstring>()</argsstring>
+        <name>_Role__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::_Role__isset::_Role__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="2288" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="2288" bodyend="2288"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="2287" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="2287" bodyend="2292"/>
+    <listofallmembers>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__Role____isset_1add6b99da067cd5d19d603f929cda54ba" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_Role__isset</scope><name>_Role__isset</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__Role____isset_1aa99248804c888606896afbe15750d4b2" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_Role__isset</scope><name>createTime</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__Role____isset_1a586790c0015e1a5da287ffe328829efb" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_Role__isset</scope><name>ownerName</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__Role____isset_1aa96932867c19ad64f0c09f2db81a711a" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_Role__isset</scope><name>roleName</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

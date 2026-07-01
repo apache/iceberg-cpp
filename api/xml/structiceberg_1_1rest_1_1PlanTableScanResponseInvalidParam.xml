@@ -1,0 +1,94 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1rest_1_1PlanTableScanResponseInvalidParam" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::rest::PlanTableScanResponseInvalidParam</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1rest_1_1PlanTableScanResponseInvalidParam_1acf4570740ac891185e4473c706730034" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::rest::PlanTableScanResponseInvalidParam::test_name</definition>
+        <argsstring></argsstring>
+        <name>test_name</name>
+        <qualifiedname>iceberg::rest::PlanTableScanResponseInvalidParam::test_name</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/rest_json_serde_test.cc" line="1518" column="15" bodyfile="iceberg/test/rest_json_serde_test.cc" bodystart="1518" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1rest_1_1PlanTableScanResponseInvalidParam_1a886818fb4e52359845fbfa28fb8a919a" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::rest::PlanTableScanResponseInvalidParam::json_str</definition>
+        <argsstring></argsstring>
+        <name>json_str</name>
+        <qualifiedname>iceberg::rest::PlanTableScanResponseInvalidParam::json_str</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/rest_json_serde_test.cc" line="1519" column="15" bodyfile="iceberg/test/rest_json_serde_test.cc" bodystart="1519" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1rest_1_1PlanTableScanResponseInvalidParam_1a4518007d8fae2931ab17abc6f2ab0c25" prot="public" static="no" mutable="no">
+        <type>ErrorKind</type>
+        <definition>ErrorKind iceberg::rest::PlanTableScanResponseInvalidParam::expected_error_kind</definition>
+        <argsstring></argsstring>
+        <name>expected_error_kind</name>
+        <qualifiedname>iceberg::rest::PlanTableScanResponseInvalidParam::expected_error_kind</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/rest_json_serde_test.cc" line="1520" column="13" bodyfile="iceberg/test/rest_json_serde_test.cc" bodystart="1520" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1rest_1_1PlanTableScanResponseInvalidParam_1a157791b2f57e3a5b8124bbc94aec3ed5" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::rest::PlanTableScanResponseInvalidParam::expected_error_msg</definition>
+        <argsstring></argsstring>
+        <name>expected_error_msg</name>
+        <qualifiedname>iceberg::rest::PlanTableScanResponseInvalidParam::expected_error_msg</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/rest_json_serde_test.cc" line="1521" column="15" bodyfile="iceberg/test/rest_json_serde_test.cc" bodystart="1521" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::rest::PlanTableScanResponseInvalidParam</label>
+        <link refid="structiceberg_1_1rest_1_1PlanTableScanResponseInvalidParam"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>expected_error_msg</edgelabel>
+          <edgelabel>json_str</edgelabel>
+          <edgelabel>test_name</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="2">
+        <label>std::string</label>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/test/rest_json_serde_test.cc" line="1517" column="1" bodyfile="iceberg/test/rest_json_serde_test.cc" bodystart="1517" bodyend="1522"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1rest_1_1PlanTableScanResponseInvalidParam_1a4518007d8fae2931ab17abc6f2ab0c25" prot="public" virt="non-virtual"><scope>iceberg::rest::PlanTableScanResponseInvalidParam</scope><name>expected_error_kind</name></member>
+      <member refid="structiceberg_1_1rest_1_1PlanTableScanResponseInvalidParam_1a157791b2f57e3a5b8124bbc94aec3ed5" prot="public" virt="non-virtual"><scope>iceberg::rest::PlanTableScanResponseInvalidParam</scope><name>expected_error_msg</name></member>
+      <member refid="structiceberg_1_1rest_1_1PlanTableScanResponseInvalidParam_1a886818fb4e52359845fbfa28fb8a919a" prot="public" virt="non-virtual"><scope>iceberg::rest::PlanTableScanResponseInvalidParam</scope><name>json_str</name></member>
+      <member refid="structiceberg_1_1rest_1_1PlanTableScanResponseInvalidParam_1acf4570740ac891185e4473c706730034" prot="public" virt="non-virtual"><scope>iceberg::rest::PlanTableScanResponseInvalidParam</scope><name>test_name</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

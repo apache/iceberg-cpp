@@ -1,0 +1,104 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1ScopedDefaultLogger" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::ScopedDefaultLogger</compoundname>
+    <includes refid="logging__test__helpers_8h" local="no">logging_test_helpers.h</includes>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1ScopedDefaultLogger_1a3a1248cbba59cb3fbbf157bb1adeca6a" prot="private" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Logger" kindref="compound">Logger</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;Logger&gt; iceberg::ScopedDefaultLogger::previous_</definition>
+        <argsstring></argsstring>
+        <name>previous_</name>
+        <qualifiedname>iceberg::ScopedDefaultLogger::previous_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/logging_test_helpers.h" line="81" column="19" bodyfile="iceberg/test/logging_test_helpers.h" bodystart="81" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1ScopedDefaultLogger_1a3cc39f5b531c1e045de9443564029e21" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::ScopedDefaultLogger::ScopedDefaultLogger</definition>
+        <argsstring>(std::shared_ptr&lt; Logger &gt; logger)</argsstring>
+        <name>ScopedDefaultLogger</name>
+        <qualifiedname>iceberg::ScopedDefaultLogger::ScopedDefaultLogger</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Logger" kindref="compound">Logger</ref> &gt;</type>
+          <declname>logger</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/logging_test_helpers.h" line="71" column="12" bodyfile="iceberg/test/logging_test_helpers.h" bodystart="71" bodyend="74"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ScopedDefaultLogger_1af59b47c54337749f6165338046f4c3db" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::ScopedDefaultLogger::~ScopedDefaultLogger</definition>
+        <argsstring>()</argsstring>
+        <name>~ScopedDefaultLogger</name>
+        <qualifiedname>iceberg::ScopedDefaultLogger::~ScopedDefaultLogger</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/logging_test_helpers.h" line="75" column="3" bodyfile="iceberg/test/logging_test_helpers.h" bodystart="75" bodyend="75"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ScopedDefaultLogger_1ab364a76946f74725e4353463d6a8831f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::ScopedDefaultLogger::ScopedDefaultLogger</definition>
+        <argsstring>(const ScopedDefaultLogger &amp;)=delete</argsstring>
+        <name>ScopedDefaultLogger</name>
+        <qualifiedname>iceberg::ScopedDefaultLogger::ScopedDefaultLogger</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1ScopedDefaultLogger" kindref="compound">ScopedDefaultLogger</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/logging_test_helpers.h" line="77" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ScopedDefaultLogger_1a2eeb0a0d06c86b602cec99176acb5ddb" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1ScopedDefaultLogger" kindref="compound">ScopedDefaultLogger</ref> &amp;</type>
+        <definition>ScopedDefaultLogger &amp; iceberg::ScopedDefaultLogger::operator=</definition>
+        <argsstring>(const ScopedDefaultLogger &amp;)=delete</argsstring>
+        <name>operator=</name>
+        <qualifiedname>iceberg::ScopedDefaultLogger::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1ScopedDefaultLogger" kindref="compound">ScopedDefaultLogger</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/logging_test_helpers.h" line="78" column="23"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>RAII guard that restores the process default logger on scope exit, so tests that swap the global default don&apos;t leak state into other tests. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/test/logging_test_helpers.h" line="69" column="1" bodyfile="iceberg/test/logging_test_helpers.h" bodystart="69" bodyend="82"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1ScopedDefaultLogger_1a2eeb0a0d06c86b602cec99176acb5ddb" prot="public" virt="non-virtual"><scope>iceberg::ScopedDefaultLogger</scope><name>operator=</name></member>
+      <member refid="classiceberg_1_1ScopedDefaultLogger_1a3a1248cbba59cb3fbbf157bb1adeca6a" prot="private" virt="non-virtual"><scope>iceberg::ScopedDefaultLogger</scope><name>previous_</name></member>
+      <member refid="classiceberg_1_1ScopedDefaultLogger_1a3cc39f5b531c1e045de9443564029e21" prot="public" virt="non-virtual"><scope>iceberg::ScopedDefaultLogger</scope><name>ScopedDefaultLogger</name></member>
+      <member refid="classiceberg_1_1ScopedDefaultLogger_1ab364a76946f74725e4353463d6a8831f" prot="public" virt="non-virtual"><scope>iceberg::ScopedDefaultLogger</scope><name>ScopedDefaultLogger</name></member>
+      <member refid="classiceberg_1_1ScopedDefaultLogger_1af59b47c54337749f6165338046f4c3db" prot="public" virt="non-virtual"><scope>iceberg::ScopedDefaultLogger</scope><name>~ScopedDefaultLogger</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,80 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1DateHumanStringTest" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::DateHumanStringTest</compoundname>
+    <basecompoundref prot="public" virt="non-virtual">testing::TestWithParam&lt; HumanStringTestParam &gt;</basecompoundref>
+    <sectiondef kind="protected-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1DateHumanStringTest_1a1518af2fcb90e68efb36c2a614daf02f" prot="protected" static="no" mutable="no">
+        <type>std::vector&lt; std::shared_ptr&lt; <ref refid="classiceberg_1_1Transform" kindref="compound">Transform</ref> &gt; &gt;</type>
+        <definition>std::vector&lt;std::shared_ptr&lt;Transform&gt; &gt; iceberg::DateHumanStringTest::transforms_</definition>
+        <argsstring></argsstring>
+        <name>transforms_</name>
+        <qualifiedname>iceberg::DateHumanStringTest::transforms_</qualifiedname>
+        <initializer>{
+      <ref refid="classiceberg_1_1Transform_1a203252162bb4d5a1e89b18cbf9ba2278" kindref="member">Transform::Year</ref>(), <ref refid="classiceberg_1_1Transform_1a95c96711e4ed3b6c1a505cd751fbdfc7" kindref="member">Transform::Month</ref>(), <ref refid="classiceberg_1_1Transform_1abeb248059ada6671e05717a38b50497c" kindref="member">Transform::Day</ref>()}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/transform_human_string_test.cc" line="86" column="15" bodyfile="iceberg/test/transform_human_string_test.cc" bodystart="86" bodyend="87"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>iceberg::DateHumanStringTest</label>
+        <link refid="classiceberg_1_1DateHumanStringTest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>testing::TestWithParam&lt; HumanStringTestParam &gt;</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::DateHumanStringTest</label>
+        <link refid="classiceberg_1_1DateHumanStringTest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>transforms_</edgelabel>
+        </childnode>
+      </node>
+      <node id="5">
+        <label>iceberg::Transform</label>
+        <link refid="classiceberg_1_1Transform"/>
+        <childnode refid="6" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="6">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+      <node id="4">
+        <label>std::shared_ptr&lt; iceberg::Transform &gt;</label>
+        <childnode refid="5" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="2">
+        <label>testing::TestWithParam&lt; HumanStringTestParam &gt;</label>
+      </node>
+      <node id="3">
+        <label>std::vector&lt; std::shared_ptr&lt; iceberg::Transform &gt; &gt;</label>
+        <childnode refid="4" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/test/transform_human_string_test.cc" line="84" column="1" bodyfile="iceberg/test/transform_human_string_test.cc" bodystart="84" bodyend="88"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1DateHumanStringTest_1a1518af2fcb90e68efb36c2a614daf02f" prot="protected" virt="non-virtual"><scope>iceberg::DateHumanStringTest</scope><name>transforms_</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

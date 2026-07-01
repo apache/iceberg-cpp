@@ -1,0 +1,77 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1VariantDispatchParam" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::VariantDispatchParam</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1VariantDispatchParam_1a235c5ae60e06af589db023068c8023f4" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::VariantDispatchParam::test_name</definition>
+        <argsstring></argsstring>
+        <name>test_name</name>
+        <qualifiedname>iceberg::VariantDispatchParam::test_name</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/metrics_reporter_test.cc" line="131" column="15" bodyfile="iceberg/test/metrics_reporter_test.cc" bodystart="131" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1VariantDispatchParam_1a2f4bb9e3bfcd5d11848352168b1c9e29" prot="public" static="no" mutable="no">
+        <type>MetricsReport</type>
+        <definition>MetricsReport iceberg::VariantDispatchParam::report</definition>
+        <argsstring></argsstring>
+        <name>report</name>
+        <qualifiedname>iceberg::VariantDispatchParam::report</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/metrics_reporter_test.cc" line="132" column="17" bodyfile="iceberg/test/metrics_reporter_test.cc" bodystart="132" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1VariantDispatchParam_1a687d094a01185d19ae5ddd949b509d25" prot="public" static="no" mutable="no">
+        <type>MetricsReportType</type>
+        <definition>MetricsReportType iceberg::VariantDispatchParam::expected_type</definition>
+        <argsstring></argsstring>
+        <name>expected_type</name>
+        <qualifiedname>iceberg::VariantDispatchParam::expected_type</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/metrics_reporter_test.cc" line="133" column="21" bodyfile="iceberg/test/metrics_reporter_test.cc" bodystart="133" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::VariantDispatchParam</label>
+        <link refid="structiceberg_1_1VariantDispatchParam"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>test_name</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="2">
+        <label>std::string</label>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/test/metrics_reporter_test.cc" line="130" column="1" bodyfile="iceberg/test/metrics_reporter_test.cc" bodystart="130" bodyend="134"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1VariantDispatchParam_1a687d094a01185d19ae5ddd949b509d25" prot="public" virt="non-virtual"><scope>iceberg::VariantDispatchParam</scope><name>expected_type</name></member>
+      <member refid="structiceberg_1_1VariantDispatchParam_1a2f4bb9e3bfcd5d11848352168b1c9e29" prot="public" virt="non-virtual"><scope>iceberg::VariantDispatchParam</scope><name>report</name></member>
+      <member refid="structiceberg_1_1VariantDispatchParam_1a235c5ae60e06af589db023068c8023f4" prot="public" virt="non-virtual"><scope>iceberg::VariantDispatchParam</scope><name>test_name</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

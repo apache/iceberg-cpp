@@ -1,0 +1,48 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structApache_1_1Hadoop_1_1Hive_1_1__ScheduledQueryProgressInfo____isset" kind="struct" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::_ScheduledQueryProgressInfo__isset</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__ScheduledQueryProgressInfo____isset_1abc017b667fa12a114572153415a1afb2" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_ScheduledQueryProgressInfo__isset::errorMessage</definition>
+        <argsstring></argsstring>
+        <name>errorMessage</name>
+        <qualifiedname>Apache::Hadoop::Hive::_ScheduledQueryProgressInfo__isset::errorMessage</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13561" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="13561" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structApache_1_1Hadoop_1_1Hive_1_1__ScheduledQueryProgressInfo____isset_1a1433552781e7e660788b0fe7bebab906" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::_ScheduledQueryProgressInfo__isset::_ScheduledQueryProgressInfo__isset</definition>
+        <argsstring>()</argsstring>
+        <name>_ScheduledQueryProgressInfo__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::_ScheduledQueryProgressInfo__isset::_ScheduledQueryProgressInfo__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13560" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="13560" bodyend="13560"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="13559" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="13559" bodyend="13562"/>
+    <listofallmembers>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__ScheduledQueryProgressInfo____isset_1a1433552781e7e660788b0fe7bebab906" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_ScheduledQueryProgressInfo__isset</scope><name>_ScheduledQueryProgressInfo__isset</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__ScheduledQueryProgressInfo____isset_1abc017b667fa12a114572153415a1afb2" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_ScheduledQueryProgressInfo__isset</scope><name>errorMessage</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

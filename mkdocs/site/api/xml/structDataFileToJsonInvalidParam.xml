@@ -1,0 +1,78 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structDataFileToJsonInvalidParam" kind="struct" language="C++" prot="public">
+    <compoundname>DataFileToJsonInvalidParam</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structDataFileToJsonInvalidParam_1af5629338f1dcc17076a9d43b3283aef7" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string DataFileToJsonInvalidParam::test_name</definition>
+        <argsstring></argsstring>
+        <name>test_name</name>
+        <qualifiedname>DataFileToJsonInvalidParam::test_name</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/rest_json_serde_test.cc" line="2187" column="15" bodyfile="iceberg/test/rest_json_serde_test.cc" bodystart="2187" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structDataFileToJsonInvalidParam_1a2328ddb3e2490cb8308bed022879074d" prot="public" static="no" mutable="no">
+        <type>DataFileToJsonInvalidCase</type>
+        <definition>DataFileToJsonInvalidCase DataFileToJsonInvalidParam::test_case</definition>
+        <argsstring></argsstring>
+        <name>test_case</name>
+        <qualifiedname>DataFileToJsonInvalidParam::test_case</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/rest_json_serde_test.cc" line="2188" column="29" bodyfile="iceberg/test/rest_json_serde_test.cc" bodystart="2188" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structDataFileToJsonInvalidParam_1a5eb88f8bf9fc0fc3c4763b9046dff0f6" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string DataFileToJsonInvalidParam::expected_error_msg</definition>
+        <argsstring></argsstring>
+        <name>expected_error_msg</name>
+        <qualifiedname>DataFileToJsonInvalidParam::expected_error_msg</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/rest_json_serde_test.cc" line="2189" column="15" bodyfile="iceberg/test/rest_json_serde_test.cc" bodystart="2189" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>DataFileToJsonInvalidParam</label>
+        <link refid="structDataFileToJsonInvalidParam"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>expected_error_msg</edgelabel>
+          <edgelabel>test_name</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="2">
+        <label>std::string</label>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/test/rest_json_serde_test.cc" line="2186" column="1" bodyfile="iceberg/test/rest_json_serde_test.cc" bodystart="2186" bodyend="2190"/>
+    <listofallmembers>
+      <member refid="structDataFileToJsonInvalidParam_1a5eb88f8bf9fc0fc3c4763b9046dff0f6" prot="public" virt="non-virtual"><scope>DataFileToJsonInvalidParam</scope><name>expected_error_msg</name></member>
+      <member refid="structDataFileToJsonInvalidParam_1a2328ddb3e2490cb8308bed022879074d" prot="public" virt="non-virtual"><scope>DataFileToJsonInvalidParam</scope><name>test_case</name></member>
+      <member refid="structDataFileToJsonInvalidParam_1af5629338f1dcc17076a9d43b3283aef7" prot="public" virt="non-virtual"><scope>DataFileToJsonInvalidParam</scope><name>test_name</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

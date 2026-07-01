@@ -1,0 +1,80 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structApache_1_1Hadoop_1_1Hive_1_1__ThriftHiveMetastore__heartbeat__lock__materialization__rebuild__args____isset" kind="struct" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::_ThriftHiveMetastore_heartbeat_lock_materialization_rebuild_args__isset</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__ThriftHiveMetastore__heartbeat__lock__materialization__rebuild__args____isset_1adc3efe51f560b4a55946b2c2d331e2b5" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_ThriftHiveMetastore_heartbeat_lock_materialization_rebuild_args__isset::dbName</definition>
+        <argsstring></argsstring>
+        <name>dbName</name>
+        <qualifiedname>Apache::Hadoop::Hive::_ThriftHiveMetastore_heartbeat_lock_materialization_rebuild_args__isset::dbName</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="28403" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="28403" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__ThriftHiveMetastore__heartbeat__lock__materialization__rebuild__args____isset_1a440f2b402335c1a45db2a38ab652742f" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_ThriftHiveMetastore_heartbeat_lock_materialization_rebuild_args__isset::tableName</definition>
+        <argsstring></argsstring>
+        <name>tableName</name>
+        <qualifiedname>Apache::Hadoop::Hive::_ThriftHiveMetastore_heartbeat_lock_materialization_rebuild_args__isset::tableName</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="28404" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="28404" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__ThriftHiveMetastore__heartbeat__lock__materialization__rebuild__args____isset_1aaa83915b03c775f1e1f90bfa97422a41" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_ThriftHiveMetastore_heartbeat_lock_materialization_rebuild_args__isset::txnId</definition>
+        <argsstring></argsstring>
+        <name>txnId</name>
+        <qualifiedname>Apache::Hadoop::Hive::_ThriftHiveMetastore_heartbeat_lock_materialization_rebuild_args__isset::txnId</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="28405" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="28405" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structApache_1_1Hadoop_1_1Hive_1_1__ThriftHiveMetastore__heartbeat__lock__materialization__rebuild__args____isset_1a963ccf95eca728db020cd4d4f6e5a9cd" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::_ThriftHiveMetastore_heartbeat_lock_materialization_rebuild_args__isset::_ThriftHiveMetastore_heartbeat_lock_materialization_rebuild_args__isset</definition>
+        <argsstring>()</argsstring>
+        <name>_ThriftHiveMetastore_heartbeat_lock_materialization_rebuild_args__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::_ThriftHiveMetastore_heartbeat_lock_materialization_rebuild_args__isset::_ThriftHiveMetastore_heartbeat_lock_materialization_rebuild_args__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="28402" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="28402" bodyend="28402"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" line="28401" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/ThriftHiveMetastore.h" bodystart="28401" bodyend="28406"/>
+    <listofallmembers>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__ThriftHiveMetastore__heartbeat__lock__materialization__rebuild__args____isset_1a963ccf95eca728db020cd4d4f6e5a9cd" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_ThriftHiveMetastore_heartbeat_lock_materialization_rebuild_args__isset</scope><name>_ThriftHiveMetastore_heartbeat_lock_materialization_rebuild_args__isset</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__ThriftHiveMetastore__heartbeat__lock__materialization__rebuild__args____isset_1adc3efe51f560b4a55946b2c2d331e2b5" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_ThriftHiveMetastore_heartbeat_lock_materialization_rebuild_args__isset</scope><name>dbName</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__ThriftHiveMetastore__heartbeat__lock__materialization__rebuild__args____isset_1a440f2b402335c1a45db2a38ab652742f" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_ThriftHiveMetastore_heartbeat_lock_materialization_rebuild_args__isset</scope><name>tableName</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__ThriftHiveMetastore__heartbeat__lock__materialization__rebuild__args____isset_1aaa83915b03c775f1e1f90bfa97422a41" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_ThriftHiveMetastore_heartbeat_lock_materialization_rebuild_args__isset</scope><name>txnId</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

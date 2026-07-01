@@ -1,0 +1,77 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1DurationConversionParam" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::DurationConversionParam</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1DurationConversionParam_1a10344597f0109e4a36c325fead9b6fee" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::DurationConversionParam::name</definition>
+        <argsstring></argsstring>
+        <name>name</name>
+        <qualifiedname>iceberg::DurationConversionParam::name</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/metrics_test.cc" line="211" column="15" bodyfile="iceberg/test/metrics_test.cc" bodystart="211" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1DurationConversionParam_1a985a36f5e9d5150d184355f65ae81bae" prot="public" static="no" mutable="no">
+        <type>std::chrono::nanoseconds</type>
+        <definition>std::chrono::nanoseconds iceberg::DurationConversionParam::input</definition>
+        <argsstring></argsstring>
+        <name>input</name>
+        <qualifiedname>iceberg::DurationConversionParam::input</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/metrics_test.cc" line="212" column="28" bodyfile="iceberg/test/metrics_test.cc" bodystart="212" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1DurationConversionParam_1ab92ccde5e72168b0e043731a9afca029" prot="public" static="no" mutable="no">
+        <type>std::chrono::nanoseconds</type>
+        <definition>std::chrono::nanoseconds iceberg::DurationConversionParam::expected</definition>
+        <argsstring></argsstring>
+        <name>expected</name>
+        <qualifiedname>iceberg::DurationConversionParam::expected</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/metrics_test.cc" line="213" column="28" bodyfile="iceberg/test/metrics_test.cc" bodystart="213" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::DurationConversionParam</label>
+        <link refid="structiceberg_1_1DurationConversionParam"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>name</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="2">
+        <label>std::string</label>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/test/metrics_test.cc" line="210" column="1" bodyfile="iceberg/test/metrics_test.cc" bodystart="210" bodyend="214"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1DurationConversionParam_1ab92ccde5e72168b0e043731a9afca029" prot="public" virt="non-virtual"><scope>iceberg::DurationConversionParam</scope><name>expected</name></member>
+      <member refid="structiceberg_1_1DurationConversionParam_1a985a36f5e9d5150d184355f65ae81bae" prot="public" virt="non-virtual"><scope>iceberg::DurationConversionParam</scope><name>input</name></member>
+      <member refid="structiceberg_1_1DurationConversionParam_1a10344597f0109e4a36c325fead9b6fee" prot="public" virt="non-virtual"><scope>iceberg::DurationConversionParam</scope><name>name</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,80 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structApache_1_1Hadoop_1_1Hive_1_1__FindNextCompactRequest____isset" kind="struct" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::_FindNextCompactRequest__isset</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__FindNextCompactRequest____isset_1a782af1418e04d0b6081ccc34999c7e53" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_FindNextCompactRequest__isset::workerId</definition>
+        <argsstring></argsstring>
+        <name>workerId</name>
+        <qualifiedname>Apache::Hadoop::Hive::_FindNextCompactRequest__isset::workerId</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8964" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="8964" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__FindNextCompactRequest____isset_1a2ac09d4f7fd41b4d3584050e84a3d273" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_FindNextCompactRequest__isset::workerVersion</definition>
+        <argsstring></argsstring>
+        <name>workerVersion</name>
+        <qualifiedname>Apache::Hadoop::Hive::_FindNextCompactRequest__isset::workerVersion</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8965" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="8965" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__FindNextCompactRequest____isset_1a42b424c4afc7f20ad4252cd18bfc34c2" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_FindNextCompactRequest__isset::poolName</definition>
+        <argsstring></argsstring>
+        <name>poolName</name>
+        <qualifiedname>Apache::Hadoop::Hive::_FindNextCompactRequest__isset::poolName</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8966" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="8966" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structApache_1_1Hadoop_1_1Hive_1_1__FindNextCompactRequest____isset_1a4624b3654583392c8b708356d6da4bcf" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::_FindNextCompactRequest__isset::_FindNextCompactRequest__isset</definition>
+        <argsstring>()</argsstring>
+        <name>_FindNextCompactRequest__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::_FindNextCompactRequest__isset::_FindNextCompactRequest__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8963" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="8963" bodyend="8963"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8962" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="8962" bodyend="8967"/>
+    <listofallmembers>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__FindNextCompactRequest____isset_1a4624b3654583392c8b708356d6da4bcf" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_FindNextCompactRequest__isset</scope><name>_FindNextCompactRequest__isset</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__FindNextCompactRequest____isset_1a42b424c4afc7f20ad4252cd18bfc34c2" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_FindNextCompactRequest__isset</scope><name>poolName</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__FindNextCompactRequest____isset_1a782af1418e04d0b6081ccc34999c7e53" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_FindNextCompactRequest__isset</scope><name>workerId</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__FindNextCompactRequest____isset_1a2ac09d4f7fd41b4d3584050e84a3d273" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_FindNextCompactRequest__isset</scope><name>workerVersion</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

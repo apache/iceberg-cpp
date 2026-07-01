@@ -1,0 +1,48 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structApache_1_1Hadoop_1_1Hive_1_1__RuntimeStat____isset" kind="struct" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::_RuntimeStat__isset</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__RuntimeStat____isset_1abb4ef12f1ee2bb5eabadbcef8cd26e1a" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_RuntimeStat__isset::createTime</definition>
+        <argsstring></argsstring>
+        <name>createTime</name>
+        <qualifiedname>Apache::Hadoop::Hive::_RuntimeStat__isset::createTime</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12985" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="12985" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structApache_1_1Hadoop_1_1Hive_1_1__RuntimeStat____isset_1a615283e96aee6fcb11136d510b9909a6" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::_RuntimeStat__isset::_RuntimeStat__isset</definition>
+        <argsstring>()</argsstring>
+        <name>_RuntimeStat__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::_RuntimeStat__isset::_RuntimeStat__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12984" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="12984" bodyend="12984"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="12983" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="12983" bodyend="12986"/>
+    <listofallmembers>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__RuntimeStat____isset_1a615283e96aee6fcb11136d510b9909a6" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_RuntimeStat__isset</scope><name>_RuntimeStat__isset</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__RuntimeStat____isset_1abb4ef12f1ee2bb5eabadbcef8cd26e1a" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_RuntimeStat__isset</scope><name>createTime</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

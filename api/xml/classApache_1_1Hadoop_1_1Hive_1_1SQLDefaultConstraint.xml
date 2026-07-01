@@ -1,0 +1,565 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1SQLDefaultConstraint" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::SQLDefaultConstraint</compoundname>
+    <basecompoundref prot="public" virt="virtual">apache::thrift::TBase</basecompoundref>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1SQLDefaultConstraint_1a78728c7054aa993c3daf9469b0f3b865" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::SQLDefaultConstraint::catName</definition>
+        <argsstring></argsstring>
+        <name>catName</name>
+        <qualifiedname>Apache::Hadoop::Hive::SQLDefaultConstraint::catName</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1529" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="1529" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1SQLDefaultConstraint_1ad3b65629669f063ef49ee0afd9bcf4fe" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::SQLDefaultConstraint::table_db</definition>
+        <argsstring></argsstring>
+        <name>table_db</name>
+        <qualifiedname>Apache::Hadoop::Hive::SQLDefaultConstraint::table_db</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1530" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="1530" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1SQLDefaultConstraint_1abad70bed316921b5497f0597d315b8e7" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::SQLDefaultConstraint::table_name</definition>
+        <argsstring></argsstring>
+        <name>table_name</name>
+        <qualifiedname>Apache::Hadoop::Hive::SQLDefaultConstraint::table_name</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1531" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="1531" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1SQLDefaultConstraint_1a4c2fd0bd9a89ea0fdf4fe90834655644" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::SQLDefaultConstraint::column_name</definition>
+        <argsstring></argsstring>
+        <name>column_name</name>
+        <qualifiedname>Apache::Hadoop::Hive::SQLDefaultConstraint::column_name</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1532" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="1532" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1SQLDefaultConstraint_1a0f3f14fce936d625932ff2a6f684f708" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::SQLDefaultConstraint::default_value</definition>
+        <argsstring></argsstring>
+        <name>default_value</name>
+        <qualifiedname>Apache::Hadoop::Hive::SQLDefaultConstraint::default_value</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1533" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="1533" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1SQLDefaultConstraint_1a6909b6a04966af6d2a5621ac64192e53" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::SQLDefaultConstraint::dc_name</definition>
+        <argsstring></argsstring>
+        <name>dc_name</name>
+        <qualifiedname>Apache::Hadoop::Hive::SQLDefaultConstraint::dc_name</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1534" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="1534" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1SQLDefaultConstraint_1a8cac81ed44e6d5f9fda91e4b4a3882e3" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::SQLDefaultConstraint::enable_cstr</definition>
+        <argsstring></argsstring>
+        <name>enable_cstr</name>
+        <qualifiedname>Apache::Hadoop::Hive::SQLDefaultConstraint::enable_cstr</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1535" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="1535" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1SQLDefaultConstraint_1ae2555c06250fff17029711ef1ddb10dc" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::SQLDefaultConstraint::validate_cstr</definition>
+        <argsstring></argsstring>
+        <name>validate_cstr</name>
+        <qualifiedname>Apache::Hadoop::Hive::SQLDefaultConstraint::validate_cstr</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1536" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="1536" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1SQLDefaultConstraint_1af4333ce9c4be88b00b94c6f9dbb7e53d" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::SQLDefaultConstraint::rely_cstr</definition>
+        <argsstring></argsstring>
+        <name>rely_cstr</name>
+        <qualifiedname>Apache::Hadoop::Hive::SQLDefaultConstraint::rely_cstr</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1537" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="1537" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1SQLDefaultConstraint_1a964ce7cab3d4522e25bd704943c84074" prot="public" static="no" mutable="no">
+        <type><ref refid="structApache_1_1Hadoop_1_1Hive_1_1__SQLDefaultConstraint____isset" kindref="compound">_SQLDefaultConstraint__isset</ref></type>
+        <definition>_SQLDefaultConstraint__isset Apache::Hadoop::Hive::SQLDefaultConstraint::__isset</definition>
+        <argsstring></argsstring>
+        <name>__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::SQLDefaultConstraint::__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1539" column="32" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="1539" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1SQLDefaultConstraint_1ab3dd5fbc07f578aaf115b485762ee9fe" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::SQLDefaultConstraint::SQLDefaultConstraint</definition>
+        <argsstring>(const SQLDefaultConstraint &amp;)</argsstring>
+        <name>SQLDefaultConstraint</name>
+        <qualifiedname>Apache::Hadoop::Hive::SQLDefaultConstraint::SQLDefaultConstraint</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1SQLDefaultConstraint" kindref="compound">SQLDefaultConstraint</ref> &amp;</type>
+          <defname>other22</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1524" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="2844" bodyend="2855"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1SQLDefaultConstraint_1a4e9ce44a7cc93ef8267b76dad2d1ceae" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1SQLDefaultConstraint" kindref="compound">SQLDefaultConstraint</ref> &amp;</type>
+        <definition>SQLDefaultConstraint &amp; Apache::Hadoop::Hive::SQLDefaultConstraint::operator=</definition>
+        <argsstring>(const SQLDefaultConstraint &amp;)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::SQLDefaultConstraint::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1SQLDefaultConstraint" kindref="compound">SQLDefaultConstraint</ref> &amp;</type>
+          <defname>other23</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1525" column="24" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="2856" bodyend="2868"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1SQLDefaultConstraint_1a7e9ed09d6fe2cec15a58afe660a35bc5" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::SQLDefaultConstraint::SQLDefaultConstraint</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>SQLDefaultConstraint</name>
+        <qualifiedname>Apache::Hadoop::Hive::SQLDefaultConstraint::SQLDefaultConstraint</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1526" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="2602" bodyend="2612"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1SQLDefaultConstraint_1a382db734a7bab315da2aa12d62d07500" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::SQLDefaultConstraint::~SQLDefaultConstraint</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~SQLDefaultConstraint</name>
+        <qualifiedname>Apache::Hadoop::Hive::SQLDefaultConstraint::~SQLDefaultConstraint</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1528" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="2599" bodyend="2600"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1SQLDefaultConstraint_1a1e79bf0b71e0d3889c52d7739e9bb2f7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::SQLDefaultConstraint::__set_catName</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_catName</name>
+        <qualifiedname>Apache::Hadoop::Hive::SQLDefaultConstraint::__set_catName</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1541" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="2614" bodyend="2616"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1SQLDefaultConstraint_1a8c0bd58ecf84a1628391f325d47841ca" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::SQLDefaultConstraint::__set_table_db</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_table_db</name>
+        <qualifiedname>Apache::Hadoop::Hive::SQLDefaultConstraint::__set_table_db</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1543" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="2618" bodyend="2620"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1SQLDefaultConstraint_1ad9d826b79b2b4886d148385748fd7333" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::SQLDefaultConstraint::__set_table_name</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_table_name</name>
+        <qualifiedname>Apache::Hadoop::Hive::SQLDefaultConstraint::__set_table_name</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1545" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="2622" bodyend="2624"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1SQLDefaultConstraint_1abc893c5ee0767ed85d7fe42015d7e7e7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::SQLDefaultConstraint::__set_column_name</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_column_name</name>
+        <qualifiedname>Apache::Hadoop::Hive::SQLDefaultConstraint::__set_column_name</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1547" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="2626" bodyend="2628"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1SQLDefaultConstraint_1acf74234fd1f0a20714e1fc485d7432b3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::SQLDefaultConstraint::__set_default_value</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_default_value</name>
+        <qualifiedname>Apache::Hadoop::Hive::SQLDefaultConstraint::__set_default_value</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1549" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="2630" bodyend="2632"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1SQLDefaultConstraint_1aba4eae7ecdcfdf737e1810340c640cc5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::SQLDefaultConstraint::__set_dc_name</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_dc_name</name>
+        <qualifiedname>Apache::Hadoop::Hive::SQLDefaultConstraint::__set_dc_name</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1551" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="2634" bodyend="2636"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1SQLDefaultConstraint_1aa26f866abe808179a9f83e2f3b5d5761" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::SQLDefaultConstraint::__set_enable_cstr</definition>
+        <argsstring>(const bool val)</argsstring>
+        <name>__set_enable_cstr</name>
+        <qualifiedname>Apache::Hadoop::Hive::SQLDefaultConstraint::__set_enable_cstr</qualifiedname>
+        <param>
+          <type>const bool</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1553" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="2638" bodyend="2640"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1SQLDefaultConstraint_1a582f0950b26d845266dd0152c6a01bd5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::SQLDefaultConstraint::__set_validate_cstr</definition>
+        <argsstring>(const bool val)</argsstring>
+        <name>__set_validate_cstr</name>
+        <qualifiedname>Apache::Hadoop::Hive::SQLDefaultConstraint::__set_validate_cstr</qualifiedname>
+        <param>
+          <type>const bool</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1555" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="2642" bodyend="2644"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1SQLDefaultConstraint_1aeaa1e7132eb8c94c625204c2f7a9d22d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::SQLDefaultConstraint::__set_rely_cstr</definition>
+        <argsstring>(const bool val)</argsstring>
+        <name>__set_rely_cstr</name>
+        <qualifiedname>Apache::Hadoop::Hive::SQLDefaultConstraint::__set_rely_cstr</qualifiedname>
+        <param>
+          <type>const bool</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1557" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="2646" bodyend="2648"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1SQLDefaultConstraint_1a9e3c04d73518e271fedb456d76dce33e" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::SQLDefaultConstraint::operator==</definition>
+        <argsstring>(const SQLDefaultConstraint &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::SQLDefaultConstraint::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1SQLDefaultConstraint" kindref="compound">SQLDefaultConstraint</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1559" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="2821" bodyend="2842"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1SQLDefaultConstraint_1a2ed0b4575ae69cdb3f0acf3ca94e4ccf" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::SQLDefaultConstraint::operator!=</definition>
+        <argsstring>(const SQLDefaultConstraint &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::SQLDefaultConstraint::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1SQLDefaultConstraint" kindref="compound">SQLDefaultConstraint</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1560" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="1560" bodyend="1562"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1SQLDefaultConstraint_1a1e7a28849ddf822b211d2dd4e28d51fa" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::SQLDefaultConstraint::operator&lt;</definition>
+        <argsstring>(const SQLDefaultConstraint &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::SQLDefaultConstraint::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1SQLDefaultConstraint" kindref="compound">SQLDefaultConstraint</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1564" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1SQLDefaultConstraint_1a79662561eb0ad13b969aa16c9066f6bc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::SQLDefaultConstraint::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot) override</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::SQLDefaultConstraint::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1566" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="2656" bodyend="2759"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1SQLDefaultConstraint_1ab6793f0c80d1a20b4a5f284b6967b29c" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::SQLDefaultConstraint::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const override</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::SQLDefaultConstraint::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1567" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="2761" bodyend="2805"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1SQLDefaultConstraint_1a209f52ce617f08c322bee5711d61a14c" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::SQLDefaultConstraint::printTo</definition>
+        <argsstring>(std::ostream &amp;out) const</argsstring>
+        <name>printTo</name>
+        <qualifiedname>Apache::Hadoop::Hive::SQLDefaultConstraint::printTo</qualifiedname>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1569" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="2869" bodyend="2882"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::SQLDefaultConstraint</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1SQLDefaultConstraint"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::SQLDefaultConstraint</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1SQLDefaultConstraint"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>catName</edgelabel>
+          <edgelabel>column_name</edgelabel>
+          <edgelabel>dc_name</edgelabel>
+          <edgelabel>default_value</edgelabel>
+          <edgelabel>table_db</edgelabel>
+          <edgelabel>table_name</edgelabel>
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="5">
+        <label>Apache::Hadoop::Hive::_SQLDefaultConstraint__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__SQLDefaultConstraint____isset"/>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+      <node id="4">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="3">
+        <label>std::string</label>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="1521" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="1521" bodyend="1570"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1SQLDefaultConstraint_1a964ce7cab3d4522e25bd704943c84074" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::SQLDefaultConstraint</scope><name>__isset</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1SQLDefaultConstraint_1a1e79bf0b71e0d3889c52d7739e9bb2f7" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::SQLDefaultConstraint</scope><name>__set_catName</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1SQLDefaultConstraint_1abc893c5ee0767ed85d7fe42015d7e7e7" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::SQLDefaultConstraint</scope><name>__set_column_name</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1SQLDefaultConstraint_1aba4eae7ecdcfdf737e1810340c640cc5" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::SQLDefaultConstraint</scope><name>__set_dc_name</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1SQLDefaultConstraint_1acf74234fd1f0a20714e1fc485d7432b3" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::SQLDefaultConstraint</scope><name>__set_default_value</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1SQLDefaultConstraint_1aa26f866abe808179a9f83e2f3b5d5761" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::SQLDefaultConstraint</scope><name>__set_enable_cstr</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1SQLDefaultConstraint_1aeaa1e7132eb8c94c625204c2f7a9d22d" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::SQLDefaultConstraint</scope><name>__set_rely_cstr</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1SQLDefaultConstraint_1a8c0bd58ecf84a1628391f325d47841ca" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::SQLDefaultConstraint</scope><name>__set_table_db</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1SQLDefaultConstraint_1ad9d826b79b2b4886d148385748fd7333" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::SQLDefaultConstraint</scope><name>__set_table_name</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1SQLDefaultConstraint_1a582f0950b26d845266dd0152c6a01bd5" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::SQLDefaultConstraint</scope><name>__set_validate_cstr</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1SQLDefaultConstraint_1a78728c7054aa993c3daf9469b0f3b865" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::SQLDefaultConstraint</scope><name>catName</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1SQLDefaultConstraint_1a4c2fd0bd9a89ea0fdf4fe90834655644" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::SQLDefaultConstraint</scope><name>column_name</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1SQLDefaultConstraint_1a6909b6a04966af6d2a5621ac64192e53" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::SQLDefaultConstraint</scope><name>dc_name</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1SQLDefaultConstraint_1a0f3f14fce936d625932ff2a6f684f708" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::SQLDefaultConstraint</scope><name>default_value</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1SQLDefaultConstraint_1a8cac81ed44e6d5f9fda91e4b4a3882e3" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::SQLDefaultConstraint</scope><name>enable_cstr</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1SQLDefaultConstraint_1a2ed0b4575ae69cdb3f0acf3ca94e4ccf" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::SQLDefaultConstraint</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1SQLDefaultConstraint_1a1e7a28849ddf822b211d2dd4e28d51fa" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::SQLDefaultConstraint</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1SQLDefaultConstraint_1a4e9ce44a7cc93ef8267b76dad2d1ceae" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::SQLDefaultConstraint</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1SQLDefaultConstraint_1a9e3c04d73518e271fedb456d76dce33e" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::SQLDefaultConstraint</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1SQLDefaultConstraint_1a209f52ce617f08c322bee5711d61a14c" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::SQLDefaultConstraint</scope><name>printTo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1SQLDefaultConstraint_1a79662561eb0ad13b969aa16c9066f6bc" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::SQLDefaultConstraint</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1SQLDefaultConstraint_1af4333ce9c4be88b00b94c6f9dbb7e53d" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::SQLDefaultConstraint</scope><name>rely_cstr</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1SQLDefaultConstraint_1ab3dd5fbc07f578aaf115b485762ee9fe" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::SQLDefaultConstraint</scope><name>SQLDefaultConstraint</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1SQLDefaultConstraint_1a7e9ed09d6fe2cec15a58afe660a35bc5" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::SQLDefaultConstraint</scope><name>SQLDefaultConstraint</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1SQLDefaultConstraint_1ad3b65629669f063ef49ee0afd9bcf4fe" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::SQLDefaultConstraint</scope><name>table_db</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1SQLDefaultConstraint_1abad70bed316921b5497f0597d315b8e7" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::SQLDefaultConstraint</scope><name>table_name</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1SQLDefaultConstraint_1ae2555c06250fff17029711ef1ddb10dc" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::SQLDefaultConstraint</scope><name>validate_cstr</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1SQLDefaultConstraint_1ab6793f0c80d1a20b4a5f284b6967b29c" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::SQLDefaultConstraint</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1SQLDefaultConstraint_1a382db734a7bab315da2aa12d62d07500" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::SQLDefaultConstraint</scope><name>~SQLDefaultConstraint</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

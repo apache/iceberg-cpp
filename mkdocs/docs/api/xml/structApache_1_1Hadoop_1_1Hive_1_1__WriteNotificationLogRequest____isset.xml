@@ -1,0 +1,48 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structApache_1_1Hadoop_1_1Hive_1_1__WriteNotificationLogRequest____isset" kind="struct" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::_WriteNotificationLogRequest__isset</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__WriteNotificationLogRequest____isset_1a4fe7f660b65d5f19d38decbb07488317" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_WriteNotificationLogRequest__isset::partitionVals</definition>
+        <argsstring></argsstring>
+        <name>partitionVals</name>
+        <qualifiedname>Apache::Hadoop::Hive::_WriteNotificationLogRequest__isset::partitionVals</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9566" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="9566" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structApache_1_1Hadoop_1_1Hive_1_1__WriteNotificationLogRequest____isset_1ae5d18e384b67cf744ac7fc9ca71d9868" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::_WriteNotificationLogRequest__isset::_WriteNotificationLogRequest__isset</definition>
+        <argsstring>()</argsstring>
+        <name>_WriteNotificationLogRequest__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::_WriteNotificationLogRequest__isset::_WriteNotificationLogRequest__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9565" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="9565" bodyend="9565"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="9564" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="9564" bodyend="9567"/>
+    <listofallmembers>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__WriteNotificationLogRequest____isset_1ae5d18e384b67cf744ac7fc9ca71d9868" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_WriteNotificationLogRequest__isset</scope><name>_WriteNotificationLogRequest__isset</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__WriteNotificationLogRequest____isset_1a4fe7f660b65d5f19d38decbb07488317" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_WriteNotificationLogRequest__isset</scope><name>partitionVals</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

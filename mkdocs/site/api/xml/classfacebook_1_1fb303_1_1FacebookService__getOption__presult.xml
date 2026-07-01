@@ -1,0 +1,105 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classfacebook_1_1fb303_1_1FacebookService__getOption__presult" kind="class" language="C++" prot="public">
+    <compoundname>facebook::fb303::FacebookService_getOption_presult</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classfacebook_1_1fb303_1_1FacebookService__getOption__presult_1a0b4e07230d60fe7a5ab51f0dac29a7c8" prot="public" static="no" mutable="no">
+        <type>std::string *</type>
+        <definition>std::string* facebook::fb303::FacebookService_getOption_presult::success</definition>
+        <argsstring></argsstring>
+        <name>success</name>
+        <qualifiedname>facebook::fb303::FacebookService_getOption_presult::success</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="852" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.h" bodystart="852" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classfacebook_1_1fb303_1_1FacebookService__getOption__presult_1ae5541635b2e68b36bf832ceab96f9fff" prot="public" static="no" mutable="no">
+        <type><ref refid="structfacebook_1_1fb303_1_1__FacebookService__getOption__presult____isset" kindref="compound">_FacebookService_getOption_presult__isset</ref></type>
+        <definition>_FacebookService_getOption_presult__isset facebook::fb303::FacebookService_getOption_presult::__isset</definition>
+        <argsstring></argsstring>
+        <name>__isset</name>
+        <qualifiedname>facebook::fb303::FacebookService_getOption_presult::__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="854" column="45" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.h" bodystart="854" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookService__getOption__presult_1a7c3ebc77b3a55c918d5928c688091db2" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>facebook::fb303::FacebookService_getOption_presult::~FacebookService_getOption_presult</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~FacebookService_getOption_presult</name>
+        <qualifiedname>facebook::fb303::FacebookService_getOption_presult::~FacebookService_getOption_presult</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="851" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.cpp" bodystart="1427" bodyend="1428"/>
+      </memberdef>
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookService__getOption__presult_1ad8bc851b78c6279d3977b274bd4f85e6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t facebook::fb303::FacebookService_getOption_presult::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot)</argsstring>
+        <name>read</name>
+        <qualifiedname>facebook::fb303::FacebookService_getOption_presult::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="856" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.cpp" bodystart="1431" bodyend="1470"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>facebook::fb303::FacebookService_getOption_presult</label>
+        <link refid="classfacebook_1_1fb303_1_1FacebookService__getOption__presult"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>success</edgelabel>
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="4">
+        <label>facebook::fb303::_FacebookService_getOption_presult__isset</label>
+        <link refid="structfacebook_1_1fb303_1_1__FacebookService__getOption__presult____isset"/>
+      </node>
+      <node id="3">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="2">
+        <label>std::string</label>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="847" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.h" bodystart="847" bodyend="858"/>
+    <listofallmembers>
+      <member refid="classfacebook_1_1fb303_1_1FacebookService__getOption__presult_1ae5541635b2e68b36bf832ceab96f9fff" prot="public" virt="non-virtual"><scope>facebook::fb303::FacebookService_getOption_presult</scope><name>__isset</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookService__getOption__presult_1ad8bc851b78c6279d3977b274bd4f85e6" prot="public" virt="non-virtual"><scope>facebook::fb303::FacebookService_getOption_presult</scope><name>read</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookService__getOption__presult_1a0b4e07230d60fe7a5ab51f0dac29a7c8" prot="public" virt="non-virtual"><scope>facebook::fb303::FacebookService_getOption_presult</scope><name>success</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookService__getOption__presult_1a7c3ebc77b3a55c918d5928c688091db2" prot="public" virt="virtual"><scope>facebook::fb303::FacebookService_getOption_presult</scope><name>~FacebookService_getOption_presult</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

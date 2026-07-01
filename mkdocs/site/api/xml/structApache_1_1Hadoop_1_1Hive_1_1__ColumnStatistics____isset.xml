@@ -1,0 +1,64 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structApache_1_1Hadoop_1_1Hive_1_1__ColumnStatistics____isset" kind="struct" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::_ColumnStatistics__isset</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__ColumnStatistics____isset_1aefe65562a65f1a43f70f6c23c3af12a6" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_ColumnStatistics__isset::isStatsCompliant</definition>
+        <argsstring></argsstring>
+        <name>isStatsCompliant</name>
+        <qualifiedname>Apache::Hadoop::Hive::_ColumnStatistics__isset::isStatsCompliant</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3934" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="3934" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__ColumnStatistics____isset_1ac750a25c688de844859066ba375891d4" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_ColumnStatistics__isset::engine</definition>
+        <argsstring></argsstring>
+        <name>engine</name>
+        <qualifiedname>Apache::Hadoop::Hive::_ColumnStatistics__isset::engine</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3935" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="3935" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structApache_1_1Hadoop_1_1Hive_1_1__ColumnStatistics____isset_1af94480f0f2f3a86706d79201cd83cb1d" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::_ColumnStatistics__isset::_ColumnStatistics__isset</definition>
+        <argsstring>()</argsstring>
+        <name>_ColumnStatistics__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::_ColumnStatistics__isset::_ColumnStatistics__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3933" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="3933" bodyend="3933"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="3932" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="3932" bodyend="3936"/>
+    <listofallmembers>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__ColumnStatistics____isset_1af94480f0f2f3a86706d79201cd83cb1d" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_ColumnStatistics__isset</scope><name>_ColumnStatistics__isset</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__ColumnStatistics____isset_1ac750a25c688de844859066ba375891d4" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_ColumnStatistics__isset</scope><name>engine</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__ColumnStatistics____isset_1aefe65562a65f1a43f70f6c23c3af12a6" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_ColumnStatistics__isset</scope><name>isStatsCompliant</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

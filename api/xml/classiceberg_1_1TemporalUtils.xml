@@ -1,0 +1,400 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1TemporalUtils" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::TemporalUtils</compoundname>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classiceberg_1_1TemporalUtils_1abca09bad9aa50f17f1836745ccd703cb" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int64_t</type>
+        <definition>int64_t iceberg::TemporalUtils::NanosToMicros</definition>
+        <argsstring>(int64_t nanos)</argsstring>
+        <name>NanosToMicros</name>
+        <qualifiedname>iceberg::TemporalUtils::NanosToMicros</qualifiedname>
+        <param>
+          <type>int64_t</type>
+          <declname>nanos</declname>
+        </param>
+        <briefdescription>
+<para>Convert nanoseconds since epoch to microseconds using floor division. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/temporal_util.h" line="55" column="18" bodyfile="iceberg/util/temporal_util.cc" bodystart="338" bodyend="340"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TemporalUtils_1a9e9c1fd853320613af3b99a738ff0e51" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; int64_t &gt;</type>
+        <definition>Result&lt; int64_t &gt; iceberg::TemporalUtils::MicrosToNanos</definition>
+        <argsstring>(int64_t micros)</argsstring>
+        <name>MicrosToNanos</name>
+        <qualifiedname>iceberg::TemporalUtils::MicrosToNanos</qualifiedname>
+        <param>
+          <type>int64_t</type>
+          <declname>micros</declname>
+        </param>
+        <briefdescription>
+<para>Convert microseconds since epoch to nanoseconds, failing on overflow. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/temporal_util.h" line="58" column="17" bodyfile="iceberg/util/temporal_util.cc" bodystart="342" bodyend="344"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TemporalUtils_1a0e845ac1ac5377e279649cfc0e49ca02" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; int32_t &gt;</type>
+        <definition>Result&lt; int32_t &gt; iceberg::TemporalUtils::ParseDay</definition>
+        <argsstring>(std::string_view str)</argsstring>
+        <name>ParseDay</name>
+        <qualifiedname>iceberg::TemporalUtils::ParseDay</qualifiedname>
+        <param>
+          <type>std::string_view</type>
+          <declname>str</declname>
+        </param>
+        <briefdescription>
+<para>Parses a date string in &quot;[+-]yyyy-MM-dd&quot; format into days since epoch. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Supports an optional &apos;+&apos; or &apos;-&apos; prefix for extended years beyond 9999.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>str</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The date string to parse. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The number of days since 1970-01-01, or an error. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/temporal_util.h" line="66" column="17" bodyfile="iceberg/util/temporal_util.cc" bodystart="346" bodyend="372"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TemporalUtils_1ac7a6286b53c790bd6eb3461f06c363d8" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; int64_t &gt;</type>
+        <definition>Result&lt; int64_t &gt; iceberg::TemporalUtils::ParseTime</definition>
+        <argsstring>(std::string_view str)</argsstring>
+        <name>ParseTime</name>
+        <qualifiedname>iceberg::TemporalUtils::ParseTime</qualifiedname>
+        <param>
+          <type>std::string_view</type>
+          <declname>str</declname>
+        </param>
+        <briefdescription>
+<para>Parses a time string into microseconds from midnight. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Accepts ISO-8601 local time formats: &quot;HH:mm&quot;, &quot;HH:mm:ss&quot;, or &quot;HH:mm:ss.f&quot; where the fractional part can be 1-9 digits. Digits beyond 6 (microsecond precision) are truncated.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>str</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The time string to parse. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The number of microseconds from midnight, or an error. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/temporal_util.h" line="76" column="17" bodyfile="iceberg/util/temporal_util.cc" bodystart="374" bodyend="376"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TemporalUtils_1a3de9b099e8436bc4592f1cd9282e17fd" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; int64_t &gt;</type>
+        <definition>Result&lt; int64_t &gt; iceberg::TemporalUtils::ParseTimeNs</definition>
+        <argsstring>(std::string_view str)</argsstring>
+        <name>ParseTimeNs</name>
+        <qualifiedname>iceberg::TemporalUtils::ParseTimeNs</qualifiedname>
+        <param>
+          <type>std::string_view</type>
+          <declname>str</declname>
+        </param>
+        <briefdescription>
+<para>Parses a time string into nanoseconds from midnight. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Accepts ISO-8601 local time formats: &quot;HH:mm&quot;, &quot;HH:mm:ss&quot;, or &quot;HH:mm:ss.f&quot; where the fractional part can be 1-9 digits. Digits beyond 9 (nanosecond precision) are truncated.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>str</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The time string to parse. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The number of nanoseconds from midnight, or an error. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/temporal_util.h" line="86" column="17" bodyfile="iceberg/util/temporal_util.cc" bodystart="378" bodyend="380"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TemporalUtils_1a05e54dcc4decfcde7df93246cbee707d" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; int64_t &gt;</type>
+        <definition>Result&lt; int64_t &gt; iceberg::TemporalUtils::ParseTimestamp</definition>
+        <argsstring>(std::string_view str)</argsstring>
+        <name>ParseTimestamp</name>
+        <qualifiedname>iceberg::TemporalUtils::ParseTimestamp</qualifiedname>
+        <param>
+          <type>std::string_view</type>
+          <declname>str</declname>
+        </param>
+        <briefdescription>
+<para>Parses a timestamp string into microseconds since epoch. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Accepts ISO-8601 local date-time formats: &quot;yyyy-MM-ddTHH:mm&quot;, &quot;yyyy-MM-ddTHH:mm:ss&quot;, or &quot;yyyy-MM-ddTHH:mm:ss.f&quot; where the fractional part can be 1-9 digits (truncated to microseconds).</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>str</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The timestamp string to parse. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The number of microseconds since epoch, or an error. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/temporal_util.h" line="96" column="17" bodyfile="iceberg/util/temporal_util.cc" bodystart="382" bodyend="393"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TemporalUtils_1a504dca5eaf8b65bb8b806c300c7d7ddb" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; int64_t &gt;</type>
+        <definition>Result&lt; int64_t &gt; iceberg::TemporalUtils::ParseTimestampNs</definition>
+        <argsstring>(std::string_view str)</argsstring>
+        <name>ParseTimestampNs</name>
+        <qualifiedname>iceberg::TemporalUtils::ParseTimestampNs</qualifiedname>
+        <param>
+          <type>std::string_view</type>
+          <declname>str</declname>
+        </param>
+        <briefdescription>
+<para>Parses a timestamp string into nanoseconds since epoch. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Accepts ISO-8601 local date-time formats: &quot;yyyy-MM-ddTHH:mm&quot;, &quot;yyyy-MM-ddTHH:mm:ss&quot;, or &quot;yyyy-MM-ddTHH:mm:ss.f&quot; where the fractional part can be 1-9 digits.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>str</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The timestamp string to parse. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The number of nanoseconds since epoch, or an error. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/temporal_util.h" line="106" column="17" bodyfile="iceberg/util/temporal_util.cc" bodystart="395" bodyend="407"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TemporalUtils_1afc5845ceaed7653a9b95823afe938c34" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; int64_t &gt;</type>
+        <definition>Result&lt; int64_t &gt; iceberg::TemporalUtils::ParseTimestampWithZone</definition>
+        <argsstring>(std::string_view str)</argsstring>
+        <name>ParseTimestampWithZone</name>
+        <qualifiedname>iceberg::TemporalUtils::ParseTimestampWithZone</qualifiedname>
+        <param>
+          <type>std::string_view</type>
+          <declname>str</declname>
+        </param>
+        <briefdescription>
+<para>Parses a timestamp-with-zone string into microseconds since epoch (UTC). </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Accepts the same formats as ParseTimestamp, with a timezone suffix: &quot;Z&quot;, &quot;+HH:mm&quot;, or &quot;-HH:mm&quot;. Non-UTC offsets are converted to UTC. The seconds and fractional parts are optional (e.g. &quot;yyyy-MM-ddTHH:mm+00:00&quot;).</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>str</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The timestamp string to parse. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The number of microseconds since epoch (UTC), or an error. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/temporal_util.h" line="116" column="17" bodyfile="iceberg/util/temporal_util.cc" bodystart="409" bodyend="426"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TemporalUtils_1a26772ce6675b4fb88048a2403e77f1d5" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; int64_t &gt;</type>
+        <definition>Result&lt; int64_t &gt; iceberg::TemporalUtils::ParseTimestampNsWithZone</definition>
+        <argsstring>(std::string_view str)</argsstring>
+        <name>ParseTimestampNsWithZone</name>
+        <qualifiedname>iceberg::TemporalUtils::ParseTimestampNsWithZone</qualifiedname>
+        <param>
+          <type>std::string_view</type>
+          <declname>str</declname>
+        </param>
+        <briefdescription>
+<para>Parses a timestamp-with-zone string into nanoseconds since epoch (UTC). </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Accepts the same formats as ParseTimestampNs, with a timezone suffix: &quot;Z&quot;, &quot;+HH:mm&quot;, or &quot;-HH:mm&quot;. Non-UTC offsets are converted to UTC. The seconds and fractional parts are optional (e.g. &quot;yyyy-MM-ddTHH:mm+00:00&quot;).</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>str</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The timestamp string to parse. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The number of nanoseconds since epoch (UTC), or an error. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/temporal_util.h" line="126" column="17" bodyfile="iceberg/util/temporal_util.cc" bodystart="428" bodyend="445"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TemporalUtils_1a91c773e9495fc673c0d38400a292a6cb" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; bool &gt;</type>
+        <definition>Result&lt; bool &gt; iceberg::TemporalUtils::IsUtcOffset</definition>
+        <argsstring>(std::string_view str)</argsstring>
+        <name>IsUtcOffset</name>
+        <qualifiedname>iceberg::TemporalUtils::IsUtcOffset</qualifiedname>
+        <param>
+          <type>std::string_view</type>
+          <declname>str</declname>
+        </param>
+        <briefdescription>
+<para>Reports whether a timestamp-with-zone string carries a zero (UTC) offset. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>The ParseTimestamp*WithZone parsers accept any offset and silently normalize it to UTC. The spec&apos;s JSON single-value form for <computeroutput>timestamptz</computeroutput> / <computeroutput>timestamptz_ns</computeroutput> default values is meant to be UTC, so callers that must enforce that rule check the offset here before parsing.</para>
+<para>Any zero-offset spelling is treated as UTC: &quot;Z&quot;, &quot;+00:00&quot; and &quot;-00:00&quot; all denote a zero offset and are accepted, even though the spec writes the canonical form as &quot;+00:00&quot;. Only a genuinely non-zero offset (e.g. &quot;+05:00&quot;) is rejected.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>str</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The timestamp-with-zone string to inspect. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>true if the offset is zero, false if it is a non-zero offset, or an error if the timezone suffix cannot be parsed. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/temporal_util.h" line="142" column="17" bodyfile="iceberg/util/temporal_util.cc" bodystart="447" bodyend="450"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TemporalUtils_1a5fd14b5e476db025684d37351a8d821e" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &gt;</type>
+        <definition>Result&lt; Literal &gt; iceberg::TemporalUtils::ExtractYear</definition>
+        <argsstring>(const Literal &amp;literal)</argsstring>
+        <name>ExtractYear</name>
+        <qualifiedname>iceberg::TemporalUtils::ExtractYear</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &amp;</type>
+          <declname>literal</declname>
+        </param>
+        <briefdescription>
+<para>Extract a date or timestamp year, as years from 1970. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/temporal_util.h" line="145" column="17" bodyfile="iceberg/util/temporal_util.cc" bodystart="456" bodyend="475"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TemporalUtils_1afa7ed8ec605daeb7487a739c1e602070" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &gt;</type>
+        <definition>Result&lt; Literal &gt; iceberg::TemporalUtils::ExtractMonth</definition>
+        <argsstring>(const Literal &amp;literal)</argsstring>
+        <name>ExtractMonth</name>
+        <qualifiedname>iceberg::TemporalUtils::ExtractMonth</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &amp;</type>
+          <declname>literal</declname>
+        </param>
+        <briefdescription>
+<para>Extract a date or timestamp month, as months from 1970-01-01. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/temporal_util.h" line="148" column="17" bodyfile="iceberg/util/temporal_util.cc" bodystart="481" bodyend="500"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TemporalUtils_1aee0757d3540d0df7df8aa2f3e9a3121f" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &gt;</type>
+        <definition>Result&lt; Literal &gt; iceberg::TemporalUtils::ExtractDay</definition>
+        <argsstring>(const Literal &amp;literal)</argsstring>
+        <name>ExtractDay</name>
+        <qualifiedname>iceberg::TemporalUtils::ExtractDay</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &amp;</type>
+          <declname>literal</declname>
+        </param>
+        <briefdescription>
+<para>Extract a date or timestamp day, as days from 1970-01-01. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/temporal_util.h" line="151" column="17" bodyfile="iceberg/util/temporal_util.cc" bodystart="506" bodyend="525"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TemporalUtils_1a96090fda58bef0c1f099961155763c1f" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &gt;</type>
+        <definition>Result&lt; Literal &gt; iceberg::TemporalUtils::ExtractHour</definition>
+        <argsstring>(const Literal &amp;literal)</argsstring>
+        <name>ExtractHour</name>
+        <qualifiedname>iceberg::TemporalUtils::ExtractHour</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &amp;</type>
+          <declname>literal</declname>
+        </param>
+        <briefdescription>
+<para>Extract a timestamp hour, as hours from 1970-01-01 00:00:00. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/temporal_util.h" line="154" column="17" bodyfile="iceberg/util/temporal_util.cc" bodystart="531" bodyend="549"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/util/temporal_util.h" line="52" column="1" bodyfile="iceberg/util/temporal_util.h" bodystart="52" bodyend="155"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1TemporalUtils_1aee0757d3540d0df7df8aa2f3e9a3121f" prot="public" virt="non-virtual"><scope>iceberg::TemporalUtils</scope><name>ExtractDay</name></member>
+      <member refid="classiceberg_1_1TemporalUtils_1a96090fda58bef0c1f099961155763c1f" prot="public" virt="non-virtual"><scope>iceberg::TemporalUtils</scope><name>ExtractHour</name></member>
+      <member refid="classiceberg_1_1TemporalUtils_1afa7ed8ec605daeb7487a739c1e602070" prot="public" virt="non-virtual"><scope>iceberg::TemporalUtils</scope><name>ExtractMonth</name></member>
+      <member refid="classiceberg_1_1TemporalUtils_1a5fd14b5e476db025684d37351a8d821e" prot="public" virt="non-virtual"><scope>iceberg::TemporalUtils</scope><name>ExtractYear</name></member>
+      <member refid="classiceberg_1_1TemporalUtils_1a91c773e9495fc673c0d38400a292a6cb" prot="public" virt="non-virtual"><scope>iceberg::TemporalUtils</scope><name>IsUtcOffset</name></member>
+      <member refid="classiceberg_1_1TemporalUtils_1a9e9c1fd853320613af3b99a738ff0e51" prot="public" virt="non-virtual"><scope>iceberg::TemporalUtils</scope><name>MicrosToNanos</name></member>
+      <member refid="classiceberg_1_1TemporalUtils_1abca09bad9aa50f17f1836745ccd703cb" prot="public" virt="non-virtual"><scope>iceberg::TemporalUtils</scope><name>NanosToMicros</name></member>
+      <member refid="classiceberg_1_1TemporalUtils_1a0e845ac1ac5377e279649cfc0e49ca02" prot="public" virt="non-virtual"><scope>iceberg::TemporalUtils</scope><name>ParseDay</name></member>
+      <member refid="classiceberg_1_1TemporalUtils_1ac7a6286b53c790bd6eb3461f06c363d8" prot="public" virt="non-virtual"><scope>iceberg::TemporalUtils</scope><name>ParseTime</name></member>
+      <member refid="classiceberg_1_1TemporalUtils_1a3de9b099e8436bc4592f1cd9282e17fd" prot="public" virt="non-virtual"><scope>iceberg::TemporalUtils</scope><name>ParseTimeNs</name></member>
+      <member refid="classiceberg_1_1TemporalUtils_1a05e54dcc4decfcde7df93246cbee707d" prot="public" virt="non-virtual"><scope>iceberg::TemporalUtils</scope><name>ParseTimestamp</name></member>
+      <member refid="classiceberg_1_1TemporalUtils_1a504dca5eaf8b65bb8b806c300c7d7ddb" prot="public" virt="non-virtual"><scope>iceberg::TemporalUtils</scope><name>ParseTimestampNs</name></member>
+      <member refid="classiceberg_1_1TemporalUtils_1a26772ce6675b4fb88048a2403e77f1d5" prot="public" virt="non-virtual"><scope>iceberg::TemporalUtils</scope><name>ParseTimestampNsWithZone</name></member>
+      <member refid="classiceberg_1_1TemporalUtils_1afc5845ceaed7653a9b95823afe938c34" prot="public" virt="non-virtual"><scope>iceberg::TemporalUtils</scope><name>ParseTimestampWithZone</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

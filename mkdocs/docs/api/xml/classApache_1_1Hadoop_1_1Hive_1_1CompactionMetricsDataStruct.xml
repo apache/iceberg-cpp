@@ -1,0 +1,497 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1CompactionMetricsDataStruct" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::CompactionMetricsDataStruct</compoundname>
+    <basecompoundref prot="public" virt="virtual">apache::thrift::TBase</basecompoundref>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1CompactionMetricsDataStruct_1a65191d72f6074367cd0eabde6294ef6b" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::CompactionMetricsDataStruct::dbname</definition>
+        <argsstring></argsstring>
+        <name>dbname</name>
+        <qualifiedname>Apache::Hadoop::Hive::CompactionMetricsDataStruct::dbname</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8365" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="8365" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1CompactionMetricsDataStruct_1abfeaa2980172449060a31ffe3ba6a68d" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::CompactionMetricsDataStruct::tblname</definition>
+        <argsstring></argsstring>
+        <name>tblname</name>
+        <qualifiedname>Apache::Hadoop::Hive::CompactionMetricsDataStruct::tblname</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8366" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="8366" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1CompactionMetricsDataStruct_1a8863aef69bffe576732ca2041946d356" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string Apache::Hadoop::Hive::CompactionMetricsDataStruct::partitionname</definition>
+        <argsstring></argsstring>
+        <name>partitionname</name>
+        <qualifiedname>Apache::Hadoop::Hive::CompactionMetricsDataStruct::partitionname</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8367" column="15" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="8367" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1CompactionMetricsDataStruct_1aa0c174bc7f15f5b244080c48541ae114" prot="public" static="no" mutable="no">
+        <type>CompactionMetricsMetricType::type</type>
+        <definition>CompactionMetricsMetricType::type Apache::Hadoop::Hive::CompactionMetricsDataStruct::type</definition>
+        <argsstring></argsstring>
+        <name>type</name>
+        <qualifiedname>Apache::Hadoop::Hive::CompactionMetricsDataStruct::type</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="see"><para><ref refid="structApache_1_1Hadoop_1_1Hive_1_1CompactionMetricsMetricType" kindref="compound">CompactionMetricsMetricType</ref> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8372" column="37" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="8372" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1CompactionMetricsDataStruct_1a66d32bcf0cf6a2b0eb211c26c6bac6e4" prot="public" static="no" mutable="no">
+        <type>int32_t</type>
+        <definition>int32_t Apache::Hadoop::Hive::CompactionMetricsDataStruct::metricvalue</definition>
+        <argsstring></argsstring>
+        <name>metricvalue</name>
+        <qualifiedname>Apache::Hadoop::Hive::CompactionMetricsDataStruct::metricvalue</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8373" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="8373" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1CompactionMetricsDataStruct_1a7d46cd813e9fe222c5212abd285b0a7f" prot="public" static="no" mutable="no">
+        <type>int32_t</type>
+        <definition>int32_t Apache::Hadoop::Hive::CompactionMetricsDataStruct::version</definition>
+        <argsstring></argsstring>
+        <name>version</name>
+        <qualifiedname>Apache::Hadoop::Hive::CompactionMetricsDataStruct::version</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8374" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="8374" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1CompactionMetricsDataStruct_1a4a270defffbbd4b11427200eb0f4388e" prot="public" static="no" mutable="no">
+        <type>int32_t</type>
+        <definition>int32_t Apache::Hadoop::Hive::CompactionMetricsDataStruct::threshold</definition>
+        <argsstring></argsstring>
+        <name>threshold</name>
+        <qualifiedname>Apache::Hadoop::Hive::CompactionMetricsDataStruct::threshold</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8375" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="8375" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1CompactionMetricsDataStruct_1a6cb4720a0dedc76ebc26ef85a55afe94" prot="public" static="no" mutable="no">
+        <type><ref refid="structApache_1_1Hadoop_1_1Hive_1_1__CompactionMetricsDataStruct____isset" kindref="compound">_CompactionMetricsDataStruct__isset</ref></type>
+        <definition>_CompactionMetricsDataStruct__isset Apache::Hadoop::Hive::CompactionMetricsDataStruct::__isset</definition>
+        <argsstring></argsstring>
+        <name>__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::CompactionMetricsDataStruct::__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8377" column="39" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="8377" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CompactionMetricsDataStruct_1ae2fe55b68cf5e209fbd77771a50e8c0e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::CompactionMetricsDataStruct::CompactionMetricsDataStruct</definition>
+        <argsstring>(const CompactionMetricsDataStruct &amp;)</argsstring>
+        <name>CompactionMetricsDataStruct</name>
+        <qualifiedname>Apache::Hadoop::Hive::CompactionMetricsDataStruct::CompactionMetricsDataStruct</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionMetricsDataStruct" kindref="compound">CompactionMetricsDataStruct</ref> &amp;</type>
+          <defname>other1042</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8360" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="32438" bodyend="32447"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CompactionMetricsDataStruct_1aa33fec3ecb0f771c8b93cb36d1f95831" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionMetricsDataStruct" kindref="compound">CompactionMetricsDataStruct</ref> &amp;</type>
+        <definition>CompactionMetricsDataStruct &amp; Apache::Hadoop::Hive::CompactionMetricsDataStruct::operator=</definition>
+        <argsstring>(const CompactionMetricsDataStruct &amp;)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::CompactionMetricsDataStruct::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionMetricsDataStruct" kindref="compound">CompactionMetricsDataStruct</ref> &amp;</type>
+          <defname>other1043</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8361" column="31" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="32448" bodyend="32458"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CompactionMetricsDataStruct_1a4bbf76ef06320cfacf932637c704e662" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::CompactionMetricsDataStruct::CompactionMetricsDataStruct</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>CompactionMetricsDataStruct</name>
+        <qualifiedname>Apache::Hadoop::Hive::CompactionMetricsDataStruct::CompactionMetricsDataStruct</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8362" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="32212" bodyend="32220"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CompactionMetricsDataStruct_1a4813bf6aefad1803b96db0c09f766560" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::CompactionMetricsDataStruct::~CompactionMetricsDataStruct</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~CompactionMetricsDataStruct</name>
+        <qualifiedname>Apache::Hadoop::Hive::CompactionMetricsDataStruct::~CompactionMetricsDataStruct</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8364" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="32209" bodyend="32210"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CompactionMetricsDataStruct_1a378bcbaaac486a04f3e55ac59ebc3fa4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::CompactionMetricsDataStruct::__set_dbname</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_dbname</name>
+        <qualifiedname>Apache::Hadoop::Hive::CompactionMetricsDataStruct::__set_dbname</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8379" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="32222" bodyend="32224"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CompactionMetricsDataStruct_1af4c055706679149c4843c3c234eeca54" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::CompactionMetricsDataStruct::__set_tblname</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_tblname</name>
+        <qualifiedname>Apache::Hadoop::Hive::CompactionMetricsDataStruct::__set_tblname</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8381" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="32226" bodyend="32228"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CompactionMetricsDataStruct_1a82bda78580772f6ec83abd595e52e276" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::CompactionMetricsDataStruct::__set_partitionname</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>__set_partitionname</name>
+        <qualifiedname>Apache::Hadoop::Hive::CompactionMetricsDataStruct::__set_partitionname</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8383" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="32230" bodyend="32233"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CompactionMetricsDataStruct_1af3c79877e5ad1594e6b5e837d56fbd91" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::CompactionMetricsDataStruct::__set_type</definition>
+        <argsstring>(const CompactionMetricsMetricType::type val)</argsstring>
+        <name>__set_type</name>
+        <qualifiedname>Apache::Hadoop::Hive::CompactionMetricsDataStruct::__set_type</qualifiedname>
+        <param>
+          <type>const CompactionMetricsMetricType::type</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8385" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="32235" bodyend="32237"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CompactionMetricsDataStruct_1a9158e022e1780b5289898b84b0c34aec" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::CompactionMetricsDataStruct::__set_metricvalue</definition>
+        <argsstring>(const int32_t val)</argsstring>
+        <name>__set_metricvalue</name>
+        <qualifiedname>Apache::Hadoop::Hive::CompactionMetricsDataStruct::__set_metricvalue</qualifiedname>
+        <param>
+          <type>const int32_t</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8387" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="32239" bodyend="32241"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CompactionMetricsDataStruct_1a9bcd686af319d98935323b8ef1f7d064" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::CompactionMetricsDataStruct::__set_version</definition>
+        <argsstring>(const int32_t val)</argsstring>
+        <name>__set_version</name>
+        <qualifiedname>Apache::Hadoop::Hive::CompactionMetricsDataStruct::__set_version</qualifiedname>
+        <param>
+          <type>const int32_t</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8389" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="32243" bodyend="32245"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CompactionMetricsDataStruct_1a5b7a4d657d49b92244ec1df3891c55f8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::CompactionMetricsDataStruct::__set_threshold</definition>
+        <argsstring>(const int32_t val)</argsstring>
+        <name>__set_threshold</name>
+        <qualifiedname>Apache::Hadoop::Hive::CompactionMetricsDataStruct::__set_threshold</qualifiedname>
+        <param>
+          <type>const int32_t</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8391" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="32247" bodyend="32249"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CompactionMetricsDataStruct_1a6a519eb935f920746d5971809c9fb73b" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::CompactionMetricsDataStruct::operator==</definition>
+        <argsstring>(const CompactionMetricsDataStruct &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::CompactionMetricsDataStruct::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionMetricsDataStruct" kindref="compound">CompactionMetricsDataStruct</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8393" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="32417" bodyend="32436"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CompactionMetricsDataStruct_1a9040d732f74d73f50411459719e67965" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::CompactionMetricsDataStruct::operator!=</definition>
+        <argsstring>(const CompactionMetricsDataStruct &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::CompactionMetricsDataStruct::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionMetricsDataStruct" kindref="compound">CompactionMetricsDataStruct</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8394" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="8394" bodyend="8396"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CompactionMetricsDataStruct_1a9bb8d3ad13d8431daefed77e20931bcf" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::CompactionMetricsDataStruct::operator&lt;</definition>
+        <argsstring>(const CompactionMetricsDataStruct &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::CompactionMetricsDataStruct::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionMetricsDataStruct" kindref="compound">CompactionMetricsDataStruct</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8398" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CompactionMetricsDataStruct_1ae3c5cb43b5c94860c5afcb4156e6d9d5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::CompactionMetricsDataStruct::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot) override</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::CompactionMetricsDataStruct::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8400" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="32257" bodyend="32364"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CompactionMetricsDataStruct_1a528e05e2c7f794b05230563ecf1eeafe" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::CompactionMetricsDataStruct::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const override</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::CompactionMetricsDataStruct::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8401" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="32366" bodyend="32403"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CompactionMetricsDataStruct_1aad5f9be38df70bc3264fd7a899538acd" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::CompactionMetricsDataStruct::printTo</definition>
+        <argsstring>(std::ostream &amp;out) const</argsstring>
+        <name>printTo</name>
+        <qualifiedname>Apache::Hadoop::Hive::CompactionMetricsDataStruct::printTo</qualifiedname>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8403" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="32459" bodyend="32470"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::CompactionMetricsDataStruct</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionMetricsDataStruct"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::CompactionMetricsDataStruct</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionMetricsDataStruct"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>dbname</edgelabel>
+          <edgelabel>partitionname</edgelabel>
+          <edgelabel>tblname</edgelabel>
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="5">
+        <label>Apache::Hadoop::Hive::_CompactionMetricsDataStruct__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__CompactionMetricsDataStruct____isset"/>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+      <node id="4">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="3">
+        <label>std::string</label>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8357" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="8357" bodyend="8404"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionMetricsDataStruct_1a6cb4720a0dedc76ebc26ef85a55afe94" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CompactionMetricsDataStruct</scope><name>__isset</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionMetricsDataStruct_1a378bcbaaac486a04f3e55ac59ebc3fa4" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CompactionMetricsDataStruct</scope><name>__set_dbname</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionMetricsDataStruct_1a9158e022e1780b5289898b84b0c34aec" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CompactionMetricsDataStruct</scope><name>__set_metricvalue</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionMetricsDataStruct_1a82bda78580772f6ec83abd595e52e276" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CompactionMetricsDataStruct</scope><name>__set_partitionname</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionMetricsDataStruct_1af4c055706679149c4843c3c234eeca54" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CompactionMetricsDataStruct</scope><name>__set_tblname</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionMetricsDataStruct_1a5b7a4d657d49b92244ec1df3891c55f8" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CompactionMetricsDataStruct</scope><name>__set_threshold</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionMetricsDataStruct_1af3c79877e5ad1594e6b5e837d56fbd91" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CompactionMetricsDataStruct</scope><name>__set_type</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionMetricsDataStruct_1a9bcd686af319d98935323b8ef1f7d064" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CompactionMetricsDataStruct</scope><name>__set_version</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionMetricsDataStruct_1ae2fe55b68cf5e209fbd77771a50e8c0e" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CompactionMetricsDataStruct</scope><name>CompactionMetricsDataStruct</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionMetricsDataStruct_1a4bbf76ef06320cfacf932637c704e662" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CompactionMetricsDataStruct</scope><name>CompactionMetricsDataStruct</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionMetricsDataStruct_1a65191d72f6074367cd0eabde6294ef6b" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CompactionMetricsDataStruct</scope><name>dbname</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionMetricsDataStruct_1a66d32bcf0cf6a2b0eb211c26c6bac6e4" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CompactionMetricsDataStruct</scope><name>metricvalue</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionMetricsDataStruct_1a9040d732f74d73f50411459719e67965" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CompactionMetricsDataStruct</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionMetricsDataStruct_1a9bb8d3ad13d8431daefed77e20931bcf" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CompactionMetricsDataStruct</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionMetricsDataStruct_1aa33fec3ecb0f771c8b93cb36d1f95831" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CompactionMetricsDataStruct</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionMetricsDataStruct_1a6a519eb935f920746d5971809c9fb73b" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CompactionMetricsDataStruct</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionMetricsDataStruct_1a8863aef69bffe576732ca2041946d356" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CompactionMetricsDataStruct</scope><name>partitionname</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionMetricsDataStruct_1aad5f9be38df70bc3264fd7a899538acd" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::CompactionMetricsDataStruct</scope><name>printTo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionMetricsDataStruct_1ae3c5cb43b5c94860c5afcb4156e6d9d5" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CompactionMetricsDataStruct</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionMetricsDataStruct_1abfeaa2980172449060a31ffe3ba6a68d" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CompactionMetricsDataStruct</scope><name>tblname</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionMetricsDataStruct_1a4a270defffbbd4b11427200eb0f4388e" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CompactionMetricsDataStruct</scope><name>threshold</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionMetricsDataStruct_1aa0c174bc7f15f5b244080c48541ae114" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CompactionMetricsDataStruct</scope><name>type</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionMetricsDataStruct_1a7d46cd813e9fe222c5212abd285b0a7f" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CompactionMetricsDataStruct</scope><name>version</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionMetricsDataStruct_1a528e05e2c7f794b05230563ecf1eeafe" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CompactionMetricsDataStruct</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionMetricsDataStruct_1a4813bf6aefad1803b96db0c09f766560" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::CompactionMetricsDataStruct</scope><name>~CompactionMetricsDataStruct</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

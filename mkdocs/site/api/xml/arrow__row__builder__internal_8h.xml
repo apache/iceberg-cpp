@@ -1,0 +1,184 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="arrow__row__builder__internal_8h" kind="file" language="C++">
+    <compoundname>arrow_row_builder_internal.h</compoundname>
+    <includes local="no">cstdint</includes>
+    <includes local="no">string_view</includes>
+    <includes local="no">unordered_map</includes>
+    <includes refid="arrow__c__data_8h" local="yes">iceberg/arrow_c_data.h</includes>
+    <includes refid="iceberg__export_8h" local="yes">iceberg/iceberg_export.h</includes>
+    <includes refid="result_8h" local="yes">iceberg/result.h</includes>
+    <includes refid="type__fwd_8h" local="yes">iceberg/type_fwd.h</includes>
+    <includedby refid="arrow__row__builder_8cc" local="yes">iceberg/arrow_row_builder.cc</includedby>
+    <includedby refid="arrow__row__builder__test_8cc" local="yes">iceberg/test/arrow_row_builder_test.cc</includedby>
+    <incdepgraph>
+      <node id="5">
+        <label>iceberg/arrow_c_data.h</label>
+        <link refid="arrow__c__data_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg/arrow_row_builder_internal.h</label>
+        <link refid="arrow__row__builder__internal_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+      </node>
+      <node id="6">
+        <label>iceberg/iceberg_export.h</label>
+        <link refid="iceberg__export_8h_source"/>
+      </node>
+      <node id="7">
+        <label>iceberg/result.h</label>
+        <link refid="result_8h_source"/>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+      </node>
+      <node id="13">
+        <label>iceberg/type_fwd.h</label>
+        <link refid="type__fwd_8h"/>
+      </node>
+      <node id="8">
+        <label>concepts</label>
+      </node>
+      <node id="2">
+        <label>cstdint</label>
+      </node>
+      <node id="9">
+        <label>expected</label>
+      </node>
+      <node id="10">
+        <label>format</label>
+      </node>
+      <node id="11">
+        <label>string</label>
+      </node>
+      <node id="3">
+        <label>string_view</label>
+      </node>
+      <node id="12">
+        <label>type_traits</label>
+      </node>
+      <node id="4">
+        <label>unordered_map</label>
+      </node>
+    </incdepgraph>
+    <invincdepgraph>
+      <node id="1">
+        <label>iceberg/arrow_row_builder_internal.h</label>
+        <link refid="arrow__row__builder__internal_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg/test/arrow_row_builder_test.cc</label>
+        <link refid="arrow__row__builder__test_8cc"/>
+      </node>
+    </invincdepgraph>
+    <innerclass refid="classiceberg_1_1ArrowRowBuilder" prot="public">iceberg::ArrowRowBuilder</innerclass>
+    <innernamespace refid="namespaceiceberg">iceberg</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para>Internal Arrow row-building utilities shared by metadata tables.</para>
+<para>Metadata tables (snapshots, history, manifests, ...) materialize in-memory structures into Arrow batches that conform to the table&apos;s Iceberg schema. <computeroutput>ArrowRowBuilder</computeroutput> wraps a nanoarrow <computeroutput><ref refid="structArrowArray" kindref="compound">ArrowArray</ref></computeroutput> initialized from such a schema and exposes per-column access plus typed append helpers so each metadata table can emit rows without re-implementing the nanoarrow boilerplate. </para>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="comment">/*</highlight></codeline>
+<codeline lineno="2"><highlight class="comment"><sp/>*<sp/>Licensed<sp/>to<sp/>the<sp/>Apache<sp/>Software<sp/>Foundation<sp/>(ASF)<sp/>under<sp/>one</highlight></codeline>
+<codeline lineno="3"><highlight class="comment"><sp/>*<sp/>or<sp/>more<sp/>contributor<sp/>license<sp/>agreements.<sp/><sp/>See<sp/>the<sp/>NOTICE<sp/>file</highlight></codeline>
+<codeline lineno="4"><highlight class="comment"><sp/>*<sp/>distributed<sp/>with<sp/>this<sp/>work<sp/>for<sp/>additional<sp/>information</highlight></codeline>
+<codeline lineno="5"><highlight class="comment"><sp/>*<sp/>regarding<sp/>copyright<sp/>ownership.<sp/><sp/>The<sp/>ASF<sp/>licenses<sp/>this<sp/>file</highlight></codeline>
+<codeline lineno="6"><highlight class="comment"><sp/>*<sp/>to<sp/>you<sp/>under<sp/>the<sp/>Apache<sp/>License,<sp/>Version<sp/>2.0<sp/>(the</highlight></codeline>
+<codeline lineno="7"><highlight class="comment"><sp/>*<sp/>&quot;License&quot;);<sp/>you<sp/>may<sp/>not<sp/>use<sp/>this<sp/>file<sp/>except<sp/>in<sp/>compliance</highlight></codeline>
+<codeline lineno="8"><highlight class="comment"><sp/>*<sp/>with<sp/>the<sp/>License.<sp/><sp/>You<sp/>may<sp/>obtain<sp/>a<sp/>copy<sp/>of<sp/>the<sp/>License<sp/>at</highlight></codeline>
+<codeline lineno="9"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="10"><highlight class="comment"><sp/>*<sp/><sp/><sp/>http://www.apache.org/licenses/LICENSE-2.0</highlight></codeline>
+<codeline lineno="11"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="12"><highlight class="comment"><sp/>*<sp/>Unless<sp/>required<sp/>by<sp/>applicable<sp/>law<sp/>or<sp/>agreed<sp/>to<sp/>in<sp/>writing,</highlight></codeline>
+<codeline lineno="13"><highlight class="comment"><sp/>*<sp/>software<sp/>distributed<sp/>under<sp/>the<sp/>License<sp/>is<sp/>distributed<sp/>on<sp/>an</highlight></codeline>
+<codeline lineno="14"><highlight class="comment"><sp/>*<sp/>&quot;AS<sp/>IS&quot;<sp/>BASIS,<sp/>WITHOUT<sp/>WARRANTIES<sp/>OR<sp/>CONDITIONS<sp/>OF<sp/>ANY</highlight></codeline>
+<codeline lineno="15"><highlight class="comment"><sp/>*<sp/>KIND,<sp/>either<sp/>express<sp/>or<sp/>implied.<sp/><sp/>See<sp/>the<sp/>License<sp/>for<sp/>the</highlight></codeline>
+<codeline lineno="16"><highlight class="comment"><sp/>*<sp/>specific<sp/>language<sp/>governing<sp/>permissions<sp/>and<sp/>limitations</highlight></codeline>
+<codeline lineno="17"><highlight class="comment"><sp/>*<sp/>under<sp/>the<sp/>License.</highlight></codeline>
+<codeline lineno="18"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="19"><highlight class="normal"></highlight></codeline>
+<codeline lineno="20"><highlight class="normal"></highlight><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="21"><highlight class="normal"></highlight></codeline>
+<codeline lineno="31"><highlight class="normal"></highlight></codeline>
+<codeline lineno="32"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;cstdint&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="33"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;string_view&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="34"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;unordered_map&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="35"><highlight class="normal"></highlight></codeline>
+<codeline lineno="36"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="arrow__c__data_8h" kindref="compound">iceberg/arrow_c_data.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="37"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;iceberg/iceberg_export.h&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="38"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;iceberg/result.h&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="39"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="type__fwd_8h" kindref="compound">iceberg/type_fwd.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="40"><highlight class="normal"></highlight></codeline>
+<codeline lineno="41"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">iceberg<sp/>{</highlight></codeline>
+<codeline lineno="42"><highlight class="normal"></highlight></codeline>
+<codeline lineno="63" refid="classiceberg_1_1ArrowRowBuilder" refkind="compound"><highlight class="keyword">class<sp/></highlight><highlight class="normal">ICEBERG_EXPORT<sp/><ref refid="classiceberg_1_1ArrowRowBuilder" kindref="compound">ArrowRowBuilder</ref><sp/>{</highlight></codeline>
+<codeline lineno="64"><highlight class="normal"><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="66"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>Result&lt;ArrowRowBuilder&gt;<sp/>Make(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref>&amp;<sp/>schema);</highlight></codeline>
+<codeline lineno="67"><highlight class="normal"></highlight></codeline>
+<codeline lineno="72"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>Result&lt;ArrowRowBuilder&gt;<sp/>Make(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structArrowSchema" kindref="compound">ArrowSchema</ref>*<sp/>schema);</highlight></codeline>
+<codeline lineno="73"><highlight class="normal"></highlight></codeline>
+<codeline lineno="74"><highlight class="normal"><sp/><sp/><ref refid="classiceberg_1_1ArrowRowBuilder" kindref="compound">ArrowRowBuilder</ref>(<ref refid="classiceberg_1_1ArrowRowBuilder" kindref="compound">ArrowRowBuilder</ref>&amp;&amp;<sp/>other)<sp/></highlight><highlight class="keyword">noexcept</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="75"><highlight class="normal"><sp/><sp/><ref refid="classiceberg_1_1ArrowRowBuilder" kindref="compound">ArrowRowBuilder</ref>&amp;<sp/>operator=(<ref refid="classiceberg_1_1ArrowRowBuilder" kindref="compound">ArrowRowBuilder</ref>&amp;&amp;<sp/>other)<sp/></highlight><highlight class="keyword">noexcept</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="76"><highlight class="normal"></highlight></codeline>
+<codeline lineno="77"><highlight class="normal"><sp/><sp/><ref refid="classiceberg_1_1ArrowRowBuilder" kindref="compound">ArrowRowBuilder</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1ArrowRowBuilder" kindref="compound">ArrowRowBuilder</ref>&amp;)<sp/>=<sp/></highlight><highlight class="keyword">delete</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="78"><highlight class="normal"><sp/><sp/><ref refid="classiceberg_1_1ArrowRowBuilder" kindref="compound">ArrowRowBuilder</ref>&amp;<sp/>operator=(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1ArrowRowBuilder" kindref="compound">ArrowRowBuilder</ref>&amp;)<sp/>=<sp/></highlight><highlight class="keyword">delete</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="79"><highlight class="normal"></highlight></codeline>
+<codeline lineno="80"><highlight class="normal"><sp/><sp/><ref refid="classiceberg_1_1ArrowRowBuilder" kindref="compound">~ArrowRowBuilder</ref>();</highlight></codeline>
+<codeline lineno="81"><highlight class="normal"></highlight></codeline>
+<codeline lineno="83"><highlight class="normal"><sp/><sp/>int64_t<sp/>num_columns()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="84"><highlight class="normal"></highlight></codeline>
+<codeline lineno="88"><highlight class="normal"><sp/><sp/><ref refid="structArrowArray" kindref="compound">ArrowArray</ref>*<sp/>column(int64_t<sp/>index);</highlight></codeline>
+<codeline lineno="89"><highlight class="normal"></highlight></codeline>
+<codeline lineno="93"><highlight class="normal"><sp/><sp/>Status<sp/>FinishRow();</highlight></codeline>
+<codeline lineno="94"><highlight class="normal"></highlight></codeline>
+<codeline lineno="98"><highlight class="normal"><sp/><sp/>Result&lt;ArrowArray&gt;<sp/>Finish()<sp/>&amp;&amp;;</highlight></codeline>
+<codeline lineno="99"><highlight class="normal"></highlight></codeline>
+<codeline lineno="100"><highlight class="normal"><sp/></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="101"><highlight class="normal"><sp/><sp/><ref refid="classiceberg_1_1ArrowRowBuilder" kindref="compound">ArrowRowBuilder</ref>()<sp/>=<sp/></highlight><highlight class="keywordflow">default</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="102"><highlight class="normal"><sp/><sp/><ref refid="structArrowArray" kindref="compound">ArrowArray</ref><sp/>array_{};</highlight></codeline>
+<codeline lineno="103"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="104"><highlight class="normal"></highlight></codeline>
+<codeline lineno="106"><highlight class="normal">ICEBERG_EXPORT<sp/>Status<sp/>AppendNull(<ref refid="structArrowArray" kindref="compound">ArrowArray</ref>*<sp/>array);</highlight></codeline>
+<codeline lineno="107"><highlight class="normal"></highlight></codeline>
+<codeline lineno="109"><highlight class="normal">ICEBERG_EXPORT<sp/>Status<sp/>AppendBoolean(<ref refid="structArrowArray" kindref="compound">ArrowArray</ref>*<sp/>array,<sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>value);</highlight></codeline>
+<codeline lineno="110"><highlight class="normal"></highlight></codeline>
+<codeline lineno="114"><highlight class="normal">ICEBERG_EXPORT<sp/>Status<sp/>AppendInt(<ref refid="structArrowArray" kindref="compound">ArrowArray</ref>*<sp/>array,<sp/>int64_t<sp/>value);</highlight></codeline>
+<codeline lineno="115"><highlight class="normal"></highlight></codeline>
+<codeline lineno="117"><highlight class="normal">ICEBERG_EXPORT<sp/>Status<sp/>AppendString(<ref refid="structArrowArray" kindref="compound">ArrowArray</ref>*<sp/>array,<sp/>std::string_view<sp/>value);</highlight></codeline>
+<codeline lineno="118"><highlight class="normal"></highlight></codeline>
+<codeline lineno="123"><highlight class="normal">ICEBERG_EXPORT<sp/>Status<sp/>AppendStringMap(</highlight></codeline>
+<codeline lineno="124"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structArrowArray" kindref="compound">ArrowArray</ref>*<sp/>array,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::unordered_map&lt;std::string,<sp/>std::string&gt;&amp;<sp/>entries);</highlight></codeline>
+<codeline lineno="125"><highlight class="normal"></highlight></codeline>
+<codeline lineno="126"><highlight class="normal">}<sp/><sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>iceberg</highlight><highlight class="normal"></highlight></codeline>
+    </programlisting>
+    <location file="iceberg/arrow_row_builder_internal.h"/>
+  </compounddef>
+</doxygen>

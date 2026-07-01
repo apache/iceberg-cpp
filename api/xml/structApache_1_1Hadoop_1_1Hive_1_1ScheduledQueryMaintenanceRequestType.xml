@@ -1,0 +1,55 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structApache_1_1Hadoop_1_1Hive_1_1ScheduledQueryMaintenanceRequestType" kind="struct" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::ScheduledQueryMaintenanceRequestType</compoundname>
+    <sectiondef kind="public-type">
+      <memberdef kind="enum" id="structApache_1_1Hadoop_1_1Hive_1_1ScheduledQueryMaintenanceRequestType_1afa7a06d8be517e1d5f1232a5c4e1e24a" prot="public" static="no" strong="no">
+        <type></type>
+        <name>type</name>
+        <qualifiedname>Apache::Hadoop::Hive::ScheduledQueryMaintenanceRequestType::type</qualifiedname>
+        <enumvalue id="structApache_1_1Hadoop_1_1Hive_1_1ScheduledQueryMaintenanceRequestType_1afa7a06d8be517e1d5f1232a5c4e1e24aaf9f695c76bb84985a79a8e3f93d6d1d9" prot="public">
+          <name>CREATE</name>
+          <initializer>= 1</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="structApache_1_1Hadoop_1_1Hive_1_1ScheduledQueryMaintenanceRequestType_1afa7a06d8be517e1d5f1232a5c4e1e24aa5b641eb6ec854cf3393e3bc2cac3c8dd" prot="public">
+          <name>ALTER</name>
+          <initializer>= 2</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="structApache_1_1Hadoop_1_1Hive_1_1ScheduledQueryMaintenanceRequestType_1afa7a06d8be517e1d5f1232a5c4e1e24aa4b85fc32e6ebafc8583fbba9fee4649c" prot="public">
+          <name>DROP</name>
+          <initializer>= 3</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="396" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="396" bodyend="400"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="395" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="395" bodyend="401"/>
+    <listofallmembers>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1ScheduledQueryMaintenanceRequestType_1afa7a06d8be517e1d5f1232a5c4e1e24aa5b641eb6ec854cf3393e3bc2cac3c8dd" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ScheduledQueryMaintenanceRequestType</scope><name>ALTER</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1ScheduledQueryMaintenanceRequestType_1afa7a06d8be517e1d5f1232a5c4e1e24aaf9f695c76bb84985a79a8e3f93d6d1d9" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ScheduledQueryMaintenanceRequestType</scope><name>CREATE</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1ScheduledQueryMaintenanceRequestType_1afa7a06d8be517e1d5f1232a5c4e1e24aa4b85fc32e6ebafc8583fbba9fee4649c" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ScheduledQueryMaintenanceRequestType</scope><name>DROP</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1ScheduledQueryMaintenanceRequestType_1afa7a06d8be517e1d5f1232a5c4e1e24a" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ScheduledQueryMaintenanceRequestType</scope><name>type</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

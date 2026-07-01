@@ -1,0 +1,103 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1TimerResult" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::TimerResult</compoundname>
+    <includes refid="metrics__types_8h" local="no">metrics_types.h</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1TimerResult_1a4bb68053abd651bff544bc904c45ea5b" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::TimerResult::unit</definition>
+        <argsstring></argsstring>
+        <name>unit</name>
+        <qualifiedname>iceberg::TimerResult::unit</qualifiedname>
+        <initializer>{&quot;nanoseconds&quot;}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/metrics_types.h" line="56" column="15" bodyfile="iceberg/metrics/metrics_types.h" bodystart="56" bodyend="56"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1TimerResult_1a031c979941dfdbefa4a30e8bb334d44c" prot="public" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t iceberg::TimerResult::count</definition>
+        <argsstring></argsstring>
+        <name>count</name>
+        <qualifiedname>iceberg::TimerResult::count</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/metrics_types.h" line="57" column="11" bodyfile="iceberg/metrics/metrics_types.h" bodystart="57" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1TimerResult_1a89b175b097f149285b4530daaca12dad" prot="public" static="no" mutable="no">
+        <type>std::chrono::nanoseconds</type>
+        <definition>std::chrono::nanoseconds iceberg::TimerResult::total_duration</definition>
+        <argsstring></argsstring>
+        <name>total_duration</name>
+        <qualifiedname>iceberg::TimerResult::total_duration</qualifiedname>
+        <initializer>{0}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/metrics_types.h" line="58" column="28" bodyfile="iceberg/metrics/metrics_types.h" bodystart="58" bodyend="58"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structiceberg_1_1TimerResult_1a9e2c42fcdfaa46242232f3b026f1e693" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::TimerResult::operator==</definition>
+        <argsstring>(const TimerResult &amp;) const =default</argsstring>
+        <name>operator==</name>
+        <qualifiedname>iceberg::TimerResult::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1TimerResult" kindref="compound">TimerResult</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/metrics_types.h" line="60" column="8"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Serialisable snapshot of a single <ref refid="classiceberg_1_1Timer" kindref="compound">Timer</ref> measurement. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>Carries the unit name, recording count, and total accumulated duration. </para>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::TimerResult</label>
+        <link refid="structiceberg_1_1TimerResult"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>unit</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="2">
+        <label>std::string</label>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/metrics/metrics_types.h" line="54" column="1" bodyfile="iceberg/metrics/metrics_types.h" bodystart="54" bodyend="61"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1TimerResult_1a031c979941dfdbefa4a30e8bb334d44c" prot="public" virt="non-virtual"><scope>iceberg::TimerResult</scope><name>count</name></member>
+      <member refid="structiceberg_1_1TimerResult_1a9e2c42fcdfaa46242232f3b026f1e693" prot="public" virt="non-virtual"><scope>iceberg::TimerResult</scope><name>operator==</name></member>
+      <member refid="structiceberg_1_1TimerResult_1a89b175b097f149285b4530daaca12dad" prot="public" virt="non-virtual"><scope>iceberg::TimerResult</scope><name>total_duration</name></member>
+      <member refid="structiceberg_1_1TimerResult_1a4bb68053abd651bff544bc904c45ea5b" prot="public" virt="non-virtual"><scope>iceberg::TimerResult</scope><name>unit</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

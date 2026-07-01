@@ -1,0 +1,112 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structApache_1_1Hadoop_1_1Hive_1_1__WMNullablePool____isset" kind="struct" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::_WMNullablePool__isset</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__WMNullablePool____isset_1a498bcb16e389d4d4a44912159fbba118" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_WMNullablePool__isset::allocFraction</definition>
+        <argsstring></argsstring>
+        <name>allocFraction</name>
+        <qualifiedname>Apache::Hadoop::Hive::_WMNullablePool__isset::allocFraction</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11039" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="11039" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__WMNullablePool____isset_1a85a692b12178c55888128be782fdcd5a" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_WMNullablePool__isset::queryParallelism</definition>
+        <argsstring></argsstring>
+        <name>queryParallelism</name>
+        <qualifiedname>Apache::Hadoop::Hive::_WMNullablePool__isset::queryParallelism</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11040" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="11040" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__WMNullablePool____isset_1abb0c7ce8d42fbc819a4348642683a9af" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_WMNullablePool__isset::schedulingPolicy</definition>
+        <argsstring></argsstring>
+        <name>schedulingPolicy</name>
+        <qualifiedname>Apache::Hadoop::Hive::_WMNullablePool__isset::schedulingPolicy</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11041" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="11041" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__WMNullablePool____isset_1ae90a87b17cfc160c24383cf218aee375" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_WMNullablePool__isset::isSetSchedulingPolicy</definition>
+        <argsstring></argsstring>
+        <name>isSetSchedulingPolicy</name>
+        <qualifiedname>Apache::Hadoop::Hive::_WMNullablePool__isset::isSetSchedulingPolicy</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11042" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="11042" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__WMNullablePool____isset_1ac03f75e5d5cfa4fd728c6121e8f92de1" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_WMNullablePool__isset::ns</definition>
+        <argsstring></argsstring>
+        <name>ns</name>
+        <qualifiedname>Apache::Hadoop::Hive::_WMNullablePool__isset::ns</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11043" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="11043" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structApache_1_1Hadoop_1_1Hive_1_1__WMNullablePool____isset_1a896622e19b4231b9011e7db6a7598f67" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::_WMNullablePool__isset::_WMNullablePool__isset</definition>
+        <argsstring>()</argsstring>
+        <name>_WMNullablePool__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::_WMNullablePool__isset::_WMNullablePool__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11038" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="11038" bodyend="11038"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="11037" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="11037" bodyend="11044"/>
+    <listofallmembers>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__WMNullablePool____isset_1a896622e19b4231b9011e7db6a7598f67" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_WMNullablePool__isset</scope><name>_WMNullablePool__isset</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__WMNullablePool____isset_1a498bcb16e389d4d4a44912159fbba118" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_WMNullablePool__isset</scope><name>allocFraction</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__WMNullablePool____isset_1ae90a87b17cfc160c24383cf218aee375" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_WMNullablePool__isset</scope><name>isSetSchedulingPolicy</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__WMNullablePool____isset_1ac03f75e5d5cfa4fd728c6121e8f92de1" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_WMNullablePool__isset</scope><name>ns</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__WMNullablePool____isset_1a85a692b12178c55888128be782fdcd5a" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_WMNullablePool__isset</scope><name>queryParallelism</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__WMNullablePool____isset_1abb0c7ce8d42fbc819a4348642683a9af" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_WMNullablePool__isset</scope><name>schedulingPolicy</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,261 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1ClientCapabilities" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::ClientCapabilities</compoundname>
+    <basecompoundref prot="public" virt="virtual">apache::thrift::TBase</basecompoundref>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1ClientCapabilities_1a03e06fb95c1c009047ce718266c8a7db" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; ClientCapability::type &gt;</type>
+        <definition>std::vector&lt;ClientCapability::type&gt; Apache::Hadoop::Hive::ClientCapabilities::values</definition>
+        <argsstring></argsstring>
+        <name>values</name>
+        <qualifiedname>Apache::Hadoop::Hive::ClientCapabilities::values</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10145" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="10145" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ClientCapabilities_1acdc14cec633c1e9369b17e498af85edc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::ClientCapabilities::ClientCapabilities</definition>
+        <argsstring>(const ClientCapabilities &amp;)</argsstring>
+        <name>ClientCapabilities</name>
+        <qualifiedname>Apache::Hadoop::Hive::ClientCapabilities::ClientCapabilities</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ClientCapabilities" kindref="compound">ClientCapabilities</ref> &amp;</type>
+          <defname>other1313</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10140" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="39962" bodyend="39964"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ClientCapabilities_1ab94ad59cded800660fb6634a74d98fcc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1ClientCapabilities" kindref="compound">ClientCapabilities</ref> &amp;</type>
+        <definition>ClientCapabilities &amp; Apache::Hadoop::Hive::ClientCapabilities::operator=</definition>
+        <argsstring>(const ClientCapabilities &amp;)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::ClientCapabilities::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ClientCapabilities" kindref="compound">ClientCapabilities</ref> &amp;</type>
+          <defname>other1314</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10141" column="22" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="39965" bodyend="39968"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ClientCapabilities_1a46f237f6a8134af60d059c37beffbfcb" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::ClientCapabilities::ClientCapabilities</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>ClientCapabilities</name>
+        <qualifiedname>Apache::Hadoop::Hive::ClientCapabilities::ClientCapabilities</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10142" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="39857" bodyend="39858"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ClientCapabilities_1aa5ecdf56094d030f69fec4ec5d2977fc" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::ClientCapabilities::~ClientCapabilities</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~ClientCapabilities</name>
+        <qualifiedname>Apache::Hadoop::Hive::ClientCapabilities::~ClientCapabilities</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10144" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="39854" bodyend="39855"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ClientCapabilities_1a7c8e9b979448b92d0922d8e95d8ef3bb" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::ClientCapabilities::__set_values</definition>
+        <argsstring>(const std::vector&lt; ClientCapability::type &gt; &amp;val)</argsstring>
+        <name>__set_values</name>
+        <qualifiedname>Apache::Hadoop::Hive::ClientCapabilities::__set_values</qualifiedname>
+        <param>
+          <type>const std::vector&lt; ClientCapability::type &gt; &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10147" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="39860" bodyend="39862"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ClientCapabilities_1a47c3b1e486d44377abfee5cc5bd5f3b1" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::ClientCapabilities::operator==</definition>
+        <argsstring>(const ClientCapabilities &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::ClientCapabilities::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ClientCapabilities" kindref="compound">ClientCapabilities</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10149" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="39955" bodyend="39960"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ClientCapabilities_1ac4708fc98ddf283075b048b1b3b20648" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::ClientCapabilities::operator!=</definition>
+        <argsstring>(const ClientCapabilities &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::ClientCapabilities::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ClientCapabilities" kindref="compound">ClientCapabilities</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10150" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="10150" bodyend="10152"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ClientCapabilities_1a55d2fdca6cd4673d878fc7e1b59cc7e4" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::ClientCapabilities::operator&lt;</definition>
+        <argsstring>(const ClientCapabilities &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::ClientCapabilities::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1ClientCapabilities" kindref="compound">ClientCapabilities</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10154" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ClientCapabilities_1a4f053446595ba54dfc2d80168cdd8ffe" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::ClientCapabilities::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot) override</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::ClientCapabilities::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10156" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="39870" bodyend="39926"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ClientCapabilities_1af07dbc34078ca857731b928ba2557810" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::ClientCapabilities::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const override</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::ClientCapabilities::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10157" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="39928" bodyend="39948"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1ClientCapabilities_1a8dd4929fdc572724ac2a2ce8a0ae32fc" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::ClientCapabilities::printTo</definition>
+        <argsstring>(std::ostream &amp;out) const</argsstring>
+        <name>printTo</name>
+        <qualifiedname>Apache::Hadoop::Hive::ClientCapabilities::printTo</qualifiedname>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10159" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="39969" bodyend="39974"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::ClientCapabilities</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1ClientCapabilities"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::ClientCapabilities</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1ClientCapabilities"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>values</edgelabel>
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+      <node id="3">
+        <label>std::vector&lt; ClientCapability::type &gt;</label>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="10137" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="10137" bodyend="10160"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ClientCapabilities_1a7c8e9b979448b92d0922d8e95d8ef3bb" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ClientCapabilities</scope><name>__set_values</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ClientCapabilities_1acdc14cec633c1e9369b17e498af85edc" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ClientCapabilities</scope><name>ClientCapabilities</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ClientCapabilities_1a46f237f6a8134af60d059c37beffbfcb" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ClientCapabilities</scope><name>ClientCapabilities</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ClientCapabilities_1ac4708fc98ddf283075b048b1b3b20648" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ClientCapabilities</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ClientCapabilities_1a55d2fdca6cd4673d878fc7e1b59cc7e4" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ClientCapabilities</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ClientCapabilities_1ab94ad59cded800660fb6634a74d98fcc" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ClientCapabilities</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ClientCapabilities_1a47c3b1e486d44377abfee5cc5bd5f3b1" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ClientCapabilities</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ClientCapabilities_1a8dd4929fdc572724ac2a2ce8a0ae32fc" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::ClientCapabilities</scope><name>printTo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ClientCapabilities_1a4f053446595ba54dfc2d80168cdd8ffe" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ClientCapabilities</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ClientCapabilities_1a03e06fb95c1c009047ce718266c8a7db" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ClientCapabilities</scope><name>values</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ClientCapabilities_1af07dbc34078ca857731b928ba2557810" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::ClientCapabilities</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1ClientCapabilities_1aa5ecdf56094d030f69fec4ec5d2977fc" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::ClientCapabilities</scope><name>~ClientCapabilities</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

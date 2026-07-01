@@ -1,0 +1,156 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="hive__metastore__constants_8h" kind="file" language="C++">
+    <compoundname>hive_metastore_constants.h</compoundname>
+    <includes refid="hive__metastore__types_8h" local="yes">hive_metastore_types.h</includes>
+    <includedby refid="hive__metastore__constants_8cpp" local="yes">iceberg/catalog/hive/gen-cpp/hive_metastore_constants.cpp</includedby>
+    <incdepgraph>
+      <node id="11">
+        <label>fb303_types.h</label>
+        <link refid="fb303__types_8h_source"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg/catalog/hive/gen-cpp/hive_metastore_constants.h</label>
+        <link refid="hive__metastore__constants_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>hive_metastore_types.h</label>
+        <link refid="hive__metastore__types_8h_source"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+      </node>
+      <node id="9">
+        <label>functional</label>
+      </node>
+      <node id="3">
+        <label>iosfwd</label>
+      </node>
+      <node id="10">
+        <label>memory</label>
+      </node>
+      <node id="5">
+        <label>thrift/TApplicationException.h</label>
+      </node>
+      <node id="6">
+        <label>thrift/TBase.h</label>
+      </node>
+      <node id="4">
+        <label>thrift/Thrift.h</label>
+      </node>
+      <node id="7">
+        <label>thrift/protocol/TProtocol.h</label>
+      </node>
+      <node id="8">
+        <label>thrift/transport/TTransport.h</label>
+      </node>
+    </incdepgraph>
+    <innerclass refid="classApache_1_1Hadoop_1_1Hive_1_1hive__metastoreConstants" prot="public">Apache::Hadoop::Hive::hive_metastoreConstants</innerclass>
+    <innernamespace refid="namespaceApache">Apache</innernamespace>
+    <innernamespace refid="namespaceApache_1_1Hadoop">Apache::Hadoop</innernamespace>
+    <innernamespace refid="namespaceApache_1_1Hadoop_1_1Hive">Apache::Hadoop::Hive</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="normal"></highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight><highlight class="preprocessor">#ifndef<sp/>hive_metastore_CONSTANTS_H</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>hive_metastore_CONSTANTS_H</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;hive_metastore_types.h&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="11"><highlight class="normal"></highlight></codeline>
+<codeline lineno="12"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespaceApache" kindref="compound">Apache</ref><sp/>{<sp/></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">Hadoop<sp/>{<sp/></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">Hive<sp/>{</highlight></codeline>
+<codeline lineno="13"><highlight class="normal"></highlight></codeline>
+<codeline lineno="14" refid="classApache_1_1Hadoop_1_1Hive_1_1hive__metastoreConstants" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classApache_1_1Hadoop_1_1Hive_1_1hive__metastoreConstants" kindref="compound">hive_metastoreConstants</ref><sp/>{</highlight></codeline>
+<codeline lineno="15"><highlight class="normal"><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="16"><highlight class="normal"><sp/><sp/><ref refid="classApache_1_1Hadoop_1_1Hive_1_1hive__metastoreConstants" kindref="compound">hive_metastoreConstants</ref>();</highlight></codeline>
+<codeline lineno="17"><highlight class="normal"></highlight></codeline>
+<codeline lineno="18"><highlight class="normal"><sp/><sp/>std::string<sp/>DDL_TIME;</highlight></codeline>
+<codeline lineno="19"><highlight class="normal"><sp/><sp/>int8_t<sp/>ACCESSTYPE_NONE;</highlight></codeline>
+<codeline lineno="20"><highlight class="normal"><sp/><sp/>int8_t<sp/>ACCESSTYPE_READONLY;</highlight></codeline>
+<codeline lineno="21"><highlight class="normal"><sp/><sp/>int8_t<sp/>ACCESSTYPE_WRITEONLY;</highlight></codeline>
+<codeline lineno="22"><highlight class="normal"><sp/><sp/>int8_t<sp/>ACCESSTYPE_READWRITE;</highlight></codeline>
+<codeline lineno="23"><highlight class="normal"><sp/><sp/>std::string<sp/>HIVE_FILTER_FIELD_OWNER;</highlight></codeline>
+<codeline lineno="24"><highlight class="normal"><sp/><sp/>std::string<sp/>HIVE_FILTER_FIELD_PARAMS;</highlight></codeline>
+<codeline lineno="25"><highlight class="normal"><sp/><sp/>std::string<sp/>HIVE_FILTER_FIELD_LAST_ACCESS;</highlight></codeline>
+<codeline lineno="26"><highlight class="normal"><sp/><sp/>std::string<sp/>HIVE_FILTER_FIELD_TABLE_NAME;</highlight></codeline>
+<codeline lineno="27"><highlight class="normal"><sp/><sp/>std::string<sp/>HIVE_FILTER_FIELD_TABLE_TYPE;</highlight></codeline>
+<codeline lineno="28"><highlight class="normal"><sp/><sp/>std::string<sp/>IS_ARCHIVED;</highlight></codeline>
+<codeline lineno="29"><highlight class="normal"><sp/><sp/>std::string<sp/>ORIGINAL_LOCATION;</highlight></codeline>
+<codeline lineno="30"><highlight class="normal"><sp/><sp/>std::string<sp/>IS_IMMUTABLE;</highlight></codeline>
+<codeline lineno="31"><highlight class="normal"><sp/><sp/>std::string<sp/>META_TABLE_COLUMNS;</highlight></codeline>
+<codeline lineno="32"><highlight class="normal"><sp/><sp/>std::string<sp/>META_TABLE_COLUMN_TYPES;</highlight></codeline>
+<codeline lineno="33"><highlight class="normal"><sp/><sp/>std::string<sp/>BUCKET_FIELD_NAME;</highlight></codeline>
+<codeline lineno="34"><highlight class="normal"><sp/><sp/>std::string<sp/>BUCKET_COUNT;</highlight></codeline>
+<codeline lineno="35"><highlight class="normal"><sp/><sp/>std::string<sp/>FIELD_TO_DIMENSION;</highlight></codeline>
+<codeline lineno="36"><highlight class="normal"><sp/><sp/>std::string<sp/>IF_PURGE;</highlight></codeline>
+<codeline lineno="37"><highlight class="normal"><sp/><sp/>std::string<sp/>META_TABLE_NAME;</highlight></codeline>
+<codeline lineno="38"><highlight class="normal"><sp/><sp/>std::string<sp/>META_TABLE_DB;</highlight></codeline>
+<codeline lineno="39"><highlight class="normal"><sp/><sp/>std::string<sp/>META_TABLE_LOCATION;</highlight></codeline>
+<codeline lineno="40"><highlight class="normal"><sp/><sp/>std::string<sp/>META_TABLE_SERDE;</highlight></codeline>
+<codeline lineno="41"><highlight class="normal"><sp/><sp/>std::string<sp/>META_TABLE_PARTITION_COLUMNS;</highlight></codeline>
+<codeline lineno="42"><highlight class="normal"><sp/><sp/>std::string<sp/>META_TABLE_PARTITION_COLUMN_TYPES;</highlight></codeline>
+<codeline lineno="43"><highlight class="normal"><sp/><sp/>std::string<sp/>FILE_INPUT_FORMAT;</highlight></codeline>
+<codeline lineno="44"><highlight class="normal"><sp/><sp/>std::string<sp/>FILE_OUTPUT_FORMAT;</highlight></codeline>
+<codeline lineno="45"><highlight class="normal"><sp/><sp/>std::string<sp/>META_TABLE_STORAGE;</highlight></codeline>
+<codeline lineno="46"><highlight class="normal"><sp/><sp/>std::string<sp/>TABLE_IS_TRANSACTIONAL;</highlight></codeline>
+<codeline lineno="47"><highlight class="normal"><sp/><sp/>std::string<sp/>NO_AUTO_COMPACT;</highlight></codeline>
+<codeline lineno="48"><highlight class="normal"><sp/><sp/>std::string<sp/>TABLE_TRANSACTIONAL_PROPERTIES;</highlight></codeline>
+<codeline lineno="49"><highlight class="normal"><sp/><sp/>std::string<sp/>TABLE_BUCKETING_VERSION;</highlight></codeline>
+<codeline lineno="50"><highlight class="normal"><sp/><sp/>std::string<sp/>DRUID_CONFIG_PREFIX;</highlight></codeline>
+<codeline lineno="51"><highlight class="normal"><sp/><sp/>std::string<sp/>JDBC_CONFIG_PREFIX;</highlight></codeline>
+<codeline lineno="52"><highlight class="normal"><sp/><sp/>std::string<sp/>TABLE_IS_CTAS;</highlight></codeline>
+<codeline lineno="53"><highlight class="normal"><sp/><sp/>std::string<sp/>TABLE_IS_CTLT;</highlight></codeline>
+<codeline lineno="54"><highlight class="normal"><sp/><sp/>std::string<sp/>PARTITION_TRANSFORM_SPEC;</highlight></codeline>
+<codeline lineno="55"><highlight class="normal"><sp/><sp/>std::string<sp/>NO_CLEANUP;</highlight></codeline>
+<codeline lineno="56"><highlight class="normal"><sp/><sp/>std::string<sp/>CTAS_LEGACY_CONFIG;</highlight></codeline>
+<codeline lineno="57"><highlight class="normal"><sp/><sp/>std::string<sp/>DEFAULT_TABLE_TYPE;</highlight></codeline>
+<codeline lineno="58"><highlight class="normal"><sp/><sp/>std::string<sp/>TXN_ID;</highlight></codeline>
+<codeline lineno="59"><highlight class="normal"><sp/><sp/>std::string<sp/>WRITE_ID;</highlight></codeline>
+<codeline lineno="60"><highlight class="normal"><sp/><sp/>std::string<sp/>EXPECTED_PARAMETER_KEY;</highlight></codeline>
+<codeline lineno="61"><highlight class="normal"><sp/><sp/>std::string<sp/>EXPECTED_PARAMETER_VALUE;</highlight></codeline>
+<codeline lineno="62"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="63"><highlight class="normal"></highlight></codeline>
+<codeline lineno="64"><highlight class="normal"></highlight><highlight class="keyword">extern</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classApache_1_1Hadoop_1_1Hive_1_1hive__metastoreConstants" kindref="compound">hive_metastoreConstants</ref><sp/>g_hive_metastore_constants;</highlight></codeline>
+<codeline lineno="65"><highlight class="normal"></highlight></codeline>
+<codeline lineno="66"><highlight class="normal">}}}<sp/></highlight><highlight class="comment">//<sp/>namespace</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="67"><highlight class="normal"></highlight></codeline>
+<codeline lineno="68"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight></codeline>
+    </programlisting>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_constants.h"/>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,306 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classApache_1_1Hadoop_1_1Hive_1_1CompactionMetricsDataResponse" kind="class" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::CompactionMetricsDataResponse</compoundname>
+    <basecompoundref prot="public" virt="virtual">apache::thrift::TBase</basecompoundref>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1CompactionMetricsDataResponse_1acf0bd232cc008221d39640ff3541fca1" prot="public" static="no" mutable="no">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionMetricsDataStruct" kindref="compound">CompactionMetricsDataStruct</ref></type>
+        <definition>CompactionMetricsDataStruct Apache::Hadoop::Hive::CompactionMetricsDataResponse::data</definition>
+        <argsstring></argsstring>
+        <name>data</name>
+        <qualifiedname>Apache::Hadoop::Hive::CompactionMetricsDataResponse::data</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8423" column="31" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="8423" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classApache_1_1Hadoop_1_1Hive_1_1CompactionMetricsDataResponse_1ab07ef6ecd3bf64fb34c98998b9b631d1" prot="public" static="no" mutable="no">
+        <type><ref refid="structApache_1_1Hadoop_1_1Hive_1_1__CompactionMetricsDataResponse____isset" kindref="compound">_CompactionMetricsDataResponse__isset</ref></type>
+        <definition>_CompactionMetricsDataResponse__isset Apache::Hadoop::Hive::CompactionMetricsDataResponse::__isset</definition>
+        <argsstring></argsstring>
+        <name>__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::CompactionMetricsDataResponse::__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8425" column="41" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="8425" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CompactionMetricsDataResponse_1a6be29a0c753155292ca6eed313f3c72e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::CompactionMetricsDataResponse::CompactionMetricsDataResponse</definition>
+        <argsstring>(const CompactionMetricsDataResponse &amp;)</argsstring>
+        <name>CompactionMetricsDataResponse</name>
+        <qualifiedname>Apache::Hadoop::Hive::CompactionMetricsDataResponse::CompactionMetricsDataResponse</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionMetricsDataResponse" kindref="compound">CompactionMetricsDataResponse</ref> &amp;</type>
+          <defname>other1044</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8418" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="32561" bodyend="32564"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CompactionMetricsDataResponse_1aaddbd42aceb4e8efc323fb43c00b934a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionMetricsDataResponse" kindref="compound">CompactionMetricsDataResponse</ref> &amp;</type>
+        <definition>CompactionMetricsDataResponse &amp; Apache::Hadoop::Hive::CompactionMetricsDataResponse::operator=</definition>
+        <argsstring>(const CompactionMetricsDataResponse &amp;)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>Apache::Hadoop::Hive::CompactionMetricsDataResponse::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionMetricsDataResponse" kindref="compound">CompactionMetricsDataResponse</ref> &amp;</type>
+          <defname>other1045</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8419" column="33" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="32565" bodyend="32569"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CompactionMetricsDataResponse_1a3db41146862d689329359ca8166fa546" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::CompactionMetricsDataResponse::CompactionMetricsDataResponse</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>CompactionMetricsDataResponse</name>
+        <qualifiedname>Apache::Hadoop::Hive::CompactionMetricsDataResponse::CompactionMetricsDataResponse</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8420" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="32476" bodyend="32477"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CompactionMetricsDataResponse_1a29045614c926e65df0c1ddf06854d59e" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::CompactionMetricsDataResponse::~CompactionMetricsDataResponse</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~CompactionMetricsDataResponse</name>
+        <qualifiedname>Apache::Hadoop::Hive::CompactionMetricsDataResponse::~CompactionMetricsDataResponse</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8422" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="32473" bodyend="32474"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CompactionMetricsDataResponse_1ac3e276e20a03bf5b61c99d3d9f3f98ef" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::CompactionMetricsDataResponse::__set_data</definition>
+        <argsstring>(const CompactionMetricsDataStruct &amp;val)</argsstring>
+        <name>__set_data</name>
+        <qualifiedname>Apache::Hadoop::Hive::CompactionMetricsDataResponse::__set_data</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionMetricsDataStruct" kindref="compound">CompactionMetricsDataStruct</ref> &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8427" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="32479" bodyend="32482"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CompactionMetricsDataResponse_1a3ca2698e4ede54edab2246ef9b71ba88" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::CompactionMetricsDataResponse::operator==</definition>
+        <argsstring>(const CompactionMetricsDataResponse &amp;rhs) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>Apache::Hadoop::Hive::CompactionMetricsDataResponse::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionMetricsDataResponse" kindref="compound">CompactionMetricsDataResponse</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8429" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="32552" bodyend="32559"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CompactionMetricsDataResponse_1ad462c48db03b28483b0c08a18f47fa56" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::CompactionMetricsDataResponse::operator!=</definition>
+        <argsstring>(const CompactionMetricsDataResponse &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>Apache::Hadoop::Hive::CompactionMetricsDataResponse::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionMetricsDataResponse" kindref="compound">CompactionMetricsDataResponse</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8430" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="8430" bodyend="8432"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CompactionMetricsDataResponse_1a9e55e67ebf577f303a7b7a04e952685a" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::CompactionMetricsDataResponse::operator&lt;</definition>
+        <argsstring>(const CompactionMetricsDataResponse &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>Apache::Hadoop::Hive::CompactionMetricsDataResponse::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionMetricsDataResponse" kindref="compound">CompactionMetricsDataResponse</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8434" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CompactionMetricsDataResponse_1a11ba7792131d7ef58485165177ee4deb" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::CompactionMetricsDataResponse::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot) override</argsstring>
+        <name>read</name>
+        <qualifiedname>Apache::Hadoop::Hive::CompactionMetricsDataResponse::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8436" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="32490" bodyend="32529"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CompactionMetricsDataResponse_1a8fe5ca029501933853dfcf18521a7fda" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t Apache::Hadoop::Hive::CompactionMetricsDataResponse::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const override</argsstring>
+        <name>write</name>
+        <qualifiedname>Apache::Hadoop::Hive::CompactionMetricsDataResponse::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8437" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="32531" bodyend="32544"/>
+      </memberdef>
+      <memberdef kind="function" id="classApache_1_1Hadoop_1_1Hive_1_1CompactionMetricsDataResponse_1a45d1d5a4fc44296ae519c3ff023d4f59" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void Apache::Hadoop::Hive::CompactionMetricsDataResponse::printTo</definition>
+        <argsstring>(std::ostream &amp;out) const</argsstring>
+        <name>printTo</name>
+        <qualifiedname>Apache::Hadoop::Hive::CompactionMetricsDataResponse::printTo</qualifiedname>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>out</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8439" column="16" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.cpp" bodystart="32570" bodyend="32575"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::CompactionMetricsDataResponse</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionMetricsDataResponse"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>Apache::Hadoop::Hive::CompactionMetricsDataResponse</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionMetricsDataResponse"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>data</edgelabel>
+        </childnode>
+        <childnode refid="7" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>Apache::Hadoop::Hive::CompactionMetricsDataStruct</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionMetricsDataStruct"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>dbname</edgelabel>
+          <edgelabel>partitionname</edgelabel>
+          <edgelabel>tblname</edgelabel>
+        </childnode>
+        <childnode refid="6" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="7">
+        <label>Apache::Hadoop::Hive::_CompactionMetricsDataResponse__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__CompactionMetricsDataResponse____isset"/>
+      </node>
+      <node id="6">
+        <label>Apache::Hadoop::Hive::_CompactionMetricsDataStruct__isset</label>
+        <link refid="structApache_1_1Hadoop_1_1Hive_1_1__CompactionMetricsDataStruct____isset"/>
+      </node>
+      <node id="2">
+        <label>apache::thrift::TBase</label>
+      </node>
+      <node id="5">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="4">
+        <label>std::string</label>
+        <childnode refid="5" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="8415" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="8415" bodyend="8440"/>
+    <listofallmembers>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionMetricsDataResponse_1ab07ef6ecd3bf64fb34c98998b9b631d1" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CompactionMetricsDataResponse</scope><name>__isset</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionMetricsDataResponse_1ac3e276e20a03bf5b61c99d3d9f3f98ef" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CompactionMetricsDataResponse</scope><name>__set_data</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionMetricsDataResponse_1a6be29a0c753155292ca6eed313f3c72e" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CompactionMetricsDataResponse</scope><name>CompactionMetricsDataResponse</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionMetricsDataResponse_1a3db41146862d689329359ca8166fa546" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CompactionMetricsDataResponse</scope><name>CompactionMetricsDataResponse</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionMetricsDataResponse_1acf0bd232cc008221d39640ff3541fca1" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CompactionMetricsDataResponse</scope><name>data</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionMetricsDataResponse_1ad462c48db03b28483b0c08a18f47fa56" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CompactionMetricsDataResponse</scope><name>operator!=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionMetricsDataResponse_1a9e55e67ebf577f303a7b7a04e952685a" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CompactionMetricsDataResponse</scope><name>operator&lt;</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionMetricsDataResponse_1aaddbd42aceb4e8efc323fb43c00b934a" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CompactionMetricsDataResponse</scope><name>operator=</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionMetricsDataResponse_1a3ca2698e4ede54edab2246ef9b71ba88" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CompactionMetricsDataResponse</scope><name>operator==</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionMetricsDataResponse_1a45d1d5a4fc44296ae519c3ff023d4f59" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::CompactionMetricsDataResponse</scope><name>printTo</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionMetricsDataResponse_1a11ba7792131d7ef58485165177ee4deb" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CompactionMetricsDataResponse</scope><name>read</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionMetricsDataResponse_1a8fe5ca029501933853dfcf18521a7fda" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::CompactionMetricsDataResponse</scope><name>write</name></member>
+      <member refid="classApache_1_1Hadoop_1_1Hive_1_1CompactionMetricsDataResponse_1a29045614c926e65df0c1ddf06854d59e" prot="public" virt="virtual"><scope>Apache::Hadoop::Hive::CompactionMetricsDataResponse</scope><name>~CompactionMetricsDataResponse</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

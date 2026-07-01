@@ -1,0 +1,94 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classfacebook_1_1fb303_1_1FacebookService__aliveSince__presult" kind="class" language="C++" prot="public">
+    <compoundname>facebook::fb303::FacebookService_aliveSince_presult</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classfacebook_1_1fb303_1_1FacebookService__aliveSince__presult_1a0dd006984768d5cbe5fa7dcead75bf78" prot="public" static="no" mutable="no">
+        <type>int64_t *</type>
+        <definition>int64_t* facebook::fb303::FacebookService_aliveSince_presult::success</definition>
+        <argsstring></argsstring>
+        <name>success</name>
+        <qualifiedname>facebook::fb303::FacebookService_aliveSince_presult::success</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="1108" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.h" bodystart="1108" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classfacebook_1_1fb303_1_1FacebookService__aliveSince__presult_1a873de617380f75c23d0c7dc785ddb7d8" prot="public" static="no" mutable="no">
+        <type><ref refid="structfacebook_1_1fb303_1_1__FacebookService__aliveSince__presult____isset" kindref="compound">_FacebookService_aliveSince_presult__isset</ref></type>
+        <definition>_FacebookService_aliveSince_presult__isset facebook::fb303::FacebookService_aliveSince_presult::__isset</definition>
+        <argsstring></argsstring>
+        <name>__isset</name>
+        <qualifiedname>facebook::fb303::FacebookService_aliveSince_presult::__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="1110" column="46" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.h" bodystart="1110" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookService__aliveSince__presult_1a6787ad97bd7eeec9dc73cfed6b1f50d2" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>facebook::fb303::FacebookService_aliveSince_presult::~FacebookService_aliveSince_presult</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~FacebookService_aliveSince_presult</name>
+        <qualifiedname>facebook::fb303::FacebookService_aliveSince_presult::~FacebookService_aliveSince_presult</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="1107" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.cpp" bodystart="2000" bodyend="2001"/>
+      </memberdef>
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookService__aliveSince__presult_1a92d460862ad6e15fbe6e335f8d3d81fd" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t facebook::fb303::FacebookService_aliveSince_presult::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot)</argsstring>
+        <name>read</name>
+        <qualifiedname>facebook::fb303::FacebookService_aliveSince_presult::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="1112" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.cpp" bodystart="2004" bodyend="2043"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>facebook::fb303::FacebookService_aliveSince_presult</label>
+        <link refid="classfacebook_1_1fb303_1_1FacebookService__aliveSince__presult"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>__isset</edgelabel>
+        </childnode>
+      </node>
+      <node id="2">
+        <label>facebook::fb303::_FacebookService_aliveSince_presult__isset</label>
+        <link refid="structfacebook_1_1fb303_1_1__FacebookService__aliveSince__presult____isset"/>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="1103" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.h" bodystart="1103" bodyend="1114"/>
+    <listofallmembers>
+      <member refid="classfacebook_1_1fb303_1_1FacebookService__aliveSince__presult_1a873de617380f75c23d0c7dc785ddb7d8" prot="public" virt="non-virtual"><scope>facebook::fb303::FacebookService_aliveSince_presult</scope><name>__isset</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookService__aliveSince__presult_1a92d460862ad6e15fbe6e335f8d3d81fd" prot="public" virt="non-virtual"><scope>facebook::fb303::FacebookService_aliveSince_presult</scope><name>read</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookService__aliveSince__presult_1a0dd006984768d5cbe5fa7dcead75bf78" prot="public" virt="non-virtual"><scope>facebook::fb303::FacebookService_aliveSince_presult</scope><name>success</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookService__aliveSince__presult_1a6787ad97bd7eeec9dc73cfed6b1f50d2" prot="public" virt="virtual"><scope>facebook::fb303::FacebookService_aliveSince_presult</scope><name>~FacebookService_aliveSince_presult</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

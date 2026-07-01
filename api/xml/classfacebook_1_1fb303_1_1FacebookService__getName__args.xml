@@ -1,0 +1,174 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classfacebook_1_1fb303_1_1FacebookService__getName__args" kind="class" language="C++" prot="public">
+    <compoundname>facebook::fb303::FacebookService_getName_args</compoundname>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookService__getName__args_1a55fe985e409cd3206e3a0dda91192206" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>facebook::fb303::FacebookService_getName_args::FacebookService_getName_args</definition>
+        <argsstring>(const FacebookService_getName_args &amp;) noexcept</argsstring>
+        <name>FacebookService_getName_args</name>
+        <qualifiedname>facebook::fb303::FacebookService_getName_args::FacebookService_getName_args</qualifiedname>
+        <param>
+          <type>const <ref refid="classfacebook_1_1fb303_1_1FacebookService__getName__args" kindref="compound">FacebookService_getName_args</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="181" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookService__getName__args_1ad7008881bd13dddf150a87131bf049ed" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type><ref refid="classfacebook_1_1fb303_1_1FacebookService__getName__args" kindref="compound">FacebookService_getName_args</ref> &amp;</type>
+        <definition>FacebookService_getName_args &amp; facebook::fb303::FacebookService_getName_args::operator=</definition>
+        <argsstring>(const FacebookService_getName_args &amp;) noexcept</argsstring>
+        <name>operator=</name>
+        <qualifiedname>facebook::fb303::FacebookService_getName_args::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classfacebook_1_1fb303_1_1FacebookService__getName__args" kindref="compound">FacebookService_getName_args</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="182" column="32"/>
+      </memberdef>
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookService__getName__args_1a7a5c20b614372954a9b8ec9a405fe37f" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>facebook::fb303::FacebookService_getName_args::FacebookService_getName_args</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>FacebookService_getName_args</name>
+        <qualifiedname>facebook::fb303::FacebookService_getName_args::FacebookService_getName_args</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="183" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.cpp" bodystart="15" bodyend="16"/>
+      </memberdef>
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookService__getName__args_1a81cc902b75ffb97ef1bb977aaf68c04d" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="virtual">
+        <type></type>
+        <definition>facebook::fb303::FacebookService_getName_args::~FacebookService_getName_args</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~FacebookService_getName_args</name>
+        <qualifiedname>facebook::fb303::FacebookService_getName_args::~FacebookService_getName_args</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="185" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.cpp" bodystart="12" bodyend="13"/>
+      </memberdef>
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookService__getName__args_1a19eb7addea194ab5da6fcb246a3bc299" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool facebook::fb303::FacebookService_getName_args::operator==</definition>
+        <argsstring>(const FacebookService_getName_args &amp;) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>facebook::fb303::FacebookService_getName_args::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classfacebook_1_1fb303_1_1FacebookService__getName__args" kindref="compound">FacebookService_getName_args</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="187" column="8"/>
+      </memberdef>
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookService__getName__args_1adbb8739c1ffa322b2e50c274e917bdff" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool facebook::fb303::FacebookService_getName_args::operator!=</definition>
+        <argsstring>(const FacebookService_getName_args &amp;rhs) const</argsstring>
+        <name>operator!=</name>
+        <qualifiedname>facebook::fb303::FacebookService_getName_args::operator!=</qualifiedname>
+        <param>
+          <type>const <ref refid="classfacebook_1_1fb303_1_1FacebookService__getName__args" kindref="compound">FacebookService_getName_args</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="188" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.h" bodystart="188" bodyend="190"/>
+      </memberdef>
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookService__getName__args_1afb1675b1f5ca19d8ba39ef3e5563569e" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool facebook::fb303::FacebookService_getName_args::operator&lt;</definition>
+        <argsstring>(const FacebookService_getName_args &amp;) const</argsstring>
+        <name>operator&lt;</name>
+        <qualifiedname>facebook::fb303::FacebookService_getName_args::operator&lt;</qualifiedname>
+        <param>
+          <type>const <ref refid="classfacebook_1_1fb303_1_1FacebookService__getName__args" kindref="compound">FacebookService_getName_args</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="192" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookService__getName__args_1ad2b0dfbb203dac079ce61a040bf2b519" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t facebook::fb303::FacebookService_getName_args::read</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *iprot)</argsstring>
+        <name>read</name>
+        <qualifiedname>facebook::fb303::FacebookService_getName_args::read</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>iprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="194" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.cpp" bodystart="18" bodyend="44"/>
+      </memberdef>
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookService__getName__args_1aee3ffb31afcfd015f33922c30c3470ef" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t facebook::fb303::FacebookService_getName_args::write</definition>
+        <argsstring>(::apache::thrift::protocol::TProtocol *oprot) const</argsstring>
+        <name>write</name>
+        <qualifiedname>facebook::fb303::FacebookService_getName_args::write</qualifiedname>
+        <param>
+          <type>::apache::thrift::protocol::TProtocol *</type>
+          <declname>oprot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="195" column="12" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.cpp" bodystart="46" bodyend="54"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="178" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.h" bodystart="178" bodyend="197"/>
+    <listofallmembers>
+      <member refid="classfacebook_1_1fb303_1_1FacebookService__getName__args_1a55fe985e409cd3206e3a0dda91192206" prot="public" virt="non-virtual"><scope>facebook::fb303::FacebookService_getName_args</scope><name>FacebookService_getName_args</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookService__getName__args_1a7a5c20b614372954a9b8ec9a405fe37f" prot="public" virt="non-virtual"><scope>facebook::fb303::FacebookService_getName_args</scope><name>FacebookService_getName_args</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookService__getName__args_1adbb8739c1ffa322b2e50c274e917bdff" prot="public" virt="non-virtual"><scope>facebook::fb303::FacebookService_getName_args</scope><name>operator!=</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookService__getName__args_1afb1675b1f5ca19d8ba39ef3e5563569e" prot="public" virt="non-virtual"><scope>facebook::fb303::FacebookService_getName_args</scope><name>operator&lt;</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookService__getName__args_1ad7008881bd13dddf150a87131bf049ed" prot="public" virt="non-virtual"><scope>facebook::fb303::FacebookService_getName_args</scope><name>operator=</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookService__getName__args_1a19eb7addea194ab5da6fcb246a3bc299" prot="public" virt="non-virtual"><scope>facebook::fb303::FacebookService_getName_args</scope><name>operator==</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookService__getName__args_1ad2b0dfbb203dac079ce61a040bf2b519" prot="public" virt="non-virtual"><scope>facebook::fb303::FacebookService_getName_args</scope><name>read</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookService__getName__args_1aee3ffb31afcfd015f33922c30c3470ef" prot="public" virt="non-virtual"><scope>facebook::fb303::FacebookService_getName_args</scope><name>write</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookService__getName__args_1a81cc902b75ffb97ef1bb977aaf68c04d" prot="public" virt="virtual"><scope>facebook::fb303::FacebookService_getName_args</scope><name>~FacebookService_getName_args</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

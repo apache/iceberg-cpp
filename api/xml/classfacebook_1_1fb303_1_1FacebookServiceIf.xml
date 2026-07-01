@@ -1,0 +1,461 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classfacebook_1_1fb303_1_1FacebookServiceIf" kind="class" language="C++" prot="public" abstract="yes">
+    <compoundname>facebook::fb303::FacebookServiceIf</compoundname>
+    <derivedcompoundref refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastoreIf" prot="public" virt="virtual">Apache::Hadoop::Hive::ThriftHiveMetastoreIf</derivedcompoundref>
+    <derivedcompoundref refid="classfacebook_1_1fb303_1_1FacebookServiceClient" prot="public" virt="virtual">facebook::fb303::FacebookServiceClient</derivedcompoundref>
+    <derivedcompoundref refid="classfacebook_1_1fb303_1_1FacebookServiceConcurrentClient" prot="public" virt="virtual">facebook::fb303::FacebookServiceConcurrentClient</derivedcompoundref>
+    <derivedcompoundref refid="classfacebook_1_1fb303_1_1FacebookServiceMultiface" prot="public" virt="virtual">facebook::fb303::FacebookServiceMultiface</derivedcompoundref>
+    <derivedcompoundref refid="classfacebook_1_1fb303_1_1FacebookServiceNull" prot="public" virt="virtual">facebook::fb303::FacebookServiceNull</derivedcompoundref>
+    <includes refid="FacebookService_8h" local="no">FacebookService.h</includes>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookServiceIf_1a97000e6d358c611b0fb8558dbdacb846" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type></type>
+        <definition>virtual facebook::fb303::FacebookServiceIf::~FacebookServiceIf</definition>
+        <argsstring>()</argsstring>
+        <name>~FacebookServiceIf</name>
+        <qualifiedname>facebook::fb303::FacebookServiceIf::~FacebookServiceIf</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="27" column="11" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.h" bodystart="27" bodyend="27"/>
+      </memberdef>
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookServiceIf_1ab852f1096d980ecb8f5c5264314aae96" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type>void</type>
+        <definition>virtual void facebook::fb303::FacebookServiceIf::getName</definition>
+        <argsstring>(std::string &amp;_return)=0</argsstring>
+        <name>getName</name>
+        <qualifiedname>facebook::fb303::FacebookServiceIf::getName</qualifiedname>
+        <reimplementedby refid="classfacebook_1_1fb303_1_1FacebookServiceNull_1a235d728447355aaa3b7e3f2a6694f61b">getName</reimplementedby>
+        <reimplementedby refid="classfacebook_1_1fb303_1_1FacebookServiceClient_1ad7accc4e12c9b7995254ac208f4d5422">getName</reimplementedby>
+        <reimplementedby refid="classfacebook_1_1fb303_1_1FacebookServiceMultiface_1a20958fe00ac892221898ebce55cacfaa">getName</reimplementedby>
+        <reimplementedby refid="classfacebook_1_1fb303_1_1FacebookServiceConcurrentClient_1ad3ff645695b825447c46839e0da9e6fb">getName</reimplementedby>
+        <param>
+          <type>std::string &amp;</type>
+          <declname>_return</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Returns a descriptive name of the service </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="32" column="16"/>
+      </memberdef>
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookServiceIf_1ae94f6c907c518f703d099f4e61978555" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type>void</type>
+        <definition>virtual void facebook::fb303::FacebookServiceIf::getVersion</definition>
+        <argsstring>(std::string &amp;_return)=0</argsstring>
+        <name>getVersion</name>
+        <qualifiedname>facebook::fb303::FacebookServiceIf::getVersion</qualifiedname>
+        <reimplementedby refid="classfacebook_1_1fb303_1_1FacebookServiceNull_1a67cf69f3a404e41c5b26adfce124701d">getVersion</reimplementedby>
+        <reimplementedby refid="classfacebook_1_1fb303_1_1FacebookServiceClient_1a31b7f3faefd9d3573b2e7d2c062f5ea2">getVersion</reimplementedby>
+        <reimplementedby refid="classfacebook_1_1fb303_1_1FacebookServiceMultiface_1a0936b0cb135ed546f267fa1886b36515">getVersion</reimplementedby>
+        <reimplementedby refid="classfacebook_1_1fb303_1_1FacebookServiceConcurrentClient_1a267c4dd7611be5945dfd6f5e56259eb4">getVersion</reimplementedby>
+        <param>
+          <type>std::string &amp;</type>
+          <declname>_return</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Returns the version of the service </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="37" column="16"/>
+      </memberdef>
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookServiceIf_1a5a79713d79dc1dc9a9d788a7058aba3f" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type>fb_status::type</type>
+        <definition>virtual fb_status::type facebook::fb303::FacebookServiceIf::getStatus</definition>
+        <argsstring>()=0</argsstring>
+        <name>getStatus</name>
+        <qualifiedname>facebook::fb303::FacebookServiceIf::getStatus</qualifiedname>
+        <reimplementedby refid="classfacebook_1_1fb303_1_1FacebookServiceNull_1adaa3ab7eea0255f6f9b171636e3d2e0a">getStatus</reimplementedby>
+        <reimplementedby refid="classfacebook_1_1fb303_1_1FacebookServiceClient_1aa23c4e30be11a2e7c73cd5d045ae9555">getStatus</reimplementedby>
+        <reimplementedby refid="classfacebook_1_1fb303_1_1FacebookServiceMultiface_1acc3cb044fd8fed8607508ae3edcd6f79">getStatus</reimplementedby>
+        <reimplementedby refid="classfacebook_1_1fb303_1_1FacebookServiceConcurrentClient_1ae56557b9e7e6f3326a98405ed4a8e4e4">getStatus</reimplementedby>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Gets the status of this service </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="42" column="27"/>
+      </memberdef>
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookServiceIf_1adf81c416ff893e42358439b9de88cb35" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type>void</type>
+        <definition>virtual void facebook::fb303::FacebookServiceIf::getStatusDetails</definition>
+        <argsstring>(std::string &amp;_return)=0</argsstring>
+        <name>getStatusDetails</name>
+        <qualifiedname>facebook::fb303::FacebookServiceIf::getStatusDetails</qualifiedname>
+        <reimplementedby refid="classfacebook_1_1fb303_1_1FacebookServiceNull_1aa17a47a26dc4bef7b9e71275edf1b6e9">getStatusDetails</reimplementedby>
+        <reimplementedby refid="classfacebook_1_1fb303_1_1FacebookServiceClient_1ad4a7997c930cdb957c15b387935c165c">getStatusDetails</reimplementedby>
+        <reimplementedby refid="classfacebook_1_1fb303_1_1FacebookServiceMultiface_1a5fb31185fb6e75554266ccb86fe1e22b">getStatusDetails</reimplementedby>
+        <reimplementedby refid="classfacebook_1_1fb303_1_1FacebookServiceConcurrentClient_1a37b94a180d30084fb604025bab2846d3">getStatusDetails</reimplementedby>
+        <param>
+          <type>std::string &amp;</type>
+          <declname>_return</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>User friendly description of status, such as why the service is in the dead or warning state, or what is being started or stopped. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="48" column="16"/>
+      </memberdef>
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookServiceIf_1a0b334a85913adbe8c2639037c72db917" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type>void</type>
+        <definition>virtual void facebook::fb303::FacebookServiceIf::getCounters</definition>
+        <argsstring>(std::map&lt; std::string, int64_t &gt; &amp;_return)=0</argsstring>
+        <name>getCounters</name>
+        <qualifiedname>facebook::fb303::FacebookServiceIf::getCounters</qualifiedname>
+        <reimplementedby refid="classfacebook_1_1fb303_1_1FacebookServiceNull_1ad5f341ff4766be34bc737d87edce4b68">getCounters</reimplementedby>
+        <reimplementedby refid="classfacebook_1_1fb303_1_1FacebookServiceClient_1a6bfaf0ea60dff485f33a570d2d936547">getCounters</reimplementedby>
+        <reimplementedby refid="classfacebook_1_1fb303_1_1FacebookServiceMultiface_1a6f948838e04b6952d222f19258237266">getCounters</reimplementedby>
+        <reimplementedby refid="classfacebook_1_1fb303_1_1FacebookServiceConcurrentClient_1a2958846ff8bb2988188251ec3dd48080">getCounters</reimplementedby>
+        <param>
+          <type>std::map&lt; std::string, int64_t &gt; &amp;</type>
+          <declname>_return</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Gets the counters for this service </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="53" column="16"/>
+      </memberdef>
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookServiceIf_1a03b67e6e05a9c6a7d20998bd69ab3b65" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type>int64_t</type>
+        <definition>virtual int64_t facebook::fb303::FacebookServiceIf::getCounter</definition>
+        <argsstring>(const std::string &amp;key)=0</argsstring>
+        <name>getCounter</name>
+        <qualifiedname>facebook::fb303::FacebookServiceIf::getCounter</qualifiedname>
+        <reimplementedby refid="classfacebook_1_1fb303_1_1FacebookServiceNull_1a155df62115da4067f026372568bf33ae">getCounter</reimplementedby>
+        <reimplementedby refid="classfacebook_1_1fb303_1_1FacebookServiceClient_1a9af2e54bb44cc347bad04a266e87f620">getCounter</reimplementedby>
+        <reimplementedby refid="classfacebook_1_1fb303_1_1FacebookServiceMultiface_1a0dc5e1c89dd8a3b81b155f9b5b58624c">getCounter</reimplementedby>
+        <reimplementedby refid="classfacebook_1_1fb303_1_1FacebookServiceConcurrentClient_1a5c104d8bedb93b113f9cecd3bf36e3de">getCounter</reimplementedby>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>key</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Gets the value of a single counter</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>key</parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="60" column="19"/>
+      </memberdef>
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookServiceIf_1acd5e168313e87d2ba254e65b53827cf6" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type>void</type>
+        <definition>virtual void facebook::fb303::FacebookServiceIf::setOption</definition>
+        <argsstring>(const std::string &amp;key, const std::string &amp;value)=0</argsstring>
+        <name>setOption</name>
+        <qualifiedname>facebook::fb303::FacebookServiceIf::setOption</qualifiedname>
+        <reimplementedby refid="classfacebook_1_1fb303_1_1FacebookServiceNull_1a7624b5897ca52561b9eeda69325106f0">setOption</reimplementedby>
+        <reimplementedby refid="classfacebook_1_1fb303_1_1FacebookServiceClient_1a4c0ec79e693ba35e2f4f5644f021d513">setOption</reimplementedby>
+        <reimplementedby refid="classfacebook_1_1fb303_1_1FacebookServiceMultiface_1a2233b88a7745677bcd77b83bd95329a4">setOption</reimplementedby>
+        <reimplementedby refid="classfacebook_1_1fb303_1_1FacebookServiceConcurrentClient_1a6c1b147f5d75f3d43c04c2611949b9d8">setOption</reimplementedby>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>key</declname>
+        </param>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>value</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Sets an option</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>key</parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>value</parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="68" column="16"/>
+      </memberdef>
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookServiceIf_1af909ac5fba5ce59b7ab0dd0502c61c89" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type>void</type>
+        <definition>virtual void facebook::fb303::FacebookServiceIf::getOption</definition>
+        <argsstring>(std::string &amp;_return, const std::string &amp;key)=0</argsstring>
+        <name>getOption</name>
+        <qualifiedname>facebook::fb303::FacebookServiceIf::getOption</qualifiedname>
+        <reimplementedby refid="classfacebook_1_1fb303_1_1FacebookServiceNull_1a75dfaf321b73fa3e4dd604160fb35773">getOption</reimplementedby>
+        <reimplementedby refid="classfacebook_1_1fb303_1_1FacebookServiceClient_1acb12d4e81edea013236115e9d8be9279">getOption</reimplementedby>
+        <reimplementedby refid="classfacebook_1_1fb303_1_1FacebookServiceMultiface_1a56391191c56b42e5144ecfd4f712a40a">getOption</reimplementedby>
+        <reimplementedby refid="classfacebook_1_1fb303_1_1FacebookServiceConcurrentClient_1a17a3d05e82bd138d849f4a9bfb67b0a7">getOption</reimplementedby>
+        <param>
+          <type>std::string &amp;</type>
+          <declname>_return</declname>
+        </param>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>key</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Gets an option</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>key</parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="75" column="16"/>
+      </memberdef>
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookServiceIf_1a8dcbc98fed9ba494f33c1b48ff4176f3" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type>void</type>
+        <definition>virtual void facebook::fb303::FacebookServiceIf::getOptions</definition>
+        <argsstring>(std::map&lt; std::string, std::string &gt; &amp;_return)=0</argsstring>
+        <name>getOptions</name>
+        <qualifiedname>facebook::fb303::FacebookServiceIf::getOptions</qualifiedname>
+        <reimplementedby refid="classfacebook_1_1fb303_1_1FacebookServiceNull_1a51eae652f0a21c5559667bc668e34a37">getOptions</reimplementedby>
+        <reimplementedby refid="classfacebook_1_1fb303_1_1FacebookServiceClient_1a797d7e4579b2f9f69580439b8b876bb7">getOptions</reimplementedby>
+        <reimplementedby refid="classfacebook_1_1fb303_1_1FacebookServiceMultiface_1a17bd6b71109b96db73a3bd5fed36fa17">getOptions</reimplementedby>
+        <reimplementedby refid="classfacebook_1_1fb303_1_1FacebookServiceConcurrentClient_1ab10db693b8bff578666b54cc275f2cde">getOptions</reimplementedby>
+        <param>
+          <type>std::map&lt; std::string, std::string &gt; &amp;</type>
+          <declname>_return</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Gets all options </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="80" column="16"/>
+      </memberdef>
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookServiceIf_1a82e29aa3ad637e00b69cbea4ad5579eb" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type>void</type>
+        <definition>virtual void facebook::fb303::FacebookServiceIf::getCpuProfile</definition>
+        <argsstring>(std::string &amp;_return, const int32_t profileDurationInSec)=0</argsstring>
+        <name>getCpuProfile</name>
+        <qualifiedname>facebook::fb303::FacebookServiceIf::getCpuProfile</qualifiedname>
+        <reimplementedby refid="classfacebook_1_1fb303_1_1FacebookServiceNull_1aad372b00b0bc0e19a43bf82d79705f50">getCpuProfile</reimplementedby>
+        <reimplementedby refid="classfacebook_1_1fb303_1_1FacebookServiceClient_1a344f4ef94cdccc03959c5b5d05290b56">getCpuProfile</reimplementedby>
+        <reimplementedby refid="classfacebook_1_1fb303_1_1FacebookServiceMultiface_1a980a574bd52cf73631eb5d2302d94ea4">getCpuProfile</reimplementedby>
+        <reimplementedby refid="classfacebook_1_1fb303_1_1FacebookServiceConcurrentClient_1a0ec5ef3f7158136bde68dffc28e31f3f">getCpuProfile</reimplementedby>
+        <param>
+          <type>std::string &amp;</type>
+          <declname>_return</declname>
+        </param>
+        <param>
+          <type>const int32_t</type>
+          <declname>profileDurationInSec</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Returns a CPU profile over the given time interval (client and server must agree on the profile format).</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>profileDurationInSec</parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="88" column="16"/>
+      </memberdef>
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookServiceIf_1a48e66d93de7f68de0b7abf49d0dce2d2" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type>int64_t</type>
+        <definition>virtual int64_t facebook::fb303::FacebookServiceIf::aliveSince</definition>
+        <argsstring>()=0</argsstring>
+        <name>aliveSince</name>
+        <qualifiedname>facebook::fb303::FacebookServiceIf::aliveSince</qualifiedname>
+        <reimplementedby refid="classfacebook_1_1fb303_1_1FacebookServiceNull_1abe064db901f819077018cae4b45bbbc3">aliveSince</reimplementedby>
+        <reimplementedby refid="classfacebook_1_1fb303_1_1FacebookServiceClient_1a064b34e5cae8ef342013c9b5df2c836d">aliveSince</reimplementedby>
+        <reimplementedby refid="classfacebook_1_1fb303_1_1FacebookServiceMultiface_1aa1874f8106acb26688d3189bc21bd89f">aliveSince</reimplementedby>
+        <reimplementedby refid="classfacebook_1_1fb303_1_1FacebookServiceConcurrentClient_1a7a0bc06f588f651c7a1e193328c2138c">aliveSince</reimplementedby>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Returns the unix time that the server has been running since </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="93" column="19"/>
+      </memberdef>
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookServiceIf_1a4be22595bd9f01befd8c1f494ce2a8bb" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type>void</type>
+        <definition>virtual void facebook::fb303::FacebookServiceIf::reinitialize</definition>
+        <argsstring>()=0</argsstring>
+        <name>reinitialize</name>
+        <qualifiedname>facebook::fb303::FacebookServiceIf::reinitialize</qualifiedname>
+        <reimplementedby refid="classfacebook_1_1fb303_1_1FacebookServiceNull_1aa6134105e19a3bd57db38ac326c88c41">reinitialize</reimplementedby>
+        <reimplementedby refid="classfacebook_1_1fb303_1_1FacebookServiceClient_1ad0723ebb2df6f44f0430048f4ccce235">reinitialize</reimplementedby>
+        <reimplementedby refid="classfacebook_1_1fb303_1_1FacebookServiceMultiface_1a16a8391ebc88821fee740503dae89d13">reinitialize</reimplementedby>
+        <reimplementedby refid="classfacebook_1_1fb303_1_1FacebookServiceConcurrentClient_1a581da2c6af729ab65555d01614b9199a">reinitialize</reimplementedby>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Tell the server to reload its configuration, reopen log files, etc </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="98" column="16"/>
+      </memberdef>
+      <memberdef kind="function" id="classfacebook_1_1fb303_1_1FacebookServiceIf_1a8b4200726d05c4d5592418ccbc05825f" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type>void</type>
+        <definition>virtual void facebook::fb303::FacebookServiceIf::shutdown</definition>
+        <argsstring>()=0</argsstring>
+        <name>shutdown</name>
+        <qualifiedname>facebook::fb303::FacebookServiceIf::shutdown</qualifiedname>
+        <reimplementedby refid="classfacebook_1_1fb303_1_1FacebookServiceNull_1a894c0c8a14b2c099ba7032babb2eeb3f">shutdown</reimplementedby>
+        <reimplementedby refid="classfacebook_1_1fb303_1_1FacebookServiceClient_1a54598759db7d1a50297ed5b948d4a175">shutdown</reimplementedby>
+        <reimplementedby refid="classfacebook_1_1fb303_1_1FacebookServiceMultiface_1ab1b08ce22cd6ffa226845694cf27c6ee">shutdown</reimplementedby>
+        <reimplementedby refid="classfacebook_1_1fb303_1_1FacebookServiceConcurrentClient_1aef6540efc27d2a43f54b39037295aa4c">shutdown</reimplementedby>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Suggest a shutdown to the server </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="103" column="16"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para>Standard base service </para>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="3">
+        <label>Apache::Hadoop::Hive::ThriftHiveMetastoreClient</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastoreClient"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="7" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>Apache::Hadoop::Hive::ThriftHiveMetastoreConcurrentClient</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastoreConcurrentClient"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="8" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>Apache::Hadoop::Hive::ThriftHiveMetastoreIf</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastoreIf"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>Apache::Hadoop::Hive::ThriftHiveMetastoreMultiface</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastoreMultiface"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="9" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="6">
+        <label>Apache::Hadoop::Hive::ThriftHiveMetastoreNull</label>
+        <link refid="classApache_1_1Hadoop_1_1Hive_1_1ThriftHiveMetastoreNull"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="10" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="7">
+        <label>facebook::fb303::FacebookServiceClient</label>
+        <link refid="classfacebook_1_1fb303_1_1FacebookServiceClient"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="8">
+        <label>facebook::fb303::FacebookServiceConcurrentClient</label>
+        <link refid="classfacebook_1_1fb303_1_1FacebookServiceConcurrentClient"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>facebook::fb303::FacebookServiceIf</label>
+        <link refid="classfacebook_1_1fb303_1_1FacebookServiceIf"/>
+      </node>
+      <node id="9">
+        <label>facebook::fb303::FacebookServiceMultiface</label>
+        <link refid="classfacebook_1_1fb303_1_1FacebookServiceMultiface"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="10">
+        <label>facebook::fb303::FacebookServiceNull</label>
+        <link refid="classfacebook_1_1fb303_1_1FacebookServiceNull"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <location file="iceberg/catalog/hive/gen-cpp/FacebookService.h" line="25" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/FacebookService.h" bodystart="25" bodyend="104"/>
+    <listofallmembers>
+      <member refid="classfacebook_1_1fb303_1_1FacebookServiceIf_1a48e66d93de7f68de0b7abf49d0dce2d2" prot="public" virt="pure-virtual"><scope>facebook::fb303::FacebookServiceIf</scope><name>aliveSince</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookServiceIf_1a03b67e6e05a9c6a7d20998bd69ab3b65" prot="public" virt="pure-virtual"><scope>facebook::fb303::FacebookServiceIf</scope><name>getCounter</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookServiceIf_1a0b334a85913adbe8c2639037c72db917" prot="public" virt="pure-virtual"><scope>facebook::fb303::FacebookServiceIf</scope><name>getCounters</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookServiceIf_1a82e29aa3ad637e00b69cbea4ad5579eb" prot="public" virt="pure-virtual"><scope>facebook::fb303::FacebookServiceIf</scope><name>getCpuProfile</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookServiceIf_1ab852f1096d980ecb8f5c5264314aae96" prot="public" virt="pure-virtual"><scope>facebook::fb303::FacebookServiceIf</scope><name>getName</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookServiceIf_1af909ac5fba5ce59b7ab0dd0502c61c89" prot="public" virt="pure-virtual"><scope>facebook::fb303::FacebookServiceIf</scope><name>getOption</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookServiceIf_1a8dcbc98fed9ba494f33c1b48ff4176f3" prot="public" virt="pure-virtual"><scope>facebook::fb303::FacebookServiceIf</scope><name>getOptions</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookServiceIf_1a5a79713d79dc1dc9a9d788a7058aba3f" prot="public" virt="pure-virtual"><scope>facebook::fb303::FacebookServiceIf</scope><name>getStatus</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookServiceIf_1adf81c416ff893e42358439b9de88cb35" prot="public" virt="pure-virtual"><scope>facebook::fb303::FacebookServiceIf</scope><name>getStatusDetails</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookServiceIf_1ae94f6c907c518f703d099f4e61978555" prot="public" virt="pure-virtual"><scope>facebook::fb303::FacebookServiceIf</scope><name>getVersion</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookServiceIf_1a4be22595bd9f01befd8c1f494ce2a8bb" prot="public" virt="pure-virtual"><scope>facebook::fb303::FacebookServiceIf</scope><name>reinitialize</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookServiceIf_1acd5e168313e87d2ba254e65b53827cf6" prot="public" virt="pure-virtual"><scope>facebook::fb303::FacebookServiceIf</scope><name>setOption</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookServiceIf_1a8b4200726d05c4d5592418ccbc05825f" prot="public" virt="pure-virtual"><scope>facebook::fb303::FacebookServiceIf</scope><name>shutdown</name></member>
+      <member refid="classfacebook_1_1fb303_1_1FacebookServiceIf_1a97000e6d358c611b0fb8558dbdacb846" prot="public" virt="virtual"><scope>facebook::fb303::FacebookServiceIf</scope><name>~FacebookServiceIf</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

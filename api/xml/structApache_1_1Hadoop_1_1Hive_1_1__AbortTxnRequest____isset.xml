@@ -1,0 +1,80 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structApache_1_1Hadoop_1_1Hive_1_1__AbortTxnRequest____isset" kind="struct" language="C++" prot="public">
+    <compoundname>Apache::Hadoop::Hive::_AbortTxnRequest__isset</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__AbortTxnRequest____isset_1a6ea49d5804c903776e038821d828c7c7" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_AbortTxnRequest__isset::replPolicy</definition>
+        <argsstring></argsstring>
+        <name>replPolicy</name>
+        <qualifiedname>Apache::Hadoop::Hive::_AbortTxnRequest__isset::replPolicy</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6837" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="6837" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__AbortTxnRequest____isset_1a8ef863e3d16aaa8b00515aba5921e65f" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_AbortTxnRequest__isset::txn_type</definition>
+        <argsstring></argsstring>
+        <name>txn_type</name>
+        <qualifiedname>Apache::Hadoop::Hive::_AbortTxnRequest__isset::txn_type</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6838" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="6838" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structApache_1_1Hadoop_1_1Hive_1_1__AbortTxnRequest____isset_1ad49cc89584e23afcbe72824024ef1634" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Apache::Hadoop::Hive::_AbortTxnRequest__isset::errorCode</definition>
+        <argsstring></argsstring>
+        <name>errorCode</name>
+        <qualifiedname>Apache::Hadoop::Hive::_AbortTxnRequest__isset::errorCode</qualifiedname>
+        <bitfield>1</bitfield>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6839" column="8" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="6839" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structApache_1_1Hadoop_1_1Hive_1_1__AbortTxnRequest____isset_1a183bc2954369f20ee8d82afaac477e66" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>Apache::Hadoop::Hive::_AbortTxnRequest__isset::_AbortTxnRequest__isset</definition>
+        <argsstring>()</argsstring>
+        <name>_AbortTxnRequest__isset</name>
+        <qualifiedname>Apache::Hadoop::Hive::_AbortTxnRequest__isset::_AbortTxnRequest__isset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6836" column="3" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="6836" bodyend="6836"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" line="6835" column="1" bodyfile="iceberg/catalog/hive/gen-cpp/hive_metastore_types.h" bodystart="6835" bodyend="6840"/>
+    <listofallmembers>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__AbortTxnRequest____isset_1a183bc2954369f20ee8d82afaac477e66" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_AbortTxnRequest__isset</scope><name>_AbortTxnRequest__isset</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__AbortTxnRequest____isset_1ad49cc89584e23afcbe72824024ef1634" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_AbortTxnRequest__isset</scope><name>errorCode</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__AbortTxnRequest____isset_1a6ea49d5804c903776e038821d828c7c7" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_AbortTxnRequest__isset</scope><name>replPolicy</name></member>
+      <member refid="structApache_1_1Hadoop_1_1Hive_1_1__AbortTxnRequest____isset_1a8ef863e3d16aaa8b00515aba5921e65f" prot="public" virt="non-virtual"><scope>Apache::Hadoop::Hive::_AbortTxnRequest__isset</scope><name>txn_type</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>
