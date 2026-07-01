@@ -110,6 +110,7 @@ set(ICEBERG_SOURCES
     update/overwrite_files.cc
     update/pending_update.cc
     update/rewrite_files.cc
+    update/rewrite_manifests.cc
     update/row_delta.cc
     update/set_snapshot.cc
     update/snapshot_manager.cc

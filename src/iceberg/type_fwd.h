@@ -246,6 +246,7 @@ class MergeAppend;
 class OverwriteFiles;
 class PendingUpdate;
 class RewriteFiles;
+class RewriteManifests;
 class RowDelta;
 class SetSnapshot;
 class SnapshotManager;

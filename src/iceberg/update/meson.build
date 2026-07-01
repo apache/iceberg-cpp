@@ -25,6 +25,7 @@ install_headers(
         'overwrite_files.h',
         'pending_update.h',
         'rewrite_files.h',
+        'rewrite_manifests.h',
         'row_delta.h',
         'set_snapshot.h',
         'snapshot_manager.h',
