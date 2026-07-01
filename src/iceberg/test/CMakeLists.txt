@@ -317,3 +317,27 @@ if(ICEBERG_BUILD_REST)
                           util/docker_compose_util.cc)
   endif()
 endif()
+
+if(ICEBERG_BUILD_HIVE)
+  function(add_hive_iceberg_test test_name)
+    set(options)
+    set(oneValueArgs)
+    set(multiValueArgs SOURCES)
+    cmake_parse_arguments(ARG
+                          "${options}"
+                          "${oneValueArgs}"
+                          "${multiValueArgs}"
+                          ${ARGN})
+
+    add_executable(${test_name})
+    target_include_directories(${test_name} PRIVATE "${CMAKE_BINARY_DIR}/iceberg/test/")
+    target_sources(${test_name} PRIVATE ${ARG_SOURCES})
+    target_link_libraries(${test_name} PRIVATE GTest::gmock_main iceberg_hive_static)
+    if(MSVC_TOOLCHAIN)
+      target_compile_options(${test_name} PRIVATE /bigobj)
+    endif()
+    add_test(NAME ${test_name} COMMAND ${test_name})
+  endfunction()
+
+  add_hive_iceberg_test(hive_catalog_test SOURCES hms_client_test.cc)
+endif()
