@@ -41,6 +41,7 @@
 
 #include "iceberg/arrow/arrow_io_internal.h"
 #include "iceberg/arrow/arrow_status_internal.h"
+#include "iceberg/expression/literal.h"
 #include "iceberg/file_reader.h"
 #include "iceberg/file_writer.h"
 #include "iceberg/metadata_columns.h"
@@ -270,6 +271,57 @@ TEST_F(ParquetReaderTest, ReadTwoFields) {
 
   ASSERT_NO_FATAL_FAILURE(
       VerifyNextBatch(*reader, R"([[1, "Foo"], [2, "Bar"], [3, "Baz"]])"));
+  ASSERT_NO_FATAL_FAILURE(VerifyExhausted(*reader));
+}
+
+TEST_F(ParquetReaderTest, ReadMissingFieldsWithDefaults) {
+  // The file contains only fields 1 and 2; the projected schema adds fields 3 and 4
+  // with initial-defaults, which are filled for all rows written before the columns
+  // existed.
+  CreateSimpleParquetFile();
+
+  auto schema = std::make_shared<Schema>(std::vector<SchemaField>{
+      SchemaField::MakeRequired(1, "id", int32()),
+      SchemaField::MakeOptional(2, "name", string()),
+      SchemaField(3, "score", int64(), /*optional=*/false, /*doc=*/{},
+                  std::make_shared<const Literal>(Literal::Long(100))),
+      SchemaField(4, "status", string(), /*optional=*/true, /*doc=*/{},
+                  std::make_shared<const Literal>(Literal::String("active"))),
+  });
+
+  auto reader_result = ReaderFactoryRegistry::Open(
+      FileFormatType::kParquet,
+      {.path = temp_parquet_file_, .io = file_io_, .projection = schema});
+  ASSERT_THAT(reader_result, IsOk())
+      << "Failed to create reader: " << reader_result.error().message;
+  auto reader = std::move(reader_result.value());
+
+  ASSERT_NO_FATAL_FAILURE(VerifyNextBatch(*reader,
+                                          R"([[1, "Foo", 100, "active"],
+                                              [2, "Bar", 100, "active"],
+                                              [3, "Baz", 100, "active"]])"));
+  ASSERT_NO_FATAL_FAILURE(VerifyExhausted(*reader));
+}
+
+TEST_F(ParquetReaderTest, ReadOnlyDefaultColumn) {
+  // The projected schema selects a single column that is absent from the file, so no
+  // physical column is read. The default must still be filled once per row, using the
+  // file's row count as the anchor.
+  CreateSimpleParquetFile();
+
+  auto schema = std::make_shared<Schema>(std::vector<SchemaField>{
+      SchemaField(3, "score", int64(), /*optional=*/false, /*doc=*/{},
+                  std::make_shared<const Literal>(Literal::Long(100))),
+  });
+
+  auto reader_result = ReaderFactoryRegistry::Open(
+      FileFormatType::kParquet,
+      {.path = temp_parquet_file_, .io = file_io_, .projection = schema});
+  ASSERT_THAT(reader_result, IsOk())
+      << "Failed to create reader: " << reader_result.error().message;
+  auto reader = std::move(reader_result.value());
+
+  ASSERT_NO_FATAL_FAILURE(VerifyNextBatch(*reader, R"([[100], [100], [100]])"));
   ASSERT_NO_FATAL_FAILURE(VerifyExhausted(*reader));
 }
 

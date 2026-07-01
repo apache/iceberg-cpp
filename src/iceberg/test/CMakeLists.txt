@@ -256,7 +256,8 @@ if(ICEBERG_BUILD_BUNDLE)
                    data_writer_test.cc
                    delete_filter_test.cc
                    delete_loader_test.cc
-                   file_scan_task_reader_test.cc)
+                   file_scan_task_reader_test.cc
+                   literal_util_test.cc)
 
 endif()
 

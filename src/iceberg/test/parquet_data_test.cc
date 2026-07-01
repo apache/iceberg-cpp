@@ -28,6 +28,7 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
+#include "iceberg/expression/literal.h"
 #include "iceberg/parquet/parquet_data_util_internal.h"
 #include "iceberg/schema.h"
 #include "iceberg/schema_internal.h"
@@ -403,6 +404,68 @@ TEST(ProjectRecordBatchTest, StructWithMissingOptionalField) {
   const std::string expected_json = R"([
     {"id": 1, "name": "Person0", "age": null, "email": null},
     {"id": 2, "name": "Person1", "age": null, "email": null}
+  ])";
+
+  ASSERT_NO_FATAL_FAILURE(VerifyProjectRecordBatch(projected_schema, source_schema,
+                                                   input_json, expected_json));
+}
+
+TEST(ProjectRecordBatchTest, StructWithMissingDefaultFields) {
+  Schema projected_schema({
+      SchemaField::MakeRequired(1, "id", int32()),
+      // Missing required field with an initial-default: filled with the default.
+      SchemaField(2, "score", int64(), /*optional=*/false, /*doc=*/{},
+                  std::make_shared<const Literal>(Literal::Long(100))),
+      // Missing optional field with an initial-default: also filled, not null.
+      SchemaField(3, "grade", string(), /*optional=*/true, /*doc=*/{},
+                  std::make_shared<const Literal>(Literal::String("A"))),
+  });
+
+  Schema source_schema({
+      SchemaField::MakeRequired(1, "id", int32()),
+  });
+
+  const std::string input_json = R"([
+    {"id": 1},
+    {"id": 2}
+  ])";
+  const std::string expected_json = R"([
+    {"id": 1, "score": 100, "grade": "A"},
+    {"id": 2, "score": 100, "grade": "A"}
+  ])";
+
+  ASSERT_NO_FATAL_FAILURE(VerifyProjectRecordBatch(projected_schema, source_schema,
+                                                   input_json, expected_json));
+}
+
+TEST(ProjectRecordBatchTest, NestedStructWithMissingDefaultField) {
+  Schema projected_schema({
+      SchemaField::MakeRequired(1, "id", int32()),
+      SchemaField::MakeRequired(
+          2, "person",
+          std::make_shared<StructType>(std::vector<SchemaField>{
+              SchemaField::MakeRequired(3, "name", string()),
+              // Missing in source; filled with its initial-default.
+              SchemaField(4, "age", int32(), /*optional=*/false, /*doc=*/{},
+                          std::make_shared<const Literal>(Literal::Int(18))),
+          })),
+  });
+
+  Schema source_schema({
+      SchemaField::MakeRequired(1, "id", int32()),
+      SchemaField::MakeRequired(2, "person",
+                                std::make_shared<StructType>(std::vector<SchemaField>{
+                                    SchemaField::MakeRequired(3, "name", string()),
+                                })),
+  });
+
+  const std::string input_json = R"([
+    {"id": 100, "person": {"name": "Employee0"}},
+    {"id": 101, "person": {"name": "Employee1"}}
+  ])";
+  const std::string expected_json = R"([
+    {"id": 100, "person": {"name": "Employee0", "age": 18}},
+    {"id": 101, "person": {"name": "Employee1", "age": 18}}
   ])";
 
   ASSERT_NO_FATAL_FAILURE(VerifyProjectRecordBatch(projected_schema, source_schema,
