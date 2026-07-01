@@ -29,6 +29,7 @@
 
 #include "iceberg/deletes/roaring_position_bitmap.h"
 #include "iceberg/iceberg_data_export.h"
+#include "iceberg/result.h"
 
 namespace iceberg {
 
@@ -66,7 +67,20 @@ class ICEBERG_DATA_EXPORT PositionDeleteIndex {
   /// \param other The index to merge (union operation)
   void Merge(const PositionDeleteIndex& other);
 
+  /// \brief Serialize the index into a `deletion-vector-v1` blob.
+  ///
+  /// The positions are run-length encoded, then framed per the Puffin spec:
+  /// https://iceberg.apache.org/puffin-spec/#deletion-vector-v1-blob-type
+  Result<std::vector<uint8_t>> Serialize();
+
+  /// \brief Deserialize a `deletion-vector-v1` blob into an index.
+  ///
+  /// Validates the length prefix, magic sequence, and CRC-32 checksum.
+  static Result<PositionDeleteIndex> Deserialize(std::span<const uint8_t> blob);
+
  private:
+  explicit PositionDeleteIndex(RoaringPositionBitmap bitmap);
+
   // Bulk-add positions sharing high-32-bit `key`. Private hook for
   // `ForEachPositionDelete`'s bulk path; keeps `Delete` the sole public
   // mutation surface.

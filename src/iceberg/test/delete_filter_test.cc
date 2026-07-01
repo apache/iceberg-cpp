@@ -34,6 +34,7 @@
 #include <gtest/gtest.h>
 
 #include "iceberg/arrow/arrow_io_internal.h"
+#include "iceberg/data/deletion_vector_writer.h"
 #include "iceberg/data/equality_delete_writer.h"
 #include "iceberg/data/position_delete_writer.h"
 #include "iceberg/file_format.h"
@@ -248,6 +249,23 @@ class DeleteFilterTest : public ::testing::Test {
   }
 
   static constexpr std::string_view kDataPath = "data.parquet";
+
+  Result<std::shared_ptr<DataFile>> DeletionVectorFile(
+      const std::string& path, const std::vector<int64_t>& positions,
+      const std::string& data_path = std::string(kDataPath)) {
+    DeletionVectorWriterOptions options{
+        .path = path,
+        .io = file_io_,
+    };
+    ICEBERG_ASSIGN_OR_RAISE(auto writer, DeletionVectorWriter::Make(std::move(options)));
+    for (int64_t pos : positions) {
+      ICEBERG_RETURN_UNEXPECTED(
+          writer->Delete(data_path, pos, partition_spec_, PartitionValues{}));
+    }
+    ICEBERG_RETURN_UNEXPECTED(writer->Close());
+    ICEBERG_ASSIGN_OR_RAISE(auto metadata, writer->Metadata());
+    return metadata.delete_files[0];
+  }
 
   std::shared_ptr<FileIO> file_io_;
   std::shared_ptr<Schema> table_schema_;
@@ -1156,7 +1174,7 @@ TEST_F(DeleteFilterTest, DeletionVectorErrorPropagatesFromCompute) {
   ICEBERG_UNWRAP_OR_FAIL(auto batch,
                          MakeBatch(*filter.value()->RequiredSchema(), R"([[1, 0]])"));
   auto alive = filter.value()->ComputeAliveRows(batch.schema, batch.array);
-  ASSERT_THAT(alive, IsError(ErrorKind::kNotSupported));
+  ASSERT_THAT(alive, IsError(ErrorKind::kInvalidArgument));
 }
 
 TEST_F(DeleteFilterTest, EmptyBatchPropagatesDeleteLoadErrors) {
@@ -1175,7 +1193,27 @@ TEST_F(DeleteFilterTest, EmptyBatchPropagatesDeleteLoadErrors) {
 
   auto alive = filter.value()->ComputeAliveRows(batch.schema, batch.array);
 
-  ASSERT_THAT(alive, IsError(ErrorKind::kNotSupported));
+  ASSERT_THAT(alive, IsError(ErrorKind::kInvalidArgument));
+}
+
+TEST_F(DeleteFilterTest, DeletionVectorComputeAliveRows) {
+  // Write a real deletion vector with DeletionVectorWriter, then load it through
+  // DeleteFilter (DeleteLoader::LoadDV) and verify deleted positions are filtered.
+  ICEBERG_UNWRAP_OR_FAIL(auto dv, DeletionVectorFile("dv-alive.puffin", {1, 3}));
+  std::vector<std::shared_ptr<DataFile>> delete_files = {dv};
+  auto requested_schema = Project({1});
+  auto filter = DeleteFilter::Make(std::string(kDataPath), delete_files, table_schema_,
+                                   requested_schema, file_io_,
+                                   /*need_row_pos_col=*/true);
+  ASSERT_THAT(filter, IsOk());
+
+  ICEBERG_UNWRAP_OR_FAIL(auto batch,
+                         MakeBatch(*filter.value()->RequiredSchema(),
+                                   R"([[10, 0], [20, 1], [30, 2], [40, 3], [50, 4]])"));
+  auto alive = filter.value()->ComputeAliveRows(batch.schema, batch.array);
+
+  ASSERT_THAT(alive, IsOk());
+  ExpectAliveRows(alive.value(), {0, 2, 4});
 }
 
 TEST_F(DeleteFilterTest, CounterAccumulatesAcrossBatches) {

@@ -164,6 +164,9 @@ add_iceberg_test(puffin_test
                  puffin_json_test.cc
                  puffin_reader_writer_test.cc)
 
+add_iceberg_test(deletion_vector_writer_test USE_DATA SOURCES
+                 deletion_vector_writer_test.cc)
+
 if(ICEBERG_BUILD_BUNDLE)
   add_iceberg_test(avro_test
                    USE_BUNDLE

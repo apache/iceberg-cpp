@@ -19,7 +19,12 @@
 
 #include "iceberg/deletes/position_delete_index.h"
 
+#include <cstdint>
+#include <vector>
+
 #include <gtest/gtest.h>
+
+#include "iceberg/test/matchers.h"
 
 namespace iceberg {
 
@@ -198,6 +203,91 @@ TEST(PositionDeleteIndexTest, TestMergeIdempotence) {
   ASSERT_EQ(index1.Cardinality(), 2);
   ASSERT_TRUE(index1.IsDeleted(10));
   ASSERT_TRUE(index1.IsDeleted(20));
+}
+
+// ==================== deletion-vector-v1 serialization ====================
+
+TEST(PositionDeleteIndexTest, SerializeRoundTrip) {
+  PositionDeleteIndex index;
+  for (int64_t pos :
+       {int64_t{0}, int64_t{1}, int64_t{5}, int64_t{100}, int64_t{4'000'000'000}}) {
+    index.Delete(pos);
+  }
+
+  ICEBERG_UNWRAP_OR_FAIL(auto blob, index.Serialize());
+  ICEBERG_UNWRAP_OR_FAIL(auto restored, PositionDeleteIndex::Deserialize(blob));
+
+  EXPECT_EQ(restored.Cardinality(), 5);
+  for (int64_t pos :
+       {int64_t{0}, int64_t{1}, int64_t{5}, int64_t{100}, int64_t{4'000'000'000}}) {
+    EXPECT_TRUE(restored.IsDeleted(pos));
+  }
+}
+
+TEST(PositionDeleteIndexTest, SerializeEmptyRoundTrip) {
+  PositionDeleteIndex index;
+  ICEBERG_UNWRAP_OR_FAIL(auto blob, index.Serialize());
+  ICEBERG_UNWRAP_OR_FAIL(auto restored, PositionDeleteIndex::Deserialize(blob));
+  EXPECT_TRUE(restored.IsEmpty());
+}
+
+// Spans two high-32-bit keys and exercises all Roaring container types
+// (sparse "array", dense "bitset", and run containers after optimization).
+TEST(PositionDeleteIndexTest, SerializeAllContainerTypesAcrossKeys) {
+  constexpr int64_t kKeyStride = 0x100000000LL;  // 2^32: high-32-bit key
+  constexpr int64_t kContainerStride = 1 << 16;  // 2^16: Roaring container
+  auto pos = [](int64_t key, int64_t container, int64_t value) {
+    return key * kKeyStride + container * kContainerStride + value;
+  };
+
+  PositionDeleteIndex index;
+  int64_t expected = 0;
+  for (int64_t key : {int64_t{0}, int64_t{1}}) {
+    index.Delete(pos(key, 0, 5));
+    index.Delete(pos(key, 0, 7));
+    expected += 2;
+    index.Delete(pos(key, 1, 1), pos(key, 1, 1000));
+    expected += 999;
+    index.Delete(pos(key, 2, 1), pos(key, 2, kContainerStride));
+    expected += kContainerStride - 1;
+  }
+
+  ICEBERG_UNWRAP_OR_FAIL(auto blob, index.Serialize());
+  ICEBERG_UNWRAP_OR_FAIL(auto restored, PositionDeleteIndex::Deserialize(blob));
+
+  EXPECT_EQ(restored.Cardinality(), expected);
+  EXPECT_TRUE(restored.IsDeleted(pos(0, 0, 5)));
+  EXPECT_TRUE(restored.IsDeleted(pos(1, 2, kContainerStride - 1)));
+  EXPECT_TRUE(restored.IsDeleted(pos(0, 1, 999)));
+  EXPECT_FALSE(restored.IsDeleted(pos(0, 0, 6)));
+  EXPECT_FALSE(restored.IsDeleted(pos(1, 1, 1000)));  // range end is exclusive
+}
+
+TEST(PositionDeleteIndexTest, DeserializeRejectsCorruptedCrc) {
+  PositionDeleteIndex index;
+  index.Delete(1);
+  index.Delete(2);
+  ICEBERG_UNWRAP_OR_FAIL(auto blob, index.Serialize());
+
+  blob.back() ^= 0xFF;
+  EXPECT_THAT(PositionDeleteIndex::Deserialize(blob),
+              IsError(ErrorKind::kInvalidArgument));
+}
+
+TEST(PositionDeleteIndexTest, DeserializeRejectsBadMagic) {
+  PositionDeleteIndex index;
+  index.Delete(1);
+  ICEBERG_UNWRAP_OR_FAIL(auto blob, index.Serialize());
+
+  blob[4] = 0x00;
+  EXPECT_THAT(PositionDeleteIndex::Deserialize(blob),
+              IsError(ErrorKind::kInvalidArgument));
+}
+
+TEST(PositionDeleteIndexTest, DeserializeRejectsTruncatedBlob) {
+  std::vector<uint8_t> blob = {0x00, 0x00};
+  EXPECT_THAT(PositionDeleteIndex::Deserialize(blob),
+              IsError(ErrorKind::kInvalidArgument));
 }
 
 }  // namespace iceberg
