@@ -526,7 +526,7 @@ TEST_F(MergingSnapshotUpdateTest, V3BranchRowIds) {
   EXPECT_THAT(table_->Refresh(), IsOk());
 
   ICEBERG_UNWRAP_OR_FAIL(auto op, NewMergeAppend());
-  op->SetTargetBranch("audit");
+  op->ToBranch("audit");
   EXPECT_THAT(op->AddFile(file_b_), IsOk());
   EXPECT_THAT(op->Commit(), IsOk());
 
