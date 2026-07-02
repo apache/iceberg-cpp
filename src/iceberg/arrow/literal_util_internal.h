@@ -33,8 +33,8 @@ namespace iceberg::arrow {
 ///
 /// A null literal converts to a null scalar of the corresponding Arrow type. `pool` is
 /// used for the backing buffer of binary/fixed/uuid scalars.
-Result<std::shared_ptr<::arrow::Scalar>> ToArrowScalar(
-    const Literal& literal, ::arrow::MemoryPool* pool = ::arrow::default_memory_pool());
+Result<std::shared_ptr<::arrow::Scalar>> ToArrowScalar(const Literal& literal,
+                                                       ::arrow::MemoryPool* pool);
 
 /// \brief Create an Arrow array of `num_rows` rows where every row holds the literal
 /// value, e.g. to materialize a missing column with a default value.
