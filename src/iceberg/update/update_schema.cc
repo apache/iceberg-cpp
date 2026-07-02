@@ -299,6 +299,10 @@ std::vector<SchemaField> ApplyChangesVisitor::MoveFields(
 /// the column scale), so differing scales fall through to `CastTo` and are rejected. All
 /// other conversions delegate to `CastTo`, which reports narrowing via AboveMax/BelowMin
 /// sentinels that callers reject.
+///
+/// \pre `target_type` is non-null; every caller passes a resolved field type. `value` is
+/// the caller's dereferenced default, so a missing default must be filtered out before
+/// this is reached.
 Result<Literal> CastDefaultToType(const Literal& value,
                                   const std::shared_ptr<PrimitiveType>& target_type) {
   if (value.type()->type_id() == TypeId::kDecimal &&
