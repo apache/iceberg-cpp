@@ -289,6 +289,24 @@ std::vector<SchemaField> ApplyChangesVisitor::MoveFields(
   return reordered;
 }
 
+/// \brief Cast a default value literal to a target primitive type.
+///
+/// `Literal::CastTo` only returns a value for identical decimal types, but schema
+/// evolution permits widening a decimal to a larger precision at the same scale. Such a
+/// promotion leaves the unscaled value unchanged, so the literal is rebuilt with the
+/// target type instead of going through `CastTo`. All other conversions delegate to
+/// `CastTo`, which reports narrowing via AboveMax/BelowMin sentinels that callers reject.
+Result<Literal> CastDefaultToType(const Literal& value,
+                                  const std::shared_ptr<PrimitiveType>& target_type) {
+  if (value.type()->type_id() == TypeId::kDecimal &&
+      target_type->type_id() == TypeId::kDecimal) {
+    const auto& decimal_type = internal::checked_cast<const DecimalType&>(*target_type);
+    return Literal::Decimal(std::get<Decimal>(value.value()).value(),
+                            decimal_type.precision(), decimal_type.scale());
+  }
+  return value.CastTo(target_type);
+}
+
 }  // namespace
 
 Result<std::shared_ptr<UpdateSchema>> UpdateSchema::Make(
@@ -419,17 +437,7 @@ UpdateSchema& UpdateSchema::UpdateColumn(std::string_view name,
     if (value == nullptr) {
       return nullptr;
     }
-    // IsPromotionAllowed permits widening a decimal to a larger precision at the same
-    // scale, but Literal::CastTo only handles identical decimal types. Such a promotion
-    // leaves the unscaled value unchanged, so rebuild the literal with the new type.
-    if (value->type()->type_id() == TypeId::kDecimal &&
-        new_type->type_id() == TypeId::kDecimal) {
-      const auto& decimal_type = internal::checked_cast<const DecimalType&>(*new_type);
-      return std::make_shared<const Literal>(
-          Literal::Decimal(std::get<Decimal>(value->value()).value(),
-                           decimal_type.precision(), decimal_type.scale()));
-    }
-    ICEBERG_ASSIGN_OR_RAISE(Literal promoted, value->CastTo(new_type));
+    ICEBERG_ASSIGN_OR_RAISE(Literal promoted, CastDefaultToType(*value, new_type));
     return std::make_shared<const Literal>(std::move(promoted));
   };
   ICEBERG_BUILDER_ASSIGN_OR_RETURN(std::shared_ptr<const Literal> initial_default,
@@ -496,7 +504,8 @@ UpdateSchema& UpdateSchema::UpdateColumnDefault(std::string_view name,
                         *new_default);
   ICEBERG_BUILDER_ASSIGN_OR_RETURN_WITH_ERROR(
       Literal typed_default,
-      new_default->CastTo(internal::checked_pointer_cast<PrimitiveType>(field.type())),
+      CastDefaultToType(*new_default,
+                        internal::checked_pointer_cast<PrimitiveType>(field.type())),
       "Cannot cast default value to {}: {}", *field.type(), *new_default);
   // CastTo reports narrowing by returning sentinel values instead of failing.
   ICEBERG_BUILDER_CHECK(!typed_default.IsNull() && !typed_default.IsAboveMax() &&
@@ -797,8 +806,8 @@ UpdateSchema& UpdateSchema::AddColumnInternal(std::optional<std::string_view> pa
                           *type_with_fresh_ids, *default_value);
     ICEBERG_BUILDER_ASSIGN_OR_RETURN_WITH_ERROR(
         Literal typed_default,
-        default_value->CastTo(
-            internal::checked_pointer_cast<PrimitiveType>(type_with_fresh_ids)),
+        CastDefaultToType(*default_value, internal::checked_pointer_cast<PrimitiveType>(
+                                              type_with_fresh_ids)),
         "Cannot cast default value to {}: {}", *type_with_fresh_ids, *default_value);
     // CastTo reports narrowing by returning sentinel values instead of failing.
     ICEBERG_BUILDER_CHECK(!typed_default.IsNull() && !typed_default.IsAboveMax() &&

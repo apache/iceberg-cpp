@@ -361,6 +361,41 @@ TEST_F(UpdateSchemaDefaultValueTest, UpdateColumnTypePromotesDecimalDefault) {
   EXPECT_EQ(*field.write_default(), Literal::Decimal(1234, 18, 2));
 }
 
+TEST_F(UpdateSchemaDefaultValueTest, AddColumnWithWiderPrecisionDecimalDefault) {
+  // A decimal default whose precision differs from the column (same scale) is accepted:
+  // Literal::CastTo does not cast between decimal types, so the default is rebuilt at the
+  // column's precision instead of being rejected.
+  ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateSchema());
+  update->AddColumn("new_col", decimal(18, 2), "A decimal column",
+                    Literal::Decimal(1234, 9, 2));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(auto field_opt, result.schema->FindFieldByName("new_col"));
+  ASSERT_TRUE(field_opt.has_value());
+
+  const auto& field = field_opt->get();
+  ASSERT_NE(field.initial_default(), nullptr);
+  EXPECT_EQ(*field.initial_default(), Literal::Decimal(1234, 18, 2));
+  ASSERT_NE(field.write_default(), nullptr);
+  EXPECT_EQ(*field.write_default(), Literal::Decimal(1234, 18, 2));
+}
+
+TEST_F(UpdateSchemaDefaultValueTest, UpdateColumnDefaultWiderPrecisionDecimal) {
+  // UpdateColumnDefault accepts a decimal default whose precision differs from the
+  // column (same scale), rebuilding it at the column's precision.
+  ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateSchema());
+  update->AddColumn("new_col", decimal(18, 2), "A decimal column")
+      .UpdateColumnDefault("new_col", Literal::Decimal(1234, 9, 2));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(auto field_opt, result.schema->FindFieldByName("new_col"));
+  ASSERT_TRUE(field_opt.has_value());
+
+  const auto& field = field_opt->get();
+  ASSERT_NE(field.write_default(), nullptr);
+  EXPECT_EQ(*field.write_default(), Literal::Decimal(1234, 18, 2));
+}
+
 TEST_F(UpdateSchemaTest, AddMultipleColumns) {
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateSchema());
   update->AddColumn("col1", int32(), "First column")
