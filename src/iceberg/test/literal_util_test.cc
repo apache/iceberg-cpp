@@ -53,7 +53,8 @@ class ToArrowScalarTest : public ::testing::TestWithParam<ToArrowScalarParam> {}
 TEST_P(ToArrowScalarTest, ConvertsTypeAndValue) {
   const auto& param = GetParam();
 
-  ICEBERG_UNWRAP_OR_FAIL(auto scalar, ToArrowScalar(param.literal));
+  ICEBERG_UNWRAP_OR_FAIL(auto scalar,
+                         ToArrowScalar(param.literal, ::arrow::default_memory_pool()));
   ASSERT_TRUE(scalar->type->Equals(*param.expected->type))
       << "actual type: " << scalar->type->ToString();
   ASSERT_TRUE(scalar->Equals(*param.expected)) << "actual value: " << scalar->ToString();
@@ -124,7 +125,8 @@ INSTANTIATE_TEST_SUITE_P(
     });
 
 TEST(LiteralUtilTest, NullLiteralBecomesNullScalar) {
-  ICEBERG_UNWRAP_OR_FAIL(auto scalar, ToArrowScalar(Literal::Null(iceberg::int32())));
+  ICEBERG_UNWRAP_OR_FAIL(auto scalar, ToArrowScalar(Literal::Null(iceberg::int32()),
+                                                    ::arrow::default_memory_pool()));
   ASSERT_TRUE(scalar->type->Equals(*::arrow::int32()));
   ASSERT_FALSE(scalar->is_valid);
 }
@@ -136,7 +138,8 @@ TEST(LiteralUtilTest, SentinelLiteralsAreRejected) {
       auto above_max,
       Literal::Long(std::numeric_limits<int64_t>::max()).CastTo(iceberg::int32()));
   ASSERT_TRUE(above_max.IsAboveMax());
-  ASSERT_THAT(ToArrowScalar(above_max), IsError(ErrorKind::kNotSupported));
+  ASSERT_THAT(ToArrowScalar(above_max, ::arrow::default_memory_pool()),
+              IsError(ErrorKind::kNotSupported));
 }
 
 TEST(LiteralUtilTest, MakeDefaultArrayFillsAllRows) {
