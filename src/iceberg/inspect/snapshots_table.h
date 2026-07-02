@@ -40,6 +40,13 @@ class ICEBERG_EXPORT SnapshotsTable : public MetadataTable {
 
   Kind kind() const noexcept override { return Kind::kSnapshots; }
 
+  /// \brief Scan all snapshots as rows.
+  ///
+  /// The snapshots table always returns every known snapshot, so the
+  /// snapshot_selection parameter is ignored.
+  Result<ArrowArray> Scan(
+      std::optional<SnapshotSelection> /*snapshot_selection*/) override;
+
  private:
   explicit SnapshotsTable(std::shared_ptr<Table> table);
 };
