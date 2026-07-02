@@ -396,6 +396,28 @@ TEST_F(UpdateSchemaDefaultValueTest, UpdateColumnDefaultWiderPrecisionDecimal) {
   EXPECT_EQ(*field.write_default(), Literal::Decimal(1234, 18, 2));
 }
 
+TEST_F(UpdateSchemaDefaultValueTest, AddColumnWithDifferentScaleDecimalDefaultFails) {
+  // A decimal default whose scale differs from the column is rejected, not silently
+  // reinterpreted: the unscaled value only keeps its meaning at the same scale.
+  ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateSchema());
+  update->AddColumn("new_col", decimal(18, 2), "A decimal column",
+                    Literal::Decimal(1234, 9, 3));
+
+  auto result = update->Apply();
+  EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
+  EXPECT_THAT(result, HasErrorMessage("Cannot cast default value"));
+}
+
+TEST_F(UpdateSchemaDefaultValueTest, UpdateColumnDefaultDifferentScaleDecimalFails) {
+  ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateSchema());
+  update->AddColumn("new_col", decimal(18, 2), "A decimal column")
+      .UpdateColumnDefault("new_col", Literal::Decimal(1234, 9, 3));
+
+  auto result = update->Apply();
+  EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
+  EXPECT_THAT(result, HasErrorMessage("Cannot cast default value"));
+}
+
 TEST_F(UpdateSchemaTest, AddMultipleColumns) {
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateSchema());
   update->AddColumn("col1", int32(), "First column")

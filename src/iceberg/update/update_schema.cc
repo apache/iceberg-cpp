@@ -292,17 +292,23 @@ std::vector<SchemaField> ApplyChangesVisitor::MoveFields(
 /// \brief Cast a default value literal to a target primitive type.
 ///
 /// `Literal::CastTo` only returns a value for identical decimal types, but schema
-/// evolution permits widening a decimal to a larger precision at the same scale. Such a
+/// evolution permits widening a decimal to a larger precision at the SAME scale. Such a
 /// promotion leaves the unscaled value unchanged, so the literal is rebuilt with the
-/// target type instead of going through `CastTo`. All other conversions delegate to
-/// `CastTo`, which reports narrowing via AboveMax/BelowMin sentinels that callers reject.
+/// target type instead of going through `CastTo`. A scale change is NOT handled here: the
+/// unscaled value only keeps its meaning at the same scale (a decimal default must match
+/// the column scale), so differing scales fall through to `CastTo` and are rejected. All
+/// other conversions delegate to `CastTo`, which reports narrowing via AboveMax/BelowMin
+/// sentinels that callers reject.
 Result<Literal> CastDefaultToType(const Literal& value,
                                   const std::shared_ptr<PrimitiveType>& target_type) {
   if (value.type()->type_id() == TypeId::kDecimal &&
       target_type->type_id() == TypeId::kDecimal) {
+    const auto& source_type = internal::checked_cast<const DecimalType&>(*value.type());
     const auto& decimal_type = internal::checked_cast<const DecimalType&>(*target_type);
-    return Literal::Decimal(std::get<Decimal>(value.value()).value(),
-                            decimal_type.precision(), decimal_type.scale());
+    if (source_type.scale() == decimal_type.scale()) {
+      return Literal::Decimal(std::get<Decimal>(value.value()).value(),
+                              decimal_type.precision(), decimal_type.scale());
+    }
   }
   return value.CastTo(target_type);
 }
