@@ -31,6 +31,7 @@
 #include <avro/Types.hh>
 
 #include "iceberg/arrow/arrow_status_internal.h"
+#include "iceberg/arrow/literal_util_internal.h"
 #include "iceberg/avro/avro_data_util_internal.h"
 #include "iceberg/avro/avro_schema_util_internal.h"
 #include "iceberg/metadata_columns.h"
@@ -88,6 +89,9 @@ Status AppendStructToBuilder(const ::avro::NodePtr& avro_node,
                                                      metadata_context, field_builder));
     } else if (field_projection.kind == FieldProjection::Kind::kNull) {
       ICEBERG_ARROW_RETURN_NOT_OK(field_builder->AppendNull());
+    } else if (field_projection.kind == FieldProjection::Kind::kDefault) {
+      ICEBERG_RETURN_UNEXPECTED(arrow::AppendDefaultToBuilder(
+          std::get<Literal>(field_projection.from), field_builder));
     } else if (field_projection.kind == FieldProjection::Kind::kMetadata) {
       int32_t field_id = expected_field.field_id();
       if (field_id == MetadataColumns::kFilePathColumnId) {
@@ -464,6 +468,11 @@ Status AppendFieldToBuilder(const ::avro::NodePtr& avro_node,
   if (projection.kind == FieldProjection::Kind::kNull) {
     ICEBERG_ARROW_RETURN_NOT_OK(array_builder->AppendNull());
     return {};
+  }
+
+  if (projection.kind == FieldProjection::Kind::kDefault) {
+    return arrow::AppendDefaultToBuilder(std::get<Literal>(projection.from),
+                                         array_builder);
   }
 
   const bool is_row_lineage =

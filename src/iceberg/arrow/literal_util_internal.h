@@ -44,4 +44,8 @@ Result<std::shared_ptr<::arrow::Array>> MakeDefaultArray(
     const Literal& literal, const std::shared_ptr<::arrow::DataType>& type,
     int64_t num_rows, ::arrow::MemoryPool* pool);
 
+/// \brief Append the literal value once to `builder`, e.g. to materialize a missing
+/// field with a default value while building rows one at a time.
+Status AppendDefaultToBuilder(const Literal& literal, ::arrow::ArrayBuilder* builder);
+
 }  // namespace iceberg::arrow
