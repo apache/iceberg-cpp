@@ -23,7 +23,16 @@ source_dir=${1}
 build_dir=${1}/build
 run_example=${ICEBERG_RUN_EXAMPLE:-OFF}
 
-rm -rf "${build_dir}"
+# Clean up before configuring. If Windows still holds a just-built exe/dll
+# after the retries, let mkdir fail rather than reuse a half-deleted tree.
+for attempt in 1 2 3; do
+    if rm -rf "${build_dir}"; then
+        break
+    fi
+    if [[ "${attempt}" != "3" ]]; then
+        sleep 2
+    fi
+done
 mkdir "${build_dir}"
 pushd ${build_dir}
 

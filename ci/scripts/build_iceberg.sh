@@ -99,5 +99,13 @@ fi
 
 popd
 
-# clean up between builds
-rm -rf ${build_dir}
+# Clean up after the build. Windows can briefly hold a just-built exe/dll,
+# so retry but do not fail an otherwise successful CI job.
+for attempt in 1 2 3; do
+    if rm -rf "${build_dir}"; then
+        break
+    fi
+    if [[ "${attempt}" != "3" ]]; then
+        sleep 2
+    fi
+done
