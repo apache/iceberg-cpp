@@ -49,26 +49,19 @@ CMAKE_ARGS=(
 
 if is_windows; then
     CMAKE_ARGS+=("-DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake")
-    CMAKE_ARGS+=("-DCMAKE_BUILD_TYPE=Release")
-else
-    CMAKE_ARGS+=("-DCMAKE_BUILD_TYPE=Debug")
 fi
 
+build_type="${ICEBERG_BUILD_TYPE:-Debug}"
+CMAKE_ARGS+=("-DCMAKE_BUILD_TYPE=${build_type}")
+
 cmake "${CMAKE_ARGS[@]}" ${source_dir}
-if is_windows; then
-  cmake --build . --config Release
-  if [[ "${run_example}" == "ON" ]]; then
-    if [[ -x ./demo_example.exe ]]; then
-      ./demo_example.exe
+cmake --build .
+if [[ "${run_example}" == "ON" ]]; then
+    if is_windows; then
+        ./demo_example.exe
     else
-      ./Release/demo_example.exe
+        ./demo_example
     fi
-  fi
-else
-  cmake --build .
-  if [[ "${run_example}" == "ON" ]]; then
-    ./demo_example
-  fi
 fi
 
 popd
