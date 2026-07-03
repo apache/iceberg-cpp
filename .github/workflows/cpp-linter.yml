@@ -79,7 +79,8 @@ jobs:
             -DICEBERG_BUILD_SQL_CATALOG=ON \
             -DICEBERG_SQL_SQLITE=ON \
             -DICEBERG_SQL_POSTGRESQL=ON \
-            -DICEBERG_SQL_MYSQL=ON
+            -DICEBERG_SQL_MYSQL=ON \
+            -DICEBERG_BUILD_HIVE=ON
           cmake --build .
       - name: Show sccache stats
         shell: bash
