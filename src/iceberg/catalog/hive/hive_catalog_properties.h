@@ -73,11 +73,14 @@ class ICEBERG_HIVE_EXPORT HiveCatalogProperties
   /// \brief Thrift framing for the HMS connection ("buffered" or "framed").
   inline static Entry<std::string> kThriftTransport{"thrift-transport", "buffered"};
 
-  /// \brief HMS connect timeout, in milliseconds.
-  inline static Entry<int> kConnectTimeoutMs{"connect-timeout-ms", 30000};
+  /// \brief HMS connect timeout, in milliseconds. Stored as a string so a
+  /// malformed value surfaces as an error from `ConnectTimeoutMs()` rather
+  /// than throwing during `Get`.
+  inline static Entry<std::string> kConnectTimeoutMs{"connect-timeout-ms", "30000"};
 
-  /// \brief HMS socket / RPC timeout, in milliseconds.
-  inline static Entry<int> kSocketTimeoutMs{"socket-timeout-ms", 60000};
+  /// \brief HMS socket / RPC timeout, in milliseconds. Stored as a string for
+  /// the same reason as `kConnectTimeoutMs`.
+  inline static Entry<std::string> kSocketTimeoutMs{"socket-timeout-ms", "60000"};
 
   /// \brief When true, wrap the commit path with HMS `lock` / `unlock` for
   /// extra safety on top of the metadata_location CAS. Defaults to false
@@ -99,6 +102,14 @@ class ICEBERG_HIVE_EXPORT HiveCatalogProperties
   /// is case-insensitive to match the conventions used by other Iceberg
   /// language ports.
   Result<HiveThriftTransport> ThriftTransport() const;
+
+  /// \brief Parse `kConnectTimeoutMs` into a non-negative millisecond value.
+  /// Returns InvalidArgument for malformed or negative values.
+  Result<int> ConnectTimeoutMs() const;
+
+  /// \brief Parse `kSocketTimeoutMs` into a non-negative millisecond value.
+  /// Returns InvalidArgument for malformed or negative values.
+  Result<int> SocketTimeoutMs() const;
 };
 
 }  // namespace iceberg::hive
