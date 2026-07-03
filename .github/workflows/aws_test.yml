@@ -73,8 +73,6 @@ jobs:
       AWS_DEFAULT_REGION: us-east-1
       AWS_ENDPOINT_URL: http://127.0.0.1:9000
       AWS_EC2_METADATA_DISABLED: "TRUE"
-      SCCACHE_DIR: ${{ github.workspace }}/.sccache
-      SCCACHE_CACHE_SIZE: "2G"
     steps:
       - name: Checkout iceberg-cpp
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
@@ -114,26 +112,18 @@ jobs:
         if: ${{ matrix.s3 == 'ON' }}
         shell: bash
         run: bash ci/scripts/start_minio.sh
-      - name: Restore sccache cache
-        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      - name: Set up sccache
+        uses: ./.github/actions/setup-sccache
         with:
-          path: ${{ github.workspace }}/.sccache
-          key: sccache-aws-${{ matrix.runs-on }}-bundle${{ matrix.bundle_awssdk }}-s3${{ matrix.s3 }}-sigv4${{ matrix.sigv4 }}-${{ github.run_id }}
-          restore-keys: |
-            sccache-aws-${{ matrix.runs-on }}-bundle${{ matrix.bundle_awssdk }}-s3${{ matrix.s3 }}-sigv4${{ matrix.sigv4 }}-
-      - name: Setup sccache
-        uses: mozilla-actions/sccache-action@9e7fa8a12102821edf02ca5dbea1acd0f89a2696 # v0.0.10
+          key-prefix: sccache-aws-${{ matrix.runs-on }}-bundle${{ matrix.bundle_awssdk }}-s3${{ matrix.s3 }}-sigv4${{ matrix.sigv4 }}
       - name: Build and test Iceberg
         shell: bash
         env:
           CMAKE_TOOLCHAIN_FILE: ${{ startsWith(matrix.runs-on, 'ubuntu') && matrix.bundle_awssdk == 'OFF' && '/usr/local/share/vcpkg/scripts/buildsystems/vcpkg.cmake' || '' }}
         run: ci/scripts/build_iceberg.sh "$(pwd)" OFF ON ${{ matrix.s3 }} ${{ matrix.sigv4 }} ${{ matrix.bundle_awssdk }}
-      - name: Show sccache stats
-        shell: bash
-        run: sccache --show-stats
-      - name: Save sccache cache
-        if: github.ref == 'refs/heads/main'
-        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      - name: Save sccache
+        if: always()
+        uses: ./.github/actions/save-sccache
         with:
-          path: ${{ github.workspace }}/.sccache
-          key: sccache-aws-${{ matrix.runs-on }}-bundle${{ matrix.bundle_awssdk }}-s3${{ matrix.s3 }}-sigv4${{ matrix.sigv4 }}-${{ github.run_id }}
+          key-prefix: sccache-aws-${{ matrix.runs-on }}-bundle${{ matrix.bundle_awssdk }}-s3${{ matrix.s3 }}-sigv4${{ matrix.sigv4 }}
+          job-status: ${{ job.status }}

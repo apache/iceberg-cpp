@@ -60,9 +60,6 @@ jobs:
             runs-on: windows-2025
             cmake_build_type: Debug
             cmake_extra_args: -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake
-    env:
-      SCCACHE_DIR: ${{ github.workspace }}/.sccache
-      SCCACHE_CACHE_SIZE: "2G"
     steps:
       - name: Checkout iceberg-cpp
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
@@ -73,26 +70,6 @@ jobs:
         uses: ilammy/msvc-dev-cmd@0b201ec74fa43914dc39ae48a89fd1d8cb592756 # v1.13.0
         with:
           arch: x64
-      # GitHub patches the Windows image roughly weekly via gradual rollouts, so
-      # back-to-back runs can hit different cl.exe builds. sccache keys on the compiler,
-      # so a shared key would miss after each bump; the version keeps caches separate.
-      # Non-Windows legs get an empty suffix, leaving their keys unchanged.
-      - name: Resolve MSVC version for sccache key
-        if: ${{ startsWith(matrix.runs-on, 'windows') }}
-        shell: pwsh
-        run: |
-          $PSNativeCommandUseErrorActionPreference = $false
-          $banner = (cl.exe 2>&1 | Out-String)
-          if ($banner -match 'Version ([\d.]+)') {
-            $suffix = "-$($Matches[1])"
-          } else {
-            # The key is only a cache hint, so degrade to a shared bucket rather than
-            # fail the build; the warning flags that the parse needs fixing.
-            $suffix = '-unknown'
-            Write-Host "::warning::could not parse cl.exe version for sccache key, using '$suffix'; banner was: $banner"
-          }
-          Add-Content -Path $env:GITHUB_ENV -Value "SCCACHE_KEY_SUFFIX=$suffix"
-          Write-Host "SCCACHE_KEY_SUFFIX=$suffix"
       - name: Install dependencies on Ubuntu
         if: ${{ startsWith(matrix.runs-on, 'ubuntu') }}
         shell: bash
@@ -114,15 +91,10 @@ jobs:
         shell: pwsh
         run: |
           vcpkg install zlib:x64-windows nlohmann-json:x64-windows nanoarrow:x64-windows roaring:x64-windows sqlite3:x64-windows
-      - name: Restore sccache cache
-        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      - name: Set up sccache
+        uses: ./.github/actions/setup-sccache
         with:
-          path: ${{ github.workspace }}/.sccache
-          key: sccache-sqlcatalog-${{ matrix.runs-on }}${{ env.SCCACHE_KEY_SUFFIX }}-${{ github.run_id }}
-          restore-keys: |
-            sccache-sqlcatalog-${{ matrix.runs-on }}${{ env.SCCACHE_KEY_SUFFIX }}-
-      - name: Setup sccache
-        uses: mozilla-actions/sccache-action@9e7fa8a12102821edf02ca5dbea1acd0f89a2696 # v0.0.10
+          key-prefix: sccache-sqlcatalog-${{ matrix.runs-on }}
       - name: Configure Iceberg
         shell: bash
         run: |
@@ -140,15 +112,12 @@ jobs:
       - name: Build SQL catalog tests
         shell: bash
         run: cmake --build build --target sql_catalog_test
-      - name: Show sccache stats
-        shell: bash
-        run: sccache --show-stats
-      - name: Save sccache cache
-        if: github.ref == 'refs/heads/main'
-        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      - name: Save sccache
+        if: always()
+        uses: ./.github/actions/save-sccache
         with:
-          path: ${{ github.workspace }}/.sccache
-          key: sccache-sqlcatalog-${{ matrix.runs-on }}${{ env.SCCACHE_KEY_SUFFIX }}-${{ github.run_id }}
+          key-prefix: sccache-sqlcatalog-${{ matrix.runs-on }}
+          job-status: ${{ job.status }}
       - name: Run SQL catalog tests
         shell: bash
         run: ctest --test-dir build -R '^sql_catalog_test$' --output-on-failure -C ${{ matrix.cmake_build_type }}

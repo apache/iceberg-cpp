@@ -46,8 +46,6 @@ jobs:
       contents: read
       pull-requests: write
     env:
-      SCCACHE_DIR: ${{ github.workspace }}/.sccache
-      SCCACHE_CACHE_SIZE: "2G"
       CPP_LINTER_VERSION: "1.13.0"
       # clang-format is handled by the pre-commit workflow; cpp-linter runs
       # clang-tidy only.
@@ -62,15 +60,10 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y libcurl4-openssl-dev libsqlite3-dev libpq-dev default-libmysqlclient-dev
-      - name: Restore sccache cache
-        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      - name: Set up sccache
+        uses: ./.github/actions/setup-sccache
         with:
-          path: ${{ github.workspace }}/.sccache
-          key: sccache-cpp-linter-ubuntu-${{ github.run_id }}
-          restore-keys: |
-            sccache-cpp-linter-ubuntu-
-      - name: Setup sccache
-        uses: mozilla-actions/sccache-action@9e7fa8a12102821edf02ca5dbea1acd0f89a2696 # v0.0.10
+          key-prefix: sccache-cpp-linter-ubuntu
       - name: Run build
         env:
           CC: gcc-14
@@ -86,15 +79,12 @@ jobs:
             -DICEBERG_SQL_POSTGRESQL=ON \
             -DICEBERG_SQL_MYSQL=ON
           cmake --build .
-      - name: Show sccache stats
-        shell: bash
-        run: sccache --show-stats
-      - name: Save sccache cache
-        if: github.ref == 'refs/heads/main'
-        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      - name: Save sccache
+        if: always()
+        uses: ./.github/actions/save-sccache
         with:
-          path: ${{ github.workspace }}/.sccache
-          key: sccache-cpp-linter-ubuntu-${{ github.run_id }}
+          key-prefix: sccache-cpp-linter-ubuntu
+          job-status: ${{ job.status }}
       - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
         if: github.event_name == 'pull_request'
         with:

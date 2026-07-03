@@ -38,9 +38,6 @@ jobs:
     if: ${{ github.event_name != 'pull_request' || github.event.pull_request.draft == false }}
     name: "ASAN and UBSAN Tests"
     runs-on: ubuntu-26.04
-    env:
-      SCCACHE_DIR: ${{ github.workspace }}/.sccache
-      SCCACHE_CACHE_SIZE: "2G"
     steps:
       - name: Checkout iceberg-cpp
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
@@ -49,15 +46,10 @@ jobs:
       - name: Install dependencies
         shell: bash
         run: sudo apt-get update && sudo apt-get install -y libcurl4-openssl-dev
-      - name: Restore sccache cache
-        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      - name: Set up sccache
+        uses: ./.github/actions/setup-sccache
         with:
-          path: ${{ github.workspace }}/.sccache
-          key: sccache-sanitizer-ubuntu-${{ github.run_id }}
-          restore-keys: |
-            sccache-sanitizer-ubuntu-
-      - name: Setup sccache
-        uses: mozilla-actions/sccache-action@9e7fa8a12102821edf02ca5dbea1acd0f89a2696 # v0.0.10
+          key-prefix: sccache-sanitizer-ubuntu
       - name: Configure and Build with ASAN & UBSAN
         env:
           CC: gcc-14
@@ -67,15 +59,12 @@ jobs:
           cmake .. -G Ninja -DCMAKE_BUILD_TYPE=Debug -DICEBERG_ENABLE_ASAN=ON -DICEBERG_ENABLE_UBSAN=ON \
             -DCMAKE_C_COMPILER_LAUNCHER=sccache -DCMAKE_CXX_COMPILER_LAUNCHER=sccache
           cmake --build . --verbose
-      - name: Show sccache stats
-        shell: bash
-        run: sccache --show-stats
-      - name: Save sccache cache
-        if: github.ref == 'refs/heads/main'
-        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      - name: Save sccache
+        if: always()
+        uses: ./.github/actions/save-sccache
         with:
-          path: ${{ github.workspace }}/.sccache
-          key: sccache-sanitizer-ubuntu-${{ github.run_id }}
+          key-prefix: sccache-sanitizer-ubuntu
+          job-status: ${{ job.status }}
       - name: Run Tests
         working-directory: build
         env:

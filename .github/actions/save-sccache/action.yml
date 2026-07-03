@@ -1,0 +1,44 @@
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+
+name: Save sccache
+description: Show sccache stats and save the cache on main branch runs after setup-sccache.
+
+inputs:
+  key-prefix:
+    description: Cache key prefix without the run id or Windows compiler suffix.
+    required: true
+  job-status:
+    description: >-
+      Pass `job.status` so the cache is only saved when the job has not failed;
+      `success()` inside a composite action cannot see the caller's steps.
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Show sccache stats
+      if: always()
+      shell: bash
+      run: sccache --show-stats
+
+    - name: Save sccache cache
+      if: ${{ inputs.job-status == 'success' && github.ref == 'refs/heads/main' }}
+      uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      with:
+        path: ${{ github.workspace }}/.sccache
+        key: ${{ inputs.key-prefix }}${{ env.SCCACHE_KEY_SUFFIX }}-${{ github.run_id }}
