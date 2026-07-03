@@ -102,9 +102,16 @@ Literal LiteralCaster::AboveMaxLiteral(std::shared_ptr<PrimitiveType> type) {
 Result<Literal> LiteralCaster::CastIntegerToDecimal(
     int64_t value, const std::shared_ptr<PrimitiveType>& target_type) {
   const auto& decimal_type = internal::checked_cast<const DecimalType&>(*target_type);
+  const int32_t scale = decimal_type.scale();
+  // DecimalType does not bound its scale, but Rescale indexes a powers-of-ten table sized
+  // for [0, kMaxScale]; reject an out-of-range scale here rather than reading past it.
+  if (scale < 0 || scale > Decimal::kMaxScale) {
+    return InvalidArgument("Cannot cast {} as a {} value", value,
+                           target_type->ToString());
+  }
   // An integer has scale 0, so scaling it to the target scale multiplies the unscaled
   // value by 10^scale; Rescale rejects a target scale that would overflow the value.
-  ICEBERG_ASSIGN_OR_RAISE(auto decimal, Decimal(value).Rescale(0, decimal_type.scale()));
+  ICEBERG_ASSIGN_OR_RAISE(auto decimal, Decimal(value).Rescale(0, scale));
   if (!decimal.FitsInPrecision(decimal_type.precision())) {
     return InvalidArgument("Cannot cast {} as a {} value", value,
                            target_type->ToString());

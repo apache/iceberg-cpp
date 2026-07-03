@@ -166,6 +166,11 @@ TEST(LiteralTest, IntegerCastToDecimal) {
               IsError(ErrorKind::kInvalidArgument));
   EXPECT_THAT(Literal::Long(int64_t{100}).CastTo(decimal(4, 2)),
               IsError(ErrorKind::kInvalidArgument));
+
+  // A scale beyond the decimal powers-of-ten table is rejected rather than read past it
+  // (DecimalType does not bound its scale on construction).
+  EXPECT_THAT(Literal::Int(1).CastTo(std::make_shared<DecimalType>(9, 40)),
+              IsError(ErrorKind::kInvalidArgument));
 }
 
 // Error cases for casts
