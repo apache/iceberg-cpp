@@ -19,6 +19,9 @@
 
 #pragma once
 
+/// \file iceberg/schema_util.h
+/// \brief Provide schema projection utilities.
+
 #include <memory>
 #include <string>
 #include <variant>

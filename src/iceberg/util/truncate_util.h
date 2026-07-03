@@ -19,6 +19,9 @@
 
 #pragma once
 
+/// \file iceberg/util/truncate_util.h
+/// \brief Provide truncate transform utility helpers.
+
 #include <cstdint>
 #include <optional>
 #include <string>

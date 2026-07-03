@@ -19,6 +19,9 @@
 
 #pragma once
 
+/// \file iceberg/deletes/position_delete_range_consumer.h
+/// \brief Provide bulk application of position deletes.
+
 #include <cstdint>
 #include <span>
 #include <vector>

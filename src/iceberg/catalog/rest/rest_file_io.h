@@ -19,6 +19,9 @@
 
 #pragma once
 
+/// \file iceberg/catalog/rest/rest_file_io.h
+/// \brief Provide helpers to create FileIO instances for REST catalog responses.
+
 #include <cstdint>
 #include <memory>
 #include <string_view>

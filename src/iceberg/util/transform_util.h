@@ -19,6 +19,9 @@
 
 #pragma once
 
+/// \file iceberg/util/transform_util.h
+/// \brief Provide partition transform utility helpers.
+
 #include <cstdint>
 #include <string>
 

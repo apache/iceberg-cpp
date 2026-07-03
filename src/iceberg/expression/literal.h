@@ -19,6 +19,9 @@
 
 #pragma once
 
+/// \file iceberg/expression/literal.h
+/// \brief Define typed literal values used by expressions.
+
 #include <compare>
 #include <memory>
 #include <string>

@@ -20,6 +20,9 @@
 
 #pragma once
 
+/// \file iceberg/transaction.h
+/// \brief Define transaction APIs.
+
 #include <cstdint>
 #include <memory>
 #include <optional>

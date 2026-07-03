@@ -19,6 +19,9 @@
 
 #pragma once
 
+/// \file iceberg/snapshot.h
+/// \brief Define snapshot metadata types.
+
 #include <memory>
 #include <optional>
 #include <span>

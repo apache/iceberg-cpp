@@ -41,6 +41,7 @@ if ! command -v doxygen &> /dev/null; then
 else
     echo "Building API documentation with Doxygen..."
     cd mkdocs
+    rm -rf docs/api
     mkdir -p docs/api
     doxygen Doxyfile
     cd ..

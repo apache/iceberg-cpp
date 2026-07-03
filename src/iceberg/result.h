@@ -19,6 +19,9 @@
 
 #pragma once
 
+/// \file iceberg/result.h
+/// \brief Define Result, Status, and error helpers.
+
 #include <concepts>
 #include <expected>
 #include <format>

@@ -19,6 +19,9 @@
 
 #pragma once
 
+/// \file iceberg/util/retry_util.h
+/// \brief Provide retry policy and runner utilities.
+
 #include <chrono>
 #include <cstdint>
 #include <functional>

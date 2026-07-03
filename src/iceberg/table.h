@@ -19,6 +19,9 @@
 
 #pragma once
 
+/// \file iceberg/table.h
+/// \brief Define table abstractions and update entry points.
+
 #include <functional>
 #include <memory>
 #include <string>

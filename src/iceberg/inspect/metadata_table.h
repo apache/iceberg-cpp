@@ -19,6 +19,9 @@
 
 #pragma once
 
+/// \file iceberg/inspect/metadata_table.h
+/// \brief Define base APIs for metadata tables.
+
 #include <memory>
 
 #include "iceberg/iceberg_export.h"

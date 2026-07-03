@@ -19,6 +19,9 @@
 
 #pragma once
 
+/// \file iceberg/catalog/sql/iceberg_sql_catalog_export.h
+/// \brief Define symbol visibility macros for the SQL catalog library.
+
 #if defined(_WIN32) || defined(__CYGWIN__)
 #  ifdef ICEBERG_SQL_CATALOG_STATIC
 #    define ICEBERG_SQL_CATALOG_EXPORT

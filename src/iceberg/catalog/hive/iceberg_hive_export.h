@@ -19,6 +19,9 @@
 
 #pragma once
 
+/// \file iceberg/catalog/hive/iceberg_hive_export.h
+/// \brief Define symbol visibility macros for the Hive catalog library.
+
 #if defined(_WIN32) || defined(__CYGWIN__)
 #  ifdef ICEBERG_HIVE_STATIC
 #    define ICEBERG_HIVE_EXPORT

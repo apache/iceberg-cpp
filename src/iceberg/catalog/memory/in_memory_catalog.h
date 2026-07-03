@@ -19,6 +19,9 @@
 
 #pragma once
 
+/// \file iceberg/catalog/memory/in_memory_catalog.h
+/// \brief Provide an in-memory catalog implementation.
+
 #include <shared_mutex>
 
 #include "iceberg/catalog.h"

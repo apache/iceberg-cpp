@@ -19,6 +19,9 @@
 
 #pragma once
 
+/// \file iceberg/table_properties.h
+/// \brief Define table property helpers.
+
 #include <limits>
 #include <string>
 #include <unordered_map>

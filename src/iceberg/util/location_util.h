@@ -19,6 +19,9 @@
 
 #pragma once
 
+/// \file iceberg/util/location_util.h
+/// \brief Provide location path utilities.
+
 #include <string_view>
 
 #include "iceberg/iceberg_export.h"

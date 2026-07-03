@@ -19,6 +19,9 @@
 
 #pragma once
 
+/// \file iceberg/file_io.h
+/// \brief Define the FileIO abstraction and file stream interfaces.
+
 #include <cstddef>
 #include <cstdint>
 #include <memory>

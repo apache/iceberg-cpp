@@ -19,6 +19,9 @@
 
 #pragma once
 
+/// \file iceberg/metrics/metrics_reporter.h
+/// \brief Define metrics report dispatch APIs.
+
 #include <string>
 #include <string_view>
 #include <unordered_map>

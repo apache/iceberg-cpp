@@ -19,6 +19,9 @@
 
 #pragma once
 
+/// \file iceberg/iceberg_bundle_export.h
+/// \brief Define symbol visibility macros for bundled format integrations.
+
 #if defined(_WIN32) || defined(__CYGWIN__)
 #  ifdef ICEBERG_BUNDLE_STATIC
 #    define ICEBERG_BUNDLE_EXPORT

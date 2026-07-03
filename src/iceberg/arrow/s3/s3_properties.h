@@ -19,6 +19,9 @@
 
 #pragma once
 
+/// \file iceberg/arrow/s3/s3_properties.h
+/// \brief Define S3 configuration property keys.
+
 #include <string_view>
 
 namespace iceberg::arrow {

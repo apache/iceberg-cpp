@@ -19,6 +19,9 @@
 
 #pragma once
 
+/// \file iceberg/catalog/rest/rest_util.h
+/// \brief Provide utilities for REST catalog path and config handling.
+
 #include <string>
 #include <string_view>
 #include <unordered_map>

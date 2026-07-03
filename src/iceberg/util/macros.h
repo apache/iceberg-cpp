@@ -19,6 +19,9 @@
 
 #pragma once
 
+/// \file iceberg/util/macros.h
+/// \brief Define common Iceberg utility macros.
+
 #include <cassert>
 
 #include "iceberg/exception.h"

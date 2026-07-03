@@ -18,6 +18,9 @@
  */
 #pragma once
 
+/// \file iceberg/util/config.h
+/// \brief Provide typed configuration helpers.
+
 #include <format>
 #include <functional>
 #include <string>

@@ -19,6 +19,9 @@
 
 #pragma once
 
+/// \file iceberg/catalog/rest/http_request.h
+/// \brief Define REST HTTP request types.
+
 #include <algorithm>
 #include <cctype>
 #include <cstddef>

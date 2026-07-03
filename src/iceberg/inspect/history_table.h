@@ -19,6 +19,9 @@
 
 #pragma once
 
+/// \file iceberg/inspect/history_table.h
+/// \brief Define the history metadata table.
+
 #include <memory>
 
 #include "iceberg/iceberg_export.h"

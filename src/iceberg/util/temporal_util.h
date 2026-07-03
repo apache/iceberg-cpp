@@ -19,6 +19,9 @@
 
 #pragma once
 
+/// \file iceberg/util/temporal_util.h
+/// \brief Provide date and timestamp conversion utilities.
+
 #include <chrono>
 #include <cstdint>
 #include <string_view>

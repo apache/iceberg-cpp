@@ -33,6 +33,7 @@ install-deps:
 
 build-api-docs:
 	cd mkdocs && \
+	rm -rf docs/api && \
 	mkdir -p docs/api && \
 	doxygen Doxyfile && \
 	echo "Doxygen output created in docs/api/"

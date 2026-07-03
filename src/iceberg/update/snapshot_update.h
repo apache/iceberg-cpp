@@ -19,6 +19,9 @@
 
 #pragma once
 
+/// \file iceberg/update/snapshot_update.h
+/// \brief Define base APIs for snapshot updates.
+
 #include <atomic>
 #include <functional>
 #include <memory>

@@ -19,6 +19,9 @@
 
 #pragma once
 
+/// \file iceberg/util/task_group.h
+/// \brief Provide grouped task execution utilities.
+
 #include <concepts>
 #include <optional>
 #include <type_traits>

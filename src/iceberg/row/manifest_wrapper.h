@@ -19,7 +19,7 @@
 
 #pragma once
 
-/// \file iceberg/manifest_wrapper.h
+/// \file iceberg/row/manifest_wrapper.h
 /// Wrapper classes for manifest-related data structures that implement
 /// StructLike, ArrayLike, and MapLike interfaces for unified data access.
 

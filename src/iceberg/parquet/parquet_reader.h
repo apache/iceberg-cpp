@@ -19,6 +19,9 @@
 
 #pragma once
 
+/// \file iceberg/parquet/parquet_reader.h
+/// \brief Provide the Parquet file reader interface.
+
 #include "iceberg/file_reader.h"
 #include "iceberg/iceberg_bundle_export.h"
 

@@ -19,6 +19,9 @@
 
 #pragma once
 
+/// \file iceberg/storage_credential.h
+/// \brief Define storage credential metadata.
+
 #include <string>
 #include <unordered_map>
 

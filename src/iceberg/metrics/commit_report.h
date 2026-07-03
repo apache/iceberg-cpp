@@ -19,6 +19,9 @@
 
 #pragma once
 
+/// \file iceberg/metrics/commit_report.h
+/// \brief Define commit metrics and reports.
+
 #include <memory>
 #include <optional>
 #include <string>

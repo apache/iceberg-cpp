@@ -19,6 +19,9 @@
 
 #pragma once
 
+/// \file iceberg/avro/avro_reader.h
+/// \brief Provide the Avro file reader interface.
+
 #include "iceberg/file_reader.h"
 #include "iceberg/iceberg_bundle_export.h"
 

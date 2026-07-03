@@ -19,6 +19,9 @@
 
 #pragma once
 
+/// \file iceberg/metrics/timer.h
+/// \brief Define metrics timers.
+
 #include <atomic>
 #include <chrono>
 #include <cstdint>

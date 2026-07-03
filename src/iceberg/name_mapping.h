@@ -19,6 +19,9 @@
 
 #pragma once
 
+/// \file iceberg/name_mapping.h
+/// \brief Define schema name mapping APIs.
+
 #include <functional>
 #include <map>
 #include <memory>

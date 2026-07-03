@@ -19,6 +19,9 @@
 
 #pragma once
 
+/// \file iceberg/catalog/session_catalog.h
+/// \brief Define session catalog routing APIs.
+
 #include <memory>
 #include <string_view>
 

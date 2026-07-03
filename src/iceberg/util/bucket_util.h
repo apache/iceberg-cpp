@@ -19,6 +19,9 @@
 
 #pragma once
 
+/// \file iceberg/util/bucket_util.h
+/// \brief Provide bucket transform utilities.
+
 #include <cstdint>
 #include <span>
 

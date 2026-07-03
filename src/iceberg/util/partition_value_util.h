@@ -19,7 +19,7 @@
 
 #pragma once
 
-/// \file iceberg/row/partition_values.h
+/// \file iceberg/util/partition_value_util.h
 /// Wrapper classes for partition value related data structures.
 
 #include <functional>

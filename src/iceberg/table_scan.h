@@ -19,6 +19,9 @@
 
 #pragma once
 
+/// \file iceberg/table_scan.h
+/// \brief Define table scan APIs and scan task types.
+
 #include <functional>
 #include <memory>
 #include <optional>

@@ -19,6 +19,9 @@
 
 #pragma once
 
+/// \file iceberg/avro/avro_metrics.h
+/// \brief Compute Iceberg metrics for Avro data files.
+
 #include "iceberg/iceberg_bundle_export.h"
 #include "iceberg/metrics.h"
 

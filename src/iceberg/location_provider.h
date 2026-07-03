@@ -19,6 +19,9 @@
 
 #pragma once
 
+/// \file iceberg/location_provider.h
+/// \brief Define table data location providers.
+
 #include <memory>
 #include <string>
 #include <string_view>
