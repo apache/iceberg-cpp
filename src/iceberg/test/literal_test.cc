@@ -173,6 +173,41 @@ TEST(LiteralTest, IntegerCastToDecimal) {
               IsError(ErrorKind::kInvalidArgument));
 }
 
+TEST(LiteralTest, RealCastToDecimal) {
+  // A double is scaled to the target scale keeping its unscaled value: 9.99 ->
+  // 999@(10,2).
+  auto d = Literal::Double(9.99).CastTo(decimal(10, 2));
+  ASSERT_THAT(d, IsOk());
+  EXPECT_EQ(*d, Literal::Decimal(999, 10, 2));
+
+  auto f = Literal::Float(1.5f).CastTo(decimal(4, 3));
+  ASSERT_THAT(f, IsOk());
+  EXPECT_EQ(*f, Literal::Decimal(1500, 4, 3));
+
+  // Rounding is HALF_UP (round half away from zero), matching Java: 2.5 -> 3 (not the
+  // banker's-rounding 2), and -2.5 -> -3.
+  auto half_up = Literal::Double(2.5).CastTo(decimal(2, 0));
+  ASSERT_THAT(half_up, IsOk());
+  EXPECT_EQ(*half_up, Literal::Decimal(3, 2, 0));
+
+  auto neg_half_up = Literal::Double(-2.5).CastTo(decimal(2, 0));
+  ASSERT_THAT(neg_half_up, IsOk());
+  EXPECT_EQ(*neg_half_up, Literal::Decimal(-3, 2, 0));
+
+  // Below the halfway point rounds down.
+  auto round_down = Literal::Double(2.4).CastTo(decimal(2, 0));
+  ASSERT_THAT(round_down, IsOk());
+  EXPECT_EQ(*round_down, Literal::Decimal(2, 2, 0));
+
+  // A value whose rounded form exceeds the target precision is rejected.
+  EXPECT_THAT(Literal::Double(123.4).CastTo(decimal(2, 0)),
+              IsError(ErrorKind::kInvalidArgument));
+  // Non-finite values cannot be represented as a decimal.
+  EXPECT_THAT(
+      Literal::Double(std::numeric_limits<double>::quiet_NaN()).CastTo(decimal(4, 2)),
+      IsError(ErrorKind::kInvalidArgument));
+}
+
 // Error cases for casts
 TEST(LiteralTest, CastToError) {
   std::vector<uint8_t> data = {0x01, 0x02, 0x03, 0x04};

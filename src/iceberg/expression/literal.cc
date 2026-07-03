@@ -22,6 +22,7 @@
 #include <cmath>
 #include <concepts>
 #include <cstdint>
+#include <format>
 #include <string>
 #include <vector>
 
@@ -89,6 +90,10 @@ class LiteralCaster {
   /// Cast an integer value (from Int or Long) to a decimal target type.
   static Result<Literal> CastIntegerToDecimal(
       int64_t value, const std::shared_ptr<PrimitiveType>& target_type);
+
+  /// Cast a floating-point value (from Float or Double) to a decimal target type.
+  static Result<Literal> CastRealToDecimal(
+      double value, const std::shared_ptr<PrimitiveType>& target_type);
 };
 
 Literal LiteralCaster::BelowMinLiteral(std::shared_ptr<PrimitiveType> type) {
@@ -118,6 +123,50 @@ Result<Literal> LiteralCaster::CastIntegerToDecimal(
   }
   return Literal::Decimal(decimal.value(), decimal_type.precision(),
                           decimal_type.scale());
+}
+
+Result<Literal> LiteralCaster::CastRealToDecimal(
+    double value, const std::shared_ptr<PrimitiveType>& target_type) {
+  const auto& decimal_type = internal::checked_cast<const DecimalType&>(*target_type);
+  const int32_t target_scale = decimal_type.scale();
+  if (target_scale < 0 || target_scale > Decimal::kMaxScale) {
+    return InvalidArgument("Cannot cast {} as a {} value", value,
+                           target_type->ToString());
+  }
+  if (!std::isfinite(value)) {
+    return InvalidArgument("Cannot cast {} as a {} value", value,
+                           target_type->ToString());
+  }
+
+  // Parse the shortest round-tripping decimal representation of the value (matching
+  // Java's BigDecimal.valueOf(double), which goes through Double.toString) into a
+  // full-precision decimal, then round to the target scale below.
+  int32_t parsed_scale = 0;
+  ICEBERG_ASSIGN_OR_RAISE(
+      auto parsed, Decimal::FromString(std::format("{}", value), nullptr, &parsed_scale));
+
+  Decimal unscaled = parsed;
+  if (parsed_scale > target_scale) {
+    // Drop excess fractional digits with HALF_UP rounding (round half away from zero, as
+    // Java does), since Rescale itself only truncates and rejects any dropped remainder.
+    const int32_t drop = parsed_scale - target_scale;
+    ICEBERG_ASSIGN_OR_RAISE(auto divisor, Decimal(1).Rescale(0, drop));
+    ICEBERG_ASSIGN_OR_RAISE(auto divmod, parsed.Divide(divisor));
+    Decimal quotient = divmod.first;
+    Decimal remainder = Decimal::Abs(divmod.second);
+    if (remainder * Decimal(2) >= divisor) {
+      quotient += (value < 0) ? Decimal(-1) : Decimal(1);
+    }
+    unscaled = quotient;
+  } else if (parsed_scale < target_scale) {
+    ICEBERG_ASSIGN_OR_RAISE(unscaled, parsed.Rescale(parsed_scale, target_scale));
+  }
+
+  if (!unscaled.FitsInPrecision(decimal_type.precision())) {
+    return InvalidArgument("Cannot cast {} as a {} value", value,
+                           target_type->ToString());
+  }
+  return Literal::Decimal(unscaled.value(), decimal_type.precision(), target_scale);
 }
 
 Result<Literal> LiteralCaster::CastFromInt(
@@ -195,6 +244,8 @@ Result<Literal> LiteralCaster::CastFromFloat(
   switch (target_type->type_id()) {
     case TypeId::kDouble:
       return Literal::Double(static_cast<double>(float_val));
+    case TypeId::kDecimal:
+      return CastRealToDecimal(static_cast<double>(float_val), target_type);
     default:
       return NotSupported("Cast from Float to {} is not supported",
                           target_type->ToString());
@@ -215,6 +266,8 @@ Result<Literal> LiteralCaster::CastFromDouble(
       }
       return Literal::Float(static_cast<float>(double_val));
     }
+    case TypeId::kDecimal:
+      return CastRealToDecimal(double_val, target_type);
     default:
       return NotSupported("Cast from Double to {} is not supported",
                           target_type->ToString());
