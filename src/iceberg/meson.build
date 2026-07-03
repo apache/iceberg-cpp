@@ -189,15 +189,26 @@ croaring_dep = dependency('croaring', static: croaring_needs_static)
 nanoarrow_dep = dependency('nanoarrow')
 nlohmann_json_dep = dependency('nlohmann_json')
 spdlog_dep = dependency('spdlog')
+# utf8proc's header declares its functions __declspec(dllimport) on Windows unless
+# UTF8PROC_STATIC is defined, and the wrap does not propagate that define to consumers.
+# Define it whenever utf8proc is linked statically, so the header's declarations match
+# how it is linked. Harmless on other platforms.
+utf8proc_needs_static = get_option('default_library') == 'static'
+utf8proc_dep = dependency('libutf8proc', static: utf8proc_needs_static)
+if utf8proc_needs_static
+    utf8proc_dep = declare_dependency(
+        compile_args: ['-DUTF8PROC_STATIC'],
+        dependencies: utf8proc_dep,
+    )
+endif
 zlib_dep = dependency('zlib')
-utf8proc_dep = dependency('libutf8proc')
 
 iceberg_deps = [
     nanoarrow_dep,
     nlohmann_json_dep,
     spdlog_dep,
-    zlib_dep,
     utf8proc_dep,
+    zlib_dep,
 ]
 
 iceberg_lib = library(

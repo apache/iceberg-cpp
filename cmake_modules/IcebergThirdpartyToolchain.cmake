@@ -72,6 +72,7 @@ endfunction()
 # ICEBERG_AVRO_GIT_URL       - Apache Avro git repository URL
 # ICEBERG_NANOARROW_URL      - Nanoarrow tarball URL
 # ICEBERG_CROARING_URL       - CRoaring tarball URL
+# ICEBERG_UTF8PROC_URL       - utf8proc tarball URL
 # ICEBERG_NLOHMANN_JSON_URL  - nlohmann-json tarball URL
 # ICEBERG_SPDLOG_URL         - spdlog tarball URL
 # ICEBERG_CPR_URL            - cpr tarball URL
@@ -106,6 +107,20 @@ else()
       "https://www.apache.org/dyn/closer.lua?action=download&filename=/arrow/apache-arrow-nanoarrow-${ICEBERG_NANOARROW_BUILD_VERSION}/apache-arrow-nanoarrow-${ICEBERG_NANOARROW_BUILD_VERSION}.tar.gz"
       "https://downloads.apache.org/arrow/apache-arrow-nanoarrow-${ICEBERG_NANOARROW_BUILD_VERSION}/apache-arrow-nanoarrow-${ICEBERG_NANOARROW_BUILD_VERSION}.tar.gz"
       "https://archive.apache.org/dist/arrow/apache-arrow-nanoarrow-${ICEBERG_NANOARROW_BUILD_VERSION}/apache-arrow-nanoarrow-${ICEBERG_NANOARROW_BUILD_VERSION}.tar.gz"
+  )
+endif()
+
+set(ICEBERG_UTF8PROC_BUILD_VERSION "2.10.0")
+set(ICEBERG_UTF8PROC_BUILD_SHA256_CHECKSUM
+    "276a37dc4d1dd24d7896826a579f4439d1e5fe33603add786bb083cab802e23e")
+
+if(DEFINED ENV{ICEBERG_UTF8PROC_URL})
+  set(UTF8PROC_SOURCE_URL "$ENV{ICEBERG_UTF8PROC_URL}")
+else()
+  # Use the release asset (stable bytes, matching subprojects/utf8proc.wrap) rather
+  # than the auto-generated tag archive, whose contents GitHub does not guarantee.
+  set(UTF8PROC_SOURCE_URL
+      "https://github.com/JuliaStrings/utf8proc/releases/download/v${ICEBERG_UTF8PROC_BUILD_VERSION}/utf8proc-${ICEBERG_UTF8PROC_BUILD_VERSION}.tar.gz"
   )
 endif()
 
@@ -427,20 +442,19 @@ endfunction()
 function(resolve_utf8proc_dependency)
   prepare_fetchcontent()
 
-  if(DEFINED ENV{ICEBERG_UTF8PROC_URL})
-    set(UTF8PROC_URL "$ENV{ICEBERG_UTF8PROC_URL}")
-  else()
-    set(UTF8PROC_URL
-        "https://github.com/JuliaStrings/utf8proc/archive/refs/tags/v2.10.0.tar.gz")
-  endif()
+  # The vendored build needs no install rules; without this, CMake < 3.28 (where
+  # FetchContent has no EXCLUDE_FROM_ALL) would install utf8proc's headers and
+  # pkg-config file into the iceberg install prefix.
+  set(UTF8PROC_INSTALL OFF)
 
   fetchcontent_declare(utf8proc
                        ${FC_DECLARE_COMMON_OPTIONS}
-                       URL ${UTF8PROC_URL}
-                           FIND_PACKAGE_ARGS
-                           NAMES
-                           utf8proc
-                           CONFIG)
+                       URL ${UTF8PROC_SOURCE_URL}
+                       URL_HASH "SHA256=${ICEBERG_UTF8PROC_BUILD_SHA256_CHECKSUM}"
+                       FIND_PACKAGE_ARGS
+                       NAMES
+                       utf8proc
+                       CONFIG)
   fetchcontent_makeavailable(utf8proc)
 
   if(utf8proc_SOURCE_DIR)

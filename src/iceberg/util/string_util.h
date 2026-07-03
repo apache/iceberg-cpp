@@ -22,6 +22,7 @@
 #include <algorithm>
 #include <cerrno>
 #include <charconv>
+#include <optional>
 #include <ranges>
 #include <string>
 #include <string_view>
@@ -49,7 +50,11 @@ class ICEBERG_EXPORT StringUtils {
   /// above) maps to U+0069 ("i") here, but to U+0069 U+0307 ("i" + combining dot above)
   /// in Java. For ASCII and the large majority of letters the two agree.
   ///
-  /// Invalid UTF-8 input is returned unchanged.
+  /// Pure-ASCII input takes a byte-wise fast path; utf8proc is only invoked when a
+  /// non-ASCII byte (>= 0x80) is present. The function is total: it never fails, and
+  /// input need not be valid UTF-8. A byte that does not begin a valid UTF-8 sequence
+  /// is copied through unchanged and decoding resumes at the next byte, so the valid
+  /// code points around it are still lower-cased.
   /// See https://github.com/apache/iceberg-cpp/issues/613.
   static std::string ToLower(std::string_view str);
 
@@ -66,19 +71,30 @@ class ICEBERG_EXPORT StringUtils {
            std::ranges::to<std::string>();
   }
 
-  /// \brief Case-insensitive equality; compares the ToLower forms of both operands and
-  /// therefore inherits ToLower's Unicode simple-mapping behavior.
+  /// \brief Case-insensitive equality using Unicode simple (1:1) case mapping.
+  ///
+  /// Equal when the ToLower forms of both operands are equal, so folding follows
+  /// ToLower's rules (e.g. "İ" (U+0130) folds to "i"). Defined for any byte sequence:
+  /// ToLower passes invalid UTF-8 bytes through unchanged, so they compare verbatim.
   static bool EqualsIgnoreCase(std::string_view lhs, std::string_view rhs) {
-    return ToLower(lhs) == ToLower(rhs);
+    const std::optional<bool> fast = AsciiEqualsIgnoreCase(lhs, rhs);
+    return fast.has_value() ? *fast : (ToLower(lhs) == ToLower(rhs));
   }
 
-  /// \brief Case-insensitive prefix test, comparing the ToLower forms of both inputs.
+  /// \brief Case-insensitive prefix test using Unicode simple (1:1) case mapping.
   ///
-  /// Inherits ToLower's Unicode simple-mapping behavior. The whole strings are
-  /// lower-cased rather than byte-slicing str to prefix.size(), because ToLower can
-  /// change a string's byte length (e.g. "İ" (U+0130) is two bytes but maps to "i"),
-  /// so a byte slice could split a code point or reject a valid match.
+  /// True when the ToLower form of str starts with the ToLower form of prefix, so folding
+  /// follows ToLower's rules (e.g. "İ" (U+0130) folds to "i"). Defined for any byte
+  /// sequence: ToLower passes invalid UTF-8 bytes through unchanged, so they compare
+  /// verbatim.
   static bool StartsWithIgnoreCase(std::string_view str, std::string_view prefix) {
+    if (prefix.size() <= str.size()) {
+      const std::optional<bool> fast =
+          AsciiEqualsIgnoreCase(str.substr(0, prefix.size()), prefix);
+      if (fast.has_value()) {
+        return *fast;
+      }
+    }
     return ToLower(str).starts_with(ToLower(prefix));
   }
 
@@ -150,10 +166,37 @@ class ICEBERG_EXPORT StringUtils {
   }
 
  private:
-  // Avoids std::toupper, which is locale-dependent and has undefined behavior for
-  // negative char values.
+  // ASCII-only case mappings. These avoid std::toupper/std::tolower, which are
+  // locale-dependent and have undefined behavior for negative char values.
   static constexpr char ToUpperAscii(char c) noexcept {
     return (c >= 'a' && c <= 'z') ? static_cast<char>(c - 'a' + 'A') : c;
+  }
+  static constexpr char ToLowerAscii(char c) noexcept {
+    return (c >= 'A' && c <= 'Z') ? static_cast<char>(c - 'A' + 'a') : c;
+  }
+
+  // True if c is a 7-bit ASCII byte (< 0x80). The cast is required because char may be
+  // signed, which would make bytes >= 0x80 compare as negative.
+  static constexpr bool IsAsciiByte(char c) noexcept {
+    return (static_cast<unsigned char>(c) & 0x80) == 0;
+  }
+
+  // Case-insensitive equality decided in a single byte-wise pass, without allocating.
+  // Returns nullopt once a byte of either operand is non-ASCII, because folding can then
+  // be non-ASCII and length-changing (e.g. "İ" (U+0130) -> "i"), which only ToLower
+  // knows.
+  static std::optional<bool> AsciiEqualsIgnoreCase(std::string_view a,
+                                                   std::string_view b) {
+    const size_t n = std::min(a.size(), b.size());
+    for (size_t i = 0; i < n; ++i) {
+      if (!IsAsciiByte(a[i]) || !IsAsciiByte(b[i])) {
+        return std::nullopt;
+      }
+      if (ToLowerAscii(a[i]) != ToLowerAscii(b[i])) {
+        return false;
+      }
+    }
+    return a.size() == b.size();
   }
 };
 

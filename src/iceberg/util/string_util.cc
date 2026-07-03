@@ -31,19 +31,32 @@ std::string StringUtils::ToLower(std::string_view str) {
   std::string result;
   result.reserve(str.size());
 
+  // Lower-case ASCII bytes directly; hand non-ASCII bytes to utf8proc. The common inputs
+  // (modes, UUIDs, header/property names, enum-like strings) are pure ASCII and never
+  // touch utf8proc. utf8proc has no string-level helper, so each non-ASCII code point is
+  // decoded, mapped with utf8proc_tolower (simple 1:1 mapping, not casefolding), and
+  // re-encoded.
   const auto* data = reinterpret_cast<const utf8proc_uint8_t*>(str.data());
   const auto size = static_cast<utf8proc_ssize_t>(str.size());
   utf8proc_ssize_t offset = 0;
   while (offset < size) {
+    // An ASCII byte is a complete 1-byte code point (never a UTF-8 continuation byte),
+    // and utf8proc_tolower agrees with ToLowerAscii on it, so handle it without utf8proc.
+    if (IsAsciiByte(str[offset])) {
+      result.push_back(ToLowerAscii(str[offset]));
+      ++offset;
+      continue;
+    }
     utf8proc_int32_t code_point = 0;
     utf8proc_ssize_t consumed =
         utf8proc_iterate(data + offset, size - offset, &code_point);
     if (consumed < 0) {
-      // Invalid UTF-8: return the input unchanged rather than erroring.
-      return std::string(str);
+      // Invalid UTF-8: pass the offending byte through unchanged and resume decoding at
+      // the next byte, so the valid code points around it are still lower-cased.
+      result.push_back(str[offset]);
+      ++offset;
+      continue;
     }
-    // utf8proc has no string-level lower-case helper, so map and re-encode each code
-    // point individually. utf8proc_tolower is a simple 1:1 mapping (not casefolding).
     const utf8proc_int32_t lowered = utf8proc_tolower(code_point);
     std::array<utf8proc_uint8_t, 4> encoded{};
     const utf8proc_ssize_t written = utf8proc_encode_char(lowered, encoded.data());

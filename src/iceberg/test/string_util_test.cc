@@ -57,8 +57,31 @@ TEST(StringUtilsTest, ToLowerUnicode) {
   // "日本語" has no case mapping and is returned verbatim.
   ASSERT_EQ(StringUtils::ToLower("\xE6\x97\xA5\xE6\x9C\xAC\xE8\xAA\x9E"),
             "\xE6\x97\xA5\xE6\x9C\xAC\xE8\xAA\x9E");
-  // Invalid UTF-8 (a lone 0xFF byte) is returned unchanged rather than erroring.
+  // ASCII prefix before the first non-ASCII byte takes the fast path; the rest goes
+  // through utf8proc. "ABÉ" -> "abé".
+  ASSERT_EQ(StringUtils::ToLower("AB\xC3\x89"), "ab\xC3\xA9");
+  // An invalid UTF-8 byte (a lone 0xFF) passes through unchanged rather than erroring.
   ASSERT_EQ(StringUtils::ToLower("\xFF"), "\xFF");
+  // An invalid byte only passes through itself; the valid code points around it are
+  // still lower-cased ("AB" 0xFF "CÉ" -> "ab" 0xFF "cé").
+  ASSERT_EQ(StringUtils::ToLower("AB\xFF"
+                                 "C\xC3\x89"),
+            "ab\xFF"
+            "c\xC3\xA9");
+  // The invalid byte can abut a multi-byte code point with no ASCII between them; 0xFF
+  // passes through and the adjacent "É" still lower-cases to "é" (0xFF "É" -> 0xFF "é").
+  ASSERT_EQ(StringUtils::ToLower("\xFF\xC3\x89"), "\xFF\xC3\xA9");
+  // A truncated multi-byte sequence (0xC3 with no continuation byte) passes through
+  // without consuming the bytes after it.
+  ASSERT_EQ(StringUtils::ToLower("\xC3"
+                                 "AB"),
+            "\xC3"
+            "ab");
+  // A stray continuation byte (0x80) behaves the same way.
+  ASSERT_EQ(StringUtils::ToLower("A\x80"
+                                 "B"),
+            "a\x80"
+            "b");
 }
 
 // ToUpper is intentionally ASCII-only; non-ASCII (multibyte UTF-8) bytes pass through.
@@ -84,6 +107,23 @@ TEST(StringUtilsTest, EqualsIgnoreCase) {
                                     "e"));
   // Different letters still differ ("café" vs "cafe").
   ASSERT_FALSE(StringUtils::EqualsIgnoreCase("caf\xC3\xA9", "cafe"));
+  // Fallback correctness: an ASCII operand can equal a non-ASCII one once lower-cased,
+  // even though their raw byte lengths differ. "İ" (U+0130 = 0xC4 0xB0, two bytes)
+  // lower-cases to one-byte "i", so it must compare equal to "i" and "I".
+  ASSERT_TRUE(StringUtils::EqualsIgnoreCase("i", "\xC4\xB0"));
+  ASSERT_TRUE(StringUtils::EqualsIgnoreCase("\xC4\xB0", "I"));
+  // The non-ASCII byte can appear after a matching ASCII prefix ("abi" vs "abİ").
+  ASSERT_TRUE(StringUtils::EqualsIgnoreCase("abi", "ab\xC4\xB0"));
+  // Pure-ASCII operands that share a prefix but differ in length are not equal.
+  ASSERT_FALSE(StringUtils::EqualsIgnoreCase("abc", "ab"));
+  // Operands containing invalid UTF-8 are still compared case-insensitively on their
+  // valid parts; the invalid bytes themselves compare verbatim.
+  ASSERT_TRUE(
+      StringUtils::EqualsIgnoreCase("AB\xFF"
+                                    "C",
+                                    "ab\xFF"
+                                    "c"));
+  ASSERT_FALSE(StringUtils::EqualsIgnoreCase("\xFF", "\xFE"));
 }
 
 TEST(StringUtilsTest, StartsWithIgnoreCase) {
@@ -105,6 +145,61 @@ TEST(StringUtilsTest, StartsWithIgnoreCase) {
       StringUtils::StartsWithIgnoreCase("CAF\xC3\x89"
                                         "bar",
                                         "caf\xC3\xA9"));
+  // Invalid UTF-8 bytes compare verbatim in the prefix as well.
+  ASSERT_TRUE(
+      StringUtils::StartsWithIgnoreCase("AB\xFF"
+                                        "x",
+                                        "ab\xFF"));
+  ASSERT_FALSE(StringUtils::StartsWithIgnoreCase("ab\xFE", "ab\xFF"));
+}
+
+// The ASCII fast paths in EqualsIgnoreCase / StartsWithIgnoreCase must agree with their
+// documented ToLower-based semantics for every input, including length-changing case
+// mappings and invalid UTF-8. Rather than enumerate cases by hand, exhaustively compare
+// both functions against the ToLower oracle over all short strings built from a small
+// alphabet that straddles those boundaries. This is the mechanical form of the #760
+// regression, where a fast path disagreed with ToLower on a length-changing mapping.
+TEST(StringUtilsTest, IgnoreCaseAgreesWithToLowerOracle) {
+  // Atoms mix ASCII (upper/lower, including the lowercase targets of the multi-byte
+  // mappings) with a 2-byte code point that lower-cases to one byte ("İ" U+0130 -> "i"),
+  // a 3-byte one that also shrinks to one byte ("K" U+212A -> "k"), an ordinary 2-byte
+  // cased letter ("É"), and an invalid UTF-8 byte.
+  const std::vector<std::string> atoms = {
+      "a", "I", "i", "k", "\xC4\xB0", "\xE2\x84\xAA", "\xC3\x89", "\xFF"};
+
+  // Build every string of 0..3 atoms, one generation (length) at a time.
+  std::vector<std::string> inputs = {""};
+  size_t generation_begin = 0;
+  for (int len = 0; len < 3; ++len) {
+    const size_t generation_end = inputs.size();
+    for (size_t i = generation_begin; i < generation_end; ++i) {
+      for (const auto& atom : atoms) {
+        inputs.push_back(inputs[i] + atom);
+      }
+    }
+    generation_begin = generation_end;
+  }
+
+  // Precompute the oracle so the O(n^2) comparison below does not re-lower each string.
+  std::vector<std::string> lowered;
+  lowered.reserve(inputs.size());
+  for (const auto& s : inputs) {
+    lowered.push_back(StringUtils::ToLower(s));
+  }
+
+  for (size_t i = 0; i < inputs.size(); ++i) {
+    for (size_t j = 0; j < inputs.size(); ++j) {
+      EXPECT_EQ(StringUtils::EqualsIgnoreCase(inputs[i], inputs[j]),
+                lowered[i] == lowered[j])
+          << "EqualsIgnoreCase disagreed for a=" << testing::PrintToString(inputs[i])
+          << " b=" << testing::PrintToString(inputs[j]);
+      EXPECT_EQ(StringUtils::StartsWithIgnoreCase(inputs[i], inputs[j]),
+                lowered[i].starts_with(lowered[j]))
+          << "StartsWithIgnoreCase disagreed for str="
+          << testing::PrintToString(inputs[i])
+          << " prefix=" << testing::PrintToString(inputs[j]);
+    }
+  }
 }
 
 }  // namespace iceberg
