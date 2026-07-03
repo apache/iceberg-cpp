@@ -123,9 +123,7 @@ Result<std::shared_ptr<::arrow::Scalar>> ToArrowScalar(const Literal& literal,
       return std::make_shared<::arrow::DoubleScalar>(std::get<double>(value));
     case TypeId::kDecimal: {
       const auto& decimal = std::get<Decimal>(value);
-      ::arrow::Decimal128 arrow_decimal(
-          static_cast<int64_t>(decimal.value() >> 64),
-          static_cast<uint64_t>(decimal.value() & ~uint64_t{0}));
+      ::arrow::Decimal128 arrow_decimal(decimal.high(), decimal.low());
       return std::make_shared<::arrow::Decimal128Scalar>(arrow_decimal,
                                                          std::move(arrow_type));
     }
