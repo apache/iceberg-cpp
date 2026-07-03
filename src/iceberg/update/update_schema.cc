@@ -300,18 +300,33 @@ std::vector<SchemaField> ApplyChangesVisitor::MoveFields(
 /// other conversions delegate to `CastTo`, which reports narrowing via AboveMax/BelowMin
 /// sentinels that callers reject.
 ///
+/// The fast path only fires for a literal that actually holds a `Decimal` value: a typed
+/// null default (`Literal::Null(decimal(...))`) or a sentinel carries decimal type
+/// metadata but no `Decimal` payload, so those fall through to `CastTo` and are handled
+/// by the same null/sentinel rejection the callers already apply, rather than being
+/// force-relabeled.
+///
 /// \pre `target_type` is non-null; every caller passes a resolved field type. `value` is
 /// the caller's dereferenced default, so a missing default must be filtered out before
 /// this is reached.
 Result<Literal> CastDefaultToType(const Literal& value,
                                   const std::shared_ptr<PrimitiveType>& target_type) {
-  if (value.type()->type_id() == TypeId::kDecimal &&
-      target_type->type_id() == TypeId::kDecimal) {
+  if (target_type->type_id() == TypeId::kDecimal &&
+      std::holds_alternative<Decimal>(value.value())) {
     const auto& source_type = internal::checked_cast<const DecimalType&>(*value.type());
     const auto& decimal_type = internal::checked_cast<const DecimalType&>(*target_type);
     if (source_type.scale() == decimal_type.scale()) {
-      return Literal::Decimal(std::get<Decimal>(value.value()).value(),
-                              decimal_type.precision(), decimal_type.scale());
+      const auto& decimal_value = std::get<Decimal>(value.value());
+      // Relabeling keeps the unscaled value but adopts the target precision, so reject a
+      // value that does not fit it. Otherwise the widened literal passes schema
+      // validation yet serializes to metadata the JSON parser later rejects for exceeding
+      // precision.
+      if (!decimal_value.FitsInPrecision(decimal_type.precision())) {
+        return InvalidArgument("Cannot cast default value to {}: {}", *target_type,
+                               value);
+      }
+      return Literal::Decimal(decimal_value.value(), decimal_type.precision(),
+                              decimal_type.scale());
     }
   }
   return value.CastTo(target_type);

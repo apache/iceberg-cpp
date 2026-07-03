@@ -418,6 +418,32 @@ TEST_F(UpdateSchemaDefaultValueTest, UpdateColumnDefaultDifferentScaleDecimalFai
   EXPECT_THAT(result, HasErrorMessage("Cannot cast default value"));
 }
 
+TEST_F(UpdateSchemaDefaultValueTest, AddColumnWithOutOfPrecisionDecimalDefaultFails) {
+  // A same-scale decimal default whose unscaled value exceeds the column precision is
+  // rejected here, rather than being relabeled and later rejected by the JSON parser when
+  // the metadata is read back.
+  ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateSchema());
+  update->AddColumn("new_col", decimal(4, 2), "A decimal column",
+                    Literal::Decimal(1234567, 9, 2));
+
+  auto result = update->Apply();
+  EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
+  EXPECT_THAT(result, HasErrorMessage("Cannot cast default value"));
+}
+
+TEST_F(UpdateSchemaDefaultValueTest, AddColumnWithTypedNullDecimalDefaultFails) {
+  // A typed null default carries decimal type metadata but no Decimal payload; the
+  // same-scale fast path must not read a Decimal out of it (which would be undefined),
+  // so it falls through and is rejected as a null default.
+  ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateSchema());
+  update->AddColumn("new_col", decimal(18, 2), "A decimal column",
+                    Literal::Null(decimal(18, 2)));
+
+  auto result = update->Apply();
+  EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
+  EXPECT_THAT(result, HasErrorMessage("Cannot cast default value"));
+}
+
 TEST_F(UpdateSchemaTest, AddMultipleColumns) {
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateSchema());
   update->AddColumn("col1", int32(), "First column")
