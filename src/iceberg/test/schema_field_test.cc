@@ -20,11 +20,13 @@
 #include "iceberg/schema_field.h"
 
 #include <format>
+#include <limits>
 #include <memory>
 
 #include <gtest/gtest.h>
 
 #include "iceberg/expression/literal.h"
+#include "iceberg/test/matchers.h"
 #include "iceberg/type.h"
 #include "iceberg/util/formatter.h"  // IWYU pragma: keep
 
@@ -168,6 +170,36 @@ TEST(SchemaFieldTest, CastDefaultValue) {
         SchemaField::CastDefaultValue(Literal::Decimal(1234567, 9, 2), decimal(4, 2));
     EXPECT_FALSE(result.has_value());
   }
+}
+
+TEST(SchemaFieldTest, ValidateRejectsNonFiniteFloatingDefault) {
+  // NaN / infinity cannot be represented in JSON (the serializer emits `null`, which
+  // reads back as an absent default), so a non-finite floating default must be rejected.
+  SchemaField nan_field(/*field_id=*/1, /*name=*/"f", float32(),
+                        /*optional=*/true, /*doc=*/"",
+                        std::make_shared<const Literal>(
+                            Literal::Float(std::numeric_limits<float>::quiet_NaN())));
+  EXPECT_THAT(nan_field.Validate(), IsError(ErrorKind::kInvalidSchema));
+  EXPECT_THAT(nan_field.Validate(), HasErrorMessage("must be finite"));
+
+  SchemaField inf_field(/*field_id=*/2, /*name=*/"d", float64(),
+                        /*optional=*/true, /*doc=*/"",
+                        std::make_shared<const Literal>(
+                            Literal::Double(std::numeric_limits<double>::infinity())));
+  EXPECT_THAT(inf_field.Validate(), IsError(ErrorKind::kInvalidSchema));
+
+  SchemaField neg_inf_field(/*field_id=*/3, /*name=*/"d2", float64(),
+                            /*optional=*/true, /*doc=*/"",
+                            std::make_shared<const Literal>(Literal::Double(
+                                -std::numeric_limits<double>::infinity())));
+  EXPECT_THAT(neg_inf_field.Validate(), IsError(ErrorKind::kInvalidSchema));
+}
+
+TEST(SchemaFieldTest, ValidateAcceptsFiniteFloatingDefault) {
+  SchemaField field(/*field_id=*/1, /*name=*/"f", float32(),
+                    /*optional=*/true, /*doc=*/"",
+                    std::make_shared<const Literal>(Literal::Float(1.5f)));
+  EXPECT_THAT(field.Validate(), IsOk());
 }
 
 }  // namespace iceberg
