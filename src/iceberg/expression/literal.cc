@@ -85,6 +85,10 @@ class LiteralCaster {
   /// Cast from Fixed type to target type.
   static Result<Literal> CastFromFixed(const Literal& literal,
                                        const std::shared_ptr<PrimitiveType>& target_type);
+
+  /// Cast an integer value (from Int or Long) to a decimal target type.
+  static Result<Literal> CastIntegerToDecimal(
+      int64_t value, const std::shared_ptr<PrimitiveType>& target_type);
 };
 
 Literal LiteralCaster::BelowMinLiteral(std::shared_ptr<PrimitiveType> type) {
@@ -93,6 +97,20 @@ Literal LiteralCaster::BelowMinLiteral(std::shared_ptr<PrimitiveType> type) {
 
 Literal LiteralCaster::AboveMaxLiteral(std::shared_ptr<PrimitiveType> type) {
   return Literal(Literal::AboveMax{}, std::move(type));
+}
+
+Result<Literal> LiteralCaster::CastIntegerToDecimal(
+    int64_t value, const std::shared_ptr<PrimitiveType>& target_type) {
+  const auto& decimal_type = internal::checked_cast<const DecimalType&>(*target_type);
+  // An integer has scale 0, so scaling it to the target scale multiplies the unscaled
+  // value by 10^scale; Rescale rejects a target scale that would overflow the value.
+  ICEBERG_ASSIGN_OR_RAISE(auto decimal, Decimal(value).Rescale(0, decimal_type.scale()));
+  if (!decimal.FitsInPrecision(decimal_type.precision())) {
+    return InvalidArgument("Cannot cast {} as a {} value", value,
+                           target_type->ToString());
+  }
+  return Literal::Decimal(decimal.value(), decimal_type.precision(),
+                          decimal_type.scale());
 }
 
 Result<Literal> LiteralCaster::CastFromInt(
@@ -109,6 +127,8 @@ Result<Literal> LiteralCaster::CastFromInt(
       return Literal::Double(static_cast<double>(int_val));
     case TypeId::kDate:
       return Literal::Date(int_val);
+    case TypeId::kDecimal:
+      return CastIntegerToDecimal(static_cast<int64_t>(int_val), target_type);
     default:
       return NotSupported("Cast from Int to {} is not implemented",
                           target_type->ToString());
@@ -153,6 +173,8 @@ Result<Literal> LiteralCaster::CastFromLong(
       return Literal::TimestampNs(long_val);
     case TypeId::kTimestampTzNs:
       return Literal::TimestampTzNs(long_val);
+    case TypeId::kDecimal:
+      return CastIntegerToDecimal(long_val, target_type);
     default:
       return NotSupported("Cast from Long to {} is not supported",
                           target_type->ToString());

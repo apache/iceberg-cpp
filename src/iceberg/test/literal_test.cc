@@ -150,6 +150,24 @@ TEST(LiteralTest, DoubleCastToOverflow) {
   EXPECT_TRUE(min_result->IsBelowMin());
 }
 
+TEST(LiteralTest, IntegerCastToDecimal) {
+  // An integer default is scaled up to the target decimal scale: 12 -> 12.00 keeps the
+  // unscaled value 1200 at precision/scale (9, 2).
+  auto int_result = Literal::Int(12).CastTo(decimal(9, 2));
+  ASSERT_THAT(int_result, IsOk());
+  EXPECT_EQ(*int_result, Literal::Decimal(1200, 9, 2));
+
+  auto long_result = Literal::Long(int64_t{12}).CastTo(decimal(18, 3));
+  ASSERT_THAT(long_result, IsOk());
+  EXPECT_EQ(*long_result, Literal::Decimal(12000, 18, 3));
+
+  // A value whose scaled form needs more digits than the target precision is rejected.
+  EXPECT_THAT(Literal::Int(12345).CastTo(decimal(4, 0)),
+              IsError(ErrorKind::kInvalidArgument));
+  EXPECT_THAT(Literal::Long(int64_t{100}).CastTo(decimal(4, 2)),
+              IsError(ErrorKind::kInvalidArgument));
+}
+
 // Error cases for casts
 TEST(LiteralTest, CastToError) {
   std::vector<uint8_t> data = {0x01, 0x02, 0x03, 0x04};
