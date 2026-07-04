@@ -40,11 +40,15 @@ env:
 jobs:
   ubuntu:
     if: ${{ github.event_name != 'pull_request' || github.event.pull_request.draft == false }}
-    name: AMD64 Ubuntu 26.04
+    name: AMD64 Ubuntu 26.04 (${{ matrix.cmake_build_type }})
     runs-on: ubuntu-26.04
     timeout-minutes: 30
     strategy:
       fail-fast: false
+      matrix:
+        cmake_build_type:
+          - Debug
+          - RelWithDebInfo
     env:
       SCCACHE_DIR: ${{ github.workspace }}/.sccache
       SCCACHE_CACHE_SIZE: "2G"
@@ -70,7 +74,7 @@ jobs:
         env:
           CC: gcc-14
           CXX: g++-14
-        run: ci/scripts/build_iceberg.sh $(pwd) ON ON
+        run: ci/scripts/build_iceberg.sh $(pwd) ON ON OFF OFF ON ${{ matrix.cmake_build_type }}
       - name: Show sccache stats
         shell: bash
         run: sccache --show-stats

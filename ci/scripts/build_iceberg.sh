@@ -17,7 +17,7 @@
 # specific language governing permissions and limitations
 # under the License.
 #
-# Usage: build_iceberg.sh <source_dir> [rest_integration_tests=OFF] [sccache=OFF] [s3=OFF] [sigv4=OFF] [bundle_awssdk=ON]
+# Usage: build_iceberg.sh <source_dir> [rest_integration_tests=OFF] [sccache=OFF] [s3=OFF] [sigv4=OFF] [bundle_awssdk=ON] [build_type=Debug]
 
 set -eux
 
@@ -36,6 +36,12 @@ pushd ${build_dir}
 is_windows() {
     [[ "${OSTYPE}" == "msys" || "${OSTYPE}" == "win32" || "${OSTYPE}" == "cygwin" ]]
 }
+
+if is_windows; then
+    build_type=${7:-Release}
+else
+    build_type=${7:-Debug}
+fi
 
 CMAKE_ARGS=(
     "-G Ninja"
@@ -65,13 +71,13 @@ fi
 
 if is_windows; then
     CMAKE_ARGS+=("-DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake")
-    CMAKE_ARGS+=("-DCMAKE_BUILD_TYPE=Release")
+    CMAKE_ARGS+=("-DCMAKE_BUILD_TYPE=${build_type}")
 else
     # Pass an externally provided toolchain (e.g. vcpkg for the SigV4 job)
     if [[ -n "${CMAKE_TOOLCHAIN_FILE:-}" ]]; then
         CMAKE_ARGS+=("-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}")
     fi
-    CMAKE_ARGS+=("-DCMAKE_BUILD_TYPE=Debug")
+    CMAKE_ARGS+=("-DCMAKE_BUILD_TYPE=${build_type}")
 fi
 
 if [[ "${build_enable_sccache}" == "ON" ]]; then
@@ -86,9 +92,9 @@ fi
 
 cmake "${CMAKE_ARGS[@]}" ${source_dir}
 if is_windows; then
-  cmake --build . --config Release --target install
+  cmake --build . --config "${build_type}" --target install
   if [[ "${run_tests}" == "ON" ]]; then
-    ctest --output-on-failure -C Release
+    ctest --output-on-failure -C "${build_type}"
   fi
 else
   cmake --build . --target install
