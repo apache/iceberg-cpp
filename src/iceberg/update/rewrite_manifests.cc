@@ -238,12 +238,8 @@ Status RewriteManifests::Finalize(Result<const TableMetadata*> commit_result) {
 
 bool RewriteManifests::RequiresRewrite(
     const std::unordered_set<std::string>& current_manifest_paths) const {
-  const bool has_direct_replacements = !deleted_manifests_.empty() ||
-                                       !added_manifests_.empty() ||
-                                       !rewritten_added_manifests_.empty();
-  if (!cluster_by_func_ && !predicate_ && has_direct_replacements) {
-    // Manifests are deleted and added directly, so don't rewrite unrelated manifests
-    // unless a clustering function or predicate explicitly requests it.
+  if (!cluster_by_func_) {
+    // manifests are deleted and added directly so don't perform a rewrite
     return false;
   }
   if (rewritten_manifests_.empty()) {
@@ -416,16 +412,9 @@ Result<std::vector<ManifestFile>> RewriteManifests::Rewrite(
 
   auto new_writer = [this, &schema](const RewriteWriter& rewrite_writer)
       -> Result<std::unique_ptr<ManifestWriter>> {
-    std::optional<int64_t> first_row_id = std::nullopt;
-    if (base().format_version >= 3 && rewrite_writer.content == ManifestContent::kData) {
-      // Rewritten manifests contain existing files only. Use a non-null manifest
-      // first_row_id so v3 manifest-list writing does not assign new row IDs for
-      // existing rows.
-      first_row_id = 0;
-    }
     return ManifestWriter::MakeWriter(base().format_version, SnapshotId(), ManifestPath(),
                                       ctx_->table->io(), rewrite_writer.spec, schema,
-                                      rewrite_writer.content, first_row_id);
+                                      rewrite_writer.content);
   };
 
   std::vector<ManifestFile> result;

@@ -549,45 +549,55 @@ TEST_P(RewriteManifestsTest, RewriteManifestsWithoutClusterBy) {
 
   ICEBERG_UNWRAP_OR_FAIL(auto manifests, CurrentManifests());
   ASSERT_EQ(manifests.size(), 1U);
-  EXPECT_NE(manifests[0].manifest_path, before[0].manifest_path);
+  EXPECT_EQ(manifests[0].manifest_path, before[0].manifest_path);
   ExpectManifestEntriesWithSnapshotIds(manifests[0], {file_a_->file_path},
-                                       {ManifestStatus::kExisting}, {append_id});
+                                       {ManifestStatus::kAdded}, {append_id});
 }
 
-TEST_P(RewriteManifestsTest, RewriteIfWithoutClusterBy) {
+TEST_P(RewriteManifestsTest, RewriteAfterV2ToV3UpgradeAssignsRowIds) {
+  if (format_version() != 2) {
+    GTEST_SKIP() << "This regression starts from a v2 table";
+  }
+
   ASSERT_THAT(AppendFiles({file_a_}), IsOk());
-  ICEBERG_UNWRAP_OR_FAIL(auto append_snapshot_a, table_->current_snapshot());
-  const int64_t append_id_a = append_snapshot_a->snapshot_id;
   ASSERT_THAT(AppendFiles({file_b_}), IsOk());
-  ICEBERG_UNWRAP_OR_FAIL(auto append_snapshot_b, table_->current_snapshot());
-  const int64_t append_id_b = append_snapshot_b->snapshot_id;
-  ASSERT_THAT(AppendFiles({file_c_}), IsOk());
-  ICEBERG_UNWRAP_OR_FAIL(auto append_snapshot_c, table_->current_snapshot());
-  const int64_t append_id_c = append_snapshot_c->snapshot_id;
+
+  ICEBERG_UNWRAP_OR_FAIL(auto original_manifests, CurrentManifests());
+  ASSERT_EQ(original_manifests.size(), 2U);
+  for (const auto& manifest : original_manifests) {
+    EXPECT_FALSE(manifest.first_row_id.has_value());
+  }
+
+  ICEBERG_UNWRAP_OR_FAIL(auto props, table_->NewUpdateProperties());
+  props->Set(std::string(TableProperties::kFormatVersion.key()), "3");
+  EXPECT_THAT(props->Commit(), IsOk());
+  EXPECT_THAT(table_->Refresh(), IsOk());
+  EXPECT_EQ(table_->metadata()->format_version, 3);
+  EXPECT_EQ(table_->metadata()->next_row_id, TableMetadata::kInitialRowId);
 
   ICEBERG_UNWRAP_OR_FAIL(auto rewrite, table_->NewRewriteManifests());
-  rewrite->RewriteIf([&](const ManifestFile& manifest) {
-    auto entries_result = ReadManifestEntries(manifest);
-    if (!entries_result.has_value() || entries_result.value().empty()) {
-      return false;
-    }
-    return entries_result.value()[0].data_file->file_path != file_a_->file_path;
-  });
+  rewrite->ClusterBy([](const DataFile&) { return ""; });
   EXPECT_THAT(rewrite->Commit(), IsOk());
 
   ICEBERG_UNWRAP_OR_FAIL(auto manifests, CurrentManifests());
-  ASSERT_EQ(manifests.size(), 2U);
+  ASSERT_EQ(manifests.size(), 1U);
+  EXPECT_EQ(manifests[0].first_row_id,
+            std::make_optional<int64_t>(TableMetadata::kInitialRowId));
 
-  ICEBERG_UNWRAP_OR_FAIL(auto kept_manifest,
-                         ManifestContainingPath(manifests, file_a_->file_path));
-  ICEBERG_UNWRAP_OR_FAIL(auto rewritten_manifest,
-                         ManifestContainingPath(manifests, file_b_->file_path));
+  ICEBERG_UNWRAP_OR_FAIL(auto entries, ReadManifestEntries(manifests[0]));
+  ASSERT_EQ(entries.size(), 2U);
 
-  ExpectManifestEntriesWithSnapshotIds(*kept_manifest, {file_a_->file_path},
-                                       {ManifestStatus::kAdded}, {append_id_a});
-  ExpectManifestEntriesWithSnapshotIds(
-      *rewritten_manifest, {file_b_->file_path, file_c_->file_path},
-      {ManifestStatus::kExisting, ManifestStatus::kExisting}, {append_id_b, append_id_c});
+  int64_t next_row_id = TableMetadata::kInitialRowId;
+  int64_t assigned_rows = 0;
+  for (const auto& entry : entries) {
+    ASSERT_NE(entry.data_file, nullptr);
+    ASSERT_TRUE(entry.data_file->first_row_id.has_value());
+    EXPECT_EQ(entry.data_file->first_row_id.value(), next_row_id);
+    next_row_id += entry.data_file->record_count;
+    assigned_rows += entry.data_file->record_count;
+  }
+  EXPECT_EQ(table_->metadata()->next_row_id,
+            TableMetadata::kInitialRowId + assigned_rows);
 }
 
 TEST_P(RewriteManifestsTest, ReplaceManifestsSeparate) {
