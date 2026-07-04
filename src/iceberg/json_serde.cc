@@ -1377,9 +1377,9 @@ Result<std::unique_ptr<TableMetadata>> TableMetadataFromJson(const nlohmann::jso
       TimePointMs{std::chrono::milliseconds(last_updated_ms)};
 
   if (json.contains(kRefs)) {
-    ICEBERG_ASSIGN_OR_RAISE(
-        table_metadata->refs,
-        FromJsonMap<std::shared_ptr<SnapshotRef>>(json, kRefs, SnapshotRefFromJson));
+    ICEBERG_ASSIGN_OR_RAISE(auto refs, FromJsonMap<std::shared_ptr<SnapshotRef>>(
+                                           json, kRefs, SnapshotRefFromJson));
+    table_metadata->refs = std::move(refs);
   } else if (table_metadata->current_snapshot_id != kInvalidSnapshotId) {
     table_metadata->refs["main"] = std::make_unique<SnapshotRef>(SnapshotRef{
         .snapshot_id = table_metadata->current_snapshot_id,
