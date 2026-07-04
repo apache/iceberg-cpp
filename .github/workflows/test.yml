@@ -42,7 +42,7 @@ jobs:
     if: ${{ github.event_name != 'pull_request' || github.event.pull_request.draft == false }}
     name: AMD64 Ubuntu 26.04 (${{ matrix.cmake_build_type }})
     runs-on: ubuntu-26.04
-    timeout-minutes: 30
+    timeout-minutes: 60
     strategy:
       fail-fast: false
       matrix:
@@ -64,9 +64,9 @@ jobs:
         uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
         with:
           path: ${{ github.workspace }}/.sccache
-          key: sccache-test-ubuntu-${{ github.run_id }}
+          key: sccache-test-ubuntu-${{ matrix.cmake_build_type }}-${{ github.run_id }}
           restore-keys: |
-            sccache-test-ubuntu-
+            sccache-test-ubuntu-${{ matrix.cmake_build_type }}-
       - name: Setup sccache
         uses: mozilla-actions/sccache-action@9e7fa8a12102821edf02ca5dbea1acd0f89a2696 # v0.0.10
       - name: Build Iceberg
@@ -83,7 +83,7 @@ jobs:
         uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
         with:
           path: ${{ github.workspace }}/.sccache
-          key: sccache-test-ubuntu-${{ github.run_id }}
+          key: sccache-test-ubuntu-${{ matrix.cmake_build_type }}-${{ github.run_id }}
       - name: Build Example
         shell: bash
         env:
