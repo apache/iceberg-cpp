@@ -31,6 +31,8 @@ for attempt in 1 2 3; do
     fi
     if [[ "${attempt}" != "3" ]]; then
         sleep 2
+    else
+        echo "Failed to remove build directory after 3 attempts: ${build_dir}" >&2
     fi
 done
 mkdir "${build_dir}"
