@@ -451,7 +451,7 @@ TEST_F(LocalFileIOTest, ResolvesFileUriSingleSlash) {
   // Build a cross-platform file:/path URI: normalize backslashes to forward slashes
   // and ensure a leading '/' (Linux paths already have one; Windows drive letters don't).
   std::string p = temp_filepath_;
-  std::replace(p.begin(), p.end(), '\\', '/');
+  std::ranges::replace(p, '\\', '/');
   std::string single_slash_uri = "file:" + (p.front() == '/' ? p : "/" + p);
   auto read_res = file_io_->ReadFile(single_slash_uri, std::nullopt);
   EXPECT_THAT(read_res, IsOk());
@@ -465,7 +465,7 @@ TEST_F(LocalFileIOTest, ResolvesFileUriTripleSlash) {
   // that "file://" + "/" + path produces the canonical triple-slash form on all
   // platforms. Linux: file:///tmp/...  Windows: file:///C:/Users/...
   std::string p = temp_filepath_;
-  std::replace(p.begin(), p.end(), '\\', '/');
+  std::ranges::replace(p, '\\', '/');
   std::string triple_slash_uri = "file://" + (p.front() == '/' ? p : "/" + p);
   auto read_res = file_io_->ReadFile(triple_slash_uri, std::nullopt);
   EXPECT_THAT(read_res, IsOk());

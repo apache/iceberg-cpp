@@ -19,8 +19,6 @@
 
 #include "iceberg/catalog/rest/rest_file_io.h"
 
-#include <algorithm>
-#include <cctype>
 #include <string>
 #include <unordered_map>
 #include <utility>
@@ -30,6 +28,7 @@
 #include "iceberg/file_io.h"
 #include "iceberg/file_io_registry.h"
 #include "iceberg/util/macros.h"
+#include "iceberg/util/uri.h"
 
 namespace iceberg::rest {
 
@@ -53,24 +52,15 @@ std::unordered_map<std::string, std::string> MergeFileIOProperties(
 }  // namespace
 
 Result<BuiltinFileIOKind> DetectBuiltinFileIO(std::string_view location) {
-  // Detect URI scheme using RFC 3986 rules: a scheme is 2+ chars starting with
-  // a letter, followed by letters/digits/+/-/., ending at ':'.
-  // A single char before ':' is a Windows drive letter, not a scheme.
-  auto colon_pos = location.find(':');
-  bool is_uri =
-      colon_pos != std::string_view::npos && colon_pos > 1 &&
-      std::isalpha(static_cast<unsigned char>(location[0])) &&
-      std::all_of(location.begin(),
-                  location.begin() + static_cast<std::ptrdiff_t>(colon_pos), [](char c) {
-                    return std::isalpha(static_cast<unsigned char>(c)) ||
-                           std::isdigit(static_cast<unsigned char>(c)) || c == '+' ||
-                           c == '-' || c == '.';
-                  });
+  // Detect URI scheme using RFC 3986 rules.
+  // See iceberg/util/uri.h for the scheme grammar.
+  bool is_uri = IsUriScheme(location);
 
   if (!is_uri) {
     return BuiltinFileIOKind::kArrowLocal;
   }
 
+  const auto colon_pos = location.find(':');
   const auto scheme = location.substr(0, colon_pos);
   if (scheme == "file") {
     return BuiltinFileIOKind::kArrowLocal;

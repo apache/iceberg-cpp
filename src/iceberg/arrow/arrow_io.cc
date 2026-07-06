@@ -18,7 +18,6 @@
  */
 
 #include <algorithm>
-#include <cctype>
 #include <chrono>
 #include <limits>
 #include <mutex>
@@ -37,6 +36,7 @@
 #include "iceberg/arrow/arrow_io_util.h"
 #include "iceberg/arrow/arrow_status_internal.h"
 #include "iceberg/util/macros.h"
+#include "iceberg/util/uri.h"
 
 namespace iceberg::arrow {
 
@@ -486,25 +486,14 @@ class ArrowOutputFile : public OutputFile {
 
 Result<std::string> ArrowFileSystemFileIO::ResolvePath(const std::string& file_location) {
   // Detect whether the location is a URI by looking for a scheme component.
-  // A URI scheme (RFC 3986 §3.1) starts with a letter and is followed by any
-  // combination of letters, digits, '+', '-', or '.', ending at the first ':'.
-  // A single character before ':' is a Windows drive letter (e.g., "C:\..."),
-  // not a URI scheme.
-  auto colon_pos = file_location.find(':');
-  bool is_uri =
-      colon_pos != std::string::npos && colon_pos > 1 &&
-      std::isalpha(static_cast<unsigned char>(file_location[0])) &&
-      std::all_of(file_location.begin(),
-                  file_location.begin() + static_cast<std::ptrdiff_t>(colon_pos),
-                  [](char c) {
-                    return std::isalpha(static_cast<unsigned char>(c)) ||
-                           std::isdigit(static_cast<unsigned char>(c)) || c == '+' ||
-                           c == '-' || c == '.';
-                  });
+  // See iceberg/util/uri.h for the RFC 3986 scheme grammar.
+  bool is_uri = IsUriScheme(file_location);
 
   if (!is_uri) {
     return file_location;  // Bare local path (Unix or Windows drive letter)
   }
+
+  auto colon_pos = file_location.find(':');
 
   // Normalize authority-less file: URI short forms to the canonical three-slash
   // form so that Arrow's PathFromUri can parse them.  Java Iceberg may write
