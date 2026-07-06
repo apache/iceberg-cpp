@@ -448,8 +448,11 @@ TEST_F(LocalFileIOTest, PropagatesNonSchemeMismatchUriError) {
 // recognized as URIs and normalized before being passed to Arrow.
 TEST_F(LocalFileIOTest, ResolvesFileUriSingleSlash) {
   ASSERT_THAT(file_io_->WriteFile(temp_filepath_, "hello"), IsOk());
-  // file:/path (single slash, the form Java Iceberg writes)
-  std::string single_slash_uri = "file:" + temp_filepath_;
+  // Build a cross-platform file:/path URI: normalize backslashes to forward slashes
+  // and ensure a leading '/' (Linux paths already have one; Windows drive letters don't).
+  std::string p = temp_filepath_;
+  std::replace(p.begin(), p.end(), '\\', '/');
+  std::string single_slash_uri = "file:" + (p.front() == '/' ? p : "/" + p);
   auto read_res = file_io_->ReadFile(single_slash_uri, std::nullopt);
   EXPECT_THAT(read_res, IsOk());
   EXPECT_THAT(read_res, HasValue(::testing::Eq("hello")));
@@ -457,9 +460,13 @@ TEST_F(LocalFileIOTest, ResolvesFileUriSingleSlash) {
 
 TEST_F(LocalFileIOTest, ResolvesFileUriTripleSlash) {
   ASSERT_THAT(file_io_->WriteFile(temp_filepath_, "hello"), IsOk());
-  // "file://" + temp_filepath_ yields the canonical "file:///..." triple-slash form
-  // because temp_filepath_ starts with '/', so concatenation gives "file:///tmp/...".
-  std::string triple_slash_uri = "file://" + temp_filepath_;
+  // Build a cross-platform file:///path URI: normalize backslashes to forward slashes
+  // and ensure exactly one leading '/' before the (possibly drive-lettered) path so
+  // that "file://" + "/" + path produces the canonical triple-slash form on all
+  // platforms. Linux: file:///tmp/...  Windows: file:///C:/Users/...
+  std::string p = temp_filepath_;
+  std::replace(p.begin(), p.end(), '\\', '/');
+  std::string triple_slash_uri = "file://" + (p.front() == '/' ? p : "/" + p);
   auto read_res = file_io_->ReadFile(triple_slash_uri, std::nullopt);
   EXPECT_THAT(read_res, IsOk());
   EXPECT_THAT(read_res, HasValue(::testing::Eq("hello")));
