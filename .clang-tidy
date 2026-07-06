@@ -21,6 +21,7 @@ Checks: |
   clang-analyzer-*,
   google-*,
   modernize-*,
+  misc-include-cleaner,
   readability-identifier-naming,
   readability-isolate-declaration,
   -modernize-use-nodiscard,
@@ -41,5 +42,7 @@ CheckOptions:
     value:  '_'
   - key:    modernize-use-scoped-lock.WarnOnSingleLocks
     value:  'false'
+  - key:    misc-include-cleaner.IgnoreHeaders
+    value:  'arrow/.*;nanoarrow/.*;nlohmann/.*;spdlog/.*;roaring/.*;cpr/.*'
 
 HeaderFilterRegex: 'src/iceberg|example'
