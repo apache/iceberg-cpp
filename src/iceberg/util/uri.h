@@ -41,6 +41,9 @@ namespace iceberg {
 /// \return true if \p value starts with a valid URI scheme followed by ':'.
 inline bool IsUriScheme(std::string_view value) {
   auto colon_pos = value.find(':');
+  // Reject if there is no ':', an empty scheme (colon_pos == 0), or only a
+  // single character before ':' (colon_pos == 1), which is a Windows drive
+  // letter (e.g. "C:\path"), not a URI scheme.
   if (colon_pos == std::string_view::npos || colon_pos <= 1) {
     return false;
   }
