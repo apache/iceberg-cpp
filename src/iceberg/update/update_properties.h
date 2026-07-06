@@ -51,8 +51,9 @@ class ICEBERG_EXPORT UpdateProperties : public PendingUpdate {
 
   /// \brief Sets a property key to a specified value.
   ///
-  /// The key must not have been previously marked for removal and reserved property keys
-  /// will be ignored.
+  /// The key must not have been previously marked for removal and must not be a
+  /// reserved property key (except `format-version`). Setting a reserved property
+  /// will result in a validation error at Apply() time.
   ///
   /// \param key The property key to set
   /// \param value The property value to set
