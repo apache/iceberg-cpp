@@ -30,8 +30,11 @@
 /// boilerplate.
 
 #include <cstdint>
+#include <map>
+#include <span>
 #include <string_view>
 #include <unordered_map>
+#include <vector>
 
 #include "iceberg/arrow_c_data.h"
 #include "iceberg/iceberg_export.h"
@@ -113,8 +116,25 @@ ICEBERG_EXPORT Status AppendBoolean(ArrowArray* array, bool value);
 /// Works for int32/int64/timestamp columns, which nanoarrow stores as int64.
 ICEBERG_EXPORT Status AppendInt(ArrowArray* array, int64_t value);
 
+/// \brief Append an unsigned integer value to a nanoarrow array builder.
+ICEBERG_EXPORT Status AppendUInt(ArrowArray* array, uint64_t value);
+
+/// \brief Append a double value to a nanoarrow array builder.
+ICEBERG_EXPORT Status AppendDouble(ArrowArray* array, double value);
+
 /// \brief Append a string value to a nanoarrow array builder.
 ICEBERG_EXPORT Status AppendString(ArrowArray* array, std::string_view value);
+
+/// \brief Append a binary value to a nanoarrow array builder.
+ICEBERG_EXPORT Status AppendBytes(ArrowArray* array, std::span<const uint8_t> value);
+
+/// \brief Append a list of int32 values to a nanoarrow list array builder.
+ICEBERG_EXPORT Status AppendIntList(ArrowArray* array,
+                                    const std::vector<int32_t>& values);
+
+/// \brief Append a list of int64 values to a nanoarrow list array builder.
+ICEBERG_EXPORT Status AppendIntList(ArrowArray* array,
+                                    const std::vector<int64_t>& values);
 
 /// \brief Append a map<string, string> value to a nanoarrow map array builder.
 ///
@@ -122,5 +142,13 @@ ICEBERG_EXPORT Status AppendString(ArrowArray* array, std::string_view value);
 /// resulting entries is unspecified.
 ICEBERG_EXPORT Status AppendStringMap(
     ArrowArray* array, const std::unordered_map<std::string, std::string>& entries);
+
+/// \brief Append a map<int32, int64> to a nanoarrow map array builder.
+ICEBERG_EXPORT Status AppendIntMap(ArrowArray* array,
+                                   const std::map<int32_t, int64_t>& entries);
+
+/// \brief Append a map<int32, binary> to a nanoarrow map array builder.
+ICEBERG_EXPORT Status AppendBinaryMap(
+    ArrowArray* array, const std::map<int32_t, std::vector<uint8_t>>& entries);
 
 }  // namespace iceberg

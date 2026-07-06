@@ -17,7 +17,9 @@
  * under the License.
  */
 
-#include <utility>
+#include <map>
+#include <span>
+#include <vector>
 
 #include <nanoarrow/nanoarrow.h>
 
@@ -109,9 +111,46 @@ Status AppendInt(ArrowArray* array, int64_t value) {
   return {};
 }
 
+Status AppendUInt(ArrowArray* array, uint64_t value) {
+  ICEBERG_NANOARROW_RETURN_UNEXPECTED(ArrowArrayAppendUInt(array, value));
+  return {};
+}
+
+Status AppendDouble(ArrowArray* array, double value) {
+  ICEBERG_NANOARROW_RETURN_UNEXPECTED(ArrowArrayAppendDouble(array, value));
+  return {};
+}
+
 Status AppendString(ArrowArray* array, std::string_view value) {
   ArrowStringView view(value.data(), static_cast<int64_t>(value.size()));
   ICEBERG_NANOARROW_RETURN_UNEXPECTED(ArrowArrayAppendString(array, view));
+  return {};
+}
+
+Status AppendBytes(ArrowArray* array, std::span<const uint8_t> value) {
+  ArrowBufferViewData data;
+  data.as_char = reinterpret_cast<const char*>(value.data());
+  ArrowBufferView view(data, static_cast<int64_t>(value.size()));
+  ICEBERG_NANOARROW_RETURN_UNEXPECTED(ArrowArrayAppendBytes(array, view));
+  return {};
+}
+
+Status AppendIntList(ArrowArray* array, const std::vector<int32_t>& values) {
+  auto list_array = array->children[0];
+  for (const auto& value : values) {
+    ICEBERG_NANOARROW_RETURN_UNEXPECTED(
+        ArrowArrayAppendInt(list_array, static_cast<int64_t>(value)));
+  }
+  ICEBERG_NANOARROW_RETURN_UNEXPECTED(ArrowArrayFinishElement(array));
+  return {};
+}
+
+Status AppendIntList(ArrowArray* array, const std::vector<int64_t>& values) {
+  auto list_array = array->children[0];
+  for (const auto& value : values) {
+    ICEBERG_NANOARROW_RETURN_UNEXPECTED(ArrowArrayAppendInt(list_array, value));
+  }
+  ICEBERG_NANOARROW_RETURN_UNEXPECTED(ArrowArrayFinishElement(array));
   return {};
 }
 
@@ -130,6 +169,39 @@ Status AppendStringMap(ArrowArray* array,
   }
 
   // Finish the (possibly empty) map element on the outer list.
+  ICEBERG_NANOARROW_RETURN_UNEXPECTED(ArrowArrayFinishElement(array));
+  return {};
+}
+
+Status AppendIntMap(ArrowArray* array, const std::map<int32_t, int64_t>& entries) {
+  auto map_array = array->children[0];
+  if (map_array->n_children != 2) {
+    return InvalidArrowData("Map array must have exactly 2 children.");
+  }
+  for (const auto& [key, value] : entries) {
+    auto key_array = map_array->children[0];
+    auto value_array = map_array->children[1];
+    ICEBERG_RETURN_UNEXPECTED(AppendInt(key_array, static_cast<int64_t>(key)));
+    ICEBERG_RETURN_UNEXPECTED(AppendInt(value_array, value));
+    ICEBERG_NANOARROW_RETURN_UNEXPECTED(ArrowArrayFinishElement(map_array));
+  }
+  ICEBERG_NANOARROW_RETURN_UNEXPECTED(ArrowArrayFinishElement(array));
+  return {};
+}
+
+Status AppendBinaryMap(ArrowArray* array,
+                       const std::map<int32_t, std::vector<uint8_t>>& entries) {
+  auto map_array = array->children[0];
+  if (map_array->n_children != 2) {
+    return InvalidArrowData("Map array must have exactly 2 children.");
+  }
+  for (const auto& [key, value] : entries) {
+    auto key_array = map_array->children[0];
+    auto value_array = map_array->children[1];
+    ICEBERG_RETURN_UNEXPECTED(AppendInt(key_array, static_cast<int64_t>(key)));
+    ICEBERG_RETURN_UNEXPECTED(AppendBytes(value_array, value));
+    ICEBERG_NANOARROW_RETURN_UNEXPECTED(ArrowArrayFinishElement(map_array));
+  }
   ICEBERG_NANOARROW_RETURN_UNEXPECTED(ArrowArrayFinishElement(array));
   return {};
 }
