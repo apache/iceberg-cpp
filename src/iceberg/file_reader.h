@@ -22,6 +22,7 @@
 /// \file iceberg/file_reader.h
 /// Reader interface for file formats like Parquet, Avro and ORC.
 
+#include <cstdint>
 #include <functional>
 #include <memory>
 #include <optional>
@@ -105,6 +106,10 @@ struct ICEBERG_EXPORT ReaderOptions {
   /// \brief Name mapping for schema evolution compatibility. Used when reading files
   /// that may have different field names than the current schema.
   std::shared_ptr<class NameMapping> name_mapping;
+  /// \brief First row ID inherited by the data file, if assigned.
+  std::optional<int64_t> first_row_id;
+  /// \brief Data sequence number inherited by the manifest entry, if assigned.
+  std::optional<int64_t> data_sequence_number;
   /// \brief Format-specific or implementation-specific properties.
   ReaderProperties properties;
 };

@@ -64,6 +64,7 @@ Status BaseInheritableMetadata::Apply(ManifestEntry& entry) {
 
   if (entry.data_file) {
     entry.data_file->partition_spec_id = spec_id_;
+    entry.data_file->data_sequence_number = entry.sequence_number;
   } else {
     return InvalidManifest("Manifest entry has no data file");
   }

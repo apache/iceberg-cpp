@@ -24,6 +24,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <string>
 
 #include <arrow/type_fwd.h>
@@ -36,7 +37,12 @@ namespace iceberg::arrow {
 struct MetadataColumnContext {
   std::string file_path;      // The file path to populate _file column.
   int64_t next_file_pos = 0;  // The next row position for populating _pos column.
+  std::optional<int64_t> first_row_id;          // First row ID used to populate _row_id.
+  std::optional<int64_t> data_sequence_number;  // Data sequence number for lineage.
 };
+
+/// \brief Check if row lineage metadata can be inherited for the column.
+bool HasRowLineageValue(int32_t field_id, const MetadataColumnContext& metadata_context);
 
 /// \brief Create a constant string array for _file column.
 ///
@@ -61,5 +67,27 @@ Result<std::shared_ptr<::arrow::Array>> MakeFilePathArray(const std::string& fil
 Result<std::shared_ptr<::arrow::Array>> MakeRowPositionArray(int64_t start_position,
                                                              int64_t num_rows,
                                                              ::arrow::MemoryPool* pool);
+
+/// \brief Create a row ID array for _row_id column.
+///
+/// \param first_row_id First row ID of the data file.
+/// \param start_position Starting row position (inclusive).
+/// \param num_rows Number of rows in the batch.
+/// \param pool Arrow memory pool.
+/// \return Arrow Int64Array for _row_id.
+Result<std::shared_ptr<::arrow::Array>> MakeRowIdArray(
+    std::optional<int64_t> first_row_id, int64_t start_position, int64_t num_rows,
+    ::arrow::MemoryPool* pool);
+
+/// \brief Create a sequence number array for _last_updated_sequence_number column.
+///
+/// \param first_row_id First row ID of the data file.
+/// \param data_sequence_number Data sequence number of the data file.
+/// \param num_rows Number of rows in the batch.
+/// \param pool Arrow memory pool.
+/// \return Arrow Int64Array for _last_updated_sequence_number.
+Result<std::shared_ptr<::arrow::Array>> MakeLastUpdatedSequenceNumberArray(
+    std::optional<int64_t> first_row_id, std::optional<int64_t> data_sequence_number,
+    int64_t num_rows, ::arrow::MemoryPool* pool);
 
 }  // namespace iceberg::arrow

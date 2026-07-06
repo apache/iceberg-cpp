@@ -129,7 +129,10 @@ class ParquetReader::Impl {
 
     // Project read schema onto the Parquet file schema
     ICEBERG_ASSIGN_OR_RAISE(projection_, BuildProjection(reader_.get(), *read_schema_));
-    metadata_context_ = {.file_path = options.path, .next_file_pos = 0};
+    metadata_context_ = {.file_path = options.path,
+                         .next_file_pos = 0,
+                         .first_row_id = options.first_row_id,
+                         .data_sequence_number = options.data_sequence_number};
 
     return {};
   }

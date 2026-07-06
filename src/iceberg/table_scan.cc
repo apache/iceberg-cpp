@@ -182,6 +182,18 @@ int64_t FileScanTask::estimated_row_count() const { return data_file_->record_co
 
 // ChangelogScanTask implementation
 
+ChangelogScanTask::ChangelogScanTask(int32_t change_ordinal, int64_t commit_snapshot_id,
+                                     std::shared_ptr<DataFile> data_file,
+                                     std::vector<std::shared_ptr<DataFile>> delete_files,
+                                     std::shared_ptr<Expression> residual_filter)
+    : change_ordinal_(change_ordinal),
+      commit_snapshot_id_(commit_snapshot_id),
+      data_file_(std::move(data_file)),
+      delete_files_(std::move(delete_files)),
+      residual_filter_(std::move(residual_filter)) {
+  ICEBERG_DCHECK(data_file_ != nullptr, "Data file cannot be null for ChangelogScanTask");
+}
+
 int64_t ChangelogScanTask::size_bytes() const {
   int64_t total_size = data_file_->file_size_in_bytes;
   for (const auto& delete_file : delete_files_) {
@@ -790,7 +802,6 @@ IncrementalChangelogScan::PlanFiles(std::optional<int64_t> from_snapshot_id_excl
 
       ICEBERG_ASSIGN_OR_RAISE(auto residual,
                               ctx.residuals->ResidualFor(entry.data_file->partition));
-
       switch (entry.status) {
         case ManifestStatus::kAdded:
           tasks.push_back(std::make_shared<AddedRowsScanTask>(

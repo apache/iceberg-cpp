@@ -174,10 +174,17 @@ struct ICEBERG_EXPORT DataFile {
   /// present
   std::optional<int64_t> content_size_in_bytes;
 
+  /// \note Fields defined below are inherited and not persisted to the DataFile struct.
+
   /// \brief Partition spec id for this data file.
-  /// \note This field is for internal use only and will not be persisted to manifest
-  /// entry.
+  /// \note This inherited field is for internal use only and will not be persisted to
+  /// the DataFile struct.
   std::optional<int32_t> partition_spec_id;
+
+  /// \brief Data sequence number for this data file.
+  /// \note This inherited field is for internal use only and will not be persisted to
+  /// the DataFile struct.
+  std::optional<int64_t> data_sequence_number;
 
   static constexpr int32_t kContentFieldId = 134;
   inline static const SchemaField kContent = SchemaField::MakeOptional(

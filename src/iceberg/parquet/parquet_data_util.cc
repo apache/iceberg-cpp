@@ -70,6 +70,53 @@ Result<std::shared_ptr<::arrow::Array>> ProjectPrimitiveArray(
   return cast_result.make_array();
 }
 
+Result<std::shared_ptr<::arrow::Array>> MakeInheritedRowLineageArray(
+    int32_t field_id, int64_t num_rows,
+    const arrow::MetadataColumnContext& metadata_context, ::arrow::MemoryPool* pool) {
+  if (field_id == MetadataColumns::kRowIdColumnId) {
+    return arrow::MakeRowIdArray(metadata_context.first_row_id,
+                                 metadata_context.next_file_pos, num_rows, pool);
+  }
+  if (field_id == MetadataColumns::kLastUpdatedSequenceNumberColumnId) {
+    return arrow::MakeLastUpdatedSequenceNumberArray(
+        metadata_context.first_row_id, metadata_context.data_sequence_number, num_rows,
+        pool);
+  }
+  return NotSupported("Unsupported row lineage field id: {}", field_id);
+}
+
+Result<std::shared_ptr<::arrow::Array>> ProjectRowLineageArray(
+    const std::shared_ptr<::arrow::Array>& physical_array, int32_t field_id,
+    const arrow::MetadataColumnContext& metadata_context, ::arrow::MemoryPool* pool) {
+  if (!arrow::HasRowLineageValue(field_id, metadata_context)) {
+    return MakeInheritedRowLineageArray(field_id, physical_array->length(),
+                                        metadata_context, pool);
+  }
+  if (physical_array->null_count() == 0) {
+    return physical_array;
+  }
+
+  auto values = internal::checked_pointer_cast<::arrow::Int64Array>(physical_array);
+  ::arrow::Int64Builder builder(pool);
+  ICEBERG_ARROW_RETURN_NOT_OK(builder.Reserve(values->length()));
+  for (int64_t row_index = 0; row_index < values->length(); ++row_index) {
+    if (!values->IsNull(row_index)) {
+      ICEBERG_ARROW_RETURN_NOT_OK(builder.Append(values->Value(row_index)));
+    } else if (field_id == MetadataColumns::kRowIdColumnId) {
+      ICEBERG_ARROW_RETURN_NOT_OK(builder.Append(metadata_context.first_row_id.value() +
+                                                 metadata_context.next_file_pos +
+                                                 row_index));
+    } else {
+      ICEBERG_ARROW_RETURN_NOT_OK(
+          builder.Append(metadata_context.data_sequence_number.value()));
+    }
+  }
+
+  std::shared_ptr<::arrow::Array> output;
+  ICEBERG_ARROW_RETURN_NOT_OK(builder.Finish(&output));
+  return output;
+}
+
 Result<std::shared_ptr<::arrow::Array>> ProjectStructArray(
     const std::shared_ptr<::arrow::StructArray>& struct_array,
     const std::shared_ptr<::arrow::StructType>& output_struct_type,
@@ -111,6 +158,11 @@ Result<std::shared_ptr<::arrow::Array>> ProjectStructArray(
             projected_array,
             ProjectNestedArray(parquet_array, output_arrow_type, nested_type,
                                field_projection.children, metadata_context, pool));
+      } else if (MetadataColumns::IsRowLineageColumn(projected_field.field_id())) {
+        ICEBERG_ASSIGN_OR_RAISE(
+            projected_array,
+            ProjectRowLineageArray(parquet_array, projected_field.field_id(),
+                                   metadata_context, pool));
       } else {
         ICEBERG_ASSIGN_OR_RAISE(
             projected_array,
@@ -135,6 +187,10 @@ Result<std::shared_ptr<::arrow::Array>> ProjectStructArray(
         ICEBERG_ASSIGN_OR_RAISE(
             projected_array, arrow::MakeRowPositionArray(metadata_context.next_file_pos,
                                                          struct_array->length(), pool));
+      } else if (MetadataColumns::IsRowLineageColumn(field_id)) {
+        ICEBERG_ASSIGN_OR_RAISE(projected_array, MakeInheritedRowLineageArray(
+                                                     field_id, struct_array->length(),
+                                                     metadata_context, pool));
       } else {
         return NotSupported("Unsupported metadata field id: {}", field_id);
       }

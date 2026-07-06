@@ -43,6 +43,7 @@
 #include "iceberg/file_format.h"
 #include "iceberg/file_reader.h"
 #include "iceberg/manifest/manifest_entry.h"
+#include "iceberg/metadata_columns.h"
 #include "iceberg/parquet/parquet_register.h"
 #include "iceberg/partition_spec.h"
 #include "iceberg/row/partition_values.h"
@@ -375,6 +376,36 @@ TEST_F(FileScanTaskReaderTest, OpenWithoutDeletesReadsProjectedSchema) {
 
   ASSERT_NO_FATAL_FAILURE(
       VerifyStream(&stream, R"([[1, "Foo"], [2, "Bar"], [3, "Baz"]])"));
+}
+
+TEST_F(FileScanTaskReaderTest, ReadLastUpdatedFromDataSeq) {
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto data_file,
+      MakeDataFile(table_schema_,
+                   R"([[1, "Foo", "blue"], [2, "Bar", "red"], [3, "Baz", "green"]])"));
+  data_file->first_row_id = 100L;
+  data_file->data_sequence_number = 5L;
+  FileScanTask task(data_file);
+  auto projected_schema = std::make_shared<Schema>(
+      std::vector<SchemaField>{SchemaField::MakeRequired(1, "id", int32()),
+                               MetadataColumns::kRowId,
+                               MetadataColumns::kLastUpdatedSequenceNumber},
+      table_schema_->schema_id());
+
+  FileScanTaskReader::Options options{
+      .io = file_io_,
+      .table_schema = table_schema_,
+      .schemas = {table_schema_},
+      .projected_schema = projected_schema,
+  };
+  ICEBERG_UNWRAP_OR_FAIL(auto reader, FileScanTaskReader::Make(std::move(options)));
+  auto stream_result = reader->Open(task);
+  ASSERT_THAT(stream_result, IsOk());
+  auto stream = std::move(stream_result.value());
+
+  ASSERT_NO_FATAL_FAILURE(VerifyStream(&stream, R"([[1, 100, 5],
+                                                   [2, 101, 5],
+                                                   [3, 102, 5]])"));
 }
 
 TEST_F(FileScanTaskReaderTest, OpenWithPositionDeletesFiltersRowsAndPrunesPos) {

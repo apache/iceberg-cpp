@@ -223,6 +223,26 @@ class ParquetReaderTest : public TempFileTestBase {
     ASSERT_TRUE(outfile->Close().ok());
   }
 
+  std::shared_ptr<Schema> RowLineageSchema() {
+    return std::make_shared<Schema>(std::vector<SchemaField>{
+        SchemaField::MakeRequired(1, "id", int32()),
+        MetadataColumns::kRowId,
+        MetadataColumns::kLastUpdatedSequenceNumber,
+    });
+  }
+
+  Result<std::unique_ptr<Reader>> OpenRowLineageReader(
+      const std::shared_ptr<Schema>& schema,
+      std::optional<int64_t> first_row_id = std::nullopt,
+      std::optional<int64_t> data_sequence_number = std::nullopt) {
+    return ReaderFactoryRegistry::Open(FileFormatType::kParquet,
+                                       {.path = temp_parquet_file_,
+                                        .io = file_io_,
+                                        .projection = schema,
+                                        .first_row_id = first_row_id,
+                                        .data_sequence_number = data_sequence_number});
+  }
+
   void VerifyNextBatch(Reader& reader, std::string_view expected_json) {
     // Boilerplate to get Arrow schema
     auto schema_result = reader.Schema();
@@ -523,6 +543,36 @@ TEST_F(ParquetReaderTest, ReadMetadataOnlyProjection) {
           {.path = temp_parquet_file_, .io = file_io_, .projection = schema}));
 
   ASSERT_NO_FATAL_FAILURE(VerifyNextBatch(*reader, kExpectedJson));
+}
+
+TEST_F(ParquetReaderTest, ReadRowLineage) {
+  temp_parquet_file_ = "row_lineage.parquet";
+  CreateSimpleParquetFile();
+
+  ICEBERG_UNWRAP_OR_FAIL(auto reader, OpenRowLineageReader(RowLineageSchema(), 100L, 7L));
+
+  ASSERT_NO_FATAL_FAILURE(VerifyNextBatch(*reader, R"([[1, 100, 7],
+                                                       [2, 101, 7],
+                                                       [3, 102, 7]])"));
+}
+
+TEST_F(ParquetReaderTest, ReadPartialLineage) {
+  temp_parquet_file_ = "partial_lineage.parquet";
+  CreateSimpleParquetFile();
+
+  auto schema = RowLineageSchema();
+  ICEBERG_UNWRAP_OR_FAIL(auto reader, OpenRowLineageReader(schema));
+
+  ASSERT_NO_FATAL_FAILURE(VerifyNextBatch(*reader, R"([[1, null, null],
+                                                       [2, null, null],
+                                                       [3, null, null]])"));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto reader_with_row_id, OpenRowLineageReader(schema, 100L));
+
+  ASSERT_NO_FATAL_FAILURE(VerifyNextBatch(*reader_with_row_id,
+                                          R"([[1, 100, null],
+                                             [2, 101, null],
+                                             [3, 102, null]])"));
 }
 
 TEST_F(ParquetReaderTest, ReadNestedUnknownProjection) {

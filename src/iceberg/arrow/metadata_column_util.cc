@@ -24,8 +24,17 @@
 
 #include "iceberg/arrow/arrow_status_internal.h"
 #include "iceberg/arrow/metadata_column_util_internal.h"
+#include "iceberg/metadata_columns.h"
 
 namespace iceberg::arrow {
+
+bool HasRowLineageValue(int32_t field_id, const MetadataColumnContext& metadata_context) {
+  if (!metadata_context.first_row_id.has_value()) {
+    return false;
+  }
+  return field_id != MetadataColumns::kLastUpdatedSequenceNumberColumnId ||
+         metadata_context.data_sequence_number.has_value();
+}
 
 Result<std::shared_ptr<::arrow::Array>> MakeFilePathArray(const std::string& file_path,
                                                           int64_t num_rows,
@@ -48,6 +57,43 @@ Result<std::shared_ptr<::arrow::Array>> MakeRowPositionArray(int64_t start_posit
   for (int64_t i = 0; i < num_rows; ++i) {
     ICEBERG_ARROW_RETURN_NOT_OK(builder.Append(start_position + i));
   }
+  std::shared_ptr<::arrow::Array> array;
+  ICEBERG_ARROW_RETURN_NOT_OK(builder.Finish(&array));
+  return array;
+}
+
+Result<std::shared_ptr<::arrow::Array>> MakeRowIdArray(
+    std::optional<int64_t> first_row_id, int64_t start_position, int64_t num_rows,
+    ::arrow::MemoryPool* pool) {
+  ::arrow::Int64Builder builder(pool);
+  ICEBERG_ARROW_RETURN_NOT_OK(builder.Reserve(num_rows));
+  if (!first_row_id.has_value()) {
+    ICEBERG_ARROW_RETURN_NOT_OK(builder.AppendNulls(num_rows));
+  } else {
+    for (int64_t row_index = 0; row_index < num_rows; ++row_index) {
+      ICEBERG_ARROW_RETURN_NOT_OK(
+          builder.Append(first_row_id.value() + start_position + row_index));
+    }
+  }
+
+  std::shared_ptr<::arrow::Array> array;
+  ICEBERG_ARROW_RETURN_NOT_OK(builder.Finish(&array));
+  return array;
+}
+
+Result<std::shared_ptr<::arrow::Array>> MakeLastUpdatedSequenceNumberArray(
+    std::optional<int64_t> first_row_id, std::optional<int64_t> data_sequence_number,
+    int64_t num_rows, ::arrow::MemoryPool* pool) {
+  ::arrow::Int64Builder builder(pool);
+  ICEBERG_ARROW_RETURN_NOT_OK(builder.Reserve(num_rows));
+  if (!first_row_id.has_value() || !data_sequence_number.has_value()) {
+    ICEBERG_ARROW_RETURN_NOT_OK(builder.AppendNulls(num_rows));
+  } else {
+    for (int64_t row_index = 0; row_index < num_rows; ++row_index) {
+      ICEBERG_ARROW_RETURN_NOT_OK(builder.Append(data_sequence_number.value()));
+    }
+  }
+
   std::shared_ptr<::arrow::Array> array;
   ICEBERG_ARROW_RETURN_NOT_OK(builder.Finish(&array));
   return array;
