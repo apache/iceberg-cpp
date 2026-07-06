@@ -151,6 +151,10 @@ endmacro()
 function(resolve_arrow_dependency)
   prepare_fetchcontent()
 
+  # Prevent Arrow from injecting -Werror into CMAKE_CXX_FLAGS_DEBUG via
+  # arrow_add_werror_if_debug(). PRODUCTION level only adds standard warnings.
+  set(BUILD_WARNING_LEVEL PRODUCTION)
+
   set(ARROW_BUILD_SHARED OFF)
   set(ARROW_BUILD_STATIC ON)
   # Work around undefined symbol: arrow::ipc::ReadSchema(arrow::io::InputStream*, arrow::ipc::DictionaryMemo*)

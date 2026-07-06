@@ -15,8 +15,6 @@
 # specific language governing permissions and limitations
 # under the License.
 
-set(CMAKE_COMPILE_WARNING_AS_ERROR FALSE)
-
 set(INSTALL_GTEST
     OFF
     CACHE BOOL "" FORCE)
