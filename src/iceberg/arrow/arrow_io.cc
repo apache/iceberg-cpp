@@ -487,13 +487,12 @@ class ArrowOutputFile : public OutputFile {
 Result<std::string> ArrowFileSystemFileIO::ResolvePath(const std::string& file_location) {
   // Detect whether the location is a URI by looking for a scheme component.
   // See iceberg/util/uri.h for the RFC 3986 scheme grammar.
-  bool is_uri = IsUriScheme(file_location);
+  std::size_t colon_pos = 0;
+  bool is_uri = IsUriScheme(file_location, &colon_pos);
 
   if (!is_uri) {
     return file_location;  // Bare local path (Unix or Windows drive letter)
   }
-
-  auto colon_pos = file_location.find(':');
 
   // Normalize authority-less file: URI short forms to the canonical three-slash
   // form so that Arrow's PathFromUri can parse them.  Java Iceberg may write

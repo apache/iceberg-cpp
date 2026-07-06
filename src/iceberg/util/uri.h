@@ -21,6 +21,7 @@
 
 #include <algorithm>
 #include <cctype>
+#include <cstddef>
 #include <string_view>
 
 /// \file iceberg/util/uri.h
@@ -38,8 +39,11 @@ namespace iceberg {
 /// scheme (e.g., "C:\path").
 ///
 /// \param value The string to inspect.
+/// \param scheme_colon_pos If non-null and the function returns true, set to the
+///   position of the scheme-delimiting ':' so callers can reuse it without a
+///   redundant search.
 /// \return true if \p value starts with a valid URI scheme followed by ':'.
-inline bool IsUriScheme(std::string_view value) {
+inline bool IsUriScheme(std::string_view value, std::size_t* scheme_colon_pos = nullptr) {
   auto colon_pos = value.find(':');
   // Reject if there is no ':', an empty scheme (colon_pos == 0), or only a
   // single character before ':' (colon_pos == 1), which is a Windows drive
@@ -50,11 +54,15 @@ inline bool IsUriScheme(std::string_view value) {
   if (!std::isalpha(static_cast<unsigned char>(value[0]))) {
     return false;
   }
-  return std::ranges::all_of(value.substr(1, colon_pos - 1), [](char c) {
+  bool valid = std::ranges::all_of(value.substr(1, colon_pos - 1), [](char c) {
     return std::isalpha(static_cast<unsigned char>(c)) ||
            std::isdigit(static_cast<unsigned char>(c)) || c == '+' || c == '-' ||
            c == '.';
   });
+  if (valid && scheme_colon_pos != nullptr) {
+    *scheme_colon_pos = colon_pos;
+  }
+  return valid;
 }
 
 }  // namespace iceberg

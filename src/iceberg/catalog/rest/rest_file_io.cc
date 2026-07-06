@@ -54,13 +54,13 @@ std::unordered_map<std::string, std::string> MergeFileIOProperties(
 Result<BuiltinFileIOKind> DetectBuiltinFileIO(std::string_view location) {
   // Detect URI scheme using RFC 3986 rules.
   // See iceberg/util/uri.h for the scheme grammar.
-  bool is_uri = IsUriScheme(location);
+  std::size_t colon_pos = 0;
+  bool is_uri = IsUriScheme(location, &colon_pos);
 
   if (!is_uri) {
     return BuiltinFileIOKind::kArrowLocal;
   }
 
-  const auto colon_pos = location.find(':');
   const auto scheme = location.substr(0, colon_pos);
   if (scheme == "file") {
     return BuiltinFileIOKind::kArrowLocal;
