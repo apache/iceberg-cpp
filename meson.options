@@ -52,3 +52,10 @@ option(
 )
 
 option('tests', type: 'feature', description: 'Build tests', value: 'enabled')
+
+option(
+    'benchmarks',
+    type: 'feature',
+    description: 'Build benchmarks',
+    value: 'disabled',
+)

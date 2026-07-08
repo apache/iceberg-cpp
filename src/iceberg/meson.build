@@ -319,3 +319,7 @@ subdir('inspect')
 if get_option('tests').enabled()
     subdir('test')
 endif
+
+if get_option('benchmarks').enabled()
+    subdir('benchmark')
+endif
