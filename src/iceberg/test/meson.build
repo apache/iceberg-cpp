@@ -65,6 +65,9 @@ iceberg_tests = {
         'sources': files(
             'cerr_logger_test.cc',
             'log_level_test.cc',
+            'log_macros_active_level_test.cc',
+            'log_macros_header_test.cc',
+            'log_macros_test.cc',
             'logger_test.cc',
         ),
     },
