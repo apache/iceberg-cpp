@@ -39,3 +39,9 @@ target_link_libraries(benchmark_smoke
                       PRIVATE "$<IF:$<TARGET_EXISTS:iceberg_static>,iceberg_static,iceberg_shared>"
                               "$<IF:$<TARGET_EXISTS:benchmark::benchmark>,benchmark::benchmark,benchmark>"
 )
+
+add_executable(metrics_evaluator_benchmark metrics_evaluator_benchmark.cc)
+target_link_libraries(metrics_evaluator_benchmark
+                      PRIVATE "$<IF:$<TARGET_EXISTS:iceberg_static>,iceberg_static,iceberg_shared>"
+                              "$<IF:$<TARGET_EXISTS:benchmark::benchmark>,benchmark::benchmark,benchmark>"
+)
