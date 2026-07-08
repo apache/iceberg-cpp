@@ -89,7 +89,4 @@ if(ICEBERG_BUILD_TESTS)
 endif()
 
 add_subdirectory(src)
-if(ICEBERG_BUILD_BENCHMARKS)
-  add_subdirectory(benchmark)
-endif()
 install(FILES LICENSE NOTICE DESTINATION ${ICEBERG_INSTALL_DOCDIR})

@@ -361,3 +361,7 @@ endif()
 if(ICEBERG_BUILD_TESTS)
   add_subdirectory(test)
 endif()
+
+if(ICEBERG_BUILD_BENCHMARKS)
+  add_subdirectory(benchmark)
+endif()

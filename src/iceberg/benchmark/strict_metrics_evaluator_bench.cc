@@ -17,10 +17,10 @@
  * under the License.
  */
 
-#include <benchmark/benchmark.h>
-
 #include <memory>
 #include <vector>
+
+#include <benchmark/benchmark.h>
 
 #include "iceberg/expression/expressions.h"
 #include "iceberg/expression/strict_metrics_evaluator.h"
@@ -95,30 +95,19 @@ std::shared_ptr<Expression> MakeFilter(int predicate_count) {
   return filter;
 }
 
-struct EvaluatorFixture {
-  std::shared_ptr<Schema> schema;
-  std::shared_ptr<DataFile> data_file;
-  std::unique_ptr<StrictMetricsEvaluator> evaluator;
-};
-
-EvaluatorFixture MakeFixture(int predicate_count) {
-  EvaluatorFixture fixture;
-  fixture.schema = MakeSchema();
-  fixture.data_file = MakeDataFile();
-  auto filter = MakeFilter(predicate_count);
-  auto evaluator = StrictMetricsEvaluator::Make(filter, fixture.schema, true);
-  if (!evaluator.has_value()) {
-    benchmark::Shutdown();
-    std::exit(1);
-  }
-  fixture.evaluator = std::move(evaluator.value());
-  return fixture;
-}
-
 void BM_StrictMetricsEvaluate(benchmark::State& state) {
-  auto fixture = MakeFixture(static_cast<int>(state.range(0)));
+  auto schema = MakeSchema();
+  auto data_file = MakeDataFile();
+  auto filter = MakeFilter(static_cast<int>(state.range(0)));
+  auto evaluator_result = StrictMetricsEvaluator::Make(filter, schema, true);
+  if (!evaluator_result.has_value()) {
+    state.SkipWithError(evaluator_result.error().message.c_str());
+    return;
+  }
+  auto& evaluator = *evaluator_result.value();
+
   for (auto _ : state) {
-    auto result = fixture.evaluator->Evaluate(*fixture.data_file);
+    auto result = evaluator.Evaluate(*data_file);
     benchmark::DoNotOptimize(result);
   }
   state.SetItemsProcessed(state.iterations());
