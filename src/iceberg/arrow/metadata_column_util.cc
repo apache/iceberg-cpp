@@ -25,6 +25,7 @@
 #include "iceberg/arrow/arrow_status_internal.h"
 #include "iceberg/arrow/metadata_column_util_internal.h"
 #include "iceberg/metadata_columns.h"
+#include "iceberg/util/checked_cast.h"
 
 namespace iceberg::arrow {
 
@@ -34,6 +35,22 @@ bool HasRowLineageValue(int32_t field_id, const MetadataColumnContext& metadata_
   }
   return field_id != MetadataColumns::kLastUpdatedSequenceNumberColumnId ||
          metadata_context.data_sequence_number.has_value();
+}
+
+Status AppendRowLineageValue(int32_t field_id,
+                             const MetadataColumnContext& metadata_context,
+                             ::arrow::ArrayBuilder* array_builder) {
+  auto* int_builder = internal::checked_cast<::arrow::Int64Builder*>(array_builder);
+  if (!HasRowLineageValue(field_id, metadata_context)) {
+    ICEBERG_ARROW_RETURN_NOT_OK(int_builder->AppendNull());
+  } else if (field_id == MetadataColumns::kRowIdColumnId) {
+    ICEBERG_ARROW_RETURN_NOT_OK(int_builder->Append(
+        metadata_context.first_row_id.value() + metadata_context.next_file_pos));
+  } else {
+    ICEBERG_ARROW_RETURN_NOT_OK(
+        int_builder->Append(metadata_context.data_sequence_number.value()));
+  }
+  return {};
 }
 
 Result<std::shared_ptr<::arrow::Array>> MakeFilePathArray(const std::string& file_path,

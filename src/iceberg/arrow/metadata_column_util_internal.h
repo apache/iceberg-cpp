@@ -31,6 +31,10 @@
 
 #include "iceberg/result.h"
 
+namespace arrow {
+class ArrayBuilder;
+}  // namespace arrow
+
 namespace iceberg::arrow {
 
 /// \brief Context for populating metadata columns during reading.
@@ -43,6 +47,11 @@ struct MetadataColumnContext {
 
 /// \brief Check if row lineage metadata can be inherited for the column.
 bool HasRowLineageValue(int32_t field_id, const MetadataColumnContext& metadata_context);
+
+/// \brief Append one inherited row lineage value to an int64 builder.
+Status AppendRowLineageValue(int32_t field_id,
+                             const MetadataColumnContext& metadata_context,
+                             ::arrow::ArrayBuilder* array_builder);
 
 /// \brief Create a constant string array for _file column.
 ///

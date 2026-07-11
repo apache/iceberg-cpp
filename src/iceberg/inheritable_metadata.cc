@@ -65,6 +65,8 @@ Status BaseInheritableMetadata::Apply(ManifestEntry& entry) {
   if (entry.data_file) {
     entry.data_file->partition_spec_id = spec_id_;
     entry.data_file->data_sequence_number = entry.sequence_number;
+    // TODO(gangwu): Also propagate file_sequence_number and manifest_location
+    // when C++ adds consumers that need Java-style inherited file metadata.
   } else {
     return InvalidManifest("Manifest entry has no data file");
   }

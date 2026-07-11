@@ -54,22 +54,6 @@ Status AppendFieldToBuilder(const ::avro::NodePtr& avro_node,
                             const arrow::MetadataColumnContext& metadata_context,
                             ::arrow::ArrayBuilder* array_builder);
 
-Status AppendRowLineageValue(int32_t field_id,
-                             const arrow::MetadataColumnContext& metadata_context,
-                             ::arrow::ArrayBuilder* array_builder) {
-  auto* int_builder = internal::checked_cast<::arrow::Int64Builder*>(array_builder);
-  if (!arrow::HasRowLineageValue(field_id, metadata_context)) {
-    ICEBERG_ARROW_RETURN_NOT_OK(int_builder->AppendNull());
-  } else if (field_id == MetadataColumns::kRowIdColumnId) {
-    ICEBERG_ARROW_RETURN_NOT_OK(int_builder->Append(
-        metadata_context.first_row_id.value() + metadata_context.next_file_pos));
-  } else {
-    ICEBERG_ARROW_RETURN_NOT_OK(
-        int_builder->Append(metadata_context.data_sequence_number.value()));
-  }
-  return {};
-}
-
 /// \brief Append Avro record data to Arrow struct builder.
 Status AppendStructToBuilder(const ::avro::NodePtr& avro_node,
                              const ::avro::GenericDatum& avro_datum,
@@ -115,7 +99,7 @@ Status AppendStructToBuilder(const ::avro::NodePtr& avro_node,
         ICEBERG_ARROW_RETURN_NOT_OK(int_builder->Append(metadata_context.next_file_pos));
       } else if (MetadataColumns::IsRowLineageColumn(field_id)) {
         ICEBERG_RETURN_UNEXPECTED(
-            AppendRowLineageValue(field_id, metadata_context, field_builder));
+            arrow::AppendRowLineageValue(field_id, metadata_context, field_builder));
       } else {
         return NotSupported("Unsupported metadata column field id: {}", field_id);
       }
@@ -494,8 +478,8 @@ Status AppendFieldToBuilder(const ::avro::NodePtr& avro_node,
     size_t branch = avro_datum.unionBranch();
     if (avro_node->leafAt(branch)->type() == ::avro::AVRO_NULL) {
       if (is_row_lineage) {
-        return AppendRowLineageValue(projected_field.field_id(), metadata_context,
-                                     array_builder);
+        return arrow::AppendRowLineageValue(projected_field.field_id(), metadata_context,
+                                            array_builder);
       }
       ICEBERG_ARROW_RETURN_NOT_OK(array_builder->AppendNull());
       return {};
