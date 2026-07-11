@@ -19,25 +19,88 @@
 
 #include "iceberg/update/update_schema.h"
 
+#include <format>
 #include <limits>
 #include <memory>
+#include <optional>
+#include <string>
+#include <string_view>
 #include <vector>
 
+#include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
+#include "iceberg/catalog/memory/in_memory_catalog.h"
 #include "iceberg/expression/literal.h"
 #include "iceberg/schema.h"
 #include "iceberg/schema_field.h"
+#include "iceberg/table.h"
+#include "iceberg/table_identifier.h"
+#include "iceberg/table_metadata.h"
 #include "iceberg/test/matchers.h"
-#include "iceberg/test/update_test_base.h"
+#include "iceberg/test/mock_io.h"
+#include "iceberg/test/test_resource.h"
 #include "iceberg/type.h"
 #include "iceberg/util/checked_cast.h"
+#include "iceberg/util/uuid.h"
 
 namespace iceberg {
 
 using internal::checked_cast;
 
-class UpdateSchemaTest : public UpdateTestBase {};
+class UpdateSchemaTest : public ::testing::Test {
+ protected:
+  virtual std::string MetadataResource() const { return "TableMetadataV2Valid.json"; }
+  virtual std::string TableName() const { return "test_table"; }
+
+  void SetUp() override {
+    table_ident_ = TableIdentifier{.name = TableName()};
+    table_location_ = "/warehouse/" + TableName();
+
+    InitializeFileIO();
+    RegisterTableFromResource(MetadataResource());
+  }
+
+  void InitializeFileIO() {
+    auto mock_file_io = std::make_shared<::testing::NiceMock<MockFileIO>>();
+    auto* mock_file_io_ptr = mock_file_io.get();
+    ON_CALL(*mock_file_io, ReadFile(::testing::_, ::testing::_))
+        .WillByDefault([mock_file_io_ptr](const std::string& file_location,
+                                          std::optional<size_t> length) {
+          return mock_file_io_ptr->FileIO::ReadFile(file_location, length);
+        });
+    ON_CALL(*mock_file_io, WriteFile(::testing::_, ::testing::_))
+        .WillByDefault([mock_file_io_ptr](const std::string& file_location,
+                                          std::string_view content) {
+          return mock_file_io_ptr->FileIO::WriteFile(file_location, content);
+        });
+    file_io_ = std::move(mock_file_io);
+    catalog_ =
+        InMemoryCatalog::Make("test_catalog", file_io_, "/warehouse/", /*properties=*/{});
+  }
+
+  void RegisterTable(std::unique_ptr<TableMetadata> metadata) {
+    auto metadata_location = std::format("{}/metadata/00001-{}.metadata.json",
+                                         table_location_, Uuid::GenerateV7().ToString());
+    metadata->location = table_location_;
+    ASSERT_THAT(TableMetadataUtil::Write(*file_io_, metadata_location, *metadata),
+                IsOk());
+
+    ICEBERG_UNWRAP_OR_FAIL(table_,
+                           catalog_->RegisterTable(table_ident_, metadata_location));
+  }
+
+  void RegisterTableFromResource(const std::string& resource_name) {
+    ICEBERG_UNWRAP_OR_FAIL(auto metadata, ReadTableMetadataFromResource(resource_name));
+    RegisterTable(std::move(metadata));
+  }
+
+  TableIdentifier table_ident_;
+  std::string table_location_;
+  std::shared_ptr<FileIO> file_io_;
+  std::shared_ptr<InMemoryCatalog> catalog_;
+  std::shared_ptr<Table> table_;
+};
 
 TEST_F(UpdateSchemaTest, AddOptionalColumn) {
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateSchema());
@@ -84,10 +147,21 @@ TEST_F(UpdateSchemaTest, AddRequiredColumnWithAllowIncompatible) {
   EXPECT_EQ(new_field.doc(), "A required string column");
 }
 
-/// Default values require a v3 table for Apply() to validate successfully.
+/// Uses v3 metadata for default-value tests.
 class UpdateSchemaDefaultValueTest : public UpdateSchemaTest {
  protected:
-  std::string MetadataResource() const override { return "TableMetadataV3Valid.json"; }
+  void SetUp() override {
+    table_ident_ = TableIdentifier{.name = TableName()};
+    table_location_ = "/warehouse/" + TableName();
+
+    InitializeFileIO();
+
+    ICEBERG_UNWRAP_OR_FAIL(auto metadata,
+                           ReadTableMetadataFromResource("TableMetadataV2Valid.json"));
+    metadata->format_version = TableMetadata::kSupportedTableFormatVersion;
+    metadata->next_row_id = TableMetadata::kInitialRowId;
+    RegisterTable(std::move(metadata));
+  }
 };
 
 TEST_F(UpdateSchemaTest, AddColumnWithDefaultValueRequiresV3) {
@@ -115,8 +189,6 @@ TEST_F(UpdateSchemaDefaultValueTest, AddColumnWithDefaultValue) {
 }
 
 TEST_F(UpdateSchemaDefaultValueTest, AddRequiredColumnWithDefaultValue) {
-  // A required column with a default does not need AllowIncompatibleChanges():
-  // old rows read the initial-default instead of null.
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateSchema());
   update->AddRequiredColumn("required_col", string(), "A required string column",
                             Literal::String("n/a"));
@@ -144,8 +216,6 @@ TEST_F(UpdateSchemaDefaultValueTest, AddColumnWithMismatchedDefaultValueFails) {
 }
 
 TEST_F(UpdateSchemaDefaultValueTest, AddColumnWithNarrowingDefaultValueFails) {
-  // CastTo signals narrowing with AboveMax/BelowMin sentinels; they must not be
-  // stored as defaults.
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateSchema());
   update->AddColumn("new_col", int32(), "An integer column",
                     Literal::Long(std::numeric_limits<int64_t>::max()));
@@ -165,7 +235,6 @@ TEST_F(UpdateSchemaDefaultValueTest, UpdateColumnDefault) {
   ASSERT_TRUE(new_field_opt.has_value());
 
   const auto& new_field = new_field_opt->get();
-  // initial-default is fixed at column addition; write-default is updated.
   ASSERT_NE(new_field.initial_default(), nullptr);
   EXPECT_EQ(*new_field.initial_default(), Literal::Int(42));
   ASSERT_NE(new_field.write_default(), nullptr);
@@ -173,7 +242,6 @@ TEST_F(UpdateSchemaDefaultValueTest, UpdateColumnDefault) {
 }
 
 TEST_F(UpdateSchemaDefaultValueTest, UpdateColumnDefaultOnExistingColumn) {
-  // Updating the write-default of a pre-existing column must survive Apply().
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateSchema());
   update->UpdateColumnDefault("x", Literal::Long(0));
 
@@ -188,7 +256,6 @@ TEST_F(UpdateSchemaDefaultValueTest, UpdateColumnDefaultOnExistingColumn) {
 }
 
 TEST_F(UpdateSchemaDefaultValueTest, UpdateColumnDefaultClearsWithNullopt) {
-  // Passing std::nullopt removes the write-default (Java parity with null).
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateSchema());
   update->AddColumn("new_col", int32(), "An integer column", Literal::Int(42))
       .UpdateColumnDefault("new_col", std::nullopt);
@@ -198,15 +265,12 @@ TEST_F(UpdateSchemaDefaultValueTest, UpdateColumnDefaultClearsWithNullopt) {
   ASSERT_TRUE(field_opt.has_value());
 
   const auto& field = field_opt->get();
-  // initial-default stays; write-default is cleared.
   ASSERT_NE(field.initial_default(), nullptr);
   EXPECT_EQ(*field.initial_default(), Literal::Int(42));
   EXPECT_EQ(field.write_default(), nullptr);
 }
 
 TEST_F(UpdateSchemaDefaultValueTest, AddNestedColumnPreservesNestedDefaults) {
-  // The added column's type gets fresh field ids; defaults on its nested fields must
-  // survive the reassignment.
   auto nested_type = std::make_shared<StructType>(std::vector<SchemaField>{
       SchemaField(/*field_id=*/100, "inner", int32(), /*optional=*/false, /*doc=*/{},
                   std::make_shared<const Literal>(Literal::Int(5)),
@@ -230,7 +294,6 @@ TEST_F(UpdateSchemaDefaultValueTest, AddNestedColumnPreservesNestedDefaults) {
 }
 
 TEST_F(UpdateSchemaDefaultValueTest, UpdateColumnDefaultCastsToColumnType) {
-  // An int default for a long column is cast to the column type, not rejected.
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateSchema());
   update->UpdateColumnDefault("x", Literal::Int(5));
 
@@ -255,10 +318,7 @@ TEST_F(UpdateSchemaDefaultValueTest, RequireColumnAddedWithDefault) {
 }
 
 TEST_F(UpdateSchemaDefaultValueTest, RequireNestedMapListColumnAddedWithDefault) {
-  // A field added into a map value-struct or list element-struct is addressed by its
-  // user-facing short name ("locations.alt", "points.z"), which drops the synthetic
-  // "value"/"element" segment. Making such a just-added, defaulted column required must
-  // resolve that short name and not require AllowIncompatibleChanges().
+  // Map/list paths omit value/element.
   auto map_key_struct = std::make_shared<StructType>(
       std::vector<SchemaField>{SchemaField(20, "address", string(), false)});
   auto map_value_struct = std::make_shared<StructType>(
@@ -340,9 +400,6 @@ TEST_F(UpdateSchemaDefaultValueTest, UpdateColumnTypePromotesDefaultValues) {
 }
 
 TEST_F(UpdateSchemaDefaultValueTest, UpdateColumnTypePromotesDecimalDefault) {
-  // decimal(9,2) -> decimal(18,2) is an allowed precision widening. Literal::CastTo
-  // does not cast between decimal types, so the default must still be promoted (the
-  // unscaled value is unchanged).
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateSchema());
   update
       ->AddColumn("new_col", decimal(9, 2), "A decimal column",
@@ -362,9 +419,6 @@ TEST_F(UpdateSchemaDefaultValueTest, UpdateColumnTypePromotesDecimalDefault) {
 }
 
 TEST_F(UpdateSchemaDefaultValueTest, AddColumnWithWiderPrecisionDecimalDefault) {
-  // A decimal default whose precision differs from the column (same scale) is accepted:
-  // Literal::CastTo does not cast between decimal types, so the default is rebuilt at the
-  // column's precision instead of being rejected.
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateSchema());
   update->AddColumn("new_col", decimal(18, 2), "A decimal column",
                     Literal::Decimal(1234, 9, 2));
@@ -381,8 +435,6 @@ TEST_F(UpdateSchemaDefaultValueTest, AddColumnWithWiderPrecisionDecimalDefault) 
 }
 
 TEST_F(UpdateSchemaDefaultValueTest, UpdateColumnDefaultWiderPrecisionDecimal) {
-  // UpdateColumnDefault accepts a decimal default whose precision differs from the
-  // column (same scale), rebuilding it at the column's precision.
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateSchema());
   update->AddColumn("new_col", decimal(18, 2), "A decimal column")
       .UpdateColumnDefault("new_col", Literal::Decimal(1234, 9, 2));
@@ -397,8 +449,6 @@ TEST_F(UpdateSchemaDefaultValueTest, UpdateColumnDefaultWiderPrecisionDecimal) {
 }
 
 TEST_F(UpdateSchemaDefaultValueTest, AddColumnWithDifferentScaleDecimalDefaultFails) {
-  // A decimal default whose scale differs from the column is rejected, not silently
-  // reinterpreted: the unscaled value only keeps its meaning at the same scale.
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateSchema());
   update->AddColumn("new_col", decimal(18, 2), "A decimal column",
                     Literal::Decimal(1234, 9, 3));
@@ -419,9 +469,6 @@ TEST_F(UpdateSchemaDefaultValueTest, UpdateColumnDefaultDifferentScaleDecimalFai
 }
 
 TEST_F(UpdateSchemaDefaultValueTest, AddColumnWithOutOfPrecisionDecimalDefaultFails) {
-  // A same-scale decimal default whose unscaled value exceeds the column precision is
-  // rejected here, rather than being relabeled and later rejected by the JSON parser when
-  // the metadata is read back.
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateSchema());
   update->AddColumn("new_col", decimal(4, 2), "A decimal column",
                     Literal::Decimal(1234567, 9, 2));
@@ -432,9 +479,6 @@ TEST_F(UpdateSchemaDefaultValueTest, AddColumnWithOutOfPrecisionDecimalDefaultFa
 }
 
 TEST_F(UpdateSchemaDefaultValueTest, AddColumnWithTypedNullDecimalDefaultFails) {
-  // A typed null default carries decimal type metadata but no Decimal payload; the
-  // same-scale fast path must not read a Decimal out of it (which would be undefined),
-  // so it falls through and is rejected as a null default.
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateSchema());
   update->AddColumn("new_col", decimal(18, 2), "A decimal column",
                     Literal::Null(decimal(18, 2)));

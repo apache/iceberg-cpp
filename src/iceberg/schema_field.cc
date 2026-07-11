@@ -22,9 +22,11 @@
 #include <format>
 #include <string_view>
 #include <utility>
+#include <variant>
 
 #include "iceberg/expression/literal.h"
 #include "iceberg/type.h"
+#include "iceberg/util/checked_cast.h"
 #include "iceberg/util/formatter.h"  // IWYU pragma: keep
 #include "iceberg/util/macros.h"
 
@@ -32,8 +34,7 @@ namespace iceberg {
 
 namespace {
 
-// A null default value is modeled as the absence of a default (matching Java), so it is
-// not stored.
+// Treat null defaults as absent.
 std::shared_ptr<const Literal> DropNullDefault(std::shared_ptr<const Literal> value) {
   if (value != nullptr && value->IsNull()) {
     return nullptr;
@@ -65,6 +66,55 @@ SchemaField SchemaField::MakeRequired(int32_t field_id, std::string_view name,
   return {field_id, name, std::move(type), false, doc};
 }
 
+SchemaField SchemaField::WithName(std::string_view name) const {
+  return {field_id_, name, type_, optional_, doc_, initial_default_, write_default_};
+}
+
+SchemaField SchemaField::WithType(std::shared_ptr<Type> type) const {
+  return {field_id_,        name_,         std::move(type), optional_, doc_,
+          initial_default_, write_default_};
+}
+
+SchemaField SchemaField::WithDoc(std::string_view doc) const {
+  return {field_id_, name_, type_, optional_, doc, initial_default_, write_default_};
+}
+
+SchemaField SchemaField::WithInitialDefault(
+    std::shared_ptr<const Literal> initial_default) const {
+  return {field_id_,     name_, type_, optional_, doc_, std::move(initial_default),
+          write_default_};
+}
+
+SchemaField SchemaField::WithWriteDefault(
+    std::shared_ptr<const Literal> write_default) const {
+  return {field_id_,
+          name_,
+          type_,
+          optional_,
+          doc_,
+          initial_default_,
+          std::move(write_default)};
+}
+
+Result<Literal> SchemaField::CastDefaultValue(
+    const Literal& value, const std::shared_ptr<PrimitiveType>& target_type) {
+  if (target_type->type_id() == TypeId::kDecimal &&
+      std::holds_alternative<Decimal>(value.value())) {
+    const auto& source_type = internal::checked_cast<const DecimalType&>(*value.type());
+    const auto& decimal_type = internal::checked_cast<const DecimalType&>(*target_type);
+    if (source_type.scale() == decimal_type.scale()) {
+      const auto& decimal_value = std::get<Decimal>(value.value());
+      if (!decimal_value.FitsInPrecision(decimal_type.precision())) {
+        return InvalidArgument("Cannot cast default value to {}: {}", *target_type,
+                               value);
+      }
+      return Literal::Decimal(decimal_value.value(), decimal_type.precision(),
+                              decimal_type.scale());
+    }
+  }
+  return value.CastTo(target_type);
+}
+
 int32_t SchemaField::field_id() const { return field_id_; }
 
 std::string_view SchemaField::name() const { return name_; }
@@ -87,8 +137,7 @@ namespace {
 
 Status ValidateDefault(const SchemaField& field, const Literal& value,
                        std::string_view kind) {
-  // A null default is modeled as absence and dropped at construction, so it never reaches
-  // here; only the out-of-range cast sentinels need rejecting.
+  // Null defaults are dropped at construction.
   if (value.IsAboveMax() || value.IsBelowMin()) {
     return InvalidSchema("Invalid {} value for {}: value is out of range", kind,
                          field.name());
@@ -97,8 +146,7 @@ Status ValidateDefault(const SchemaField& field, const Literal& value,
     return InvalidSchema("Invalid {} value for {}: field has no type", kind,
                          field.name());
   }
-  // The spec requires unknown/variant/geometry/geography columns to default to null, so a
-  // non-null default on them is invalid (a null default was already dropped as absence).
+  // These types can only use null defaults.
   switch (field.type()->type_id()) {
     case TypeId::kUnknown:
     case TypeId::kVariant:
@@ -109,17 +157,13 @@ Status ValidateDefault(const SchemaField& field, const Literal& value,
     default:
       break;
   }
-  // Defaults are otherwise only supported on primitive fields. The spec also permits JSON
-  // single-value defaults for struct/list/map (e.g. an empty struct `{}` whose sub-field
-  // defaults live in field metadata); that matches the current Java model's gap and is
-  // left as a follow-up.
+  // Nested defaults are not supported yet.
   if (!field.type()->is_primitive()) {
     return InvalidSchema(
         "Invalid {} value for {}: default values are only supported for primitive types",
         kind, field.name());
   }
-  // Defaults are stored verbatim (no implicit cast), so a default whose literal type does
-  // not match the field type is invalid.
+  // Stored defaults must already match the field type.
   if (*value.type() != *field.type()) {
     return InvalidSchema("{} of field {} has type {} but expected {}", kind, field.name(),
                          *value.type(), *field.type());

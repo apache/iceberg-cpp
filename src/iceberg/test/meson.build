@@ -59,6 +59,7 @@ iceberg_tests = {
             'table_requirements_test.cc',
             'table_test.cc',
             'table_update_test.cc',
+            'update_schema_test.cc',
         ),
     },
     'logging_test': {

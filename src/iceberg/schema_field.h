@@ -46,10 +46,8 @@ class ICEBERG_EXPORT SchemaField : public iceberg::util::Formattable {
   /// \param[in] type The field type.
   /// \param[in] optional Whether values of this field are required or nullable.
   /// \param[in] doc Optional documentation string for the field.
-  /// \param[in] initial_default The v3 `initial-default` value, or null if absent. The
-  /// field shares ownership of the (immutable) value.
-  /// \param[in] write_default The v3 `write-default` value, or null if absent. The field
-  /// shares ownership of the (immutable) value.
+  /// \param[in] initial_default The v3 `initial-default`, or null if absent.
+  /// \param[in] write_default The v3 `write-default`, or null if absent.
   SchemaField(int32_t field_id, std::string_view name, std::shared_ptr<Type> type,
               bool optional, std::string_view doc = {},
               std::shared_ptr<const Literal> initial_default = nullptr,
@@ -62,14 +60,33 @@ class ICEBERG_EXPORT SchemaField : public iceberg::util::Formattable {
   static SchemaField MakeRequired(int32_t field_id, std::string_view name,
                                   std::shared_ptr<Type> type, std::string_view doc = {});
 
+  /// \brief Return a copy with a new name.
+  SchemaField WithName(std::string_view name) const;
+
+  /// \brief Return a copy with a new type.
+  SchemaField WithType(std::shared_ptr<Type> type) const;
+
+  /// \brief Return a copy with new documentation.
+  SchemaField WithDoc(std::string_view doc) const;
+
+  /// \brief Return a copy with a new `initial-default`.
+  SchemaField WithInitialDefault(std::shared_ptr<const Literal> initial_default) const;
+
+  /// \brief Return a copy with a new `write-default`.
+  SchemaField WithWriteDefault(std::shared_ptr<const Literal> write_default) const;
+
+  /// \brief Cast a default literal to a field type.
+  static Result<Literal> CastDefaultValue(
+      const Literal& value, const std::shared_ptr<PrimitiveType>& target_type);
+
   /// \brief Get the field ID.
-  [[nodiscard]] int32_t field_id() const;
+  int32_t field_id() const;
 
   /// \brief Get the field name.
-  [[nodiscard]] std::string_view name() const;
+  std::string_view name() const;
 
   /// \brief Get the field type.
-  [[nodiscard]] const std::shared_ptr<Type>& type() const;
+  const std::shared_ptr<Type>& type() const;
 
   /// \brief Get whether the field is optional.
   [[nodiscard]] bool optional() const;
@@ -77,15 +94,13 @@ class ICEBERG_EXPORT SchemaField : public iceberg::util::Formattable {
   /// \brief Get the field documentation.
   std::string_view doc() const;
 
-  /// \brief Get the owning pointer to the default value for this field used when reading
-  /// rows written before the field existed (v3 `initial-default`), or null if absent.
+  /// \brief Get the v3 `initial-default`, or null if absent.
   const std::shared_ptr<const Literal>& initial_default() const;
 
-  /// \brief Get the owning pointer to the default value for this field used when a writer
-  /// does not supply a value (v3 `write-default`), or null if absent.
+  /// \brief Get the v3 `write-default`, or null if absent.
   const std::shared_ptr<const Literal>& write_default() const;
 
-  [[nodiscard]] std::string ToString() const override;
+  std::string ToString() const override;
 
   Status Validate() const;
 
@@ -107,14 +122,13 @@ class ICEBERG_EXPORT SchemaField : public iceberg::util::Formattable {
 
  private:
   /// \brief Compare two fields for equality.
-  [[nodiscard]] bool Equals(const SchemaField& other) const;
+  bool Equals(const SchemaField& other) const;
 
   int32_t field_id_;
   std::string name_;
   std::shared_ptr<Type> type_;
   bool optional_;
   std::string doc_;
-  // Immutable default values, shared (not deep-copied) across field copies, like `type_`.
   std::shared_ptr<const Literal> initial_default_;
   std::shared_ptr<const Literal> write_default_;
 };

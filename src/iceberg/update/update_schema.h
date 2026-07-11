@@ -75,9 +75,7 @@ class ICEBERG_EXPORT UpdateSchema : public PendingUpdate {
   /// If type is a nested type, its field IDs are reassigned when added to the
   /// existing schema.
   ///
-  /// Without a default value, the added column is optional with a null default.
-  /// With a default value (v3+), it is used as both the `initial-default` and the
-  /// `write-default` of the new column.
+  /// v3+: `default_value` sets `initial-default` and `write-default`.
   ///
   /// \param name Name for the new column.
   /// \param type Type for the new column.
@@ -103,9 +101,7 @@ class ICEBERG_EXPORT UpdateSchema : public PendingUpdate {
   /// If type is a nested type, its field IDs are reassigned when added to the
   /// existing schema.
   ///
-  /// Without a default value, the added column is optional with a null default.
-  /// With a default value (v3+), it is used as both the `initial-default` and the
-  /// `write-default` of the new column.
+  /// v3+: `default_value` sets `initial-default` and `write-default`.
   ///
   /// \param parent Name of the parent struct to which the column will be added.
   /// \param name Name for the new column.
@@ -120,11 +116,8 @@ class ICEBERG_EXPORT UpdateSchema : public PendingUpdate {
 
   /// \brief Add a new required top-level column with documentation.
   ///
-  /// Adding a required column without a default is an incompatible change that can
-  /// break reading older data. To suppress exceptions thrown when an incompatible
-  /// change is detected, call AllowIncompatibleChanges() or provide a default value
-  /// (v3+), which is used as both the `initial-default` and the `write-default` of
-  /// the new column.
+  /// Required adds need AllowIncompatibleChanges() unless `default_value` is set.
+  /// v3+: `default_value` sets `initial-default` and `write-default`.
   ///
   /// Because "." may be interpreted as a column path separator or may be used in
   /// field names, it is not allowed in names passed to this method. To add to nested
@@ -146,11 +139,8 @@ class ICEBERG_EXPORT UpdateSchema : public PendingUpdate {
 
   /// \brief Add a new required column to a nested struct with documentation.
   ///
-  /// Adding a required column without a default is an incompatible change that can
-  /// break reading older data. To suppress exceptions thrown when an incompatible
-  /// change is detected, call AllowIncompatibleChanges() or provide a default value
-  /// (v3+), which is used as both the `initial-default` and the `write-default` of
-  /// the new column.
+  /// Required adds need AllowIncompatibleChanges() unless `default_value` is set.
+  /// v3+: `default_value` sets `initial-default` and `write-default`.
   ///
   /// The parent name is used to find the parent using Schema::FindFieldByName(). If
   /// the parent name is null or empty, the new column will be added to the root as a
@@ -226,8 +216,7 @@ class ICEBERG_EXPORT UpdateSchema : public PendingUpdate {
   /// \brief Update the `write-default` value for a column (v3+).
   ///
   /// The name is used to find the column to update using Schema::FindFieldByName().
-  /// The column's `initial-default` is not changed: it is fixed when the column is
-  /// added and applies to rows that predate the column.
+  /// Only `write-default` changes; `initial-default` is fixed.
   ///
   /// \param name Name of the column to update the default value for.
   /// \param new_default Replacement `write-default` value for the column, or

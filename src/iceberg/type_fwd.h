@@ -104,6 +104,7 @@ class GeometryType;
 
 /// \brief Data values.
 class Decimal;
+class Literal;
 class Uuid;
 
 /// \brief Schema.
