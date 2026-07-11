@@ -33,6 +33,7 @@
 #include "iceberg/iceberg_export.h"
 #include "iceberg/result.h"
 #include "iceberg/storage_credential.h"
+#include "iceberg/util/string_util.h"
 
 namespace iceberg {
 
@@ -79,7 +80,8 @@ class ICEBERG_EXPORT ResolvingFileIO final : public FileIO,
   // Guards lazy resolution; set credentials before sharing across threads.
   std::mutex mutex_;
   std::vector<StorageCredential> storage_credentials_;
-  std::unordered_map<std::string_view, std::unique_ptr<FileIO>> io_by_name_;
+  std::unordered_map<std::string, std::unique_ptr<FileIO>, StringHash, StringEqual>
+      io_by_name_;
 };
 
 }  // namespace iceberg
