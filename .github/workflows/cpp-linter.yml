@@ -76,6 +76,7 @@ jobs:
           cmake .. -G Ninja -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
             -DCMAKE_C_COMPILER_LAUNCHER=sccache \
             -DCMAKE_CXX_COMPILER_LAUNCHER=sccache \
+            -DICEBERG_BUILD_BENCHMARKS=ON \
             -DICEBERG_BUILD_SQL_CATALOG=ON \
             -DICEBERG_SQL_SQLITE=ON \
             -DICEBERG_SQL_POSTGRESQL=ON \
