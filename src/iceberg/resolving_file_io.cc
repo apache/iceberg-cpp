@@ -42,6 +42,7 @@ Result<std::string_view> ResolvingFileIO::ResolveFileIOName(std::string_view loc
     return FileIORegistry::kArrowLocalFileIO;
   }
   // S3-compatible schemes served by the S3 FileIO (Java: SCHEME_TO_FILE_IO).
+  // Keep in sync with CanonicalizeS3Scheme in arrow_s3_file_io.cc.
   if (scheme == "s3" || scheme == "s3a" || scheme == "s3n" || scheme == "oss") {
     return FileIORegistry::kArrowS3FileIO;
   }
@@ -65,7 +66,7 @@ Result<FileIO*> ResolvingFileIO::FileIOForPath(std::string_view location) {
             credentialed->SetStorageCredentials(storage_credentials_));
       }
     }
-    it = io_by_name_.emplace(name, std::move(io)).first;
+    it = io_by_name_.emplace(std::string(name), std::move(io)).first;
   }
   return it->second.get();
 }

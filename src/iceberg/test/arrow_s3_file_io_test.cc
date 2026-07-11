@@ -175,6 +175,20 @@ TEST_F(ArrowS3FileIOTest, SkipsNonS3CredentialPrefix) {
   EXPECT_EQ(credentialed->credentials(), credentials);
 }
 
+TEST_F(ArrowS3FileIOTest, AcceptsCredentialsWithoutS3Prefix) {
+  auto result = MakeS3FileIO({});
+  ASSERT_THAT(result, IsOk());
+  auto* credentialed = result.value()->AsSupportsStorageCredentials();
+  ASSERT_NE(credentialed, nullptr);
+
+  // Even when no vended credential is S3-family, setting them succeeds (a
+  // warning is logged) and S3 access falls back to the default credentials.
+  std::vector<StorageCredential> credentials = {
+      {.prefix = "gs://bucket/table", .config = {{"k", "v"}}}};
+  EXPECT_THAT(credentialed->SetStorageCredentials(credentials), IsOk());
+  EXPECT_EQ(credentialed->credentials(), credentials);
+}
+
 TEST_F(ArrowS3FileIOTest, RejectsIncompleteStaticCredentials) {
   auto result =
       MakeS3FileIO({{std::string(S3Properties::kAccessKeyId), "access-key-only"}});
