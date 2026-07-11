@@ -43,6 +43,6 @@ CheckOptions:
   - key:    modernize-use-scoped-lock.WarnOnSingleLocks
     value:  'false'
   - key:    misc-include-cleaner.IgnoreHeaders
-    value:  'arrow/.*;nanoarrow/.*;nlohmann/.*;spdlog/.*;roaring/.*;cpr/.*'
+    value:  'arrow/.*;avro/.*;aws/.*;cpr/.*;gmock/.*;gtest/.*;nanoarrow/.*;nlohmann/.*;parquet/.*;roaring/.*;spdlog/.*;sqlpp23/.*;sqlite3\.h;thrift/.*;utf8proc\.h;zlib\.h'
 
 HeaderFilterRegex: 'src/iceberg|example'
