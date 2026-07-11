@@ -19,12 +19,15 @@
 
 #include "iceberg/update/replace_partitions.h"
 
+#include <algorithm>
+
 #include "iceberg/expression/expressions.h"
 #include "iceberg/partition_spec.h"
 #include "iceberg/snapshot.h"
 #include "iceberg/table.h"  // IWYU pragma: keep
 #include "iceberg/table_metadata.h"
 #include "iceberg/transaction.h"
+#include "iceberg/transform.h"
 #include "iceberg/util/error_collector.h"
 #include "iceberg/util/macros.h"
 
@@ -53,7 +56,17 @@ ReplacePartitions& ReplacePartitions::AddFile(const std::shared_ptr<DataFile>& f
   ICEBERG_BUILDER_ASSIGN_OR_RETURN(auto spec, base().PartitionSpecById(spec_id));
 
   ICEBERG_BUILDER_RETURN_IF_ERROR(AddDataFile(file));
-  if (spec->fields().empty()) {
+  // A spec is effectively unpartitioned if it has no fields, or every field
+  // uses the void transform. Java's PartitionSpec.isUnpartitioned() covers
+  // both cases; mirror that so an all-void spec triggers the table-wide
+  // replace path instead of a DropPartition with void-valued partition keys.
+  auto is_unpartitioned = [](const PartitionSpec& s) {
+    return s.fields().empty() ||
+           std::all_of(s.fields().begin(), s.fields().end(), [](const PartitionField& f) {
+             return f.transform()->transform_type() == TransformType::kVoid;
+           });
+  };
+  if (is_unpartitioned(*spec)) {
     // Unpartitioned spec: Java's BaseReplacePartitions treats this as a
     // table-wide replace rather than a spec-scoped DropPartition with empty
     // partition values. Mirror that so every existing data file is dropped
@@ -91,12 +104,12 @@ std::string ReplacePartitions::operation() { return DataOperation::kOverwrite; }
 
 Status ReplacePartitions::Validate(const TableMetadata& current_metadata,
                                    const std::shared_ptr<Snapshot>& snapshot) {
-  // Match Java BaseReplacePartitions: require at least one staged data file.
-  // Use the flags AddFile() sets — `DataSpec()` would also error on multi-spec
-  // stages and is not the guard we want here.
-  if (!replace_by_row_filter_ && replaced_partitions_.empty()) {
-    return InvalidArgument(
-        "ReplacePartitions requires at least one data file; call AddFile() first");
+  // Match Java BaseReplacePartitions.validate: require at least one staged data
+  // file and that all staged files share exactly one partition spec.
+  // DataSpec() enforces both invariants; ignore the returned spec here since
+  // replace_by_row_filter_ / replaced_partitions_ already scope validation.
+  if (!replace_by_row_filter_) {
+    ICEBERG_RETURN_UNEXPECTED(DataSpec());
   }
 
   if (snapshot == nullptr) {
