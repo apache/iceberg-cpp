@@ -22,6 +22,8 @@
 #include <mutex>
 #include <utility>
 
+#include "iceberg/resolving_file_io.h"
+
 namespace iceberg {
 
 namespace {
@@ -29,6 +31,15 @@ namespace {
 struct RegistryState {
   std::mutex mutex;
   std::unordered_map<std::string, FileIORegistry::Factory> registry;
+
+  RegistryState() {
+    // Always available: the scheme-resolving FileIO lives in the core library.
+    registry[std::string(FileIORegistry::kResolvingFileIO)] =
+        [](const std::unordered_map<std::string, std::string>& properties)
+        -> Result<std::unique_ptr<FileIO>> {
+      return std::make_unique<ResolvingFileIO>(properties);
+    };
+  }
 };
 
 RegistryState& State() {

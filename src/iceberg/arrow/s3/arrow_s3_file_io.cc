@@ -235,10 +235,11 @@ Status ArrowS3FileIO::SetStorageCredentials(
   // TODO(gangwu): Refresh vended credentials via credentials.uri before tokens expire.
   for (const auto& credential : storage_credentials) {
     ICEBERG_RETURN_UNEXPECTED(credential.Validate());
+    // A server may vend credentials for several storage systems at once;
+    // non-S3 prefixes are skipped, not rejected (Java S3FileIO filters
+    // credentials by the "s3" prefix).
     if (!IsS3FileIOCredentialPrefix(credential.prefix)) {
-      return NotSupported(
-          "Storage credential prefix '{}' is unsupported by Arrow S3 FileIO",
-          credential.prefix);
+      continue;
     }
     auto properties = default_properties_;
     for (const auto& [key, value] : credential.config) {
