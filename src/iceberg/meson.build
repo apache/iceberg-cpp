@@ -45,6 +45,7 @@ iceberg_include_dir = include_directories('..')
 iceberg_sources = files(
     'arrow_c_data_guard_internal.cc',
     'arrow_c_data_util.cc',
+    'arrow_row_builder.cc',
     'catalog/memory/in_memory_catalog.cc',
     'catalog/session_catalog.cc',
     'catalog/session_context.cc',
@@ -74,6 +75,7 @@ iceberg_sources = files(
     'inspect/snapshots_table.cc',
     'json_serde.cc',
     'location_provider.cc',
+    'logging/cerr_logger.cc',
     'logging/logger.cc',
     'manifest/manifest_adapter.cc',
     'manifest/manifest_entry.cc',
@@ -130,8 +132,10 @@ iceberg_sources = files(
     'update/fast_append.cc',
     'update/merge_append.cc',
     'update/merging_snapshot_update.cc',
+    'update/overwrite_files.cc',
     'update/pending_update.cc',
     'update/replace_partitions.cc',
+    'update/rewrite_files.cc',
     'update/row_delta.cc',
     'update/set_snapshot.cc',
     'update/snapshot_manager.cc',
@@ -158,6 +162,7 @@ iceberg_sources = files(
     'util/struct_like_set.cc',
     'util/task_group.cc',
     'util/temporal_util.cc',
+    'util/thread_util.cc',
     'util/timepoint.cc',
     'util/transform_util.cc',
     'util/truncate_util.cc',
@@ -194,9 +199,27 @@ croaring_dep = dependency('croaring', static: croaring_needs_static)
 nanoarrow_dep = dependency('nanoarrow')
 nlohmann_json_dep = dependency('nlohmann_json')
 spdlog_dep = dependency('spdlog')
+# utf8proc's header declares its functions __declspec(dllimport) on Windows unless
+# UTF8PROC_STATIC is defined, and the wrap does not propagate that define to consumers.
+# Define it whenever utf8proc is linked statically, so the header's declarations match
+# how it is linked. Harmless on other platforms.
+utf8proc_needs_static = get_option('default_library') == 'static'
+utf8proc_dep = dependency('libutf8proc', static: utf8proc_needs_static)
+if utf8proc_needs_static
+    utf8proc_dep = declare_dependency(
+        compile_args: ['-DUTF8PROC_STATIC'],
+        dependencies: utf8proc_dep,
+    )
+endif
 zlib_dep = dependency('zlib')
 
-iceberg_deps = [nanoarrow_dep, nlohmann_json_dep, spdlog_dep, zlib_dep]
+iceberg_deps = [
+    nanoarrow_dep,
+    nlohmann_json_dep,
+    spdlog_dep,
+    utf8proc_dep,
+    zlib_dep,
+]
 
 iceberg_lib = library(
     'iceberg',
@@ -281,6 +304,7 @@ install_headers(
         'sort_field.h',
         'sort_order.h',
         'statistics_file.h',
+        'storage_credential.h',
         'table.h',
         'table_identifier.h',
         'table_metadata.h',

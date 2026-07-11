@@ -50,10 +50,10 @@ UpdateProperties& UpdateProperties::Set(const std::string& key,
                         "Cannot set property '{}' that is already marked for removal",
                         key);
 
-  if (!TableProperties::reserved_properties().contains(key) ||
-      key == TableProperties::kFormatVersion.key()) {
-    updates_.insert_or_assign(key, value);
-  }
+  ICEBERG_BUILDER_CHECK(!TableProperties::reserved_properties().contains(key) ||
+                            key == TableProperties::kFormatVersion.key(),
+                        "Cannot set reserved property: '{}'", key);
+  updates_.insert_or_assign(key, value);
 
   return *this;
 }

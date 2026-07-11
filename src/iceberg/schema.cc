@@ -116,9 +116,15 @@ std::shared_ptr<Type> ReassignTypeIds(const std::shared_ptr<Type>& type,
 SchemaField ReassignField(const SchemaField& field, int32_t new_id,
                           const Schema::GetId& get_id, Schema::IdMap& ids_to_reassigned,
                           Schema::IdMap& ids_to_original) {
-  return {new_id, std::string(field.name()),
+  // Reassigning IDs only rewrites the field ID and nested type IDs; share the field's
+  // (immutable) default values rather than copying them.
+  return {new_id,
+          std::string(field.name()),
           ReassignTypeIds(field.type(), get_id, ids_to_reassigned, ids_to_original),
-          field.optional(), std::string(field.doc())};
+          field.optional(),
+          std::string(field.doc()),
+          field.initial_default(),
+          field.write_default()};
 }
 
 std::vector<SchemaField> ReassignIds(std::vector<SchemaField> fields,
@@ -447,7 +453,21 @@ Status Schema::Validate(int32_t format_version) const {
       }
     }
 
-    // TODO(GuoTao.yu): Check default values when they are supported
+    // Only the initial-default is gated on format version: it changes how existing
+    // data files are read (rows written before the column existed materialize this
+    // value), so it requires the v3 reader contract. A write-default only affects
+    // values written going forward and does not reinterpret existing data.
+    if (field.initial_default() != nullptr &&
+        format_version < TableMetadata::kMinFormatVersionDefaultValues) {
+      return InvalidSchema(
+          "Invalid initial default for {}: non-null default ({}) is not supported "
+          "until v{}",
+          field.name(), *field.initial_default(),
+          TableMetadata::kMinFormatVersionDefaultValues);
+    }
+    if (field.initial_default() != nullptr || field.write_default() != nullptr) {
+      ICEBERG_RETURN_UNEXPECTED(field.Validate());
+    }
   }
 
   return {};

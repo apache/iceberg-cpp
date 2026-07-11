@@ -19,6 +19,9 @@
 
 #pragma once
 
+/// \file iceberg/file_io_registry.h
+/// \brief Define the FileIO registry.
+
 #include <functional>
 #include <memory>
 #include <string>

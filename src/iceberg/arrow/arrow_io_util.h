@@ -19,6 +19,9 @@
 
 #pragma once
 
+/// \file iceberg/arrow/arrow_io_util.h
+/// \brief Provide helpers to create Arrow-backed FileIO implementations.
+
 #include <memory>
 #include <string>
 #include <unordered_map>

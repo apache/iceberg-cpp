@@ -17,6 +17,8 @@
  * under the License.
  */
 
+#include <array>
+#include <initializer_list>
 #include <optional>
 #include <sstream>
 #include <string>
@@ -25,7 +27,10 @@
 
 #include <arrow/array.h>
 #include <arrow/array/array_base.h>
+#include <arrow/array/builder_binary.h>
+#include <arrow/array/builder_primitive.h>
 #include <arrow/c/bridge.h>
+#include <arrow/extension/uuid.h>
 #include <arrow/filesystem/filesystem.h>
 #include <arrow/json/from_string.h>
 #include <avro/DataFile.hh>
@@ -46,6 +51,7 @@
 #include "iceberg/test/temp_file_test_base.h"
 #include "iceberg/type.h"
 #include "iceberg/util/checked_cast.h"
+#include "iceberg/util/uuid.h"
 
 namespace iceberg::avro {
 
@@ -74,6 +80,41 @@ std::optional<int32_t> FieldIdAt(const ::avro::NodePtr& node, size_t index) {
     return std::nullopt;
   }
   return std::stoi(field_id.value());
+}
+
+constexpr std::array<uint8_t, Uuid::kLength> kUuidBytes1 = {
+    0x12, 0x3e, 0x45, 0x67, 0xe8, 0x9b, 0x12, 0xd3,
+    0xa4, 0x56, 0x42, 0x66, 0x14, 0x17, 0x40, 0x00};
+constexpr std::array<uint8_t, Uuid::kLength> kUuidBytes2 = {
+    0xf7, 0x9c, 0x3e, 0x09, 0x67, 0x7c, 0x4b, 0xbd,
+    0xa4, 0x79, 0x3f, 0x34, 0x9c, 0xb7, 0x85, 0xe7};
+
+std::shared_ptr<::arrow::Array> MakeUuidArray(
+    std::initializer_list<const std::array<uint8_t, Uuid::kLength>*> values) {
+  ::arrow::FixedSizeBinaryBuilder uuid_storage_builder(
+      ::arrow::fixed_size_binary(Uuid::kLength));
+  for (const auto* value : values) {
+    EXPECT_TRUE(uuid_storage_builder.Append(value->data()).ok());
+  }
+  auto uuid_storage = uuid_storage_builder.Finish().ValueOrDie();
+  return ::arrow::ExtensionType::WrapArray(::arrow::extension::uuid(), uuid_storage);
+}
+
+std::shared_ptr<::arrow::Array> MakeInt32Array(std::initializer_list<int32_t> values) {
+  ::arrow::Int32Builder builder;
+  for (auto value : values) {
+    EXPECT_TRUE(builder.Append(value).ok());
+  }
+  return builder.Finish().ValueOrDie();
+}
+
+std::shared_ptr<::arrow::Array> MakeStringArray(
+    std::initializer_list<std::string_view> values) {
+  ::arrow::StringBuilder builder;
+  for (auto value : values) {
+    EXPECT_TRUE(builder.Append(value).ok());
+  }
+  return builder.Finish().ValueOrDie();
 }
 
 }  // namespace
@@ -781,6 +822,41 @@ class AvroWriterTest : public ::testing::Test,
     return avro_reader.dataSchema();
   }
 
+  void WriteArrowArrayAndVerify(std::shared_ptr<Schema> schema,
+                                const std::shared_ptr<::arrow::Array>& array) {
+    ArrowArray arrow_array;
+    ASSERT_TRUE(::arrow::ExportArray(*array, &arrow_array).ok());
+
+    WriterProperties writer_properties;
+    writer_properties.Set(WriterProperties::kAvroSkipDatum, skip_datum_);
+
+    ICEBERG_UNWRAP_OR_FAIL(writer_, WriterFactoryRegistry::Open(
+                                        FileFormatType::kAvro,
+                                        {.path = temp_avro_file_,
+                                         .schema = schema,
+                                         .io = file_io_,
+                                         .properties = std::move(writer_properties)}));
+    ASSERT_THAT(writer_->Write(&arrow_array), IsOk());
+    ASSERT_THAT(writer_->Close(), IsOk());
+
+    ICEBERG_UNWRAP_OR_FAIL(auto written_length, writer_->length());
+    ICEBERG_UNWRAP_OR_FAIL(
+        auto reader,
+        ReaderFactoryRegistry::Open(FileFormatType::kAvro, {.path = temp_avro_file_,
+                                                            .length = written_length,
+                                                            .io = file_io_,
+                                                            .projection = schema}));
+    ICEBERG_UNWRAP_OR_FAIL(auto data, reader->Next());
+    ASSERT_TRUE(data.has_value());
+
+    ICEBERG_UNWRAP_OR_FAIL(auto arrow_c_schema, reader->Schema());
+    auto read_array = ::arrow::ImportArray(&data.value(), &arrow_c_schema).ValueOrDie();
+    ASSERT_TRUE(read_array->Equals(*array)) << "actual:\n"
+                                            << read_array->ToString() << "\nexpected:\n"
+                                            << array->ToString();
+    ASSERT_NO_FATAL_FAILURE(VerifyExhausted(*reader));
+  }
+
   std::shared_ptr<FileIO> file_io_;
   std::string temp_avro_file_;
   bool skip_datum_{true};
@@ -804,6 +880,135 @@ TEST_P(AvroWriterTest, WritePrimitiveTypes) {
 
   WriteAvroFile(schema, test_data);
   VerifyWrittenData(test_data);
+}
+
+TEST_P(AvroWriterTest, WriteUuidType) {
+  auto schema = std::make_shared<iceberg::Schema>(std::vector<SchemaField>{
+      SchemaField::MakeRequired(1, "uuid_col", iceberg::uuid())});
+
+  auto uuid_array = MakeUuidArray({&kUuidBytes1, &kUuidBytes2});
+  auto array =
+      ::arrow::StructArray::Make(
+          {uuid_array},
+          {::arrow::field("uuid_col", ::arrow::extension::uuid(), /*nullable=*/false)})
+          .ValueOrDie();
+
+  ArrowArray arrow_array;
+  ASSERT_TRUE(::arrow::ExportArray(*array, &arrow_array).ok());
+
+  WriterProperties writer_properties;
+  writer_properties.Set(WriterProperties::kAvroSkipDatum, skip_datum_);
+
+  ICEBERG_UNWRAP_OR_FAIL(
+      writer_, WriterFactoryRegistry::Open(FileFormatType::kAvro,
+                                           {.path = temp_avro_file_,
+                                            .schema = schema,
+                                            .io = file_io_,
+                                            .properties = std::move(writer_properties)}));
+  ASSERT_THAT(writer_->Write(&arrow_array), IsOk());
+  ASSERT_THAT(writer_->Close(), IsOk());
+
+  auto avro_schema = PhysicalAvroSchema();
+  auto root = avro_schema.root();
+  ASSERT_EQ(root->type(), ::avro::AVRO_RECORD);
+  ASSERT_EQ(root->leaves(), 1);
+  auto uuid_node = root->leafAt(0);
+  EXPECT_EQ(uuid_node->type(), ::avro::AVRO_FIXED);
+  EXPECT_EQ(uuid_node->logicalType().type(), ::avro::LogicalType::UUID);
+  EXPECT_EQ(uuid_node->fixedSize(), Uuid::kLength);
+
+  ICEBERG_UNWRAP_OR_FAIL(auto written_length, writer_->length());
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto reader,
+      ReaderFactoryRegistry::Open(FileFormatType::kAvro, {.path = temp_avro_file_,
+                                                          .length = written_length,
+                                                          .io = file_io_,
+                                                          .projection = schema}));
+  ICEBERG_UNWRAP_OR_FAIL(auto data, reader->Next());
+  ASSERT_TRUE(data.has_value());
+
+  ICEBERG_UNWRAP_OR_FAIL(auto arrow_c_schema, reader->Schema());
+  auto read_array = ::arrow::ImportArray(&data.value(), &arrow_c_schema).ValueOrDie();
+  ASSERT_TRUE(read_array->Equals(*array)) << "actual:\n"
+                                          << read_array->ToString() << "\nexpected:\n"
+                                          << array->ToString();
+  ASSERT_NO_FATAL_FAILURE(VerifyExhausted(*reader));
+}
+
+TEST_P(AvroWriterTest, WriteUuidListType) {
+  auto schema = std::make_shared<iceberg::Schema>(std::vector<SchemaField>{
+      SchemaField::MakeRequired(1, "uuid_list",
+                                std::make_shared<ListType>(SchemaField::MakeRequired(
+                                    2, ListType::kElementName, iceberg::uuid())))});
+
+  auto list_values = MakeUuidArray({&kUuidBytes1, &kUuidBytes2, &kUuidBytes1});
+  auto list_offsets = MakeInt32Array({0, 2, 3});
+  auto list_type = ::arrow::list(::arrow::field(std::string(ListType::kElementName),
+                                                ::arrow::extension::uuid(),
+                                                /*nullable=*/false));
+  auto list_array =
+      ::arrow::ListArray::FromArrays(list_type, *list_offsets, *list_values).ValueOrDie();
+
+  auto array =
+      ::arrow::StructArray::Make(
+          {list_array}, {::arrow::field("uuid_list", list_type, /*nullable=*/false)})
+          .ValueOrDie();
+
+  ASSERT_NO_FATAL_FAILURE(WriteArrowArrayAndVerify(schema, array));
+}
+
+TEST_P(AvroWriterTest, WriteUuidMapType) {
+  auto schema = std::make_shared<iceberg::Schema>(
+      std::vector<SchemaField>{SchemaField::MakeRequired(
+          1, "uuid_map",
+          std::make_shared<MapType>(
+              SchemaField::MakeRequired(2, MapType::kKeyName, iceberg::string()),
+              SchemaField::MakeRequired(3, MapType::kValueName, iceberg::uuid())))});
+
+  auto map_offsets = MakeInt32Array({0, 2, 3});
+  auto map_keys = MakeStringArray({"first", "second", "only"});
+  auto map_items = MakeUuidArray({&kUuidBytes1, &kUuidBytes2, &kUuidBytes1});
+  auto map_type =
+      ::arrow::map(::arrow::utf8(), ::arrow::field(std::string(MapType::kValueName),
+                                                   ::arrow::extension::uuid(),
+                                                   /*nullable=*/false));
+  auto map_array =
+      ::arrow::MapArray::FromArrays(map_type, map_offsets, map_keys, map_items)
+          .ValueOrDie();
+
+  auto array =
+      ::arrow::StructArray::Make(
+          {map_array}, {::arrow::field("uuid_map", map_type, /*nullable=*/false)})
+          .ValueOrDie();
+
+  ASSERT_NO_FATAL_FAILURE(WriteArrowArrayAndVerify(schema, array));
+}
+
+TEST_P(AvroWriterTest, WriteUuidMapKeyType) {
+  auto schema = std::make_shared<iceberg::Schema>(
+      std::vector<SchemaField>{SchemaField::MakeRequired(
+          1, "uuid_key_map",
+          std::make_shared<MapType>(
+              SchemaField::MakeRequired(2, MapType::kKeyName, iceberg::uuid()),
+              SchemaField::MakeRequired(3, MapType::kValueName, iceberg::string())))});
+
+  auto map_offsets = MakeInt32Array({0, 2, 3});
+  auto map_keys = MakeUuidArray({&kUuidBytes1, &kUuidBytes2, &kUuidBytes1});
+  auto map_items = MakeStringArray({"first", "second", "only"});
+  auto map_type =
+      ::arrow::map(::arrow::extension::uuid(),
+                   ::arrow::field(std::string(MapType::kValueName), ::arrow::utf8(),
+                                  /*nullable=*/false));
+  auto map_array =
+      ::arrow::MapArray::FromArrays(map_type, map_offsets, map_keys, map_items)
+          .ValueOrDie();
+
+  auto array =
+      ::arrow::StructArray::Make(
+          {map_array}, {::arrow::field("uuid_key_map", map_type, /*nullable=*/false)})
+          .ValueOrDie();
+
+  ASSERT_NO_FATAL_FAILURE(WriteArrowArrayAndVerify(schema, array));
 }
 
 TEST_P(AvroWriterTest, WriteTemporalTypes) {

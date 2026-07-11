@@ -27,6 +27,17 @@ if(ICEBERG_S3 AND ICEBERG_BUNDLE_AWSSDK)
   set(ICEBERG_AWSSDK_BUNDLED TRUE)
 endif()
 
+# Mirror the AWS SDK bundle/system policy for Thrift (used by the Hive catalog):
+# ICEBERG_BUNDLE_THRIFT is the user's intent, ICEBERG_THRIFT_BUNDLED the resolved
+# conclusion that the rest of the build keys off.
+set(ICEBERG_THRIFT_BUNDLED FALSE)
+if(ICEBERG_BUILD_HIVE AND ICEBERG_BUNDLE_THRIFT)
+  if(NOT ICEBERG_BUILD_BUNDLE)
+    message(FATAL_ERROR "ICEBERG_BUNDLE_THRIFT requires ICEBERG_BUILD_BUNDLE to be ON")
+  endif()
+  set(ICEBERG_THRIFT_BUNDLED TRUE)
+endif()
+
 set(ICEBERG_AWSSDK_COMPONENTS)
 if(NOT ICEBERG_AWSSDK_BUNDLED)
   if(ICEBERG_S3)
@@ -72,6 +83,7 @@ endfunction()
 # ICEBERG_AVRO_GIT_URL       - Apache Avro git repository URL
 # ICEBERG_NANOARROW_URL      - Nanoarrow tarball URL
 # ICEBERG_CROARING_URL       - CRoaring tarball URL
+# ICEBERG_UTF8PROC_URL       - utf8proc tarball URL
 # ICEBERG_NLOHMANN_JSON_URL  - nlohmann-json tarball URL
 # ICEBERG_SPDLOG_URL         - spdlog tarball URL
 # ICEBERG_CPR_URL            - cpr tarball URL
@@ -109,6 +121,20 @@ else()
   )
 endif()
 
+set(ICEBERG_UTF8PROC_BUILD_VERSION "2.10.0")
+set(ICEBERG_UTF8PROC_BUILD_SHA256_CHECKSUM
+    "276a37dc4d1dd24d7896826a579f4439d1e5fe33603add786bb083cab802e23e")
+
+if(DEFINED ENV{ICEBERG_UTF8PROC_URL})
+  set(UTF8PROC_SOURCE_URL "$ENV{ICEBERG_UTF8PROC_URL}")
+else()
+  # Use the release asset (stable bytes, matching subprojects/utf8proc.wrap) rather
+  # than the auto-generated tag archive, whose contents GitHub does not guarantee.
+  set(UTF8PROC_SOURCE_URL
+      "https://github.com/JuliaStrings/utf8proc/releases/download/v${ICEBERG_UTF8PROC_BUILD_VERSION}/utf8proc-${ICEBERG_UTF8PROC_BUILD_VERSION}.tar.gz"
+  )
+endif()
+
 # ----------------------------------------------------------------------
 # FetchContent
 
@@ -139,6 +165,10 @@ endmacro()
 
 function(resolve_arrow_dependency)
   prepare_fetchcontent()
+
+  # Prevent Arrow from injecting -Werror into CMAKE_CXX_FLAGS_DEBUG via
+  # arrow_add_werror_if_debug(). PRODUCTION level only adds standard warnings.
+  set(BUILD_WARNING_LEVEL PRODUCTION)
 
   set(ARROW_BUILD_SHARED OFF)
   set(ARROW_BUILD_STATIC ON)
@@ -418,6 +448,61 @@ function(resolve_croaring_dependency)
       PARENT_SCOPE)
   set(CROARING_VENDORED
       ${CROARING_VENDORED}
+      PARENT_SCOPE)
+endfunction()
+
+# ----------------------------------------------------------------------
+# utf8proc
+
+function(resolve_utf8proc_dependency)
+  prepare_fetchcontent()
+
+  # The vendored build needs no install rules; without this, CMake < 3.28 (where
+  # FetchContent has no EXCLUDE_FROM_ALL) would install utf8proc's headers and
+  # pkg-config file into the iceberg install prefix.
+  set(UTF8PROC_INSTALL OFF)
+
+  fetchcontent_declare(utf8proc
+                       ${FC_DECLARE_COMMON_OPTIONS}
+                       URL ${UTF8PROC_SOURCE_URL}
+                       URL_HASH "SHA256=${ICEBERG_UTF8PROC_BUILD_SHA256_CHECKSUM}"
+                       FIND_PACKAGE_ARGS
+                       NAMES
+                       utf8proc
+                       CONFIG)
+  fetchcontent_makeavailable(utf8proc)
+
+  if(utf8proc_SOURCE_DIR)
+    if(NOT TARGET utf8proc::utf8proc)
+      add_library(utf8proc::utf8proc INTERFACE IMPORTED)
+      target_link_libraries(utf8proc::utf8proc INTERFACE utf8proc)
+      target_include_directories(utf8proc::utf8proc INTERFACE ${utf8proc_SOURCE_DIR})
+    endif()
+
+    set(UTF8PROC_VENDORED TRUE)
+    # utf8proc's CMake puts a raw build-tree path in INTERFACE_INCLUDE_DIRECTORIES, which
+    # install(EXPORT) rejects. Wrap it in BUILD_INTERFACE so the export is valid; utf8proc
+    # is a private dependency, so installed consumers never need its headers.
+    set_target_properties(utf8proc
+                          PROPERTIES OUTPUT_NAME "iceberg_vendored_utf8proc"
+                                     POSITION_INDEPENDENT_CODE ON
+                                     INTERFACE_INCLUDE_DIRECTORIES
+                                     "$<BUILD_INTERFACE:${utf8proc_SOURCE_DIR}>")
+    install(TARGETS utf8proc
+            EXPORT iceberg_targets
+            RUNTIME DESTINATION "${ICEBERG_INSTALL_BINDIR}"
+            ARCHIVE DESTINATION "${ICEBERG_INSTALL_LIBDIR}"
+            LIBRARY DESTINATION "${ICEBERG_INSTALL_LIBDIR}")
+  else()
+    set(UTF8PROC_VENDORED FALSE)
+    list(APPEND ICEBERG_SYSTEM_DEPENDENCIES utf8proc)
+  endif()
+
+  set(ICEBERG_SYSTEM_DEPENDENCIES
+      ${ICEBERG_SYSTEM_DEPENDENCIES}
+      PARENT_SCOPE)
+  set(UTF8PROC_VENDORED
+      ${UTF8PROC_VENDORED}
       PARENT_SCOPE)
 endfunction()
 
@@ -719,6 +804,7 @@ endfunction()
 resolve_zlib_dependency()
 resolve_nanoarrow_dependency()
 resolve_croaring_dependency()
+resolve_utf8proc_dependency()
 resolve_nlohmann_json_dependency()
 resolve_spdlog_dependency()
 
@@ -741,4 +827,40 @@ endif()
 
 if(ICEBERG_BUILD_SQL_CATALOG)
   resolve_sql_catalog_dependencies()
+endif()
+
+# ----------------------------------------------------------------------
+# Thrift (Hive catalog)
+#
+# Provide a `thrift::thrift` target for iceberg_hive's generated Hive Metastore
+# bindings, either bundled (from Arrow's build) or from a system install. Must
+# run after resolve_arrow_dependency() so the bundled `thrift` target exists.
+
+function(resolve_thrift_dependency)
+  if(NOT ICEBERG_BUILD_HIVE)
+    return()
+  endif()
+  if(ICEBERG_THRIFT_BUNDLED)
+    # Arrow's bundled build creates the Thrift C++ runtime as a `thrift` target
+    # scoped to its FetchContent directory, where iceberg_hive cannot see it.
+    # Promote it to a global `thrift::thrift` alias so iceberg_hive can link the
+    # generated Hive Metastore bindings against it.
+    if(TARGET thrift AND NOT TARGET thrift::thrift)
+      add_library(thrift::thrift INTERFACE IMPORTED GLOBAL)
+      target_link_libraries(thrift::thrift INTERFACE thrift)
+    endif()
+  else()
+    # System Thrift, located by cmake_modules/FindThriftAlt.cmake (MODULE mode),
+    # which provides the `thrift::thrift` target iceberg_hive expects. Record it
+    # as a system dependency so downstream find_package(Iceberg) re-finds it.
+    find_package(ThriftAlt MODULE REQUIRED GLOBAL)
+    list(APPEND ICEBERG_SYSTEM_DEPENDENCIES ThriftAlt)
+    set(ICEBERG_SYSTEM_DEPENDENCIES
+        ${ICEBERG_SYSTEM_DEPENDENCIES}
+        PARENT_SCOPE)
+  endif()
+endfunction()
+
+if(ICEBERG_BUILD_HIVE)
+  resolve_thrift_dependency()
 endif()

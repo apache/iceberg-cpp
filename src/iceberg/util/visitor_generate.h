@@ -19,6 +19,9 @@
 
 #pragma once
 
+/// \file iceberg/util/visitor_generate.h
+/// \brief Define macros for generating type visitors.
+
 namespace iceberg {
 
 #define ICEBERG_GENERATE_FOR_ALL_TYPES(ACTION) \

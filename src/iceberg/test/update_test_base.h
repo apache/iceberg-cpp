@@ -145,9 +145,25 @@ class UpdateTestBase : public ::testing::Test {
 /// \brief Test fixture for table update operations on minimal table metadata.
 class MinimalUpdateTestBase : public UpdateTestBase {
  protected:
-  std::string MetadataResource() const override {
-    return "TableMetadataV2ValidMinimal.json";
+  virtual int8_t format_version() const {
+    return TableMetadata::kDefaultTableFormatVersion;
   }
+
+  std::string MetadataResource() const override {
+    switch (format_version()) {
+      case 1:
+        return "TableMetadataV1Valid.json";
+      case 2:
+        return "TableMetadataV2ValidMinimal.json";
+      case 3:
+        return "TableMetadataV3ValidMinimal.json";
+      default:
+        ADD_FAILURE() << "Unsupported format version: "
+                      << static_cast<int>(format_version());
+        return "TableMetadataV2ValidMinimal.json";
+    }
+  }
+
   std::string TableName() const override { return "minimal_table"; }
 };
 

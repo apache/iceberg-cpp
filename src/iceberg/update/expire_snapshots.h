@@ -122,6 +122,12 @@ class ICEBERG_EXPORT ExpireSnapshots : public PendingUpdate {
   /// \return Reference to this for method chaining.
   ExpireSnapshots& DeleteWith(std::function<void(const std::string&)> delete_func);
 
+  /// \brief Configure an executor for planning expired snapshot metadata.
+  ///
+  /// \param executor Executor to use while planning expired snapshot metadata.
+  /// \return Reference to this for method chaining.
+  ExpireSnapshots& PlanWith(Executor& executor);
+
   /// \brief Configures the cleanup level for expired files.
   ///
   /// This method provides fine-grained control over which files are cleaned up during
@@ -145,12 +151,9 @@ class ICEBERG_EXPORT ExpireSnapshots : public PendingUpdate {
 
   /// \brief Configure an executor for DeleteWith() callbacks.
   ///
-  /// Only used with DeleteWith(). The caller must keep the executor alive until
-  /// Finalize() returns.
-  ///
-  /// \param executor An executor reference, or std::nullopt for serial deletion.
+  /// \param executor An executor reference.
   /// \return Reference to this for method chaining.
-  ExpireSnapshots& ExecuteDeleteWith(OptionalExecutor executor);
+  ExpireSnapshots& ExecuteDeleteWith(Executor& executor);
 
   Kind kind() const final { return Kind::kExpireSnapshots; }
   bool IsRetryable() const override { return true; }
@@ -194,9 +197,10 @@ class ICEBERG_EXPORT ExpireSnapshots : public PendingUpdate {
   std::function<void(const std::string&)> delete_func_;
   std::vector<int64_t> snapshot_ids_to_expire_;
   enum CleanupLevel cleanup_level_ { CleanupLevel::kAll };
+  OptionalExecutor plan_executor_;
   bool clean_expired_metadata_{false};
   bool specified_snapshot_id_{false};
-  OptionalExecutor executor_;
+  OptionalExecutor delete_executor_;
 
   /// Cached result from Apply(), consumed by Finalize() and cleared after use.
   std::optional<ApplyResult> apply_result_;

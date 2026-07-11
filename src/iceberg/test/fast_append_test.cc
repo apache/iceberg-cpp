@@ -20,8 +20,11 @@
 #include "iceberg/update/fast_append.h"
 
 #include <format>
+#include <limits>
 #include <optional>
 #include <string>
+#include <thread>
+#include <unordered_set>
 #include <vector>
 
 #include <gmock/gmock.h>
@@ -30,17 +33,40 @@
 #include "iceberg/avro/avro_register.h"
 #include "iceberg/constants.h"
 #include "iceberg/manifest/manifest_entry.h"
+#include "iceberg/manifest/manifest_reader.h"
 #include "iceberg/manifest/manifest_writer.h"
 #include "iceberg/partition_spec.h"
 #include "iceberg/schema.h"
 #include "iceberg/snapshot.h"
 #include "iceberg/table_metadata.h"
+#include "iceberg/table_properties.h"
+#include "iceberg/test/executor.h"
 #include "iceberg/test/matchers.h"
-#include "iceberg/test/test_resource.h"
 #include "iceberg/test/update_test_base.h"
-#include "iceberg/util/uuid.h"
+#include "iceberg/transaction.h"
+#include "iceberg/update/update_properties.h"  // IWYU pragma: keep
 
 namespace iceberg {
+
+namespace {
+
+class TestSnapshotUpdate : public SnapshotUpdate {
+ public:
+  explicit TestSnapshotUpdate(std::shared_ptr<TransactionContext> ctx)
+      : SnapshotUpdate(std::move(ctx)) {}
+
+  using SnapshotUpdate::ManifestPath;
+
+  Status CleanUncommitted(const std::unordered_set<std::string>&) override { return {}; }
+  std::string operation() override { return "test"; }
+  Result<std::vector<ManifestFile>> Apply(const TableMetadata&,
+                                          const std::shared_ptr<Snapshot>&) override {
+    return std::vector<ManifestFile>{};
+  }
+  std::unordered_map<std::string, std::string> Summary() override { return {}; }
+};
+
+}  // namespace
 
 class FastAppendTest : public UpdateTestBase {
  protected:
@@ -96,11 +122,36 @@ class FastAppendTest : public UpdateTestBase {
     return writer->ToManifestFile();
   }
 
+  void SetManifestTargetSizeBytes(int64_t size_bytes) {
+    ICEBERG_UNWRAP_OR_FAIL(auto props, table_->NewUpdateProperties());
+    props->Set(std::string(TableProperties::kManifestTargetSizeBytes.key()),
+               std::to_string(size_bytes));
+    EXPECT_THAT(props->Commit(), IsOk());
+    EXPECT_THAT(table_->Refresh(), IsOk());
+  }
+
+  Result<std::vector<ManifestFile>> CurrentDataManifests() {
+    ICEBERG_ASSIGN_OR_RAISE(auto snapshot, table_->current_snapshot());
+    SnapshotCache snapshot_cache(snapshot.get());
+    ICEBERG_ASSIGN_OR_RAISE(auto manifests, snapshot_cache.DataManifests(file_io_));
+    return std::vector<ManifestFile>(manifests.begin(), manifests.end());
+  }
+
+  Result<std::vector<ManifestEntry>> ReadEntries(const ManifestFile& manifest) {
+    ICEBERG_ASSIGN_OR_RAISE(
+        auto spec, table_->metadata()->PartitionSpecById(manifest.partition_spec_id));
+    ICEBERG_ASSIGN_OR_RAISE(auto reader,
+                            ManifestReader::Make(manifest, file_io_, schema_, spec));
+    return reader->Entries();
+  }
+
   std::shared_ptr<PartitionSpec> spec_;
   std::shared_ptr<Schema> schema_;
   std::shared_ptr<DataFile> file_a_;
   std::shared_ptr<DataFile> file_b_;
 };
+
+class SnapshotUpdateTest : public UpdateTestBase {};
 
 TEST_F(FastAppendTest, AppendDataFile) {
   std::shared_ptr<FastAppend> fast_append;
@@ -158,6 +209,63 @@ TEST_F(FastAppendTest, AppendManyFiles) {
   EXPECT_EQ(snapshot->summary.at("added-data-files"), std::to_string(kFileCount));
   EXPECT_EQ(snapshot->summary.at("added-records"), std::to_string(total_records));
   EXPECT_EQ(snapshot->summary.at("added-files-size"), std::to_string(total_size));
+}
+
+TEST_F(FastAppendTest, WriteManifestGroups) {
+  SetManifestTargetSizeBytes(std::numeric_limits<int64_t>::max());
+
+  test::ThreadExecutor executor;
+  std::shared_ptr<FastAppend> fast_append;
+  ICEBERG_UNWRAP_OR_FAIL(fast_append, table_->NewFastAppend());
+  fast_append->WriteManifestsWith(executor, 3);
+
+  constexpr size_t kFileCount = 15'000;
+  constexpr size_t kGroupSize = 7'500;
+  std::vector<std::shared_ptr<DataFile>> files;
+  files.reserve(kFileCount);
+  for (size_t index = 0; index < kFileCount; ++index) {
+    auto data_file =
+        CreateDataFile(std::format("/data/group_{}.parquet", index),
+                       /*record_count=*/1, /*size=*/1, static_cast<int64_t>(index % 2));
+    fast_append->AppendFile(data_file);
+    files.push_back(std::move(data_file));
+  }
+
+  EXPECT_THAT(fast_append->Commit(), IsOk());
+
+  EXPECT_THAT(table_->Refresh(), IsOk());
+  EXPECT_EQ(executor.submit_count(), 2);
+  ICEBERG_UNWRAP_OR_FAIL(auto manifests, CurrentDataManifests());
+  ASSERT_EQ(manifests.size(), 2U);
+
+  for (size_t group_index = 0; group_index < manifests.size(); ++group_index) {
+    ASSERT_TRUE(manifests[group_index].added_files_count.has_value());
+    EXPECT_EQ(manifests[group_index].added_files_count.value(), kGroupSize);
+
+    ICEBERG_UNWRAP_OR_FAIL(auto entries, ReadEntries(manifests[group_index]));
+    ASSERT_EQ(entries.size(), kGroupSize);
+    const size_t offset = group_index * kGroupSize;
+    for (size_t entry_index = 0; entry_index < entries.size(); ++entry_index) {
+      ASSERT_NE(entries[entry_index].data_file, nullptr);
+      EXPECT_EQ(entries[entry_index].data_file->file_path,
+                files[offset + entry_index]->file_path);
+    }
+  }
+}
+
+TEST_F(FastAppendTest, InvalidManifestParallelism) {
+  test::ThreadExecutor executor;
+  std::shared_ptr<FastAppend> fast_append;
+  ICEBERG_UNWRAP_OR_FAIL(fast_append, table_->NewFastAppend());
+  fast_append->WriteManifestsWith(executor, 0);
+  fast_append->AppendFile(file_a_);
+
+  auto result = fast_append->Commit();
+  EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
+  EXPECT_THAT(
+      result,
+      HasErrorMessage("Manifest write parallelism must be greater than 0, but was: 0"));
+  EXPECT_EQ(executor.submit_count(), 0);
 }
 
 TEST_F(FastAppendTest, EmptyTableAppendUpdatesSequenceNumbers) {
@@ -258,6 +366,37 @@ TEST_F(FastAppendTest, SetSnapshotProperty) {
   EXPECT_THAT(table_->Refresh(), IsOk());
   ICEBERG_UNWRAP_OR_FAIL(auto snapshot, table_->current_snapshot());
   EXPECT_EQ(snapshot->summary.at("custom-property"), "custom-value");
+}
+
+TEST_F(SnapshotUpdateTest, ConcurrentManifestPaths) {
+  ICEBERG_UNWRAP_OR_FAIL(auto ctx,
+                         TransactionContext::Make(table_, TransactionKind::kUpdate));
+  TestSnapshotUpdate update(std::move(ctx));
+
+  constexpr int kThreadCount = 8;
+  constexpr int kPathsPerThread = 32;
+  std::vector<std::string> paths(kThreadCount * kPathsPerThread);
+  std::vector<std::thread> threads;
+  threads.reserve(kThreadCount);
+
+  for (int thread_index = 0; thread_index < kThreadCount; ++thread_index) {
+    threads.emplace_back([&, thread_index] {
+      for (int path_index = 0; path_index < kPathsPerThread; ++path_index) {
+        paths[thread_index * kPathsPerThread + path_index] = update.ManifestPath();
+      }
+    });
+  }
+
+  for (auto& thread : threads) {
+    thread.join();
+  }
+
+  std::unordered_set<std::string> unique_paths(paths.begin(), paths.end());
+  ASSERT_EQ(unique_paths.size(), paths.size());
+  for (const auto& path : paths) {
+    EXPECT_THAT(path, ::testing::HasSubstr("/metadata/"));
+    EXPECT_THAT(path, ::testing::HasSubstr("-m"));
+  }
 }
 
 }  // namespace iceberg

@@ -22,6 +22,9 @@
 
 #pragma once
 
+/// \file iceberg/util/functional.h
+/// \brief Provide move-only function wrappers.
+
 #include <concepts>
 #include <functional>
 #include <memory>

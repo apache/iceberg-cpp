@@ -15,8 +15,6 @@
 # specific language governing permissions and limitations
 # under the License.
 
-set(CMAKE_COMPILE_WARNING_AS_ERROR FALSE)
-
 set(INSTALL_GTEST
     OFF
     CACHE BOOL "" FORCE)
@@ -89,7 +87,6 @@ add_iceberg_test(schema_test
 add_iceberg_test(table_test
                  SOURCES
                  location_provider_test.cc
-                 metadata_table_test.cc
                  metrics_config_test.cc
                  metrics_reporter_test.cc
                  metrics_test.cc
@@ -102,7 +99,11 @@ add_iceberg_test(table_test
                  table_test.cc
                  table_update_test.cc)
 
-add_iceberg_test(logging_test SOURCES log_level_test.cc logger_test.cc)
+add_iceberg_test(logging_test
+                 SOURCES
+                 cerr_logger_test.cc
+                 log_level_test.cc
+                 logger_test.cc)
 
 add_iceberg_test(expression_test
                  SOURCES
@@ -185,6 +186,8 @@ if(ICEBERG_BUILD_BUNDLE)
 
   add_iceberg_test(catalog_test USE_BUNDLE SOURCES in_memory_catalog_test.cc)
 
+  add_iceberg_test(metadata_table_test USE_BUNDLE SOURCES metadata_table_test.cc)
+
   add_iceberg_test(eval_expr_test
                    USE_BUNDLE
                    SOURCES
@@ -230,6 +233,7 @@ if(ICEBERG_BUILD_BUNDLE)
                    merge_append_test.cc
                    merging_snapshot_update_test.cc
                    name_mapping_update_test.cc
+                   rewrite_files_test.cc
                    row_delta_test.cc
                    snapshot_manager_test.cc
                    transaction_test.cc
@@ -239,16 +243,19 @@ if(ICEBERG_BUILD_BUNDLE)
                    update_properties_test.cc
                    update_schema_test.cc
                    update_sort_order_test.cc
-                   update_statistics_test.cc)
+                   update_statistics_test.cc
+                   overwrite_files_test.cc)
 
   add_iceberg_test(data_test
                    USE_BUNDLE
                    SOURCES
                    arrow_c_data_util_test.cc
+                   arrow_row_builder_test.cc
                    data_writer_test.cc
                    delete_filter_test.cc
                    delete_loader_test.cc
-                   file_scan_task_reader_test.cc)
+                   file_scan_task_reader_test.cc
+                   literal_util_test.cc)
 
 endif()
 

@@ -19,6 +19,9 @@
 
 #pragma once
 
+/// \file iceberg/util/property_util.h
+/// \brief Provide property conversion helpers.
+
 #include <string>
 #include <unordered_map>
 

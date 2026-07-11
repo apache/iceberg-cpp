@@ -19,6 +19,9 @@
 
 #pragma once
 
+/// \file iceberg/metrics/scan_report.h
+/// \brief Define scan metrics and reports.
+
 #include <memory>
 #include <optional>
 #include <string>

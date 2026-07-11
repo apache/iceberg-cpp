@@ -638,7 +638,7 @@ TEST(ArrowExecutorAdapterTest, RunsTaskGroupOnThreadPool) {
   std::mutex mutex;
   std::vector<std::thread::id> thread_ids;
 
-  auto status = TaskGroup<>()
+  auto status = TaskGroup()
                     .SetExecutor(std::ref(executor))
                     .Submit([&]() -> Status {
                       std::lock_guard lock(mutex);

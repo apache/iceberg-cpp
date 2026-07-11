@@ -35,6 +35,7 @@
 #include "iceberg/result.h"
 #include "iceberg/type_fwd.h"
 #include "iceberg/util/error_collector.h"
+#include "iceberg/util/executor.h"
 #include "iceberg/util/partition_value_util.h"
 
 namespace iceberg {
@@ -356,6 +357,12 @@ class ICEBERG_EXPORT DeleteFileIndex::Builder : public ErrorCollector {
   /// \brief Ignore residual expressions after partition filtering.
   Builder& IgnoreResiduals();
 
+  /// \brief Configure an optional executor for reading delete manifests.
+  ///
+  /// \param executor Executor to use, or std::nullopt to read manifests serially.
+  /// \return Reference to this for method chaining.
+  Builder& PlanWith(OptionalExecutor executor);
+
   /// \brief Build the DeleteFileIndex.
   Result<std::unique_ptr<DeleteFileIndex>> Build();
 
@@ -388,6 +395,7 @@ class ICEBERG_EXPORT DeleteFileIndex::Builder : public ErrorCollector {
   std::shared_ptr<Expression> data_filter_;
   std::shared_ptr<Expression> partition_filter_;
   std::shared_ptr<PartitionSet> partition_set_;
+  OptionalExecutor executor_;
   bool case_sensitive_ = true;
   bool ignore_residuals_ = false;
 };

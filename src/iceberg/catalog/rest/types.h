@@ -30,6 +30,7 @@
 #include "iceberg/catalog/rest/endpoint.h"
 #include "iceberg/catalog/rest/iceberg_rest_export.h"
 #include "iceberg/result.h"
+#include "iceberg/storage_credential.h"
 #include "iceberg/table_identifier.h"
 #include "iceberg/type_fwd.h"
 #include "iceberg/util/macros.h"
@@ -185,12 +186,16 @@ struct ICEBERG_REST_EXPORT LoadTableResult {
   std::string metadata_location;
   std::shared_ptr<TableMetadata> metadata;  // required
   std::unordered_map<std::string, std::string> config;
-  // TODO(Li Feiyang): Add std::shared_ptr<StorageCredential> storage_credential;
+  /// \brief Vended storage credentials, one per URI prefix; empty if none.
+  std::vector<StorageCredential> storage_credentials;
 
   /// \brief Validates the LoadTableResult.
   Status Validate() const {
     if (!metadata) {
       return ValidationFailed("Invalid metadata: null");
+    }
+    for (const auto& credential : storage_credentials) {
+      ICEBERG_RETURN_UNEXPECTED(credential.Validate());
     }
     return {};
   }
@@ -332,7 +337,7 @@ struct ICEBERG_REST_EXPORT PlanTableScanResponse {
   PlanStatus plan_status = PlanStatus::kCompleted;
   std::string plan_id;
   std::optional<ErrorResponse> error;
-  // TODO(sandeepg): Add credentials.
+  // TODO(sandeepg): Add storage credentials and bind scan FileIO to them.
 
   Status Validate() const;
 
@@ -347,7 +352,7 @@ struct ICEBERG_REST_EXPORT FetchPlanningResultResponse {
   std::vector<std::shared_ptr<DataFile>> delete_files;
   PlanStatus plan_status = PlanStatus::kCompleted;
   std::optional<ErrorResponse> error;
-  // TODO(sandeepg): Add credentials.
+  // TODO(sandeepg): Add storage credentials and bind scan FileIO to them.
 
   Status Validate() const;
 

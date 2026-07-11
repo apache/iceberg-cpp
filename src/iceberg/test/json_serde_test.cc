@@ -23,10 +23,12 @@
 #include <gtest/gtest.h>
 #include <nlohmann/json.hpp>
 
+#include "iceberg/expression/literal.h"
 #include "iceberg/json_serde_internal.h"
 #include "iceberg/name_mapping.h"
 #include "iceberg/partition_spec.h"
 #include "iceberg/schema.h"
+#include "iceberg/schema_field.h"
 #include "iceberg/snapshot.h"
 #include "iceberg/sort_field.h"
 #include "iceberg/sort_order.h"
@@ -35,10 +37,12 @@
 #include "iceberg/table_update.h"
 #include "iceberg/test/matchers.h"
 #include "iceberg/transform.h"
+#include "iceberg/type.h"
 #include "iceberg/util/base64.h"
 #include "iceberg/util/formatter.h"  // IWYU pragma: keep
 #include "iceberg/util/macros.h"     // IWYU pragma: keep
 #include "iceberg/util/timepoint.h"
+#include "iceberg/util/uuid.h"
 
 namespace iceberg {
 
@@ -72,6 +76,11 @@ Result<std::unique_ptr<NameMapping>> FromJsonHelper(const nlohmann::json& json) 
   return NameMappingFromJson(json);
 }
 
+template <>
+Result<std::unique_ptr<SchemaField>> FromJsonHelper(const nlohmann::json& json) {
+  return FieldFromJson(json);
+}
+
 // Helper function to reduce duplication in testing
 template <typename T>
 void TestJsonConversion(const T& obj, const nlohmann::json& expected_json) {
@@ -84,7 +93,101 @@ void TestJsonConversion(const T& obj, const nlohmann::json& expected_json) {
   EXPECT_EQ(obj, *obj_ex.value()) << "Deserialized object mismatch.";
 }
 
+// ToJson(SchemaField) returns Result, so it cannot use the shared
+// TestJsonConversion helper. Unwrap the serialized json before comparing and
+// round-tripping.
+void TestSchemaFieldJsonConversion(const SchemaField& field,
+                                   const nlohmann::json& expected_json) {
+  ICEBERG_UNWRAP_OR_FAIL(auto json, ToJson(field));
+  EXPECT_EQ(expected_json, json) << "JSON conversion mismatch.";
+
+  auto obj_ex = FieldFromJson(expected_json);
+  EXPECT_TRUE(obj_ex.has_value()) << "Failed to deserialize JSON.";
+  EXPECT_EQ(field, *obj_ex.value()) << "Deserialized object mismatch.";
+}
+
 }  // namespace
+
+// Pins the wire format produced by ToJson(SchemaField) / FieldFromJson for
+// `initial-default` and `write-default`, including the absence of the keys when a
+// field carries no defaults.
+TEST(JsonInternalTest, SchemaFieldDefaultValues) {
+  // Both defaults present.
+  SchemaField with_both(/*field_id=*/1, "id", int32(), /*optional=*/false, /*doc=*/{},
+                        std::make_shared<const Literal>(Literal::Int(42)),
+                        std::make_shared<const Literal>(Literal::Int(7)));
+  TestSchemaFieldJsonConversion(
+      with_both,
+      R"({"id":1,"name":"id","required":true,"type":"int","initial-default":42,"write-default":7})"_json);
+
+  // Only an initial-default; write-default must not appear in the JSON.
+  SchemaField initial_only(/*field_id=*/2, "name", string(), /*optional=*/true,
+                           /*doc=*/{},
+                           std::make_shared<const Literal>(Literal::String("n/a")),
+                           /*write_default=*/nullptr);
+  TestSchemaFieldJsonConversion(
+      initial_only,
+      R"({"id":2,"name":"name","required":false,"type":"string","initial-default":"n/a"})"_json);
+
+  // No defaults; neither key may appear.
+  SchemaField no_defaults(/*field_id=*/3, "plain", int32(), /*optional=*/false);
+  TestSchemaFieldJsonConversion(
+      no_defaults, R"({"id":3,"name":"plain","required":true,"type":"int"})"_json);
+}
+
+// Round-trips a field carrying both defaults through ToJson -> FieldFromJson for
+// every primitive type, exercising the per-type single-value serialization the
+// default path reuses (date/timestamp/decimal/uuid/binary have non-trivial wire
+// encodings).
+TEST(JsonInternalTest, SchemaFieldDefaultValuesRoundTripAllTypes) {
+  ICEBERG_UNWRAP_OR_FAIL(auto uuid_value,
+                         Uuid::FromString("f79c3e09-677c-4bbd-a479-3f349cb785e7"));
+  std::vector<std::pair<std::shared_ptr<Type>, Literal>> cases;
+  cases.emplace_back(boolean(), Literal::Boolean(true));
+  cases.emplace_back(int32(), Literal::Int(-7));
+  cases.emplace_back(int64(), Literal::Long(1234567890123LL));
+  cases.emplace_back(float32(), Literal::Float(1.5f));
+  cases.emplace_back(float64(), Literal::Double(2.5));
+  cases.emplace_back(date(), Literal::Date(19738));
+  cases.emplace_back(time(), Literal::Time(43200000000LL));
+  cases.emplace_back(timestamp(), Literal::Timestamp(1719446400000000LL));
+  cases.emplace_back(timestamp_tz(), Literal::TimestampTz(1719446400000000LL));
+  cases.emplace_back(timestamp_ns(), Literal::TimestampNs(1719446400000000123LL));
+  cases.emplace_back(timestamptz_ns(), Literal::TimestampTzNs(1719446400000000123LL));
+  cases.emplace_back(string(), Literal::String("hello"));
+  cases.emplace_back(decimal(9, 2), Literal::Decimal(12345, 9, 2));
+  cases.emplace_back(fixed(3), Literal::Fixed({0x01, 0x02, 0x03}));
+  cases.emplace_back(binary(), Literal::Binary({0xDE, 0xAD, 0xBE, 0xEF}));
+  cases.emplace_back(uuid(), Literal::UUID(uuid_value));
+
+  int32_t field_id = 1;
+  for (const auto& [type, literal] : cases) {
+    SchemaField field(field_id++, "f", type, /*optional=*/false, /*doc=*/{},
+                      std::make_shared<const Literal>(literal),
+                      std::make_shared<const Literal>(literal));
+    ICEBERG_UNWRAP_OR_FAIL(auto json, ToJson(field));
+    ICEBERG_UNWRAP_OR_FAIL(auto parsed, FieldFromJson(json));
+    EXPECT_EQ(field, *parsed) << "round-trip mismatch for type " << type->ToString()
+                              << ", json=" << json.dump();
+  }
+}
+
+// The spec only permits UTC offsets for timestamptz / timestamptz_ns default values.
+// A non-UTC offset (which the shared parser would silently normalize) must be rejected,
+// while the UTC form is accepted.
+TEST(JsonInternalTest, SchemaFieldRejectsNonUtcTimestamptzDefault) {
+  auto non_utc = nlohmann::json::parse(
+      R"({"id":1,"name":"ts","required":true,"type":"timestamptz","initial-default":"2024-06-27T05:00:00+05:00"})");
+  EXPECT_FALSE(FieldFromJson(non_utc).has_value());
+
+  auto non_utc_ns = nlohmann::json::parse(
+      R"({"id":1,"name":"ts","required":true,"type":"timestamptz_ns","write-default":"2024-06-27T05:00:00-08:00"})");
+  EXPECT_FALSE(FieldFromJson(non_utc_ns).has_value());
+
+  auto utc = nlohmann::json::parse(
+      R"({"id":1,"name":"ts","required":true,"type":"timestamptz","initial-default":"2024-06-27T00:00:00+00:00"})");
+  EXPECT_TRUE(FieldFromJson(utc).has_value());
+}
 
 TEST(JsonInternalTest, SortField) {
   auto identity_transform = Transform::Identity();
@@ -256,6 +359,53 @@ TEST(JsonInternalTest, Snapshot) {
   TestJsonConversion(snapshot, expected_json);
 }
 
+TEST(JsonInternalTest, SnapshotRowLineageSerializesTopLevelFields) {
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto snapshot,
+      Snapshot::Make(/*sequence_number=*/99, /*snapshot_id=*/1234567890,
+                     /*parent_snapshot_id=*/9876543210,
+                     TimePointMsFromUnixMs(1234567890123), DataOperation::kAppend,
+                     {{SnapshotSummaryFields::kAddedDataFiles, "50"}},
+                     /*schema_id=*/42, "/path/to/manifest_list",
+                     /*first_row_id=*/100, /*added_rows=*/25));
+
+  auto json = ToJson(*snapshot);
+  EXPECT_EQ(json["first-row-id"], 100);
+  EXPECT_EQ(json["added-rows"], 25);
+  EXPECT_FALSE(json["summary"].contains("first-row-id"));
+  EXPECT_FALSE(json["summary"].contains("added-rows"));
+}
+
+TEST(JsonInternalTest, SnapshotFromJsonReadsTopLevelRowLineageFields) {
+  nlohmann::json snapshot_json =
+      R"({"snapshot-id":1234567890,
+          "parent-snapshot-id":9876543210,
+          "sequence-number":99,
+          "timestamp-ms":1234567890123,
+          "manifest-list":"/path/to/manifest_list",
+          "summary":{
+            "operation":"append",
+            "added-data-files":"50",
+            "first-row-id":"101",
+            "added-rows":"26"
+          },
+          "schema-id":42,
+          "first-row-id":100,
+          "added-rows":25})"_json;
+
+  ICEBERG_UNWRAP_OR_FAIL(auto snapshot, SnapshotFromJson(snapshot_json));
+  ICEBERG_UNWRAP_OR_FAIL(auto first_row_id, snapshot->FirstRowId());
+  ICEBERG_UNWRAP_OR_FAIL(auto added_rows, snapshot->AddedRows());
+  EXPECT_EQ(first_row_id, 100);
+  EXPECT_EQ(added_rows, 25);
+
+  auto json = ToJson(*snapshot);
+  EXPECT_EQ(json["first-row-id"], 100);
+  EXPECT_EQ(json["added-rows"], 25);
+  EXPECT_EQ(json["summary"]["first-row-id"], "101");
+  EXPECT_EQ(json["summary"]["added-rows"], "26");
+}
+
 // FIXME: disable it for now since Iceberg Spark plugin generates
 // custom summary keys.
 TEST(JsonInternalTest, DISABLED_SnapshotFromJsonWithInvalidSummary) {
@@ -325,7 +475,8 @@ TEST(JsonInternalTest, TableUpdateAssignUUID) {
   nlohmann::json expected =
       R"({"action":"assign-uuid","uuid":"550e8400-e29b-41d4-a716-446655440000"})"_json;
 
-  EXPECT_EQ(ToJson(update), expected);
+  ICEBERG_UNWRAP_OR_FAIL(auto json, ToJson(update));
+  EXPECT_EQ(json, expected);
   auto parsed = TableUpdateFromJson(expected);
   ASSERT_THAT(parsed, IsOk());
   EXPECT_EQ(*internal::checked_cast<table::AssignUUID*>(parsed.value().get()), update);
@@ -336,7 +487,8 @@ TEST(JsonInternalTest, TableUpdateUpgradeFormatVersion) {
   nlohmann::json expected =
       R"({"action":"upgrade-format-version","format-version":2})"_json;
 
-  EXPECT_EQ(ToJson(update), expected);
+  ICEBERG_UNWRAP_OR_FAIL(auto json, ToJson(update));
+  EXPECT_EQ(json, expected);
   auto parsed = TableUpdateFromJson(expected);
   ASSERT_THAT(parsed, IsOk());
   EXPECT_EQ(*internal::checked_cast<table::UpgradeFormatVersion*>(parsed.value().get()),
@@ -350,7 +502,7 @@ TEST(JsonInternalTest, TableUpdateAddSchema) {
       /*schema_id=*/1);
   table::AddSchema update(schema, 2);
 
-  auto json = ToJson(update);
+  ICEBERG_UNWRAP_OR_FAIL(auto json, ToJson(update));
   EXPECT_EQ(json["action"], "add-schema");
   EXPECT_EQ(json["last-column-id"], 2);
   EXPECT_TRUE(json.contains("schema"));
@@ -367,9 +519,10 @@ TEST(JsonInternalTest, TableUpdateAddSchemaWithoutDeprecatedLastColumnId) {
       std::vector<SchemaField>{SchemaField(1, "id", int64(), false),
                                SchemaField(3, "name", string(), true)},
       /*schema_id=*/1);
+  ICEBERG_UNWRAP_OR_FAIL(auto schema_json, ToJson(*schema));
   nlohmann::json json = {
       {"action", "add-schema"},
-      {"schema", ToJson(*schema)},
+      {"schema", schema_json},
   };
 
   auto parsed = TableUpdateFromJson(json);
@@ -383,7 +536,8 @@ TEST(JsonInternalTest, TableUpdateSetCurrentSchema) {
   table::SetCurrentSchema update(1);
   nlohmann::json expected = R"({"action":"set-current-schema","schema-id":1})"_json;
 
-  EXPECT_EQ(ToJson(update), expected);
+  ICEBERG_UNWRAP_OR_FAIL(auto json, ToJson(update));
+  EXPECT_EQ(json, expected);
   auto parsed = TableUpdateFromJson(expected);
   ASSERT_THAT(parsed, IsOk());
   EXPECT_EQ(*internal::checked_cast<table::SetCurrentSchema*>(parsed.value().get()),
@@ -397,7 +551,7 @@ TEST(JsonInternalTest, TableUpdateAddPartitionSpec) {
       PartitionSpec::Make(1, {PartitionField(3, 101, "region", identity_transform)}));
   table::AddPartitionSpec update(std::move(spec));
 
-  auto json = ToJson(update);
+  ICEBERG_UNWRAP_OR_FAIL(auto json, ToJson(update));
   EXPECT_EQ(json["action"], "add-spec");
   EXPECT_TRUE(json.contains("spec"));
 
@@ -411,7 +565,8 @@ TEST(JsonInternalTest, TableUpdateSetDefaultPartitionSpec) {
   table::SetDefaultPartitionSpec update(2);
   nlohmann::json expected = R"({"action":"set-default-spec","spec-id":2})"_json;
 
-  EXPECT_EQ(ToJson(update), expected);
+  ICEBERG_UNWRAP_OR_FAIL(auto json, ToJson(update));
+  EXPECT_EQ(json, expected);
   auto parsed = TableUpdateFromJson(expected);
   ASSERT_THAT(parsed, IsOk());
   EXPECT_EQ(
@@ -424,7 +579,8 @@ TEST(JsonInternalTest, TableUpdateRemovePartitionSpecs) {
   nlohmann::json expected =
       R"({"action":"remove-partition-specs","spec-ids":[1,2,3]})"_json;
 
-  EXPECT_EQ(ToJson(update), expected);
+  ICEBERG_UNWRAP_OR_FAIL(auto json, ToJson(update));
+  EXPECT_EQ(json, expected);
   auto parsed = TableUpdateFromJson(expected);
   ASSERT_THAT(parsed, IsOk());
   EXPECT_EQ(*internal::checked_cast<table::RemovePartitionSpecs*>(parsed.value().get()),
@@ -434,7 +590,7 @@ TEST(JsonInternalTest, TableUpdateRemovePartitionSpecs) {
 TEST(JsonInternalTest, TableUpdateRemoveSchemas) {
   table::RemoveSchemas update({1, 2});
 
-  auto json = ToJson(update);
+  ICEBERG_UNWRAP_OR_FAIL(auto json, ToJson(update));
   EXPECT_EQ(json["action"], "remove-schemas");
   EXPECT_THAT(json["schema-ids"].get<std::vector<int32_t>>(),
               testing::UnorderedElementsAre(1, 2));
@@ -450,7 +606,7 @@ TEST(JsonInternalTest, TableUpdateAddSortOrder) {
   ICEBERG_UNWRAP_OR_FAIL(auto sort_order, SortOrder::Make(1, {st}));
   table::AddSortOrder update(std::move(sort_order));
 
-  auto json = ToJson(update);
+  ICEBERG_UNWRAP_OR_FAIL(auto json, ToJson(update));
   EXPECT_EQ(json["action"], "add-sort-order");
   EXPECT_TRUE(json.contains("sort-order"));
 
@@ -465,7 +621,8 @@ TEST(JsonInternalTest, TableUpdateSetDefaultSortOrder) {
   nlohmann::json expected =
       R"({"action":"set-default-sort-order","sort-order-id":1})"_json;
 
-  EXPECT_EQ(ToJson(update), expected);
+  ICEBERG_UNWRAP_OR_FAIL(auto json, ToJson(update));
+  EXPECT_EQ(json, expected);
   auto parsed = TableUpdateFromJson(expected);
   ASSERT_THAT(parsed, IsOk());
   EXPECT_EQ(*internal::checked_cast<table::SetDefaultSortOrder*>(parsed.value().get()),
@@ -473,19 +630,21 @@ TEST(JsonInternalTest, TableUpdateSetDefaultSortOrder) {
 }
 
 TEST(JsonInternalTest, TableUpdateAddSnapshot) {
-  auto snapshot = std::make_shared<Snapshot>(
-      Snapshot{.snapshot_id = 123456789,
-               .parent_snapshot_id = 987654321,
-               .sequence_number = 5,
-               .timestamp_ms = TimePointMsFromUnixMs(1234567890000),
-               .manifest_list = "/path/to/manifest-list.avro",
-               .summary = {{SnapshotSummaryFields::kOperation, DataOperation::kAppend}},
-               .schema_id = 1});
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto snapshot_unique,
+      Snapshot::Make(/*sequence_number=*/5, /*snapshot_id=*/123456789,
+                     /*parent_snapshot_id=*/987654321,
+                     TimePointMsFromUnixMs(1234567890000), DataOperation::kAppend,
+                     /*summary=*/{}, /*schema_id=*/1, "/path/to/manifest-list.avro",
+                     /*first_row_id=*/100, /*added_rows=*/25));
+  std::shared_ptr<Snapshot> snapshot(std::move(snapshot_unique));
   table::AddSnapshot update(snapshot);
 
-  auto json = ToJson(update);
+  ICEBERG_UNWRAP_OR_FAIL(auto json, ToJson(update));
   EXPECT_EQ(json["action"], "add-snapshot");
   EXPECT_TRUE(json.contains("snapshot"));
+  EXPECT_EQ(json["snapshot"]["first-row-id"], 100);
+  EXPECT_EQ(json["snapshot"]["added-rows"], 25);
 
   auto parsed = TableUpdateFromJson(json);
   ASSERT_THAT(parsed, IsOk());
@@ -498,7 +657,8 @@ TEST(JsonInternalTest, TableUpdateRemoveSnapshots) {
   nlohmann::json expected =
       R"({"action":"remove-snapshots","snapshot-ids":[111,222,333]})"_json;
 
-  EXPECT_EQ(ToJson(update), expected);
+  ICEBERG_UNWRAP_OR_FAIL(auto json, ToJson(update));
+  EXPECT_EQ(json, expected);
   auto parsed = TableUpdateFromJson(expected);
   ASSERT_THAT(parsed, IsOk());
   EXPECT_EQ(*internal::checked_cast<table::RemoveSnapshots*>(parsed.value().get()),
@@ -510,7 +670,8 @@ TEST(JsonInternalTest, TableUpdateRemoveSnapshotRef) {
   nlohmann::json expected =
       R"({"action":"remove-snapshot-ref","ref-name":"my-branch"})"_json;
 
-  EXPECT_EQ(ToJson(update), expected);
+  ICEBERG_UNWRAP_OR_FAIL(auto json, ToJson(update));
+  EXPECT_EQ(json, expected);
   auto parsed = TableUpdateFromJson(expected);
   ASSERT_THAT(parsed, IsOk());
   EXPECT_EQ(*internal::checked_cast<table::RemoveSnapshotRef*>(parsed.value().get()),
@@ -521,7 +682,7 @@ TEST(JsonInternalTest, TableUpdateSetSnapshotRefBranch) {
   table::SetSnapshotRef update("main", 123456789, SnapshotRefType::kBranch, 5, 86400000,
                                604800000);
 
-  auto json = ToJson(update);
+  ICEBERG_UNWRAP_OR_FAIL(auto json, ToJson(update));
   EXPECT_EQ(json["action"], "set-snapshot-ref");
   EXPECT_EQ(json["ref-name"], "main");
   EXPECT_EQ(json["snapshot-id"], 123456789);
@@ -536,7 +697,7 @@ TEST(JsonInternalTest, TableUpdateSetSnapshotRefBranch) {
 TEST(JsonInternalTest, TableUpdateSetSnapshotRefTag) {
   table::SetSnapshotRef update("release-1.0", 987654321, SnapshotRefType::kTag);
 
-  auto json = ToJson(update);
+  ICEBERG_UNWRAP_OR_FAIL(auto json, ToJson(update));
   EXPECT_EQ(json["action"], "set-snapshot-ref");
   EXPECT_EQ(json["type"], "tag");
 
@@ -549,7 +710,7 @@ TEST(JsonInternalTest, TableUpdateSetSnapshotRefTag) {
 TEST(JsonInternalTest, TableUpdateSetProperties) {
   table::SetProperties update({{"key1", "value1"}, {"key2", "value2"}});
 
-  auto json = ToJson(update);
+  ICEBERG_UNWRAP_OR_FAIL(auto json, ToJson(update));
   EXPECT_EQ(json["action"], "set-properties");
   EXPECT_TRUE(json.contains("updates"));
 
@@ -578,7 +739,7 @@ TEST(JsonInternalTest, TableUpdateSetPropertiesMissingCanonicalField) {
 TEST(JsonInternalTest, TableUpdateRemoveProperties) {
   table::RemoveProperties update({"key1", "key2"});
 
-  auto json = ToJson(update);
+  ICEBERG_UNWRAP_OR_FAIL(auto json, ToJson(update));
   EXPECT_EQ(json["action"], "remove-properties");
   EXPECT_TRUE(json.contains("removals"));
 
@@ -610,7 +771,8 @@ TEST(JsonInternalTest, TableUpdateSetLocation) {
   nlohmann::json expected =
       R"({"action":"set-location","location":"s3://bucket/warehouse/table"})"_json;
 
-  EXPECT_EQ(ToJson(update), expected);
+  ICEBERG_UNWRAP_OR_FAIL(auto json, ToJson(update));
+  EXPECT_EQ(json, expected);
   auto parsed = TableUpdateFromJson(expected);
   ASSERT_THAT(parsed, IsOk());
   EXPECT_EQ(*internal::checked_cast<table::SetLocation*>(parsed.value().get()), update);
@@ -646,7 +808,8 @@ TEST(JsonInternalTest, TableUpdateSetStatistics) {
     }
   })"_json;
 
-  EXPECT_EQ(ToJson(update), expected);
+  ICEBERG_UNWRAP_OR_FAIL(auto json, ToJson(update));
+  EXPECT_EQ(json, expected);
   auto parsed = TableUpdateFromJson(expected);
   ASSERT_THAT(parsed, IsOk());
   EXPECT_EQ(*internal::checked_cast<table::SetStatistics*>(parsed.value().get()), update);
@@ -657,7 +820,8 @@ TEST(JsonInternalTest, TableUpdateRemoveStatistics) {
   nlohmann::json expected =
       R"({"action":"remove-statistics","snapshot-id":123456789})"_json;
 
-  EXPECT_EQ(ToJson(update), expected);
+  ICEBERG_UNWRAP_OR_FAIL(auto json, ToJson(update));
+  EXPECT_EQ(json, expected);
   auto parsed = TableUpdateFromJson(expected);
   ASSERT_THAT(parsed, IsOk());
   EXPECT_EQ(*internal::checked_cast<table::RemoveStatistics*>(parsed.value().get()),
@@ -681,7 +845,8 @@ TEST(JsonInternalTest, TableUpdateSetPartitionStatistics) {
     }
   })"_json;
 
-  EXPECT_EQ(ToJson(update), expected);
+  ICEBERG_UNWRAP_OR_FAIL(auto json, ToJson(update));
+  EXPECT_EQ(json, expected);
   auto parsed = TableUpdateFromJson(expected);
   ASSERT_THAT(parsed, IsOk());
   EXPECT_EQ(*internal::checked_cast<table::SetPartitionStatistics*>(parsed.value().get()),
@@ -693,7 +858,8 @@ TEST(JsonInternalTest, TableUpdateRemovePartitionStatistics) {
   nlohmann::json expected =
       R"({"action":"remove-partition-statistics","snapshot-id":123456789})"_json;
 
-  EXPECT_EQ(ToJson(update), expected);
+  ICEBERG_UNWRAP_OR_FAIL(auto json, ToJson(update));
+  EXPECT_EQ(json, expected);
   auto parsed = TableUpdateFromJson(expected);
   ASSERT_THAT(parsed, IsOk());
   EXPECT_EQ(
@@ -719,7 +885,8 @@ TEST(JsonInternalTest, TableUpdateAddEncryptionKey) {
         {"properties", {{"scope", "table"}}}}},
   };
 
-  EXPECT_EQ(ToJson(update), expected);
+  ICEBERG_UNWRAP_OR_FAIL(auto json, ToJson(update));
+  EXPECT_EQ(json, expected);
   auto parsed = TableUpdateFromJson(expected);
   ASSERT_THAT(parsed, IsOk());
   EXPECT_EQ(*internal::checked_cast<table::AddEncryptionKey*>(parsed.value().get()),
@@ -738,7 +905,8 @@ TEST(JsonInternalTest, TableUpdateRemoveEncryptionKey) {
   table::RemoveEncryptionKey update("key-1");
   nlohmann::json expected = R"({"action":"remove-encryption-key","key-id":"key-1"})"_json;
 
-  EXPECT_EQ(ToJson(update), expected);
+  ICEBERG_UNWRAP_OR_FAIL(auto json, ToJson(update));
+  EXPECT_EQ(json, expected);
   auto parsed = TableUpdateFromJson(expected);
   ASSERT_THAT(parsed, IsOk());
   EXPECT_EQ(*internal::checked_cast<table::RemoveEncryptionKey*>(parsed.value().get()),

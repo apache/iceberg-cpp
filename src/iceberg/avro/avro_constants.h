@@ -19,6 +19,9 @@
 
 #pragma once
 
+/// \file iceberg/avro/avro_constants.h
+/// \brief Define Avro metadata constants used by Iceberg.
+
 #include <string_view>
 
 namespace iceberg::avro {

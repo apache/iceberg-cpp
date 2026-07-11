@@ -30,6 +30,8 @@
 #   iceberg::iceberg_bundle_static
 #   iceberg::iceberg_rest_shared
 #   iceberg::iceberg_rest_static
+#   iceberg::iceberg_hive_shared
+#   iceberg::iceberg_hive_static
 #   iceberg::iceberg_catalog_sql_shared
 #   iceberg::iceberg_catalog_sql_static
 

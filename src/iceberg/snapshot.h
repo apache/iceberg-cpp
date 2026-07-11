@@ -19,6 +19,9 @@
 
 #pragma once
 
+/// \file iceberg/snapshot.h
+/// \brief Define snapshot metadata types.
+
 #include <memory>
 #include <optional>
 #include <span>
@@ -405,6 +408,10 @@ struct ICEBERG_EXPORT Snapshot {
   std::unordered_map<std::string, std::string> summary;
   /// ID of the table's current schema when the snapshot was created.
   std::optional<int32_t> schema_id;
+  /// The row-id of the first newly added row in this snapshot.
+  std::optional<int64_t> first_row_id;
+  /// The upper bound of rows with assigned row IDs in this snapshot.
+  std::optional<int64_t> added_rows;
 
   /// \brief Create a new Snapshot instance with validation on the inputs.
   static Result<std::unique_ptr<Snapshot>> Make(

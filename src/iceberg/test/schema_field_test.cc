@@ -24,6 +24,7 @@
 
 #include <gtest/gtest.h>
 
+#include "iceberg/expression/literal.h"
 #include "iceberg/type.h"
 #include "iceberg/util/formatter.h"  // IWYU pragma: keep
 
@@ -104,6 +105,68 @@ TEST(SchemaFieldTest, WithDoc) {
     EXPECT_TRUE(field.optional());
     EXPECT_EQ("Field with 10 bytes", field.doc());
     EXPECT_EQ("bar (2): fixed(10) (optional) - Field with 10 bytes", field.ToString());
+  }
+}
+
+TEST(SchemaFieldTest, WithFieldMetadata) {
+  auto initial_default = std::make_shared<const Literal>(Literal::Int(1));
+  auto write_default = std::make_shared<const Literal>(Literal::Int(2));
+  SchemaField field(1, "foo", int32(), false, "doc", initial_default, write_default);
+
+  auto renamed = field.WithName("bar");
+  EXPECT_EQ(renamed.name(), "bar");
+  EXPECT_EQ(renamed.field_id(), field.field_id());
+  EXPECT_EQ(renamed.type(), field.type());
+  EXPECT_EQ(renamed.doc(), field.doc());
+  EXPECT_EQ(renamed.initial_default(), field.initial_default());
+  EXPECT_EQ(renamed.write_default(), field.write_default());
+
+  auto retyped = field.WithType(int64());
+  EXPECT_EQ(retyped.type(), int64());
+  EXPECT_EQ(retyped.name(), field.name());
+  EXPECT_EQ(retyped.initial_default(), field.initial_default());
+  EXPECT_EQ(retyped.write_default(), field.write_default());
+
+  auto documented = field.WithDoc("new doc");
+  EXPECT_EQ(documented.doc(), "new doc");
+  EXPECT_EQ(documented.name(), field.name());
+  EXPECT_EQ(documented.initial_default(), field.initial_default());
+  EXPECT_EQ(documented.write_default(), field.write_default());
+
+  auto new_initial = std::make_shared<const Literal>(Literal::Int(3));
+  auto with_initial = field.WithInitialDefault(new_initial);
+  EXPECT_EQ(with_initial.initial_default(), new_initial);
+  EXPECT_EQ(with_initial.write_default(), field.write_default());
+
+  auto new_write = std::make_shared<const Literal>(Literal::Int(4));
+  auto with_write = field.WithWriteDefault(new_write);
+  EXPECT_EQ(with_write.initial_default(), field.initial_default());
+  EXPECT_EQ(with_write.write_default(), new_write);
+  EXPECT_EQ(field.name(), "foo");
+  EXPECT_EQ(*field.write_default(), Literal::Int(2));
+}
+
+TEST(SchemaFieldTest, CastDefaultValue) {
+  {
+    auto result = SchemaField::CastDefaultValue(Literal::Int(5), int64());
+    ASSERT_TRUE(result.has_value());
+    EXPECT_EQ(result.value(), Literal::Long(5));
+  }
+  {
+    auto result =
+        SchemaField::CastDefaultValue(Literal::Decimal(1234, 9, 2), decimal(18, 2));
+    ASSERT_TRUE(result.has_value());
+    EXPECT_EQ(result.value(), Literal::Decimal(1234, 18, 2));
+  }
+  {
+    auto result =
+        SchemaField::CastDefaultValue(Literal::Decimal(1234, 9, 3), decimal(18, 2));
+    EXPECT_FALSE(result.has_value());
+  }
+  {
+    auto result =
+        SchemaField::CastDefaultValue(Literal::Decimal(1234567, 9, 2), decimal(4, 2));
+    EXPECT_FALSE(result.has_value());
   }
 }
 

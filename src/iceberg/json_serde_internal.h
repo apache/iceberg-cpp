@@ -93,7 +93,7 @@ ICEBERG_EXPORT Result<std::unique_ptr<SortOrder>> SortOrderFromJson(
 ///
 /// \param schema The Iceberg schema to convert.
 /// \return The JSON representation of the schema.
-ICEBERG_EXPORT nlohmann::json ToJson(const Schema& schema);
+ICEBERG_EXPORT Result<nlohmann::json> ToJson(const Schema& schema);
 
 /// \brief Convert an Iceberg Schema to JSON.
 ///
@@ -111,7 +111,7 @@ ICEBERG_EXPORT Result<std::unique_ptr<Schema>> SchemaFromJson(const nlohmann::js
 ///
 /// \param type The Iceberg type to convert.
 /// \return The JSON representation of the type.
-ICEBERG_EXPORT nlohmann::json ToJson(const Type& type);
+ICEBERG_EXPORT Result<nlohmann::json> ToJson(const Type& type);
 
 /// \brief Convert JSON to an Iceberg Type.
 ///
@@ -123,7 +123,7 @@ ICEBERG_EXPORT Result<std::unique_ptr<Type>> TypeFromJson(const nlohmann::json& 
 ///
 /// \param field The Iceberg field to convert.
 /// \return The JSON representation of the field.
-ICEBERG_EXPORT nlohmann::json ToJson(const SchemaField& field);
+ICEBERG_EXPORT Result<nlohmann::json> ToJson(const SchemaField& field);
 
 /// \brief Convert JSON to an Iceberg SchemaField.
 ///
@@ -300,7 +300,7 @@ ICEBERG_EXPORT Result<EncryptedKey> EncryptedKeyFromJson(const nlohmann::json& j
 ///
 /// \param table_metadata The `TableMetadata` object to be serialized.
 /// \return A JSON object representing the `TableMetadata`.
-ICEBERG_EXPORT nlohmann::json ToJson(const TableMetadata& table_metadata);
+ICEBERG_EXPORT Result<nlohmann::json> ToJson(const TableMetadata& table_metadata);
 
 /// \brief Serializes a `TableMetadata` object to JSON.
 ///
@@ -404,7 +404,7 @@ ICEBERG_EXPORT Result<Namespace> NamespaceFromJson(const nlohmann::json& json);
 ///
 /// \param update The `TableUpdate` object to be serialized.
 /// \return A JSON object representing the `TableUpdate`.
-ICEBERG_EXPORT nlohmann::json ToJson(const TableUpdate& update);
+ICEBERG_EXPORT Result<nlohmann::json> ToJson(const TableUpdate& update);
 
 /// \brief Deserializes a JSON object into a `TableUpdate` object.
 ///

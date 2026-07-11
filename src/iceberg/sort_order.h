@@ -19,6 +19,9 @@
 
 #pragma once
 
+/// \file iceberg/sort_order.h
+/// \brief Define table sort order metadata.
+
 #include <cstdint>
 #include <memory>
 #include <span>

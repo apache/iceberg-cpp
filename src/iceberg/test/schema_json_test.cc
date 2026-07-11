@@ -24,6 +24,7 @@
 #include <gtest/gtest.h>
 #include <nlohmann/json.hpp>
 
+#include "iceberg/expression/literal.h"
 #include "iceberg/json_serde_internal.h"
 #include "iceberg/schema.h"
 #include "iceberg/schema_field.h"
@@ -42,8 +43,8 @@ class TypeJsonTest : public ::testing::TestWithParam<SchemaJsonParam> {};
 TEST_P(TypeJsonTest, SingleTypeRoundTrip) {
   // To Json
   const auto& param = GetParam();
-  auto json = ToJson(*param.type).dump();
-  ASSERT_EQ(param.json, json);
+  ICEBERG_UNWRAP_OR_FAIL(auto json, ToJson(*param.type));
+  ASSERT_EQ(param.json, json.dump());
 
   // From Json
   auto type_result = TypeFromJson(nlohmann::json::parse(param.json));
@@ -190,8 +191,54 @@ TEST(SchemaJsonTest, RoundTrip) {
   ASSERT_EQ(field2.type()->type_id(), TypeId::kString);
   ASSERT_TRUE(field2.optional());
 
-  auto dumped_json = ToJson(*schema).dump();
-  ASSERT_EQ(dumped_json, json);
+  ICEBERG_UNWRAP_OR_FAIL(auto schema_json, ToJson(*schema));
+  ASSERT_EQ(schema_json.dump(), json);
+}
+
+TEST(SchemaJsonTest, FieldWithDefaultValuesRoundTrip) {
+  constexpr std::string_view json =
+      R"({"fields":[{"id":1,"initial-default":42,"name":"id","required":true,"type":"int","write-default":7},{"id":2,"initial-default":"n/a","name":"name","required":false,"type":"string"}],"schema-id":1,"type":"struct"})";
+
+  ICEBERG_UNWRAP_OR_FAIL(auto schema, SchemaFromJson(nlohmann::json::parse(json)));
+  ASSERT_EQ(schema->fields().size(), 2);
+
+  const auto& field1 = schema->fields()[0];
+  ASSERT_NE(field1.initial_default(), nullptr);
+  ASSERT_EQ(*field1.initial_default(), Literal::Int(42));
+  ASSERT_NE(field1.write_default(), nullptr);
+  ASSERT_EQ(*field1.write_default(), Literal::Int(7));
+
+  const auto& field2 = schema->fields()[1];
+  ASSERT_NE(field2.initial_default(), nullptr);
+  ASSERT_EQ(*field2.initial_default(), Literal::String("n/a"));
+  ASSERT_EQ(field2.write_default(), nullptr);
+
+  ICEBERG_UNWRAP_OR_FAIL(auto schema_json, ToJson(*schema));
+  ASSERT_EQ(schema_json.dump(), json);
+}
+
+TEST(SchemaJsonTest, FieldWithMismatchedDefaultValueFails) {
+  constexpr std::string_view json =
+      R"({"fields":[{"id":1,"initial-default":"oops","name":"id","required":true,"type":"int"}],"schema-id":1,"type":"struct"})";
+
+  auto result = SchemaFromJson(nlohmann::json::parse(json));
+  ASSERT_FALSE(result.has_value());
+}
+
+TEST(SchemaJsonTest, NestedFieldWithDefaultValuesRoundTrip) {
+  constexpr std::string_view json =
+      R"({"fields":[{"id":1,"name":"person","required":true,"type":{"fields":[{"id":2,"initial-default":18,"name":"age","required":true,"type":"int","write-default":21}],"type":"struct"}}],"schema-id":1,"type":"struct"})";
+
+  ICEBERG_UNWRAP_OR_FAIL(auto schema, SchemaFromJson(nlohmann::json::parse(json)));
+  const auto& person = schema->fields()[0];
+  const auto& nested = dynamic_cast<const StructType&>(*person.type()).fields()[0];
+  ASSERT_NE(nested.initial_default(), nullptr);
+  ASSERT_EQ(*nested.initial_default(), Literal::Int(18));
+  ASSERT_NE(nested.write_default(), nullptr);
+  ASSERT_EQ(*nested.write_default(), Literal::Int(21));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto schema_json, ToJson(*schema));
+  ASSERT_EQ(schema_json.dump(), json);
 }
 
 TEST(SchemaJsonTest, UnknownFieldRoundTrip) {
@@ -206,7 +253,8 @@ TEST(SchemaJsonTest, UnknownFieldRoundTrip) {
   ASSERT_EQ(field.name(), "mystery");
   ASSERT_EQ(field.type()->type_id(), TypeId::kUnknown);
   ASSERT_TRUE(field.optional());
-  ASSERT_EQ(ToJson(*schema).dump(), json);
+  ICEBERG_UNWRAP_OR_FAIL(auto schema_json, ToJson(*schema));
+  ASSERT_EQ(schema_json.dump(), json);
 }
 
 TEST(SchemaJsonTest, NestedUnknownFieldsRoundTrip) {
@@ -273,7 +321,8 @@ TEST(SchemaJsonTest, NestedUnknownFieldsRoundTrip) {
   ASSERT_EQ(properties->value().type()->type_id(), TypeId::kUnknown);
   ASSERT_TRUE(properties->value().optional());
 
-  ASSERT_EQ(ToJson(*schema), parsed_json);
+  ICEBERG_UNWRAP_OR_FAIL(auto schema_json, ToJson(*schema));
+  ASSERT_EQ(schema_json, parsed_json);
 }
 
 TEST(SchemaJsonTest, IdentifierFieldIds) {
@@ -292,7 +341,8 @@ TEST(SchemaJsonTest, IdentifierFieldIds) {
   ASSERT_EQ(schema_with_identifers->schema_id(), 1);
   ASSERT_EQ(schema_with_identifers->IdentifierFieldIds().size(), 1);
   ASSERT_EQ(schema_with_identifers->IdentifierFieldIds()[0], 1);
-  ASSERT_EQ(ToJson(*schema_with_identifers), json_with_identifiers);
+  ICEBERG_UNWRAP_OR_FAIL(auto json_with_identifiers_out, ToJson(*schema_with_identifers));
+  ASSERT_EQ(json_with_identifiers_out, json_with_identifiers);
 
   // Test schema without identifier-field-ids
   constexpr std::string_view json_without_identifiers_str =
@@ -305,7 +355,9 @@ TEST(SchemaJsonTest, IdentifierFieldIds) {
   ICEBERG_UNWRAP_OR_FAIL(auto schema_without_identifiers,
                          SchemaFromJson(json_without_identifiers));
   ASSERT_TRUE(schema_without_identifiers->IdentifierFieldIds().empty());
-  ASSERT_EQ(ToJson(*schema_without_identifiers), json_without_identifiers);
+  ICEBERG_UNWRAP_OR_FAIL(auto json_without_identifiers_out,
+                         ToJson(*schema_without_identifiers));
+  ASSERT_EQ(json_without_identifiers_out, json_without_identifiers);
 
   // Test schema with multiple identifier fields
   constexpr std::string_view json_multi_identifiers_str =
@@ -321,7 +373,9 @@ TEST(SchemaJsonTest, IdentifierFieldIds) {
   ASSERT_EQ(schema_multi_identifiers->IdentifierFieldIds().size(), 2);
   ASSERT_EQ(schema_multi_identifiers->IdentifierFieldIds()[0], 1);
   ASSERT_EQ(schema_multi_identifiers->IdentifierFieldIds()[1], 2);
-  ASSERT_EQ(ToJson(*schema_multi_identifiers), json_multi_identifiers);
+  ICEBERG_UNWRAP_OR_FAIL(auto json_multi_identifiers_out,
+                         ToJson(*schema_multi_identifiers));
+  ASSERT_EQ(json_multi_identifiers_out, json_multi_identifiers);
 }
 
 }  // namespace iceberg

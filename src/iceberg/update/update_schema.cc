@@ -29,6 +29,7 @@
 #include <utility>
 #include <vector>
 
+#include "iceberg/expression/literal.h"
 #include "iceberg/json_serde_internal.h"
 #include "iceberg/name_mapping.h"
 #include "iceberg/schema.h"
@@ -39,6 +40,7 @@
 #include "iceberg/type.h"
 #include "iceberg/util/checked_cast.h"
 #include "iceberg/util/error_collector.h"
+#include "iceberg/util/formatter.h"  // IWYU pragma: keep
 #include "iceberg/util/macros.h"
 #include "iceberg/util/string_util.h"
 #include "iceberg/util/type_util.h"
@@ -214,11 +216,9 @@ class ApplyChangesVisitor {
 
     if (update_it != updates_.end()) {
       const auto& update_field = update_it->second;
-      return SchemaField(field_id, update_field->name(), std::move(result_type),
-                         update_field->optional(), update_field->doc());
+      return update_field->WithType(std::move(result_type));
     } else if (result_type != field.type()) {
-      return SchemaField(field_id, field.name(), std::move(result_type), field.optional(),
-                         field.doc());
+      return field.WithType(std::move(result_type));
     } else {
       return field;
     }
@@ -280,6 +280,10 @@ std::vector<SchemaField> ApplyChangesVisitor::MoveFields(
   }
 
   return reordered;
+}
+
+bool ValidateDefaultLiteral(const Literal& value) {
+  return !value.IsNull() && !value.IsAboveMax() && !value.IsBelowMin();
 }
 
 }  // namespace
@@ -345,39 +349,43 @@ UpdateSchema& UpdateSchema::CaseSensitive(bool case_sensitive) {
 }
 
 UpdateSchema& UpdateSchema::AddColumn(std::string_view name, std::shared_ptr<Type> type,
-                                      std::string_view doc) {
+                                      std::string_view doc,
+                                      std::optional<Literal> default_value) {
   ICEBERG_BUILDER_CHECK(!name.contains('.'),
                         "Cannot add column with ambiguous name: {}, use "
                         "AddColumn(parent, name, type, doc)",
                         name);
-  return AddColumnInternal(std::nullopt, name, /*is_optional=*/true, std::move(type),
-                           doc);
+  return AddColumnInternal(/*parent=*/std::nullopt, name, /*is_optional=*/true,
+                           std::move(type), doc, std::move(default_value));
 }
 
 UpdateSchema& UpdateSchema::AddColumn(std::optional<std::string_view> parent,
                                       std::string_view name, std::shared_ptr<Type> type,
-                                      std::string_view doc) {
+                                      std::string_view doc,
+                                      std::optional<Literal> default_value) {
   return AddColumnInternal(std::move(parent), name, /*is_optional=*/true, std::move(type),
-                           doc);
+                           doc, std::move(default_value));
 }
 
 UpdateSchema& UpdateSchema::AddRequiredColumn(std::string_view name,
                                               std::shared_ptr<Type> type,
-                                              std::string_view doc) {
+                                              std::string_view doc,
+                                              std::optional<Literal> default_value) {
   ICEBERG_BUILDER_CHECK(!name.contains('.'),
                         "Cannot add column with ambiguous name: {}, use "
                         "AddRequiredColumn(parent, name, type, doc)",
                         name);
   return AddColumnInternal(std::nullopt, name, /*is_optional=*/false, std::move(type),
-                           doc);
+                           doc, std::move(default_value));
 }
 
 UpdateSchema& UpdateSchema::AddRequiredColumn(std::optional<std::string_view> parent,
                                               std::string_view name,
                                               std::shared_ptr<Type> type,
-                                              std::string_view doc) {
+                                              std::string_view doc,
+                                              std::optional<Literal> default_value) {
   return AddColumnInternal(std::move(parent), name, /*is_optional=*/false,
-                           std::move(type), doc);
+                           std::move(type), doc, std::move(default_value));
 }
 
 UpdateSchema& UpdateSchema::UpdateColumn(std::string_view name,
@@ -399,8 +407,25 @@ UpdateSchema& UpdateSchema::UpdateColumn(std::string_view name,
                         "Cannot change column type: {}: {} -> {}", name,
                         field.type()->ToString(), new_type->ToString());
 
-  updates_[field_id] = std::make_shared<SchemaField>(
-      field.field_id(), field.name(), new_type, field.optional(), field.doc());
+  // Defaults must follow the promoted type.
+  auto promote_default = [&](const std::shared_ptr<const Literal>& value)
+      -> Result<std::shared_ptr<const Literal>> {
+    if (value == nullptr) {
+      return nullptr;
+    }
+    ICEBERG_ASSIGN_OR_RAISE(Literal promoted,
+                            SchemaField::CastDefaultValue(*value, new_type));
+    return std::make_shared<const Literal>(std::move(promoted));
+  };
+  ICEBERG_BUILDER_ASSIGN_OR_RETURN(std::shared_ptr<const Literal> initial_default,
+                                   promote_default(field.initial_default()));
+  ICEBERG_BUILDER_ASSIGN_OR_RETURN(std::shared_ptr<const Literal> write_default,
+                                   promote_default(field.write_default()));
+
+  updates_[field_id] =
+      std::make_shared<SchemaField>(field.WithType(new_type)
+                                        .WithInitialDefault(std::move(initial_default))
+                                        .WithWriteDefault(std::move(write_default)));
 
   return *this;
 }
@@ -420,9 +445,44 @@ UpdateSchema& UpdateSchema::UpdateColumnDoc(std::string_view name,
     return *this;
   }
 
-  updates_[field_id] =
-      std::make_shared<SchemaField>(field.field_id(), field.name(), field.type(),
-                                    field.optional(), std::string(new_doc));
+  updates_[field_id] = std::make_shared<SchemaField>(field.WithDoc(new_doc));
+
+  return *this;
+}
+
+UpdateSchema& UpdateSchema::UpdateColumnDefault(std::string_view name,
+                                                std::optional<Literal> new_default) {
+  ICEBERG_BUILDER_ASSIGN_OR_RETURN(auto field_opt, FindFieldForUpdate(name));
+  ICEBERG_BUILDER_CHECK(field_opt.has_value(), "Cannot update missing column: {}", name);
+
+  const auto& field = field_opt->get();
+  int32_t field_id = field.field_id();
+
+  ICEBERG_BUILDER_CHECK(!deletes_.contains(field_id),
+                        "Cannot update a column that will be deleted: {}", field.name());
+
+  if (!new_default.has_value()) {
+    updates_[field_id] = std::make_shared<SchemaField>(field.WithWriteDefault(nullptr));
+    return *this;
+  }
+
+  ICEBERG_BUILDER_CHECK(field.type()->is_primitive(),
+                        "Invalid default value for {}: {} (must be null)", *field.type(),
+                        *new_default);
+  ICEBERG_BUILDER_ASSIGN_OR_RETURN_WITH_ERROR(
+      Literal typed_default,
+      SchemaField::CastDefaultValue(
+          *new_default, internal::checked_pointer_cast<PrimitiveType>(field.type())),
+      "Cannot cast default value to {}: {}", *field.type(), *new_default);
+  ICEBERG_BUILDER_CHECK(ValidateDefaultLiteral(typed_default),
+                        "Cannot cast default value to {}: {}", *field.type(),
+                        *new_default);
+  if (field.write_default() != nullptr && *field.write_default() == typed_default) {
+    return *this;
+  }
+
+  updates_[field_id] = std::make_shared<SchemaField>(
+      field.WithWriteDefault(std::make_shared<const Literal>(std::move(typed_default))));
 
   return *this;
 }
@@ -443,9 +503,7 @@ UpdateSchema& UpdateSchema::RenameColumn(std::string_view name,
   const SchemaField& base_field =
       update_it != updates_.end() ? *update_it->second : field;
 
-  updates_[field_id] = std::make_shared<SchemaField>(
-      base_field.field_id(), std::string(new_name), base_field.type(),
-      base_field.optional(), base_field.doc());
+  updates_[field_id] = std::make_shared<SchemaField>(base_field.WithName(new_name));
 
   auto it = std::ranges::find(identifier_field_names_, name);
   if (it != identifier_field_names_.end()) {
@@ -474,9 +532,9 @@ UpdateSchema& UpdateSchema::UpdateColumnRequirementInternal(std::string_view nam
     return *this;
   }
 
-  // TODO(GuotaoYu): support added column with default value
-  // bool is_defaulted_add = IsAdded(name) && field.initial_default() != null;
-  bool is_defaulted_add = false;
+  // Defaulted adds can become required.
+  bool is_defaulted_add = added_name_to_id_.contains(CaseSensitivityAwareName(name)) &&
+                          field.initial_default() != nullptr;
 
   ICEBERG_BUILDER_CHECK(is_optional || is_defaulted_add || allow_incompatible_changes_,
                         "Cannot change column nullability: {}: optional -> required",
@@ -625,13 +683,15 @@ Result<UpdateSchema::ApplyResult> UpdateSchema::Apply() {
                      .updated_props = std::move(updated_props)};
 }
 
-// TODO(Guotao Yu): v3 default value is not yet supported
 UpdateSchema& UpdateSchema::AddColumnInternal(std::optional<std::string_view> parent,
                                               std::string_view name, bool is_optional,
                                               std::shared_ptr<Type> type,
-                                              std::string_view doc) {
+                                              std::string_view doc,
+                                              std::optional<Literal> default_value) {
   int32_t parent_id = kTableRootId;
   std::string full_name;
+  // For map/list adds, this omits synthetic value/element path segments.
+  std::string short_name;
 
   if (parent.has_value()) {
     ICEBERG_BUILDER_CHECK(!parent->empty(), "Parent name cannot be empty");
@@ -661,13 +721,13 @@ UpdateSchema& UpdateSchema::AddColumnInternal(std::optional<std::string_view> pa
     ICEBERG_BUILDER_CHECK(!deletes_.contains(parent_id),
                           "Cannot add to a column that will be deleted: {}", *parent);
 
-    auto current_name = std::format("{}.{}", *parent, name);
-    ICEBERG_BUILDER_ASSIGN_OR_RETURN(auto current_field, FindField(current_name));
+    short_name = std::format("{}.{}", *parent, name);
+    ICEBERG_BUILDER_ASSIGN_OR_RETURN(auto current_field, FindField(short_name));
     ICEBERG_BUILDER_CHECK(
         !current_field.has_value() || deletes_.contains(current_field->get().field_id()),
         "Cannot add column, name already exists: {}.{}", *parent, name);
 
-    // Build full name using canonical name of parent
+    // Use the canonical parent name for schema updates.
     ICEBERG_BUILDER_ASSIGN_OR_RETURN(auto parent_name_opt,
                                      schema_->FindColumnNameById(parent_id));
     ICEBERG_BUILDER_CHECK(parent_name_opt.has_value(),
@@ -680,16 +740,19 @@ UpdateSchema& UpdateSchema::AddColumnInternal(std::optional<std::string_view> pa
         "Cannot add column, name already exists: {}", name);
 
     full_name = std::string(name);
+    short_name = full_name;
   }
 
   ICEBERG_BUILDER_CHECK(
-      is_optional || allow_incompatible_changes_,
+      is_optional || default_value.has_value() || allow_incompatible_changes_,
       "Incompatible change: cannot add required column without a default value: {}",
       full_name);
 
   int32_t new_id = AssignNewColumnId();
 
   added_name_to_id_[CaseSensitivityAwareName(full_name)] = new_id;
+  // Needed for same-update lookups by user-facing path.
+  added_name_to_id_[CaseSensitivityAwareName(short_name)] = new_id;
   if (parent_id != kTableRootId) {
     id_to_parent_[new_id] = parent_id;
   }
@@ -697,11 +760,30 @@ UpdateSchema& UpdateSchema::AddColumnInternal(std::optional<std::string_view> pa
   AssignFreshIdVisitor id_assigner([this]() { return AssignNewColumnId(); });
   auto type_with_fresh_ids = id_assigner.Visit(type);
 
-  auto new_field = std::make_shared<SchemaField>(new_id, std::string(name),
-                                                 std::move(type_with_fresh_ids),
-                                                 is_optional, std::string(doc));
+  std::shared_ptr<const Literal> initial_default;
+  std::shared_ptr<const Literal> write_default;
+  if (default_value.has_value()) {
+    ICEBERG_BUILDER_CHECK(type_with_fresh_ids->is_primitive(),
+                          "Invalid default value for {}: {} (must be null)",
+                          *type_with_fresh_ids, *default_value);
+    ICEBERG_BUILDER_ASSIGN_OR_RETURN_WITH_ERROR(
+        Literal typed_default,
+        SchemaField::CastDefaultValue(
+            *default_value,
+            internal::checked_pointer_cast<PrimitiveType>(type_with_fresh_ids)),
+        "Cannot cast default value to {}: {}", *type_with_fresh_ids, *default_value);
+    ICEBERG_BUILDER_CHECK(ValidateDefaultLiteral(typed_default),
+                          "Cannot cast default value to {}: {}", *type_with_fresh_ids,
+                          *default_value);
+    // Add-column defaults set both default kinds.
+    auto shared_default = std::make_shared<const Literal>(std::move(typed_default));
+    initial_default = shared_default;
+    write_default = std::move(shared_default);
+  }
 
-  updates_[new_id] = std::move(new_field);
+  updates_[new_id] = std::make_shared<SchemaField>(
+      new_id, name, std::move(type_with_fresh_ids), is_optional, doc,
+      std::move(initial_default), std::move(write_default));
   parent_to_added_ids_[parent_id].push_back(new_id);
 
   return *this;

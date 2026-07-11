@@ -53,6 +53,31 @@ TEST(TemporalUtilTest, ParseTimestampNsChecksInt64Bounds) {
               IsError(ErrorKind::kInvalidArgument));
 }
 
+TEST(TemporalUtilTest, IsUtcOffset) {
+  // UTC offsets: "Z", "+00:00" and "-00:00".
+  ICEBERG_UNWRAP_OR_FAIL(auto z, TemporalUtils::IsUtcOffset("2024-06-27T00:00:00Z"));
+  EXPECT_TRUE(z);
+  ICEBERG_UNWRAP_OR_FAIL(auto plus_zero,
+                         TemporalUtils::IsUtcOffset("2024-06-27T00:00:00+00:00"));
+  EXPECT_TRUE(plus_zero);
+  ICEBERG_UNWRAP_OR_FAIL(auto minus_zero,
+                         TemporalUtils::IsUtcOffset("2024-06-27T00:00:00-00:00"));
+  EXPECT_TRUE(minus_zero);
+
+  // Non-UTC offsets.
+  ICEBERG_UNWRAP_OR_FAIL(auto plus_five,
+                         TemporalUtils::IsUtcOffset("2024-06-27T05:00:00+05:00"));
+  EXPECT_FALSE(plus_five);
+  ICEBERG_UNWRAP_OR_FAIL(auto minus_eight,
+                         TemporalUtils::IsUtcOffset("2024-06-27T00:00:00-08:00"));
+  EXPECT_FALSE(minus_eight);
+
+  // A missing or unparseable timezone suffix is an error.
+  EXPECT_THAT(TemporalUtils::IsUtcOffset("2024-06-27T00:00:00"),
+              IsError(ErrorKind::kInvalidArgument));
+  EXPECT_THAT(TemporalUtils::IsUtcOffset(""), IsError(ErrorKind::kInvalidArgument));
+}
+
 TEST(TemporalUtilTest, ParseTimestampNsRejectsMoreThanNineFractionalDigits) {
   EXPECT_THAT(TemporalUtils::ParseTimestampNs("2026-01-01T00:00:01.0000010011"),
               IsError(ErrorKind::kInvalidArgument));

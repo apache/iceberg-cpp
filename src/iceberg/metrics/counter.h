@@ -19,6 +19,9 @@
 
 #pragma once
 
+/// \file iceberg/metrics/counter.h
+/// \brief Define metrics counters.
+
 #include <atomic>
 #include <cstdint>
 #include <memory>

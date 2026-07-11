@@ -39,7 +39,7 @@ namespace iceberg {
 /// \brief API for encoding row-level changes to a table.
 ///
 /// This API accumulates data and delete file changes, produces a new Snapshot
-/// of the table, and commits that snapshot as current.
+/// of the table, and commits that snapshot as the current.
 ///
 /// When committing, these changes are applied to the latest table snapshot.
 /// Commit conflicts are resolved by applying the changes to the new latest
@@ -50,25 +50,25 @@ class ICEBERG_EXPORT RowDelta : public MergingSnapshotUpdate {
   static Result<std::unique_ptr<RowDelta>> Make(std::string table_name,
                                                 std::shared_ptr<TransactionContext> ctx);
 
-  /// \brief Add a data file to the table.
+  /// \brief Add a DataFile to the table.
   ///
   /// \param inserts A data file of rows to insert.
   /// \return This RowDelta for method chaining.
   RowDelta& AddRows(const std::shared_ptr<DataFile>& inserts);
 
-  /// \brief Add a delete file to the table.
+  /// \brief Add a DeleteFile to the table.
   ///
   /// \param deletes A delete file of rows to delete.
   /// \return This RowDelta for method chaining.
   RowDelta& AddDeletes(const std::shared_ptr<DataFile>& deletes);
 
-  /// \brief Remove a data file from the table.
+  /// \brief Remove a DataFile from the table.
   ///
   /// \param file A data file.
   /// \return This RowDelta for method chaining.
   RowDelta& RemoveRows(const std::shared_ptr<DataFile>& file);
 
-  /// \brief Remove a rewritten delete file from the table.
+  /// \brief Remove a rewritten DeleteFile from the table.
   ///
   /// \param deletes A delete file that can be removed from the table.
   /// \return This RowDelta for method chaining.
@@ -114,7 +114,8 @@ class ICEBERG_EXPORT RowDelta : public MergingSnapshotUpdate {
   /// \return This RowDelta for method chaining.
   RowDelta& ValidateDeletedFiles();
 
-  /// \brief Set a conflict detection filter used to validate added files.
+  /// \brief Set a conflict detection filter used to validate concurrently added
+  /// data and delete files.
   ///
   /// If not called, a true literal is used as the conflict detection filter.
   ///

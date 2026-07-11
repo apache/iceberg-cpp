@@ -17,13 +17,16 @@
  * under the License.
  */
 
+#include <array>
 #include <optional>
 #include <string>
 #include <utility>
 #include <vector>
 
 #include <arrow/array.h>
+#include <arrow/array/builder_binary.h>
 #include <arrow/c/bridge.h>
+#include <arrow/extension/uuid.h>
 #include <arrow/filesystem/filesystem.h>
 #include <arrow/json/from_string.h>
 #include <arrow/record_batch.h>
@@ -38,6 +41,7 @@
 
 #include "iceberg/arrow/arrow_io_internal.h"
 #include "iceberg/arrow/arrow_status_internal.h"
+#include "iceberg/expression/literal.h"
 #include "iceberg/file_reader.h"
 #include "iceberg/file_writer.h"
 #include "iceberg/metadata_columns.h"
@@ -52,6 +56,7 @@
 #include "iceberg/type.h"
 #include "iceberg/util/checked_cast.h"
 #include "iceberg/util/macros.h"
+#include "iceberg/util/uuid.h"
 
 namespace iceberg::parquet {
 
@@ -149,6 +154,13 @@ std::optional<ParquetCodec> FirstUnavailableParquetCodec() {
   }
   return std::nullopt;
 }
+
+constexpr std::array<uint8_t, Uuid::kLength> kUuidBytes1 = {
+    0x12, 0x3e, 0x45, 0x67, 0xe8, 0x9b, 0x12, 0xd3,
+    0xa4, 0x56, 0x42, 0x66, 0x14, 0x17, 0x40, 0x00};
+constexpr std::array<uint8_t, Uuid::kLength> kUuidBytes2 = {
+    0xf7, 0x9c, 0x3e, 0x09, 0x67, 0x7c, 0x4b, 0xbd,
+    0xa4, 0x79, 0x3f, 0x34, 0x9c, 0xb7, 0x85, 0xe7};
 
 }  // namespace
 
@@ -259,6 +271,57 @@ TEST_F(ParquetReaderTest, ReadTwoFields) {
 
   ASSERT_NO_FATAL_FAILURE(
       VerifyNextBatch(*reader, R"([[1, "Foo"], [2, "Bar"], [3, "Baz"]])"));
+  ASSERT_NO_FATAL_FAILURE(VerifyExhausted(*reader));
+}
+
+TEST_F(ParquetReaderTest, ReadMissingFieldsWithDefaults) {
+  // The file contains only fields 1 and 2; the projected schema adds fields 3 and 4
+  // with initial-defaults, which are filled for all rows written before the columns
+  // existed.
+  CreateSimpleParquetFile();
+
+  auto schema = std::make_shared<Schema>(std::vector<SchemaField>{
+      SchemaField::MakeRequired(1, "id", int32()),
+      SchemaField::MakeOptional(2, "name", string()),
+      SchemaField(3, "score", int64(), /*optional=*/false, /*doc=*/{},
+                  std::make_shared<const Literal>(Literal::Long(100))),
+      SchemaField(4, "status", string(), /*optional=*/true, /*doc=*/{},
+                  std::make_shared<const Literal>(Literal::String("active"))),
+  });
+
+  auto reader_result = ReaderFactoryRegistry::Open(
+      FileFormatType::kParquet,
+      {.path = temp_parquet_file_, .io = file_io_, .projection = schema});
+  ASSERT_THAT(reader_result, IsOk())
+      << "Failed to create reader: " << reader_result.error().message;
+  auto reader = std::move(reader_result.value());
+
+  ASSERT_NO_FATAL_FAILURE(VerifyNextBatch(*reader,
+                                          R"([[1, "Foo", 100, "active"],
+                                              [2, "Bar", 100, "active"],
+                                              [3, "Baz", 100, "active"]])"));
+  ASSERT_NO_FATAL_FAILURE(VerifyExhausted(*reader));
+}
+
+TEST_F(ParquetReaderTest, ReadOnlyDefaultColumn) {
+  // The projected schema selects a single column that is absent from the file, so no
+  // physical column is read. The default must still be filled once per row, using the
+  // file's row count as the anchor.
+  CreateSimpleParquetFile();
+
+  auto schema = std::make_shared<Schema>(std::vector<SchemaField>{
+      SchemaField(3, "score", int64(), /*optional=*/false, /*doc=*/{},
+                  std::make_shared<const Literal>(Literal::Long(100))),
+  });
+
+  auto reader_result = ReaderFactoryRegistry::Open(
+      FileFormatType::kParquet,
+      {.path = temp_parquet_file_, .io = file_io_, .projection = schema});
+  ASSERT_THAT(reader_result, IsOk())
+      << "Failed to create reader: " << reader_result.error().message;
+  auto reader = std::move(reader_result.value());
+
+  ASSERT_NO_FATAL_FAILURE(VerifyNextBatch(*reader, R"([[100], [100], [100]])"));
   ASSERT_NO_FATAL_FAILURE(VerifyExhausted(*reader));
 }
 
@@ -769,6 +832,31 @@ TEST_F(ParquetReadWrite, SimpleTypeRoundTrip) {
   DoRoundtrip(array, schema, out);
 
   ASSERT_TRUE(out->Equals(*array));
+}
+
+TEST_F(ParquetReadWrite, UuidRoundTrip) {
+  auto schema = std::make_shared<Schema>(
+      std::vector<SchemaField>{SchemaField::MakeRequired(1, "uuid_col", uuid())});
+
+  ::arrow::FixedSizeBinaryBuilder uuid_storage_builder(
+      ::arrow::fixed_size_binary(Uuid::kLength));
+  ASSERT_TRUE(uuid_storage_builder.Append(kUuidBytes1.data()).ok());
+  ASSERT_TRUE(uuid_storage_builder.Append(kUuidBytes2.data()).ok());
+  auto uuid_storage = uuid_storage_builder.Finish().ValueOrDie();
+  auto uuid_array =
+      ::arrow::ExtensionType::WrapArray(::arrow::extension::uuid(), uuid_storage);
+  auto array =
+      ::arrow::StructArray::Make(
+          {uuid_array},
+          {::arrow::field("uuid_col", ::arrow::extension::uuid(), /*nullable=*/false)})
+          .ValueOrDie();
+
+  std::shared_ptr<::arrow::Array> out;
+  DoRoundtrip(array, schema, out);
+
+  ASSERT_TRUE(out->Equals(*array)) << "actual:\n"
+                                   << out->ToString() << "\nexpected:\n"
+                                   << array->ToString();
 }
 
 }  // namespace iceberg::parquet

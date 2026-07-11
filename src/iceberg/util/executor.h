@@ -19,6 +19,9 @@
 
 #pragma once
 
+/// \file iceberg/util/executor.h
+/// \brief Define task executor interfaces.
+
 #include <functional>
 #include <optional>
 

@@ -27,6 +27,8 @@
 #include <nlohmann/json.hpp>
 
 #include "iceberg/constants.h"
+#include "iceberg/expression/json_serde_internal.h"
+#include "iceberg/expression/literal.h"
 #include "iceberg/json_serde_internal.h"
 #include "iceberg/name_mapping.h"
 #include "iceberg/partition_field.h"
@@ -49,6 +51,7 @@
 #include "iceberg/util/json_util_internal.h"
 #include "iceberg/util/macros.h"
 #include "iceberg/util/string_util.h"
+#include "iceberg/util/temporal_util.h"
 #include "iceberg/util/timepoint.h"
 
 namespace iceberg {
@@ -102,6 +105,8 @@ constexpr std::string_view kSequenceNumber = "sequence-number";
 constexpr std::string_view kTimestampMs = "timestamp-ms";
 constexpr std::string_view kManifestList = "manifest-list";
 constexpr std::string_view kSummary = "summary";
+constexpr std::string_view kFirstRowId = "first-row-id";
+constexpr std::string_view kAddedRows = "added-rows";
 constexpr std::string_view kMinSnapshotsToKeep = "min-snapshots-to-keep";
 constexpr std::string_view kMaxSnapshotAgeMs = "max-snapshot-age-ms";
 constexpr std::string_view kMaxRefAgeMs = "max-ref-age-ms";
@@ -315,19 +320,25 @@ Result<std::unique_ptr<SortOrder>> SortOrderFromJson(const nlohmann::json& json)
   return SortOrder::Make(parsed.order_id, std::move(parsed.fields));
 }
 
-nlohmann::json ToJson(const SchemaField& field) {
+Result<nlohmann::json> ToJson(const SchemaField& field) {
   nlohmann::json json;
   json[kId] = field.field_id();
   json[kName] = field.name();
   json[kRequired] = !field.optional();
-  json[kType] = ToJson(*field.type());
+  ICEBERG_ASSIGN_OR_RAISE(json[kType], ToJson(*field.type()));
   if (!field.doc().empty()) {
     json[kDoc] = field.doc();
+  }
+  if (field.initial_default() != nullptr) {
+    ICEBERG_ASSIGN_OR_RAISE(json[kInitialDefault], ToJson(*field.initial_default()));
+  }
+  if (field.write_default() != nullptr) {
+    ICEBERG_ASSIGN_OR_RAISE(json[kWriteDefault], ToJson(*field.write_default()));
   }
   return json;
 }
 
-nlohmann::json ToJson(const Type& type) {
+Result<nlohmann::json> ToJson(const Type& type) {
   switch (type.type_id()) {
     case TypeId::kStruct: {
       const auto& struct_type = internal::checked_cast<const StructType&>(type);
@@ -335,8 +346,8 @@ nlohmann::json ToJson(const Type& type) {
       json[kType] = kStruct;
       nlohmann::json fields_json = nlohmann::json::array();
       for (const auto& field : struct_type.fields()) {
-        fields_json.push_back(ToJson(field));
-        // TODO(gangwu): add default values
+        ICEBERG_ASSIGN_OR_RAISE(auto field_json, ToJson(field));
+        fields_json.push_back(std::move(field_json));
       }
       json[kFields] = fields_json;
       return json;
@@ -349,7 +360,7 @@ nlohmann::json ToJson(const Type& type) {
       const auto& element_field = list_type.fields().front();
       json[kElementId] = element_field.field_id();
       json[kElementRequired] = !element_field.optional();
-      json[kElement] = ToJson(*element_field.type());
+      ICEBERG_ASSIGN_OR_RAISE(json[kElement], ToJson(*element_field.type()));
       return json;
     }
     case TypeId::kMap: {
@@ -359,12 +370,12 @@ nlohmann::json ToJson(const Type& type) {
 
       const auto& key_field = map_type.key();
       json[kKeyId] = key_field.field_id();
-      json[kKey] = ToJson(*key_field.type());
+      ICEBERG_ASSIGN_OR_RAISE(json[kKey], ToJson(*key_field.type()));
 
       const auto& value_field = map_type.value();
       json[kValueId] = value_field.field_id();
       json[kValueRequired] = !value_field.optional();
-      json[kValue] = ToJson(*value_field.type());
+      ICEBERG_ASSIGN_OR_RAISE(json[kValue], ToJson(*value_field.type()));
       return json;
     }
     case TypeId::kBoolean:
@@ -416,8 +427,9 @@ nlohmann::json ToJson(const Type& type) {
   std::unreachable();
 }
 
-nlohmann::json ToJson(const Schema& schema) {
-  nlohmann::json json = ToJson(internal::checked_cast<const Type&>(schema));
+Result<nlohmann::json> ToJson(const Schema& schema) {
+  ICEBERG_ASSIGN_OR_RAISE(nlohmann::json json,
+                          ToJson(internal::checked_cast<const Type&>(schema)));
   json[kSchemaId] = schema.schema_id();
   if (!schema.IdentifierFieldIds().empty()) {
     json[kIdentifierFieldIds] = schema.IdentifierFieldIds();
@@ -426,7 +438,8 @@ nlohmann::json ToJson(const Schema& schema) {
 }
 
 Result<std::string> ToJsonString(const Schema& schema) {
-  return ToJsonString(ToJson(schema));
+  ICEBERG_ASSIGN_OR_RAISE(auto json, ToJson(schema));
+  return ToJsonString(json);
 }
 
 nlohmann::json ToJson(const SnapshotRef& ref) {
@@ -459,6 +472,10 @@ nlohmann::json ToJson(const Snapshot& snapshot) {
     json[kSummary] = snapshot.summary;
   }
   SetOptionalField(json, kSchemaId, snapshot.schema_id);
+  SetOptionalField(json, kFirstRowId, snapshot.first_row_id);
+  if (snapshot.first_row_id.has_value()) {
+    SetOptionalField(json, kAddedRows, snapshot.added_rows);
+  }
   return json;
 }
 
@@ -625,6 +642,34 @@ Result<std::unique_ptr<Type>> TypeFromJson(const nlohmann::json& json) {
   }
 }
 
+namespace {
+
+// The spec's JSON single-value form for `timestamptz` / `timestamptz_ns` default
+// values requires a UTC offset. The shared timestamp parser accepts any offset and
+// silently normalizes to UTC, which would let C++ accept default metadata that Java
+// rejects and then rewrite the offset on serialization. Enforce UTC for these
+// defaults at parse time, where the original offset is still visible.
+Status ValidateTimestamptzDefaultIsUtc(const Type& type, const nlohmann::json& value) {
+  const auto type_id = type.type_id();
+  if (type_id != TypeId::kTimestampTz && type_id != TypeId::kTimestampTzNs) {
+    return {};
+  }
+  if (!value.is_string()) {
+    return JsonParseError("Invalid timestamptz default {} for {}: expected a string",
+                          SafeDumpJson(value), type.ToString());
+  }
+  const auto str = value.get<std::string>();
+  ICEBERG_ASSIGN_OR_RAISE(bool is_utc, TemporalUtils::IsUtcOffset(str));
+  if (!is_utc) {
+    return JsonParseError(
+        "Invalid timestamptz default '{}' for {}: default values must use a UTC offset",
+        str, type.ToString());
+  }
+  return {};
+}
+
+}  // namespace
+
 Result<std::unique_ptr<SchemaField>> FieldFromJson(const nlohmann::json& json) {
   ICEBERG_ASSIGN_OR_RAISE(
       auto type, GetJsonValue<nlohmann::json>(json, kType).and_then(TypeFromJson));
@@ -632,9 +677,31 @@ Result<std::unique_ptr<SchemaField>> FieldFromJson(const nlohmann::json& json) {
   ICEBERG_ASSIGN_OR_RAISE(auto name, GetJsonValue<std::string>(json, kName));
   ICEBERG_ASSIGN_OR_RAISE(auto required, GetJsonValue<bool>(json, kRequired));
   ICEBERG_ASSIGN_OR_RAISE(auto doc, GetJsonValueOrDefault<std::string>(json, kDoc));
+  ICEBERG_ASSIGN_OR_RAISE(auto initial_default_json,
+                          GetJsonValueOptional<nlohmann::json>(json, kInitialDefault));
+  ICEBERG_ASSIGN_OR_RAISE(auto write_default_json,
+                          GetJsonValueOptional<nlohmann::json>(json, kWriteDefault));
+
+  std::shared_ptr<const Literal> initial_default;
+  if (initial_default_json.has_value()) {
+    ICEBERG_RETURN_UNEXPECTED(
+        ValidateTimestamptzDefaultIsUtc(*type, *initial_default_json));
+    ICEBERG_ASSIGN_OR_RAISE(Literal literal,
+                            LiteralFromJson(*initial_default_json, type.get()));
+    initial_default = std::make_shared<const Literal>(std::move(literal));
+  }
+  std::shared_ptr<const Literal> write_default;
+  if (write_default_json.has_value()) {
+    ICEBERG_RETURN_UNEXPECTED(
+        ValidateTimestamptzDefaultIsUtc(*type, *write_default_json));
+    ICEBERG_ASSIGN_OR_RAISE(Literal literal,
+                            LiteralFromJson(*write_default_json, type.get()));
+    write_default = std::make_shared<const Literal>(std::move(literal));
+  }
 
   return std::make_unique<SchemaField>(field_id, std::move(name), std::move(type),
-                                       !required, doc);
+                                       !required, doc, std::move(initial_default),
+                                       std::move(write_default));
 }
 
 Result<std::unique_ptr<Schema>> SchemaFromJson(const nlohmann::json& json) {
@@ -805,12 +872,32 @@ Result<std::unique_ptr<Snapshot>> SnapshotFromJson(const nlohmann::json& json) {
     }
   }
 
+  ICEBERG_ASSIGN_OR_RAISE(auto first_row_id,
+                          GetJsonValueOptional<int64_t>(json, kFirstRowId));
+  ICEBERG_ASSIGN_OR_RAISE(auto added_rows,
+                          GetJsonValueOptional<int64_t>(json, kAddedRows));
+
+  if (first_row_id.has_value() && first_row_id.value() < 0) {
+    return JsonParseError("Invalid first-row-id (cannot be negative): {}",
+                          first_row_id.value());
+  }
+  if (added_rows.has_value() && added_rows.value() < 0) {
+    return JsonParseError("Invalid added-rows (cannot be negative): {}",
+                          added_rows.value());
+  }
+  if (first_row_id.has_value() && !added_rows.has_value()) {
+    return JsonParseError("Invalid added-rows (required when first-row-id is set): null");
+  }
+  if (!first_row_id.has_value()) {
+    added_rows = std::nullopt;
+  }
+
   ICEBERG_ASSIGN_OR_RAISE(auto schema_id, GetJsonValueOptional<int32_t>(json, kSchemaId));
 
   return std::make_unique<Snapshot>(
       snapshot_id, parent_snapshot_id,
       sequence_number.value_or(TableMetadata::kInitialSequenceNumber), timestamp_ms,
-      manifest_list, std::move(summary), schema_id);
+      manifest_list, std::move(summary), schema_id, first_row_id, added_rows);
 }
 
 nlohmann::json ToJson(const BlobMetadata& blob_metadata) {
@@ -966,7 +1053,7 @@ Result<EncryptedKey> EncryptedKeyFromJson(const nlohmann::json& json) {
   };
 }
 
-nlohmann::json ToJson(const TableMetadata& table_metadata) {
+Result<nlohmann::json> ToJson(const TableMetadata& table_metadata) {
   nlohmann::json json;
 
   json[kFormatVersion] = table_metadata.format_version;
@@ -984,7 +1071,7 @@ nlohmann::json ToJson(const TableMetadata& table_metadata) {
   if (table_metadata.format_version == 1) {
     for (const auto& schema : table_metadata.schemas) {
       if (schema->schema_id() == table_metadata.current_schema_id) {
-        json[kSchema] = ToJson(*schema);
+        ICEBERG_ASSIGN_OR_RAISE(json[kSchema], ToJson(*schema));
         break;
       }
     }
@@ -992,7 +1079,14 @@ nlohmann::json ToJson(const TableMetadata& table_metadata) {
 
   // write the current schema ID and schema list
   json[kCurrentSchemaId] = table_metadata.current_schema_id;
-  json[kSchemas] = ToJsonList(table_metadata.schemas);
+  // ToJson(Schema) is fallible, so the shared ToJsonList helper (which assumes an
+  // infallible ToJson) cannot be used here; build the array with an explicit loop.
+  nlohmann::json schemas_json = nlohmann::json::array();
+  for (const auto& schema : table_metadata.schemas) {
+    ICEBERG_ASSIGN_OR_RAISE(auto schema_json, ToJson(*schema));
+    schemas_json.push_back(std::move(schema_json));
+  }
+  json[kSchemas] = std::move(schemas_json);
 
   // for older readers, continue writing the default spec as "partition-spec"
   if (table_metadata.format_version == 1) {
@@ -1042,7 +1136,8 @@ nlohmann::json ToJson(const TableMetadata& table_metadata) {
 }
 
 Result<std::string> ToJsonString(const TableMetadata& table_metadata) {
-  return ToJsonString(ToJson(table_metadata));
+  ICEBERG_ASSIGN_OR_RAISE(auto json, ToJson(table_metadata));
+  return ToJsonString(json);
 }
 
 namespace {
@@ -1282,9 +1377,9 @@ Result<std::unique_ptr<TableMetadata>> TableMetadataFromJson(const nlohmann::jso
       TimePointMs{std::chrono::milliseconds(last_updated_ms)};
 
   if (json.contains(kRefs)) {
-    ICEBERG_ASSIGN_OR_RAISE(
-        table_metadata->refs,
-        FromJsonMap<std::shared_ptr<SnapshotRef>>(json, kRefs, SnapshotRefFromJson));
+    ICEBERG_ASSIGN_OR_RAISE(auto refs, FromJsonMap<std::shared_ptr<SnapshotRef>>(
+                                           json, kRefs, SnapshotRefFromJson));
+    table_metadata->refs = std::move(refs);
   } else if (table_metadata->current_snapshot_id != kInvalidSnapshotId) {
     table_metadata->refs["main"] = std::make_unique<SnapshotRef>(SnapshotRef{
         .snapshot_id = table_metadata->current_snapshot_id,
@@ -1446,7 +1541,7 @@ Result<Namespace> NamespaceFromJson(const nlohmann::json& json) {
   return ns;
 }
 
-nlohmann::json ToJson(const TableUpdate& update) {
+Result<nlohmann::json> ToJson(const TableUpdate& update) {
   nlohmann::json json;
   switch (update.kind()) {
     case TableUpdate::Kind::kAssignUUID: {
@@ -1465,7 +1560,7 @@ nlohmann::json ToJson(const TableUpdate& update) {
       const auto& u = internal::checked_cast<const table::AddSchema&>(update);
       json[kAction] = kActionAddSchema;
       if (u.schema()) {
-        json[kSchema] = ToJson(*u.schema());
+        ICEBERG_ASSIGN_OR_RAISE(json[kSchema], ToJson(*u.schema()));
       } else {
         json[kSchema] = nlohmann::json::value_t::null;
       }

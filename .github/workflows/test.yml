@@ -20,8 +20,7 @@ name: Test
 on:
   push:
     branches:
-      - '**'
-      - '!dependabot/**'
+      - main
     tags:
       - '**'
   pull_request:
@@ -40,29 +39,33 @@ env:
 jobs:
   ubuntu:
     if: ${{ github.event_name != 'pull_request' || github.event.pull_request.draft == false }}
-    name: AMD64 Ubuntu 26.04
+    name: AMD64 Ubuntu 26.04 (${{ matrix.cmake_build_type }})
     runs-on: ubuntu-26.04
-    timeout-minutes: 30
+    timeout-minutes: 60
     strategy:
       fail-fast: false
+      matrix:
+        cmake_build_type:
+          - Debug
+          - RelWithDebInfo
     env:
       SCCACHE_DIR: ${{ github.workspace }}/.sccache
       SCCACHE_CACHE_SIZE: "2G"
     steps:
       - name: Checkout iceberg-cpp
-        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           persist-credentials: false
       - name: Install dependencies
         shell: bash
         run: sudo apt-get update && sudo apt-get install -y libcurl4-openssl-dev
       - name: Restore sccache cache
-        uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ${{ github.workspace }}/.sccache
-          key: sccache-test-ubuntu-${{ github.run_id }}
+          key: sccache-test-ubuntu-${{ matrix.cmake_build_type }}-${{ github.run_id }}
           restore-keys: |
-            sccache-test-ubuntu-
+            sccache-test-ubuntu-${{ matrix.cmake_build_type }}-
       - name: Setup sccache
         uses: mozilla-actions/sccache-action@9e7fa8a12102821edf02ca5dbea1acd0f89a2696 # v0.0.10
       - name: Build Iceberg
@@ -70,16 +73,16 @@ jobs:
         env:
           CC: gcc-14
           CXX: g++-14
-        run: ci/scripts/build_iceberg.sh $(pwd) ON ON
+        run: ci/scripts/build_iceberg.sh $(pwd) ON ON OFF OFF ON ${{ matrix.cmake_build_type }}
       - name: Show sccache stats
         shell: bash
         run: sccache --show-stats
       - name: Save sccache cache
         if: github.ref == 'refs/heads/main'
-        uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ${{ github.workspace }}/.sccache
-          key: sccache-test-ubuntu-${{ github.run_id }}
+          key: sccache-test-ubuntu-${{ matrix.cmake_build_type }}-${{ github.run_id }}
       - name: Build Example
         shell: bash
         env:
@@ -98,11 +101,11 @@ jobs:
       SCCACHE_CACHE_SIZE: "2G"
     steps:
       - name: Checkout iceberg-cpp
-        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           persist-credentials: false
       - name: Restore sccache cache
-        uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ${{ github.workspace }}/.sccache
           key: sccache-test-macos-${{ github.run_id }}
@@ -118,7 +121,7 @@ jobs:
         run: sccache --show-stats
       - name: Save sccache cache
         if: github.ref == 'refs/heads/main'
-        uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ${{ github.workspace }}/.sccache
           key: sccache-test-macos-${{ github.run_id }}
@@ -137,15 +140,33 @@ jobs:
       SCCACHE_CACHE_SIZE: "2G"
     steps:
       - name: Checkout iceberg-cpp
-        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           persist-credentials: false
       - name: Set up MSVC Developer Command Prompt
         uses: ilammy/msvc-dev-cmd@0b201ec74fa43914dc39ae48a89fd1d8cb592756 # v1.13.0
         with:
           arch: x64
+      # GitHub patches the Windows image roughly weekly via gradual rollouts, so
+      # back-to-back runs can hit different cl.exe builds. sccache keys on the compiler,
+      # so a shared key would miss after each bump; the version keeps caches separate.
+      - name: Resolve MSVC version for sccache key
+        shell: pwsh
+        run: |
+          $PSNativeCommandUseErrorActionPreference = $false
+          $banner = (cl.exe 2>&1 | Out-String)
+          if ($banner -match 'Version ([\d.]+)') {
+            $msvc = $Matches[1]
+          } else {
+            # The key is only a cache hint, so degrade to a shared bucket rather than
+            # fail the build; the warning flags that the parse needs fixing.
+            $msvc = 'unknown'
+            Write-Host "::warning::could not parse cl.exe version for sccache key, using '$msvc'; banner was: $banner"
+          }
+          Add-Content -Path $env:GITHUB_ENV -Value "MSVC_VER=$msvc"
+          Write-Host "Resolved MSVC_VER=$msvc"
       - name: Cache vcpkg packages
-        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         id: vcpkg-cache
         with:
           path: C:/vcpkg/installed
@@ -156,12 +177,12 @@ jobs:
         run: |
           vcpkg install zlib:x64-windows nlohmann-json:x64-windows nanoarrow:x64-windows roaring:x64-windows cpr:x64-windows
       - name: Restore sccache cache
-        uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ${{ github.workspace }}/.sccache
-          key: sccache-test-windows-${{ github.run_id }}
+          key: sccache-test-windows-${{ env.MSVC_VER }}-${{ github.run_id }}
           restore-keys: |
-            sccache-test-windows-
+            sccache-test-windows-${{ env.MSVC_VER }}-
       - name: Setup sccache
         uses: mozilla-actions/sccache-action@9e7fa8a12102821edf02ca5dbea1acd0f89a2696 # v0.0.10
       - name: Build Iceberg
@@ -173,10 +194,10 @@ jobs:
           sccache --show-stats
       - name: Save sccache cache
         if: github.ref == 'refs/heads/main'
-        uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ${{ github.workspace }}/.sccache
-          key: sccache-test-windows-${{ github.run_id }}
+          key: sccache-test-windows-${{ env.MSVC_VER }}-${{ github.run_id }}
       - name: Build Example
         shell: pwsh
         run: |
@@ -206,11 +227,11 @@ jobs:
           - title: AArch64 macOS 26
             runs-on: macos-26
     steps:
-      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
         with:
           python-version: '3.x'
       - name: Checkout iceberg-cpp
-        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           persist-credentials: false
       - name: Install build dependencies
@@ -226,7 +247,7 @@ jobs:
           echo "CC=sccache ${{ matrix.CC }}" >> $GITHUB_ENV
           echo "CXX=sccache ${{ matrix.CXX }}" >> $GITHUB_ENV
       - name: Restore sccache cache
-        uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ${{ github.workspace }}/.sccache
           key: sccache-meson-${{ matrix.runs-on }}-${{ github.run_id }}
@@ -242,7 +263,7 @@ jobs:
         run: sccache --show-stats
       - name: Save sccache cache
         if: github.ref == 'refs/heads/main'
-        uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ${{ github.workspace }}/.sccache
           key: sccache-meson-${{ matrix.runs-on }}-${{ github.run_id }}

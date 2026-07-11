@@ -1,0 +1,154 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
+#pragma once
+
+/// \file iceberg/arrow_row_builder_internal.h
+/// Internal Arrow row-building utilities shared by metadata tables.
+///
+/// Metadata tables (snapshots, history, manifests, ...) materialize in-memory
+/// structures into Arrow batches that conform to the table's Iceberg schema.
+/// `ArrowRowBuilder` wraps a nanoarrow `ArrowArray` initialized from such a
+/// schema and exposes per-column access plus typed append helpers so each
+/// metadata table can emit rows without re-implementing the nanoarrow
+/// boilerplate.
+
+#include <cstdint>
+#include <map>
+#include <span>
+#include <string_view>
+#include <unordered_map>
+#include <vector>
+
+#include "iceberg/arrow_c_data.h"
+#include "iceberg/iceberg_export.h"
+#include "iceberg/result.h"
+#include "iceberg/type_fwd.h"
+
+namespace iceberg {
+
+/// \brief Movable RAII builder that materializes rows into an Arrow struct array.
+///
+/// Handles the nanoarrow lifecycle: InitFromSchema → StartAppending →
+/// ... append values ... → FinishBuilding → Release.
+///
+/// Two constructors:
+/// - `Make(schema)` accepts an Iceberg Schema (typical for metadata tables).
+/// - `Make(arrow_schema)` accepts a raw ArrowSchema (for lower-level callers
+///   like position_delete_writer or manifest_adapter).
+///
+/// Typical usage:
+/// \code
+///   ICEBERG_ASSIGN_OR_RAISE(auto builder, ArrowRowBuilder::Make(schema));
+///   for (const auto& row : rows) {
+///     ICEBERG_RETURN_UNEXPECTED(AppendInt(builder.column(0), row.id));
+///     ICEBERG_RETURN_UNEXPECTED(AppendString(builder.column(1), row.name));
+///     ICEBERG_RETURN_UNEXPECTED(builder.FinishRow());
+///   }
+///   ICEBERG_ASSIGN_OR_RAISE(auto array, std::move(builder).Finish());
+/// \endcode
+class ICEBERG_EXPORT ArrowRowBuilder {
+ public:
+  /// \brief Create a row builder from an Iceberg schema.
+  static Result<ArrowRowBuilder> Make(const Schema& schema);
+
+  /// \brief Create a row builder from an ArrowSchema.
+  ///
+  /// The schema must outlive this call (the caller guards it). On failure the
+  /// partially-initialized array is released automatically.
+  static Result<ArrowRowBuilder> Make(const ArrowSchema* schema);
+
+  ArrowRowBuilder(ArrowRowBuilder&& other) noexcept;
+  ArrowRowBuilder& operator=(ArrowRowBuilder&& other) noexcept;
+
+  ArrowRowBuilder(const ArrowRowBuilder&) = delete;
+  ArrowRowBuilder& operator=(const ArrowRowBuilder&) = delete;
+
+  ~ArrowRowBuilder();
+
+  /// \brief The number of top-level columns in the batch.
+  int64_t num_columns() const;
+
+  /// \brief Access the nanoarrow child builder for a top-level column.
+  ///
+  /// \param index Zero-based column index. Returns nullptr if out of range.
+  ArrowArray* column(int64_t index);
+
+  /// \brief Finish the current row, advancing the struct length by one.
+  ///
+  /// Call after appending exactly one value (or null) to every column.
+  Status FinishRow();
+
+  /// \brief Finish building and transfer ownership of the resulting array.
+  ///
+  /// The builder must not be used after this call.
+  Result<ArrowArray> Finish() &&;
+
+ private:
+  ArrowRowBuilder() = default;
+  ArrowArray array_{};
+};
+
+/// \brief Append a null to a nanoarrow array builder.
+ICEBERG_EXPORT Status AppendNull(ArrowArray* array);
+
+/// \brief Append a boolean value to a nanoarrow array builder.
+ICEBERG_EXPORT Status AppendBoolean(ArrowArray* array, bool value);
+
+/// \brief Append an integer value to a nanoarrow array builder.
+///
+/// Works for int32/int64/timestamp columns, which nanoarrow stores as int64.
+ICEBERG_EXPORT Status AppendInt(ArrowArray* array, int64_t value);
+
+/// \brief Append an unsigned integer value to a nanoarrow array builder.
+ICEBERG_EXPORT Status AppendUInt(ArrowArray* array, uint64_t value);
+
+/// \brief Append a double value to a nanoarrow array builder.
+ICEBERG_EXPORT Status AppendDouble(ArrowArray* array, double value);
+
+/// \brief Append a string value to a nanoarrow array builder.
+ICEBERG_EXPORT Status AppendString(ArrowArray* array, std::string_view value);
+
+/// \brief Append a binary value to a nanoarrow array builder.
+ICEBERG_EXPORT Status AppendBytes(ArrowArray* array, std::span<const uint8_t> value);
+
+/// \brief Append a list of int32 values to a nanoarrow list array builder.
+ICEBERG_EXPORT Status AppendIntList(ArrowArray* array,
+                                    const std::vector<int32_t>& values);
+
+/// \brief Append a list of int64 values to a nanoarrow list array builder.
+ICEBERG_EXPORT Status AppendIntList(ArrowArray* array,
+                                    const std::vector<int64_t>& values);
+
+/// \brief Append a map<string, string> value to a nanoarrow map array builder.
+///
+/// Appends one (possibly empty) map element. The iteration order of the
+/// resulting entries is unspecified.
+ICEBERG_EXPORT Status AppendStringMap(
+    ArrowArray* array, const std::unordered_map<std::string, std::string>& entries);
+
+/// \brief Append a map<int32, int64> to a nanoarrow map array builder.
+ICEBERG_EXPORT Status AppendIntMap(ArrowArray* array,
+                                   const std::map<int32_t, int64_t>& entries);
+
+/// \brief Append a map<int32, binary> to a nanoarrow map array builder.
+ICEBERG_EXPORT Status AppendBinaryMap(
+    ArrowArray* array, const std::map<int32_t, std::vector<uint8_t>>& entries);
+
+}  // namespace iceberg

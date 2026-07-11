@@ -24,6 +24,7 @@
 #include <arrow/type.h>
 
 #include "iceberg/arrow/arrow_status_internal.h"
+#include "iceberg/arrow/literal_util_internal.h"
 #include "iceberg/metadata_columns.h"
 #include "iceberg/parquet/parquet_data_util_internal.h"
 #include "iceberg/schema.h"
@@ -119,6 +120,11 @@ Result<std::shared_ptr<::arrow::Array>> ProjectStructArray(
       ICEBERG_ASSIGN_OR_RAISE(
           projected_array,
           MakeNullArray(output_arrow_type, struct_array->length(), pool));
+    } else if (field_projection.kind == FieldProjection::Kind::kDefault) {
+      ICEBERG_ASSIGN_OR_RAISE(
+          projected_array,
+          arrow::MakeDefaultArray(std::get<Literal>(field_projection.from),
+                                  output_arrow_type, struct_array->length(), pool));
     } else if (field_projection.kind == FieldProjection::Kind::kMetadata) {
       int32_t field_id = projected_field.field_id();
       if (field_id == MetadataColumns::kFilePathColumnId) {

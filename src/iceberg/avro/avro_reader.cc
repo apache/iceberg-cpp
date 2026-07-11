@@ -20,9 +20,11 @@
 #include "iceberg/avro/avro_reader.h"
 
 #include <memory>
+#include <vector>
 
 #include <arrow/array/builder_base.h>
 #include <arrow/c/bridge.h>
+#include <arrow/extension_type.h>
 #include <arrow/filesystem/filesystem.h>
 #include <arrow/record_batch.h>
 #include <arrow/result.h>
@@ -42,6 +44,7 @@
 #include "iceberg/metadata_columns.h"
 #include "iceberg/name_mapping.h"
 #include "iceberg/schema_internal.h"
+#include "iceberg/util/checked_cast.h"
 #include "iceberg/util/macros.h"
 
 namespace iceberg::avro {
@@ -209,6 +212,63 @@ struct ReadContext {
   std::shared_ptr<::arrow::ArrayBuilder> builder_;
 };
 
+std::shared_ptr<::arrow::DataType> StorageTypeForBuilder(
+    const std::shared_ptr<::arrow::DataType>& type);
+
+std::shared_ptr<::arrow::Field> StorageFieldForBuilder(
+    const std::shared_ptr<::arrow::Field>& field) {
+  return ::arrow::field(field->name(), StorageTypeForBuilder(field->type()),
+                        field->nullable(), field->metadata());
+}
+
+// Arrow cannot construct builders for arrow.uuid extension arrays yet, so build
+// with the UUID storage type while keeping the public schema unchanged.
+std::shared_ptr<::arrow::DataType> StorageTypeForBuilder(
+    const std::shared_ptr<::arrow::DataType>& type) {
+  switch (type->id()) {
+    case ::arrow::Type::EXTENSION: {
+      const auto& extension_type =
+          internal::checked_cast<const ::arrow::ExtensionType&>(*type);
+      if (extension_type.extension_name() == kArrowUuidExtensionName) {
+        return extension_type.storage_type();
+      }
+      return type;
+    }
+    case ::arrow::Type::STRUCT: {
+      const auto& struct_type = internal::checked_cast<const ::arrow::StructType&>(*type);
+      std::vector<std::shared_ptr<::arrow::Field>> fields;
+      fields.reserve(struct_type.num_fields());
+      for (const auto& field : struct_type.fields()) {
+        fields.emplace_back(StorageFieldForBuilder(field));
+      }
+      return ::arrow::struct_(std::move(fields));
+    }
+    case ::arrow::Type::LIST: {
+      const auto& list_type = internal::checked_cast<const ::arrow::ListType&>(*type);
+      return ::arrow::list(StorageFieldForBuilder(list_type.value_field()));
+    }
+    case ::arrow::Type::LARGE_LIST: {
+      const auto& list_type =
+          internal::checked_cast<const ::arrow::LargeListType&>(*type);
+      return ::arrow::large_list(StorageFieldForBuilder(list_type.value_field()));
+    }
+    case ::arrow::Type::FIXED_SIZE_LIST: {
+      const auto& list_type =
+          internal::checked_cast<const ::arrow::FixedSizeListType&>(*type);
+      return ::arrow::fixed_size_list(StorageFieldForBuilder(list_type.value_field()),
+                                      list_type.list_size());
+    }
+    case ::arrow::Type::MAP: {
+      const auto& map_type = internal::checked_cast<const ::arrow::MapType&>(*type);
+      return ::arrow::map(StorageTypeForBuilder(map_type.key_type()),
+                          StorageFieldForBuilder(map_type.item_field()),
+                          map_type.keys_sorted());
+    }
+    default:
+      return type;
+  }
+}
+
 }  // namespace
 
 // TODO(gang.wu): collect basic reader metrics
@@ -349,7 +409,8 @@ class AvroReader::Impl {
     context_->arrow_schema_ = import_result.MoveValueUnsafe();
 
     auto arrow_struct_type =
-        std::make_shared<::arrow::StructType>(context_->arrow_schema_->fields());
+        internal::checked_pointer_cast<::arrow::StructType>(StorageTypeForBuilder(
+            std::make_shared<::arrow::StructType>(context_->arrow_schema_->fields())));
     auto builder_result = ::arrow::MakeBuilder(arrow_struct_type);
     if (!builder_result.ok()) {
       return InvalidSchema("Failed to make the arrow builder: {}",

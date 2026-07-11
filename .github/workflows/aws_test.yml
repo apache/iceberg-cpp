@@ -20,8 +20,7 @@ name: AWS Tests
 on:
   push:
     branches:
-      - '**'
-      - '!dependabot/**'
+      - main
     tags:
       - '**'
   pull_request:
@@ -78,7 +77,7 @@ jobs:
       SCCACHE_CACHE_SIZE: "2G"
     steps:
       - name: Checkout iceberg-cpp
-        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           persist-credentials: false
       - name: Install dependencies on Ubuntu
@@ -87,7 +86,7 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y libcurl4-openssl-dev libjitterentropy3-dev
       - name: Cache vcpkg packages
         if: ${{ startsWith(matrix.runs-on, 'ubuntu') && matrix.bundle_awssdk == 'OFF' }}
-        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         id: vcpkg-cache
         with:
           path: /usr/local/share/vcpkg/installed
@@ -116,7 +115,7 @@ jobs:
         shell: bash
         run: bash ci/scripts/start_minio.sh
       - name: Restore sccache cache
-        uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ${{ github.workspace }}/.sccache
           key: sccache-aws-${{ matrix.runs-on }}-bundle${{ matrix.bundle_awssdk }}-s3${{ matrix.s3 }}-sigv4${{ matrix.sigv4 }}-${{ github.run_id }}
@@ -134,7 +133,7 @@ jobs:
         run: sccache --show-stats
       - name: Save sccache cache
         if: github.ref == 'refs/heads/main'
-        uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ${{ github.workspace }}/.sccache
           key: sccache-aws-${{ matrix.runs-on }}-bundle${{ matrix.bundle_awssdk }}-s3${{ matrix.s3 }}-sigv4${{ matrix.sigv4 }}-${{ github.run_id }}
@@ -150,11 +149,11 @@ jobs:
       SCCACHE_DIR: ${{ github.workspace }}/.sccache
       SCCACHE_CACHE_SIZE: "2G"
     steps:
-      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
         with:
           python-version: '3.x'
       - name: Checkout iceberg-cpp
-        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           persist-credentials: false
       - name: Install build dependencies
@@ -164,7 +163,7 @@ jobs:
           python3 -m pip install --upgrade pip
           python3 -m pip install -r requirements.txt
       - name: Cache vcpkg packages
-        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         id: vcpkg-cache
         with:
           path: /usr/local/share/vcpkg/installed
@@ -190,7 +189,7 @@ jobs:
           echo "CC=sccache gcc-14" >> $GITHUB_ENV
           echo "CXX=sccache g++-14" >> $GITHUB_ENV
       - name: Restore sccache cache
-        uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ${{ github.workspace }}/.sccache
           key: sccache-meson-sigv4-${{ github.run_id }}
@@ -209,7 +208,7 @@ jobs:
           meson test -C builddir --timeout-multiplier 0 --print-errorlogs
       - name: Save sccache cache
         if: github.ref == 'refs/heads/main'
-        uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ${{ github.workspace }}/.sccache
           key: sccache-meson-sigv4-${{ github.run_id }}

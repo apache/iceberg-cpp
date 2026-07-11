@@ -19,6 +19,9 @@
 
 #pragma once
 
+/// \file iceberg/util/temporal_util.h
+/// \brief Provide date and timestamp conversion utilities.
+
 #include <chrono>
 #include <cstdint>
 #include <string_view>
@@ -124,6 +127,22 @@ class ICEBERG_EXPORT TemporalUtils {
   /// \param str The timestamp string to parse.
   /// \return The number of nanoseconds since epoch (UTC), or an error.
   static Result<int64_t> ParseTimestampNsWithZone(std::string_view str);
+
+  /// \brief Reports whether a timestamp-with-zone string carries a zero (UTC) offset.
+  ///
+  /// The ParseTimestamp*WithZone parsers accept any offset and silently normalize it
+  /// to UTC. The spec's JSON single-value form for `timestamptz` / `timestamptz_ns`
+  /// default values is meant to be UTC, so callers that must enforce that rule check
+  /// the offset here before parsing.
+  ///
+  /// Any zero-offset spelling is treated as UTC: "Z", "+00:00" and "-00:00" all denote
+  /// a zero offset and are accepted, even though the spec writes the canonical form as
+  /// "+00:00". Only a genuinely non-zero offset (e.g. "+05:00") is rejected.
+  ///
+  /// \param str The timestamp-with-zone string to inspect.
+  /// \return true if the offset is zero, false if it is a non-zero offset, or an error
+  ///         if the timezone suffix cannot be parsed.
+  static Result<bool> IsUtcOffset(std::string_view str);
 
   /// \brief Extract a date or timestamp year, as years from 1970
   static Result<Literal> ExtractYear(const Literal& literal);

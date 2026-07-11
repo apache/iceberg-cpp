@@ -19,6 +19,9 @@
 
 #pragma once
 
+/// \file iceberg/arrow/s3/s3_properties.h
+/// \brief Define S3 configuration property keys.
+
 #include <string_view>
 
 namespace iceberg::arrow {
@@ -37,8 +40,8 @@ struct S3Properties {
   static constexpr std::string_view kSecretAccessKey = "s3.secret-access-key";
   /// AWS session token (for temporary credentials)
   static constexpr std::string_view kSessionToken = "s3.session-token";
-  /// AWS region
-  static constexpr std::string_view kRegion = "s3.region";
+  /// AWS region, standard Iceberg client property.
+  static constexpr std::string_view kClientRegion = "client.region";
   /// Custom endpoint override (for MinIO, LocalStack, etc.)
   static constexpr std::string_view kEndpoint = "s3.endpoint";
   /// Whether to use path-style access (needed for MinIO)

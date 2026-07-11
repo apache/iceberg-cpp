@@ -19,6 +19,9 @@
 
 #pragma once
 
+/// \file iceberg/iceberg_export.h
+/// \brief Define symbol visibility macros for core Iceberg APIs.
+
 #if defined(_WIN32) || defined(__CYGWIN__)
 #  ifdef ICEBERG_STATIC
 #    define ICEBERG_EXPORT

@@ -19,6 +19,9 @@
 
 #pragma once
 
+/// \file iceberg/catalog.h
+/// \brief Define the catalog API for table and namespace operations.
+
 #include <memory>
 #include <string>
 #include <string_view>

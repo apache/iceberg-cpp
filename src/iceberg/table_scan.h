@@ -19,6 +19,9 @@
 
 #pragma once
 
+/// \file iceberg/table_scan.h
+/// \brief Define table scan APIs and scan task types.
+
 #include <functional>
 #include <memory>
 #include <optional>
@@ -32,6 +35,7 @@
 #include "iceberg/table_metadata.h"
 #include "iceberg/type_fwd.h"
 #include "iceberg/util/error_collector.h"
+#include "iceberg/util/executor.h"
 
 namespace iceberg {
 
@@ -228,6 +232,7 @@ struct TableScanContext {
   std::optional<int64_t> to_snapshot_id;
   std::string branch{};
   std::optional<int64_t> min_rows_requested;
+  OptionalExecutor plan_executor;
 
   // Validate the context parameters to see if they have conflicts.
   [[nodiscard]] Status Validate() const;
@@ -301,6 +306,12 @@ class ICEBERG_TEMPLATE_CLASS_EXPORT TableScanBuilder : public ErrorCollector {
   ///
   /// \param num_rows The minimum number of rows requested
   TableScanBuilder& MinRowsRequested(int64_t num_rows);
+
+  /// \brief Configure an executor for manifest planning.
+  ///
+  /// \param executor Executor to use while planning manifests.
+  /// \return Reference to this for method chaining.
+  TableScanBuilder& PlanWith(Executor& executor);
 
   /// \brief Request this scan to use the given snapshot by ID.
   /// \param snapshot_id a snapshot ID
@@ -384,11 +395,13 @@ class ICEBERG_TEMPLATE_CLASS_EXPORT TableScanBuilder : public ErrorCollector {
 
   // Return the schema bound to the specified snapshot.
   Result<std::reference_wrapper<const std::shared_ptr<Schema>>> ResolveSnapshotSchema();
+  Status ResolveColumnStatsSelection();
 
   std::shared_ptr<TableMetadata> metadata_;
   std::shared_ptr<FileIO> io_;
   internal::TableScanContext context_;
   std::shared_ptr<Schema> snapshot_schema_;
+  std::optional<std::vector<std::string>> requested_column_stats_;
 };
 
 /// \brief Represents a configured scan operation on a table.

@@ -104,6 +104,7 @@ class GeometryType;
 
 /// \brief Data values.
 class Decimal;
+class Literal;
 class Uuid;
 
 /// \brief Schema.
@@ -201,6 +202,7 @@ class PartitionSummary;
 /// \brief File I/O.
 struct ReaderOptions;
 struct WriterOptions;
+struct StorageCredential;
 class FileIO;
 class Reader;
 class Writer;
@@ -243,7 +245,9 @@ class ExpireSnapshots;
 class FastAppend;
 class ReplacePartitions;
 class MergeAppend;
+class OverwriteFiles;
 class PendingUpdate;
+class RewriteFiles;
 class RowDelta;
 class SetSnapshot;
 class SnapshotManager;

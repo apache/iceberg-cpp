@@ -20,7 +20,12 @@
 #include "iceberg/catalog/rest/rest_file_io.h"
 
 #include <string>
+#include <unordered_map>
+#include <utility>
+#include <vector>
 
+#include "iceberg/catalog/rest/types.h"
+#include "iceberg/file_io.h"
 #include "iceberg/file_io_registry.h"
 #include "iceberg/util/macros.h"
 
@@ -31,6 +36,16 @@ namespace {
 bool IsBuiltinImpl(std::string_view io_impl) {
   return io_impl == FileIORegistry::kArrowLocalFileIO ||
          io_impl == FileIORegistry::kArrowS3FileIO;
+}
+
+std::unordered_map<std::string, std::string> MergeFileIOProperties(
+    const std::unordered_map<std::string, std::string>& catalog_config,
+    const std::unordered_map<std::string, std::string>& table_config) {
+  auto properties = catalog_config;
+  for (const auto& [key, value] : table_config) {
+    properties[key] = value;
+  }
+  return properties;
 }
 
 }  // namespace
@@ -90,6 +105,35 @@ Result<std::unique_ptr<FileIO>> MakeCatalogFileIO(const RestCatalogProperties& c
   // TODO(gangwu): Support Java-style customized FileIO creation flows instead of
   // resolving a single catalog-scoped FileIO instance only from properties.
   return FileIORegistry::Load(io_impl, config.configs());
+}
+
+Result<std::unique_ptr<FileIO>> MakeTableFileIO(
+    const std::unordered_map<std::string, std::string>& catalog_config,
+    const std::unordered_map<std::string, std::string>& table_config,
+    const std::vector<StorageCredential>& storage_credentials) {
+  const auto default_properties = MergeFileIOProperties(catalog_config, table_config);
+  const auto properties = RestCatalogProperties::FromMap(default_properties);
+  auto io_impl = properties.Get(RestCatalogProperties::kIOImpl);
+  if (io_impl.empty()) {
+    const auto warehouse = properties.Get(RestCatalogProperties::kWarehouse);
+    if (warehouse.empty()) {
+      return InvalidArgument(R"("{}" or "{}" property is required to create FileIO)",
+                             RestCatalogProperties::kIOImpl.key(),
+                             RestCatalogProperties::kWarehouse.key());
+    }
+    ICEBERG_ASSIGN_OR_RAISE(const auto detected_kind, DetectBuiltinFileIO(warehouse));
+    io_impl = std::string(BuiltinFileIOName(detected_kind));
+  }
+  ICEBERG_ASSIGN_OR_RAISE(auto io, FileIORegistry::Load(io_impl, default_properties));
+
+  if (storage_credentials.empty()) {
+    return io;
+  } else if (auto* credentialed = io->AsSupportsStorageCredentials()) {
+    ICEBERG_RETURN_UNEXPECTED(credentialed->SetStorageCredentials(storage_credentials));
+  } else {
+    return NotSupported("Configured FileIO does not support vended storage credentials");
+  }
+  return io;
 }
 
 }  // namespace iceberg::rest

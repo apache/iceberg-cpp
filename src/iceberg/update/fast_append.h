@@ -34,36 +34,43 @@
 
 namespace iceberg {
 
-/// \brief Appending new files in a table.
+/// \brief API for appending new files in a table.
 ///
-/// FastAppend is optimized for appending new data files to a table, it creates new
-/// manifest files for the added data without compacting or rewriting existing manifests,
-/// making it faster for write-heavy workloads.
+/// This API accumulates file additions, produces a new Snapshot of the table,
+/// and commits that snapshot as current. When committing, these changes are
+/// applied to the latest table snapshot. Commit conflicts are resolved by
+/// applying the changes to the new latest snapshot and reattempting the commit.
+///
+/// FastAppend is optimized for appending new data files to a table. It creates
+/// new manifest files for the added data without compacting or rewriting
+/// existing manifests.
 class ICEBERG_EXPORT FastAppend : public SnapshotUpdate {
  public:
   /// \brief Create a new FastAppend instance.
   ///
   /// \param table_name The name of the table
-  /// \param transaction The transaction to use for this update
+  /// \param ctx The transaction context to use for this update
   /// \return A Result containing the FastAppend instance or an error
   static Result<std::unique_ptr<FastAppend>> Make(
       std::string table_name, std::shared_ptr<TransactionContext> ctx);
 
-  /// \brief Append a data file to this update.
+  /// \brief Append a DataFile to the table.
   ///
-  /// \param file The data file to append
-  /// \return Reference to this for method chaining
+  /// \param file A data file.
+  /// \return This FastAppend for method chaining.
   FastAppend& AppendFile(const std::shared_ptr<DataFile>& file);
 
-  /// \brief Append a manifest file to this update.
+  /// \brief Append a ManifestFile to the table.
   ///
-  /// The manifest must only contain added files (no existing or deleted files).
-  /// If the manifest doesn't have a snapshot ID assigned and snapshot ID inheritance
-  /// is enabled, it will be used directly. Otherwise, it will be copied with the
-  /// new snapshot ID.
+  /// The manifest must contain only appended files. All files in the manifest
+  /// are appended to the table in the snapshot created by this update.
   ///
-  /// \param manifest The manifest file to append
-  /// \return Reference to this for method chaining
+  /// If the manifest doesn't have a snapshot ID assigned and snapshot ID
+  /// inheritance is enabled, it will be used directly. Otherwise, it will be
+  /// copied with the new snapshot ID.
+  ///
+  /// \param manifest A manifest file of files to append.
+  /// \return This FastAppend for method chaining.
   FastAppend& AppendManifest(const ManifestFile& manifest);
 
   std::string operation() override;

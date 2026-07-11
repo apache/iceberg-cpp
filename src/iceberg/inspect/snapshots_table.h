@@ -19,6 +19,9 @@
 
 #pragma once
 
+/// \file iceberg/inspect/snapshots_table.h
+/// \brief Define the snapshots metadata table.
+
 #include <memory>
 
 #include "iceberg/iceberg_export.h"

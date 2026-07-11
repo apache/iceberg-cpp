@@ -1,0 +1,54 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
+/// \namespace iceberg
+/// \brief Core Apache Iceberg C++ APIs.
+
+/// \namespace iceberg::arrow
+/// \brief Arrow-backed IO and data conversion APIs.
+
+/// \namespace iceberg::avro
+/// \brief Avro reader, writer, and metadata APIs.
+
+/// \namespace iceberg::hive
+/// \brief Hive catalog APIs.
+
+/// \namespace iceberg::parquet
+/// \brief Parquet reader, writer, and registration APIs.
+
+/// \namespace iceberg::puffin
+/// \brief Puffin file metadata, reader, and writer APIs.
+
+/// \namespace iceberg::rest
+/// \brief REST catalog APIs.
+
+/// \namespace iceberg::rest::auth
+/// \brief REST catalog authentication APIs.
+
+/// \namespace iceberg::retry
+/// \brief Retry policy APIs.
+
+/// \namespace iceberg::sql
+/// \brief SQL catalog APIs.
+
+/// \namespace iceberg::table
+/// \brief Table update requirement APIs.
+
+/// \namespace iceberg::util
+/// \brief Utility APIs.

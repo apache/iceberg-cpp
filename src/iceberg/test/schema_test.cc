@@ -25,6 +25,7 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
+#include "iceberg/expression/literal.h"
 #include "iceberg/result.h"
 #include "iceberg/schema_field.h"
 #include "iceberg/table_metadata.h"
@@ -131,6 +132,115 @@ TEST(SchemaTest, ValidateRejectsV3TypesBeforeFormatV3) {
   EXPECT_THAT(
       unknown_schema.Validate(iceberg::TableMetadata::kSupportedTableFormatVersion),
       iceberg::IsOk());
+}
+
+TEST(SchemaTest, ValidateRejectsInitialDefaultBeforeFormatV3) {
+  iceberg::Schema schema({iceberg::SchemaField(
+      1, "id", iceberg::int32(), false, /*doc=*/{},
+      std::make_shared<const iceberg::Literal>(iceberg::Literal::Int(42)))});
+
+  auto status = schema.Validate(2);
+  ASSERT_THAT(status, iceberg::IsError(iceberg::ErrorKind::kInvalidSchema));
+  EXPECT_THAT(status, iceberg::HasErrorMessage("is not supported until v3"));
+
+  EXPECT_THAT(schema.Validate(iceberg::TableMetadata::kSupportedTableFormatVersion),
+              iceberg::IsOk());
+}
+
+TEST(SchemaTest, ValidateDoesNotVersionGateWriteDefault) {
+  // A write-default does not reinterpret existing data, so it is not gated on
+  // format version: a write-default alone is accepted below v3.
+  iceberg::Schema schema({iceberg::SchemaField(
+      1, "id", iceberg::int32(), false, /*doc=*/{}, /*initial_default=*/nullptr,
+      std::make_shared<const iceberg::Literal>(iceberg::Literal::Int(7)))});
+
+  EXPECT_THAT(schema.Validate(2), iceberg::IsOk());
+}
+
+TEST(SchemaTest, ValidateRejectsMismatchedDefaultValue) {
+  // Defaults are stored verbatim, so a default whose type differs from the field type is
+  // rejected by Validate.
+  iceberg::Schema schema({iceberg::SchemaField(
+      1, "id", iceberg::int32(), false, /*doc=*/{}, /*initial_default=*/nullptr,
+      std::make_shared<const iceberg::Literal>(iceberg::Literal::String("oops")))});
+
+  auto status = schema.Validate(iceberg::TableMetadata::kSupportedTableFormatVersion);
+  ASSERT_THAT(status, iceberg::IsError(iceberg::ErrorKind::kInvalidSchema));
+  EXPECT_THAT(status, iceberg::HasErrorMessage("write-default"));
+}
+
+TEST(SchemaTest, NullDefaultModeledAsAbsence) {
+  // A present-null default is modeled as the absence of a default (matching Java): it is
+  // dropped at construction, so the field has no stored default and compares equal to a
+  // field with no default, and it validates cleanly.
+  iceberg::SchemaField with_null(
+      1, "id", iceberg::int32(), /*optional=*/true, /*doc=*/{},
+      std::make_shared<const iceberg::Literal>(iceberg::Literal::Null(iceberg::int32())),
+      std::make_shared<const iceberg::Literal>(iceberg::Literal::Null(iceberg::int32())));
+  EXPECT_EQ(with_null.initial_default(), nullptr);
+  EXPECT_EQ(with_null.write_default(), nullptr);
+
+  iceberg::SchemaField no_default(1, "id", iceberg::int32(), /*optional=*/true);
+  EXPECT_EQ(with_null, no_default);
+
+  iceberg::Schema schema({with_null});
+  EXPECT_THAT(schema.Validate(iceberg::TableMetadata::kSupportedTableFormatVersion),
+              iceberg::IsOk());
+}
+
+TEST(SchemaTest, EqualsDistinguishesDefaultValues) {
+  auto field = [](std::shared_ptr<const iceberg::Literal> d) {
+    return iceberg::SchemaField(1, "id", iceberg::int32(), /*optional=*/true, /*doc=*/{},
+                                std::move(d));
+  };
+  // Differ only in default value -> unequal; default vs no-default -> unequal.
+  EXPECT_NE(field(std::make_shared<const iceberg::Literal>(iceberg::Literal::Int(1))),
+            field(std::make_shared<const iceberg::Literal>(iceberg::Literal::Int(2))));
+  EXPECT_NE(field(std::make_shared<const iceberg::Literal>(iceberg::Literal::Int(1))),
+            field(nullptr));
+}
+
+TEST(SchemaTest, ValidateRejectsDefaultOnNonPrimitiveAndMustBeNullTypes) {
+  // A struct (non-primitive) field with a non-null default is rejected.
+  iceberg::Schema struct_default({iceberg::SchemaField(
+      1, "s",
+      MakeStructType(iceberg::SchemaField(2, "x", iceberg::int32(), /*optional=*/true)),
+      /*optional=*/true, /*doc=*/{},
+      std::make_shared<const iceberg::Literal>(iceberg::Literal::Int(1)))});
+  EXPECT_THAT(
+      struct_default.Validate(iceberg::TableMetadata::kSupportedTableFormatVersion),
+      iceberg::IsError(iceberg::ErrorKind::kInvalidSchema));
+
+  // unknown/geometry/geography must default to null: a non-null default is rejected.
+  iceberg::Schema geo_default({iceberg::SchemaField(
+      1, "g", iceberg::geometry(), /*optional=*/true, /*doc=*/{},
+      std::make_shared<const iceberg::Literal>(iceberg::Literal::Int(1)))});
+  auto status =
+      geo_default.Validate(iceberg::TableMetadata::kSupportedTableFormatVersion);
+  ASSERT_THAT(status, iceberg::IsError(iceberg::ErrorKind::kInvalidSchema));
+  EXPECT_THAT(status, iceberg::HasErrorMessage("cannot have a default value"));
+}
+
+TEST(SchemaTest, ReassignIdsPreservesDefaultValues) {
+  // Reassigning field IDs rebuilds each SchemaField, so the rebuild must carry the
+  // default values over to the field with the new ID.
+  std::vector<iceberg::SchemaField> fields;
+  fields.push_back(iceberg::SchemaField(
+      1, "id", iceberg::int32(), false, /*doc=*/{},
+      std::make_shared<const iceberg::Literal>(iceberg::Literal::Int(42)),
+      std::make_shared<const iceberg::Literal>(iceberg::Literal::Int(7))));
+  auto reassign_id = [](int32_t old_id) { return old_id + 1000; };
+
+  iceberg::Schema schema(std::move(fields), iceberg::Schema::kInitialSchemaId,
+                         reassign_id);
+
+  ASSERT_EQ(schema.fields().size(), 1);
+  const iceberg::SchemaField& field = schema.fields()[0];
+  EXPECT_EQ(field.field_id(), 1001);
+  ASSERT_NE(field.initial_default(), nullptr);
+  EXPECT_EQ(*field.initial_default(), iceberg::Literal::Int(42));
+  ASSERT_NE(field.write_default(), nullptr);
+  EXPECT_EQ(*field.write_default(), iceberg::Literal::Int(7));
 }
 
 TEST(SchemaTest, ValidateRejectsInvalidUnknownFields) {

@@ -113,6 +113,7 @@ function(add_iceberg_lib LIB_NAME)
 
   if(BUILD_SHARED)
     add_library(${LIB_NAME}_shared SHARED)
+    set_target_properties(${LIB_NAME}_shared PROPERTIES COMPILE_WARNING_AS_ERROR ON)
 
     if(LIB_DEPS)
       target_sources(${LIB_NAME}_shared PRIVATE ${LIB_DEPS})
@@ -172,6 +173,7 @@ function(add_iceberg_lib LIB_NAME)
 
   if(BUILD_STATIC)
     add_library(${LIB_NAME}_static STATIC)
+    set_target_properties(${LIB_NAME}_static PROPERTIES COMPILE_WARNING_AS_ERROR ON)
 
     if(LIB_DEPS)
       target_sources(${LIB_NAME}_static PRIVATE ${LIB_DEPS})

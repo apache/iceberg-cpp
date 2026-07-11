@@ -31,6 +31,7 @@
 #include "iceberg/catalog/session_catalog.h"
 #include "iceberg/catalog/session_context.h"
 #include "iceberg/result.h"
+#include "iceberg/storage_credential.h"
 
 /// \file iceberg/catalog/rest/rest_catalog.h
 /// RestCatalog implementation for Iceberg REST API.
@@ -79,7 +80,8 @@ class ICEBERG_REST_EXPORT RestCatalog final
 
   Result<std::shared_ptr<FileIO>> TableFileIO(
       const SessionContext& context,
-      const std::unordered_map<std::string, std::string>& table_config) const;
+      const std::unordered_map<std::string, std::string>& table_config,
+      const std::vector<StorageCredential>& storage_credentials) const;
 
   Result<std::vector<Namespace>> ListNamespaces(const Namespace& ns,
                                                 auth::AuthSession& session) const;
@@ -169,7 +171,7 @@ class ICEBERG_REST_EXPORT RestCatalog final
       const TableIdentifier& identifier, CommitTableResponse response,
       const SessionContext& context,
       const std::unordered_map<std::string, std::string>& table_config,
-      std::shared_ptr<auth::AuthSession> table_session);
+      std::shared_ptr<auth::AuthSession> table_session, std::shared_ptr<FileIO> table_io);
 
   RestCatalogProperties config_;
   std::shared_ptr<FileIO> file_io_;

@@ -19,8 +19,10 @@
 
 #include "iceberg/update/snapshot_update.h"
 
+#include <algorithm>
 #include <format>
 #include <ranges>
+#include <span>
 
 #include "iceberg/constants.h"
 #include "iceberg/file_io.h"
@@ -30,11 +32,13 @@
 #include "iceberg/manifest/manifest_writer.h"
 #include "iceberg/manifest/rolling_manifest_writer.h"
 #include "iceberg/partition_summary_internal.h"
-#include "iceberg/table.h"
+#include "iceberg/table.h"  // IWYU pragma: keep
 #include "iceberg/transaction.h"
+#include "iceberg/util/executor_util_internal.h"
 #include "iceberg/util/macros.h"
 #include "iceberg/util/snapshot_util_internal.h"
 #include "iceberg/util/string_util.h"
+#include "iceberg/util/task_group.h"
 #include "iceberg/util/uuid.h"
 
 namespace iceberg {
@@ -76,6 +80,29 @@ Status UpdateTotal(std::unordered_map<std::string, std::string>& summary,
     }
   }
   return {};
+}
+
+constexpr size_t kMinManifestWriterGroupSize = 10'000;
+
+template <typename T, typename WriteGroup>
+Result<std::vector<ManifestFile>> WriteManifestGroups(OptionalExecutor executor,
+                                                      int32_t max_parallelism,
+                                                      std::span<const T> files,
+                                                      WriteGroup&& write_group) {
+  const auto limit = static_cast<int32_t>(
+      (files.size() + kMinManifestWriterGroupSize / 2) / kMinManifestWriterGroupSize);
+  const auto group_count =
+      static_cast<size_t>(std::max<int32_t>(1, std::min(max_parallelism, limit)));
+  const size_t group_size = (files.size() + group_count - 1) / group_count;
+  // TODO(zehua): Replace the manual offset calculation with `std::views::chunk`
+  // once the supported libc++ provides it.
+  auto groups =
+      std::views::iota(0UZ, group_count) |
+      std::views::transform([files, group_size](size_t group_index) {
+        const size_t offset = group_index * group_size;
+        return files.subspan(offset, std::min(group_size, files.size() - offset));
+      });
+  return ParallelCollect(executor, groups, std::forward<WriteGroup>(write_group));
 }
 
 // Add metadata to a manifest file by reading it and extracting statistics.
@@ -174,7 +201,6 @@ void SnapshotUpdate::SetSummaryProperty(const std::string& property,
   summary_.Set(property, value);
 }
 
-// TODO(xxx): write manifests in parallel
 Result<std::vector<ManifestFile>> SnapshotUpdate::WriteDataManifests(
     std::span<const std::shared_ptr<DataFile>> files,
     const std::shared_ptr<PartitionSpec>& spec,
@@ -184,23 +210,28 @@ Result<std::vector<ManifestFile>> SnapshotUpdate::WriteDataManifests(
   }
 
   ICEBERG_ASSIGN_OR_RAISE(auto current_schema, base().Schema());
-  RollingManifestWriter rolling_writer(
-      [this, spec, schema = std::move(current_schema),
-       snapshot_id = SnapshotId()]() -> Result<std::unique_ptr<ManifestWriter>> {
-        return ManifestWriter::MakeWriter(
-            base().format_version, snapshot_id, ManifestPath(), ctx_->table->io(),
-            std::move(spec), std::move(schema), ManifestContent::kData);
-      },
-      target_manifest_size_bytes_);
+  const int8_t format_version = base().format_version;
+  const int64_t snapshot_id = SnapshotId();
+  auto make_writer = [&]() {
+    return ManifestWriter::MakeWriter(format_version, snapshot_id, ManifestPath(),
+                                      ctx_->table->io(), spec, current_schema,
+                                      ManifestContent::kData);
+  };
 
-  for (const auto& file : files) {
-    ICEBERG_RETURN_UNEXPECTED(rolling_writer.WriteAddedEntry(file, data_sequence_number));
-  }
-  ICEBERG_RETURN_UNEXPECTED(rolling_writer.Close());
-  return rolling_writer.ToManifestFiles();
+  return WriteManifestGroups(
+      write_manifest_executor_, write_manifest_parallelism_, files,
+      [&](std::span<const std::shared_ptr<DataFile>> group)
+          -> Result<std::vector<ManifestFile>> {
+        RollingManifestWriter rolling_writer(make_writer, target_manifest_size_bytes_);
+        for (const auto& file : group) {
+          ICEBERG_RETURN_UNEXPECTED(
+              rolling_writer.WriteAddedEntry(file, data_sequence_number));
+        }
+        ICEBERG_RETURN_UNEXPECTED(rolling_writer.Close());
+        return rolling_writer.ToManifestFiles();
+      });
 }
 
-// TODO(xxx): write manifests in parallel
 Result<std::vector<ManifestFile>> SnapshotUpdate::WriteDeleteManifests(
     std::span<const ContentFileWithSequenceNumber> files,
     const std::shared_ptr<PartitionSpec>& spec) {
@@ -209,21 +240,26 @@ Result<std::vector<ManifestFile>> SnapshotUpdate::WriteDeleteManifests(
   }
 
   ICEBERG_ASSIGN_OR_RAISE(auto current_schema, base().Schema());
-  RollingManifestWriter rolling_writer(
-      [this, spec, schema = std::move(current_schema),
-       snapshot_id = SnapshotId()]() -> Result<std::unique_ptr<ManifestWriter>> {
-        return ManifestWriter::MakeWriter(
-            base().format_version, snapshot_id, ManifestPath(), ctx_->table->io(),
-            std::move(spec), std::move(schema), ManifestContent::kDeletes);
-      },
-      target_manifest_size_bytes_);
+  const int8_t format_version = base().format_version;
+  const int64_t snapshot_id = SnapshotId();
+  auto make_writer = [&]() {
+    return ManifestWriter::MakeWriter(format_version, snapshot_id, ManifestPath(),
+                                      ctx_->table->io(), spec, current_schema,
+                                      ManifestContent::kDeletes);
+  };
 
-  for (const auto& entry : files) {
-    ICEBERG_RETURN_UNEXPECTED(
-        rolling_writer.WriteAddedEntry(entry.file, entry.data_sequence_number));
-  }
-  ICEBERG_RETURN_UNEXPECTED(rolling_writer.Close());
-  return rolling_writer.ToManifestFiles();
+  return WriteManifestGroups(
+      write_manifest_executor_, write_manifest_parallelism_, files,
+      [&](std::span<const ContentFileWithSequenceNumber> group)
+          -> Result<std::vector<ManifestFile>> {
+        RollingManifestWriter rolling_writer(make_writer, target_manifest_size_bytes_);
+        for (const auto& entry : group) {
+          ICEBERG_RETURN_UNEXPECTED(
+              rolling_writer.WriteAddedEntry(entry.file, entry.data_sequence_number));
+        }
+        ICEBERG_RETURN_UNEXPECTED(rolling_writer.Close());
+        return rolling_writer.ToManifestFiles();
+      });
 }
 
 int64_t SnapshotUpdate::SnapshotId() {
@@ -257,13 +293,17 @@ Result<SnapshotUpdate::ApplyResult> SnapshotUpdate::Apply() {
   ICEBERG_RETURN_UNEXPECTED(Validate(base(), parent_snapshot));
 
   ICEBERG_ASSIGN_OR_RAISE(auto manifests, Apply(base(), parent_snapshot));
+  auto metadata_tasks = TaskGroup().SetExecutor(plan_executor_);
   for (auto& manifest : manifests) {
     if (manifest.added_snapshot_id != kInvalidSnapshotId) {
       continue;
     }
-    // TODO(xxx): read in parallel and cache enriched manifests for retries
-    ICEBERG_ASSIGN_OR_RAISE(manifest, AddMetadata(manifest, ctx_->table->io(), base()));
+    metadata_tasks.Submit([&manifest, this]() -> Status {
+      ICEBERG_ASSIGN_OR_RAISE(manifest, AddMetadata(manifest, ctx_->table->io(), base()));
+      return {};
+    });
   }
+  ICEBERG_RETURN_UNEXPECTED(std::move(metadata_tasks).Run());
 
   std::string manifest_list_path = ManifestListPath();
   manifest_lists_.push_back(manifest_list_path);
@@ -419,8 +459,9 @@ std::string SnapshotUpdate::ManifestListPath() {
   // Generate manifest list path
   // Format: {metadata_location}/snap-{snapshot_id}-{attempt}-{uuid}.avro
   int64_t snapshot_id = SnapshotId();
+  auto attempt = attempt_.fetch_add(1, std::memory_order_relaxed) + 1;
   std::string filename =
-      std::format("snap-{}-{}-{}.avro", snapshot_id, ++attempt_, commit_uuid_);
+      std::format("snap-{}-{}-{}.avro", snapshot_id, attempt, commit_uuid_);
   return ctx_->MetadataFileLocation(filename);
 }
 
@@ -449,7 +490,8 @@ SnapshotSummaryBuilder SnapshotUpdate::BuildManifestCountSummary(
 std::string SnapshotUpdate::ManifestPath() {
   // Generate manifest path
   // Format: {metadata_location}/{uuid}-m{manifest_count}.avro
-  std::string filename = std::format("{}-m{}.avro", commit_uuid_, manifest_count_++);
+  auto manifest_count = manifest_count_.fetch_add(1, std::memory_order_relaxed);
+  std::string filename = std::format("{}-m{}.avro", commit_uuid_, manifest_count);
   return ctx_->MetadataFileLocation(filename);
 }
 

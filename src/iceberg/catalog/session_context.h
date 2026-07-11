@@ -19,6 +19,9 @@
 
 #pragma once
 
+/// \file iceberg/catalog/session_context.h
+/// \brief Define session context metadata.
+
 #include <string>
 #include <unordered_map>
 

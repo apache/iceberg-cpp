@@ -239,6 +239,8 @@ TableScanBuilder<ScanType>& TableScanBuilder<ScanType>::CaseSensitive(
 template <typename ScanType>
 TableScanBuilder<ScanType>& TableScanBuilder<ScanType>::IncludeColumnStats() {
   context_.return_column_stats = true;
+  context_.columns_to_keep_stats.clear();
+  requested_column_stats_.reset();
   return *this;
 }
 
@@ -246,17 +248,7 @@ template <typename ScanType>
 TableScanBuilder<ScanType>& TableScanBuilder<ScanType>::IncludeColumnStats(
     const std::vector<std::string>& requested_columns) {
   context_.return_column_stats = true;
-  context_.columns_to_keep_stats.clear();
-  context_.columns_to_keep_stats.reserve(requested_columns.size());
-
-  ICEBERG_BUILDER_ASSIGN_OR_RETURN(auto schema_ref, ResolveSnapshotSchema());
-  const auto& schema = schema_ref.get();
-  for (const auto& column_name : requested_columns) {
-    ICEBERG_BUILDER_ASSIGN_OR_RETURN(auto field, schema->FindFieldByName(column_name));
-    if (field.has_value()) {
-      context_.columns_to_keep_stats.insert(field.value().get().field_id());
-    }
-  }
+  requested_column_stats_ = requested_columns;
 
   return *this;
 }
@@ -289,6 +281,12 @@ TableScanBuilder<ScanType>& TableScanBuilder<ScanType>::MinRowsRequested(
 }
 
 template <typename ScanType>
+TableScanBuilder<ScanType>& TableScanBuilder<ScanType>::PlanWith(Executor& executor) {
+  context_.plan_executor = std::ref(executor);
+  return *this;
+}
+
+template <typename ScanType>
 TableScanBuilder<ScanType>& TableScanBuilder<ScanType>::UseSnapshot(int64_t snapshot_id) {
   ICEBERG_BUILDER_CHECK(!context_.snapshot_id.has_value(),
                         "Cannot override snapshot, already set snapshot id={}",
@@ -301,7 +299,6 @@ TableScanBuilder<ScanType>& TableScanBuilder<ScanType>::UseSnapshot(int64_t snap
 template <typename ScanType>
 TableScanBuilder<ScanType>& TableScanBuilder<ScanType>::UseRef(const std::string& ref) {
   if (ref == SnapshotRef::kMainBranch) {
-    snapshot_schema_ = nullptr;
     context_.snapshot_id.reset();
     return *this;
   }
@@ -391,6 +388,26 @@ TableScanBuilder<ScanType>& TableScanBuilder<ScanType>::UseBranch(
 }
 
 template <typename ScanType>
+Status TableScanBuilder<ScanType>::ResolveColumnStatsSelection() {
+  if (!requested_column_stats_.has_value()) {
+    return {};
+  }
+
+  context_.columns_to_keep_stats.clear();
+  context_.columns_to_keep_stats.reserve(requested_column_stats_->size());
+
+  ICEBERG_ASSIGN_OR_RAISE(auto schema_ref, ResolveSnapshotSchema());
+  const auto& schema = schema_ref.get();
+  for (const auto& column_name : *requested_column_stats_) {
+    ICEBERG_ASSIGN_OR_RAISE(auto field, schema->FindFieldByName(column_name));
+    ICEBERG_CHECK(field.has_value(), "Cannot find stats column: {}", column_name);
+    context_.columns_to_keep_stats.insert(field.value().get().field_id());
+  }
+
+  return {};
+}
+
+template <typename ScanType>
 Result<std::reference_wrapper<const std::shared_ptr<Schema>>>
 TableScanBuilder<ScanType>::ResolveSnapshotSchema() {
   if (snapshot_schema_ == nullptr) {
@@ -410,6 +427,7 @@ TableScanBuilder<ScanType>::ResolveSnapshotSchema() {
 template <typename ScanType>
 Result<std::unique_ptr<ScanType>> TableScanBuilder<ScanType>::Build() {
   ICEBERG_RETURN_UNEXPECTED(CheckErrors());
+  ICEBERG_RETURN_UNEXPECTED(ResolveColumnStatsSelection());
   ICEBERG_RETURN_UNEXPECTED(context_.Validate());
 
   ICEBERG_ASSIGN_OR_RAISE(auto schema, ResolveSnapshotSchema());
@@ -538,7 +556,8 @@ Result<std::vector<std::shared_ptr<FileScanTask>>> DataTableScan::PlanFiles() co
       .Select(ScanColumns())
       .FilterData(filter())
       .IgnoreDeleted()
-      .ColumnsToKeepStats(context_.columns_to_keep_stats);
+      .ColumnsToKeepStats(context_.columns_to_keep_stats)
+      .PlanWith(context_.plan_executor);
   if (context_.ignore_residuals) {
     manifest_group->IgnoreResiduals();
   }
@@ -641,7 +660,8 @@ Result<std::vector<std::shared_ptr<FileScanTask>>> IncrementalAppendScan::PlanFi
                entry.status == ManifestStatus::kAdded;
       })
       .IgnoreDeleted()
-      .ColumnsToKeepStats(context_.columns_to_keep_stats);
+      .ColumnsToKeepStats(context_.columns_to_keep_stats)
+      .PlanWith(context_.plan_executor);
 
   if (context_.ignore_residuals) {
     manifest_group->IgnoreResiduals();
@@ -737,7 +757,8 @@ IncrementalChangelogScan::PlanFiles(std::optional<int64_t> from_snapshot_id_excl
                snapshot_ids.contains(entry.snapshot_id.value());
       })
       .IgnoreExisting()
-      .ColumnsToKeepStats(context_.columns_to_keep_stats);
+      .ColumnsToKeepStats(context_.columns_to_keep_stats)
+      .PlanWith(context_.plan_executor);
 
   if (context_.ignore_residuals) {
     manifest_group->IgnoreResiduals();

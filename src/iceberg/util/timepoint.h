@@ -19,6 +19,9 @@
 
 #pragma once
 
+/// \file iceberg/util/timepoint.h
+/// \brief Provide time point conversion helpers.
+
 #include <chrono>
 
 #include "iceberg/iceberg_export.h"

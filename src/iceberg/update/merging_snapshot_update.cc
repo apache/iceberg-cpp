@@ -540,8 +540,10 @@ Status MergingSnapshotUpdate::AddDeleteFile(std::shared_ptr<DataFile> file,
     return InvalidArgument("Delete file must have a partition spec ID");
   }
   ICEBERG_RETURN_UNEXPECTED(base().PartitionSpecById(file->partition_spec_id.value()));
+
+  auto staged_file = std::make_shared<DataFile>(*file);
   has_new_delete_files_ = true;
-  PendingDeleteFile pending_file{.file = std::move(file),
+  PendingDeleteFile pending_file{.file = std::move(staged_file),
                                  .data_sequence_number = std::move(data_sequence_number)};
   if (ContentFileUtil::IsDV(*pending_file.file)) {
     ICEBERG_PRECHECK(pending_file.file->referenced_data_file.has_value(),
@@ -559,14 +561,16 @@ Status MergingSnapshotUpdate::DeleteDataFile(std::shared_ptr<DataFile> file) {
   if (!file) {
     return InvalidArgument("Cannot delete a null data file");
   }
-  return data_filter_manager_->DeleteFile(std::move(file));
+  auto staged_file = std::make_shared<DataFile>(*file);
+  return data_filter_manager_->DeleteFile(std::move(staged_file));
 }
 
 Status MergingSnapshotUpdate::DeleteDeleteFile(std::shared_ptr<DataFile> file) {
   if (!file) {
     return InvalidArgument("Cannot delete a null delete file");
   }
-  return delete_filter_manager_->DeleteFile(std::move(file));
+  auto staged_file = std::make_shared<DataFile>(*file);
+  return delete_filter_manager_->DeleteFile(std::move(staged_file));
 }
 
 Status MergingSnapshotUpdate::DeleteByPath(std::string_view path) {
@@ -617,12 +621,13 @@ void MergingSnapshotUpdate::SetSummaryProperty(const std::string& property,
 
 Result<std::shared_ptr<PartitionSpec>> MergingSnapshotUpdate::DataSpec() const {
   if (new_data_files_by_spec_.empty()) {
-    return InvalidArgument("DataSpec() called before any data file was added");
+    return InvalidArgument(
+        "Cannot determine partition specs: no data files have been added");
   }
   if (new_data_files_by_spec_.size() > 1) {
     return InvalidArgument(
-        "DataSpec() requires exactly one partition spec; got {} different specs",
-        new_data_files_by_spec_.size());
+        "Cannot return a single partition spec: data files with different partition "
+        "specs have been added");
   }
   return base().PartitionSpecById(new_data_files_by_spec_.begin()->first);
 }

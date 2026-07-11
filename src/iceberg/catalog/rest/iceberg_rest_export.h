@@ -19,6 +19,9 @@
 
 #pragma once
 
+/// \file iceberg/catalog/rest/iceberg_rest_export.h
+/// \brief Define symbol visibility macros for the REST catalog library.
+
 #if defined(_WIN32) || defined(__CYGWIN__)
 #  ifdef ICEBERG_REST_STATIC
 #    define ICEBERG_REST_EXPORT

@@ -19,6 +19,9 @@
 
 #pragma once
 
+/// \file iceberg/parquet/parquet_writer.h
+/// \brief Provide the Parquet file writer interface.
+
 #include "iceberg/file_writer.h"
 #include "iceberg/iceberg_bundle_export.h"
 

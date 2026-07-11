@@ -45,13 +45,11 @@
 #include "iceberg/table_properties.h"
 #include "iceberg/test/matchers.h"
 #include "iceberg/test/mock_catalog.h"
-#include "iceberg/test/test_resource.h"
 #include "iceberg/test/update_test_base.h"
 #include "iceberg/transaction.h"
 #include "iceberg/update/fast_append.h"
 #include "iceberg/update/update_partition_spec.h"
 #include "iceberg/update/update_properties.h"
-#include "iceberg/util/uuid.h"
 
 namespace iceberg {
 
@@ -62,18 +60,12 @@ constexpr size_t kManifestFileGroupSizeForTest = 250;
 
 }  // namespace
 
-class MergeAppendTestBase : public UpdateTestBase {
+class MergeAppendTestBase : public MinimalUpdateTestBase {
  protected:
   static void SetUpTestSuite() { avro::RegisterAll(); }
 
-  std::string TableName() const override { return "minimal_table"; }
-
   void SetUp() override {
-    table_ident_ = TableIdentifier{.name = TableName()};
-    table_location_ = "/warehouse/" + TableName();
-
-    InitializeFileIO();
-    RegisterMinimalTable(format_version());
+    MinimalUpdateTestBase::SetUp();
 
     ICEBERG_UNWRAP_OR_FAIL(spec_, table_->spec());
     ICEBERG_UNWRAP_OR_FAIL(schema_, table_->schema());
@@ -82,25 +74,6 @@ class MergeAppendTestBase : public UpdateTestBase {
     file_b_ = MakeDataFile("/data/file_b.parquet", /*partition_x=*/2L);
     file_c_ = MakeDataFile("/data/file_c.parquet", /*partition_x=*/3L);
     file_d_ = MakeDataFile("/data/file_d.parquet", /*partition_x=*/4L);
-  }
-
-  void RegisterMinimalTable(int8_t format_version) {
-    auto metadata_location = std::format("{}/metadata/00001-{}.metadata.json",
-                                         table_location_, Uuid::GenerateV7().ToString());
-    ICEBERG_UNWRAP_OR_FAIL(
-        auto metadata, ReadTableMetadataFromResource("TableMetadataV2ValidMinimal.json"));
-    metadata->format_version = format_version;
-    metadata->location = table_location_;
-    metadata->next_row_id = TableMetadata::kInitialRowId;
-
-    ASSERT_THAT(TableMetadataUtil::Write(*file_io_, metadata_location, *metadata),
-                IsOk());
-    ICEBERG_UNWRAP_OR_FAIL(table_,
-                           catalog_->RegisterTable(table_ident_, metadata_location));
-  }
-
-  virtual int8_t format_version() const {
-    return TableMetadata::kDefaultTableFormatVersion;
   }
 
   virtual std::string branch() const { return std::string(SnapshotRef::kMainBranch); }
@@ -269,13 +242,13 @@ class MergeAppendTestBase : public UpdateTestBase {
   // both the main branch and a named branch without per-call boilerplate.
   Result<std::shared_ptr<MergeAppend>> NewBranchMergeAppend() {
     ICEBERG_ASSIGN_OR_RAISE(auto append, table_->NewMergeAppend());
-    append->SetTargetBranch(branch());
+    append->ToBranch(branch());
     return append;
   }
 
   Result<std::shared_ptr<FastAppend>> NewBranchFastAppend() {
     ICEBERG_ASSIGN_OR_RAISE(auto append, table_->NewFastAppend());
-    append->SetTargetBranch(branch());
+    append->ToBranch(branch());
     return append;
   }
 
@@ -1127,7 +1100,7 @@ TEST_P(MergeAppendTest, Failure) {
 
   ICEBERG_UNWRAP_OR_FAIL(auto txn, table_->NewTransaction());
   ICEBERG_UNWRAP_OR_FAIL(auto append, txn->NewMergeAppend());
-  append->SetTargetBranch(branch());
+  append->ToBranch(branch());
   append->AppendFile(file_b_);
   EXPECT_THAT(append->Commit(), IsOk());
 
@@ -1166,7 +1139,7 @@ TEST_P(MergeAppendTest, AppendManifestCleanup) {
 
   ICEBERG_UNWRAP_OR_FAIL(auto txn, table_->NewTransaction());
   ICEBERG_UNWRAP_OR_FAIL(auto append, txn->NewMergeAppend());
-  append->SetTargetBranch(branch());
+  append->ToBranch(branch());
   append->AppendManifest(manifest);
   EXPECT_THAT(append->Commit(), IsOk());
 
@@ -1215,7 +1188,7 @@ TEST_P(MergeAppendTest, Recovery) {
 
   ICEBERG_UNWRAP_OR_FAIL(auto txn, table_->NewTransaction());
   ICEBERG_UNWRAP_OR_FAIL(auto append, txn->NewMergeAppend());
-  append->SetTargetBranch(branch());
+  append->ToBranch(branch());
   append->AppendFile(file_b_);
   EXPECT_THAT(append->Commit(), IsOk());
 
@@ -1336,7 +1309,7 @@ TEST_P(MergeAppendTest, AppendManifestFailureWithSnapshotIdInheritance) {
 TEST_P(MergeAppendTest, TransactionNewMergeAppendCommits) {
   ICEBERG_UNWRAP_OR_FAIL(auto txn, table_->NewTransaction());
   ICEBERG_UNWRAP_OR_FAIL(auto append, txn->NewMergeAppend());
-  append->SetTargetBranch(branch());
+  append->ToBranch(branch());
   append->AppendFile(file_a_);
   EXPECT_THAT(append->Commit(), IsOk());
   ICEBERG_UNWRAP_OR_FAIL(auto committed_table, txn->Commit());

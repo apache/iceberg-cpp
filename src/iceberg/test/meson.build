@@ -59,9 +59,16 @@ iceberg_tests = {
             'table_requirements_test.cc',
             'table_test.cc',
             'table_update_test.cc',
+            'update_schema_test.cc',
         ),
     },
-    'logging_test': {'sources': files('log_level_test.cc', 'logger_test.cc')},
+    'logging_test': {
+        'sources': files(
+            'cerr_logger_test.cc',
+            'log_level_test.cc',
+            'logger_test.cc',
+        ),
+    },
     'expression_test': {
         'sources': files(
             'aggregate_test.cc',

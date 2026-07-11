@@ -161,23 +161,9 @@ std::optional<std::string_view> Snapshot::Operation() const {
   return std::nullopt;
 }
 
-Result<std::optional<int64_t>> Snapshot::FirstRowId() const {
-  auto it = summary.find(SnapshotSummaryFields::kFirstRowId);
-  if (it == summary.end()) {
-    return std::nullopt;
-  }
+Result<std::optional<int64_t>> Snapshot::FirstRowId() const { return first_row_id; }
 
-  return StringUtils::ParseNumber<int64_t>(it->second);
-}
-
-Result<std::optional<int64_t>> Snapshot::AddedRows() const {
-  auto it = summary.find(SnapshotSummaryFields::kAddedRows);
-  if (it == summary.end()) {
-    return std::nullopt;
-  }
-
-  return StringUtils::ParseNumber<int64_t>(it->second);
-}
+Result<std::optional<int64_t>> Snapshot::AddedRows() const { return added_rows; }
 
 bool Snapshot::Equals(const Snapshot& other) const {
   if (this == &other) {
@@ -186,7 +172,8 @@ bool Snapshot::Equals(const Snapshot& other) const {
   return snapshot_id == other.snapshot_id &&
          parent_snapshot_id == other.parent_snapshot_id &&
          sequence_number == other.sequence_number && timestamp_ms == other.timestamp_ms &&
-         schema_id == other.schema_id;
+         schema_id == other.schema_id && first_row_id == other.first_row_id &&
+         added_rows == other.added_rows;
 }
 
 Result<std::unique_ptr<Snapshot>> Snapshot::Make(
@@ -203,12 +190,6 @@ Result<std::unique_ptr<Snapshot>> Snapshot::Make(
   ICEBERG_PRECHECK(!first_row_id.has_value() || added_rows.has_value(),
                    "Missing added-rows when first-row-id is set");
   summary[SnapshotSummaryFields::kOperation] = operation;
-  if (first_row_id.has_value()) {
-    summary[SnapshotSummaryFields::kFirstRowId] = std::to_string(first_row_id.value());
-  }
-  if (added_rows.has_value()) {
-    summary[SnapshotSummaryFields::kAddedRows] = std::to_string(added_rows.value());
-  }
   return std::make_unique<Snapshot>(Snapshot{
       .snapshot_id = snapshot_id,
       .parent_snapshot_id = parent_snapshot_id,
@@ -217,6 +198,8 @@ Result<std::unique_ptr<Snapshot>> Snapshot::Make(
       .manifest_list = std::move(manifest_list),
       .summary = std::move(summary),
       .schema_id = schema_id,
+      .first_row_id = first_row_id,
+      .added_rows = first_row_id.has_value() ? added_rows : std::nullopt,
   });
 }
 

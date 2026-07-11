@@ -129,6 +129,53 @@ TEST_F(UpdatePropertiesTest, UpgradeFormatVersionUnsupported) {
   EXPECT_THAT(result, HasErrorMessage("unsupported format version"));
 }
 
+TEST_F(UpdatePropertiesTest, SetReservedPropertyUuid) {
+  ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateProperties());
+  update->Set("uuid", "some-uuid");
+
+  auto result = update->Apply();
+  EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
+  EXPECT_THAT(result, HasErrorMessage("Cannot set reserved property"));
+}
+
+TEST_F(UpdatePropertiesTest, SetReservedPropertyCurrentSchema) {
+  ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateProperties());
+  update->Set("current-schema", R"({"type": "struct"})");
+
+  auto result = update->Apply();
+  EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
+  EXPECT_THAT(result, HasErrorMessage("Cannot set reserved property"));
+}
+
+TEST_F(UpdatePropertiesTest, SetReservedPropertyCurrentSnapshotId) {
+  ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateProperties());
+  update->Set("current-snapshot-id", "12345");
+
+  auto result = update->Apply();
+  EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
+  EXPECT_THAT(result, HasErrorMessage("Cannot set reserved property"));
+}
+
+TEST_F(UpdatePropertiesTest, SetFormatVersionStillAllowed) {
+  ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateProperties());
+  update->Set("format-version", "3");
+
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  EXPECT_TRUE(result.updates.empty());
+  ASSERT_TRUE(result.format_version.has_value());
+  EXPECT_EQ(result.format_version.value(), 3);
+}
+
+TEST_F(UpdatePropertiesTest, SetValidAndReservedProperties) {
+  ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateProperties());
+  update->Set("valid.key", "valid.value");
+  update->Set("snapshot-count", "10");
+
+  auto result = update->Apply();
+  EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
+  EXPECT_THAT(result, HasErrorMessage("Cannot set reserved property"));
+}
+
 TEST_F(UpdatePropertiesTest, CommitSuccess) {
   ICEBERG_UNWRAP_OR_FAIL(auto empty_update, table_->NewUpdateProperties());
   EXPECT_THAT(empty_update->Commit(), IsOk());

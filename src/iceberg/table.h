@@ -19,6 +19,9 @@
 
 #pragma once
 
+/// \file iceberg/table.h
+/// \brief Define table abstractions and update entry points.
+
 #include <functional>
 #include <memory>
 #include <string>
@@ -185,6 +188,13 @@ class ICEBERG_EXPORT Table : public std::enable_shared_from_this<Table> {
   /// \brief Create a new RowDelta to add rows and row-level deletes.
   virtual Result<std::shared_ptr<RowDelta>> NewRowDelta();
 
+  /// \brief Create a new OverwriteFiles to overwrite data files and commit the changes.
+  virtual Result<std::shared_ptr<OverwriteFiles>> NewOverwrite();
+
+  /// \brief Create a new RewriteFiles to replace files in this table and commit the
+  /// changes.
+  virtual Result<std::shared_ptr<RewriteFiles>> NewRewriteFiles();
+
   /// \brief Create a new SnapshotManager to manage snapshots and snapshot references.
   virtual Result<std::shared_ptr<SnapshotManager>> NewSnapshotManager();
 
@@ -257,6 +267,10 @@ class ICEBERG_EXPORT StaticTable : public Table {
   Result<std::shared_ptr<DeleteFiles>> NewDeleteFiles() override;
 
   Result<std::shared_ptr<RowDelta>> NewRowDelta() override;
+
+  Result<std::shared_ptr<OverwriteFiles>> NewOverwrite() override;
+
+  Result<std::shared_ptr<RewriteFiles>> NewRewriteFiles() override;
 
   Result<std::shared_ptr<SnapshotManager>> NewSnapshotManager() override;
 

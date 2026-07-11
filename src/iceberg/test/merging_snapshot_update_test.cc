@@ -19,8 +19,12 @@
 
 #include "iceberg/update/merging_snapshot_update.h"
 
+#include <limits>
 #include <memory>
+#include <optional>
+#include <ranges>
 #include <string>
+#include <unordered_map>
 #include <unordered_set>
 #include <vector>
 
@@ -40,10 +44,14 @@
 #include "iceberg/table.h"
 #include "iceberg/table_metadata.h"
 #include "iceberg/table_properties.h"
+#include "iceberg/test/executor.h"
 #include "iceberg/test/matchers.h"
+#include "iceberg/test/retry.h"
 #include "iceberg/test/update_test_base.h"
 #include "iceberg/transaction.h"
 #include "iceberg/update/fast_append.h"
+#include "iceberg/update/merge_append.h"
+#include "iceberg/update/snapshot_manager.h"
 #include "iceberg/update/update_properties.h"
 #include "iceberg/util/macros.h"
 
@@ -91,6 +99,16 @@ class TestMergeAppend : public MergingSnapshotUpdate {
   }
   Result<std::shared_ptr<PartitionSpec>> DataSpec() const {
     return MergingSnapshotUpdate::DataSpec();
+  }
+  Result<std::vector<ManifestFile>> WriteDeletesForTest(
+      std::span<const std::shared_ptr<DataFile>> files,
+      const std::shared_ptr<PartitionSpec>& spec) {
+    auto entries = files | std::views::transform([](const auto& file) {
+                     return ContentFileWithSequenceNumber{
+                         .file = file, .data_sequence_number = std::nullopt};
+                   }) |
+                   std::ranges::to<std::vector>();
+    return WriteDeleteManifests(entries, spec);
   }
   int64_t GeneratedSnapshotId() { return SnapshotId(); }
   void SetDataSeqNumber(int64_t seq) { SetNewDataFilesDataSequenceNumber(seq); }
@@ -262,8 +280,23 @@ class MergingSnapshotUpdateTest : public MinimalUpdateTestBase {
     return TestOverwriteUpdate::Make(TableName(), table_);
   }
 
+  void UpgradeTableToV3() {
+    ICEBERG_UNWRAP_OR_FAIL(auto props, table_->NewUpdateProperties());
+    props->Set(TableProperties::kFormatVersion.key(), "3");
+    EXPECT_THAT(props->Commit(), IsOk());
+    EXPECT_THAT(table_->Refresh(), IsOk());
+  }
+
   void SetTableFormatVersion(int8_t format_version) {
     table_->metadata()->format_version = format_version;
+  }
+
+  void SetManifestTargetSizeBytes(int64_t size_bytes) {
+    ICEBERG_UNWRAP_OR_FAIL(auto props, table_->NewUpdateProperties());
+    props->Set(std::string(TableProperties::kManifestTargetSizeBytes.key()),
+               std::to_string(size_bytes));
+    EXPECT_THAT(props->Commit(), IsOk());
+    EXPECT_THAT(table_->Refresh(), IsOk());
   }
 
   // Commit file_a_ with FastAppend and refresh the table.
@@ -287,6 +320,22 @@ class MergingSnapshotUpdateTest : public MinimalUpdateTestBase {
       result.insert(result.end(), entries.begin(), entries.end());
     }
     return result;
+  }
+
+  Result<std::unordered_map<std::string, std::optional<int64_t>>> DataFileFirstRowIds(
+      const std::shared_ptr<Snapshot>& snapshot, const TableMetadata& metadata) {
+    SnapshotCache snapshot_cache(snapshot.get());
+    ICEBERG_ASSIGN_OR_RAISE(auto manifest_range, snapshot_cache.DataManifests(file_io_));
+    std::vector<ManifestFile> manifests(manifest_range.begin(), manifest_range.end());
+    ICEBERG_ASSIGN_OR_RAISE(auto entries, ReadAllEntries(manifests, metadata));
+
+    std::unordered_map<std::string, std::optional<int64_t>> first_row_ids;
+    for (const auto& entry : entries) {
+      if (entry.data_file != nullptr) {
+        first_row_ids.emplace(entry.data_file->file_path, entry.data_file->first_row_id);
+      }
+    }
+    return first_row_ids;
   }
 
   // Write a manifest file containing the given data files.
@@ -426,10 +475,7 @@ TEST_F(MergingSnapshotUpdateTest, CommitNewDataFile) {
 }
 
 TEST_F(MergingSnapshotUpdateTest, CommitV3NewDataFileAssignsRowLineage) {
-  ICEBERG_UNWRAP_OR_FAIL(auto props, table_->NewUpdateProperties());
-  props->Set(TableProperties::kFormatVersion.key(), "3");
-  EXPECT_THAT(props->Commit(), IsOk());
-  EXPECT_THAT(table_->Refresh(), IsOk());
+  UpgradeTableToV3();
 
   ICEBERG_UNWRAP_OR_FAIL(auto op, NewMergeAppend());
   EXPECT_THAT(op->AddFile(file_a_), IsOk());
@@ -442,6 +488,110 @@ TEST_F(MergingSnapshotUpdateTest, CommitV3NewDataFileAssignsRowLineage) {
   EXPECT_EQ(first_row_id, std::make_optional<int64_t>(0));
   EXPECT_EQ(added_rows, std::make_optional<int64_t>(100));
   EXPECT_EQ(table_->metadata()->next_row_id, 100);
+}
+
+TEST_F(MergingSnapshotUpdateTest, V3MultiFileRowIds) {
+  UpgradeTableToV3();
+
+  ICEBERG_UNWRAP_OR_FAIL(auto op, NewMergeAppend());
+  EXPECT_THAT(op->AddFile(file_a_), IsOk());
+  EXPECT_THAT(op->AddFile(file_b_), IsOk());
+  EXPECT_THAT(op->Commit(), IsOk());
+
+  EXPECT_THAT(table_->Refresh(), IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(auto snapshot, table_->current_snapshot());
+  ICEBERG_UNWRAP_OR_FAIL(auto first_row_id, snapshot->FirstRowId());
+  ICEBERG_UNWRAP_OR_FAIL(auto added_rows, snapshot->AddedRows());
+  EXPECT_EQ(first_row_id, std::make_optional<int64_t>(0));
+  EXPECT_EQ(added_rows, std::make_optional<int64_t>(200));
+  EXPECT_EQ(table_->metadata()->next_row_id, 200);
+
+  ICEBERG_UNWRAP_OR_FAIL(auto first_row_ids,
+                         DataFileFirstRowIds(snapshot, *table_->metadata()));
+  EXPECT_EQ(first_row_ids.at(file_a_->file_path), std::make_optional<int64_t>(0));
+  EXPECT_EQ(first_row_ids.at(file_b_->file_path), std::make_optional<int64_t>(100));
+}
+
+TEST_F(MergingSnapshotUpdateTest, V3BranchRowIds) {
+  UpgradeTableToV3();
+  CommitFileA();
+
+  ICEBERG_UNWRAP_OR_FAIL(auto starting_snapshot, table_->current_snapshot());
+  const auto starting_snapshot_id = starting_snapshot->snapshot_id;
+  const auto starting_next_row_id = table_->metadata()->next_row_id;
+
+  ICEBERG_UNWRAP_OR_FAIL(auto manager, table_->NewSnapshotManager());
+  manager->CreateBranch("audit", starting_snapshot_id);
+  EXPECT_THAT(manager->Commit(), IsOk());
+  EXPECT_THAT(table_->Refresh(), IsOk());
+
+  ICEBERG_UNWRAP_OR_FAIL(auto op, NewMergeAppend());
+  op->ToBranch("audit");
+  EXPECT_THAT(op->AddFile(file_b_), IsOk());
+  EXPECT_THAT(op->Commit(), IsOk());
+
+  EXPECT_THAT(table_->Refresh(), IsOk());
+  EXPECT_EQ(table_->metadata()->next_row_id,
+            starting_next_row_id + file_b_->record_count);
+  ICEBERG_UNWRAP_OR_FAIL(auto current_snapshot, table_->current_snapshot());
+  EXPECT_EQ(current_snapshot->snapshot_id, starting_snapshot_id);
+
+  auto ref_it = table_->metadata()->refs.find("audit");
+  ASSERT_NE(ref_it, table_->metadata()->refs.end());
+  ICEBERG_UNWRAP_OR_FAIL(auto branch_snapshot,
+                         table_->metadata()->SnapshotById(ref_it->second->snapshot_id));
+  ICEBERG_UNWRAP_OR_FAIL(auto first_row_id, branch_snapshot->FirstRowId());
+  ICEBERG_UNWRAP_OR_FAIL(auto added_rows, branch_snapshot->AddedRows());
+  EXPECT_EQ(first_row_id, std::make_optional(starting_next_row_id));
+  EXPECT_EQ(added_rows, std::make_optional(file_b_->record_count));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto first_row_ids,
+                         DataFileFirstRowIds(branch_snapshot, *table_->metadata()));
+  EXPECT_EQ(first_row_ids.at(file_a_->file_path), std::make_optional<int64_t>(0));
+  EXPECT_EQ(first_row_ids.at(file_b_->file_path),
+            std::make_optional(starting_next_row_id));
+}
+
+// A staged v3 append must reassign row IDs when a concurrent commit advances next_row_id.
+TEST_F(MergingSnapshotUpdateTest, V3RetryRowIds) {
+  UpgradeTableToV3();
+  test::FakeRetryEnvironment fake_retry;
+  ScopedRetryTestHooks retry_hooks(fake_retry.hooks());
+
+  // Stage file_a_ with first_row_id = 0, but do not commit the transaction yet.
+  ICEBERG_UNWRAP_OR_FAIL(auto txn, table_->NewTransaction());
+  ICEBERG_UNWRAP_OR_FAIL(auto append, txn->NewMergeAppend());
+  append->AppendFile(file_a_);
+  EXPECT_THAT(append->Commit(), IsOk());
+
+  ICEBERG_UNWRAP_OR_FAIL(auto staged_snapshot, txn->current().Snapshot());
+  ICEBERG_UNWRAP_OR_FAIL(auto staged_first_row_id, staged_snapshot->FirstRowId());
+  EXPECT_EQ(staged_first_row_id, std::make_optional<int64_t>(0));
+
+  // Commit file_b_ first, advancing table next_row_id and making file_a_'s row IDs stale.
+  ICEBERG_UNWRAP_OR_FAIL(auto concurrent, table_->NewMergeAppend());
+  concurrent->AppendFile(file_b_);
+  EXPECT_THAT(concurrent->Commit(), IsOk());
+  auto after_concurrent = ReloadMetadata();
+  EXPECT_EQ(after_concurrent->next_row_id, file_b_->record_count);
+
+  // The original transaction must retry and reassign file_a_ after file_b_'s row IDs.
+  ICEBERG_UNWRAP_OR_FAIL(auto committed_table, txn->Commit());
+  EXPECT_FALSE(fake_retry.sleep_durations().empty());
+  EXPECT_EQ(committed_table->metadata()->next_row_id,
+            file_b_->record_count + file_a_->record_count);
+
+  ICEBERG_UNWRAP_OR_FAIL(auto snapshot, committed_table->current_snapshot());
+  ICEBERG_UNWRAP_OR_FAIL(auto first_row_id, snapshot->FirstRowId());
+  ICEBERG_UNWRAP_OR_FAIL(auto added_rows, snapshot->AddedRows());
+  EXPECT_EQ(first_row_id, std::make_optional(file_b_->record_count));
+  EXPECT_EQ(added_rows, std::make_optional(file_a_->record_count));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto first_row_ids,
+                         DataFileFirstRowIds(snapshot, *committed_table->metadata()));
+  EXPECT_EQ(first_row_ids.at(file_b_->file_path), std::make_optional<int64_t>(0));
+  EXPECT_EQ(first_row_ids.at(file_a_->file_path),
+            std::make_optional(file_b_->record_count));
 }
 
 TEST_F(MergingSnapshotUpdateTest, CommitMultipleDataFiles) {
@@ -637,6 +787,29 @@ TEST_F(MergingSnapshotUpdateTest, AddDeleteFileWithExplicitSequenceWritesSequenc
   ASSERT_EQ(entries.size(), 1U);
   ASSERT_TRUE(entries[0].sequence_number.has_value());
   EXPECT_EQ(entries[0].sequence_number.value(), 17);
+}
+
+TEST_F(MergingSnapshotUpdateTest, WriteDeleteGroups) {
+  SetManifestTargetSizeBytes(std::numeric_limits<int64_t>::max());
+
+  test::ThreadExecutor executor;
+  ICEBERG_UNWRAP_OR_FAIL(auto op, NewMergeAppend());
+  op->WriteManifestsWith(executor, 3);
+
+  constexpr size_t kFileCount = 15'000;
+  auto files = std::views::iota(0UZ, kFileCount) |
+               std::views::transform([this](size_t index) {
+                 return MakeDeleteFile(std::format("/delete/group_{}.parquet", index),
+                                       static_cast<int64_t>(index % 2));
+               }) |
+               std::ranges::to<std::vector>();
+  ICEBERG_UNWRAP_OR_FAIL(auto manifests, op->WriteDeletesForTest(files, spec_));
+
+  EXPECT_EQ(executor.submit_count(), 2);
+  ASSERT_EQ(manifests.size(), 2U);
+  for (const auto& manifest : manifests) {
+    EXPECT_EQ(manifest.content, ManifestContent::kDeletes);
+  }
 }
 
 TEST_F(MergingSnapshotUpdateTest, ApplyRebuildsDeleteSummaryAfterPreparingDeletes) {
@@ -1403,6 +1576,43 @@ TEST_F(MergingSnapshotUpdateTest,
                   *metadata, first_snapshot->snapshot_id, replaced_files, second_snapshot,
                   file_io_, /*ignore_equality_deletes=*/true),
               IsError(ErrorKind::kValidationFailed));
+}
+
+TEST_F(MergingSnapshotUpdateTest,
+       ValidateNoNewDeletesForDataFilesIgnoresEqualityDeletesWhenFlagIsTrue) {
+  // This tests the behavior that RewriteFiles::SetDataSequenceNumber() and
+  // RewriteFiles::RewriteDataFiles() enable: when a data sequence number is
+  // set for rewritten data files, concurrent equality deletes at higher
+  // sequence numbers still apply to the new files and are NOT a conflict.
+  // Only position deletes should still fail (tested separately by
+  // ValidateNoNewDeletesForDataFilesFailsOnPositionDeleteWhenIgnoringEqualityDeletes).
+  CommitFileA();
+  ICEBERG_UNWRAP_OR_FAIL(auto first_snapshot, table_->current_snapshot());
+
+  auto del_file = MakeEqualityDeleteFile("/delete/del_a.parquet", 1L);
+  ICEBERG_UNWRAP_OR_FAIL(auto op, NewOverwriteUpdate());
+  EXPECT_THAT(op->AddDelete(del_file), IsOk());
+  const int64_t second_snapshot_id = op->GeneratedSnapshotId();
+  ICEBERG_UNWRAP_OR_FAIL(auto manifests, op->Apply(*table_->metadata(), first_snapshot));
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto second_snapshot,
+      MakeSyntheticSnapshot(DataOperation::kOverwrite, second_snapshot_id,
+                            first_snapshot->snapshot_id,
+                            first_snapshot->sequence_number + 1, manifests));
+
+  auto metadata = std::make_shared<TableMetadata>(*table_->metadata());
+  metadata->snapshots.push_back(second_snapshot);
+  metadata->current_snapshot_id = second_snapshot->snapshot_id;
+  metadata->last_sequence_number = second_snapshot->sequence_number;
+
+  DataFileSet replaced_files;
+  replaced_files.insert(file_a_);
+  // With ignore_equality_deletes=true, concurrently-added equality deletes
+  // should NOT cause a conflict.
+  EXPECT_THAT(TestMergeAppend::ValidateNoNewDeletesForDataFilesForTest(
+                  *metadata, first_snapshot->snapshot_id, replaced_files, second_snapshot,
+                  file_io_, /*ignore_equality_deletes=*/true),
+              IsOk());
 }
 
 TEST_F(MergingSnapshotUpdateTest,
