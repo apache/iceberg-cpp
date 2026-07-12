@@ -26,6 +26,7 @@
 #include <variant>
 
 #include "iceberg/expression/literal.h"
+#include "iceberg/result.h"
 #include "iceberg/type.h"
 #include "iceberg/util/checked_cast.h"
 #include "iceberg/util/formatter.h"  // IWYU pragma: keep
