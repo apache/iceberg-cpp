@@ -104,35 +104,63 @@ Literal LiteralCaster::AboveMaxLiteral(std::shared_ptr<PrimitiveType> type) {
   return Literal(Literal::AboveMax{}, std::move(type));
 }
 
+namespace {
+
+// Rescale `unscaled` (interpreted at `from_scale`) to `to_scale` using HALF_UP rounding
+// (round half away from zero), matching Java's BigDecimal.setScale(scale, HALF_UP).
+// Unlike Decimal::Rescale, which only truncates and rejects any dropped remainder, this
+// rounds, and it supports the full negative..positive scale range Iceberg decimals allow.
+Result<Decimal> RescaleHalfUp(const Decimal& unscaled, int32_t from_scale,
+                              int32_t to_scale, bool negative) {
+  const int32_t delta = to_scale - from_scale;
+  if (delta == 0) {
+    return unscaled;
+  }
+  if (delta > 0) {
+    // Growing the scale multiplies by 10^delta and is exact; Rescale rejects overflow.
+    if (delta > Decimal::kMaxScale) {
+      return InvalidArgument("scale change {} exceeds the maximum {}", delta,
+                             Decimal::kMaxScale);
+    }
+    return unscaled.Rescale(from_scale, to_scale);
+  }
+  // Shrinking the scale drops `drop` digits with HALF_UP rounding. A drop larger than the
+  // digits any decimal can hold rounds everything away, so the result is zero (e.g.
+  // 1e-100 to decimal(9, 2)); this also keeps the divisor within the powers-of-ten table.
+  const int32_t drop = -delta;
+  if (drop > Decimal::kMaxScale) {
+    return Decimal(0);
+  }
+  ICEBERG_ASSIGN_OR_RAISE(auto divisor, Decimal(1).Rescale(0, drop));
+  ICEBERG_ASSIGN_OR_RAISE(auto divmod, unscaled.Divide(divisor));
+  Decimal quotient = divmod.first;
+  Decimal remainder = Decimal::Abs(divmod.second);
+  if (remainder * Decimal(2) >= divisor) {
+    quotient += negative ? Decimal(-1) : Decimal(1);
+  }
+  return quotient;
+}
+
+}  // namespace
+
 Result<Literal> LiteralCaster::CastIntegerToDecimal(
     int64_t value, const std::shared_ptr<PrimitiveType>& target_type) {
   const auto& decimal_type = internal::checked_cast<const DecimalType&>(*target_type);
-  const int32_t scale = decimal_type.scale();
-  // DecimalType does not bound its scale, but Rescale indexes a powers-of-ten table sized
-  // for [0, kMaxScale]; reject an out-of-range scale here rather than reading past it.
-  if (scale < 0 || scale > Decimal::kMaxScale) {
+  // An integer has scale 0; rescale it to the target scale, rounding HALF_UP when the
+  // target scale is negative (matching Java's numeric-to-decimal default handling).
+  ICEBERG_ASSIGN_OR_RAISE(auto unscaled, RescaleHalfUp(Decimal(value), /*from_scale=*/0,
+                                                       decimal_type.scale(), value < 0));
+  if (!unscaled.FitsInPrecision(decimal_type.precision())) {
     return InvalidArgument("Cannot cast {} as a {} value", value,
                            target_type->ToString());
   }
-  // An integer has scale 0, so scaling it to the target scale multiplies the unscaled
-  // value by 10^scale; Rescale rejects a target scale that would overflow the value.
-  ICEBERG_ASSIGN_OR_RAISE(auto decimal, Decimal(value).Rescale(0, scale));
-  if (!decimal.FitsInPrecision(decimal_type.precision())) {
-    return InvalidArgument("Cannot cast {} as a {} value", value,
-                           target_type->ToString());
-  }
-  return Literal::Decimal(decimal.value(), decimal_type.precision(),
+  return Literal::Decimal(unscaled.value(), decimal_type.precision(),
                           decimal_type.scale());
 }
 
 Result<Literal> LiteralCaster::CastRealToDecimal(
     double value, const std::shared_ptr<PrimitiveType>& target_type) {
   const auto& decimal_type = internal::checked_cast<const DecimalType&>(*target_type);
-  const int32_t target_scale = decimal_type.scale();
-  if (target_scale < 0 || target_scale > Decimal::kMaxScale) {
-    return InvalidArgument("Cannot cast {} as a {} value", value,
-                           target_type->ToString());
-  }
   if (!std::isfinite(value)) {
     return InvalidArgument("Cannot cast {} as a {} value", value,
                            target_type->ToString());
@@ -140,33 +168,19 @@ Result<Literal> LiteralCaster::CastRealToDecimal(
 
   // Parse the shortest round-tripping decimal representation of the value (matching
   // Java's BigDecimal.valueOf(double), which goes through Double.toString) into a
-  // full-precision decimal, then round to the target scale below.
+  // full-precision decimal, then round to the target scale.
   int32_t parsed_scale = 0;
   ICEBERG_ASSIGN_OR_RAISE(
       auto parsed, Decimal::FromString(std::format("{}", value), nullptr, &parsed_scale));
 
-  Decimal unscaled = parsed;
-  if (parsed_scale > target_scale) {
-    // Drop excess fractional digits with HALF_UP rounding (round half away from zero, as
-    // Java does), since Rescale itself only truncates and rejects any dropped remainder.
-    const int32_t drop = parsed_scale - target_scale;
-    ICEBERG_ASSIGN_OR_RAISE(auto divisor, Decimal(1).Rescale(0, drop));
-    ICEBERG_ASSIGN_OR_RAISE(auto divmod, parsed.Divide(divisor));
-    Decimal quotient = divmod.first;
-    Decimal remainder = Decimal::Abs(divmod.second);
-    if (remainder * Decimal(2) >= divisor) {
-      quotient += (value < 0) ? Decimal(-1) : Decimal(1);
-    }
-    unscaled = quotient;
-  } else if (parsed_scale < target_scale) {
-    ICEBERG_ASSIGN_OR_RAISE(unscaled, parsed.Rescale(parsed_scale, target_scale));
-  }
-
+  ICEBERG_ASSIGN_OR_RAISE(auto unscaled, RescaleHalfUp(parsed, parsed_scale,
+                                                       decimal_type.scale(), value < 0));
   if (!unscaled.FitsInPrecision(decimal_type.precision())) {
     return InvalidArgument("Cannot cast {} as a {} value", value,
                            target_type->ToString());
   }
-  return Literal::Decimal(unscaled.value(), decimal_type.precision(), target_scale);
+  return Literal::Decimal(unscaled.value(), decimal_type.precision(),
+                          decimal_type.scale());
 }
 
 Result<Literal> LiteralCaster::CastFromInt(

@@ -171,6 +171,12 @@ TEST(LiteralTest, IntegerCastToDecimal) {
   // (DecimalType does not bound its scale on construction).
   EXPECT_THAT(Literal::Int(1).CastTo(std::make_shared<DecimalType>(9, 40)),
               IsError(ErrorKind::kInvalidArgument));
+
+  // Negative scale: decimal(9, -2) scales by 10^2, so 149 rounds HALF_UP to 100 (unscaled
+  // value 1 at scale -2), matching Java's setScale(-2, HALF_UP).
+  auto neg_scale = Literal::Int(149).CastTo(decimal(9, -2));
+  ASSERT_THAT(neg_scale, IsOk());
+  EXPECT_EQ(*neg_scale, Literal::Decimal(1, 9, -2));
 }
 
 TEST(LiteralTest, RealCastToDecimal) {
@@ -206,6 +212,18 @@ TEST(LiteralTest, RealCastToDecimal) {
   EXPECT_THAT(
       Literal::Double(std::numeric_limits<double>::quiet_NaN()).CastTo(decimal(4, 2)),
       IsError(ErrorKind::kInvalidArgument));
+
+  // A magnitude far smaller than the target scale rounds to zero rather than indexing
+  // past the powers-of-ten table (Java rounds 1e-100 to 0.00).
+  auto tiny = Literal::Double(1e-100).CastTo(decimal(9, 2));
+  ASSERT_THAT(tiny, IsOk());
+  EXPECT_EQ(*tiny, Literal::Decimal(0, 9, 2));
+
+  // Negative scale: decimal(9, -2) scales by 10^2, so 149 rounds HALF_UP to 100 (unscaled
+  // value 1 at scale -2), matching Java's setScale(-2, HALF_UP).
+  auto neg_scale = Literal::Double(149.0).CastTo(decimal(9, -2));
+  ASSERT_THAT(neg_scale, IsOk());
+  EXPECT_EQ(*neg_scale, Literal::Decimal(1, 9, -2));
 }
 
 // Error cases for casts
