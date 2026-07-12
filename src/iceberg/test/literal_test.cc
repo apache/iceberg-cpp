@@ -20,12 +20,14 @@
 #include "iceberg/expression/literal.h"
 
 #include <limits>
+#include <memory>
 #include <numbers>
 #include <unordered_set>
 #include <vector>
 
 #include <gtest/gtest.h>
 
+#include "iceberg/result.h"
 #include "iceberg/test/matchers.h"
 #include "iceberg/test/temporal_test_helper.h"
 #include "iceberg/type.h"

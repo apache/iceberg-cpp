@@ -26,6 +26,7 @@
 #include <string>
 #include <vector>
 
+#include "iceberg/result.h"
 #include "iceberg/type.h"
 #include "iceberg/util/checked_cast.h"
 #include "iceberg/util/conversions.h"
