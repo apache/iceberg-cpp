@@ -57,7 +57,7 @@ class EqualityDeleteWriter::Impl {
     return {};
   }
 
-  Result<FileWriter::WriteResult> Metadata() {
+  Result<WriteResult> Metadata() {
     ICEBERG_CHECK(closed_, "Cannot get metadata before closing the writer");
 
     ICEBERG_ASSIGN_OR_RAISE(auto metrics, writer_->metrics());
@@ -99,7 +99,7 @@ class EqualityDeleteWriter::Impl {
             options_.spec ? std::make_optional(options_.spec->spec_id()) : std::nullopt,
     });
 
-    FileWriter::WriteResult result;
+    WriteResult result;
     result.data_files.push_back(std::move(data_file));
     return result;
   }
@@ -134,9 +134,7 @@ Result<int64_t> EqualityDeleteWriter::Length() const { return impl_->Length(); }
 
 Status EqualityDeleteWriter::Close() { return impl_->Close(); }
 
-Result<FileWriter::WriteResult> EqualityDeleteWriter::Metadata() {
-  return impl_->Metadata();
-}
+Result<WriteResult> EqualityDeleteWriter::Metadata() { return impl_->Metadata(); }
 
 std::span<const int32_t> EqualityDeleteWriter::equality_field_ids() const {
   return impl_->equality_field_ids();

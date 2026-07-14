@@ -20,6 +20,28 @@
 
 include(CMakePackageConfigHelpers)
 
+function(iceberg_configure_version_header INPUT_FILE OUTPUT_FILE)
+  set(ICEBERG_VERSION_SUFFIX "-SNAPSHOT")
+  set(ICEBERG_VERSION_STRING "${PROJECT_VERSION}${ICEBERG_VERSION_SUFFIX}")
+  set(ICEBERG_GIT_COMMIT_ID "unknown")
+
+  find_package(Git QUIET)
+  if(GIT_FOUND)
+    execute_process(COMMAND "${GIT_EXECUTABLE}" rev-parse HEAD
+                    WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}"
+                    OUTPUT_VARIABLE ICEBERG_GIT_COMMIT_ID
+                    RESULT_VARIABLE ICEBERG_GIT_RESULT
+                    OUTPUT_STRIP_TRAILING_WHITESPACE ERROR_QUIET)
+    if(NOT ICEBERG_GIT_RESULT EQUAL 0 OR NOT ICEBERG_GIT_COMMIT_ID)
+      set(ICEBERG_GIT_COMMIT_ID "unknown")
+    endif()
+  endif()
+
+  set(ICEBERG_FULL_VERSION_STRING
+      "Apache Iceberg-CPP ${ICEBERG_VERSION_STRING} (commit ${ICEBERG_GIT_COMMIT_ID})")
+  configure_file("${INPUT_FILE}" "${OUTPUT_FILE}" @ONLY)
+endfunction()
+
 function(iceberg_install_cmake_package PACKAGE_NAME EXPORT_NAME)
   set(CONFIG_CMAKE "${PACKAGE_NAME}-config.cmake")
   set(BUILT_CONFIG_CMAKE "${CMAKE_CURRENT_BINARY_DIR}/${CONFIG_CMAKE}")

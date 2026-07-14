@@ -67,13 +67,8 @@ class ICEBERG_DATA_EXPORT DeleteLoader {
 
  private:
   /// \brief Load a single position delete file into the index.
-  Status LoadPositionDelete(const std::shared_ptr<DataFile>& file,
-                            PositionDeleteIndex& index,
+  Status LoadPositionDelete(const DataFile& file, PositionDeleteIndex& index,
                             std::string_view data_file_path) const;
-
-  /// \brief Load a single deletion vector file into the index.
-  Status LoadDV(const std::shared_ptr<DataFile>& file, PositionDeleteIndex& index,
-                std::string_view data_file_path) const;
 
   std::shared_ptr<FileIO> io_;
 };

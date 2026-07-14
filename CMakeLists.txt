@@ -28,10 +28,9 @@ project(Iceberg
         DESCRIPTION "Iceberg C++ Project"
         LANGUAGES CXX)
 
-set(ICEBERG_VERSION_SUFFIX "-SNAPSHOT")
-set(ICEBERG_VERSION_STRING "${PROJECT_VERSION}${ICEBERG_VERSION_SUFFIX}")
-configure_file("${CMAKE_CURRENT_SOURCE_DIR}/src/iceberg/version.h.in"
-               "${CMAKE_BINARY_DIR}/src/iceberg/version.h")
+include(IcebergBuildUtils)
+iceberg_configure_version_header("${CMAKE_CURRENT_SOURCE_DIR}/src/iceberg/version.h.in"
+                                 "${CMAKE_BINARY_DIR}/src/iceberg/version.h")
 
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -79,7 +78,6 @@ if(ICEBERG_BUILD_REST_INTEGRATION_TESTS AND WIN32)
 endif()
 
 include(CMakeParseArguments)
-include(IcebergBuildUtils)
 include(IcebergSanitizer)
 include(IcebergSccache)
 include(IcebergThirdpartyToolchain)

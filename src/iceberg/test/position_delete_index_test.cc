@@ -349,4 +349,18 @@ TEST(PositionDeleteIndexTest, DeserializePreservesSourceDeleteFile) {
   EXPECT_EQ(restored.delete_files()[0], delete_file);
 }
 
+TEST(PositionDeleteIndexTest, ConstructorsPreserveSourceDeleteFiles) {
+  auto file_a = std::make_shared<DataFile>(DataFile{.file_path = "a.parquet"});
+  auto file_b = std::make_shared<DataFile>(DataFile{.file_path = "b.parquet"});
+
+  PositionDeleteIndex single(file_a);
+  ASSERT_EQ(single.delete_files().size(), 1u);
+  EXPECT_EQ(single.delete_files()[0], file_a);
+
+  PositionDeleteIndex multiple(std::vector<std::shared_ptr<DataFile>>{file_a, file_b});
+  ASSERT_EQ(multiple.delete_files().size(), 2u);
+  EXPECT_EQ(multiple.delete_files()[0], file_a);
+  EXPECT_EQ(multiple.delete_files()[1], file_b);
+}
+
 }  // namespace iceberg

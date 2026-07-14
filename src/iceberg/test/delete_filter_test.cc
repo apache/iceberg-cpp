@@ -38,6 +38,7 @@
 #include "iceberg/data/equality_delete_writer.h"
 #include "iceberg/data/position_delete_writer.h"
 #include "iceberg/file_format.h"
+#include "iceberg/file_io.h"
 #include "iceberg/file_reader.h"
 #include "iceberg/manifest/manifest_entry.h"
 #include "iceberg/metadata_columns.h"
@@ -257,7 +258,7 @@ class DeleteFilterTest : public ::testing::Test {
         .path = path,
         .io = file_io_,
         .load_previous_deletes = [](std::string_view)
-            -> Result<std::shared_ptr<PositionDeleteIndex>> { return nullptr; },
+            -> Result<std::optional<PositionDeleteIndex>> { return std::nullopt; },
     };
     ICEBERG_ASSIGN_OR_RAISE(auto writer, DeletionVectorWriter::Make(std::move(options)));
     for (int64_t pos : positions) {
@@ -266,7 +267,7 @@ class DeleteFilterTest : public ::testing::Test {
     }
     ICEBERG_RETURN_UNEXPECTED(writer->Close());
     ICEBERG_ASSIGN_OR_RAISE(auto metadata, writer->Metadata());
-    return metadata.delete_files[0];
+    return metadata.data_files[0];
   }
 
   std::shared_ptr<FileIO> file_io_;

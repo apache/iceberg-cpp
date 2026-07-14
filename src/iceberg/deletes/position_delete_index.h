@@ -30,10 +30,9 @@
 #include "iceberg/deletes/roaring_position_bitmap.h"
 #include "iceberg/iceberg_data_export.h"
 #include "iceberg/result.h"
+#include "iceberg/type_fwd.h"
 
 namespace iceberg {
-
-struct DataFile;
 
 /// \brief Tracks deleted row positions using a bitmap.
 ///
@@ -43,6 +42,8 @@ struct DataFile;
 class ICEBERG_DATA_EXPORT PositionDeleteIndex {
  public:
   PositionDeleteIndex() = default;
+  explicit PositionDeleteIndex(std::shared_ptr<DataFile> delete_file);
+  explicit PositionDeleteIndex(std::vector<std::shared_ptr<DataFile>> delete_files);
   ~PositionDeleteIndex() = default;
 
   /// \brief Mark a position as deleted.
@@ -71,18 +72,12 @@ class ICEBERG_DATA_EXPORT PositionDeleteIndex {
 
   /// \brief The delete files whose positions were merged into this index.
   ///
-  /// Populated by Deserialize and AddDeleteFile, and preserved across Merge.
+  /// Populated by constructors and Deserialize, and preserved across Merge.
   /// Callers use these to report the delete files that were rewritten when
   /// replacing them with a new deletion vector.
   const std::vector<std::shared_ptr<DataFile>>& delete_files() const {
     return delete_files_;
   }
-
-  /// \brief Record a delete file whose positions were merged into this index.
-  ///
-  /// Used by the position-delete load path, where positions come from a Parquet
-  /// delete file rather than a DV blob. The file is exposed via delete_files().
-  void AddDeleteFile(std::shared_ptr<DataFile> delete_file);
 
   /// \brief Serialize the index into a `deletion-vector-v1` blob.
   ///

@@ -112,4 +112,21 @@ T ReadLittleEndian(const void* input) {
   return FromLittleEndian(value);
 }
 
+/// \brief Write a value in big-endian format to a buffer.
+/// \note Caller must ensure output has at least sizeof(T) bytes available.
+template <EndianConvertible T>
+void WriteBigEndian(T value, void* output) {
+  auto be = ToBigEndian(value);
+  std::memcpy(output, &be, sizeof(be));
+}
+
+/// \brief Read a value in big-endian format from a buffer.
+/// \note Caller must ensure input has at least sizeof(T) bytes available.
+template <EndianConvertible T>
+T ReadBigEndian(const void* input) {
+  T value;
+  std::memcpy(&value, input, sizeof(value));
+  return FromBigEndian(value);
+}
+
 }  // namespace iceberg

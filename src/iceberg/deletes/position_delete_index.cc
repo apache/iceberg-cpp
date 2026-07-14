@@ -50,23 +50,70 @@ uint32_t ComputeCrc32(std::span<const uint8_t> bytes) {
   return static_cast<uint32_t>(crc);
 }
 
-template <typename T>
-void WriteBigEndian(T value, uint8_t* buf) {
-  T be = ToBigEndian(value);
-  std::memcpy(buf, &be, sizeof(be));
+Result<int32_t> ReadBitmapDataLength(std::span<const uint8_t> blob,
+                                     const DataFile& delete_file) {
+  ICEBERG_PRECHECK(delete_file.content_size_in_bytes.has_value(),
+                   "Deletion vector requires content_size_in_bytes: {}",
+                   delete_file.file_path);
+  ICEBERG_PRECHECK(
+      std::cmp_equal(blob.size(), *delete_file.content_size_in_bytes),
+      "Deletion vector blob size {} does not match content_size_in_bytes {}: {}",
+      blob.size(), *delete_file.content_size_in_bytes, delete_file.file_path);
+  ICEBERG_PRECHECK(blob.size() >= kLengthPrefixBytes + kMagicBytes + kCrcBytes,
+                   "Deletion vector blob too small: {} bytes", blob.size());
+
+  const auto length = ReadBigEndian<int32_t>(blob.data());
+  const size_t expected_size =
+      kLengthPrefixBytes + static_cast<size_t>(length) + kCrcBytes;
+  ICEBERG_PRECHECK(length >= kMagicBytes, "Invalid deletion vector length prefix: {}",
+                   length);
+  ICEBERG_PRECHECK(blob.size() == expected_size,
+                   "Deletion vector blob size mismatch: {} bytes, expected {}",
+                   blob.size(), expected_size);
+  return length;
 }
 
-template <typename T>
-T ReadBigEndian(const uint8_t* buf) {
-  T value;
-  std::memcpy(&value, buf, sizeof(value));
-  return FromBigEndian(value);
+Result<RoaringPositionBitmap> DeserializeBitmap(std::span<const uint8_t> blob,
+                                                int32_t length,
+                                                const DataFile& delete_file) {
+  const uint8_t* bitmap_data = blob.data() + kLengthPrefixBytes;
+  ICEBERG_PRECHECK(std::memcmp(bitmap_data, kMagic.data(), kMagic.size()) == 0,
+                   "Invalid deletion vector magic");
+
+  std::string_view vector_bytes(reinterpret_cast<const char*>(bitmap_data + kMagicBytes),
+                                static_cast<size_t>(length) - kMagicBytes);
+  ICEBERG_ASSIGN_OR_RAISE(auto bitmap, RoaringPositionBitmap::Deserialize(vector_bytes));
+  ICEBERG_PRECHECK(std::cmp_equal(bitmap.Cardinality(), delete_file.record_count),
+                   "Deletion vector cardinality {} does not match record count {}: {}",
+                   bitmap.Cardinality(), delete_file.record_count, delete_file.file_path);
+  return bitmap;
+}
+
+Status ValidateChecksum(std::span<const uint8_t> blob, int32_t length) {
+  const uint8_t* bitmap_data = blob.data() + kLengthPrefixBytes;
+  const auto stored_crc = ReadBigEndian<uint32_t>(bitmap_data + length);
+  const auto actual_crc =
+      ComputeCrc32(std::span<const uint8_t>(bitmap_data, static_cast<size_t>(length)));
+  ICEBERG_PRECHECK(stored_crc == actual_crc,
+                   "Deletion vector CRC mismatch: stored {:#010x}, computed {:#010x}",
+                   stored_crc, actual_crc);
+  return {};
 }
 
 }  // namespace
 
 PositionDeleteIndex::PositionDeleteIndex(RoaringPositionBitmap bitmap)
     : bitmap_(std::move(bitmap)) {}
+
+PositionDeleteIndex::PositionDeleteIndex(std::shared_ptr<DataFile> delete_file) {
+  if (delete_file != nullptr) {
+    delete_files_.push_back(std::move(delete_file));
+  }
+}
+
+PositionDeleteIndex::PositionDeleteIndex(
+    std::vector<std::shared_ptr<DataFile>> delete_files)
+    : delete_files_(std::move(delete_files)) {}
 
 void PositionDeleteIndex::Delete(int64_t pos) { bitmap_.Add(pos); }
 
@@ -88,35 +135,23 @@ void PositionDeleteIndex::Merge(const PositionDeleteIndex& other) {
                        other.delete_files_.end());
 }
 
-void PositionDeleteIndex::AddDeleteFile(std::shared_ptr<DataFile> delete_file) {
-  delete_files_.push_back(std::move(delete_file));
-}
-
 Result<std::vector<uint8_t>> PositionDeleteIndex::Serialize() {
   bitmap_.Optimize();  // run-length encode before serializing
-  ICEBERG_ASSIGN_OR_RAISE(auto vector, bitmap_.Serialize());
+  std::vector<uint8_t> blob(kLengthPrefixBytes);
+  blob.insert(blob.end(), kMagic.begin(), kMagic.end());
+  ICEBERG_ASSIGN_OR_RAISE(const auto vector_size, bitmap_.SerializeTo(blob));
 
-  // The length prefix and CRC both cover the magic sequence plus the vector.
-  const size_t magic_and_vector_size = static_cast<size_t>(kMagicBytes) + vector.size();
-  ICEBERG_PRECHECK(
-      magic_and_vector_size <= static_cast<size_t>(std::numeric_limits<int32_t>::max()),
-      "Deletion vector is too large to serialize: {} bytes", magic_and_vector_size);
+  const size_t magic_and_vector_size = kMagicBytes + vector_size;
+  ICEBERG_PRECHECK(magic_and_vector_size <= std::numeric_limits<int32_t>::max(),
+                   "Deletion vector is too large to serialize: {} bytes",
+                   magic_and_vector_size);
 
-  std::vector<uint8_t> blob(static_cast<size_t>(kLengthPrefixBytes) +
-                            magic_and_vector_size + static_cast<size_t>(kCrcBytes));
-  uint8_t* buf = blob.data();
-
-  WriteBigEndian(static_cast<int32_t>(magic_and_vector_size), buf);
-  buf += kLengthPrefixBytes;
-
-  uint8_t* checksum_begin = buf;
-  std::memcpy(buf, kMagic.data(), kMagicBytes);
-  buf += kMagicBytes;
-  std::memcpy(buf, vector.data(), vector.size());
-  buf += vector.size();
-
-  WriteBigEndian(
-      ComputeCrc32(std::span<const uint8_t>(checksum_begin, magic_and_vector_size)), buf);
+  WriteBigEndian(static_cast<int32_t>(magic_and_vector_size), blob.data());
+  const auto crc_offset = blob.size();
+  blob.resize(crc_offset + kCrcBytes);
+  WriteBigEndian(ComputeCrc32(std::span<const uint8_t>(blob.data() + kLengthPrefixBytes,
+                                                       magic_and_vector_size)),
+                 blob.data() + crc_offset);
   return blob;
 }
 
@@ -124,65 +159,10 @@ Result<PositionDeleteIndex> PositionDeleteIndex::Deserialize(
     std::span<const uint8_t> blob, std::shared_ptr<DataFile> delete_file) {
   ICEBERG_PRECHECK(delete_file != nullptr,
                    "Deletion vector requires a source delete file");
-  // DV metadata requires content_size_in_bytes; the blob bytes must match it.
-  ICEBERG_PRECHECK(delete_file->content_size_in_bytes.has_value(),
-                   "Deletion vector requires content_size_in_bytes: {}",
-                   delete_file->file_path);
-  ICEBERG_PRECHECK(
-      std::cmp_equal(blob.size(), delete_file->content_size_in_bytes.value()),
-      "Deletion vector blob size {} does not match content_size_in_bytes {}: {}",
-      blob.size(), delete_file->content_size_in_bytes.value(), delete_file->file_path);
-
-  constexpr size_t kMinSize = static_cast<size_t>(kLengthPrefixBytes) +
-                              static_cast<size_t>(kMagicBytes) +
-                              static_cast<size_t>(kCrcBytes);
-  ICEBERG_PRECHECK(blob.size() >= kMinSize,
-                   "Deletion vector blob too small: {} bytes, need at least {}",
-                   blob.size(), kMinSize);
-
-  const uint8_t* buf = blob.data();
-
-  const auto length = ReadBigEndian<int32_t>(buf);
-  buf += kLengthPrefixBytes;
-
-  ICEBERG_PRECHECK(length >= kMagicBytes, "Invalid deletion vector length prefix: {}",
-                   length);
-
-  const size_t expected_total = static_cast<size_t>(kLengthPrefixBytes) +
-                                static_cast<size_t>(length) +
-                                static_cast<size_t>(kCrcBytes);
-  ICEBERG_PRECHECK(blob.size() == expected_total,
-                   "Deletion vector blob size mismatch: {} bytes, expected {}",
-                   blob.size(), expected_total);
-
-  // Magic and vector are checksummed together by the trailing CRC.
-  const uint8_t* checksum_begin = buf;
-  for (size_t i = 0; i < kMagic.size(); ++i) {
-    ICEBERG_PRECHECK(buf[i] == kMagic[i],
-                     "Invalid deletion vector magic byte at offset {}: got {:#04x}", i,
-                     buf[i]);
-  }
-  buf += kMagicBytes;
-
-  const auto stored_crc =
-      ReadBigEndian<uint32_t>(checksum_begin + static_cast<size_t>(length));
-  const uint32_t actual_crc =
-      ComputeCrc32(std::span<const uint8_t>(checksum_begin, static_cast<size_t>(length)));
-  ICEBERG_PRECHECK(stored_crc == actual_crc,
-                   "Deletion vector CRC mismatch: stored {:#010x}, computed {:#010x}",
-                   stored_crc, actual_crc);
-
-  const auto vector_size = static_cast<size_t>(length) - kMagicBytes;
-  std::string_view vector_bytes(reinterpret_cast<const char*>(buf), vector_size);
-  ICEBERG_ASSIGN_OR_RAISE(auto bitmap, RoaringPositionBitmap::Deserialize(vector_bytes));
+  ICEBERG_ASSIGN_OR_RAISE(const auto length, ReadBitmapDataLength(blob, *delete_file));
+  ICEBERG_ASSIGN_OR_RAISE(auto bitmap, DeserializeBitmap(blob, length, *delete_file));
+  ICEBERG_RETURN_UNEXPECTED(ValidateChecksum(blob, length));
   PositionDeleteIndex index(std::move(bitmap));
-
-  // The bitmap cardinality must match the record count recorded in metadata.
-  ICEBERG_PRECHECK(std::cmp_equal(index.Cardinality(), delete_file->record_count),
-                   "Deletion vector cardinality {} does not match record count {}: {}",
-                   index.Cardinality(), delete_file->record_count,
-                   delete_file->file_path);
-
   index.delete_files_.push_back(std::move(delete_file));
   return index;
 }

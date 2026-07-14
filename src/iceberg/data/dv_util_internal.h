@@ -19,12 +19,22 @@
 
 #pragma once
 
-#define ICEBERG_VERSION_MAJOR @PROJECT_VERSION_MAJOR@
-#define ICEBERG_VERSION_MINOR @PROJECT_VERSION_MINOR@
-#define ICEBERG_VERSION_PATCH @PROJECT_VERSION_PATCH@
+/// \file iceberg/data/dv_util_internal.h
+/// Internal deletion vector helpers.
 
-#define ICEBERG_GIT_COMMIT_ID "@ICEBERG_GIT_COMMIT_ID@"
-#define ICEBERG_VERSION_STRING "@ICEBERG_VERSION_STRING@"
-#define ICEBERG_FULL_VERSION_STRING "@ICEBERG_FULL_VERSION_STRING@"
+#include <memory>
 
-#define ICEBERG_PROJECT_NAME "@PROJECT_NAME@"
+#include "iceberg/deletes/position_delete_index.h"
+#include "iceberg/iceberg_data_export.h"
+#include "iceberg/result.h"
+#include "iceberg/type_fwd.h"
+
+namespace iceberg {
+
+class ICEBERG_DATA_EXPORT DVUtil {
+ public:
+  static Result<PositionDeleteIndex> ReadDV(const std::shared_ptr<DataFile>& delete_file,
+                                            const std::shared_ptr<FileIO>& io);
+};
+
+}  // namespace iceberg

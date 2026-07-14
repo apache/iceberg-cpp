@@ -25,10 +25,9 @@
 #include <cstdint>
 #include <functional>
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
-#include <unordered_map>
-#include <vector>
 
 #include "iceberg/data/writer.h"
 #include "iceberg/deletes/position_delete_index.h"
@@ -41,32 +40,17 @@ namespace iceberg {
 
 /// \brief Options for creating a DeletionVectorWriter.
 struct ICEBERG_DATA_EXPORT DeletionVectorWriterOptions {
-  /// Output Puffin file location.
   std::string path;
-  /// FileIO used to create the Puffin file.
   std::shared_ptr<FileIO> io;
-  /// File-level Puffin properties (e.g. "created-by").
-  std::unordered_map<std::string, std::string> properties;
-  /// Hook to load previously written deletes for a data file so they can be
-  /// merged into the new deletion vector. The returned index carries its source
-  /// delete files (via PositionDeleteIndex::delete_files()); file-scoped ones
-  /// are reported as rewritten. Return nullptr when there are none. Required: a
-  /// DV must replace any existing deletes for its data file.
-  std::function<Result<std::shared_ptr<PositionDeleteIndex>>(std::string_view)>
+  /// Loads existing deletes for a data file to merge, if any.
+  std::function<Result<std::optional<PositionDeleteIndex>>(std::string_view)>
       load_previous_deletes;
 };
 
-/// \brief Writes one or more deletion vectors into a single Puffin file.
-///
-/// Each referenced data file gets its own `deletion-vector-v1` blob with its own
-/// partition spec and partition. After Close(), Metadata() returns the produced
-/// delete files plus the referenced and rewritten delete files.
+/// \brief A deletion vector file writer.
 class ICEBERG_DATA_EXPORT DeletionVectorWriter {
  public:
   ~DeletionVectorWriter();
-
-  DeletionVectorWriter(const DeletionVectorWriter&) = delete;
-  DeletionVectorWriter& operator=(const DeletionVectorWriter&) = delete;
 
   /// \brief Create a new DeletionVectorWriter.
   static Result<std::unique_ptr<DeletionVectorWriter>> Make(
@@ -74,18 +58,20 @@ class ICEBERG_DATA_EXPORT DeletionVectorWriter {
 
   /// \brief Mark a row position as deleted for the given data file.
   Status Delete(std::string_view referenced_data_file, int64_t pos,
-                std::shared_ptr<PartitionSpec> spec, PartitionValues partition);
+                const std::shared_ptr<PartitionSpec>& spec,
+                const PartitionValues& partition);
 
   /// \brief Mark all positions in the given index as deleted for a data file.
   Status Delete(std::string_view referenced_data_file,
-                const PositionDeleteIndex& positions, std::shared_ptr<PartitionSpec> spec,
-                PartitionValues partition);
+                const PositionDeleteIndex& positions,
+                const std::shared_ptr<PartitionSpec>& spec,
+                const PartitionValues& partition);
 
   /// \brief Write all accumulated deletion vectors to the Puffin file and close.
   Status Close();
 
   /// \brief The result of writing; valid only after Close().
-  Result<DeleteWriteResult> Metadata();
+  Result<WriteResult> Metadata();
 
  private:
   class Impl;
