@@ -21,12 +21,14 @@
 
 #include <map>
 #include <set>
+#include <utility>
 #include <vector>
 
 #include <nanoarrow/nanoarrow.h>
 
 #include "iceberg/arrow/nanoarrow_status_internal.h"
 #include "iceberg/arrow_c_data_guard_internal.h"
+#include "iceberg/data/writer.h"  // IWYU pragma: keep
 #include "iceberg/file_writer.h"
 #include "iceberg/manifest/manifest_entry.h"
 #include "iceberg/metadata_columns.h"

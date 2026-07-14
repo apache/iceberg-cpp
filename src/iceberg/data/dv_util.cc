@@ -28,6 +28,7 @@
 #include "iceberg/deletes/position_delete_index.h"
 #include "iceberg/file_io.h"
 #include "iceberg/manifest/manifest_entry.h"
+#include "iceberg/result.h"
 #include "iceberg/util/content_file_util.h"
 #include "iceberg/util/macros.h"
 

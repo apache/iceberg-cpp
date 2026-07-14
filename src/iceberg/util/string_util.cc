@@ -22,7 +22,13 @@
 #include <utf8proc.h>
 
 #include <array>
+#include <cstddef>
+#include <cstdint>
+#include <string>
+#include <string_view>
+#include <vector>
 
+#include "iceberg/result.h"
 #include "iceberg/util/macros.h"
 
 namespace iceberg {

@@ -19,16 +19,23 @@
 
 #include "iceberg/deletes/position_delete_index.h"
 
+#include <zconf.h>
 #include <zlib.h>
 
 #include <array>
 #include <cstddef>
+#include <cstdint>
 #include <cstring>
 #include <limits>
+#include <memory>
+#include <span>
 #include <string_view>
 #include <utility>
+#include <vector>
 
+#include "iceberg/deletes/roaring_position_bitmap.h"
 #include "iceberg/manifest/manifest_entry.h"
+#include "iceberg/result.h"
 #include "iceberg/util/endian.h"
 #include "iceberg/util/macros.h"
 

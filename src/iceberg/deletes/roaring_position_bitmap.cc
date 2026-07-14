@@ -19,9 +19,11 @@
 
 #include "iceberg/deletes/roaring_position_bitmap.h"
 
+#include <cstdint>
 #include <cstring>
 #include <exception>
 #include <limits>
+#include <string_view>
 #include <utility>
 #include <vector>
 

@@ -19,20 +19,29 @@
 
 #include "iceberg/data/deletion_vector_writer.h"
 
+#include <cstdint>
 #include <format>
 #include <map>
+#include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <unordered_map>
 #include <utility>
 #include <vector>
 
-#include "iceberg/file_io.h"
+#include "iceberg/data/writer.h"
+#include "iceberg/deletes/position_delete_index.h"
+#include "iceberg/deletes/roaring_position_bitmap.h"
+#include "iceberg/file_format.h"
+#include "iceberg/file_io.h"  // IWYU pragma: keep
 #include "iceberg/manifest/manifest_entry.h"
 #include "iceberg/metadata_columns.h"
 #include "iceberg/partition_spec.h"
 #include "iceberg/puffin/file_metadata.h"
 #include "iceberg/puffin/puffin_writer.h"
+#include "iceberg/result.h"
+#include "iceberg/row/partition_values.h"
 #include "iceberg/util/content_file_util.h"
 #include "iceberg/util/macros.h"
 #include "iceberg/util/string_util.h"

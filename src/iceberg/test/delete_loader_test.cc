@@ -20,6 +20,7 @@
 #include "iceberg/data/delete_loader.h"
 
 #include <optional>
+#include <utility>
 
 #include <arrow/array.h>
 #include <arrow/c/bridge.h>
@@ -37,12 +38,14 @@
 #include "iceberg/manifest/manifest_entry.h"
 #include "iceberg/parquet/parquet_register.h"
 #include "iceberg/partition_spec.h"
+#include "iceberg/result.h"
 #include "iceberg/row/partition_values.h"
 #include "iceberg/schema.h"
 #include "iceberg/schema_field.h"
 #include "iceberg/schema_internal.h"
 #include "iceberg/test/matchers.h"
 #include "iceberg/type.h"
+#include "iceberg/util/macros.h"
 #include "iceberg/util/struct_like_set.h"
 
 namespace iceberg {

@@ -19,10 +19,12 @@
 
 #include "iceberg/data/deletion_vector_writer.h"
 
+#include <cstdint>
 #include <functional>
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -37,9 +39,11 @@
 #include "iceberg/partition_spec.h"
 #include "iceberg/puffin/file_metadata.h"
 #include "iceberg/puffin/puffin_reader.h"
+#include "iceberg/result.h"
 #include "iceberg/row/partition_values.h"
 #include "iceberg/test/matchers.h"
 #include "iceberg/test/mock_io.h"
+#include "iceberg/util/macros.h"
 #include "iceberg/version.h"
 
 namespace iceberg {

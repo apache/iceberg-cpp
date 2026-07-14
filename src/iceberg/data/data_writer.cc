@@ -20,7 +20,9 @@
 #include "iceberg/data/data_writer.h"
 
 #include <map>
+#include <utility>
 
+#include "iceberg/data/writer.h"  // IWYU pragma: keep
 #include "iceberg/file_writer.h"
 #include "iceberg/manifest/manifest_entry.h"
 #include "iceberg/partition_spec.h"
