@@ -816,7 +816,7 @@ MergingSnapshotUpdate::MergeDVs() {
     return result;
   }
 
-  ICEBERG_ASSIGN_OR_RAISE(auto location_provider, ctx_->LocationProvider());
+  ICEBERG_ASSIGN_OR_RAISE(auto location_provider, ctx_->NewLocationProvider());
   auto output_path = location_provider->NewDataLocation(
       std::format("merged-dvs-{}-{}.puffin", SnapshotId(), ++dv_merge_attempt_));
 

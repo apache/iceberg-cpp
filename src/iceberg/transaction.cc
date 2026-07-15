@@ -87,7 +87,8 @@ const TableMetadata& TransactionContext::current() const {
   return metadata_builder->current();
 }
 
-Result<std::unique_ptr<LocationProvider>> TransactionContext::LocationProvider() const {
+Result<std::unique_ptr<LocationProvider>> TransactionContext::NewLocationProvider()
+    const {
   return iceberg::LocationProvider::Make(current().location, current().properties);
 }
 
