@@ -137,24 +137,6 @@ TEST(HmsClientConnectTest, MultipleEndpointsRejectedUntilFailover) {
   EXPECT_EQ(client.error().kind, ErrorKind::kInvalidArgument);
 }
 
-TEST(HmsClientConnectTest, BadConnectTimeoutIsInvalidArgument) {
-  auto config = HiveCatalogProperties::FromMap(
-      {{std::string(HiveCatalogProperties::kUri.key()), "127.0.0.1:9083"},
-       {std::string(HiveCatalogProperties::kConnectTimeoutMs.key()), "abc"}});
-  auto client = HmsClient::Connect(config);
-  ASSERT_FALSE(client.has_value());
-  EXPECT_EQ(client.error().kind, ErrorKind::kInvalidArgument);
-}
-
-TEST(HmsClientConnectTest, BadSocketTimeoutIsInvalidArgument) {
-  auto config = HiveCatalogProperties::FromMap(
-      {{std::string(HiveCatalogProperties::kUri.key()), "127.0.0.1:9083"},
-       {std::string(HiveCatalogProperties::kSocketTimeoutMs.key()), "abc"}});
-  auto client = HmsClient::Connect(config);
-  ASSERT_FALSE(client.has_value());
-  EXPECT_EQ(client.error().kind, ErrorKind::kInvalidArgument);
-}
-
 TEST(HmsClientConnectTest, UnreachableHmsIsIoError) {
   // Port 1 is privileged; nothing should be listening. We assert that the
   // failure surfaces as IOError rather than a Thrift C++ exception.

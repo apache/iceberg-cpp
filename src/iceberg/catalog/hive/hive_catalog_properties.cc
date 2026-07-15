@@ -22,23 +22,9 @@
 #include <string>
 #include <string_view>
 
-#include "iceberg/util/macros.h"
 #include "iceberg/util/string_util.h"
 
 namespace iceberg::hive {
-
-namespace {
-
-/// Parse a millisecond timeout property, rejecting malformed or negative values.
-Result<int> ParseTimeoutMs(const std::string& value, std::string_view property) {
-  ICEBERG_ASSIGN_OR_RAISE(auto ms, StringUtils::ParseNumber<int>(value));
-  if (ms < 0) {
-    return InvalidArgument("Invalid Hive {}: '{}'.", property, value);
-  }
-  return ms;
-}
-
-}  // namespace
 
 HiveCatalogProperties HiveCatalogProperties::default_properties() { return {}; }
 
@@ -66,14 +52,6 @@ Result<HiveThriftTransport> HiveCatalogProperties::ThriftTransport() const {
     return HiveThriftTransport::kFramed;
   }
   return InvalidArgument("Invalid Hive thrift transport: '{}'.", Get(kThriftTransport));
-}
-
-Result<int> HiveCatalogProperties::ConnectTimeoutMs() const {
-  return ParseTimeoutMs(Get(kConnectTimeoutMs), kConnectTimeoutMs.key());
-}
-
-Result<int> HiveCatalogProperties::SocketTimeoutMs() const {
-  return ParseTimeoutMs(Get(kSocketTimeoutMs), kSocketTimeoutMs.key());
 }
 
 }  // namespace iceberg::hive

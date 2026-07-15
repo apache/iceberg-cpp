@@ -155,8 +155,8 @@ Result<std::unique_ptr<HmsClient>> HmsClient::Connect(
         endpoints.size());
   }
   const HmsEndpoint& endpoint = endpoints.front();
-  ICEBERG_ASSIGN_OR_RAISE(auto connect_timeout_ms, config.ConnectTimeoutMs());
-  ICEBERG_ASSIGN_OR_RAISE(auto socket_timeout_ms, config.SocketTimeoutMs());
+  const int connect_timeout_ms = config.Get(HiveCatalogProperties::kConnectTimeoutMs);
+  const int socket_timeout_ms = config.Get(HiveCatalogProperties::kSocketTimeoutMs);
 
   auto socket =
       std::make_shared<apache::thrift::transport::TSocket>(endpoint.host, endpoint.port);
