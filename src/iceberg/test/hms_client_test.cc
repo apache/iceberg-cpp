@@ -22,6 +22,7 @@
 #include <gtest/gtest.h>
 
 #include "iceberg/catalog/hive/hive_catalog_properties.h"
+#include "iceberg/result.h"
 
 namespace iceberg::hive {
 

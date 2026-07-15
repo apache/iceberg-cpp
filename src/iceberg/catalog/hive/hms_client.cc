@@ -21,6 +21,7 @@
 
 #include <cctype>
 #include <charconv>
+#include <cstddef>
 #include <memory>
 #include <string>
 #include <string_view>
@@ -35,6 +36,8 @@
 #include <thrift/transport/TTransportException.h>
 
 #include "ThriftHiveMetastore.h"
+#include "iceberg/catalog/hive/hive_catalog_properties.h"
+#include "iceberg/result.h"
 #include "iceberg/util/macros.h"
 
 namespace iceberg::hive {
