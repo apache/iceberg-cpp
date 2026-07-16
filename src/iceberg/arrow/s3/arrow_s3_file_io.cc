@@ -35,6 +35,7 @@
 #include "iceberg/arrow/arrow_io_util.h"
 #include "iceberg/arrow/arrow_status_internal.h"
 #include "iceberg/arrow/s3/s3_properties.h"
+#include "iceberg/logging/logger.h"
 #include "iceberg/util/macros.h"
 #include "iceberg/util/string_util.h"
 
@@ -90,6 +91,9 @@ std::string SplitEndpointScheme(std::string_view endpoint,
   return std::string(endpoint);
 }
 
+// Deliberately narrower than the schemes this FileIO serves: `oss`-prefixed
+// credentials target native OSS connectors, while S3-compatible access is
+// vended under an `s3` prefix (servers vend both side by side).
 bool IsS3FileIOCredentialPrefix(std::string_view prefix) {
   return prefix == "s3" || prefix.starts_with("s3://") || prefix.starts_with("s3a://") ||
          prefix.starts_with("s3n://");
@@ -181,6 +185,7 @@ Result<std::shared_ptr<::arrow::fs::FileSystem>> BuildArrowS3FileSystem(
   return std::shared_ptr<::arrow::fs::FileSystem>(std::move(fs));
 }
 
+// Keep in sync with ResolvingFileIO::ResolveFileIOName's S3-compatible schemes.
 std::string CanonicalizeS3Scheme(std::string_view location) {
   for (std::string_view scheme : {"s3a://", "s3n://", "oss://"}) {
     if (location.starts_with(scheme)) {
@@ -235,10 +240,11 @@ Status ArrowS3FileIO::SetStorageCredentials(
   // TODO(gangwu): Refresh vended credentials via credentials.uri before tokens expire.
   for (const auto& credential : storage_credentials) {
     ICEBERG_RETURN_UNEXPECTED(credential.Validate());
+    // A server may vend credentials for several storage systems at once;
+    // non-S3 prefixes are skipped, not rejected (Java S3FileIO filters
+    // credentials by the "s3" prefix).
     if (!IsS3FileIOCredentialPrefix(credential.prefix)) {
-      return NotSupported(
-          "Storage credential prefix '{}' is unsupported by Arrow S3 FileIO",
-          credential.prefix);
+      continue;
     }
     auto properties = default_properties_;
     for (const auto& [key, value] : credential.config) {
@@ -248,6 +254,14 @@ Status ArrowS3FileIO::SetStorageCredentials(
     file_io_by_prefix.emplace_back(
         CanonicalizeS3Scheme(credential.prefix),
         std::make_unique<ArrowFileSystemFileIO>(std::move(fs)));
+  }
+  if (file_io_by_prefix.empty() && !storage_credentials.empty()) {
+    // Silent skipping of every vended credential is hard to diagnose: S3 access
+    // would proceed with the default credentials and fail only at IO time.
+    Log(LogLevel::kWarn,
+        "None of the {} vended storage credential(s) has an S3-compatible prefix; "
+        "S3 access will use the default credentials",
+        storage_credentials.size());
   }
   file_io_by_prefix_ = std::move(file_io_by_prefix);
   storage_credentials_ = storage_credentials;

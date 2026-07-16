@@ -108,6 +108,7 @@ iceberg_tests = {
             'math_util_internal_test.cc',
             'position_delete_index_test.cc',
             'position_delete_range_consumer_test.cc',
+            'resolving_file_io_test.cc',
             'retry_util_test.cc',
             'roaring_position_bitmap_test.cc',
             'string_util_test.cc',

@@ -156,18 +156,37 @@ TEST_F(ArrowS3FileIOTest, StoresCredentials) {
   EXPECT_EQ(credentialed->credentials(), credentials);
 }
 
-TEST_F(ArrowS3FileIOTest, RejectsCredentialPrefix) {
+TEST_F(ArrowS3FileIOTest, SkipsNonS3CredentialPrefix) {
   auto result = MakeS3FileIO({});
   ASSERT_THAT(result, IsOk());
   auto* credentialed = result.value()->AsSupportsStorageCredentials();
   ASSERT_NE(credentialed, nullptr);
 
-  auto status = credentialed->SetStorageCredentials(
-      {{.prefix = "gs://bucket/table",
-        .config = {{std::string(S3Properties::kAccessKeyId), "access-key"},
-                   {std::string(S3Properties::kSecretAccessKey), "secret"}}}});
-  EXPECT_THAT(status, IsError(ErrorKind::kNotSupported));
-  EXPECT_THAT(status, HasErrorMessage("unsupported by Arrow S3 FileIO"));
+  // A server may vend credentials for several storage systems at once;
+  // non-S3 prefixes (here `oss`) are skipped rather than rejected.
+  std::vector<StorageCredential> credentials = {
+      {.prefix = "oss://bucket/table",
+       .config = {{std::string(S3Properties::kAccessKeyId), "oss-access-key"},
+                  {std::string(S3Properties::kSecretAccessKey), "oss-secret"}}},
+      {.prefix = "s3://bucket/table",
+       .config = {{std::string(S3Properties::kAccessKeyId), "access-key"},
+                  {std::string(S3Properties::kSecretAccessKey), "secret"}}}};
+  EXPECT_THAT(credentialed->SetStorageCredentials(credentials), IsOk());
+  EXPECT_EQ(credentialed->credentials(), credentials);
+}
+
+TEST_F(ArrowS3FileIOTest, AcceptsCredentialsWithoutS3Prefix) {
+  auto result = MakeS3FileIO({});
+  ASSERT_THAT(result, IsOk());
+  auto* credentialed = result.value()->AsSupportsStorageCredentials();
+  ASSERT_NE(credentialed, nullptr);
+
+  // Even when no vended credential is S3-family, setting them succeeds (a
+  // warning is logged) and S3 access falls back to the default credentials.
+  std::vector<StorageCredential> credentials = {
+      {.prefix = "gs://bucket/table", .config = {{"k", "v"}}}};
+  EXPECT_THAT(credentialed->SetStorageCredentials(credentials), IsOk());
+  EXPECT_EQ(credentialed->credentials(), credentials);
 }
 
 TEST_F(ArrowS3FileIOTest, RejectsIncompleteStaticCredentials) {
