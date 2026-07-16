@@ -45,12 +45,8 @@ github:
     issues: true
     projects: true
   collaborators:
-    - gaborkaszab
-    - lidavidm
-    - pitrou
-    - raulcd
-    - wgtmac
     - zhjwpku
+    - manuzhang
   ghp_branch: gh-pages
   ghp_path: /
 
