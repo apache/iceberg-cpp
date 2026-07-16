@@ -108,15 +108,34 @@ void LogToExplicitRuntime(Logger& logger, LogLevel level,
 }
 
 /// \brief Fatal path: acquire the effective (scoped-or-default) logger ONCE, emit
-/// if enabled, flush that same logger, then abort. Never returns.
+/// if enabled, flush that same logger, run any registered FatalHandler, then
+/// abort. Never returns.
+///
+/// The message is always formatted here (independent of ShouldLog) so the handler
+/// receives it even when the fatal record itself is filtered out. The handler runs
+/// after emit+flush and before abort; if it does not itself terminate the process,
+/// std::abort() still runs.
 template <typename MakeMessage>
 [[noreturn]] void LogFatal(const std::source_location& location,
                            MakeMessage&& make_message) noexcept {
+  std::string message;
+  try {
+    message = std::forward<MakeMessage>(make_message)();
+  } catch (...) {
+    message = "<fmt error>";
+  }
   auto logger = GetCurrentLogger();
   if (logger) {
-    EmitIfEnabled(*logger, LogLevel::kFatal, location,
-                  std::forward<MakeMessage>(make_message));
+    if (logger->ShouldLog(LogLevel::kFatal)) {
+      Emit(*logger, LogLevel::kFatal, location, std::string(message));
+    }
     logger->Flush();
+  }
+  if (auto handler = GetFatalHandler()) {
+    try {
+      handler(location, message);
+    } catch (...) {  // a throwing handler must not prevent the abort
+    }
   }
   std::abort();
 }

@@ -17,7 +17,10 @@
  * under the License.
  */
 
+#include <iostream>
 #include <memory>
+#include <source_location>
+#include <string_view>
 
 #include <gtest/gtest.h>
 
@@ -160,6 +163,45 @@ TEST(MacrosDeathTest, FatalRoutesThroughScopedLogger) {
         ICEBERG_LOG_FATAL("scopedfatal {}", 9);
       },
       "scopedfatal 9");
+}
+
+// A registered FatalHandler runs on the fatal path (after emit+flush) and receives
+// the formatted message; the process still aborts afterwards.
+TEST(MacrosDeathTest, FatalHandlerRunsWithFormattedMessageBeforeAbort) {
+  EXPECT_DEATH(
+      {
+        SetFatalHandler([](const std::source_location&, std::string_view message) {
+          std::cerr << "HANDLER[" << message << "]\n";
+        });
+        ICEBERG_LOG_FATAL("boom {}", 42);
+      },
+      "HANDLER\\[boom 42\\]");
+}
+
+// The handler receives the caller's source location.
+TEST(MacrosDeathTest, FatalHandlerReceivesCallSiteLocation) {
+  EXPECT_DEATH(
+      {
+        SetFatalHandler([](const std::source_location& loc, std::string_view) {
+          std::cerr << "LOC:" << (loc.line() > 0 ? "ok" : "bad") << "\n";
+        });
+        ICEBERG_LOG_FATAL("x");
+      },
+      "LOC:ok");
+}
+
+// The handler is a termination hook independent of log filtering: it still fires
+// (with the formatted message) when the fatal record itself is suppressed.
+TEST(MacrosDeathTest, FatalHandlerRunsEvenWhenRecordSuppressed) {
+  EXPECT_DEATH(
+      {
+        SetDefaultLevel(LogLevel::kOff);
+        SetFatalHandler([](const std::source_location&, std::string_view message) {
+          std::cerr << "H[" << message << "]\n";
+        });
+        ICEBERG_LOG_FATAL("suppressed {}", 7);
+      },
+      "H\\[suppressed 7\\]");
 }
 
 }  // namespace iceberg

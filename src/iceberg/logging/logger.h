@@ -29,6 +29,7 @@
 #include <concepts>
 #include <cstdlib>
 #include <format>
+#include <functional>
 #include <memory>
 #include <source_location>
 #include <string>
@@ -210,6 +211,26 @@ ICEBERG_EXPORT void SetDefaultLogger(std::shared_ptr<Logger> logger);
 /// decided by the logger's own ShouldLog(), so changing a logger's level by any
 /// means (this, SetLevel on a held handle, or Initialize) takes effect immediately.
 ICEBERG_EXPORT void SetDefaultLevel(LogLevel level);
+
+/// \brief A hook invoked on the fatal-log path just before std::abort().
+///
+/// Receives the fatal record's source location and already-formatted message.
+/// Runs after the record has been emitted and the logger flushed, so an embedder
+/// (JNI, a Python host, a crash reporter) can print a stack trace, flush its own
+/// resources, or translate the abort. It must not return normally on the
+/// expectation of cancelling the abort -- ICEBERG_LOG_FATAL always terminates; if
+/// the handler itself does not exit the process, std::abort() still runs after it.
+using FatalHandler =
+    std::function<void(const std::source_location&, std::string_view message)>;
+
+/// \brief Install (or clear, with nullptr) the process-global fatal handler.
+///
+/// Thread-safe. Intended to be set once at startup. Replaces any previous handler.
+ICEBERG_EXPORT void SetFatalHandler(FatalHandler handler);
+
+/// \brief Return the installed fatal handler (empty if none). Used by the fatal
+/// logging path; thread-safe.
+ICEBERG_EXPORT FatalHandler GetFatalHandler();
 
 /// \brief Bind a logger for the current thread until this object leaves scope.
 ///
