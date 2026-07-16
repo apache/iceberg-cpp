@@ -23,6 +23,7 @@
 
 #include "iceberg/logging/cerr_logger.h"
 #include "iceberg/logging/log_level.h"
+#include "iceberg/logging/log_macros.h"
 #include "iceberg/logging/logger.h"
 #include "iceberg/test/logging_test_helpers.h"
 

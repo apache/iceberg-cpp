@@ -16,6 +16,12 @@
 # under the License.
 
 install_headers(
-    ['cerr_logger.h', 'log_level.h', 'logger.h'],
+    [
+        'cerr_logger.h',
+        'log_level.h',
+        'log_macros.h',
+        'logger.h',
+        'short_log_macros.h',
+    ],
     subdir: 'iceberg/logging',
 )
