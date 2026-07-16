@@ -28,7 +28,6 @@
 
 #include <concepts>
 #include <cstdlib>
-#include <exception>
 #include <format>
 #include <memory>
 #include <source_location>
@@ -340,10 +339,10 @@ void FormatAndEmit(Logger& logger, LogLevel level, const std::source_location& l
   if (!logger.ShouldLog(level)) return;
   try {
     Emit(logger, level, loc, std::format(fmt, std::forward<Args>(args)...));
-  } catch (const std::exception&) {
-    // The only throws here are std::format_error / std::bad_alloc -- same recovery
-    // for both (drop, emit a fixed marker). Catch std::exception, not (...), so a
-    // non-std unwind like abi::__forced_unwind (thread cancellation) propagates.
+  } catch (...) {
+    // Catch-all upholds the noexcept "logging never throws" guarantee: a
+    // user-defined std::formatter may throw a non-std::exception type, and this
+    // function is noexcept, so anything escaping here would call std::terminate.
     EmitFormatError(logger, level, loc);
   }
 }
@@ -385,21 +384,22 @@ void Log(Logger& logger, LogLevel level,
 // site and, for the default CerrLogger, the line it produces.
 //
 //   ICEBERG_LOG_TRACE("entering scan for {}", table);
-//     2026-06-16T10:59:41.186Z trace [12345] table_scan.cc:88] entering scan for db.t
+//     2026-06-16T10:59:41.186Z trace [12345] [table_scan.cc:88] entering scan for db.t
 //   ICEBERG_LOG_DEBUG("cache miss key={}", key);
-//     2026-06-16T10:59:41.186Z debug [12345] cache.cc:42] cache miss key=manifest-7
+//     2026-06-16T10:59:41.186Z debug [12345] [cache.cc:42] cache miss key=manifest-7
 //   ICEBERG_LOG_INFO("loaded {} manifests in {} ms", n, ms);
-//     2026-06-16T10:59:41.186Z info [12345] table_scan.cc:91] loaded 5 manifests in 12 ms
+//     2026-06-16T10:59:41.186Z info [12345] [table_scan.cc:91] loaded 5 manifests in 12
+//     ms
 //   ICEBERG_LOG_WARN("retry {} after {}", attempt, err);
-//     2026-06-16T10:59:41.186Z warn [12345] io.cc:51] retry 2 after timeout
+//     2026-06-16T10:59:41.186Z warn [12345] [io.cc:51] retry 2 after timeout
 //   ICEBERG_LOG_ERROR("commit failed: {}", status);
-//     2026-06-16T10:59:41.186Z error [12345] txn.cc:77] commit failed: conflict
+//     2026-06-16T10:59:41.186Z error [12345] [txn.cc:77] commit failed: conflict
 //   ICEBERG_LOG_CRITICAL("metadata unreadable at {}", path);
-//     2026-06-16T10:59:41.186Z critical [12345] meta.cc:30] metadata unreadable at
+//     2026-06-16T10:59:41.186Z critical [12345] [meta.cc:30] metadata unreadable at
 //     s3://b/m.json
 //   ICEBERG_LOG_FATAL("unrecoverable: {}", reason);   // emits, flushes, then
 //   std::abort()
-//     2026-06-16T10:59:41.186Z fatal [12345] boot.cc:19] unrecoverable: bad config
+//     2026-06-16T10:59:41.186Z fatal [12345] [boot.cc:19] unrecoverable: bad config
 //
 // Less common forms:
 //   ICEBERG_LOG(level, "level chosen at runtime: {}", x);     // runtime severity
@@ -411,19 +411,22 @@ void Log(Logger& logger, LogLevel level,
 // (ICEBERG_LOG_INFO("done")).
 // ---------------------------------------------------------------------------
 
-/// \brief Compile-time severity floor: statements below this level are removed
-/// entirely from the build (their format call sites and source_location literals
-/// are never emitted). Defaults to keeping everything. ICEBERG_LOG_FATAL is never
-/// gated by this floor -- its abort is always compiled in.
+/// \brief Compile-time severity floor: statements below this level are discarded
+/// via `if constexpr`, so no emit code runs and no format call / source_location
+/// is generated for them (the compiler is free to optimize the dead branch away).
+/// The statement must still be well-formed -- a bad format string or a
+/// non-formattable argument is a compile error even when the branch is discarded.
+/// Defaults to keeping everything. ICEBERG_LOG_FATAL is never gated by this floor
+/// -- its abort is always compiled in.
 #ifndef ICEBERG_LOG_ACTIVE_LEVEL
 #  define ICEBERG_LOG_ACTIVE_LEVEL ::iceberg::LogLevel::kTrace
 #endif
 
 // Internal: fixed-severity emit with compile-time floor then the authoritative
 // Logger::ShouldLog (the single source of truth for runtime filtering), with
-// formatting only on the taken path, never throwing. The catch handles
-// std::exception (std::format_error / std::bad_alloc) -- not (...) -- so a non-std
-// unwind such as abi::__forced_unwind (thread cancellation) still propagates.
+// formatting only on the taken path, never throwing. The catch-all upholds the
+// "logging never throws" guarantee even when a user-defined std::formatter throws
+// a non-std::exception type (a std::format_error/bad_alloc route to EmitFormatError).
 #define ICEBERG_INTERNAL_LOG(level_, FMT_, ...)                                      \
   do {                                                                               \
     if constexpr ((level_) >= ICEBERG_LOG_ACTIVE_LEVEL) {                            \
@@ -433,7 +436,7 @@ void Log(Logger& logger, LogLevel level,
           ::iceberg::internal::Emit(*_ib_logger, (level_),                           \
                                     ::std::source_location::current(),               \
                                     ::std::format(FMT_ __VA_OPT__(, ) __VA_ARGS__)); \
-        } catch (const std::exception&) {                                            \
+        } catch (...) {                                                              \
           ::iceberg::internal::EmitFormatError(*_ib_logger, (level_),                \
                                                ::std::source_location::current());   \
         }                                                                            \
@@ -466,7 +469,7 @@ void Log(Logger& logger, LogLevel level,
         ::iceberg::internal::Emit(*_ib_logger, ::iceberg::LogLevel::kFatal,            \
                                   ::std::source_location::current(),                   \
                                   ::std::format(FMT_ __VA_OPT__(, ) __VA_ARGS__));     \
-      } catch (const std::exception&) {                                                \
+      } catch (...) {                                                                  \
         ::iceberg::internal::EmitFormatError(*_ib_logger, ::iceberg::LogLevel::kFatal, \
                                              ::std::source_location::current());       \
       }                                                                                \
@@ -487,7 +490,7 @@ void Log(Logger& logger, LogLevel level,
         ::iceberg::internal::Emit(*_ib_logger, _ib_lvl,                            \
                                   ::std::source_location::current(),               \
                                   ::std::format(FMT_ __VA_OPT__(, ) __VA_ARGS__)); \
-      } catch (const std::exception&) {                                            \
+      } catch (...) {                                                              \
         ::iceberg::internal::EmitFormatError(*_ib_logger, _ib_lvl,                 \
                                              ::std::source_location::current());   \
       }                                                                            \
@@ -509,7 +512,7 @@ void Log(Logger& logger, LogLevel level,
         ::iceberg::internal::Emit(_ib_logger, _ib_lvl,                             \
                                   ::std::source_location::current(),               \
                                   ::std::format(FMT_ __VA_OPT__(, ) __VA_ARGS__)); \
-      } catch (const std::exception&) {                                            \
+      } catch (...) {                                                              \
         ::iceberg::internal::EmitFormatError(_ib_logger, _ib_lvl,                  \
                                              ::std::source_location::current());   \
       }                                                                            \
@@ -531,7 +534,7 @@ void Log(Logger& logger, LogLevel level,
         ::iceberg::internal::Emit(                                               \
             *_ib_logger, _ib_lvl, ::std::source_location::current(),             \
             ::iceberg::internal::VFormat((FMT_)__VA_OPT__(, ) __VA_ARGS__));     \
-      } catch (const std::exception&) {                                          \
+      } catch (...) {                                                            \
         ::iceberg::internal::EmitFormatError(*_ib_logger, _ib_lvl,               \
                                              ::std::source_location::current()); \
       }                                                                          \

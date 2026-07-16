@@ -147,4 +147,18 @@ TEST(MacrosDeathTest, LogToFatalEmitsThenAborts) {
       "tofatal 2");
 }
 
+// Regression guard: ICEBERG_LOG_FATAL must route through the active ScopedLogger
+// binding (GetCurrentLogger), not the process default (GetDefaultLogger). A scoped
+// CerrLogger emits the record before the abort; the message must reach that sink.
+TEST(MacrosDeathTest, FatalRoutesThroughScopedLogger) {
+  EXPECT_DEATH(
+      {
+        SetDefaultLevel(LogLevel::kOff);  // default gate off -> only the scope emits
+        auto scoped = std::make_shared<CerrLogger>(LogLevel::kTrace);
+        ScopedLogger bind(scoped);
+        ICEBERG_LOG_FATAL("scopedfatal {}", 9);
+      },
+      "scopedfatal 9");
+}
+
 }  // namespace iceberg
