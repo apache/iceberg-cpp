@@ -17,6 +17,7 @@
 
 .gitignore
 LICENSE
+.github/copilot-instructions.md
 NOTICE
 build/**
 dist/**
