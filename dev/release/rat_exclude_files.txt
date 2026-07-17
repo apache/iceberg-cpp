@@ -15,8 +15,8 @@
 # specific language governing permissions and limitations
 # under the License.
 
-.gitignore
 .github/copilot-instructions.md
+.gitignore
 LICENSE
 NOTICE
 build/**
