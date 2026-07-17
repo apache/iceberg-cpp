@@ -46,12 +46,13 @@ struct MetadataColumnContext {
 };
 
 /// \brief Check if row lineage metadata can be inherited for the column.
-bool HasRowLineageValue(int32_t field_id, const MetadataColumnContext& metadata_context);
+bool CanInheritRowLineageValue(int32_t field_id,
+                               const MetadataColumnContext& metadata_context);
 
-/// \brief Append one inherited row lineage value to an int64 builder.
-Status AppendRowLineageValue(int32_t field_id,
-                             const MetadataColumnContext& metadata_context,
-                             ::arrow::ArrayBuilder* array_builder);
+/// \brief Append one inherited row lineage value, or null if unavailable.
+Status AppendInheritedRowLineageValue(int32_t field_id,
+                                      const MetadataColumnContext& metadata_context,
+                                      ::arrow::ArrayBuilder* array_builder);
 
 /// \brief Create a constant string array for _file column.
 ///
@@ -90,13 +91,12 @@ Result<std::shared_ptr<::arrow::Array>> MakeRowIdArray(
 
 /// \brief Create a sequence number array for _last_updated_sequence_number column.
 ///
-/// \param first_row_id First row ID of the data file.
 /// \param data_sequence_number Data sequence number of the data file.
 /// \param num_rows Number of rows in the batch.
 /// \param pool Arrow memory pool.
 /// \return Arrow Int64Array for _last_updated_sequence_number.
 Result<std::shared_ptr<::arrow::Array>> MakeLastUpdatedSequenceNumberArray(
-    std::optional<int64_t> first_row_id, std::optional<int64_t> data_sequence_number,
-    int64_t num_rows, ::arrow::MemoryPool* pool);
+    std::optional<int64_t> data_sequence_number, int64_t num_rows,
+    ::arrow::MemoryPool* pool);
 
 }  // namespace iceberg::arrow

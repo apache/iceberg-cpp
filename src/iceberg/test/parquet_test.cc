@@ -198,6 +198,30 @@ class ParquetReaderTest : public TempFileTestBase {
                                    .properties = std::move(writer_properties)}));
   }
 
+  void CreateRowLineageParquetFile() {
+    auto schema = RowLineageSchema();
+
+    ArrowSchema arrow_c_schema;
+    ASSERT_THAT(ToArrowSchema(*schema, &arrow_c_schema), IsOk());
+    auto arrow_schema = ::arrow::ImportType(&arrow_c_schema).ValueOrDie();
+
+    auto array =
+        ::arrow::json::ArrayFromJSONString(::arrow::struct_(arrow_schema->fields()),
+                                           R"([[1, null, null],
+                                              [2, 777, 8],
+                                              [3, null, null]])")
+            .ValueOrDie();
+
+    WriterProperties writer_properties;
+    writer_properties.Set(WriterProperties::kParquetCompression,
+                          std::string("uncompressed"));
+
+    ASSERT_TRUE(WriteArray(array, {.path = temp_parquet_file_,
+                                   .schema = schema,
+                                   .io = file_io_,
+                                   .properties = std::move(writer_properties)}));
+  }
+
   void CreateSplitParquetFile() {
     const std::string kParquetFieldIdKey = "PARQUET:field_id";
     auto arrow_schema = ::arrow::schema(
@@ -573,6 +597,26 @@ TEST_F(ParquetReaderTest, ReadPartialLineage) {
                                           R"([[1, 100, null],
                                              [2, 101, null],
                                              [3, 102, null]])"));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto reader_with_sequence,
+                         OpenRowLineageReader(schema, std::nullopt, 7L));
+
+  ASSERT_NO_FATAL_FAILURE(VerifyNextBatch(*reader_with_sequence,
+                                          R"([[1, null, 7],
+                                             [2, null, 7],
+                                             [3, null, 7]])"));
+}
+
+TEST_F(ParquetReaderTest, ReadPhysicalLineage) {
+  temp_parquet_file_ = "physical_lineage.parquet";
+  CreateRowLineageParquetFile();
+
+  auto schema = RowLineageSchema();
+  ICEBERG_UNWRAP_OR_FAIL(auto reader, OpenRowLineageReader(schema, 100L));
+
+  ASSERT_NO_FATAL_FAILURE(VerifyNextBatch(*reader, R"([[1, 100, null],
+                                                       [2, 777, 8],
+                                                       [3, 102, null]])"));
 }
 
 TEST_F(ParquetReaderTest, ReadNestedUnknownProjection) {

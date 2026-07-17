@@ -219,8 +219,8 @@ Status DecodeStructToBuilder(const ::avro::NodePtr& avro_node, ::avro::Decoder& 
         auto int_builder = internal::checked_cast<::arrow::Int64Builder*>(field_builder);
         ICEBERG_ARROW_RETURN_NOT_OK(int_builder->Append(metadata_context.next_file_pos));
       } else if (MetadataColumns::IsRowLineageColumn(field_id)) {
-        ICEBERG_RETURN_UNEXPECTED(
-            arrow::AppendRowLineageValue(field_id, metadata_context, field_builder));
+        ICEBERG_RETURN_UNEXPECTED(arrow::AppendInheritedRowLineageValue(
+            field_id, metadata_context, field_builder));
       } else {
         return NotSupported("Unsupported metadata column field id: {}", field_id);
       }
@@ -599,12 +599,6 @@ Status DecodeFieldToBuilder(const ::avro::NodePtr& avro_node, ::avro::Decoder& d
 
   const bool is_row_lineage =
       MetadataColumns::IsRowLineageColumn(projected_field.field_id());
-  if (is_row_lineage &&
-      !arrow::HasRowLineageValue(projected_field.field_id(), metadata_context)) {
-    ICEBERG_RETURN_UNEXPECTED(SkipAvroValue(avro_node, decoder));
-    ICEBERG_ARROW_RETURN_NOT_OK(array_builder->AppendNull());
-    return {};
-  }
 
   if (avro_node->type() == ::avro::AVRO_UNION) {
     const size_t branch_index = decoder.decodeUnionIndex();
@@ -619,8 +613,8 @@ Status DecodeFieldToBuilder(const ::avro::NodePtr& avro_node, ::avro::Decoder& d
     const auto& branch_node = avro_node->leafAt(branch_index);
     if (branch_node->type() == ::avro::AVRO_NULL) {
       if (is_row_lineage) {
-        return arrow::AppendRowLineageValue(projected_field.field_id(), metadata_context,
-                                            array_builder);
+        return arrow::AppendInheritedRowLineageValue(projected_field.field_id(),
+                                                     metadata_context, array_builder);
       }
       ICEBERG_ARROW_RETURN_NOT_OK(array_builder->AppendNull());
       return {};

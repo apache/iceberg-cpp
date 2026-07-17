@@ -29,19 +29,22 @@
 
 namespace iceberg::arrow {
 
-bool HasRowLineageValue(int32_t field_id, const MetadataColumnContext& metadata_context) {
-  if (!metadata_context.first_row_id.has_value()) {
-    return false;
+bool CanInheritRowLineageValue(int32_t field_id,
+                               const MetadataColumnContext& metadata_context) {
+  if (field_id == MetadataColumns::kRowIdColumnId) {
+    return metadata_context.first_row_id.has_value();
   }
-  return field_id != MetadataColumns::kLastUpdatedSequenceNumberColumnId ||
-         metadata_context.data_sequence_number.has_value();
+  if (field_id == MetadataColumns::kLastUpdatedSequenceNumberColumnId) {
+    return metadata_context.data_sequence_number.has_value();
+  }
+  return false;
 }
 
-Status AppendRowLineageValue(int32_t field_id,
-                             const MetadataColumnContext& metadata_context,
-                             ::arrow::ArrayBuilder* array_builder) {
+Status AppendInheritedRowLineageValue(int32_t field_id,
+                                      const MetadataColumnContext& metadata_context,
+                                      ::arrow::ArrayBuilder* array_builder) {
   auto* int_builder = internal::checked_cast<::arrow::Int64Builder*>(array_builder);
-  if (!HasRowLineageValue(field_id, metadata_context)) {
+  if (!CanInheritRowLineageValue(field_id, metadata_context)) {
     ICEBERG_ARROW_RETURN_NOT_OK(int_builder->AppendNull());
   } else if (field_id == MetadataColumns::kRowIdColumnId) {
     ICEBERG_ARROW_RETURN_NOT_OK(int_builder->Append(
@@ -99,11 +102,11 @@ Result<std::shared_ptr<::arrow::Array>> MakeRowIdArray(
 }
 
 Result<std::shared_ptr<::arrow::Array>> MakeLastUpdatedSequenceNumberArray(
-    std::optional<int64_t> first_row_id, std::optional<int64_t> data_sequence_number,
-    int64_t num_rows, ::arrow::MemoryPool* pool) {
+    std::optional<int64_t> data_sequence_number, int64_t num_rows,
+    ::arrow::MemoryPool* pool) {
   ::arrow::Int64Builder builder(pool);
   ICEBERG_ARROW_RETURN_NOT_OK(builder.Reserve(num_rows));
-  if (!first_row_id.has_value() || !data_sequence_number.has_value()) {
+  if (!data_sequence_number.has_value()) {
     ICEBERG_ARROW_RETURN_NOT_OK(builder.AppendNulls(num_rows));
   } else {
     for (int64_t row_index = 0; row_index < num_rows; ++row_index) {

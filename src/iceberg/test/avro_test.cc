@@ -162,6 +162,36 @@ class AvroReaderTest : public TempFileTestBase {
     ASSERT_THAT(writer->Close(), IsOk());
   }
 
+  void CreateRowLineageAvroFile() {
+    auto schema = RowLineageSchema();
+
+    ArrowSchema arrow_c_schema;
+    ASSERT_THAT(ToArrowSchema(*schema, &arrow_c_schema), IsOk());
+    auto arrow_schema = ::arrow::ImportType(&arrow_c_schema).ValueOrDie();
+
+    auto array =
+        ::arrow::json::ArrayFromJSONString(::arrow::struct_(arrow_schema->fields()),
+                                           R"([[1, null, null],
+                                              [2, 777, 8],
+                                              [3, null, null]])")
+            .ValueOrDie();
+
+    struct ArrowArray arrow_array;
+    auto export_result = ::arrow::ExportArray(*array, &arrow_array);
+    ASSERT_TRUE(export_result.ok());
+
+    auto writer_result =
+        WriterFactoryRegistry::Open(FileFormatType::kAvro, {
+                                                               .path = temp_avro_file_,
+                                                               .schema = schema,
+                                                               .io = file_io_,
+                                                           });
+    ASSERT_TRUE(writer_result.has_value());
+    auto writer = std::move(writer_result.value());
+    ASSERT_THAT(writer->Write(&arrow_array), IsOk());
+    ASSERT_THAT(writer->Close(), IsOk());
+  }
+
   std::shared_ptr<Schema> RowLineageSchema() {
     return std::make_shared<Schema>(std::vector<SchemaField>{
         SchemaField::MakeRequired(1, "id", int32()),
@@ -739,6 +769,21 @@ TEST_P(AvroReaderParameterizedTest, ReadPartialLineage) {
 
   VerifyNextBatch(*reader_with_row_id,
                   R"([[1, 100, null], [2, 101, null], [3, 102, null]])");
+
+  ICEBERG_UNWRAP_OR_FAIL(auto reader_with_sequence,
+                         OpenRowLineageReader(schema, std::nullopt, 7L));
+
+  VerifyNextBatch(*reader_with_sequence, R"([[1, null, 7], [2, null, 7], [3, null, 7]])");
+}
+
+TEST_P(AvroReaderParameterizedTest, ReadPhysicalLineage) {
+  temp_avro_file_ = "avro_physical_lineage.avro";
+  CreateRowLineageAvroFile();
+
+  auto schema = RowLineageSchema();
+  ICEBERG_UNWRAP_OR_FAIL(auto reader, OpenRowLineageReader(schema, 100L));
+
+  VerifyNextBatch(*reader, R"([[1, 100, null], [2, 777, 8], [3, 102, null]])");
 }
 
 TEST_P(AvroReaderParameterizedTest, SplitWithRowPositionNotSupported) {

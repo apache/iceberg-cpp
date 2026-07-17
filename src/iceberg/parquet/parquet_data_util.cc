@@ -79,8 +79,7 @@ Result<std::shared_ptr<::arrow::Array>> MakeInheritedRowLineageArray(
   }
   if (field_id == MetadataColumns::kLastUpdatedSequenceNumberColumnId) {
     return arrow::MakeLastUpdatedSequenceNumberArray(
-        metadata_context.first_row_id, metadata_context.data_sequence_number, num_rows,
-        pool);
+        metadata_context.data_sequence_number, num_rows, pool);
   }
   return NotSupported("Unsupported row lineage field id: {}", field_id);
 }
@@ -88,27 +87,21 @@ Result<std::shared_ptr<::arrow::Array>> MakeInheritedRowLineageArray(
 Result<std::shared_ptr<::arrow::Array>> ProjectRowLineageArray(
     const std::shared_ptr<::arrow::Array>& physical_array, int32_t field_id,
     const arrow::MetadataColumnContext& metadata_context, ::arrow::MemoryPool* pool) {
-  if (!arrow::HasRowLineageValue(field_id, metadata_context)) {
-    return MakeInheritedRowLineageArray(field_id, physical_array->length(),
-                                        metadata_context, pool);
-  }
   if (physical_array->null_count() == 0) {
     return physical_array;
   }
 
   auto values = internal::checked_pointer_cast<::arrow::Int64Array>(physical_array);
+  auto row_metadata_context = metadata_context;
   ::arrow::Int64Builder builder(pool);
   ICEBERG_ARROW_RETURN_NOT_OK(builder.Reserve(values->length()));
   for (int64_t row_index = 0; row_index < values->length(); ++row_index) {
     if (!values->IsNull(row_index)) {
       ICEBERG_ARROW_RETURN_NOT_OK(builder.Append(values->Value(row_index)));
-    } else if (field_id == MetadataColumns::kRowIdColumnId) {
-      ICEBERG_ARROW_RETURN_NOT_OK(builder.Append(metadata_context.first_row_id.value() +
-                                                 metadata_context.next_file_pos +
-                                                 row_index));
     } else {
-      ICEBERG_ARROW_RETURN_NOT_OK(
-          builder.Append(metadata_context.data_sequence_number.value()));
+      row_metadata_context.next_file_pos = metadata_context.next_file_pos + row_index;
+      ICEBERG_RETURN_UNEXPECTED(arrow::AppendInheritedRowLineageValue(
+          field_id, row_metadata_context, &builder));
     }
   }
 
