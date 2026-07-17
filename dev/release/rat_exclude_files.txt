@@ -16,8 +16,8 @@
 # under the License.
 
 .gitignore
-LICENSE
 .github/copilot-instructions.md
+LICENSE
 NOTICE
 build/**
 dist/**
