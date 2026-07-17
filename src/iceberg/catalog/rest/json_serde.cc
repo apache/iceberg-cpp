@@ -326,6 +326,7 @@ Result<std::vector<std::shared_ptr<FileScanTask>>> FileScanTasksFromJson(
     // FIXME: REST scan-task DataFile JSON currently carries first-row-id,
     // but not the manifest-entry data sequence number. Until the REST API exposes
     // it, REST-planned tasks cannot inherit _last_updated_sequence_number.
+    // See https://github.com/apache/iceberg-cpp/issues/834.
 
     std::vector<std::shared_ptr<DataFile>> task_delete_files;
     if (task_json.contains(kDeleteFileReferences) &&
