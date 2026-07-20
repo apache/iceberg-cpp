@@ -22,7 +22,6 @@
 #include <utility>
 #include <vector>
 
-#include <arrow/array/builder_base.h>
 #include <arrow/array/util.h>
 #include <arrow/buffer.h>
 #include <arrow/compute/api.h>
@@ -192,29 +191,6 @@ Result<std::shared_ptr<::arrow::Array>> MakeDefaultArray(
     return cast_result.make_array();
   }
   return array;
-}
-
-Status AppendDefaultToBuilder(const Literal& literal, ::arrow::ArrayBuilder* builder) {
-  // The builder's own memory pool is not exposed, so the small scalar buffer uses the
-  // default pool.
-  ICEBERG_ASSIGN_OR_RAISE(std::shared_ptr<::arrow::Scalar> scalar,
-                          ToArrowScalar(literal, ::arrow::default_memory_pool()));
-
-  // For an extension builder (e.g. `arrow.uuid`) target its storage type: ToArrowScalar
-  // yields the storage scalar (fixed_size_binary(16) for uuid) and Scalar::CastTo has no
-  // kernel that targets an extension type. This mirrors MakeDefaultArray's extension
-  // handling.
-  std::shared_ptr<::arrow::DataType> target_type = builder->type();
-  if (target_type->id() == ::arrow::Type::EXTENSION) {
-    target_type = internal::checked_cast<const ::arrow::ExtensionType&>(*target_type)
-                      .storage_type();
-  }
-
-  if (!scalar->type->Equals(*target_type)) {
-    ICEBERG_ARROW_ASSIGN_OR_RETURN(scalar, scalar->CastTo(target_type));
-  }
-  ICEBERG_ARROW_RETURN_NOT_OK(builder->AppendScalar(*scalar));
-  return {};
 }
 
 }  // namespace iceberg::arrow

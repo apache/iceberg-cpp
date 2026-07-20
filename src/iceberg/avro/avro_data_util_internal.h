@@ -23,9 +23,17 @@
 #include <avro/GenericDatum.hh>
 
 #include "iceberg/arrow/metadata_column_util_internal.h"
+#include "iceberg/expression/literal.h"
 #include "iceberg/schema_util.h"
 
 namespace iceberg::avro {
+
+/// \brief Append a literal once to `builder` while decoding Avro row-by-row.
+///
+/// Used to materialize `FieldProjection::Kind::kDefault`. Shares `ToArrowScalar` with
+/// Parquet's batch path (`MakeDefaultArray`); the append shape stays Avro-local because
+/// Avro builds Arrow arrays via per-row `ArrayBuilder`s rather than whole-column arrays.
+Status AppendDefaultToBuilder(const Literal& literal, ::arrow::ArrayBuilder* builder);
 
 /// \brief Append an Avro datum to an Arrow array builder.
 ///

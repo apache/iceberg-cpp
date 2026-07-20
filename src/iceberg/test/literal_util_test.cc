@@ -25,7 +25,6 @@
 #include <vector>
 
 #include <arrow/array.h>
-#include <arrow/array/builder_primitive.h>
 #include <arrow/buffer.h>
 #include <arrow/extension/uuid.h>
 #include <arrow/scalar.h>
@@ -185,31 +184,6 @@ TEST(LiteralUtilTest, MakeDefaultArrayWrapsExtensionType) {
               std::string_view(reinterpret_cast<const char*>(kUuidBytes.data()),
                                kUuidBytes.size()));
   }
-}
-
-TEST(LiteralUtilTest, AppendDefaultToBuilderAppendsValue) {
-  ::arrow::Int64Builder builder;
-  ASSERT_THAT(AppendDefaultToBuilder(Literal::Long(42), &builder), IsOk());
-  ASSERT_THAT(AppendDefaultToBuilder(Literal::Long(42), &builder), IsOk());
-
-  std::shared_ptr<::arrow::Array> array;
-  ASSERT_TRUE(builder.Finish(&array).ok());
-  ASSERT_EQ(array->length(), 2);
-  const auto& long_array = static_cast<const ::arrow::Int64Array&>(*array);
-  ASSERT_EQ(long_array.Value(0), 42);
-  ASSERT_EQ(long_array.Value(1), 42);
-}
-
-TEST(LiteralUtilTest, AppendDefaultToBuilderCastsToBuilderType) {
-  // The literal's natural type (int32) differs from the builder type (int64); the value
-  // is cast to the builder type.
-  ::arrow::Int64Builder builder;
-  ASSERT_THAT(AppendDefaultToBuilder(Literal::Int(7), &builder), IsOk());
-
-  std::shared_ptr<::arrow::Array> array;
-  ASSERT_TRUE(builder.Finish(&array).ok());
-  ASSERT_EQ(array->length(), 1);
-  ASSERT_EQ(static_cast<const ::arrow::Int64Array&>(*array).Value(0), 7);
 }
 
 }  // namespace

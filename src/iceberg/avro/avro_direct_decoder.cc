@@ -29,7 +29,7 @@
 #include <avro/Types.hh>
 
 #include "iceberg/arrow/arrow_status_internal.h"
-#include "iceberg/arrow/literal_util_internal.h"
+#include "iceberg/avro/avro_data_util_internal.h"
 #include "iceberg/avro/avro_direct_decoder_internal.h"
 #include "iceberg/avro/avro_schema_util_internal.h"
 #include "iceberg/metadata_columns.h"
@@ -211,7 +211,7 @@ Status DecodeStructToBuilder(const ::avro::NodePtr& avro_node, ::avro::Decoder& 
     if (field_projection.kind == FieldProjection::Kind::kNull) {
       ICEBERG_ARROW_RETURN_NOT_OK(field_builder->AppendNull());
     } else if (field_projection.kind == FieldProjection::Kind::kDefault) {
-      ICEBERG_RETURN_UNEXPECTED(arrow::AppendDefaultToBuilder(
+      ICEBERG_RETURN_UNEXPECTED(AppendDefaultToBuilder(
           std::get<Literal>(field_projection.from), field_builder));
     } else if (field_projection.kind == FieldProjection::Kind::kMetadata) {
       int32_t field_id = expected_field.field_id();

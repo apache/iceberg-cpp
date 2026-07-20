@@ -23,6 +23,7 @@
 #include <arrow/array/builder_primitive.h>
 #include <arrow/extension_type.h>
 #include <arrow/json/from_string.h>
+#include <arrow/scalar.h>
 #include <arrow/type.h>
 #include <arrow/util/decimal.h>
 #include <avro/Generic.hh>
@@ -90,7 +91,7 @@ Status AppendStructToBuilder(const ::avro::NodePtr& avro_node,
     } else if (field_projection.kind == FieldProjection::Kind::kNull) {
       ICEBERG_ARROW_RETURN_NOT_OK(field_builder->AppendNull());
     } else if (field_projection.kind == FieldProjection::Kind::kDefault) {
-      ICEBERG_RETURN_UNEXPECTED(arrow::AppendDefaultToBuilder(
+      ICEBERG_RETURN_UNEXPECTED(AppendDefaultToBuilder(
           std::get<Literal>(field_projection.from), field_builder));
     } else if (field_projection.kind == FieldProjection::Kind::kMetadata) {
       int32_t field_id = expected_field.field_id();
@@ -471,8 +472,7 @@ Status AppendFieldToBuilder(const ::avro::NodePtr& avro_node,
   }
 
   if (projection.kind == FieldProjection::Kind::kDefault) {
-    return arrow::AppendDefaultToBuilder(std::get<Literal>(projection.from),
-                                         array_builder);
+    return AppendDefaultToBuilder(std::get<Literal>(projection.from), array_builder);
   }
 
   const bool is_row_lineage =
@@ -505,6 +505,29 @@ Status AppendFieldToBuilder(const ::avro::NodePtr& avro_node,
 }
 
 }  // namespace
+
+Status AppendDefaultToBuilder(const Literal& literal, ::arrow::ArrayBuilder* builder) {
+  // The builder's own memory pool is not exposed, so the small scalar buffer uses the
+  // default pool.
+  ICEBERG_ASSIGN_OR_RAISE(std::shared_ptr<::arrow::Scalar> scalar,
+                          arrow::ToArrowScalar(literal, ::arrow::default_memory_pool()));
+
+  // For an extension builder (e.g. `arrow.uuid`) target its storage type: ToArrowScalar
+  // yields the storage scalar (fixed_size_binary(16) for uuid) and Scalar::CastTo has no
+  // kernel that targets an extension type. This mirrors MakeDefaultArray's extension
+  // handling.
+  std::shared_ptr<::arrow::DataType> target_type = builder->type();
+  if (target_type->id() == ::arrow::Type::EXTENSION) {
+    target_type = internal::checked_cast<const ::arrow::ExtensionType&>(*target_type)
+                      .storage_type();
+  }
+
+  if (!scalar->type->Equals(*target_type)) {
+    ICEBERG_ARROW_ASSIGN_OR_RETURN(scalar, scalar->CastTo(target_type));
+  }
+  ICEBERG_ARROW_RETURN_NOT_OK(builder->AppendScalar(*scalar));
+  return {};
+}
 
 Status AppendDatumToBuilder(const ::avro::NodePtr& avro_node,
                             const ::avro::GenericDatum& avro_datum,

@@ -19,6 +19,7 @@
 
 #include <ranges>
 
+#include <arrow/array/builder_primitive.h>
 #include <arrow/c/bridge.h>
 #include <arrow/json/from_string.h>
 #include <arrow/util/decimal.h>
@@ -698,6 +699,31 @@ TEST(AppendDatumToBuilderTest, StructWithMissingDefaultFields) {
   ])";
   ASSERT_NO_FATAL_FAILURE(VerifyAppendDatumToBuilder(iceberg_schema, avro_schema.root(),
                                                      avro_data, expected_json));
+}
+
+TEST(AppendDefaultToBuilderTest, AppendsValue) {
+  ::arrow::Int64Builder builder;
+  ASSERT_THAT(AppendDefaultToBuilder(Literal::Long(42), &builder), IsOk());
+  ASSERT_THAT(AppendDefaultToBuilder(Literal::Long(42), &builder), IsOk());
+
+  std::shared_ptr<::arrow::Array> array;
+  ASSERT_TRUE(builder.Finish(&array).ok());
+  ASSERT_EQ(array->length(), 2);
+  const auto& long_array = static_cast<const ::arrow::Int64Array&>(*array);
+  ASSERT_EQ(long_array.Value(0), 42);
+  ASSERT_EQ(long_array.Value(1), 42);
+}
+
+TEST(AppendDefaultToBuilderTest, CastsToBuilderType) {
+  // The literal's natural type (int32) differs from the builder type (int64); the value
+  // is cast to the builder type.
+  ::arrow::Int64Builder builder;
+  ASSERT_THAT(AppendDefaultToBuilder(Literal::Int(7), &builder), IsOk());
+
+  std::shared_ptr<::arrow::Array> array;
+  ASSERT_TRUE(builder.Finish(&array).ok());
+  ASSERT_EQ(array->length(), 1);
+  ASSERT_EQ(static_cast<const ::arrow::Int64Array&>(*array).Value(0), 7);
 }
 
 TEST(AppendDatumToBuilderTest, NestedStructWithMissingOptionalFields) {
