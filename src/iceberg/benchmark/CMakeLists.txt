@@ -15,24 +15,7 @@
 # specific language governing permissions and limitations
 # under the License.
 
-set(BENCHMARK_ENABLE_GTEST_TESTS
-    OFF
-    CACHE BOOL "" FORCE)
-set(BENCHMARK_ENABLE_INSTALL
-    OFF
-    CACHE BOOL "" FORCE)
-set(BENCHMARK_ENABLE_TESTING
-    OFF
-    CACHE BOOL "" FORCE)
-
-fetchcontent_declare(google_benchmark
-                     GIT_REPOSITORY https://github.com/google/benchmark.git
-                     GIT_TAG a4cf155615c63e019ae549e31703bf367df5b471 # v1.8.4
-                     FIND_PACKAGE_ARGS
-                     NAMES
-                     benchmark
-                     CONFIG)
-fetchcontent_makeavailable(google_benchmark)
+# Google Benchmark is resolved in cmake_modules/IcebergThirdpartyToolchain.cmake.
 
 add_executable(benchmark_smoke benchmark_smoke.cc)
 target_link_libraries(benchmark_smoke
