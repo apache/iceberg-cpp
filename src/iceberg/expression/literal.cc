@@ -19,6 +19,7 @@
 
 #include "iceberg/expression/literal.h"
 
+#include <array>
 #include <charconv>
 #include <cmath>
 #include <concepts>
@@ -186,15 +187,16 @@ Result<Literal> LiteralCaster::CastRealToDecimal(
   // Convert via the shortest round-tripping decimal string (std::to_chars without a
   // format specifier), then round to the target scale. Float callers widen to double
   // first, so both float and double sources share this path.
-  char buf[64];
-  auto [ptr, ec] = std::to_chars(buf, buf + sizeof(buf), value);
+  std::array<char, 64> buf{};
+  auto [ptr, ec] = std::to_chars(buf.data(), buf.data() + buf.size(), value);
   if (ec != std::errc{}) {
     return InvalidArgument("Cannot cast {} as a {} value", value,
                            target_type->ToString());
   }
   int32_t parsed_scale = 0;
-  ICEBERG_ASSIGN_OR_RAISE(auto parsed, Decimal::FromString(std::string_view(buf, ptr),
-                                                           nullptr, &parsed_scale));
+  ICEBERG_ASSIGN_OR_RAISE(
+      auto parsed,
+      Decimal::FromString(std::string_view(buf.data(), ptr), nullptr, &parsed_scale));
 
   ICEBERG_ASSIGN_OR_RAISE(auto unscaled, RescaleHalfUp(parsed, parsed_scale,
                                                        decimal_type.scale(), value < 0));
