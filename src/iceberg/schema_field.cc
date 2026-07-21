@@ -174,12 +174,14 @@ Status ValidateDefault(const SchemaField& field, const Literal& value,
   // so a value that does not fit the field precision would pass the type check above yet
   // be rejected when the metadata is parsed back. Reject it here to keep the default
   // consistent with what the reader accepts.
-  if (field.type()->type_id() == TypeId::kDecimal &&
-      std::holds_alternative<Decimal>(value.value())) {
-    const auto& decimal_type = internal::checked_cast<const DecimalType&>(*field.type());
-    if (!std::get<Decimal>(value.value()).FitsInPrecision(decimal_type.precision())) {
-      return InvalidSchema("{} of field {} does not fit precision {}", kind, field.name(),
-                           decimal_type.precision());
+  if (field.type()->type_id() == TypeId::kDecimal) {
+    if (const auto* dec = std::get_if<Decimal>(&value.value())) {
+      const auto& decimal_type =
+          internal::checked_cast<const DecimalType&>(*field.type());
+      if (!dec->FitsInPrecision(decimal_type.precision())) {
+        return InvalidSchema("{} of field {} does not fit precision {}", kind,
+                             field.name(), decimal_type.precision());
+      }
     }
   }
   return {};

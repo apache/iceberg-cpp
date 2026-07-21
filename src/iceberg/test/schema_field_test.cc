@@ -179,8 +179,9 @@ TEST(SchemaFieldTest, ValidateRejectsDecimalDefaultExceedingPrecision) {
   SchemaField field(/*field_id=*/1, /*name=*/"d", decimal(2, 1),
                     /*optional=*/true, /*doc=*/"",
                     std::make_shared<const Literal>(Literal::Decimal(999, 2, 1)));
-  EXPECT_THAT(field.Validate(), IsError(ErrorKind::kInvalidSchema));
-  EXPECT_THAT(field.Validate(), HasErrorMessage("does not fit precision"));
+  auto status = field.Validate();
+  EXPECT_THAT(status, IsError(ErrorKind::kInvalidSchema));
+  EXPECT_THAT(status, HasErrorMessage("does not fit precision"));
 }
 
 TEST(SchemaFieldTest, ValidateAcceptsDecimalDefaultWithinPrecision) {
