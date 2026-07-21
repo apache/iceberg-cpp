@@ -193,6 +193,14 @@ add_iceberg_lib(iceberg
                 OUTPUTS
                 ICEBERG_LIBRARIES)
 
+if(MSVC)
+  foreach(ICEBERG_LOGGING_TARGET iceberg_shared iceberg_static)
+    if(TARGET ${ICEBERG_LOGGING_TARGET})
+      target_compile_options(${ICEBERG_LOGGING_TARGET} PUBLIC /Zc:preprocessor)
+    endif()
+  endforeach()
+endif()
+
 set(ICEBERG_DATA_SOURCES
     data/data_writer.cc
     data/delete_filter.cc

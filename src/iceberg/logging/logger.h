@@ -56,7 +56,7 @@ struct ICEBERG_EXPORT LogAttribute {
 
 /// \brief A single log record handed to a Logger.
 ///
-/// The formatted message is owned (moved in by the logging macros), so a sink
+/// The formatted message is owned, so a sink
 /// may safely retain the record beyond the Log() call. The member set must not
 /// depend on the build's logging backend (the spdlog backend never appears here).
 /// Use LogMessage::Builder for a readable way to assemble one, especially with
@@ -134,11 +134,11 @@ inline constexpr std::string_view kPatternProperty = "pattern";
 
 /// \brief Pluggable logging sink.
 ///
-/// ShouldLog() is the single authority for runtime filtering -- the macros call
-/// it on every (compile-time-enabled) statement, so level changes by any path
-/// take effect immediately. Implementations must be thread-safe and must not
-/// throw. They must also obey:
-///   - No reentrancy: Log()/Flush() must not call the logging macros or
+/// ShouldLog() is the single authority for runtime filtering -- public logging
+/// helpers call it on every enabled statement, so level changes by any path take
+/// effect immediately. Implementations must be thread-safe and must not throw.
+/// They must also obey:
+///   - No reentrancy: Log()/Flush() must not call public logging helpers or
 ///     GetDefaultLogger() (UB -- deadlock with mutex-based sinks).
 ///   - level() is an accessor consistent with ShouldLog (used by SetDefaultLevel
 ///     and introspection); ShouldLog may implement finer logic than a level compare.
@@ -187,7 +187,7 @@ class ICEBERG_EXPORT Logger {
 /// \brief Return the process-global default logger (never null).
 ///
 /// Off the hot path -- acquires the slot lock and returns an owning copy. The
-/// logging macros use the cheaper internal hot-path accessor instead.
+/// public logging helpers use the cheaper internal hot-path accessor instead.
 ICEBERG_EXPORT std::shared_ptr<Logger> GetDefaultLogger();
 
 /// \brief Return the effective logger for this thread (never null): the active
@@ -214,7 +214,7 @@ ICEBERG_EXPORT void SetDefaultLevel(LogLevel level);
 /// \brief Bind a logger for the current thread until this object leaves scope.
 ///
 /// The default logging path on this thread -- CurrentLogger(), Log(level, ...),
-/// and the LOG_* macros -- routes to \p logger instead of the global default;
+/// and the ICEBERG_LOG_* macros -- routes to \p logger instead of the global default;
 /// explicit Log(logger, ...) is unaffected. Bindings nest and restore on exit, and
 /// nullptr masks any enclosing binding back to the global default. Lets an engine
 /// route Iceberg's own logs into a per catalog/session/query/task context with no
@@ -247,8 +247,8 @@ class ICEBERG_EXPORT ScopedLogger {
 };
 
 // ---------------------------------------------------------------------------
-// Using the API directly (the LOG_* macros that wrap this are added later in
-// the stack). Example: a custom sink, installed as the process default.
+// Using the API directly. Example: a custom sink, installed as the process
+// default.
 //
 //   class MySink : public Logger {
 //    public:
@@ -285,30 +285,18 @@ ICEBERG_EXPORT const std::shared_ptr<Logger>& CurrentLogger() noexcept;
 
 /// \brief Build a LogMessage from the already-formatted text and dispatch it.
 ///
-/// Declared ICEBERG_EXPORT because the logging macros expand into this call in
-/// consumer translation units.
+/// Declared ICEBERG_EXPORT because public inline logging helpers can expand into
+/// this call in consumer translation units.
 ICEBERG_EXPORT void Emit(Logger& logger, LogLevel level,
                          const std::source_location& location, std::string&& message);
 
 /// \brief Emit a fixed fallback record when formatting threw.
 ///
 /// noexcept, allocation-light (small/SSO literal), performs no std::format, and
-/// does not recurse -- so the macro's "logging never throws" guarantee holds
-/// even when a format argument throws.
+/// does not recurse -- so the public logging API's "logging never throws"
+/// guarantee holds even when a format argument throws.
 ICEBERG_EXPORT void EmitFormatError(Logger& logger, LogLevel level,
                                     const std::source_location& location) noexcept;
-
-/// \brief Runtime (non-literal) format-string helper.
-///
-/// std::format requires a compile-time format string; this routes a runtime
-/// string through std::vformat. Args are bound as named lvalues and the
-/// arg-store is held in a named variable so it outlives the vformat call
-/// (C++23 make_format_args rejects rvalues -- P2905 / LWG3631).
-template <typename... Args>
-std::string VFormat(std::string_view fmt, Args&&... args) {
-  auto store = std::make_format_args(args...);
-  return std::vformat(fmt, store);
-}
 
 /// \brief A checked format string bundled with the caller's source_location.
 ///
@@ -332,7 +320,7 @@ struct FmtWithLoc {
 /// \brief Shared gate -> format -> emit body for the function-style Log() API.
 ///
 /// Formats only when the logger is enabled for \p level, and never throws (a
-/// formatting failure routes to EmitFormatError, matching the macros).
+/// formatting failure routes to EmitFormatError, matching the macro helpers).
 template <typename... Args>
 void FormatAndEmit(Logger& logger, LogLevel level, const std::source_location& loc,
                    std::format_string<Args...> fmt, Args&&... args) noexcept {
