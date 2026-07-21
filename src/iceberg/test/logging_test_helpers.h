@@ -36,9 +36,15 @@ class CapturingLogger : public Logger {
     return level >= level_.load(std::memory_order_relaxed);
   }
 
-  void Log(LogMessage&& message) noexcept override {
+  // Retaining sink: deep-copy the non-owning view into an owned LogMessage so the
+  // record outlives the Log() call and tests can inspect it.
+  void Log(const LogRecord& record) noexcept override {
     std::lock_guard<std::mutex> lock(mutex_);
-    records_.push_back(std::move(message));
+    records_.push_back(
+        LogMessage{.level = record.level,
+                   .message = std::string(record.message),
+                   .location = record.location,
+                   .attributes = {record.attributes.begin(), record.attributes.end()}});
   }
 
   void SetLevel(LogLevel level) noexcept override {

@@ -39,20 +39,20 @@ std::string_view Basename(std::string_view path) noexcept {
 }
 
 /// \brief Format a record into a single newline-terminated line.
-std::string FormatLine(const LogMessage& message) {
+std::string FormatLine(const LogRecord& record) {
   auto now =
       std::chrono::floor<std::chrono::milliseconds>(std::chrono::system_clock::now());
   return std::format("{:%Y-%m-%dT%H:%M:%S}Z {} [{}] [{}:{}] {}\n", now,
-                     ToString(message.level), OsThreadId(),
-                     Basename(message.location.file_name()), message.location.line(),
-                     message.message);
+                     ToString(record.level), OsThreadId(),
+                     Basename(record.location.file_name()), record.location.line(),
+                     record.message);
 }
 
 }  // namespace
 
-void CerrLogger::Log(LogMessage&& message) noexcept {
+void CerrLogger::Log(const LogRecord& record) noexcept {
   try {
-    std::string line = FormatLine(message);
+    std::string line = FormatLine(record);
     std::lock_guard<std::mutex> lock(mutex_);
     std::cerr << line;
   } catch (...) {

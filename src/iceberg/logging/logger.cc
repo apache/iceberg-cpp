@@ -23,6 +23,8 @@
 #include <cstdint>
 #include <memory>
 #include <mutex>
+#include <string>
+#include <string_view>
 #include <tuple>
 #include <utility>
 
@@ -36,7 +38,7 @@ namespace {
 class NoopLogger final : public Logger {
  public:
   bool ShouldLog(LogLevel /*level*/) const noexcept override { return false; }
-  void Log(LogMessage&& /*message*/) noexcept override {}
+  void Log(const LogRecord& /*record*/) noexcept override {}
   void SetLevel(LogLevel /*level*/) noexcept override {}
   LogLevel level() const noexcept override { return LogLevel::kOff; }
   bool IsNoop() const override { return true; }
@@ -178,22 +180,25 @@ void RestoreThreadOverride(std::shared_ptr<Logger> prev) noexcept {
   cache->override_ = std::move(prev);
 }
 
+std::string& FormatBuffer() noexcept {
+  static thread_local std::string buf;
+  return buf;
+}
+
 void Emit(Logger& logger, LogLevel level, const std::source_location& location,
-          std::string&& message) {
-  logger.Log(LogMessage{.level = level,
-                        .message = std::move(message),
-                        .location = location,
-                        .attributes = {}});
+          std::string_view message) {
+  logger.Log(LogRecord{
+      .level = level, .message = message, .location = location, .attributes = {}});
 }
 
 void EmitFormatError(Logger& logger, LogLevel level,
                      const std::source_location& location) noexcept {
-  // Fixed short literal (<= 15 bytes, fits SSO on libstdc++/libc++/MSVC -> no heap
-  // allocation), no std::format, no retry. Cannot throw or recurse.
-  logger.Log(LogMessage{.level = level,
-                        .message = std::string("<fmt error>"),
-                        .location = location,
-                        .attributes = {}});
+  // Fixed string-view literal: no std::format, no allocation, no buffer -- safe to
+  // emit even under OOM. No retry, cannot throw or recurse.
+  logger.Log(LogRecord{.level = level,
+                       .message = std::string_view("<fmt error>"),
+                       .location = location,
+                       .attributes = {}});
 }
 
 }  // namespace internal

@@ -69,6 +69,8 @@ iceberg_tests = {
             'logger_test.cc',
         ),
     },
+    # Separate binary: replaces global operator new to count allocations.
+    'logging_zero_alloc_test': {'sources': files('logging_zero_alloc_test.cc')},
     'expression_test': {
         'sources': files(
             'aggregate_test.cc',

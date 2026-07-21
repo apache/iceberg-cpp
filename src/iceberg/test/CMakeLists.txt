@@ -94,6 +94,10 @@ add_iceberg_test(logging_test
                  log_level_test.cc
                  logger_test.cc)
 
+# Separate binary: replaces global operator new to count allocations, so it must
+# not be linked with other tests.
+add_iceberg_test(logging_zero_alloc_test SOURCES logging_zero_alloc_test.cc)
+
 add_iceberg_test(expression_test
                  SOURCES
                  aggregate_test.cc
