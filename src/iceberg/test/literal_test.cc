@@ -173,6 +173,8 @@ TEST(LiteralTest, IntegerCastToDecimal) {
   // (DecimalType does not bound its scale on construction).
   EXPECT_THAT(Literal::Int(1).CastTo(std::make_shared<DecimalType>(9, 40)),
               IsError(ErrorKind::kInvalidArgument));
+  EXPECT_THAT(Literal::Int(1).CastTo(std::make_shared<DecimalType>(9, -40)),
+              IsError(ErrorKind::kInvalidArgument));
 
   // Negative scale: decimal(9, -2) scales by 10^2, so 149 rounds HALF_UP to 100 (unscaled
   // value 1 at scale -2), matching Java's setScale(-2, HALF_UP).
@@ -207,6 +209,11 @@ TEST(LiteralTest, RealCastToDecimal) {
   ASSERT_THAT(round_down, IsOk());
   EXPECT_EQ(*round_down, Literal::Decimal(2, 2, 0));
 
+  // Shortest round-trip conversion keeps digits beyond a default 6-digit %g.
+  auto precise = Literal::Double(1.23456789).CastTo(decimal(20, 8));
+  ASSERT_THAT(precise, IsOk());
+  EXPECT_EQ(*precise, Literal::Decimal(123456789, 20, 8));
+
   // A value whose rounded form exceeds the target precision is rejected.
   EXPECT_THAT(Literal::Double(123.4).CastTo(decimal(2, 0)),
               IsError(ErrorKind::kInvalidArgument));
@@ -214,6 +221,8 @@ TEST(LiteralTest, RealCastToDecimal) {
   EXPECT_THAT(
       Literal::Double(std::numeric_limits<double>::quiet_NaN()).CastTo(decimal(4, 2)),
       IsError(ErrorKind::kInvalidArgument));
+  EXPECT_THAT(Literal::Double(1.0).CastTo(std::make_shared<DecimalType>(9, -40)),
+              IsError(ErrorKind::kInvalidArgument));
 
   // A magnitude far smaller than the target scale rounds to zero rather than indexing
   // past the powers-of-ten table (Java rounds 1e-100 to 0.00).

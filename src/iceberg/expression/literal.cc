@@ -19,11 +19,14 @@
 
 #include "iceberg/expression/literal.h"
 
+#include <charconv>
 #include <cmath>
 #include <concepts>
 #include <cstdint>
 #include <format>
 #include <string>
+#include <string_view>
+#include <system_error>
 #include <vector>
 
 #include "iceberg/result.h"
@@ -107,6 +110,14 @@ Literal LiteralCaster::AboveMaxLiteral(std::shared_ptr<PrimitiveType> type) {
 
 namespace {
 
+Status ValidateDecimalScale(int32_t scale) {
+  if (scale < -Decimal::kMaxScale || scale > Decimal::kMaxScale) {
+    return InvalidArgument("decimal scale must be in range [-{}, {}], was {}",
+                           Decimal::kMaxScale, Decimal::kMaxScale, scale);
+  }
+  return {};
+}
+
 // Rescale `unscaled` (interpreted at `from_scale`) to `to_scale` using HALF_UP rounding
 // (round half away from zero), matching Java's BigDecimal.setScale(scale, HALF_UP).
 // Unlike Decimal::Rescale, which only truncates and rejects any dropped remainder, this
@@ -136,7 +147,10 @@ Result<Decimal> RescaleHalfUp(const Decimal& unscaled, int32_t from_scale,
   ICEBERG_ASSIGN_OR_RAISE(auto divmod, unscaled.Divide(divisor));
   Decimal quotient = divmod.first;
   Decimal remainder = Decimal::Abs(divmod.second);
-  if (remainder * Decimal(2) >= divisor) {
+  // Compare against divisor/2 rather than remainder*2: for drop near kMaxScale,
+  // remainder*2 can overflow int128 and flip the HALF_UP decision. Powers of ten
+  // with drop >= 1 are always even, so the two comparisons are equivalent.
+  if (remainder >= divisor / Decimal(2)) {
     quotient += negative ? Decimal(-1) : Decimal(1);
   }
   return quotient;
@@ -147,6 +161,7 @@ Result<Decimal> RescaleHalfUp(const Decimal& unscaled, int32_t from_scale,
 Result<Literal> LiteralCaster::CastIntegerToDecimal(
     int64_t value, const std::shared_ptr<PrimitiveType>& target_type) {
   const auto& decimal_type = internal::checked_cast<const DecimalType&>(*target_type);
+  ICEBERG_RETURN_UNEXPECTED(ValidateDecimalScale(decimal_type.scale()));
   // An integer has scale 0; rescale it to the target scale, rounding HALF_UP when the
   // target scale is negative (matching Java's numeric-to-decimal default handling).
   ICEBERG_ASSIGN_OR_RAISE(auto unscaled, RescaleHalfUp(Decimal(value), /*from_scale=*/0,
@@ -162,17 +177,24 @@ Result<Literal> LiteralCaster::CastIntegerToDecimal(
 Result<Literal> LiteralCaster::CastRealToDecimal(
     double value, const std::shared_ptr<PrimitiveType>& target_type) {
   const auto& decimal_type = internal::checked_cast<const DecimalType&>(*target_type);
+  ICEBERG_RETURN_UNEXPECTED(ValidateDecimalScale(decimal_type.scale()));
   if (!std::isfinite(value)) {
     return InvalidArgument("Cannot cast {} as a {} value", value,
                            target_type->ToString());
   }
 
-  // Parse the shortest round-tripping decimal representation of the value (matching
-  // Java's BigDecimal.valueOf(double), which goes through Double.toString) into a
-  // full-precision decimal, then round to the target scale.
+  // Convert via the shortest round-tripping decimal string (std::to_chars without a
+  // format specifier), then round to the target scale. Float callers widen to double
+  // first, so both float and double sources share this path.
+  char buf[64];
+  auto [ptr, ec] = std::to_chars(buf, buf + sizeof(buf), value);
+  if (ec != std::errc{}) {
+    return InvalidArgument("Cannot cast {} as a {} value", value,
+                           target_type->ToString());
+  }
   int32_t parsed_scale = 0;
-  ICEBERG_ASSIGN_OR_RAISE(
-      auto parsed, Decimal::FromString(std::format("{}", value), nullptr, &parsed_scale));
+  ICEBERG_ASSIGN_OR_RAISE(auto parsed, Decimal::FromString(std::string_view(buf, ptr),
+                                                           nullptr, &parsed_scale));
 
   ICEBERG_ASSIGN_OR_RAISE(auto unscaled, RescaleHalfUp(parsed, parsed_scale,
                                                        decimal_type.scale(), value < 0));
