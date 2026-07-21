@@ -25,6 +25,8 @@
 #include <gtest/gtest.h>
 
 #include "iceberg/expression/literal.h"
+#include "iceberg/result.h"
+#include "iceberg/test/matchers.h"
 #include "iceberg/type.h"
 #include "iceberg/util/formatter.h"  // IWYU pragma: keep
 
@@ -168,6 +170,25 @@ TEST(SchemaFieldTest, CastDefaultValue) {
         SchemaField::CastDefaultValue(Literal::Decimal(1234567, 9, 2), decimal(4, 2));
     EXPECT_FALSE(result.has_value());
   }
+}
+
+TEST(SchemaFieldTest, ValidateRejectsDecimalDefaultExceedingPrecision) {
+  // A decimal default whose unscaled value needs more digits than the field precision has
+  // the matching literal type (decimal(2, 1)) but does not fit; Validate must reject it
+  // so it is never serialized to metadata the reader would later refuse to parse.
+  SchemaField field(/*field_id=*/1, /*name=*/"d", decimal(2, 1),
+                    /*optional=*/true, /*doc=*/"",
+                    std::make_shared<const Literal>(Literal::Decimal(999, 2, 1)));
+  auto status = field.Validate();
+  EXPECT_THAT(status, IsError(ErrorKind::kInvalidSchema));
+  EXPECT_THAT(status, HasErrorMessage("does not fit precision"));
+}
+
+TEST(SchemaFieldTest, ValidateAcceptsDecimalDefaultWithinPrecision) {
+  SchemaField field(/*field_id=*/1, /*name=*/"d", decimal(4, 1),
+                    /*optional=*/true, /*doc=*/"",
+                    std::make_shared<const Literal>(Literal::Decimal(999, 4, 1)));
+  EXPECT_THAT(field.Validate(), IsOk());
 }
 
 }  // namespace iceberg
