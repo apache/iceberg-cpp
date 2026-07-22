@@ -91,24 +91,36 @@ jobs:
         with:
           path: ${{ github.workspace }}/.sccache
           key: sccache-cpp-linter-ubuntu-${{ github.run_id }}
-      - uses: cpp-linter/cpp-linter-action@0f6d1b8d7e38b584cbee606eb23d850c217d54f8 # v2.15.1
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
+        if: github.event_name == 'pull_request'
+      - name: Install cpp-linter and clang tools
+        if: github.event_name == 'pull_request'
+        run: pip install "cpp-linter==1.13.0" "clang-format==22.1.8" "clang-tidy==22.1.8"
+      - name: Run cpp-linter
         id: linter
         if: github.event_name == 'pull_request'
         continue-on-error: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          style: file
-          tidy-checks: ''
-          version: 22
-          files-changed-only: true
-          lines-changed-only: true
-          thread-comments: true
-          ignore: 'build|cmake_modules|ci|src/iceberg/catalog/hive/gen-cpp'
-          database: build
-          verbosity: 'debug'
-          # need '-fno-builtin-std-forward_like', see https://github.com/llvm/llvm-project/issues/101614
-          extra-args: '-std=c++23 -I$PWD/src -I$PWD/build/src -I$PWD/build/_deps/sqlpp23-src/include -I/usr/include/postgresql -I/usr/include/mysql -fno-builtin-std-forward_like'
+        # need '-fno-builtin-std-forward_like', see https://github.com/llvm/llvm-project/issues/101614
+        run: |
+          cpp-linter \
+            --style=file \
+            --tidy-checks='' \
+            --version=22 \
+            --files-changed-only=true \
+            --lines-changed-only=true \
+            --thread-comments=true \
+            --ignore='build|cmake_modules|ci|src/iceberg/catalog/hive/gen-cpp' \
+            --database=build \
+            --verbosity=debug \
+            --extra-arg='-std=c++23' \
+            --extra-arg="-I${PWD}/src" \
+            --extra-arg="-I${PWD}/build/src" \
+            --extra-arg="-I${PWD}/build/_deps/sqlpp23-src/include" \
+            --extra-arg='-I/usr/include/postgresql' \
+            --extra-arg='-I/usr/include/mysql' \
+            --extra-arg='-fno-builtin-std-forward_like'
       - name: Fail fast?!
         if: github.event_name == 'pull_request' && steps.linter.outputs.checks-failed != 0
         run: |
