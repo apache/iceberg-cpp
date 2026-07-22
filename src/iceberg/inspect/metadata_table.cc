@@ -35,20 +35,10 @@ MetadataTable::MetadataTable(std::shared_ptr<Table> source_table,
 
 MetadataTable::~MetadataTable() = default;
 
-bool MetadataTable::supports_time_travel() const noexcept {
-  // Time travel is supported for tables that read from a single snapshot's
-  // manifests. Tables that scan all snapshots or return in-memory history do
-  // not.
-  switch (kind()) {
-    case Kind::kSnapshots:
-    case Kind::kHistory:
-      return false;
-  }
-  return false;
-}
+bool MetadataTable::supports_time_travel() const noexcept { return false; }
 
 Result<ArrowArray> MetadataTable::Scan(
-    std::optional<SnapshotSelection> /*snapshot_selection*/) {
+    const std::optional<SnapshotSelection>& /*snapshot_selection*/) {
   return NotSupported("Scan is not supported for this metadata table type");
 }
 

@@ -62,10 +62,8 @@ class ICEBERG_EXPORT MetadataTable {
 
   /// \brief Whether this metadata table supports time-travel queries.
   ///
-  /// Time travel is supported for tables that read from a single snapshot's
-  /// manifests (e.g., Entries, Files, Manifests, Partitions). Tables that
-  /// scan all snapshots (All*) or return in-memory history (Snapshots,
-  /// History, Refs) do not support time travel.
+  /// The currently supported snapshots and history metadata tables do not
+  /// support time travel.
   bool supports_time_travel() const noexcept;
 
   /// \brief Scan the metadata table using the current snapshot.
@@ -80,7 +78,8 @@ class ICEBERG_EXPORT MetadataTable {
   ///
   /// The default implementation returns NotSupported. Subclasses override this
   /// to materialize their data.
-  virtual Result<ArrowArray> Scan(std::optional<SnapshotSelection> snapshot_selection);
+  virtual Result<ArrowArray> Scan(
+      const std::optional<SnapshotSelection>& snapshot_selection);
 
   const TableIdentifier& name() const { return identifier_; }
 
