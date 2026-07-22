@@ -726,6 +726,35 @@ TEST(AppendDefaultToBuilderTest, CastsToBuilderType) {
   ASSERT_EQ(static_cast<const ::arrow::Int64Array&>(*array).Value(0), 7);
 }
 
+TEST(AppendDefaultToBuilderTest, ReusesPreparedScalar) {
+  auto pool = ::arrow::default_memory_pool();
+  auto child = std::make_shared<::arrow::Int64Builder>(pool);
+  ::arrow::StructBuilder struct_builder(
+      ::arrow::struct_({::arrow::field("d", ::arrow::int64())}), pool, {child});
+
+  FieldProjection projection;
+  projection.kind = FieldProjection::Kind::kDefault;
+  projection.from = Literal::Long(42);
+
+  SchemaProjection schema_projection;
+  schema_projection.fields.push_back(projection);
+  ASSERT_THAT(PrepareDefaultScalars(schema_projection, &struct_builder), IsOk());
+  ASSERT_NE(dynamic_cast<const AvroDefaultAttributes*>(
+                schema_projection.fields[0].attributes.get()),
+            nullptr);
+
+  auto* field_builder = struct_builder.field_builder(0);
+  ASSERT_THAT(AppendDefaultToBuilder(schema_projection.fields[0], field_builder), IsOk());
+  ASSERT_THAT(AppendDefaultToBuilder(schema_projection.fields[0], field_builder), IsOk());
+
+  std::shared_ptr<::arrow::Array> array;
+  ASSERT_TRUE(field_builder->Finish(&array).ok());
+  ASSERT_EQ(array->length(), 2);
+  const auto& long_array = static_cast<const ::arrow::Int64Array&>(*array);
+  ASSERT_EQ(long_array.Value(0), 42);
+  ASSERT_EQ(long_array.Value(1), 42);
+}
+
 TEST(AppendDatumToBuilderTest, NestedStructWithMissingOptionalFields) {
   Schema iceberg_schema({
       SchemaField::MakeRequired(1, "id", iceberg::int32()),

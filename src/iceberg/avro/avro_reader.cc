@@ -434,6 +434,8 @@ class AvroReader::Impl {
                            builder_result.status().message());
     }
     context_->builder_ = builder_result.MoveValueUnsafe();
+    ICEBERG_RETURN_UNEXPECTED(
+        PrepareDefaultScalars(projection_, context_->builder_.get()));
     backend_->InitReadContext(backend_->GetReaderSchema());
 
     return {};
