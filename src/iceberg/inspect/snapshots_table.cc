@@ -69,7 +69,7 @@ Result<std::unique_ptr<SnapshotsTable>> SnapshotsTable::Make(
 }
 
 Result<ArrowArray> SnapshotsTable::Scan(
-    std::optional<SnapshotSelection> /*snapshot_selection*/) {
+    const std::optional<SnapshotSelection>& /*snapshot_selection*/) {
   ICEBERG_ASSIGN_OR_RAISE(auto builder, ArrowRowBuilder::Make(*schema()));
 
   for (const auto& snapshot : source_table()->snapshots()) {
