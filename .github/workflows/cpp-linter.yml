@@ -93,9 +93,11 @@ jobs:
           key: sccache-cpp-linter-ubuntu-${{ github.run_id }}
       - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
         if: github.event_name == 'pull_request'
+        with:
+          python-version: '3.13'
       - name: Install cpp-linter and clang tools
         if: github.event_name == 'pull_request'
-        run: pip install "cpp-linter==1.13.0" "clang-format==22.1.8" "clang-tidy==22.1.8"
+        run: python -m pip install "cpp-linter==1.13.0" "clang-format==22.1.8" "clang-tidy==22.1.8"
       - name: Run cpp-linter
         id: linter
         if: github.event_name == 'pull_request'
