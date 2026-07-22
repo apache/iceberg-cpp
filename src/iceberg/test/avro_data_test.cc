@@ -19,9 +19,12 @@
 
 #include <ranges>
 
+#include <arrow/array/builder_nested.h>
 #include <arrow/array/builder_primitive.h>
 #include <arrow/c/bridge.h>
 #include <arrow/json/from_string.h>
+#include <arrow/memory_pool.h>
+#include <arrow/type.h>
 #include <arrow/util/decimal.h>
 #include <avro/Compiler.hh>
 #include <avro/Generic.hh>
