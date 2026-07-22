@@ -16,6 +16,8 @@ follow these rules to avoid noise and redundancy:
 - Single comment per issue: If the same pattern occurs multiple times,
   mention it once and suggest a global fix instead of commenting on
   every line.
+- Check for duplicates: Before reviewing, search open pull requests for
+  the same issue or change. If one exists, point it out with a link.
 - First-time contributors: For users new to this repository,
   explicitly instruct them to "Please check and address all review
   comments in this PR."
