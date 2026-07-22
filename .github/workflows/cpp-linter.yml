@@ -21,18 +21,19 @@ on:
   push:
     branches:
       - main
-    paths-ignore:
-      - '.github/**'
-      - 'ci/**'
-      - 'cmake_modules/**'
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
     branches:
       - main
     paths-ignore:
+      - '.devcontainer/**'
       - '.github/**'
+      - '*.md'
+      - '**/*.md'
       - 'ci/**'
       - 'cmake_modules/**'
+      - 'dev/**'
+      - 'mkdocs/**'
 
 concurrency:
   group: ${{ github.repository }}-${{ github.head_ref || github.sha }}-${{ github.workflow }}
