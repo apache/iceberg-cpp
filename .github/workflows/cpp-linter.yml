@@ -49,9 +49,8 @@ jobs:
       SCCACHE_DIR: ${{ github.workspace }}/.sccache
       SCCACHE_CACHE_SIZE: "2G"
       CPP_LINTER_VERSION: "1.13.0"
-      # clang-format is kept in sync with .pre-commit-config.yaml; clang-tidy is
-      # pinned separately because that version is not published on PyPI.
-      CLANG_FORMAT_VERSION: "22.1.5"
+      # clang-format is handled by the pre-commit workflow; cpp-linter runs
+      # clang-tidy only.
       CLANG_TIDY_VERSION: "22.1.8"
     steps:
       - name: Checkout iceberg-cpp
@@ -104,7 +103,7 @@ jobs:
         if: github.event_name == 'pull_request'
         run: |
           python -m pip install --upgrade pip
-          python -m pip install "cpp-linter==${CPP_LINTER_VERSION}" "clang-format==${CLANG_FORMAT_VERSION}" "clang-tidy==${CLANG_TIDY_VERSION}"
+          python -m pip install "cpp-linter==${CPP_LINTER_VERSION}" "clang-tidy==${CLANG_TIDY_VERSION}"
       - name: Run cpp-linter
         id: linter
         if: github.event_name == 'pull_request'
@@ -114,9 +113,9 @@ jobs:
         # need '-fno-builtin-std-forward_like', see https://github.com/llvm/llvm-project/issues/101614
         run: |
           cpp-linter \
-            --style=file \
+            --style='' \
             --tidy-checks='' \
-            --version="${CLANG_FORMAT_VERSION%%.*}" \
+            --version="${pythonLocation}/bin" \
             --files-changed-only=true \
             --lines-changed-only=true \
             --thread-comments=true \
