@@ -25,6 +25,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <vector>
 
 #include "iceberg/iceberg_export.h"
 #include "iceberg/result.h"
@@ -98,11 +99,13 @@ class ICEBERG_EXPORT ReplacePartitions : public MergingSnapshotUpdate {
   /// \return Reference to this for method chaining
   ReplacePartitions& ValidateNoConflictingData();
 
-  /// \brief Enable validation that no conflicting delete files were added concurrently.
+  /// \brief Enable validation that no conflicting deletes occurred concurrently.
   ///
-  /// Fails the commit if a concurrent operation added a delete file covering
-  /// any of the partitions being replaced after the snapshot set by
-  /// ValidateFromSnapshot().
+  /// Fails the commit if, after the snapshot set by ValidateFromSnapshot(), a
+  /// concurrent operation either added a delete file or removed a data file in
+  /// any of the partitions being replaced. Rejecting concurrent data-file
+  /// removals prevents this replace from undeleting rows that the concurrent
+  /// commit deleted.
   ///
   /// \return Reference to this for method chaining
   ReplacePartitions& ValidateNoConflictingDeletes();
@@ -113,6 +116,15 @@ class ICEBERG_EXPORT ReplacePartitions : public MergingSnapshotUpdate {
   Status Validate(const TableMetadata& current_metadata,
                   const std::shared_ptr<Snapshot>& snapshot) override;
 
+  /// \brief Apply changes, translating the fail-any-delete error.
+  ///
+  /// Delegates to MergingSnapshotUpdate::Apply and, when ValidateAppendOnly()
+  /// triggers a delete, rewrites the error into the partition-conflict message
+  /// that Java's BaseReplacePartitions.apply() produces.
+  Result<std::vector<ManifestFile>> Apply(
+      const TableMetadata& current_metadata,
+      const std::shared_ptr<Snapshot>& snapshot) override;
+
  private:
   explicit ReplacePartitions(std::string table_name,
                              std::shared_ptr<TransactionContext> ctx);
@@ -120,14 +132,11 @@ class ICEBERG_EXPORT ReplacePartitions : public MergingSnapshotUpdate {
   std::optional<int64_t> starting_snapshot_id_;
   bool validate_conflicting_data_{false};
   bool validate_conflicting_deletes_{false};
-  // True once an AddFile() call has staged a file whose partition spec is
-  // unpartitioned. Java's BaseReplacePartitions treats this case as a
-  // table-wide replace (DeleteByRowFilter(AlwaysTrue())) and runs conflict
-  // validation against AlwaysTrue rather than a partition set — mirror that.
+  // True when replacement uses an AlwaysTrue row filter.
   bool replace_by_row_filter_{false};
-  // Partitions touched by AddFile() in partitioned specs. Used to scope
-  // conflict validation to the overwritten partitions in the partitioned
-  // case; ignored when replace_by_row_filter_ is true.
+  // Partitions touched by AddFile() for partitioned specs; scopes conflict
+  // validation to the overwritten partitions. Ignored when
+  // replace_by_row_filter_ is true.
   PartitionSet replaced_partitions_;
 };
 

@@ -20,6 +20,7 @@
 #include "iceberg/update/replace_partitions.h"
 
 #include <algorithm>
+#include <string_view>
 
 #include "iceberg/expression/expressions.h"
 #include "iceberg/partition_spec.h"
@@ -56,10 +57,7 @@ ReplacePartitions& ReplacePartitions::AddFile(const std::shared_ptr<DataFile>& f
   ICEBERG_BUILDER_ASSIGN_OR_RETURN(auto spec, base().PartitionSpecById(spec_id));
 
   ICEBERG_BUILDER_RETURN_IF_ERROR(AddDataFile(file));
-  // A spec is effectively unpartitioned if it has no fields, or every field
-  // uses the void transform. Java's PartitionSpec.isUnpartitioned() covers
-  // both cases; mirror that so an all-void spec triggers the table-wide
-  // replace path instead of a DropPartition with void-valued partition keys.
+  // Specs with no non-void transforms are unpartitioned.
   auto is_unpartitioned = [](const PartitionSpec& s) {
     return s.fields().empty() ||
            std::all_of(s.fields().begin(), s.fields().end(), [](const PartitionField& f) {
@@ -67,10 +65,8 @@ ReplacePartitions& ReplacePartitions::AddFile(const std::shared_ptr<DataFile>& f
            });
   };
   if (is_unpartitioned(*spec)) {
-    // Unpartitioned spec: Java's BaseReplacePartitions treats this as a
-    // table-wide replace rather than a spec-scoped DropPartition with empty
-    // partition values. Mirror that so every existing data file is dropped
-    // and conflict validation runs against AlwaysTrue.
+    // Unpartitioned: replace the whole table and validate conflicts against an
+    // AlwaysTrue row filter instead of a spec-scoped partition set.
     ICEBERG_BUILDER_RETURN_IF_ERROR(DeleteByRowFilter(Expressions::AlwaysTrue()));
     replace_by_row_filter_ = true;
   } else {
@@ -102,15 +98,39 @@ ReplacePartitions& ReplacePartitions::ValidateNoConflictingDeletes() {
 
 std::string ReplacePartitions::operation() { return DataOperation::kOverwrite; }
 
+Result<std::vector<ManifestFile>> ReplacePartitions::Apply(
+    const TableMetadata& metadata_to_update, const std::shared_ptr<Snapshot>& snapshot) {
+  auto result = MergingSnapshotUpdate::Apply(metadata_to_update, snapshot);
+  if (result.has_value()) {
+    return result;
+  }
+  // Translate the fail-any-delete error raised when ValidateAppendOnly() is set,
+  // matching Java BaseReplacePartitions.apply(). The base reports "Operation
+  // would delete existing data: <partition>"; surface the partition-conflict
+  // wording Java callers expect.
+  constexpr std::string_view kFailAnyDeletePrefix =
+      "Operation would delete existing data: ";
+  const Error& error = result.error();
+  if (error.kind == ErrorKind::kValidationFailed &&
+      error.message.starts_with(kFailAnyDeletePrefix)) {
+    std::string_view partition_path{error.message};
+    partition_path.remove_prefix(kFailAnyDeletePrefix.size());
+    return ValidationFailed(
+        "Cannot commit file that conflicts with existing partition: {}", partition_path);
+  }
+  return result;
+}
+
 Status ReplacePartitions::Validate(const TableMetadata& current_metadata,
                                    const std::shared_ptr<Snapshot>& snapshot) {
-  // Match Java BaseReplacePartitions.validate: require at least one staged data
-  // file and that all staged files share exactly one partition spec.
-  // DataSpec() enforces both invariants; ignore the returned spec here since
-  // replace_by_row_filter_ / replaced_partitions_ already scope validation.
-  if (!replace_by_row_filter_) {
-    ICEBERG_RETURN_UNEXPECTED(DataSpec());
-  }
+  // Require at least one staged data file, all sharing exactly one partition
+  // spec. DataSpec() enforces both invariants. Call it unconditionally, even on
+  // the row-filter path: if an unpartitioned/all-void file is staged first and a
+  // later file comes from a different spec, this rejects the mixed-spec replace
+  // instead of committing a table-wide replace. The returned spec is unused
+  // because replace_by_row_filter_ / replaced_partitions_ already scope
+  // validation.
+  ICEBERG_RETURN_UNEXPECTED(DataSpec());
 
   if (snapshot == nullptr) {
     return {};
@@ -128,22 +148,22 @@ Status ReplacePartitions::Validate(const TableMetadata& current_metadata,
     }
   }
   if (validate_conflicting_deletes_) {
-    // Java's BaseReplacePartitions.validate gates both ValidateNoNewDeleteFiles
-    // and ValidateDeletedDataFiles on the same validateNewDeletes flag. The
-    // second check rejects concurrent overwrite/delete commits in the replaced
-    // partitions; without it a concurrent delete in a replaced partition would
-    // commit silently.
+    // Run ValidateDeletedDataFiles before ValidateNoNewDeleteFiles, matching
+    // Java, so the reported failure is deterministic when both conflict types
+    // are present. The first rejects concurrent removals of data in the
+    // replaced partitions (which would otherwise resurrect deleted rows); the
+    // second rejects delete files added concurrently in those partitions.
     if (replace_by_row_filter_) {
-      ICEBERG_RETURN_UNEXPECTED(ValidateNoNewDeleteFiles(
+      ICEBERG_RETURN_UNEXPECTED(ValidateDeletedDataFiles(
           current_metadata, starting_snapshot_id_, Expressions::AlwaysTrue(), snapshot,
           io, IsCaseSensitive()));
-      ICEBERG_RETURN_UNEXPECTED(ValidateDeletedDataFiles(
+      ICEBERG_RETURN_UNEXPECTED(ValidateNoNewDeleteFiles(
           current_metadata, starting_snapshot_id_, Expressions::AlwaysTrue(), snapshot,
           io, IsCaseSensitive()));
     } else {
-      ICEBERG_RETURN_UNEXPECTED(ValidateNoNewDeleteFiles(
-          current_metadata, starting_snapshot_id_, replaced_partitions_, snapshot, io));
       ICEBERG_RETURN_UNEXPECTED(ValidateDeletedDataFiles(
+          current_metadata, starting_snapshot_id_, replaced_partitions_, snapshot, io));
+      ICEBERG_RETURN_UNEXPECTED(ValidateNoNewDeleteFiles(
           current_metadata, starting_snapshot_id_, replaced_partitions_, snapshot, io));
     }
   }
