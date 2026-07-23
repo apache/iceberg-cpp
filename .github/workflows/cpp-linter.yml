@@ -49,7 +49,7 @@ jobs:
       SCCACHE_DIR: ${{ github.workspace }}/.sccache
       SCCACHE_CACHE_SIZE: "2G"
       CPP_LINTER_VERSION: "1.13.0"
-      CLANG_TOOLS_VERSION: "22.1.8"
+      CLANG_TOOLS_VERSION: "22.1.5"  # Don't forget to update .pre-commit-config.yaml
     steps:
       - name: Checkout iceberg-cpp
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
