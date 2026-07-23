@@ -34,6 +34,7 @@
 #include "iceberg/schema_field.h"
 #include "iceberg/test/matchers.h"
 #include "iceberg/test/temporal_test_helper.h"
+#include "iceberg/transform_function.h"
 #include "iceberg/type.h"
 #include "iceberg/util/checked_cast.h"
 #include "iceberg/util/formatter.h"  // IWYU pragma: keep
@@ -72,6 +73,13 @@ TEST(TransformFunctionTest, CreateBucketTransform) {
   const auto transformPtr = transform->Bind(iceberg::string());
   ASSERT_TRUE(transformPtr);
   EXPECT_EQ(transformPtr.value()->transform_type(), TransformType::kBucket);
+
+  BucketTransform same_bucket(string(), bucket_count);
+  BucketTransform different_bucket(string(), 16);
+  BucketTransform different_source(int32(), bucket_count);
+  EXPECT_EQ(*transformPtr.value(), same_bucket);
+  EXPECT_NE(*transformPtr.value(), different_bucket);
+  EXPECT_NE(*transformPtr.value(), different_source);
 }
 
 TEST(TransformFunctionTest, CreateTruncateTransform) {
@@ -81,7 +89,15 @@ TEST(TransformFunctionTest, CreateTruncateTransform) {
   EXPECT_EQ("truncate[16]", std::format("{}", *transform));
 
   auto transformPtr = transform->Bind(iceberg::string());
+  ASSERT_TRUE(transformPtr);
   EXPECT_EQ(transformPtr.value()->transform_type(), TransformType::kTruncate);
+
+  TruncateTransform same_truncate(string(), width);
+  TruncateTransform different_truncate(string(), 32);
+  TruncateTransform different_source(int32(), width);
+  EXPECT_EQ(*transformPtr.value(), same_truncate);
+  EXPECT_NE(*transformPtr.value(), different_truncate);
+  EXPECT_NE(*transformPtr.value(), different_source);
 }
 
 TEST(TransformFunctionTest, CreateYearTransform) {

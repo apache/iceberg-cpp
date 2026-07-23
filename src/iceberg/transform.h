@@ -275,10 +275,11 @@ class ICEBERG_EXPORT TransformFunction {
     return lhs.Equals(rhs);
   }
 
- private:
-  /// \brief Compare two partition specs for equality.
+ protected:
+  /// \brief Compare the common properties of two transform functions for equality.
   [[nodiscard]] virtual bool Equals(const TransformFunction& other) const;
 
+ private:
   TransformType transform_type_;
   std::shared_ptr<Type> source_type_;
 };
