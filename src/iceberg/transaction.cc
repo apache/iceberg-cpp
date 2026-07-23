@@ -23,9 +23,9 @@
 #include <optional>
 
 #include "iceberg/catalog.h"
+#include "iceberg/location_provider.h"
 #include "iceberg/metrics/commit_report.h"
 #include "iceberg/metrics/metrics_context.h"
-#include "iceberg/location_provider.h"
 #include "iceberg/schema.h"
 #include "iceberg/snapshot.h"
 #include "iceberg/statistics_file.h"
