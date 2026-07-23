@@ -622,6 +622,7 @@ Result<std::vector<ManifestEntry>> DeleteFileIndex::Builder::LoadDeleteFiles() {
           return manifest_result;
         }
         if (!manifest.has_added_files() && !manifest.has_existing_files()) {
+          if (scan_metrics_) scan_metrics_->skipped_delete_manifests->Increment(1);
           return manifest_result;
         }
 
@@ -647,12 +648,16 @@ Result<std::vector<ManifestEntry>> DeleteFileIndex::Builder::LoadDeleteFiles() {
             if (scan_metrics_) scan_metrics_->skipped_delete_manifests->Increment(1);
             return manifest_result;
           }
-          if (scan_metrics_) scan_metrics_->scanned_delete_manifests->Increment(1);
         }
+        if (scan_metrics_) scan_metrics_->scanned_delete_manifests->Increment(1);
 
         // Read manifest entries
         ICEBERG_ASSIGN_OR_RAISE(auto reader,
                                 ManifestReader::Make(manifest, io_, schema_, spec));
+
+        if (scan_metrics_) {
+          reader->SkipCounter(scan_metrics_->skipped_delete_files);
+        }
 
         if (delete_partition_filter) {
           reader->FilterPartitions(std::move(delete_partition_filter));

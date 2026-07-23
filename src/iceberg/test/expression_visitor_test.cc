@@ -18,6 +18,7 @@
  */
 
 #include <chrono>
+#include <limits>
 #include <regex>
 
 #include <gtest/gtest.h>
@@ -607,6 +608,34 @@ TEST_F(SanitizeExpressionTest, TimestampLiteralBucketsByDaysAgo) {
   ICEBERG_UNWRAP_OR_FAIL(auto sanitized, SanitizeExpression::Sanitize(unbound_pred));
   EXPECT_THAT(sanitized->ToString(),
               MatchesStdRegex(R"re(ref\(name="ts"\) < "\(timestamp-10-days-ago\)")re"));
+}
+
+TEST_F(SanitizeExpressionTest, TimestampLiteralNearInt64LimitsDoesNotWrap) {
+  // Regression test: the now-vs-literal distance must stay unsigned end-to-end.
+  // Casting an unsigned distance greater than INT64_MAX back to int64_t wraps to a
+  // negative number, which would previously misclassify these as "about-now" instead
+  // of the generic "(timestamp)" bucket.
+  auto min_pred = Expressions::LessThan(
+      "ts", Literal::Timestamp(std::numeric_limits<int64_t>::min()));
+  ICEBERG_UNWRAP_OR_FAIL(auto sanitized_min, SanitizeExpression::Sanitize(min_pred));
+  EXPECT_EQ(sanitized_min->ToString(), "ref(name=\"ts\") < \"(timestamp)\"");
+
+  auto max_pred = Expressions::LessThan(
+      "ts", Literal::Timestamp(std::numeric_limits<int64_t>::max()));
+  ICEBERG_UNWRAP_OR_FAIL(auto sanitized_max, SanitizeExpression::Sanitize(max_pred));
+  EXPECT_EQ(sanitized_max->ToString(), "ref(name=\"ts\") < \"(timestamp)\"");
+}
+
+TEST_F(SanitizeExpressionTest, DateLiteralNearInt32LimitsDoesNotWrap) {
+  auto min_pred =
+      Expressions::LessThan("d", Literal::Date(std::numeric_limits<int32_t>::min()));
+  ICEBERG_UNWRAP_OR_FAIL(auto sanitized_min, SanitizeExpression::Sanitize(min_pred));
+  EXPECT_EQ(sanitized_min->ToString(), "ref(name=\"d\") < \"(date)\"");
+
+  auto max_pred =
+      Expressions::LessThan("d", Literal::Date(std::numeric_limits<int32_t>::max()));
+  ICEBERG_UNWRAP_OR_FAIL(auto sanitized_max, SanitizeExpression::Sanitize(max_pred));
+  EXPECT_EQ(sanitized_max->ToString(), "ref(name=\"d\") < \"(date)\"");
 }
 
 TEST_F(SanitizeExpressionTest, UnboundPredicateOverTransformKeepsTransform) {

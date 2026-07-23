@@ -224,6 +224,44 @@ TEST_P(ScanPlanningMetricsTest, ScanReportFiredAfterPlanFiles) {
 }
 
 // ---------------------------------------------------------------------------
+// Test: ScanReport.filter is sanitized against the bound, case-insensitive-resolved
+// filter, not the raw unbound one.
+// ---------------------------------------------------------------------------
+TEST_P(ScanPlanningMetricsTest, ScanReportFilterUsesBoundCaseInsensitiveResolution) {
+  auto version = GetParam();
+  constexpr int64_t kSnapshotId = 2000L;
+  const auto part = PartitionValues({Literal::Int(0)});
+
+  auto data_manifest = WriteDataManifest(
+      version, kSnapshotId,
+      {MakeEntry(ManifestStatus::kAdded, kSnapshotId, /*sequence_number=*/1,
+                 MakeDataFile("/data/file_a.parquet", part, partitioned_spec_->spec_id(),
+                              /*record_count=*/100,
+                              /*lower_id=*/1, /*upper_id=*/50))},
+      partitioned_spec_);
+  auto manifest_list =
+      WriteManifestList(version, kSnapshotId, /*sequence_number=*/1, {data_manifest});
+  auto metadata = BuildMetadata(kSnapshotId, manifest_list);
+
+  reporter_->clear();
+  ICEBERG_UNWRAP_OR_FAIL(auto builder, DataTableScanBuilder::Make(metadata, file_io_));
+  // "ID" only resolves against the "id" schema field when binding is case-insensitive;
+  // the sanitized filter should reflect the resolved bound reference, not fail/pass
+  // through unresolved.
+  builder->MetricsReporter(reporter_)
+      .TableName("test.table")
+      .CaseSensitive(false)
+      .Filter(Expressions::Equal("ID", Literal::Int(10)));
+  ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
+  ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
+
+  ASSERT_TRUE(reporter_->last().has_value());
+  const auto& report = *reporter_->last();
+  ASSERT_NE(report.filter, nullptr);
+  EXPECT_EQ(report.filter->ToString(), "ref(name=\"id\") == \"(2-digit-int)\"");
+}
+
+// ---------------------------------------------------------------------------
 // Test 2: Two manifests, 3 total data files — verify all 12 counters.
 // Mirrors Java's scanningWithMultipleDataManifests() (unfiltered sub-scan).
 // ---------------------------------------------------------------------------

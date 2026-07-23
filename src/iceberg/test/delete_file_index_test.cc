@@ -43,6 +43,7 @@
 #include "iceberg/test/matchers.h"
 #include "iceberg/transform.h"
 #include "iceberg/type.h"
+#include "iceberg/util/partition_value_util.h"
 
 namespace iceberg {
 
@@ -299,6 +300,97 @@ TEST_P(DeleteFileIndexTest, TestMinSequenceNumberFilteringDoesNotCountAsSkipped)
   // as skipped; only the kept file should be counted as indexed.
   EXPECT_EQ(scan_metrics->skipped_delete_files->value(), 0);
   EXPECT_EQ(scan_metrics->indexed_delete_files->value(), 1);
+}
+
+TEST_P(DeleteFileIndexTest, TestEmptyDeleteManifestCountsAsSkippedManifest) {
+  auto version = GetParam();
+
+  auto eq_delete = MakeEqualityDeleteFile("/path/to/eq-delete.parquet",
+                                          PartitionValues(std::vector<Literal>{}),
+                                          unpartitioned_spec_->spec_id());
+
+  std::vector<ManifestEntry> entries;
+  // A kDeleted entry produces a manifest with no added/existing files,
+  // which is a manifest-level skip before any entries are read.
+  entries.push_back(MakeDeleteEntry(/*snapshot_id=*/1000L, /*sequence_number=*/4,
+                                    eq_delete, ManifestStatus::kDeleted));
+
+  auto manifest = WriteDeleteManifest(version, /*snapshot_id=*/1000L, std::move(entries),
+                                      unpartitioned_spec_);
+
+  auto metrics_context = MetricsContext::Default();
+  auto scan_metrics = ScanMetrics::Make(*metrics_context);
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto index,
+      BuildIndex({manifest}, /*after_sequence_number=*/std::nullopt, scan_metrics.get()));
+
+  EXPECT_TRUE(index->empty());
+  EXPECT_EQ(scan_metrics->skipped_delete_manifests->value(), 1);
+  EXPECT_EQ(scan_metrics->scanned_delete_manifests->value(), 0);
+}
+
+// BuildIndex() never sets a partition/data filter on the builder, so the manifest
+// evaluator built internally is null. A non-empty delete manifest must still be counted
+// as scanned in that case, matching Java's DeleteFileIndex, which counts every manifest
+// that survives filtering via CloseableIterable.count() regardless of whether an
+// evaluator was constructed.
+TEST_P(DeleteFileIndexTest, TestScannedDeleteManifestCountedWithoutFilter) {
+  auto version = GetParam();
+
+  auto eq_delete = MakeEqualityDeleteFile("/path/to/eq-delete.parquet",
+                                          PartitionValues(std::vector<Literal>{}),
+                                          unpartitioned_spec_->spec_id());
+
+  std::vector<ManifestEntry> entries;
+  entries.push_back(
+      MakeDeleteEntry(/*snapshot_id=*/1000L, /*sequence_number=*/4, eq_delete));
+
+  auto manifest = WriteDeleteManifest(version, /*snapshot_id=*/1000L, std::move(entries),
+                                      unpartitioned_spec_);
+
+  auto metrics_context = MetricsContext::Default();
+  auto scan_metrics = ScanMetrics::Make(*metrics_context);
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto index,
+      BuildIndex({manifest}, /*after_sequence_number=*/std::nullopt, scan_metrics.get()));
+
+  EXPECT_FALSE(index->empty());
+  EXPECT_EQ(scan_metrics->skipped_delete_manifests->value(), 0);
+  EXPECT_EQ(scan_metrics->scanned_delete_manifests->value(), 1);
+}
+
+TEST_P(DeleteFileIndexTest, TestPartitionSetFilterCountsSkippedDeleteFiles) {
+  auto version = GetParam();
+
+  auto partition_a = PartitionValues({Literal::Int(0)});
+  auto pos_delete = MakePositionDeleteFile("/path/to/pos-delete.parquet", partition_a,
+                                           partitioned_spec_->spec_id());
+
+  std::vector<ManifestEntry> entries;
+  entries.push_back(
+      MakeDeleteEntry(/*snapshot_id=*/1000L, /*sequence_number=*/2, pos_delete));
+
+  auto manifest = WriteDeleteManifest(version, /*snapshot_id=*/1000L, std::move(entries),
+                                      partitioned_spec_);
+
+  // The partition set only contains partition B, so the entry in partition A must be
+  // rejected at the reader level (an entry-level skip, not a manifest-level one).
+  auto partition_set = std::make_shared<PartitionSet>();
+  ASSERT_TRUE(partition_set->add(partitioned_spec_->spec_id(),
+                                 PartitionValues({Literal::Int(1)})));
+
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto builder,
+      DeleteFileIndex::BuilderFor(file_io_, schema_, GetSpecsById(), {manifest}));
+  auto metrics_context = MetricsContext::Default();
+  auto scan_metrics = ScanMetrics::Make(*metrics_context);
+  builder.FilterPartitions(partition_set).ScanMetrics(scan_metrics.get());
+  ICEBERG_UNWRAP_OR_FAIL(auto index, builder.Build());
+
+  ICEBERG_UNWRAP_OR_FAIL(auto deletes, index->ForDataFile(1, *file_a_));
+  EXPECT_TRUE(deletes.empty());
+  EXPECT_EQ(scan_metrics->skipped_delete_files->value(), 1);
+  EXPECT_EQ(scan_metrics->skipped_delete_manifests->value(), 0);
 }
 
 TEST_P(DeleteFileIndexTest, TestUnpartitionedDeletes) {

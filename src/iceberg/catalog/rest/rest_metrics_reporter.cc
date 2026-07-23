@@ -40,30 +40,36 @@ constexpr std::string_view kCommitReportType = "commit-report";
 
 }  // namespace
 
-RestMetricsReporter::RestMetricsReporter(std::shared_ptr<HttpClient> client,
+RestMetricsReporter::RestMetricsReporter(std::shared_ptr<HttpClientBase> client,
                                          std::string metrics_endpoint,
                                          std::shared_ptr<auth::AuthSession> session)
     : client_(std::move(client)),
       metrics_endpoint_(std::move(metrics_endpoint)),
       session_(std::move(session)) {}
 
+Result<std::string> RestMetricsReporter::BuildRequestBody(const MetricsReport& report) {
+  ICEBERG_ASSIGN_OR_RAISE(
+      auto json,
+      std::visit([](const auto& r) -> Result<nlohmann::json> { return ToJson(r); },
+                 report));
+
+  // Inject "report-type" required by the REST spec (not included in core ToJson).
+  json[kReportType] =
+      std::holds_alternative<ScanReport>(report) ? kScanReportType : kCommitReportType;
+  return json.dump();
+}
+
 Status RestMetricsReporter::Report(const MetricsReport& report) {
   try {
-    // Serialize the report variant to JSON.
-    Result<nlohmann::json> json_result = std::visit(
-        [](const auto& r) -> Result<nlohmann::json> { return ToJson(r); }, report);
-    if (!json_result) {
+    auto body_result = BuildRequestBody(report);
+    if (!body_result) {
       return {};
     }
 
-    // Inject "report-type" required by the REST spec (not included in core ToJson).
-    auto& json = json_result.value();
-    json[kReportType] =
-        std::holds_alternative<ScanReport>(report) ? kScanReportType : kCommitReportType;
-
     // POST to the metrics endpoint; suppress errors to match Java fire-and-forget
     // behavior.
-    std::ignore = client_->Post(metrics_endpoint_, json.dump(), /*headers=*/{},
+    // TODO(evindj) make this post async.
+    std::ignore = client_->Post(metrics_endpoint_, *body_result, /*headers=*/{},
                                 *DefaultErrorHandler::Instance(), *session_);
   } catch (const std::exception&) {
     return {};

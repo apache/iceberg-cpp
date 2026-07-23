@@ -32,6 +32,7 @@ struct OAuthTokenResponse;
 class Endpoint;
 class ErrorHandler;
 class HttpClient;
+class HttpClientBase;
 class ResourcePaths;
 class RestCatalog;
 class RestCatalogProperties;

@@ -256,9 +256,6 @@ Result<std::shared_ptr<FastAppend>> Table::NewFastAppend() {
   ICEBERG_ASSIGN_OR_RAISE(
       auto ctx, TransactionContext::Make(shared_from_this(), TransactionKind::kUpdate));
   ICEBERG_ASSIGN_OR_RAISE(auto op, FastAppend::Make(name().name, std::move(ctx)));
-  if (reporter_) {
-    op->ReportWith(reporter_);
-  }
   return op;
 }
 
