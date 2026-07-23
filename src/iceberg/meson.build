@@ -159,6 +159,7 @@ iceberg_sources = files(
     'update/merging_snapshot_update.cc',
     'update/overwrite_files.cc',
     'update/pending_update.cc',
+    'update/replace_partitions.cc',
     'update/rewrite_files.cc',
     'update/row_delta.cc',
     'update/set_snapshot.cc',

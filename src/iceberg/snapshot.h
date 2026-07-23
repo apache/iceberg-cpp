@@ -254,6 +254,8 @@ struct ICEBERG_EXPORT SnapshotSummaryFields {
   inline static const std::string kEngineName = "engine-name";
   /// \brief Version of the engine that created the snapshot
   inline static const std::string kEngineVersion = "engine-version";
+  /// \brief Whether this is a replace-partitions operation
+  inline static const std::string kReplacePartitions = "replace-partitions";
 };
 
 /// \brief Helper class for building snapshot summaries.

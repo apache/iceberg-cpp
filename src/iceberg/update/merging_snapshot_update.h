@@ -307,6 +307,14 @@ class ICEBERG_EXPORT MergingSnapshotUpdate : public SnapshotUpdate {
                           const std::shared_ptr<Snapshot>& parent,
                           std::shared_ptr<FileIO> io) const;
 
+  /// \brief Record a caller-supplied summary entry that survives commit retry.
+  ///
+  /// MergingSnapshotUpdate clears summary_ at the start of every Apply() and
+  /// rebuilds it from the cached sub-builders, so subclasses must route any
+  /// custom property through this hook rather than calling summary_.Set()
+  /// directly. Stored entries are re-merged in Summary().
+  void SetSummaryProperty(const std::string& property, const std::string& value) override;
+
  private:
   struct PendingDeleteFile {
     std::shared_ptr<DataFile> file;
@@ -344,8 +352,6 @@ class ICEBERG_EXPORT MergingSnapshotUpdate : public SnapshotUpdate {
                        std::optional<int64_t> data_sequence_number);
 
   Status ManagersReady() const;
-
-  void SetSummaryProperty(const std::string& property, const std::string& value) override;
 
   Result<std::vector<PendingDeleteFile>> MergeDVs();
 
