@@ -46,13 +46,10 @@ namespace {
 
 std::string SanitizeDate(int32_t days, int32_t today) {
   std::string is_past = today > days ? "ago" : "from-now";
-  // Compute the unsigned distance directly instead of subtracting then taking abs():
-  // `today - days` can overflow int32_t (UB) when the values are near the type's
-  // limits, since the sign of the operands isn't known ahead of time.
-  int32_t diff = today > days ? static_cast<int32_t>(static_cast<uint32_t>(today) -
-                                                     static_cast<uint32_t>(days))
-                              : static_cast<int32_t>(static_cast<uint32_t>(days) -
-                                                     static_cast<uint32_t>(today));
+  uint32_t diff = today > days ? static_cast<uint32_t>(static_cast<uint32_t>(today) -
+                                                       static_cast<uint32_t>(days))
+                               : static_cast<uint32_t>(static_cast<uint32_t>(days) -
+                                                       static_cast<uint32_t>(today));
   if (diff == 0) {
     return "(date-today)";
   } else if (diff < 90) {
@@ -69,12 +66,10 @@ std::string SanitizeTimestamp(int64_t micros, int64_t now) {
   constexpr int64_t kNinetyDaysInHours = 90LL * 24LL;
 
   std::string is_past = now > micros ? "ago" : "from-now";
-  // See SanitizeDate() for why this avoids `std::abs(now - micros)`: the subtraction
-  // can overflow int64_t (UB) when the values are near the type's limits.
-  int64_t diff = now > micros ? static_cast<int64_t>(static_cast<uint64_t>(now) -
-                                                     static_cast<uint64_t>(micros))
-                              : static_cast<int64_t>(static_cast<uint64_t>(micros) -
-                                                     static_cast<uint64_t>(now));
+  uint64_t diff = now > micros ? static_cast<uint64_t>(static_cast<uint64_t>(now) -
+                                                       static_cast<uint64_t>(micros))
+                               : static_cast<uint64_t>(static_cast<uint64_t>(micros) -
+                                                       static_cast<uint64_t>(now));
   if (diff < kFiveMinutesInMicros) {
     return "(timestamp-about-now)";
   }

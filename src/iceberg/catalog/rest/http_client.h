@@ -67,11 +67,28 @@ class ICEBERG_REST_EXPORT HttpResponse {
   std::unique_ptr<Impl> impl_;
 };
 
+/// \brief Base interface for HTTP clients used by the Iceberg REST catalog.
+///
+/// Only Post() is virtual for now, since RestMetricsReporter is the only caller that
+/// currently needs to depend on an interface (for mocking in tests). Migrate
+/// Get()/PostForm()/Head()/Delete() to pure virtual here too if another caller needs
+/// them mocked.
+class ICEBERG_REST_EXPORT HttpClientBase {
+ public:
+  virtual ~HttpClientBase() = default;
+
+  /// \brief Sends a POST request.
+  virtual Result<HttpResponse> Post(
+      const std::string& path, const std::string& body,
+      const std::unordered_map<std::string, std::string>& headers,
+      const ErrorHandler& error_handler, auth::AuthSession& session) = 0;
+};
+
 /// \brief HTTP client for making requests to Iceberg REST Catalog API.
-class ICEBERG_REST_EXPORT HttpClient {
+class ICEBERG_REST_EXPORT HttpClient : public HttpClientBase {
  public:
   explicit HttpClient(std::unordered_map<std::string, std::string> default_headers = {});
-  ~HttpClient();
+  ~HttpClient() override;
 
   HttpClient(const HttpClient&) = delete;
   HttpClient& operator=(const HttpClient&) = delete;
@@ -88,7 +105,7 @@ class ICEBERG_REST_EXPORT HttpClient {
   Result<HttpResponse> Post(const std::string& path, const std::string& body,
                             const std::unordered_map<std::string, std::string>& headers,
                             const ErrorHandler& error_handler,
-                            auth::AuthSession& session);
+                            auth::AuthSession& session) override;
 
   /// \brief Sends a POST request with form data.
   Result<HttpResponse> PostForm(

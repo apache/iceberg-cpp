@@ -627,8 +627,9 @@ Result<std::vector<std::shared_ptr<FileScanTask>>> DataTableScan::PlanFiles() co
       projected_field_names.emplace_back(*field_name);
     }
 
-    ICEBERG_ASSIGN_OR_RAISE(auto sanitized_filter,
-                            SanitizeExpression::Sanitize(filter()));
+    ICEBERG_ASSIGN_OR_RAISE(
+        auto sanitized_filter,
+        SanitizeExpression::Sanitize(*schema_ptr, filter(), context_.case_sensitive));
 
     ScanReport report{
         .table_name = context_.table_name,

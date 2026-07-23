@@ -283,9 +283,10 @@ Status Transaction::ApplyUpdateSnapshot(SnapshotUpdate& update) {
 
   ICEBERG_ASSIGN_OR_RAISE(auto result, update.Apply());
 
-  if (const auto& override_reporter = update.reporter()) {
-    snapshot_reporter_ = override_reporter;
-  }
+  pending_snapshot_report_ = PendingSnapshotReport{
+      .snapshot = result.snapshot,
+      .reporter_override = update.reporter(),
+  };
 
   // Create a temp builder to check if this is an empty update
   auto temp_update = TableMetadataBuilder::BuildFrom(&base);
@@ -381,10 +382,6 @@ Result<std::shared_ptr<Table>> Transaction::Commit() {
   int32_t min_wait_ms = props.Get(TableProperties::kCommitMinRetryWaitMs);
   int32_t max_wait_ms = props.Get(TableProperties::kCommitMaxRetryWaitMs);
   int32_t total_timeout_ms = props.Get(TableProperties::kCommitTotalRetryTimeMs);
-  int64_t pre_commit_snapshot_id = -1;
-  if (auto pre = ctx_->table->metadata()->Snapshot(); pre.has_value() && pre.value()) {
-    pre_commit_snapshot_id = pre.value()->snapshot_id;
-  }
 
   auto metrics_context = MetricsContext::Default();
   auto commit_metrics = CommitMetrics::Make(*metrics_context);
@@ -418,31 +415,33 @@ Result<std::shared_ptr<Table>> Transaction::Commit() {
   committed_ = true;
   ctx_->table = std::move(commit_result.value());
 
-  // Fire CommitReport only when a new snapshot was produced (not for property-only
-  // commits). A SnapshotUpdate's own ReportWith() override (captured into
-  // snapshot_reporter_ by ApplyUpdateSnapshot()) takes precedence over the table's
-  // reporter.
-  std::shared_ptr<MetricsReporter> reporter =
-      snapshot_reporter_ ? snapshot_reporter_ : ctx_->table->reporter();
-  if (reporter) {
-    auto snapshot_result = ctx_->table->metadata()->Snapshot();
-    if (snapshot_result.has_value() && snapshot_result.value() &&
-        snapshot_result.value()->snapshot_id != pre_commit_snapshot_id) {
-      const auto& snapshot = snapshot_result.value();
-      const auto op = snapshot->Operation();
-      CommitReport report{
-          .table_name = ctx_->table->FullyQualifiedName(),
-          .snapshot_id = snapshot->snapshot_id,
-          .sequence_number = snapshot->sequence_number,
-          .operation = op.has_value() ? std::string(op.value()) : "",
-          .commit_metrics = CommitMetricsResult::From(*commit_metrics, snapshot->summary),
-          .metadata = {},
-      };
-      (void)reporter->Report(report);
-    }
-  }
+  ReportPendingSnapshot(*commit_metrics);
 
   return ctx_->table;
+}
+
+void Transaction::ReportPendingSnapshot(const CommitMetrics& commit_metrics) {
+  if (!pending_snapshot_report_) {
+    return;
+  }
+  std::shared_ptr<MetricsReporter> reporter =
+      pending_snapshot_report_->reporter_override
+          ? pending_snapshot_report_->reporter_override
+          : ctx_->table->reporter();
+  if (reporter) {
+    const auto& snapshot = pending_snapshot_report_->snapshot;
+    const auto op = snapshot->Operation();
+    CommitReport report{
+        .table_name = ctx_->table->FullyQualifiedName(),
+        .snapshot_id = snapshot->snapshot_id,
+        .sequence_number = snapshot->sequence_number,
+        .operation = op.has_value() ? std::string(op.value()) : "",
+        .commit_metrics = CommitMetricsResult::From(commit_metrics, snapshot->summary),
+        .metadata = {},
+    };
+    (void)reporter->Report(report);
+  }
+  pending_snapshot_report_.reset();
 }
 
 Result<std::shared_ptr<Table>> Transaction::CommitOnce(bool is_first_attempt) {
@@ -539,9 +538,6 @@ Result<std::shared_ptr<FastAppend>> Transaction::NewFastAppend() {
   ICEBERG_ASSIGN_OR_RAISE(std::shared_ptr<FastAppend> fast_append,
                           FastAppend::Make(ctx_->table->name().name, ctx_));
   ICEBERG_RETURN_UNEXPECTED(AddUpdate(fast_append));
-  if (const auto& r = ctx_->table->reporter()) {
-    fast_append->ReportWith(r);
-  }
   return fast_append;
 }
 

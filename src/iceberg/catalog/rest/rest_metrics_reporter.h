@@ -38,23 +38,24 @@ namespace iceberg::rest {
 /// POST /v1/{prefix}/namespaces/{namespace}/tables/{table}/metrics.
 /// This C++ implementation calls HttpClient::Post() synchronously.
 /// A future improvement would be to introduce a thread pool.
-///
-/// This implementation uses the catalog-level AuthSession. Per-table auth is a future
-/// improvement consistent with the existing FIXME for per-table FileIO in
-/// RestCatalog::LoadTable.
 class ICEBERG_REST_EXPORT RestMetricsReporter : public MetricsReporter {
  public:
   /// \param client  Shared ownership of the HTTP client; must not be null.
   /// \param metrics_endpoint  Pre-built path from ResourcePaths::Metrics().
   /// \param session  Auth session used to authenticate the POST request.
-  RestMetricsReporter(std::shared_ptr<HttpClient> client, std::string metrics_endpoint,
+  RestMetricsReporter(std::shared_ptr<HttpClientBase> client,
+                      std::string metrics_endpoint,
                       std::shared_ptr<auth::AuthSession> session);
 
   /// \brief POST the report to the metrics endpoint, suppressing all errors.
   Status Report(const MetricsReport& report) override;
 
  private:
-  std::shared_ptr<HttpClient> client_;
+  /// \brief Build the JSON request body for a report, including the `report-type`
+  /// field required by the REST metrics spec (not part of the core ToJson output).
+  static Result<std::string> BuildRequestBody(const MetricsReport& report);
+
+  std::shared_ptr<HttpClientBase> client_;
   std::string metrics_endpoint_;
   std::shared_ptr<auth::AuthSession> session_;
 };
