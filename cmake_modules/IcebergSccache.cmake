@@ -18,19 +18,12 @@
 if(MSVC_TOOLCHAIN AND "${CMAKE_CXX_COMPILER_LAUNCHER}" STREQUAL "sccache")
   message(STATUS "Configuring sccache for MSVC")
 
-  # Remove /Zi or /ZI
-  string(REGEX REPLACE "/Z[iI]" "" CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG}")
-  string(REGEX REPLACE "/Z[iI]" "" CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}")
+  # Keep MSVC Debug objects cacheable by sccache without affecting Release.
+  set(CMAKE_MSVC_DEBUG_INFORMATION_FORMAT "$<$<CONFIG:Debug,RelWithDebInfo>:Embedded>")
 
-  string(REGEX REPLACE "/Z[iI]" "" CMAKE_C_FLAGS_RELWITHDEBINFO
-                       "${CMAKE_C_FLAGS_RELWITHDEBINFO}")
-  string(REGEX REPLACE "/Z[iI]" "" CMAKE_CXX_FLAGS_RELWITHDEBINFO
-                       "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}")
-
-  # Add /Z7
-  set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} /Z7")
-  set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /Z7")
-
-  set(CMAKE_C_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_RELWITHDEBINFO} /Z7")
-  set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} /Z7")
+  # CMP0141 normally handles these flags; normalize any flags injected elsewhere.
+  foreach(flag_var CMAKE_C_FLAGS_DEBUG CMAKE_CXX_FLAGS_DEBUG CMAKE_C_FLAGS_RELWITHDEBINFO
+                   CMAKE_CXX_FLAGS_RELWITHDEBINFO)
+    string(REGEX REPLACE "/Z[iI]" "/Z7" ${flag_var} "${${flag_var}}")
+  endforeach()
 endif()

@@ -27,6 +27,7 @@
 #include "iceberg/util/bucket_util.h"
 #include "iceberg/util/macros.h"
 #include "iceberg/util/temporal_util.h"
+#include "iceberg/util/transform_util.h"
 #include "iceberg/util/truncate_util.h"
 
 namespace iceberg {
@@ -92,9 +93,7 @@ Result<std::unique_ptr<TransformFunction>> BucketTransform::Make(
       return NotSupported("{} is not a valid input type for bucket transform",
                           source_type->ToString());
   }
-  if (num_buckets <= 0) {
-    return InvalidArgument("Number of buckets must be positive, got {}", num_buckets);
-  }
+  ICEBERG_RETURN_UNEXPECTED(internal::ValidateBucketTransformParameter(num_buckets));
   return std::make_unique<BucketTransform>(source_type, num_buckets);
 }
 
@@ -126,9 +125,7 @@ Result<std::unique_ptr<TransformFunction>> TruncateTransform::Make(
       return NotSupported("{} is not a valid input type for truncate transform",
                           source_type->ToString());
   }
-  if (width <= 0) {
-    return InvalidArgument("Width must be positive, got {}", width);
-  }
+  ICEBERG_RETURN_UNEXPECTED(internal::ValidateTruncateTransformParameter(width));
   return std::make_unique<TruncateTransform>(source_type, width);
 }
 

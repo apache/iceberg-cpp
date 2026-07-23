@@ -19,6 +19,9 @@
 
 #include "iceberg/data/delete_loader.h"
 
+#include <optional>
+#include <utility>
+
 #include <arrow/array.h>
 #include <arrow/c/bridge.h>
 #include <arrow/json/from_string.h>
@@ -26,19 +29,23 @@
 #include <gtest/gtest.h>
 
 #include "iceberg/arrow/arrow_io_internal.h"
+#include "iceberg/data/deletion_vector_writer.h"
 #include "iceberg/data/equality_delete_writer.h"
 #include "iceberg/data/position_delete_writer.h"
 #include "iceberg/deletes/position_delete_index.h"
 #include "iceberg/file_format.h"
+#include "iceberg/file_io.h"
 #include "iceberg/manifest/manifest_entry.h"
 #include "iceberg/parquet/parquet_register.h"
 #include "iceberg/partition_spec.h"
+#include "iceberg/result.h"
 #include "iceberg/row/partition_values.h"
 #include "iceberg/schema.h"
 #include "iceberg/schema_field.h"
 #include "iceberg/schema_internal.h"
 #include "iceberg/test/matchers.h"
 #include "iceberg/type.h"
+#include "iceberg/util/macros.h"
 #include "iceberg/util/struct_like_set.h"
 
 namespace iceberg {
@@ -110,6 +117,27 @@ class DeleteLoaderTest : public ::testing::Test {
     return writer->Metadata().value().data_files[0];
   }
 
+  /// Write a deletion vector to a Puffin file and return the DataFile metadata.
+  std::shared_ptr<DataFile> WriteDeletionVector(const std::string& path,
+                                                const std::string& referenced_data_file,
+                                                const std::vector<int64_t>& positions) {
+    auto writer =
+        DeletionVectorWriter::Make(DeletionVectorWriterOptions{
+                                       .path = path,
+                                       .io = file_io_,
+                                       .load_previous_deletes = [](std::string_view)
+                                           -> Result<std::optional<PositionDeleteIndex>> {
+                                         return std::nullopt;
+                                       }})
+            .value();
+    for (int64_t pos : positions) {
+      ICEBERG_THROW_NOT_OK(
+          writer->Delete(referenced_data_file, pos, partition_spec_, PartitionValues{}));
+    }
+    ICEBERG_THROW_NOT_OK(writer->Close());
+    return writer->Metadata().value().data_files[0];
+  }
+
   std::shared_ptr<FileIO> file_io_;
   std::shared_ptr<Schema> schema_;
   std::shared_ptr<PartitionSpec> partition_spec_;
@@ -169,8 +197,7 @@ TEST_F(DeleteLoaderTest, LoadPositionDeletesFiltersByDataFilePath) {
                                                          {"data_b.parquet", 10},
                                                          {"data_b.parquet", 20}});
 
-  // Mixed paths -> writer must NOT set the hint, forcing the loader's
-  // per-row filter path. Locks the routing in case the writer behavior changes.
+  // Mixed paths keep the loader on the per-row filter path.
   ASSERT_FALSE(delete_file->referenced_data_file.has_value());
 
   std::vector<std::shared_ptr<DataFile>> files = {delete_file};
@@ -197,6 +224,46 @@ TEST_F(DeleteLoaderTest, LoadPositionDeletesFiltersByDataFilePath) {
   ASSERT_TRUE(result_none.value().IsEmpty());
 }
 
+// The loaded index keeps the source Parquet position delete file, so a DV
+// writer can report file-scoped deletes as rewritten.
+TEST_F(DeleteLoaderTest, LoadPositionDeletesTracksSourceDeleteFile) {
+  // Single referenced data file -> writer sets the hint -> fast path.
+  auto file_scoped = WritePositionDeletes("pos_src_scoped.parquet",
+                                          {{"data.parquet", 0}, {"data.parquet", 5}});
+  ASSERT_TRUE(file_scoped->referenced_data_file.has_value());
+
+  std::vector<std::shared_ptr<DataFile>> files = {file_scoped};
+  auto result = loader_->LoadPositionDeletes(files, "data.parquet");
+  ASSERT_THAT(result, IsOk());
+  ASSERT_EQ(result.value().delete_files().size(), 1u);
+  EXPECT_EQ(result.value().delete_files()[0], file_scoped);
+}
+
+TEST_F(DeleteLoaderTest, LoadPositionDeletesTracksSourceForFilterPath) {
+  auto mixed = WritePositionDeletes("pos_src_mixed.parquet",
+                                    {{"data_a.parquet", 0}, {"data_b.parquet", 10}});
+  ASSERT_FALSE(mixed->referenced_data_file.has_value());
+
+  std::vector<std::shared_ptr<DataFile>> files = {mixed};
+
+  auto matched = loader_->LoadPositionDeletes(files, "data_a.parquet");
+  ASSERT_THAT(matched, IsOk());
+  ASSERT_EQ(matched.value().delete_files().size(), 1u);
+  EXPECT_EQ(matched.value().delete_files()[0], mixed);
+
+  auto unmatched = loader_->LoadPositionDeletes(files, "data_c.parquet");
+  ASSERT_THAT(unmatched, IsOk());
+  ASSERT_TRUE(unmatched.value().IsEmpty());
+  ASSERT_EQ(unmatched.value().delete_files().size(), 1u);
+  EXPECT_EQ(unmatched.value().delete_files()[0], mixed);
+}
+
+TEST_F(DeleteLoaderTest, LoadPositionDeletesRejectsNullFile) {
+  std::vector<std::shared_ptr<DataFile>> files = {nullptr};
+  auto result = loader_->LoadPositionDeletes(files, "data.parquet");
+  ASSERT_THAT(result, IsError(ErrorKind::kInvalidArgument));
+}
+
 TEST_F(DeleteLoaderTest, LoadPositionDeletesSkipsMismatchedReferencedDataFile) {
   auto delete_file = std::make_shared<DataFile>(DataFile{
       .content = DataFile::Content::kPositionDeletes,
@@ -212,10 +279,7 @@ TEST_F(DeleteLoaderTest, LoadPositionDeletesSkipsMismatchedReferencedDataFile) {
 }
 
 TEST_F(DeleteLoaderTest, LoadPositionDeletesFastPathHonorsReferencedDataFile) {
-  // Single-file writes -> writer sets referenced_data_file -> loader takes
-  // the zero-copy fast path. Sized above the consumer's 64-element sniff
-  // threshold so the dispatcher's real coalesce/bulk logic runs end-to-end,
-  // not just the small-input shortcut covered by LoadPositionDeletesSingleFile.
+  // Large enough to exercise the bulk path.
   constexpr int64_t kRowCount = 128;
   std::vector<std::pair<std::string, int64_t>> deletes;
   deletes.reserve(kRowCount);
@@ -239,15 +303,91 @@ TEST_F(DeleteLoaderTest, LoadPositionDeletesFastPathHonorsReferencedDataFile) {
   ASSERT_FALSE(index.IsDeleted(kRowCount));
 }
 
-TEST_F(DeleteLoaderTest, LoadPositionDeletesRejectsDV) {
+TEST_F(DeleteLoaderTest, LoadDeletionVector) {
+  auto dv_file =
+      WriteDeletionVector("dv-a.puffin", "data.parquet", {0, 5, 10, 4'000'000'000LL});
+
+  std::vector<std::shared_ptr<DataFile>> files = {dv_file};
+  auto result = loader_->LoadPositionDeletes(files, "data.parquet");
+  ASSERT_THAT(result, IsOk());
+
+  auto& index = result.value();
+  ASSERT_EQ(index.Cardinality(), 4);
+  ASSERT_TRUE(index.IsDeleted(0));
+  ASSERT_TRUE(index.IsDeleted(5));
+  ASSERT_TRUE(index.IsDeleted(10));
+  ASSERT_TRUE(index.IsDeleted(4'000'000'000LL));
+  ASSERT_FALSE(index.IsDeleted(1));
+}
+
+TEST_F(DeleteLoaderTest, LoadDeletionVectorRejectsMismatchedReferencedDataFile) {
+  // A DV referencing another data file must not be silently skipped: the single
+  // DV applies to its referenced file, so a mismatch is bad grouping/metadata.
+  auto dv_file = WriteDeletionVector("dv-b.puffin", "other-data.parquet", {1, 2, 3});
+
+  std::vector<std::shared_ptr<DataFile>> files = {dv_file};
+  auto result = loader_->LoadPositionDeletes(files, "data.parquet");
+  ASSERT_THAT(result, IsError(ErrorKind::kInvalidArgument));
+}
+
+TEST_F(DeleteLoaderTest, LoadDeletionVectorRequiresContentOffsetAndSize) {
   auto dv_file = std::make_shared<DataFile>(DataFile{
       .content = DataFile::Content::kPositionDeletes,
       .file_path = "dv.puffin",
       .file_format = FileFormatType::kPuffin,
+      .referenced_data_file = "data.parquet",
   });
   std::vector<std::shared_ptr<DataFile>> files = {dv_file};
   auto result = loader_->LoadPositionDeletes(files, "data.parquet");
-  ASSERT_THAT(result, IsError(ErrorKind::kNotSupported));
+  ASSERT_THAT(result, IsError(ErrorKind::kInvalidArgument));
+}
+
+TEST_F(DeleteLoaderTest, LoadDeletionVectorRejectsCardinalityMismatch) {
+  auto dv_file = WriteDeletionVector("dv-card.puffin", "data.parquet", {0, 1, 2});
+  // Corrupt the recorded cardinality so it no longer matches the bitmap.
+  dv_file->record_count = 99;
+
+  std::vector<std::shared_ptr<DataFile>> files = {dv_file};
+  auto result = loader_->LoadPositionDeletes(files, "data.parquet");
+  ASSERT_THAT(result, IsError(ErrorKind::kInvalidArgument));
+}
+
+// End to end: a previously written Parquet position delete is loaded, merged
+// into a new DV, and reported in rewritten_delete_files when it is file-scoped.
+TEST_F(DeleteLoaderTest, DVWriterReportsFileScopedPositionDeleteAsRewritten) {
+  // A file-scoped position delete (single referenced data file).
+  auto previous = WritePositionDeletes("prev_pos.parquet",
+                                       {{"data.parquet", 100}, {"data.parquet", 200}});
+  ASSERT_TRUE(previous->referenced_data_file.has_value());
+
+  auto* loader = loader_.get();
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto writer,
+      DeletionVectorWriter::Make(DeletionVectorWriterOptions{
+          .path = "dv-replace.puffin",
+          .io = file_io_,
+          .load_previous_deletes =
+              [&](std::string_view path) -> Result<std::optional<PositionDeleteIndex>> {
+            std::vector<std::shared_ptr<DataFile>> files = {previous};
+            ICEBERG_ASSIGN_OR_RAISE(auto index, loader->LoadPositionDeletes(files, path));
+            if (index.IsEmpty()) {
+              return std::nullopt;
+            }
+            return std::optional<PositionDeleteIndex>(std::move(index));
+          },
+      }));
+
+  ICEBERG_THROW_NOT_OK(
+      writer->Delete("data.parquet", 0, partition_spec_, PartitionValues{}));
+  ICEBERG_THROW_NOT_OK(writer->Close());
+
+  ICEBERG_UNWRAP_OR_FAIL(auto result, writer->Metadata());
+  ASSERT_EQ(result.data_files.size(), 1u);
+  // New position plus the two previous positions.
+  EXPECT_EQ(result.data_files[0]->record_count, 3);
+  // The previous Parquet position delete is file-scoped and must be reported.
+  ASSERT_EQ(result.rewritten_delete_files.size(), 1u);
+  EXPECT_EQ(result.rewritten_delete_files[0], previous);
 }
 
 TEST_F(DeleteLoaderTest, LoadPositionDeletesRejectsWrongContent) {

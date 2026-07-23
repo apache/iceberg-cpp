@@ -19,23 +19,29 @@
 
 #include "iceberg/data/delete_loader.h"
 
+#include <cstdint>
 #include <cstring>
+#include <limits>
 #include <span>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include <nanoarrow/nanoarrow.h>
 
 #include "iceberg/arrow/nanoarrow_status_internal.h"
 #include "iceberg/arrow_c_data_guard_internal.h"
+#include "iceberg/data/dv_util_internal.h"
 #include "iceberg/deletes/position_delete_index.h"
 #include "iceberg/deletes/position_delete_range_consumer.h"
+#include "iceberg/file_io.h"
 #include "iceberg/file_reader.h"
 #include "iceberg/manifest/manifest_entry.h"
 #include "iceberg/metadata_columns.h"
 #include "iceberg/result.h"
 #include "iceberg/row/arrow_array_wrapper.h"
 #include "iceberg/schema.h"
+#include "iceberg/util/content_file_util.h"
 #include "iceberg/util/macros.h"
 #include "iceberg/util/struct_like_set.h"
 
@@ -83,6 +89,21 @@ bool StringEquals(const ArrowArrayView* view, int64_t row_idx, std::string_view 
   return sv.data != nullptr && std::memcmp(sv.data, target.data(), target.size()) == 0;
 }
 
+Status ValidateDV(const DataFile& dv, std::string_view data_file_path) {
+  ICEBERG_PRECHECK(dv.content_offset.has_value(), "Invalid DV, offset cannot be null: {}",
+                   ContentFileUtil::DVDesc(dv));
+  ICEBERG_PRECHECK(dv.content_size_in_bytes.has_value(), "Invalid DV, length is null: {}",
+                   ContentFileUtil::DVDesc(dv));
+  ICEBERG_PRECHECK(
+      dv.content_size_in_bytes.value() <= std::numeric_limits<int32_t>::max(),
+      "Can't read DV larger than 2GB: {}", dv.content_size_in_bytes.value());
+  ICEBERG_PRECHECK(dv.referenced_data_file.has_value() &&
+                       dv.referenced_data_file.value() == data_file_path,
+                   "DV is expected to reference {}, not {}", data_file_path,
+                   dv.referenced_data_file.value_or(""));
+  return {};
+}
+
 }  // namespace
 
 DeleteLoader::DeleteLoader(std::shared_ptr<FileIO> io) : io_(std::move(io)) {}
@@ -91,7 +112,7 @@ DeleteLoader::~DeleteLoader() = default;
 
 Status DeleteLoader::LoadPositionDelete(const DataFile& file, PositionDeleteIndex& index,
                                         std::string_view data_file_path) const {
-  // TODO(gangwu): push down path filter to open the file.
+  // TODO(gangwu): Add cache hooks, worker pool, and filter pushdown.
   ICEBERG_ASSIGN_OR_RAISE(auto reader, OpenDeleteFile(file, PosDeleteSchema(), io_));
 
   ICEBERG_ASSIGN_OR_RAISE(auto arrow_schema, reader->Schema());
@@ -170,30 +191,40 @@ Status DeleteLoader::LoadPositionDelete(const DataFile& file, PositionDeleteInde
   return reader->Close();
 }
 
-Status DeleteLoader::LoadDV(const DataFile& file, PositionDeleteIndex& index) const {
-  return NotSupported("Loading deletion vectors is not yet supported");
-}
-
 Result<PositionDeleteIndex> DeleteLoader::LoadPositionDeletes(
     std::span<const std::shared_ptr<DataFile>> delete_files,
     std::string_view data_file_path) const {
-  PositionDeleteIndex index;
+  for (const auto& file : delete_files) {
+    ICEBERG_PRECHECK(file != nullptr, "Delete file must not be null");
+  }
+
+  if (ContentFileUtil::ContainsSingleDV(delete_files)) {
+    const auto& dv = delete_files.front();
+    ICEBERG_RETURN_UNEXPECTED(ValidateDV(*dv, data_file_path));
+    return DVUtil::ReadDV(dv, io_);
+  }
+
+  std::vector<std::shared_ptr<DataFile>> position_delete_files;
 
   for (const auto& file : delete_files) {
+    ICEBERG_PRECHECK(!file->IsDeletionVector(),
+                     "Deletion vector cannot be mixed with position delete files: {}",
+                     file->file_path);
+    ICEBERG_PRECHECK(file->content == DataFile::Content::kPositionDeletes,
+                     "Expected position delete file but got content type {}",
+                     ToString(file->content));
+
     if (file->referenced_data_file.has_value() &&
         file->referenced_data_file.value() != data_file_path) {
       continue;
     }
 
-    if (file->IsDeletionVector()) {
-      ICEBERG_RETURN_UNEXPECTED(LoadDV(*file, index));
-      continue;
-    }
+    position_delete_files.push_back(file);
+  }
 
-    ICEBERG_PRECHECK(file->content == DataFile::Content::kPositionDeletes,
-                     "Expected position delete file but got content type {}",
-                     ToString(file->content));
+  PositionDeleteIndex index(position_delete_files);
 
+  for (const auto& file : position_delete_files) {
     ICEBERG_RETURN_UNEXPECTED(LoadPositionDelete(*file, index, data_file_path));
   }
 

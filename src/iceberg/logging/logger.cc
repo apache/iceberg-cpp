@@ -106,6 +106,35 @@ void SetDefaultLevel(LogLevel level) {
   slot.logger->SetLevel(level);
 }
 
+namespace {
+
+/// \brief Immortal (leaked, hence teardown-safe) home for the fatal handler and
+/// its mutex. Leaked like Slot() so GetFatalHandler() is valid even during static
+/// teardown / from the fatal path at any time.
+struct FatalHandlerSlot {
+  std::mutex mtx;
+  FatalHandler handler;
+};
+
+FatalHandlerSlot& FatalSlot() {
+  static auto* slot = new FatalHandlerSlot();
+  return *slot;
+}
+
+}  // namespace
+
+void SetFatalHandler(FatalHandler handler) {
+  FatalHandlerSlot& slot = FatalSlot();
+  std::lock_guard<std::mutex> lock(slot.mtx);
+  slot.handler = std::move(handler);
+}
+
+FatalHandler GetFatalHandler() {
+  FatalHandlerSlot& slot = FatalSlot();
+  std::lock_guard<std::mutex> lock(slot.mtx);
+  return slot.handler;  // copy under lock; safe to invoke without holding the lock
+}
+
 namespace internal {
 
 namespace {

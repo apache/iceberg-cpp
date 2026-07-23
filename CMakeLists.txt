@@ -28,10 +28,9 @@ project(Iceberg
         DESCRIPTION "Iceberg C++ Project"
         LANGUAGES CXX)
 
-set(ICEBERG_VERSION_SUFFIX "-SNAPSHOT")
-set(ICEBERG_VERSION_STRING "${PROJECT_VERSION}${ICEBERG_VERSION_SUFFIX}")
-configure_file("${CMAKE_CURRENT_SOURCE_DIR}/src/iceberg/version.h.in"
-               "${CMAKE_BINARY_DIR}/src/iceberg/version.h")
+include(IcebergBuildUtils)
+iceberg_configure_version_header("${CMAKE_CURRENT_SOURCE_DIR}/src/iceberg/version.h.in"
+                                 "${CMAKE_BINARY_DIR}/src/iceberg/version.h")
 
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -40,6 +39,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 option(ICEBERG_BUILD_STATIC "Build static library" ON)
 option(ICEBERG_BUILD_SHARED "Build shared library" OFF)
 option(ICEBERG_BUILD_TESTS "Build tests" ON)
+option(ICEBERG_BUILD_BENCHMARKS "Build benchmarks" OFF)
 option(ICEBERG_BUILD_BUNDLE "Build the battery included library" ON)
 option(ICEBERG_BUILD_REST "Build rest catalog client" ON)
 option(ICEBERG_BUILD_REST_INTEGRATION_TESTS "Build rest catalog integration tests" OFF)
@@ -78,7 +78,6 @@ if(ICEBERG_BUILD_REST_INTEGRATION_TESTS AND WIN32)
 endif()
 
 include(CMakeParseArguments)
-include(IcebergBuildUtils)
 include(IcebergSanitizer)
 include(IcebergSccache)
 include(IcebergThirdpartyToolchain)

@@ -2284,6 +2284,33 @@ TEST(FileScanTasksFromJsonTest, SingleTaskNoDeleteFiles) {
   EXPECT_EQ(task->residual_filter(), nullptr);
 }
 
+TEST(FileScanTasksFromJsonTest, RowLineageSequence) {
+  GTEST_SKIP() << "REST scan-task JSON does not expose data-sequence-number yet: "
+               << "https://github.com/apache/iceberg-cpp/issues/834";
+
+  auto json = R"([{
+    "data-file": {
+      "content": "data",
+      "file-path": "s3://bucket/data/file.parquet",
+      "file-format": "PARQUET",
+      "spec-id": 0,
+      "partition": [],
+      "file-size-in-bytes": 12345,
+      "record-count": 100,
+      "first-row-id": 100,
+      "data-sequence-number": 7
+    }
+  }])"_json;
+
+  auto result = FileScanTasksFromJson(json, {}, UnpartitionedSpecs(), Schema({}, 0));
+  ASSERT_THAT(result, IsOk());
+  ASSERT_EQ(result.value().size(), 1U);
+  const auto& data_file = result.value()[0]->data_file();
+  ASSERT_NE(data_file, nullptr);
+  EXPECT_EQ(data_file->first_row_id, 100);
+  EXPECT_EQ(data_file->data_sequence_number, 7);
+}
+
 TEST(FileScanTasksFromJsonTest, TaskWithDeleteFileReferences) {
   DataFile delete_file;
   delete_file.content = DataFile::Content::kPositionDeletes;

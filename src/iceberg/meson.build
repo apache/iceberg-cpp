@@ -18,6 +18,7 @@
 conf_data = configuration_data()
 version = meson.project_version()
 version_suffix = '-SNAPSHOT'
+version_string = version + version_suffix
 components = version.split('.')
 assert(
     components.length() >= 3,
@@ -29,7 +30,30 @@ ver_patch = components[2]
 conf_data.set('PROJECT_VERSION_MAJOR', ver_major)
 conf_data.set('PROJECT_VERSION_MINOR', ver_minor)
 conf_data.set('PROJECT_VERSION_PATCH', ver_patch)
-conf_data.set('ICEBERG_VERSION_STRING', version + version_suffix)
+conf_data.set('ICEBERG_VERSION_STRING', version_string)
+git = find_program('git', required: false)
+git_commit_id = 'unknown'
+if git.found()
+    git_result = run_command(
+        git,
+        '-C',
+        meson.project_source_root(),
+        'rev-parse',
+        'HEAD',
+        check: false,
+    )
+    if git_result.returncode() == 0
+        git_commit_id_candidate = git_result.stdout().strip()
+        if git_commit_id_candidate != ''
+            git_commit_id = git_commit_id_candidate
+        endif
+    endif
+endif
+conf_data.set('ICEBERG_GIT_COMMIT_ID', git_commit_id)
+conf_data.set(
+    'ICEBERG_FULL_VERSION_STRING',
+    'Apache Iceberg-CPP ' + version_string + ' (commit ' + git_commit_id + ')',
+)
 conf_data.set('PROJECT_NAME', meson.project_name())
 configure_file(
     input: 'version.h.in',
@@ -103,6 +127,7 @@ iceberg_sources = files(
     'partition_field.cc',
     'partition_spec.cc',
     'partition_summary.cc',
+    'puffin_dv_io.cc',
     'row/arrow_array_wrapper.cc',
     'row/manifest_wrapper.cc',
     'row/partition_values.cc',
@@ -175,9 +200,12 @@ iceberg_data_sources = files(
     'data/data_writer.cc',
     'data/delete_filter.cc',
     'data/delete_loader.cc',
+    'data/deletion_vector_writer.cc',
+    'data/dv_util.cc',
     'data/equality_delete_writer.cc',
     'data/file_scan_task_reader.cc',
     'data/position_delete_writer.cc',
+    'data/puffin_dv_register.cc',
     'data/writer.cc',
     'deletes/position_delete_index.cc',
     'deletes/position_delete_range_consumer.cc',
@@ -337,4 +365,8 @@ subdir('inspect')
 
 if get_option('tests').enabled()
     subdir('test')
+endif
+
+if get_option('benchmarks').enabled()
+    subdir('benchmark')
 endif

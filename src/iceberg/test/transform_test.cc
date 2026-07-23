@@ -167,10 +167,12 @@ TEST(TransformFromStringTest, PositiveCases) {
 }
 
 TEST(TransformFromStringTest, NegativeCases) {
-  constexpr std::array<std::string_view, 6> invalid_cases = {
+  constexpr std::array<std::string_view, 8> invalid_cases = {
       "bucket",           // missing param
       "bucket[]",         // empty param
       "bucket[abc]",      // invalid number
+      "bucket[0]",        // invalid number of buckets
+      "truncate[0]",      // invalid width
       "unknown",          // unsupported transform
       "bucket[16",        // missing closing bracket
       "truncate[1]extra"  // extra characters

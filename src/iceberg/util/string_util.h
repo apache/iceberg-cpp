@@ -226,4 +226,11 @@ struct ICEBERG_EXPORT StringEqual {
   }
 };
 
+/// \brief Transparent less function that supports std::string_view as lookup key
+struct ICEBERG_EXPORT StringLess {
+  using is_transparent = void;
+
+  bool operator()(std::string_view lhs, std::string_view rhs) const { return lhs < rhs; }
+};
+
 }  // namespace iceberg

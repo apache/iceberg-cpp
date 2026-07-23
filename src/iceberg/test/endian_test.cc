@@ -94,6 +94,9 @@ TEST(EndianTest, BufferReadWriteRoundTrip) {
 
   WriteLittleEndian(int32_t{-1}, buf.data());
   EXPECT_EQ(ReadLittleEndian<int32_t>(buf.data()), -1);
+
+  WriteBigEndian(int32_t{0x12345678}, buf.data());
+  EXPECT_EQ(ReadBigEndian<int32_t>(buf.data()), 0x12345678);
 }
 
 }  // namespace iceberg

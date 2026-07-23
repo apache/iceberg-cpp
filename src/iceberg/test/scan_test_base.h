@@ -221,7 +221,7 @@ class ScanTestBase : public testing::TestWithParam<int8_t> {
       std::shared_ptr<PartitionSpec> spec = nullptr) {
     std::vector<std::pair<std::string, PartitionValues>> files_with_partitions;
     for (const auto& path : added_files) {
-      files_with_partitions.emplace_back(path, kEmptyPartition);
+      files_with_partitions.emplace_back(path, PartitionValues{});
     }
     return MakeAppendSnapshotWithPartitionValues(format_version, snapshot_id,
                                                  parent_snapshot_id, sequence_number,
@@ -350,7 +350,6 @@ class ScanTestBase : public testing::TestWithParam<int8_t> {
  private:
   int manifest_counter_ = 0;
   int manifest_list_counter_ = 0;
-  constexpr static PartitionValues kEmptyPartition{};
 };
 
 }  // namespace iceberg

@@ -19,9 +19,11 @@
 
 #include "iceberg/deletes/roaring_position_bitmap.h"
 
+#include <cstdint>
 #include <cstring>
 #include <exception>
 #include <limits>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -55,6 +57,16 @@ Status ValidatePosition(int64_t pos) {
                            RoaringPositionBitmap::kMaxPosition, pos);
   }
   return {};
+}
+
+void WriteBitmaps(const std::vector<roaring::Roaring>& bitmaps, uint8_t* buf) {
+  WriteLittleEndian(static_cast<int64_t>(bitmaps.size()), buf);
+  buf += kBitmapCountSizeBytes;
+  for (int32_t key = 0; std::cmp_less(key, bitmaps.size()); ++key) {
+    WriteLittleEndian(key, buf);
+    buf += kBitmapKeySizeBytes;
+    buf += bitmaps[key].write(reinterpret_cast<char*>(buf), /*portable=*/true);
+  }
 }
 
 }  // namespace
@@ -186,21 +198,16 @@ size_t RoaringPositionBitmap::SerializedSizeInBytes() const {
 Result<std::string> RoaringPositionBitmap::Serialize() const {
   size_t size = SerializedSizeInBytes();
   std::string result(size, '\0');
-  char* buf = result.data();
-
-  // Write bitmap count (array length including empties)
-  WriteLittleEndian(static_cast<int64_t>(impl_->bitmaps.size()), buf);
-  buf += kBitmapCountSizeBytes;
-
-  // Write each bitmap with its key
-  for (int32_t key = 0; std::cmp_less(key, impl_->bitmaps.size()); ++key) {
-    WriteLittleEndian(key, buf);
-    buf += kBitmapKeySizeBytes;
-    size_t written = impl_->bitmaps[key].write(buf, /*portable=*/true);
-    buf += written;
-  }
-
+  WriteBitmaps(impl_->bitmaps, reinterpret_cast<uint8_t*>(result.data()));
   return result;
+}
+
+Result<size_t> RoaringPositionBitmap::SerializeTo(std::vector<uint8_t>& output) const {
+  const size_t offset = output.size();
+  const size_t size = SerializedSizeInBytes();
+  output.resize(offset + size);
+  WriteBitmaps(impl_->bitmaps, output.data() + offset);
+  return size;
 }
 
 Result<RoaringPositionBitmap> RoaringPositionBitmap::Deserialize(std::string_view bytes) {

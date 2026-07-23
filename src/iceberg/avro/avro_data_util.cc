@@ -97,6 +97,9 @@ Status AppendStructToBuilder(const ::avro::NodePtr& avro_node,
       } else if (field_id == MetadataColumns::kFilePositionColumnId) {
         auto int_builder = internal::checked_cast<::arrow::Int64Builder*>(field_builder);
         ICEBERG_ARROW_RETURN_NOT_OK(int_builder->Append(metadata_context.next_file_pos));
+      } else if (MetadataColumns::IsRowLineageColumn(field_id)) {
+        ICEBERG_RETURN_UNEXPECTED(arrow::AppendInheritedRowLineageValue(
+            field_id, metadata_context, field_builder));
       } else {
         return NotSupported("Unsupported metadata column field id: {}", field_id);
       }
@@ -463,9 +466,16 @@ Status AppendFieldToBuilder(const ::avro::NodePtr& avro_node,
     return {};
   }
 
+  const bool is_row_lineage =
+      MetadataColumns::IsRowLineageColumn(projected_field.field_id());
+
   if (avro_node->type() == ::avro::AVRO_UNION) {
     size_t branch = avro_datum.unionBranch();
     if (avro_node->leafAt(branch)->type() == ::avro::AVRO_NULL) {
+      if (is_row_lineage) {
+        return arrow::AppendInheritedRowLineageValue(projected_field.field_id(),
+                                                     metadata_context, array_builder);
+      }
       ICEBERG_ARROW_RETURN_NOT_OK(array_builder->AppendNull());
       return {};
     } else {

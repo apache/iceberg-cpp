@@ -24,6 +24,7 @@ set(ICEBERG_SOURCES
     catalog/memory/in_memory_catalog.cc
     catalog/session_catalog.cc
     catalog/session_context.cc
+    puffin_dv_io.cc
     delete_file_index.cc
     expression/aggregate.cc
     expression/binder.cc
@@ -193,10 +194,25 @@ add_iceberg_lib(iceberg
                 OUTPUTS
                 ICEBERG_LIBRARIES)
 
+# The logging macros in the installed public header log_macros.h use __VA_OPT__,
+# which MSVC's traditional preprocessor rejects. Require the conforming
+# preprocessor PUBLICly so downstream consumers that include log_macros.h get it
+# on MSVC (and any library TU that includes it does too).
+if(MSVC_TOOLCHAIN)
+  foreach(_iceberg_lib iceberg_shared iceberg_static)
+    if(TARGET ${_iceberg_lib})
+      target_compile_options(${_iceberg_lib} PUBLIC /Zc:preprocessor)
+    endif()
+  endforeach()
+endif()
+
 set(ICEBERG_DATA_SOURCES
     data/data_writer.cc
     data/delete_filter.cc
     data/delete_loader.cc
+    data/puffin_dv_register.cc
+    data/deletion_vector_writer.cc
+    data/dv_util.cc
     data/equality_delete_writer.cc
     data/file_scan_task_reader.cc
     data/position_delete_writer.cc
@@ -365,4 +381,8 @@ endif()
 
 if(ICEBERG_BUILD_TESTS)
   add_subdirectory(test)
+endif()
+
+if(ICEBERG_BUILD_BENCHMARKS)
+  add_subdirectory(benchmark)
 endif()

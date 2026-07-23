@@ -58,7 +58,7 @@ jobs:
             cmake_extra_args: ""
           - title: AMD64 Windows 2025
             runs-on: windows-2025
-            cmake_build_type: Release
+            cmake_build_type: Debug
             cmake_extra_args: -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake
     env:
       SCCACHE_DIR: ${{ github.workspace }}/.sccache

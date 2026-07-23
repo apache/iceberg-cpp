@@ -20,6 +20,8 @@ install_headers(
         'data_writer.h',
         'delete_filter.h',
         'delete_loader.h',
+        'puffin_dv_register.h',
+        'deletion_vector_writer.h',
         'equality_delete_writer.h',
         'file_scan_task_reader.h',
         'position_delete_writer.h',

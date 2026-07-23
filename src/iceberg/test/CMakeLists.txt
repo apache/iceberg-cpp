@@ -15,18 +15,7 @@
 # specific language governing permissions and limitations
 # under the License.
 
-set(INSTALL_GTEST
-    OFF
-    CACHE BOOL "" FORCE)
-
-fetchcontent_declare(googletest
-                     GIT_REPOSITORY https://github.com/google/googletest.git
-                     GIT_TAG b514bdc898e2951020cbdca1304b75f5950d1f59 # release-1.15.2
-                     FIND_PACKAGE_ARGS
-                     NAMES
-                     GTest)
-
-fetchcontent_makeavailable(googletest)
+# GoogleTest is resolved in cmake_modules/IcebergThirdpartyToolchain.cmake.
 
 set(ICEBERG_TEST_RESOURCES "${CMAKE_SOURCE_DIR}/src/iceberg/test/resources")
 
@@ -62,7 +51,9 @@ function(add_iceberg_test test_name)
   endif()
 
   if(MSVC_TOOLCHAIN)
-    target_compile_options(${test_name} PRIVATE /bigobj)
+    # /Zc:preprocessor: conforming preprocessor for the __VA_OPT__ in the logging
+    # macros (MSVC's traditional preprocessor rejects it).
+    target_compile_options(${test_name} PRIVATE /bigobj /Zc:preprocessor)
   endif()
 
   add_test(NAME ${test_name} COMMAND ${test_name})
@@ -103,7 +94,9 @@ add_iceberg_test(logging_test
                  SOURCES
                  cerr_logger_test.cc
                  log_level_test.cc
-                 logger_test.cc)
+                 logger_test.cc
+                 macros_active_level_test.cc
+                 macros_test.cc)
 
 add_iceberg_test(expression_test
                  SOURCES
@@ -255,6 +248,7 @@ if(ICEBERG_BUILD_BUNDLE)
                    data_writer_test.cc
                    delete_filter_test.cc
                    delete_loader_test.cc
+                   deletion_vector_writer_test.cc
                    file_scan_task_reader_test.cc
                    literal_util_test.cc)
 

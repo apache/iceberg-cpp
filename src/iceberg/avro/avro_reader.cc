@@ -68,6 +68,15 @@ bool HasRowPositionColumn(const Schema& schema) {
   return false;
 }
 
+bool HasRowIdColumn(const Schema& schema) {
+  for (const auto& field : schema.fields()) {
+    if (field.field_id() == MetadataColumns::kRowIdColumnId) {
+      return true;
+    }
+  }
+  return false;
+}
+
 // Abstract base class for Avro read backends.
 class AvroReadBackend {
  public:
@@ -332,9 +341,17 @@ class AvroReader::Impl {
         return NotSupported(
             "Reading '_pos' metadata column with split is not supported for Avro files.");
       }
+      if (options.split->offset != 0 && HasRowIdColumn(*read_schema_)) {
+        return NotSupported(
+            "Reading '_row_id' metadata column with split is not supported for Avro "
+            "files.");
+      }
     }
 
-    metadata_context_ = {.file_path = options.path, .next_file_pos = 0};
+    metadata_context_ = {.file_path = options.path,
+                         .next_file_pos = 0,
+                         .first_row_id = options.first_row_id,
+                         .data_sequence_number = options.data_sequence_number};
 
     return {};
   }

@@ -30,6 +30,7 @@
 #include "iceberg/data/equality_delete_writer.h"
 #include "iceberg/data/position_delete_writer.h"
 #include "iceberg/file_format.h"
+#include "iceberg/file_reader.h"
 #include "iceberg/manifest/manifest_entry.h"
 #include "iceberg/metadata_columns.h"
 #include "iceberg/parquet/parquet_register.h"
@@ -76,15 +77,32 @@ class DataWriterTest : public ::testing::Test {
     };
   }
 
-  std::shared_ptr<::arrow::Array> CreateTestData() {
+  std::shared_ptr<::arrow::Array> CreateArray(const Schema& schema,
+                                              std::string_view json) {
     ArrowSchema arrow_c_schema;
-    ICEBERG_THROW_NOT_OK(ToArrowSchema(*schema_, &arrow_c_schema));
+    ICEBERG_THROW_NOT_OK(ToArrowSchema(schema, &arrow_c_schema));
     auto arrow_schema = ::arrow::ImportType(&arrow_c_schema).ValueOrDie();
 
-    return ::arrow::json::ArrayFromJSONString(
-               ::arrow::struct_(arrow_schema->fields()),
-               R"([[1, "Alice"], [2, "Bob"], [3, "Charlie"]])")
+    return ::arrow::json::ArrayFromJSONString(::arrow::struct_(arrow_schema->fields()),
+                                              std::string(json))
         .ValueOrDie();
+  }
+
+  std::shared_ptr<::arrow::Array> CreateTestData() {
+    return CreateArray(*schema_, R"([[1, "Alice"], [2, "Bob"], [3, "Charlie"]])");
+  }
+
+  std::shared_ptr<Schema> RowLineageSchema() {
+    return std::make_shared<Schema>(std::vector<SchemaField>{
+        SchemaField::MakeRequired(1, "id", int32()), MetadataColumns::kRowId,
+        MetadataColumns::kLastUpdatedSequenceNumber});
+  }
+
+  std::unordered_map<std::string, std::string> FormatProperties(FileFormatType format) {
+    if (format == FileFormatType::kParquet) {
+      return {{"write.parquet.compression-codec", "uncompressed"}};
+    }
+    return {};
   }
 
   void WriteTestDataToWriter(DataWriter* writer) {
@@ -92,6 +110,20 @@ class DataWriterTest : public ::testing::Test {
     ArrowArray arrow_array;
     ASSERT_TRUE(::arrow::ExportArray(*test_data, &arrow_array).ok());
     ASSERT_THAT(writer->Write(&arrow_array), IsOk());
+  }
+
+  void VerifyNextBatch(Reader& reader, const Schema& schema,
+                       std::string_view expected_json) {
+    auto data = reader.Next();
+    ASSERT_THAT(data, IsOk()) << "Reader.Next() failed: " << data.error().message;
+    ASSERT_TRUE(data.value().has_value()) << "Reader.Next() returned no data";
+
+    auto expected_array = CreateArray(schema, expected_json);
+    auto actual_array =
+        ::arrow::ImportArray(&data.value().value(), expected_array->type()).ValueOrDie();
+    ASSERT_TRUE(actual_array->Equals(expected_array))
+        << "Expected: " << expected_array->ToString()
+        << "\nActual: " << actual_array->ToString();
   }
 
   std::shared_ptr<FileIO> file_io_;
@@ -112,18 +144,48 @@ TEST_P(DataWriterFormatTest, CreateWithFormat) {
       .partition = PartitionValues{},
       .format = format,
       .io = file_io_,
-      .properties =
-          format == FileFormatType::kParquet
-              ? std::unordered_map<std::string,
-                                   std::string>{{"write.parquet.compression-codec",
-                                                 "uncompressed"}}
-              : std::unordered_map<std::string, std::string>{},
+      .properties = FormatProperties(format),
   };
 
   auto writer_result = DataWriter::Make(options);
   ASSERT_THAT(writer_result, IsOk());
   auto writer = std::move(writer_result.value());
   ASSERT_NE(writer, nullptr);
+}
+
+TEST_P(DataWriterFormatTest, WriteRowLineage) {
+  auto [format, path] = GetParam();
+  auto schema = RowLineageSchema();
+  DataWriterOptions options{
+      .path = path,
+      .schema = schema,
+      .spec = partition_spec_,
+      .partition = PartitionValues{},
+      .format = format,
+      .io = file_io_,
+      .properties = FormatProperties(format),
+  };
+
+  ICEBERG_UNWRAP_OR_FAIL(auto writer, DataWriter::Make(options));
+
+  auto array = CreateArray(*schema, R"([[1, null, null],
+                                       [2, 777, 8],
+                                       [3, null, null]])");
+  ArrowArray arrow_array;
+  ASSERT_TRUE(::arrow::ExportArray(*array, &arrow_array).ok());
+  ASSERT_THAT(writer->Write(&arrow_array), IsOk());
+  ASSERT_THAT(writer->Close(), IsOk());
+
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto reader, ReaderFactoryRegistry::Open(format, {.path = path,
+                                                        .io = file_io_,
+                                                        .projection = schema,
+                                                        .first_row_id = 100L,
+                                                        .data_sequence_number = 7L}));
+
+  ASSERT_NO_FATAL_FAILURE(VerifyNextBatch(*reader, *schema, R"([[1, 100, 7],
+                                                               [2, 777, 8],
+                                                               [3, 102, 7]])"));
 }
 
 INSTANTIATE_TEST_SUITE_P(

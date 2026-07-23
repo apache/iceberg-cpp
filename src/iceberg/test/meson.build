@@ -67,6 +67,8 @@ iceberg_tests = {
             'cerr_logger_test.cc',
             'log_level_test.cc',
             'logger_test.cc',
+            'macros_active_level_test.cc',
+            'macros_test.cc',
         ),
     },
     'expression_test': {
@@ -124,6 +126,7 @@ iceberg_tests = {
     },
     'puffin_test': {
         'sources': files(
+            'deletion_vector_writer_test.cc',
             'puffin_format_test.cc',
             'puffin_json_test.cc',
             'puffin_reader_writer_test.cc',

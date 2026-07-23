@@ -23,7 +23,18 @@ source_dir=${1}
 build_dir=${1}/build
 run_example=${ICEBERG_RUN_EXAMPLE:-OFF}
 
-rm -rf "${build_dir}"
+# Clean up before configuring. If Windows still holds a just-built exe/dll
+# after the retries, let mkdir fail rather than reuse a half-deleted tree.
+for attempt in 1 2 3; do
+    if rm -rf "${build_dir}"; then
+        break
+    fi
+    if [[ "${attempt}" != "3" ]]; then
+        sleep 2
+    else
+        echo "Failed to remove build directory after 3 attempts: ${build_dir}" >&2
+    fi
+done
 mkdir "${build_dir}"
 pushd ${build_dir}
 
@@ -38,26 +49,19 @@ CMAKE_ARGS=(
 
 if is_windows; then
     CMAKE_ARGS+=("-DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake")
-    CMAKE_ARGS+=("-DCMAKE_BUILD_TYPE=Release")
-else
-    CMAKE_ARGS+=("-DCMAKE_BUILD_TYPE=Debug")
 fi
 
+build_type="${ICEBERG_BUILD_TYPE:-Debug}"
+CMAKE_ARGS+=("-DCMAKE_BUILD_TYPE=${build_type}")
+
 cmake "${CMAKE_ARGS[@]}" ${source_dir}
-if is_windows; then
-  cmake --build . --config Release
-  if [[ "${run_example}" == "ON" ]]; then
-    if [[ -x ./demo_example.exe ]]; then
-      ./demo_example.exe
+cmake --build .
+if [[ "${run_example}" == "ON" ]]; then
+    if is_windows; then
+        ./demo_example.exe
     else
-      ./Release/demo_example.exe
+        ./demo_example
     fi
-  fi
-else
-  cmake --build .
-  if [[ "${run_example}" == "ON" ]]; then
-    ./demo_example
-  fi
 fi
 
 popd

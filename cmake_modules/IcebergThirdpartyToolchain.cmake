@@ -801,6 +801,57 @@ function(resolve_zstd_dependency)
   endif()
 endfunction()
 
+# ----------------------------------------------------------------------
+# GoogleTest (tests only)
+#
+# GTest is only consumed by the unit tests; it is neither installed nor exported
+# as a system dependency, so it does not touch ICEBERG_SYSTEM_DEPENDENCIES.
+
+function(resolve_gtest_dependency)
+  prepare_fetchcontent()
+
+  set(INSTALL_GTEST
+      OFF
+      CACHE BOOL "" FORCE)
+
+  fetchcontent_declare(googletest
+                       GIT_REPOSITORY https://github.com/google/googletest.git
+                       GIT_TAG b514bdc898e2951020cbdca1304b75f5950d1f59 # release-1.15.2
+                       FIND_PACKAGE_ARGS
+                       NAMES
+                       GTest)
+  fetchcontent_makeavailable(googletest)
+endfunction()
+
+# ----------------------------------------------------------------------
+# Google Benchmark (benchmarks only)
+#
+# Like GTest, benchmark is only consumed by the benchmark targets and is neither
+# installed nor exported as a system dependency.
+
+function(resolve_benchmark_dependency)
+  prepare_fetchcontent()
+
+  set(BENCHMARK_ENABLE_GTEST_TESTS
+      OFF
+      CACHE BOOL "" FORCE)
+  set(BENCHMARK_ENABLE_INSTALL
+      OFF
+      CACHE BOOL "" FORCE)
+  set(BENCHMARK_ENABLE_TESTING
+      OFF
+      CACHE BOOL "" FORCE)
+
+  fetchcontent_declare(google_benchmark
+                       GIT_REPOSITORY https://github.com/google/benchmark.git
+                       GIT_TAG a4cf155615c63e019ae549e31703bf367df5b471 # v1.8.4
+                       FIND_PACKAGE_ARGS
+                       NAMES
+                       benchmark
+                       CONFIG)
+  fetchcontent_makeavailable(google_benchmark)
+endfunction()
+
 resolve_zlib_dependency()
 resolve_nanoarrow_dependency()
 resolve_croaring_dependency()
@@ -863,4 +914,18 @@ endfunction()
 
 if(ICEBERG_BUILD_HIVE)
   resolve_thrift_dependency()
+endif()
+
+# ----------------------------------------------------------------------
+# Test and benchmark dependencies
+#
+# These are build-only tools, pulled in after the library dependencies and only
+# when the corresponding build option is enabled.
+
+if(ICEBERG_BUILD_TESTS)
+  resolve_gtest_dependency()
+endif()
+
+if(ICEBERG_BUILD_BENCHMARKS)
+  resolve_benchmark_dependency()
 endif()

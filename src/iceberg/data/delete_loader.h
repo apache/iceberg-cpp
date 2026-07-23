@@ -70,9 +70,6 @@ class ICEBERG_DATA_EXPORT DeleteLoader {
   Status LoadPositionDelete(const DataFile& file, PositionDeleteIndex& index,
                             std::string_view data_file_path) const;
 
-  /// \brief Load a single deletion vector file into the index.
-  Status LoadDV(const DataFile& file, PositionDeleteIndex& index) const;
-
   std::shared_ptr<FileIO> io_;
 };
 

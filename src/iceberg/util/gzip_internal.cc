@@ -19,11 +19,15 @@
 
 #include "iceberg/util/gzip_internal.h"
 
+#include <zconf.h>
 #include <zlib.h>
 
 #include <cstring>
+#include <memory>
+#include <string>
 #include <vector>
 
+#include "iceberg/result.h"
 #include "iceberg/util/macros.h"
 
 namespace iceberg {

@@ -28,6 +28,7 @@
 #include <span>
 #include <string>
 #include <string_view>
+#include <vector>
 
 #include "iceberg/iceberg_data_export.h"
 #include "iceberg/result.h"
@@ -118,6 +119,8 @@ class ICEBERG_DATA_EXPORT RoaringPositionBitmap {
   // `PositionDeleteIndex::BulkAddForKey`; per-key grouping is the caller's
   // job, keeping this a thin wrapper around CRoaring's `addMany`.
   void AddManyForKey(int32_t key, std::span<const uint32_t> positions);
+  // Appends the portable serialized bitmap and returns bytes appended.
+  Result<size_t> SerializeTo(std::vector<uint8_t>& output) const;
   friend class PositionDeleteIndex;
 };
 

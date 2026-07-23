@@ -353,7 +353,7 @@ class ICEBERG_EXPORT MergingSnapshotUpdate : public SnapshotUpdate {
 
   Status ManagersReady() const;
 
-  Result<std::vector<PendingDeleteFile>> MergeDVs() const;
+  Result<std::vector<PendingDeleteFile>> MergeDVs();
 
   /// \brief Write new data manifests for staged data files; caches the result.
   Result<std::vector<ManifestFile>> WriteNewDataManifests();
@@ -402,6 +402,8 @@ class ICEBERG_EXPORT MergingSnapshotUpdate : public SnapshotUpdate {
 
   std::vector<ManifestFile> cached_new_data_manifests_;
   std::vector<ManifestFile> cached_new_delete_manifests_;
+  std::vector<PendingDeleteFile> merged_dvs_;
+  int32_t dv_merge_attempt_ = 0;
 };
 
 }  // namespace iceberg

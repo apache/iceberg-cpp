@@ -24,6 +24,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "iceberg/arrow_c_data.h"
@@ -32,6 +33,18 @@
 #include "iceberg/type_fwd.h"
 
 namespace iceberg {
+
+/// \brief File metadata for files produced by a writer.
+struct ICEBERG_DATA_EXPORT WriteResult {
+  /// Usually a writer produces a single data or delete file.
+  /// Position delete writer may produce multiple file-scoped delete files.
+  /// In the future, multiple files can be produced if file rolling is supported.
+  std::vector<std::shared_ptr<DataFile>> data_files;
+  /// Data files referenced by the produced delete files.
+  std::vector<std::string> referenced_data_files;
+  /// Previously written delete files that were merged and should be removed.
+  std::vector<std::shared_ptr<DataFile>> rewritten_delete_files;
+};
 
 /// \brief Base interface for data file writers.
 class ICEBERG_DATA_EXPORT FileWriter {
@@ -47,14 +60,6 @@ class ICEBERG_DATA_EXPORT FileWriter {
 
   /// \brief Close the writer and finalize the file.
   virtual Status Close() = 0;
-
-  /// \brief File metadata for all files produced by this writer.
-  struct ICEBERG_DATA_EXPORT WriteResult {
-    /// Usually a writer produces a single data or delete file.
-    /// Position delete writer may produce multiple file-scoped delete files.
-    /// In the future, multiple files can be produced if file rolling is supported.
-    std::vector<std::shared_ptr<DataFile>> data_files;
-  };
 
   /// \brief Get file metadata for all files produced by this writer.
   /// \note This method should be called after Close().

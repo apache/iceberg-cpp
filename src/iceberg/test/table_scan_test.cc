@@ -399,6 +399,50 @@ TEST_P(TableScanTest, PlanFilesWithDataManifests) {
                                                              "/path/to/data2.parquet"));
 }
 
+TEST_P(TableScanTest, PlanRowLineage) {
+  auto version = GetParam();
+  if (version < 3) {
+    GTEST_SKIP() << "row lineage is only assigned in v3 manifests";
+  }
+
+  constexpr int64_t kSnapshotId = 1000L;
+  constexpr int64_t kDataSequenceNumber = 5L;
+  constexpr int64_t kFileSequenceNumber = 7L;
+
+  std::vector<ManifestEntry> data_entries{MakeEntry(
+      ManifestStatus::kAdded, kSnapshotId, kDataSequenceNumber,
+      MakeDataFile("/path/to/data.parquet", PartitionValues(std::vector<Literal>{}),
+                   unpartitioned_spec_->spec_id(), /*record_count=*/3))};
+  data_entries[0].file_sequence_number = kFileSequenceNumber;
+  auto data_manifest = WriteDataManifest(version, kSnapshotId, std::move(data_entries),
+                                         unpartitioned_spec_);
+  std::string manifest_list_path =
+      WriteManifestList(version, kSnapshotId, kFileSequenceNumber, {data_manifest});
+
+  auto timestamp_ms = TimePointMsFromUnixMs(1609459200000L);
+  auto snapshot =
+      std::make_shared<Snapshot>(Snapshot{.snapshot_id = kSnapshotId,
+                                          .parent_snapshot_id = std::nullopt,
+                                          .sequence_number = kFileSequenceNumber,
+                                          .timestamp_ms = timestamp_ms,
+                                          .manifest_list = manifest_list_path,
+                                          .schema_id = schema_->schema_id(),
+                                          .first_row_id = 0L,
+                                          .added_rows = 3L});
+  auto metadata = ScanTestBase::MakeTableMetadata(
+      {snapshot}, kSnapshotId,
+      {{"main", std::make_shared<SnapshotRef>(SnapshotRef{
+                    .snapshot_id = kSnapshotId, .retention = SnapshotRef::Branch{}})}},
+      unpartitioned_spec_);
+
+  ICEBERG_UNWRAP_OR_FAIL(auto builder, DataTableScanBuilder::Make(metadata, file_io_));
+  ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
+  ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
+  ASSERT_EQ(tasks.size(), 1);
+  EXPECT_EQ(tasks[0]->data_file()->first_row_id, 0L);
+  EXPECT_EQ(tasks[0]->data_file()->data_sequence_number, kDataSequenceNumber);
+}
+
 TEST_P(TableScanTest, PlanFilesWithMultipleManifests) {
   auto version = GetParam();
 

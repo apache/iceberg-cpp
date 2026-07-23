@@ -21,12 +21,14 @@
 
 #include <map>
 #include <set>
+#include <utility>
 #include <vector>
 
 #include <nanoarrow/nanoarrow.h>
 
 #include "iceberg/arrow/nanoarrow_status_internal.h"
 #include "iceberg/arrow_c_data_guard_internal.h"
+#include "iceberg/data/writer.h"  // IWYU pragma: keep
 #include "iceberg/file_writer.h"
 #include "iceberg/manifest/manifest_entry.h"
 #include "iceberg/metadata_columns.h"
@@ -92,7 +94,7 @@ class PositionDeleteWriter::Impl {
     return {};
   }
 
-  Result<FileWriter::WriteResult> Metadata() {
+  Result<WriteResult> Metadata() {
     ICEBERG_CHECK(closed_, "Cannot get metadata before closing the writer");
 
     ICEBERG_ASSIGN_OR_RAISE(auto metrics, writer_->metrics());
@@ -159,7 +161,7 @@ class PositionDeleteWriter::Impl {
             options_.spec ? std::make_optional(options_.spec->spec_id()) : std::nullopt,
     });
 
-    FileWriter::WriteResult result;
+    WriteResult result;
     result.data_files.push_back(std::move(data_file));
     return result;
   }
@@ -233,8 +235,6 @@ Result<int64_t> PositionDeleteWriter::Length() const { return impl_->Length(); }
 
 Status PositionDeleteWriter::Close() { return impl_->Close(); }
 
-Result<FileWriter::WriteResult> PositionDeleteWriter::Metadata() {
-  return impl_->Metadata();
-}
+Result<WriteResult> PositionDeleteWriter::Metadata() { return impl_->Metadata(); }
 
 }  // namespace iceberg

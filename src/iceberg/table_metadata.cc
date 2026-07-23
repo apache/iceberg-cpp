@@ -71,7 +71,7 @@ Result<std::unique_ptr<PartitionSpec>> FreshPartitionSpec(int32_t spec_id,
                                                           const Schema& fresh_schema) {
   std::vector<PartitionField> partition_fields;
   partition_fields.reserve(spec.fields().size());
-  int32_t last_partition_field_id = PartitionSpec::kInvalidPartitionFieldId;
+  int32_t last_partition_field_id = PartitionSpec::kLegacyPartitionDataIdStart - 1;
   for (auto& field : spec.fields()) {
     ICEBERG_ASSIGN_OR_RAISE(auto source_name,
                             base_schema.FindColumnNameById(field.source_id()));
@@ -556,7 +556,7 @@ class TableMetadataBuilder::Impl {
     metadata_.last_updated_ms = kInvalidLastUpdatedMs;
     metadata_.last_column_id = Schema::kInvalidColumnId;
     metadata_.default_spec_id = PartitionSpec::kInitialSpecId;
-    metadata_.last_partition_id = PartitionSpec::kInvalidPartitionFieldId;
+    metadata_.last_partition_id = PartitionSpec::kLegacyPartitionDataIdStart - 1;
     metadata_.current_snapshot_id = kInvalidSnapshotId;
     metadata_.default_sort_order_id = SortOrder::kInitialSortOrderId;
     metadata_.next_row_id = TableMetadata::kInitialRowId;

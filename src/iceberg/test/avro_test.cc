@@ -162,6 +162,59 @@ class AvroReaderTest : public TempFileTestBase {
     ASSERT_THAT(writer->Close(), IsOk());
   }
 
+  void CreateRowLineageAvroFile() {
+    auto schema = RowLineageSchema();
+
+    ArrowSchema arrow_c_schema;
+    ASSERT_THAT(ToArrowSchema(*schema, &arrow_c_schema), IsOk());
+    auto arrow_schema = ::arrow::ImportType(&arrow_c_schema).ValueOrDie();
+
+    auto array =
+        ::arrow::json::ArrayFromJSONString(::arrow::struct_(arrow_schema->fields()),
+                                           R"([[1, null, null],
+                                              [2, 777, 8],
+                                              [3, null, null]])")
+            .ValueOrDie();
+
+    struct ArrowArray arrow_array;
+    auto export_result = ::arrow::ExportArray(*array, &arrow_array);
+    ASSERT_TRUE(export_result.ok());
+
+    auto writer_result =
+        WriterFactoryRegistry::Open(FileFormatType::kAvro, {
+                                                               .path = temp_avro_file_,
+                                                               .schema = schema,
+                                                               .io = file_io_,
+                                                           });
+    ASSERT_TRUE(writer_result.has_value());
+    auto writer = std::move(writer_result.value());
+    ASSERT_THAT(writer->Write(&arrow_array), IsOk());
+    ASSERT_THAT(writer->Close(), IsOk());
+  }
+
+  std::shared_ptr<Schema> RowLineageSchema() {
+    return std::make_shared<Schema>(std::vector<SchemaField>{
+        SchemaField::MakeRequired(1, "id", int32()),
+        MetadataColumns::kRowId,
+        MetadataColumns::kLastUpdatedSequenceNumber,
+    });
+  }
+
+  Result<std::unique_ptr<Reader>> OpenRowLineageReader(
+      const std::shared_ptr<Schema>& schema,
+      std::optional<int64_t> first_row_id = std::nullopt,
+      std::optional<int64_t> data_sequence_number = std::nullopt) {
+    ReaderProperties properties;
+    properties.Set(ReaderProperties::kAvroSkipDatum, skip_datum_);
+    return ReaderFactoryRegistry::Open(FileFormatType::kAvro,
+                                       {.path = temp_avro_file_,
+                                        .io = file_io_,
+                                        .projection = schema,
+                                        .first_row_id = first_row_id,
+                                        .data_sequence_number = data_sequence_number,
+                                        .properties = std::move(properties)});
+  }
+
   void VerifyNextBatch(Reader& reader, std::string_view expected_json) {
     // Boilerplate to get Arrow schema
     auto schema_result = reader.Schema();
@@ -694,6 +747,45 @@ TEST_P(AvroReaderParameterizedTest, ReadMetadataOnlyProjection) {
   VerifyNextBatch(*reader, expected_string);
 }
 
+TEST_P(AvroReaderParameterizedTest, ReadRowLineage) {
+  temp_avro_file_ = "avro_row_lineage.avro";
+  CreateSimpleAvroFile();
+
+  ICEBERG_UNWRAP_OR_FAIL(auto reader, OpenRowLineageReader(RowLineageSchema(), 100L, 7L));
+
+  VerifyNextBatch(*reader, R"([[1, 100, 7], [2, 101, 7], [3, 102, 7]])");
+}
+
+TEST_P(AvroReaderParameterizedTest, ReadPartialLineage) {
+  temp_avro_file_ = "avro_partial_lineage.avro";
+  CreateSimpleAvroFile();
+
+  auto schema = RowLineageSchema();
+  ICEBERG_UNWRAP_OR_FAIL(auto reader, OpenRowLineageReader(schema));
+
+  VerifyNextBatch(*reader, R"([[1, null, null], [2, null, null], [3, null, null]])");
+
+  ICEBERG_UNWRAP_OR_FAIL(auto reader_with_row_id, OpenRowLineageReader(schema, 100L));
+
+  VerifyNextBatch(*reader_with_row_id,
+                  R"([[1, 100, null], [2, 101, null], [3, 102, null]])");
+
+  ICEBERG_UNWRAP_OR_FAIL(auto reader_with_sequence,
+                         OpenRowLineageReader(schema, std::nullopt, 7L));
+
+  VerifyNextBatch(*reader_with_sequence, R"([[1, null, 7], [2, null, 7], [3, null, 7]])");
+}
+
+TEST_P(AvroReaderParameterizedTest, ReadPhysicalLineage) {
+  temp_avro_file_ = "avro_physical_lineage.avro";
+  CreateRowLineageAvroFile();
+
+  auto schema = RowLineageSchema();
+  ICEBERG_UNWRAP_OR_FAIL(auto reader, OpenRowLineageReader(schema, 100L));
+
+  VerifyNextBatch(*reader, R"([[1, 100, null], [2, 777, 8], [3, 102, null]])");
+}
+
 TEST_P(AvroReaderParameterizedTest, SplitWithRowPositionNotSupported) {
   CreateSimpleAvroFile();
 
@@ -712,6 +804,29 @@ TEST_P(AvroReaderParameterizedTest, SplitWithRowPositionNotSupported) {
   ASSERT_THAT(reader_result, IsError(ErrorKind::kNotSupported));
   EXPECT_THAT(reader_result,
               HasErrorMessage("'_pos' metadata column with split is not supported"));
+}
+
+TEST_P(AvroReaderParameterizedTest, SplitWithRowIdNotSupported) {
+  CreateSimpleAvroFile();
+
+  auto schema = std::make_shared<Schema>(std::vector<SchemaField>{
+      SchemaField::MakeRequired(1, "id", int32()),
+      MetadataColumns::kRowId,
+  });
+
+  ReaderProperties properties;
+  properties.Set(ReaderProperties::kAvroSkipDatum, skip_datum_);
+  auto reader_result = ReaderFactoryRegistry::Open(
+      FileFormatType::kAvro, {.path = temp_avro_file_,
+                              .split = Split{.offset = 100, .length = 200},
+                              .io = file_io_,
+                              .projection = schema,
+                              .first_row_id = 100L,
+                              .properties = std::move(properties)});
+
+  ASSERT_THAT(reader_result, IsError(ErrorKind::kNotSupported));
+  EXPECT_THAT(reader_result,
+              HasErrorMessage("'_row_id' metadata column with split is not supported"));
 }
 
 INSTANTIATE_TEST_SUITE_P(DirectDecoderModes, AvroReaderParameterizedTest,

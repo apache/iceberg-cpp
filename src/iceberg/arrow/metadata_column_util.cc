@@ -24,8 +24,37 @@
 
 #include "iceberg/arrow/arrow_status_internal.h"
 #include "iceberg/arrow/metadata_column_util_internal.h"
+#include "iceberg/metadata_columns.h"
+#include "iceberg/util/checked_cast.h"
 
 namespace iceberg::arrow {
+
+bool CanInheritRowLineageValue(int32_t field_id,
+                               const MetadataColumnContext& metadata_context) {
+  if (field_id == MetadataColumns::kRowIdColumnId) {
+    return metadata_context.first_row_id.has_value();
+  }
+  if (field_id == MetadataColumns::kLastUpdatedSequenceNumberColumnId) {
+    return metadata_context.data_sequence_number.has_value();
+  }
+  return false;
+}
+
+Status AppendInheritedRowLineageValue(int32_t field_id,
+                                      const MetadataColumnContext& metadata_context,
+                                      ::arrow::ArrayBuilder* array_builder) {
+  auto* int_builder = internal::checked_cast<::arrow::Int64Builder*>(array_builder);
+  if (!CanInheritRowLineageValue(field_id, metadata_context)) {
+    ICEBERG_ARROW_RETURN_NOT_OK(int_builder->AppendNull());
+  } else if (field_id == MetadataColumns::kRowIdColumnId) {
+    ICEBERG_ARROW_RETURN_NOT_OK(int_builder->Append(
+        metadata_context.first_row_id.value() + metadata_context.next_file_pos));
+  } else {
+    ICEBERG_ARROW_RETURN_NOT_OK(
+        int_builder->Append(metadata_context.data_sequence_number.value()));
+  }
+  return {};
+}
 
 Result<std::shared_ptr<::arrow::Array>> MakeFilePathArray(const std::string& file_path,
                                                           int64_t num_rows,
@@ -48,6 +77,43 @@ Result<std::shared_ptr<::arrow::Array>> MakeRowPositionArray(int64_t start_posit
   for (int64_t i = 0; i < num_rows; ++i) {
     ICEBERG_ARROW_RETURN_NOT_OK(builder.Append(start_position + i));
   }
+  std::shared_ptr<::arrow::Array> array;
+  ICEBERG_ARROW_RETURN_NOT_OK(builder.Finish(&array));
+  return array;
+}
+
+Result<std::shared_ptr<::arrow::Array>> MakeRowIdArray(
+    std::optional<int64_t> first_row_id, int64_t start_position, int64_t num_rows,
+    ::arrow::MemoryPool* pool) {
+  ::arrow::Int64Builder builder(pool);
+  ICEBERG_ARROW_RETURN_NOT_OK(builder.Reserve(num_rows));
+  if (!first_row_id.has_value()) {
+    ICEBERG_ARROW_RETURN_NOT_OK(builder.AppendNulls(num_rows));
+  } else {
+    for (int64_t row_index = 0; row_index < num_rows; ++row_index) {
+      ICEBERG_ARROW_RETURN_NOT_OK(
+          builder.Append(first_row_id.value() + start_position + row_index));
+    }
+  }
+
+  std::shared_ptr<::arrow::Array> array;
+  ICEBERG_ARROW_RETURN_NOT_OK(builder.Finish(&array));
+  return array;
+}
+
+Result<std::shared_ptr<::arrow::Array>> MakeLastUpdatedSequenceNumberArray(
+    std::optional<int64_t> data_sequence_number, int64_t num_rows,
+    ::arrow::MemoryPool* pool) {
+  ::arrow::Int64Builder builder(pool);
+  ICEBERG_ARROW_RETURN_NOT_OK(builder.Reserve(num_rows));
+  if (!data_sequence_number.has_value()) {
+    ICEBERG_ARROW_RETURN_NOT_OK(builder.AppendNulls(num_rows));
+  } else {
+    for (int64_t row_index = 0; row_index < num_rows; ++row_index) {
+      ICEBERG_ARROW_RETURN_NOT_OK(builder.Append(data_sequence_number.value()));
+    }
+  }
+
   std::shared_ptr<::arrow::Array> array;
   ICEBERG_ARROW_RETURN_NOT_OK(builder.Finish(&array));
   return array;

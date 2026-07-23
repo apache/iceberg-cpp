@@ -23,6 +23,7 @@
 #include <optional>
 
 #include "iceberg/catalog.h"
+#include "iceberg/location_provider.h"
 #include "iceberg/schema.h"
 #include "iceberg/snapshot.h"
 #include "iceberg/statistics_file.h"
@@ -84,6 +85,11 @@ const TableMetadata* TransactionContext::base() const { return metadata_builder-
 
 const TableMetadata& TransactionContext::current() const {
   return metadata_builder->current();
+}
+
+Result<std::unique_ptr<LocationProvider>> TransactionContext::NewLocationProvider()
+    const {
+  return iceberg::LocationProvider::Make(current().location, current().properties);
 }
 
 std::string TransactionContext::MetadataFileLocation(std::string_view filename) const {
