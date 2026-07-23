@@ -48,6 +48,8 @@ jobs:
     env:
       SCCACHE_DIR: ${{ github.workspace }}/.sccache
       SCCACHE_CACHE_SIZE: "2G"
+      CPP_LINTER_VERSION: "1.13.0"
+      CLANG_TOOLS_VERSION: "22.1.8"
     steps:
       - name: Checkout iceberg-cpp
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
@@ -97,7 +99,7 @@ jobs:
           python-version: '3.13'
       - name: Install cpp-linter and clang tools
         if: github.event_name == 'pull_request'
-        run: python -m pip install "cpp-linter==1.13.0" "clang-format==22.1.8" "clang-tidy==22.1.8"
+        run: python -m pip install "cpp-linter==${CPP_LINTER_VERSION}" "clang-format==${CLANG_TOOLS_VERSION}" "clang-tidy==${CLANG_TOOLS_VERSION}"
       - name: Run cpp-linter
         id: linter
         if: github.event_name == 'pull_request'
@@ -109,7 +111,7 @@ jobs:
           cpp-linter \
             --style=file \
             --tidy-checks='' \
-            --version=22 \
+            --version="${CLANG_TOOLS_VERSION%%.*}" \
             --files-changed-only=true \
             --lines-changed-only=true \
             --thread-comments=true \
