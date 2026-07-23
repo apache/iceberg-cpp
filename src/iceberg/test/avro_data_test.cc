@@ -19,8 +19,12 @@
 
 #include <ranges>
 
+#include <arrow/array/builder_nested.h>
+#include <arrow/array/builder_primitive.h>
 #include <arrow/c/bridge.h>
 #include <arrow/json/from_string.h>
+#include <arrow/memory_pool.h>
+#include <arrow/type.h>
 #include <arrow/util/decimal.h>
 #include <avro/Compiler.hh>
 #include <avro/Generic.hh>
@@ -31,6 +35,7 @@
 
 #include "iceberg/avro/avro_data_util_internal.h"
 #include "iceberg/avro/avro_schema_util_internal.h"
+#include "iceberg/expression/literal.h"
 #include "iceberg/schema.h"
 #include "iceberg/schema_internal.h"
 #include "iceberg/schema_util.h"
@@ -660,6 +665,97 @@ TEST(AppendDatumToBuilderTest, StructWithMissingOptionalField) {
   ])";
   ASSERT_NO_FATAL_FAILURE(VerifyAppendDatumToBuilder(iceberg_schema, avro_schema.root(),
                                                      avro_data, expected_json));
+}
+
+TEST(AppendDatumToBuilderTest, StructWithMissingDefaultFields) {
+  Schema iceberg_schema({
+      SchemaField::MakeRequired(1, "id", iceberg::int32()),
+      // Missing required field with an initial-default: filled with the default.
+      SchemaField(2, "score", iceberg::int64(), /*optional=*/false, /*doc=*/{},
+                  std::make_shared<const Literal>(Literal::Long(100))),
+      // Missing optional field with an initial-default: also filled, not null.
+      SchemaField(3, "grade", iceberg::string(), /*optional=*/true, /*doc=*/{},
+                  std::make_shared<const Literal>(Literal::String("A"))),
+  });
+
+  // Create Avro schema that only has the id field (missing score and grade).
+  std::string avro_schema_json = R"({
+    "type": "record",
+    "name": "person",
+    "fields": [
+      {"name": "id", "type": "int", "field-id": 1}
+    ]
+  })";
+  auto avro_schema = ::avro::compileJsonSchemaFromString(avro_schema_json);
+
+  std::vector<::avro::GenericDatum> avro_data;
+  for (int i = 0; i < 2; ++i) {
+    ::avro::GenericDatum avro_datum(avro_schema.root());
+    auto& record = avro_datum.value<::avro::GenericRecord>();
+    record.fieldAt(0).value<int32_t>() = i + 1;
+    avro_data.push_back(avro_datum);
+  }
+
+  const std::string expected_json = R"([
+    {"id": 1, "score": 100, "grade": "A"},
+    {"id": 2, "score": 100, "grade": "A"}
+  ])";
+  ASSERT_NO_FATAL_FAILURE(VerifyAppendDatumToBuilder(iceberg_schema, avro_schema.root(),
+                                                     avro_data, expected_json));
+}
+
+TEST(AppendDefaultToBuilderTest, AppendsValue) {
+  ::arrow::Int64Builder builder;
+  ASSERT_THAT(AppendDefaultToBuilder(Literal::Long(42), &builder), IsOk());
+  ASSERT_THAT(AppendDefaultToBuilder(Literal::Long(42), &builder), IsOk());
+
+  std::shared_ptr<::arrow::Array> array;
+  ASSERT_TRUE(builder.Finish(&array).ok());
+  ASSERT_EQ(array->length(), 2);
+  const auto& long_array = static_cast<const ::arrow::Int64Array&>(*array);
+  ASSERT_EQ(long_array.Value(0), 42);
+  ASSERT_EQ(long_array.Value(1), 42);
+}
+
+TEST(AppendDefaultToBuilderTest, CastsToBuilderType) {
+  // The literal's natural type (int32) differs from the builder type (int64); the value
+  // is cast to the builder type.
+  ::arrow::Int64Builder builder;
+  ASSERT_THAT(AppendDefaultToBuilder(Literal::Int(7), &builder), IsOk());
+
+  std::shared_ptr<::arrow::Array> array;
+  ASSERT_TRUE(builder.Finish(&array).ok());
+  ASSERT_EQ(array->length(), 1);
+  ASSERT_EQ(static_cast<const ::arrow::Int64Array&>(*array).Value(0), 7);
+}
+
+TEST(AppendDefaultToBuilderTest, ReusesPreparedScalar) {
+  auto pool = ::arrow::default_memory_pool();
+  auto child = std::make_shared<::arrow::Int64Builder>(pool);
+  ::arrow::StructBuilder struct_builder(
+      ::arrow::struct_({::arrow::field("d", ::arrow::int64())}), pool, {child});
+
+  FieldProjection projection;
+  projection.kind = FieldProjection::Kind::kDefault;
+  projection.from = Literal::Long(42);
+
+  SchemaProjection schema_projection;
+  schema_projection.fields.push_back(projection);
+  ASSERT_THAT(PrepareDefaultScalars(schema_projection, &struct_builder), IsOk());
+  ASSERT_NE(dynamic_cast<const AvroDefaultAttributes*>(
+                schema_projection.fields[0].attributes.get()),
+            nullptr);
+
+  auto* field_builder = struct_builder.field_builder(0);
+  ASSERT_THAT(AppendDefaultToBuilder(schema_projection.fields[0], field_builder), IsOk());
+  ASSERT_THAT(AppendDefaultToBuilder(schema_projection.fields[0], field_builder), IsOk());
+
+  std::shared_ptr<::arrow::Array> array;
+  ASSERT_TRUE(field_builder->Finish(&array).ok());
+  ASSERT_EQ(array->length(), 2);
+  const auto& long_array = static_cast<const ::arrow::Int64Array&>(*array);
+  ASSERT_EQ(long_array.Value(0), 42);
+  ASSERT_EQ(long_array.Value(1), 42);
 }
 
 TEST(AppendDatumToBuilderTest, NestedStructWithMissingOptionalFields) {

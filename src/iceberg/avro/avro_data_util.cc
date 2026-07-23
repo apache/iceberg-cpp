@@ -17,12 +17,15 @@
  * under the License.
  */
 
+#include <span>
+
 #include <arrow/array/builder_binary.h>
 #include <arrow/array/builder_decimal.h>
 #include <arrow/array/builder_nested.h>
 #include <arrow/array/builder_primitive.h>
 #include <arrow/extension_type.h>
 #include <arrow/json/from_string.h>
+#include <arrow/scalar.h>
 #include <arrow/type.h>
 #include <arrow/util/decimal.h>
 #include <avro/Generic.hh>
@@ -31,6 +34,7 @@
 #include <avro/Types.hh>
 
 #include "iceberg/arrow/arrow_status_internal.h"
+#include "iceberg/arrow/literal_util_internal.h"
 #include "iceberg/avro/avro_data_util_internal.h"
 #include "iceberg/avro/avro_schema_util_internal.h"
 #include "iceberg/metadata_columns.h"
@@ -88,6 +92,8 @@ Status AppendStructToBuilder(const ::avro::NodePtr& avro_node,
                                                      metadata_context, field_builder));
     } else if (field_projection.kind == FieldProjection::Kind::kNull) {
       ICEBERG_ARROW_RETURN_NOT_OK(field_builder->AppendNull());
+    } else if (field_projection.kind == FieldProjection::Kind::kDefault) {
+      ICEBERG_RETURN_UNEXPECTED(AppendDefaultToBuilder(field_projection, field_builder));
     } else if (field_projection.kind == FieldProjection::Kind::kMetadata) {
       int32_t field_id = expected_field.field_id();
       if (field_id == MetadataColumns::kFilePathColumnId) {
@@ -466,6 +472,10 @@ Status AppendFieldToBuilder(const ::avro::NodePtr& avro_node,
     return {};
   }
 
+  if (projection.kind == FieldProjection::Kind::kDefault) {
+    return AppendDefaultToBuilder(projection, array_builder);
+  }
+
   const bool is_row_lineage =
       MetadataColumns::IsRowLineageColumn(projected_field.field_id());
 
@@ -496,6 +506,128 @@ Status AppendFieldToBuilder(const ::avro::NodePtr& avro_node,
 }
 
 }  // namespace
+
+namespace {
+
+Result<std::shared_ptr<::arrow::Scalar>> MakeDefaultScalar(
+    const Literal& literal, const std::shared_ptr<::arrow::DataType>& builder_type) {
+  // The builder's own memory pool is not exposed, so the small scalar buffer uses the
+  // default pool.
+  ICEBERG_ASSIGN_OR_RAISE(std::shared_ptr<::arrow::Scalar> scalar,
+                          arrow::ToArrowScalar(literal, ::arrow::default_memory_pool()));
+
+  // For an extension builder (e.g. `arrow.uuid`) target its storage type: ToArrowScalar
+  // yields the storage scalar (fixed_size_binary(16) for uuid) and Scalar::CastTo has no
+  // kernel that targets an extension type. This mirrors MakeDefaultArray's extension
+  // handling.
+  std::shared_ptr<::arrow::DataType> target_type = builder_type;
+  if (target_type->id() == ::arrow::Type::EXTENSION) {
+    target_type = internal::checked_cast<const ::arrow::ExtensionType&>(*target_type)
+                      .storage_type();
+  }
+
+  if (!scalar->type->Equals(*target_type)) {
+    ICEBERG_ARROW_ASSIGN_OR_RETURN(scalar, scalar->CastTo(target_type));
+  }
+  return scalar;
+}
+
+Status PrepareDefaultScalars(std::span<FieldProjection> projections,
+                             ::arrow::ArrayBuilder* builder) {
+  auto* struct_builder = internal::checked_cast<::arrow::StructBuilder*>(builder);
+  if (static_cast<size_t>(struct_builder->num_fields()) != projections.size()) {
+    return InvalidArgument(
+        "Inconsistent number of struct builder fields ({}) and projections ({})",
+        struct_builder->num_fields(), projections.size());
+  }
+
+  for (size_t i = 0; i < projections.size(); ++i) {
+    auto& field_projection = projections[i];
+    auto* field_builder = struct_builder->field_builder(static_cast<int>(i));
+
+    if (field_projection.kind == FieldProjection::Kind::kDefault) {
+      if (dynamic_cast<const AvroDefaultAttributes*>(field_projection.attributes.get()) !=
+          nullptr) {
+        continue;
+      }
+      auto attrs = std::make_shared<AvroDefaultAttributes>();
+      ICEBERG_ASSIGN_OR_RAISE(attrs->scalar,
+                              MakeDefaultScalar(std::get<Literal>(field_projection.from),
+                                                field_builder->type()));
+      field_projection.attributes = std::move(attrs);
+      continue;
+    }
+
+    if (field_projection.kind != FieldProjection::Kind::kProjected ||
+        field_projection.children.empty()) {
+      continue;
+    }
+
+    switch (field_builder->type()->id()) {
+      case ::arrow::Type::STRUCT:
+        ICEBERG_RETURN_UNEXPECTED(
+            PrepareDefaultScalars(field_projection.children, field_builder));
+        break;
+      case ::arrow::Type::LIST: {
+        // List projections store a single child for the element. Defaults only appear
+        // on nested struct fields of that element.
+        auto* list_builder = internal::checked_cast<::arrow::ListBuilder*>(field_builder);
+        auto& element_projection = field_projection.children[0];
+        if (element_projection.kind == FieldProjection::Kind::kProjected &&
+            !element_projection.children.empty() &&
+            list_builder->value_builder()->type()->id() == ::arrow::Type::STRUCT) {
+          ICEBERG_RETURN_UNEXPECTED(PrepareDefaultScalars(element_projection.children,
+                                                          list_builder->value_builder()));
+        }
+        break;
+      }
+      case ::arrow::Type::MAP: {
+        auto* map_builder = internal::checked_cast<::arrow::MapBuilder*>(field_builder);
+        if (field_projection.children.size() >= 1 &&
+            !field_projection.children[0].children.empty() &&
+            map_builder->key_builder()->type()->id() == ::arrow::Type::STRUCT) {
+          ICEBERG_RETURN_UNEXPECTED(PrepareDefaultScalars(
+              field_projection.children[0].children, map_builder->key_builder()));
+        }
+        if (field_projection.children.size() >= 2 &&
+            !field_projection.children[1].children.empty() &&
+            map_builder->item_builder()->type()->id() == ::arrow::Type::STRUCT) {
+          ICEBERG_RETURN_UNEXPECTED(PrepareDefaultScalars(
+              field_projection.children[1].children, map_builder->item_builder()));
+        }
+        break;
+      }
+      default:
+        break;
+    }
+  }
+  return {};
+}
+
+}  // namespace
+
+Status PrepareDefaultScalars(SchemaProjection& projection,
+                             ::arrow::ArrayBuilder* root_builder) {
+  return PrepareDefaultScalars(projection.fields, root_builder);
+}
+
+Status AppendDefaultToBuilder(const Literal& literal, ::arrow::ArrayBuilder* builder) {
+  ICEBERG_ASSIGN_OR_RAISE(std::shared_ptr<::arrow::Scalar> scalar,
+                          MakeDefaultScalar(literal, builder->type()));
+  ICEBERG_ARROW_RETURN_NOT_OK(builder->AppendScalar(*scalar));
+  return {};
+}
+
+Status AppendDefaultToBuilder(const FieldProjection& projection,
+                              ::arrow::ArrayBuilder* builder) {
+  if (const auto* attrs =
+          dynamic_cast<const AvroDefaultAttributes*>(projection.attributes.get());
+      attrs != nullptr && attrs->scalar != nullptr) {
+    ICEBERG_ARROW_RETURN_NOT_OK(builder->AppendScalar(*attrs->scalar));
+    return {};
+  }
+  return AppendDefaultToBuilder(std::get<Literal>(projection.from), builder);
+}
 
 Status AppendDatumToBuilder(const ::avro::NodePtr& avro_node,
                             const ::avro::GenericDatum& avro_datum,

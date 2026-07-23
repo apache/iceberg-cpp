@@ -19,13 +19,47 @@
 
 #pragma once
 
+#include <memory>
+
 #include <arrow/array/builder_base.h>
+#include <arrow/scalar.h>
 #include <avro/GenericDatum.hh>
 
 #include "iceberg/arrow/metadata_column_util_internal.h"
+#include "iceberg/expression/literal.h"
 #include "iceberg/schema_util.h"
 
 namespace iceberg::avro {
+
+/// \brief Cached Arrow scalar for a `kDefault` field projection.
+///
+/// Materialized once (see `PrepareDefaultScalars`) so row-by-row Avro decode only
+/// needs `AppendScalar` instead of repeating `ToArrowScalar` / `CastTo` per row.
+struct AvroDefaultAttributes : FieldProjection::ExtraAttributes {
+  std::shared_ptr<::arrow::Scalar> scalar;
+};
+
+/// \brief Precompute cast Arrow scalars for every `kDefault` field under `projection`.
+///
+/// Walks `root_builder` in lockstep with the projection so each default is cast to the
+/// builder's Arrow type once per scan. Safe to call repeatedly; existing
+/// `AvroDefaultAttributes` entries are left unchanged.
+Status PrepareDefaultScalars(SchemaProjection& projection,
+                             ::arrow::ArrayBuilder* root_builder);
+
+/// \brief Append a literal once to `builder` while decoding Avro row-by-row.
+///
+/// Used to materialize `FieldProjection::Kind::kDefault`. Shares `ToArrowScalar` with
+/// Parquet's batch path (`MakeDefaultArray`); the append shape stays Avro-local because
+/// Avro builds Arrow arrays via per-row `ArrayBuilder`s rather than whole-column arrays.
+/// Prefer the `FieldProjection` overload after `PrepareDefaultScalars` so the scalar is
+/// reused across rows.
+Status AppendDefaultToBuilder(const Literal& literal, ::arrow::ArrayBuilder* builder);
+
+/// \brief Append a `kDefault` projection, reusing a scalar cached on
+/// `projection.attributes` when present.
+Status AppendDefaultToBuilder(const FieldProjection& projection,
+                              ::arrow::ArrayBuilder* builder);
 
 /// \brief Append an Avro datum to an Arrow array builder.
 ///
