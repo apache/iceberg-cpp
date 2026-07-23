@@ -83,10 +83,10 @@ ReportTestCase MakeScanReportCase() {
   report.table_name = "ns.tbl";
   report.snapshot_id = 42;
   report.schema_id = 0;
-  return {"ScanReport",
-          report,
-          "scan-report",
-          {{"table-name", "ns.tbl"}, {"snapshot-id", 42}}};
+  return {.name = "ScanReport",
+          .report = report,
+          .expected_report_type = "scan-report",
+          .expected_fields = {{"table-name", "ns.tbl"}, {"snapshot-id", 42}}};
 }
 
 ReportTestCase MakeCommitReportCase() {
@@ -95,13 +95,13 @@ ReportTestCase MakeCommitReportCase() {
   report.snapshot_id = 99;
   report.sequence_number = 1;
   report.operation = "append";
-  return {"CommitReport",
-          report,
-          "commit-report",
-          {{"table-name", "ns.tbl"},
-           {"snapshot-id", 99},
-           {"sequence-number", 1},
-           {"operation", "append"}}};
+  return {.name = "CommitReport",
+          .report = report,
+          .expected_report_type = "commit-report",
+          .expected_fields = {{"table-name", "ns.tbl"},
+                              {"snapshot-id", 99},
+                              {"sequence-number", 1},
+                              {"operation", "append"}}};
 }
 
 }  // namespace
@@ -135,7 +135,7 @@ TEST_P(RestMetricsReporterPayloadTest, ReportPostsToConfiguredEndpoint) {
                     const ErrorHandler&, auth::AuthSession&) -> Result<HttpResponse> {
         captured_path = path;
         captured_body = body;
-        return Result<HttpResponse>(HttpResponse{});
+        return {HttpResponse{}};
       });
 
   RestMetricsReporter reporter(mock_client, endpoint, session_);
