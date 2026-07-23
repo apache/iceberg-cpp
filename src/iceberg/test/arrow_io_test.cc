@@ -444,6 +444,53 @@ TEST_F(LocalFileIOTest, PropagatesNonSchemeMismatchUriError) {
   EXPECT_THAT(read_res, HasErrorMessage("Cannot parse URI"));
 }
 
+// Regression tests for #341: file: URIs with fewer than 3 slashes must be
+// recognized as URIs and normalized before being passed to Arrow.
+TEST_F(LocalFileIOTest, ResolvesFileUriSingleSlash) {
+  ASSERT_THAT(file_io_->WriteFile(temp_filepath_, "hello"), IsOk());
+  // Build a cross-platform file:/path URI: normalize backslashes to forward slashes
+  // and ensure a leading '/' (Linux paths already have one; Windows drive letters don't).
+  std::string p = temp_filepath_;
+  std::ranges::replace(p, '\\', '/');
+  std::string single_slash_uri = "file:" + (p.front() == '/' ? p : "/" + p);
+  auto read_res = file_io_->ReadFile(single_slash_uri, std::nullopt);
+  EXPECT_THAT(read_res, IsOk());
+  EXPECT_THAT(read_res, HasValue(::testing::Eq("hello")));
+}
+
+TEST_F(LocalFileIOTest, ResolvesFileUriTripleSlash) {
+  ASSERT_THAT(file_io_->WriteFile(temp_filepath_, "hello"), IsOk());
+  // Build a cross-platform file:///path URI: normalize backslashes to forward slashes
+  // and ensure exactly one leading '/' before the (possibly drive-lettered) path so
+  // that "file://" + "/" + path produces the canonical triple-slash form on all
+  // platforms. Linux: file:///tmp/...  Windows: file:///C:/Users/...
+  std::string p = temp_filepath_;
+  std::ranges::replace(p, '\\', '/');
+  std::string triple_slash_uri = "file://" + (p.front() == '/' ? p : "/" + p);
+  auto read_res = file_io_->ReadFile(triple_slash_uri, std::nullopt);
+  EXPECT_THAT(read_res, IsOk());
+  EXPECT_THAT(read_res, HasValue(::testing::Eq("hello")));
+}
+
+TEST_F(LocalFileIOTest, FileUriWithAuthorityPassesThrough) {
+  // Non-regression: "file://host/path" is an authority-bearing URI and must NOT
+  // be rewritten to "file:///host/path" (which would change its meaning).
+  // Arrow's PathFromUri handles authority-bearing file URIs correctly.
+  auto read_res = file_io_->ReadFile("file://remotehost/share/file.avro", std::nullopt);
+  // The read will fail (no such host/path) but with an IO error from Arrow,
+  // NOT a mangled path like "/remotehost/share/file.avro" on the local filesystem.
+  EXPECT_THAT(read_res, IsError(ErrorKind::kIOError));
+}
+
+TEST_F(LocalFileIOTest, BareWindowsDriveLetterNotMisparsedAsUri) {
+  // Verify that C:/... is NOT treated as a URI scheme (single char before ':').
+  // If it were misparsed as scheme "C", ReadFile would attempt URI resolution and
+  // fail with an Arrow URI error instead of a filesystem "not found" error.
+  auto read_res = file_io_->ReadFile("C:/Users/test/warehouse/file.avro", std::nullopt);
+  EXPECT_THAT(read_res, IsError(ErrorKind::kIOError));
+  EXPECT_THAT(read_res, HasErrorMessage("Failed to open local file"));
+}
+
 TEST_F(LocalFileIOTest, FallbackDecodesPercentEncodingInKey) {
   std::string decoded_path = temp_filepath_ + " x";
   ASSERT_THAT(file_io_->WriteFile(decoded_path, "raw"), IsOk());

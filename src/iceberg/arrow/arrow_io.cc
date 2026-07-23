@@ -36,6 +36,7 @@
 #include "iceberg/arrow/arrow_io_util.h"
 #include "iceberg/arrow/arrow_status_internal.h"
 #include "iceberg/util/macros.h"
+#include "iceberg/util/uri.h"
 
 namespace iceberg::arrow {
 
@@ -484,24 +485,51 @@ class ArrowOutputFile : public OutputFile {
 }  // namespace
 
 Result<std::string> ArrowFileSystemFileIO::ResolvePath(const std::string& file_location) {
-  const auto pos = file_location.find("://");
-  if (pos == std::string::npos) {
-    return file_location;
+  // Detect whether the location is a URI by looking for a scheme component.
+  // See iceberg/util/uri.h for the RFC 3986 scheme grammar.
+  std::size_t colon_pos = 0;
+  bool is_uri = IsUriScheme(file_location, &colon_pos);
+
+  if (!is_uri) {
+    return file_location;  // Bare local path (Unix or Windows drive letter)
   }
 
-  auto path = arrow_fs_->PathFromUri(file_location);
+  // Normalize authority-less file: URI short forms to the canonical three-slash
+  // form so that Arrow's PathFromUri can parse them.  Java Iceberg may write
+  // "file:/path" (one slash) which lacks the "://" that Arrow expects.
+  // Authority-bearing URIs like "file://host/path" (char after "file://" is not
+  // '/') are already valid RFC 3986 and pass through unchanged.
+  std::string normalized = file_location;
+  if (normalized.starts_with("file:/") && !normalized.starts_with("file://")) {
+    // file:/path → file:///path  (single-slash shorthand, no authority)
+    normalized = "file:///" + normalized.substr(6);
+  }
+
+  auto path = arrow_fs_->PathFromUri(normalized);
   if (path.ok()) {
     return std::move(path).ValueOrDie();
   }
 
   // Foreign alias (s3a/s3n): validate via Arrow's parser, then percent-decode the
   // scheme-less key (substring keeps a Windows drive letter's ':' that host() drops).
+  const auto sep_pos = file_location.find("://");
+  if (sep_pos == std::string::npos) {
+    // URI without "://" that is not file: — attempt best-effort strip of scheme
+    auto scheme_end = colon_pos + 1;
+    while (scheme_end < file_location.size() && file_location[scheme_end] == '/') {
+      ++scheme_end;
+    }
+    // Keep one leading slash for absolute paths
+    return std::string(
+        file_location.substr(scheme_end > colon_pos + 1 ? scheme_end - 1 : scheme_end));
+  }
+
   if (auto parsed = ::arrow::util::Uri::FromString(file_location); !parsed.ok()) {
     const auto& status = parsed.status();
     return std::unexpected<Error>{
         {.kind = ToErrorKind(status), .message = status.ToString()}};
   }
-  std::string bucket_key = file_location.substr(pos + 3);
+  std::string bucket_key = file_location.substr(sep_pos + 3);
   bucket_key = bucket_key.substr(0, bucket_key.find_first_of("?#"));
   return ::arrow::util::UriUnescape(bucket_key);
 }
