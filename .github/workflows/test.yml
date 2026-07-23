@@ -89,6 +89,50 @@ jobs:
           CC: gcc-14
           CXX: g++-14
         run: ci/scripts/build_example.sh $(pwd)/example
+  hive:
+    if: ${{ github.event_name != 'pull_request' || github.event.pull_request.draft == false }}
+    name: AMD64 Ubuntu 26.04 Hive
+    runs-on: ubuntu-26.04
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+    env:
+      SCCACHE_DIR: ${{ github.workspace }}/.sccache
+      SCCACHE_CACHE_SIZE: "2G"
+      ICEBERG_EXTRA_CMAKE_ARGS: "-DICEBERG_BUILD_HIVE=ON"
+    steps:
+      - name: Checkout iceberg-cpp
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+      - name: Install dependencies
+        shell: bash
+        run: sudo apt-get update && sudo apt-get install -y libcurl4-openssl-dev
+      - name: Restore sccache cache
+        uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        with:
+          path: ${{ github.workspace }}/.sccache
+          key: sccache-test-hive-${{ github.run_id }}
+          restore-keys: |
+            sccache-test-hive-
+            sccache-test-ubuntu-
+      - name: Setup sccache
+        uses: mozilla-actions/sccache-action@9e7fa8a12102821edf02ca5dbea1acd0f89a2696 # v0.0.10
+      - name: Build and test Iceberg with Hive
+        shell: bash
+        env:
+          CC: gcc-14
+          CXX: g++-14
+        run: ci/scripts/build_iceberg.sh $(pwd) OFF ON
+      - name: Show sccache stats
+        shell: bash
+        run: sccache --show-stats
+      - name: Save sccache cache
+        if: github.ref == 'refs/heads/main'
+        uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        with:
+          path: ${{ github.workspace }}/.sccache
+          key: sccache-test-hive-${{ github.run_id }}
   macos:
     if: ${{ github.event_name != 'pull_request' || github.event.pull_request.draft == false }}
     name: AArch64 macOS 26

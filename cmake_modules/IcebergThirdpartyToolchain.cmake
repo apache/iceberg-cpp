@@ -191,6 +191,18 @@ function(resolve_arrow_dependency)
   set(ARROW_VERBOSE_THIRDPARTY_BUILD OFF)
   set(CMAKE_CXX_STANDARD 20)
 
+  # Arrow's bundled Thrift download (Parquet requires Thrift, so this fires even
+  # for non-Hive builds) only lists the live Apache mirrors closer.lua / dlcdn,
+  # which drop older releases. Thrift 0.22.0 (Arrow 24.0.0's pinned version) has
+  # already been removed from them and now 404s, breaking every bundled build.
+  # Point Arrow at archive.apache.org, which retains all releases, mirroring the
+  # archive fallback already used for ARROW_SOURCE_URL / NANOARROW_SOURCE_URL.
+  # Keep the version in sync with Arrow's ARROW_THRIFT_BUILD_VERSION on upgrades.
+  if(NOT DEFINED ENV{ARROW_THRIFT_URL})
+    set(ENV{ARROW_THRIFT_URL}
+        "https://archive.apache.org/dist/thrift/0.22.0/thrift-0.22.0.tar.gz")
+  endif()
+
   fetchcontent_declare(VendoredArrow
                        ${FC_DECLARE_COMMON_OPTIONS}
                        URL ${ARROW_SOURCE_URL}
