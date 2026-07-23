@@ -23,6 +23,25 @@
 #include <string>
 
 #include "iceberg/iceberg_export.h"
+#include "iceberg/result.h"
+
+namespace iceberg::internal {
+
+inline Status ValidateBucketTransformParameter(int32_t num_buckets) {
+  if (num_buckets <= 0) {
+    return InvalidArgument("Number of buckets must be positive, got {}", num_buckets);
+  }
+  return {};
+}
+
+inline Status ValidateTruncateTransformParameter(int32_t width) {
+  if (width <= 0) {
+    return InvalidArgument("Width must be positive, got {}", width);
+  }
+  return {};
+}
+
+}  // namespace iceberg::internal
 
 namespace iceberg {
 

@@ -27,7 +27,6 @@
 #include "iceberg/expression/term.h"
 #include "iceberg/result.h"
 #include "iceberg/transform_function.h"
-#include "iceberg/transform_internal.h"
 #include "iceberg/type.h"
 #include "iceberg/util/base64.h"
 #include "iceberg/util/checked_cast.h"

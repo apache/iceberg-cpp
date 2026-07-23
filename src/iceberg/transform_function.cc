@@ -22,12 +22,12 @@
 #include <cassert>
 
 #include "iceberg/expression/literal.h"
-#include "iceberg/transform_internal.h"
 #include "iceberg/type.h"
 #include "iceberg/type_fwd.h"
 #include "iceberg/util/bucket_util.h"
 #include "iceberg/util/macros.h"
 #include "iceberg/util/temporal_util.h"
+#include "iceberg/util/transform_util.h"
 #include "iceberg/util/truncate_util.h"
 
 namespace iceberg {
