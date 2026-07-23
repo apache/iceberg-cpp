@@ -17,8 +17,11 @@
  * under the License.
  */
 
+#include <cstdint>
 #include <memory>
+#include <string>
 #include <utility>
+#include <vector>
 
 #include <arrow/array.h>
 #include <arrow/c/bridge.h>
@@ -49,6 +52,19 @@ std::shared_ptr<Schema> MakeSnapshotsSchema() {
                                     SchemaField::MakeRequired(8, "value", string())))});
 }
 
+std::vector<std::pair<std::string, std::string>> GetMapEntries(
+    const std::shared_ptr<::arrow::MapArray>& map_array, int64_t row) {
+  auto keys = std::static_pointer_cast<::arrow::StringArray>(map_array->keys());
+  auto values = std::static_pointer_cast<::arrow::StringArray>(map_array->items());
+  std::vector<std::pair<std::string, std::string>> entries;
+  entries.reserve(map_array->value_length(row));
+  const auto offset = map_array->value_offset(row);
+  for (int64_t index = offset; index < offset + map_array->value_length(row); ++index) {
+    entries.emplace_back(keys->GetString(index), values->GetString(index));
+  }
+  return entries;
+}
+
 }  // namespace
 
 class SnapshotsTableTest : public MetadataTableTestBase {
@@ -57,9 +73,6 @@ class SnapshotsTableTest : public MetadataTableTestBase {
     MetadataTableTestBase::SetUp();
 
     auto [snap1, snap2] = MakeTestSnapshots();
-    snap1_ = snap1;
-    snap2_ = snap2;
-
     ICEBERG_UNWRAP_OR_FAIL(
         table_, MakeTableWithSnapshots({snap1, snap2}, /*current_snapshot_id=*/2));
 
@@ -67,27 +80,18 @@ class SnapshotsTableTest : public MetadataTableTestBase {
                            MetadataTable::Make(table_, MetadataTable::Kind::kSnapshots));
   }
 
-  std::shared_ptr<Table> table_;
-  std::shared_ptr<Snapshot> snap1_;
-  std::shared_ptr<Snapshot> snap2_;
   std::unique_ptr<MetadataTable> snapshots_table_;
 };
 
 TEST_F(SnapshotsTableTest, Construct) {
-  ICEBERG_UNWRAP_OR_FAIL(snapshots_table_,
-                         MetadataTable::Make(MetadataTableTestBase::table_,
-                                             MetadataTable::Kind::kSnapshots));
   EXPECT_EQ(snapshots_table_->kind(), MetadataTable::Kind::kSnapshots);
-  EXPECT_EQ(snapshots_table_->source_table(), MetadataTableTestBase::table_);
-  EXPECT_EQ(snapshots_table_->name().name, "source_table.snapshots");
+  EXPECT_EQ(snapshots_table_->source_table(), table_);
+  EXPECT_EQ(snapshots_table_->name().name, "test_table.snapshots");
   EXPECT_EQ(snapshots_table_->name().ns.levels, (std::vector<std::string>{"db"}));
   EXPECT_NE(snapshots_table_->schema(), nullptr);
 }
 
 TEST_F(SnapshotsTableTest, SchemaMatchesIcebergSchema) {
-  ICEBERG_UNWRAP_OR_FAIL(snapshots_table_,
-                         MetadataTable::Make(MetadataTableTestBase::table_,
-                                             MetadataTable::Kind::kSnapshots));
   EXPECT_TRUE(*snapshots_table_->schema() == *MakeSnapshotsSchema());
 }
 
@@ -133,6 +137,15 @@ TEST_F(SnapshotsTableTest, Scan) {
   EXPECT_FALSE(summaries->IsNull(1));
   EXPECT_EQ(summaries->value_length(0), 11);
   EXPECT_EQ(summaries->value_length(1), 11);
+
+  auto first_summary = GetMapEntries(summaries, 0);
+  EXPECT_THAT(first_summary, ::testing::Contains(::testing::Pair("operation", "append")));
+  EXPECT_THAT(first_summary, ::testing::Contains(::testing::Pair("total-records", "1")));
+
+  auto second_summary = GetMapEntries(summaries, 1);
+  EXPECT_THAT(second_summary,
+              ::testing::Contains(::testing::Pair("operation", "append")));
+  EXPECT_THAT(second_summary, ::testing::Contains(::testing::Pair("total-records", "2")));
 }
 
 TEST_F(SnapshotsTableTest, ScanSnapshotSelectionIgnored) {
