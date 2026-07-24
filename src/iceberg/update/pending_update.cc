@@ -35,6 +35,10 @@ Status PendingUpdate::Commit() {
   if (!ctx_->transaction) {
     // Table-created path: no transaction exists yet, create a temporary one.
     ICEBERG_ASSIGN_OR_RAISE(auto txn, Transaction::Make(ctx_));
+    auto self = weak_from_this().lock();
+    if (self) {
+      ICEBERG_RETURN_UNEXPECTED(txn->AddUpdate(self));
+    }
     auto apply_status = txn->Apply(*this);
     if (!apply_status.has_value()) {
       std::ignore = Finalize(std::unexpected(apply_status.error()));
@@ -43,11 +47,15 @@ Status PendingUpdate::Commit() {
 
     auto commit_result = txn->Commit();
     if (!commit_result.has_value()) {
-      std::ignore = Finalize(std::unexpected(commit_result.error()));
+      if (!self) {
+        std::ignore = Finalize(std::unexpected(commit_result.error()));
+      }
       return std::unexpected(commit_result.error());
     }
 
-    std::ignore = Finalize(commit_result.value()->metadata().get());
+    if (!self) {
+      std::ignore = Finalize(commit_result.value()->metadata().get());
+    }
     return {};
   }
   auto txn = ctx_->transaction->lock();
