@@ -33,6 +33,7 @@
 #include "iceberg/avro/avro_register.h"
 #include "iceberg/constants.h"
 #include "iceberg/expression/expressions.h"
+#include "iceberg/file_io.h"
 #include "iceberg/partition_spec.h"
 #include "iceberg/schema.h"
 #include "iceberg/table_metadata.h"
@@ -49,6 +50,146 @@
 #include "iceberg/util/macros.h"
 
 namespace iceberg {
+
+namespace {
+
+struct ManifestWriteFailureState {
+  int manifest_output_count = 0;
+  int fail_on_manifest_output = 0;
+  int manifest_close_count = 0;
+  int fail_on_manifest_close = 0;
+  std::vector<std::string> manifest_outputs;
+  std::vector<std::string> manifest_close_attempts;
+  std::vector<std::string> deleted_files;
+};
+
+class ManifestWriteFailureOutputStream : public PositionOutputStream {
+ public:
+  ManifestWriteFailureOutputStream(std::unique_ptr<PositionOutputStream> delegate,
+                                   std::string location,
+                                   std::shared_ptr<ManifestWriteFailureState> state)
+      : delegate_(std::move(delegate)),
+        location_(std::move(location)),
+        state_(std::move(state)) {}
+
+  Result<int64_t> Position() const override { return delegate_->Position(); }
+
+  Result<int64_t> StoredLength() const override { return delegate_->StoredLength(); }
+
+  Status Write(std::span<const std::byte> data) override {
+    return delegate_->Write(data);
+  }
+
+  Status Flush() override { return delegate_->Flush(); }
+
+  Status Close() override {
+    if (closed_) {
+      return {};
+    }
+    closed_ = true;
+    state_->manifest_close_attempts.push_back(location_);
+    ++state_->manifest_close_count;
+    ICEBERG_RETURN_UNEXPECTED(delegate_->Close());
+    if (state_->manifest_close_count == state_->fail_on_manifest_close) {
+      return IOError("Injected rewrite manifest close failure");
+    }
+    return {};
+  }
+
+ private:
+  std::unique_ptr<PositionOutputStream> delegate_;
+  std::string location_;
+  std::shared_ptr<ManifestWriteFailureState> state_;
+  bool closed_{false};
+};
+
+class ManifestWriteFailureOutputFile : public OutputFile {
+ public:
+  ManifestWriteFailureOutputFile(std::unique_ptr<OutputFile> delegate,
+                                 std::string location,
+                                 std::shared_ptr<ManifestWriteFailureState> state)
+      : delegate_(std::move(delegate)),
+        location_(std::move(location)),
+        state_(std::move(state)) {}
+
+  std::string_view location() const override { return location_; }
+
+  Result<std::unique_ptr<PositionOutputStream>> Create() override {
+    ICEBERG_ASSIGN_OR_RAISE(auto stream, delegate_->Create());
+    return std::make_unique<ManifestWriteFailureOutputStream>(std::move(stream),
+                                                              location_, state_);
+  }
+
+  Result<std::unique_ptr<PositionOutputStream>> CreateOrOverwrite() override {
+    ICEBERG_ASSIGN_OR_RAISE(auto stream, delegate_->CreateOrOverwrite());
+    return std::make_unique<ManifestWriteFailureOutputStream>(std::move(stream),
+                                                              location_, state_);
+  }
+
+ private:
+  std::unique_ptr<OutputFile> delegate_;
+  std::string location_;
+  std::shared_ptr<ManifestWriteFailureState> state_;
+};
+
+class ManifestWriteFailureFileIO : public FileIO {
+ public:
+  ManifestWriteFailureFileIO(std::shared_ptr<FileIO> delegate,
+                             std::string metadata_location,
+                             std::shared_ptr<ManifestWriteFailureState> state)
+      : delegate_(std::move(delegate)),
+        metadata_location_(std::move(metadata_location)),
+        state_(std::move(state)) {}
+
+  Result<std::unique_ptr<InputFile>> NewInputFile(std::string file_location) override {
+    return delegate_->NewInputFile(std::move(file_location));
+  }
+
+  Result<std::unique_ptr<InputFile>> NewInputFile(std::string file_location,
+                                                  size_t length) override {
+    return delegate_->NewInputFile(std::move(file_location), length);
+  }
+
+  Result<std::unique_ptr<OutputFile>> NewOutputFile(std::string file_location) override {
+    const bool is_manifest_output = IsManifestOutput(file_location);
+    if (is_manifest_output) {
+      state_->manifest_outputs.push_back(file_location);
+      ++state_->manifest_output_count;
+      if (state_->manifest_output_count == state_->fail_on_manifest_output) {
+        return IOError("Injected rewrite manifest writer failure");
+      }
+    }
+    ICEBERG_ASSIGN_OR_RAISE(auto output_file, delegate_->NewOutputFile(file_location));
+    if (is_manifest_output) {
+      return std::make_unique<ManifestWriteFailureOutputFile>(
+          std::move(output_file), std::move(file_location), state_);
+    }
+    return output_file;
+  }
+
+  Status DeleteFile(const std::string& file_location) override {
+    state_->deleted_files.push_back(file_location);
+    return delegate_->DeleteFile(file_location);
+  }
+
+  Status DeleteFiles(const std::vector<std::string>& file_locations) override {
+    state_->deleted_files.insert(state_->deleted_files.end(), file_locations.begin(),
+                                 file_locations.end());
+    return delegate_->DeleteFiles(file_locations);
+  }
+
+ private:
+  bool IsManifestOutput(const std::string& file_location) const {
+    return file_location.starts_with(metadata_location_) &&
+           file_location.ends_with(".avro");
+  }
+
+  std::shared_ptr<FileIO> delegate_;
+  std::string metadata_location_;
+  std::shared_ptr<ManifestWriteFailureState> state_;
+};
+
+}  // namespace
 
 class RewriteManifestsTest : public MinimalUpdateTestBase,
                              public ::testing::WithParamInterface<int8_t> {
@@ -206,6 +347,14 @@ class RewriteManifestsTest : public MinimalUpdateTestBase,
                                        table_->io(), mock_catalog));
     table_ = std::move(bound_table);
     mock_catalog_ = std::move(mock_catalog);
+  }
+
+  void BindTableWithFileIO(std::shared_ptr<FileIO> file_io) {
+    ICEBERG_UNWRAP_OR_FAIL(auto bound_table,
+                           Table::Make(table_->name(), table_->metadata(),
+                                       std::string(table_->metadata_file_location()),
+                                       std::move(file_io), catalog_));
+    table_ = std::move(bound_table);
   }
 
   void ValidateSummary(const std::shared_ptr<Snapshot>& snapshot, int replaced, int kept,
@@ -718,6 +867,115 @@ TEST_P(RewriteManifestsTest, ReplaceManifestsMaxSize) {
                                        {ManifestStatus::kExisting}, {append_snapshot_id});
   ExpectManifestEntriesWithSnapshotIds(manifests[1], {file_b_->file_path},
                                        {ManifestStatus::kExisting}, {append_snapshot_id});
+}
+
+TEST_P(RewriteManifestsTest, CleansRolledRewriteManifestsAfterApplyFailure) {
+  ASSERT_THAT(AppendFiles({file_a_, file_b_, file_c_}), IsOk());
+
+  ICEBERG_UNWRAP_OR_FAIL(auto before, CurrentManifests());
+  ASSERT_EQ(before.size(), 1U);
+
+  ICEBERG_UNWRAP_OR_FAIL(auto props, table_->NewUpdateProperties());
+  props->Set(std::string(TableProperties::kManifestTargetSizeBytes.key()), "1");
+  EXPECT_THAT(props->Commit(), IsOk());
+  EXPECT_THAT(table_->Refresh(), IsOk());
+
+  auto failure_state = std::make_shared<ManifestWriteFailureState>();
+  failure_state->fail_on_manifest_output = 2;
+  BindTableWithFileIO(std::make_shared<ManifestWriteFailureFileIO>(
+      file_io_, table_location_ + "/metadata/", failure_state));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto rewrite, table_->NewRewriteManifests());
+  rewrite->ClusterBy([](const DataFile&) { return "file"; });
+
+  auto result = rewrite->Commit();
+  EXPECT_THAT(result, IsError(ErrorKind::kIOError));
+  EXPECT_THAT(result, HasErrorMessage("Injected rewrite manifest writer failure"));
+
+  ASSERT_GE(failure_state->manifest_outputs.size(), 2U);
+  const auto& closed_manifest_path = failure_state->manifest_outputs[0];
+  EXPECT_THAT(failure_state->deleted_files, ::testing::Contains(closed_manifest_path));
+  EXPECT_FALSE(FileExists(closed_manifest_path));
+}
+
+TEST_P(RewriteManifestsTest, ClosesOpenRewriteWritersAfterApplyFailure) {
+  ASSERT_THAT(AppendFiles({file_a_, file_b_, file_c_}), IsOk());
+
+  auto failure_state = std::make_shared<ManifestWriteFailureState>();
+  failure_state->fail_on_manifest_output = 3;
+  BindTableWithFileIO(std::make_shared<ManifestWriteFailureFileIO>(
+      file_io_, table_location_ + "/metadata/", failure_state));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto rewrite, table_->NewRewriteManifests());
+  rewrite->ClusterBy([](const DataFile& file) { return file.file_path; });
+
+  auto result = rewrite->Commit();
+  EXPECT_THAT(result, IsError(ErrorKind::kIOError));
+  EXPECT_THAT(result, HasErrorMessage("Injected rewrite manifest writer failure"));
+
+  ASSERT_EQ(failure_state->manifest_outputs.size(), 3U);
+  EXPECT_THAT(failure_state->manifest_close_attempts,
+              ::testing::UnorderedElementsAre(failure_state->manifest_outputs[0],
+                                              failure_state->manifest_outputs[1]));
+  for (size_t i = 0; i < 2; ++i) {
+    EXPECT_THAT(failure_state->deleted_files,
+                ::testing::Contains(failure_state->manifest_outputs[i]));
+    EXPECT_FALSE(FileExists(failure_state->manifest_outputs[i]));
+  }
+}
+
+TEST_P(RewriteManifestsTest, ClosesAllRewriteWritersAfterCloseFailure) {
+  ASSERT_THAT(AppendFiles({file_a_, file_b_, file_c_}), IsOk());
+
+  auto failure_state = std::make_shared<ManifestWriteFailureState>();
+  failure_state->fail_on_manifest_close = 1;
+  BindTableWithFileIO(std::make_shared<ManifestWriteFailureFileIO>(
+      file_io_, table_location_ + "/metadata/", failure_state));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto rewrite, table_->NewRewriteManifests());
+  rewrite->ClusterBy([](const DataFile& file) { return file.file_path; });
+
+  auto result = rewrite->Commit();
+  EXPECT_THAT(result, IsError(ErrorKind::kIOError));
+  EXPECT_THAT(result, HasErrorMessage("Injected rewrite manifest close failure"));
+
+  ASSERT_EQ(failure_state->manifest_outputs.size(), 3U);
+  ASSERT_EQ(failure_state->manifest_close_attempts.size(), 3U);
+  EXPECT_THAT(failure_state->manifest_close_attempts,
+              ::testing::UnorderedElementsAre(failure_state->manifest_outputs[0],
+                                              failure_state->manifest_outputs[1],
+                                              failure_state->manifest_outputs[2]));
+  for (size_t i = 0; i < failure_state->manifest_close_attempts.size(); ++i) {
+    const auto& closed_manifest_path = failure_state->manifest_close_attempts[i];
+    EXPECT_THAT(failure_state->deleted_files, ::testing::Contains(closed_manifest_path));
+    EXPECT_FALSE(FileExists(closed_manifest_path));
+  }
+}
+
+TEST_P(RewriteManifestsTest, PreservesRewriteFailureWhenClosingWritersFails) {
+  ASSERT_THAT(AppendFiles({file_a_, file_b_, file_c_}), IsOk());
+
+  auto failure_state = std::make_shared<ManifestWriteFailureState>();
+  failure_state->fail_on_manifest_output = 3;
+  failure_state->fail_on_manifest_close = 1;
+  BindTableWithFileIO(std::make_shared<ManifestWriteFailureFileIO>(
+      file_io_, table_location_ + "/metadata/", failure_state));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto rewrite, table_->NewRewriteManifests());
+  rewrite->ClusterBy([](const DataFile& file) { return file.file_path; });
+
+  auto result = rewrite->Commit();
+  EXPECT_THAT(result, IsError(ErrorKind::kIOError));
+  EXPECT_THAT(result, HasErrorMessage("Injected rewrite manifest writer failure"));
+  EXPECT_THAT(result, HasErrorMessage("additionally failed to close manifest writer"));
+  EXPECT_THAT(result, HasErrorMessage("Injected rewrite manifest close failure"));
+
+  ASSERT_EQ(failure_state->manifest_outputs.size(), 3U);
+  ASSERT_EQ(failure_state->manifest_close_attempts.size(), 2U);
+  for (const auto& manifest_path : failure_state->manifest_outputs) {
+    EXPECT_THAT(failure_state->deleted_files, ::testing::Contains(manifest_path));
+    EXPECT_FALSE(FileExists(manifest_path));
+  }
 }
 
 TEST_P(RewriteManifestsTest, ConcurrentRewriteManifest) {

@@ -63,6 +63,7 @@ struct ManifestEntries {
 struct RewriteWriter {
   std::shared_ptr<PartitionSpec> spec;
   ManifestContent content;
+  std::string manifest_path;
   std::unique_ptr<ManifestWriter> writer;
 };
 
@@ -223,6 +224,11 @@ Status RewriteManifests::CleanUncommitted(
                                               /*clear=*/false));
   ICEBERG_RETURN_UNEXPECTED(DeleteUncommitted(rewritten_added_manifests_, committed,
                                               /*clear=*/false));
+  for (const auto& manifest_path : failed_manifest_paths_) {
+    if (!committed.contains(manifest_path)) {
+      std::ignore = DeleteFile(manifest_path);
+    }
+  }
   return {};
 }
 
@@ -407,60 +413,96 @@ Result<std::vector<ManifestFile>> RewriteManifests::Rewrite(
     ICEBERG_RETURN_UNEXPECTED(rewrite_writer.writer->Close());
     ICEBERG_ASSIGN_OR_RAISE(auto manifest_file, rewrite_writer.writer->ToManifestFile());
     rewrite_writer.writer.reset();
+    rewrite_writer.manifest_path.clear();
     return manifest_file;
   };
 
-  auto new_writer = [this, &schema](const RewriteWriter& rewrite_writer)
-      -> Result<std::unique_ptr<ManifestWriter>> {
-    return ManifestWriter::MakeWriter(base().format_version, SnapshotId(), ManifestPath(),
-                                      ctx_->table->io(), rewrite_writer.spec, schema,
-                                      rewrite_writer.content);
+  auto new_writer =
+      [this, &schema](
+          RewriteWriter& rewrite_writer) -> Result<std::unique_ptr<ManifestWriter>> {
+    auto manifest_path = ManifestPath();
+    auto writer_result = ManifestWriter::MakeWriter(
+        base().format_version, SnapshotId(), manifest_path, ctx_->table->io(),
+        rewrite_writer.spec, schema, rewrite_writer.content);
+    if (!writer_result.has_value()) {
+      failed_manifest_paths_.insert(std::move(manifest_path));
+      return std::unexpected<Error>(writer_result.error());
+    }
+    rewrite_writer.manifest_path = std::move(manifest_path);
+    return std::move(writer_result).value();
   };
 
-  std::vector<ManifestFile> result;
-  for (const auto& manifest_entry : manifest_entries) {
-    for (const auto& entry : manifest_entry.entries) {
-      ICEBERG_PRECHECK(entry.data_file != nullptr,
-                       "Manifest entry in {} is missing data_file",
-                       manifest_entry.manifest.manifest_path);
-      auto key =
-          WriterKey{cluster_by_func_ ? cluster_by_func_(*entry.data_file) : std::string{},
-                    manifest_entry.manifest.partition_spec_id};
+  // Capture a write failure so all open writers can still be closed below
+  Status write_status = [&]() -> Status {
+    for (const auto& manifest_entry : manifest_entries) {
+      for (const auto& entry : manifest_entry.entries) {
+        ICEBERG_PRECHECK(entry.data_file != nullptr,
+                         "Manifest entry in {} is missing data_file",
+                         manifest_entry.manifest.manifest_path);
+        auto key = WriterKey{
+            cluster_by_func_ ? cluster_by_func_(*entry.data_file) : std::string{},
+            manifest_entry.manifest.partition_spec_id};
 
-      auto writer_it = writers.find(key);
-      if (writer_it == writers.end()) {
-        auto [inserted_it, _] = writers.emplace(
-            key, RewriteWriter{.spec = manifest_entry.spec,
-                               .content = manifest_entry.manifest.content});
-        writer_it = inserted_it;
-      }
-
-      auto& rewrite_writer = writer_it->second;
-      if (rewrite_writer.writer == nullptr) {
-        ICEBERG_ASSIGN_OR_RAISE(rewrite_writer.writer, new_writer(rewrite_writer));
-      } else {
-        ICEBERG_ASSIGN_OR_RAISE(auto length, rewrite_writer.writer->length());
-        if (length >= target_manifest_size_bytes()) {
-          ICEBERG_ASSIGN_OR_RAISE(auto manifest_file, close_writer(rewrite_writer));
-          if (manifest_file.has_value()) {
-            result.push_back(std::move(manifest_file).value());
-          }
-          ICEBERG_ASSIGN_OR_RAISE(rewrite_writer.writer, new_writer(rewrite_writer));
+        auto writer_it = writers.find(key);
+        if (writer_it == writers.end()) {
+          auto [inserted_it, _] = writers.emplace(
+              key, RewriteWriter{.spec = manifest_entry.spec,
+                                 .content = manifest_entry.manifest.content});
+          writer_it = inserted_it;
         }
+
+        auto& rewrite_writer = writer_it->second;
+        if (rewrite_writer.writer == nullptr) {
+          ICEBERG_ASSIGN_OR_RAISE(rewrite_writer.writer, new_writer(rewrite_writer));
+        } else {
+          ICEBERG_ASSIGN_OR_RAISE(auto length, rewrite_writer.writer->length());
+          if (length >= target_manifest_size_bytes()) {
+            ICEBERG_ASSIGN_OR_RAISE(auto manifest_file, close_writer(rewrite_writer));
+            if (manifest_file.has_value()) {
+              new_manifests_.push_back(std::move(manifest_file).value());
+            }
+            ICEBERG_ASSIGN_OR_RAISE(rewrite_writer.writer, new_writer(rewrite_writer));
+          }
+        }
+
+        ICEBERG_RETURN_UNEXPECTED(rewrite_writer.writer->WriteExistingEntry(entry));
+        ++entry_count_;
       }
-
-      ICEBERG_RETURN_UNEXPECTED(rewrite_writer.writer->WriteExistingEntry(entry));
-      ++entry_count_;
     }
-  }
+    return {};
+  }();
 
+  // Keep the first close error, but continue closing the remaining writers.
+  std::optional<Error> first_close_error;
   for (auto& [_, writer] : writers) {
-    ICEBERG_ASSIGN_OR_RAISE(auto manifest_file, close_writer(writer));
+    auto manifest_file_result = close_writer(writer);
+    if (!manifest_file_result.has_value()) {
+      if (!writer.manifest_path.empty()) {
+        failed_manifest_paths_.insert(writer.manifest_path);
+      }
+      if (!first_close_error.has_value()) {
+        first_close_error = manifest_file_result.error();
+      }
+      continue;
+    }
+    auto manifest_file = std::move(manifest_file_result).value();
     if (manifest_file.has_value()) {
-      result.push_back(std::move(manifest_file).value());
+      new_manifests_.push_back(std::move(manifest_file).value());
     }
   }
-  return result;
+
+  if (!write_status.has_value()) {
+    auto error = std::move(write_status).error();
+    if (first_close_error.has_value()) {
+      error.message += "; additionally failed to close manifest writer: ";
+      error.message += first_close_error->message;
+    }
+    return std::unexpected<Error>(std::move(error));
+  }
+  if (first_close_error.has_value()) {
+    return std::unexpected<Error>(std::move(first_close_error).value());
+  }
+  return new_manifests_;
 }
 
 Status RewriteManifests::DeleteUncommitted(
@@ -479,6 +521,10 @@ Status RewriteManifests::DeleteUncommitted(
 
 void RewriteManifests::ResetRewriteState() {
   std::ignore = DeleteUncommitted(new_manifests_, {}, /*clear=*/true);
+  for (const auto& manifest_path : failed_manifest_paths_) {
+    std::ignore = DeleteFile(manifest_path);
+  }
+  failed_manifest_paths_.clear();
   entry_count_ = 0;
   kept_manifests_.clear();
   rewritten_manifests_.clear();

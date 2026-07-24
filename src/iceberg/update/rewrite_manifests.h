@@ -138,6 +138,7 @@ class ICEBERG_EXPORT RewriteManifests : public SnapshotUpdate {
   std::vector<ManifestFile> new_manifests_;
   std::vector<ManifestFile> rewritten_manifests_;
   std::unordered_set<std::string> rewritten_manifest_paths_;
+  std::unordered_set<std::string> failed_manifest_paths_;
   int64_t entry_count_{0};
 
   std::unordered_map<std::string, std::string> custom_summary_properties_;
