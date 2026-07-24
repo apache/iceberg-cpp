@@ -63,6 +63,8 @@ class PositionDeleteWriter::Impl {
 
   Status Write(ArrowArray* data) {
     ICEBERG_PRECHECK(data != nullptr, "Position delete data must not be null");
+    ICEBERG_PRECHECK(data->offset == 0,
+                     "Position delete data with a non-zero offset is not supported");
     ICEBERG_PRECHECK(buffered_paths_.empty(),
                      "Cannot write batch data when there are buffered deletes.");
 
@@ -71,10 +73,10 @@ class PositionDeleteWriter::Impl {
     internal::ArrowSchemaGuard schema_guard(&arrow_schema);
 
     ArrowArrayView array_view;
-    internal::ArrowArrayViewGuard view_guard(&array_view);
     ArrowError error;
     ICEBERG_NANOARROW_RETURN_UNEXPECTED_WITH_ERROR(
         ArrowArrayViewInitFromSchema(&array_view, &arrow_schema, &error), error);
+    internal::ArrowArrayViewGuard view_guard(&array_view);
     ICEBERG_NANOARROW_RETURN_UNEXPECTED_WITH_ERROR(
         ArrowArrayViewSetArray(&array_view, data, &error), error);
 

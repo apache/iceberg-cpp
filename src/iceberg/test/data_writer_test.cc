@@ -455,6 +455,57 @@ TEST_F(PositionDeleteWriterTest, WriteBatchData) {
   EXPECT_GT(data_file->file_size_in_bytes, 0);
   ASSERT_TRUE(data_file->referenced_data_file.has_value());
   EXPECT_EQ(data_file->referenced_data_file.value(), "data_file_1.parquet");
+  // Bounds for delete metadata columns are kept when referencing a single file.
+  EXPECT_TRUE(data_file->lower_bounds.contains(MetadataColumns::kDeleteFilePathColumnId));
+  EXPECT_TRUE(data_file->lower_bounds.contains(MetadataColumns::kDeleteFilePosColumnId));
+  EXPECT_TRUE(data_file->upper_bounds.contains(MetadataColumns::kDeleteFilePathColumnId));
+  EXPECT_TRUE(data_file->upper_bounds.contains(MetadataColumns::kDeleteFilePosColumnId));
+}
+
+TEST_F(PositionDeleteWriterTest, WriteBatchRejectsSlicedData) {
+  auto writer_result = PositionDeleteWriter::Make(MakeDeleteOptions());
+  ASSERT_THAT(writer_result, IsOk());
+  auto writer = std::move(writer_result.value());
+
+  auto test_data = CreatePositionDeleteData(
+      R"([["data_file_1.parquet", 0], ["data_file_1.parquet", 5]])");
+  auto sliced = test_data->Slice(1, 1);
+  ArrowArray arrow_array;
+  ASSERT_TRUE(::arrow::ExportArray(*sliced, &arrow_array).ok());
+  internal::ArrowArrayGuard array_guard(&arrow_array);
+
+  auto result = writer->Write(&arrow_array);
+  ASSERT_THAT(result, IsError(ErrorKind::kInvalidArgument));
+  EXPECT_THAT(
+      result,
+      HasErrorMessage("Position delete data with a non-zero offset is not supported"));
+}
+
+TEST_F(PositionDeleteWriterTest, FailedBatchWriteDoesNotTrackReferencedFiles) {
+  auto writer_result = PositionDeleteWriter::Make(MakeDeleteOptions());
+  ASSERT_THAT(writer_result, IsOk());
+  auto writer = std::move(writer_result.value());
+
+  // A rejected batch must not contribute referenced paths.
+  auto bad_data =
+      CreatePositionDeleteData(R"([[null, 0], ["data_file_bad.parquet", 1]])");
+  ArrowArray bad_array;
+  ASSERT_TRUE(::arrow::ExportArray(*bad_data, &bad_array).ok());
+  internal::ArrowArrayGuard bad_array_guard(&bad_array);
+  ASSERT_THAT(writer->Write(&bad_array), IsError(ErrorKind::kInvalidArrowData));
+
+  auto test_data = CreatePositionDeleteData(R"([["data_file_1.parquet", 0]])");
+  ArrowArray arrow_array;
+  ASSERT_TRUE(::arrow::ExportArray(*test_data, &arrow_array).ok());
+  ASSERT_THAT(writer->Write(&arrow_array), IsOk());
+  ASSERT_THAT(writer->Close(), IsOk());
+
+  auto metadata_result = writer->Metadata();
+  ASSERT_THAT(metadata_result, IsOk());
+
+  const auto& data_file = metadata_result.value().data_files[0];
+  ASSERT_TRUE(data_file->referenced_data_file.has_value());
+  EXPECT_EQ(data_file->referenced_data_file.value(), "data_file_1.parquet");
 }
 
 TEST_F(PositionDeleteWriterTest, WriteBatchDataForMultipleFiles) {
