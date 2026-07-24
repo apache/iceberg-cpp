@@ -35,6 +35,7 @@
 #include "iceberg/manifest/manifest_list.h"
 #include "iceberg/manifest/manifest_reader.h"
 #include "iceberg/metadata_columns.h"
+#include "iceberg/metrics/scan_report.h"
 #include "iceberg/partition_spec.h"
 #include "iceberg/schema.h"
 #include "iceberg/util/checked_cast.h"
@@ -535,6 +536,11 @@ DeleteFileIndex::Builder& DeleteFileIndex::Builder::PlanWith(OptionalExecutor ex
   executor_ = executor;
   return *this;
 }
+DeleteFileIndex::Builder& DeleteFileIndex::Builder::ScanMetrics(
+    class iceberg::ScanMetrics* scan_metrics) {
+  scan_metrics_ = scan_metrics;
+  return *this;
+}
 
 Result<std::vector<ManifestEntry>> DeleteFileIndex::Builder::LoadDeleteFiles() {
   // TODO(zehua): Replace with a thread-safe LRU cache.
@@ -616,6 +622,7 @@ Result<std::vector<ManifestEntry>> DeleteFileIndex::Builder::LoadDeleteFiles() {
           return manifest_result;
         }
         if (!manifest.has_added_files() && !manifest.has_existing_files()) {
+          if (scan_metrics_) scan_metrics_->skipped_delete_manifests->Increment(1);
           return manifest_result;
         }
 
@@ -638,13 +645,19 @@ Result<std::vector<ManifestEntry>> DeleteFileIndex::Builder::LoadDeleteFiles() {
           ICEBERG_ASSIGN_OR_RAISE(auto should_match,
                                   manifest_evaluator->Evaluate(manifest));
           if (!should_match) {
+            if (scan_metrics_) scan_metrics_->skipped_delete_manifests->Increment(1);
             return manifest_result;
           }
         }
+        if (scan_metrics_) scan_metrics_->scanned_delete_manifests->Increment(1);
 
         // Read manifest entries
         ICEBERG_ASSIGN_OR_RAISE(auto reader,
                                 ManifestReader::Make(manifest, io_, schema_, spec));
+
+        if (scan_metrics_) {
+          reader->SkipCounter(scan_metrics_->skipped_delete_files);
+        }
 
         if (delete_partition_filter) {
           reader->FilterPartitions(std::move(delete_partition_filter));
@@ -675,6 +688,9 @@ Result<std::vector<ManifestEntry>> DeleteFileIndex::Builder::LoadDeleteFiles() {
             ContentFileUtil::DropUnselectedStats(*entry.data_file, columns);
             manifest_result.emplace_back(std::move(entry));
           }
+          // Entries filtered out by min_sequence_number_ are not counted as skipped;
+          // Java's ScanMetricsUtil only counts manifest-level and partition-evaluator
+          // skips, not sequence-number-based dedup filtering.
         }
         return manifest_result;
       });
@@ -820,12 +836,30 @@ Result<std::unique_ptr<DeleteFileIndex>> DeleteFileIndex::Builder::Build() {
     }
   }
 
-  return std::unique_ptr<DeleteFileIndex>(new DeleteFileIndex(
+  auto index = std::unique_ptr<DeleteFileIndex>(new DeleteFileIndex(
       global_deletes->empty() ? nullptr : std::move(global_deletes),
       eq_deletes_by_partition->empty() ? nullptr : std::move(eq_deletes_by_partition),
       pos_deletes_by_partition->empty() ? nullptr : std::move(pos_deletes_by_partition),
       pos_deletes_by_path->empty() ? nullptr : std::move(pos_deletes_by_path),
       dv_by_path->empty() ? nullptr : std::move(dv_by_path)));
+
+  if (scan_metrics_) {
+    for (const auto& delete_file : index->ReferencedDeleteFiles()) {
+      scan_metrics_->indexed_delete_files->Increment(1);
+
+      if (delete_file->content == DataFile::Content::kPositionDeletes) {
+        if (ContentFileUtil::IsDV(*delete_file)) {
+          scan_metrics_->dvs->Increment(1);
+        } else {
+          scan_metrics_->positional_delete_files->Increment(1);
+        }
+      } else if (delete_file->content == DataFile::Content::kEqualityDeletes) {
+        scan_metrics_->equality_delete_files->Increment(1);
+      }
+    }
+  }
+
+  return index;
 }
 
 }  // namespace iceberg

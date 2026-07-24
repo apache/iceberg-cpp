@@ -21,10 +21,12 @@
 
 #include <format>
 #include <limits>
+#include <mutex>
 #include <optional>
 #include <string>
 #include <thread>
 #include <unordered_set>
+#include <variant>
 #include <vector>
 
 #include <gmock/gmock.h>
@@ -35,6 +37,9 @@
 #include "iceberg/manifest/manifest_entry.h"
 #include "iceberg/manifest/manifest_reader.h"
 #include "iceberg/manifest/manifest_writer.h"
+#include "iceberg/metrics/commit_report.h"
+#include "iceberg/metrics/metrics_reporter.h"
+#include "iceberg/metrics/metrics_reporters.h"
 #include "iceberg/partition_spec.h"
 #include "iceberg/schema.h"
 #include "iceberg/snapshot.h"
@@ -44,7 +49,9 @@
 #include "iceberg/test/matchers.h"
 #include "iceberg/test/update_test_base.h"
 #include "iceberg/transaction.h"
-#include "iceberg/update/update_properties.h"  // IWYU pragma: keep
+#include "iceberg/update/merge_append.h"
+#include "iceberg/update/update_properties.h"
+#include "iceberg/util/uuid.h"
 
 namespace iceberg {
 
@@ -397,6 +404,238 @@ TEST_F(SnapshotUpdateTest, ConcurrentManifestPaths) {
     EXPECT_THAT(path, ::testing::HasSubstr("/metadata/"));
     EXPECT_THAT(path, ::testing::HasSubstr("-m"));
   }
+}
+
+// ---------------------------------------------------------------------------
+// Metrics integration tests
+// ---------------------------------------------------------------------------
+
+namespace {
+
+class CapturingReporter final : public MetricsReporter {
+ public:
+  Status Report(const MetricsReport& report) override {
+    reports_.push_back(report);
+    return {};
+  }
+  const std::vector<MetricsReport>& reports() const { return reports_; }
+  void clear() { reports_.clear(); }
+
+ private:
+  std::vector<MetricsReport> reports_;
+};
+
+void RegisterCapturingReporter() {
+  static std::once_flag flag;
+  std::call_once(flag, [] {
+    (void)MetricsReporters::Register(
+        "fast.append.test.reporter",
+        [](const auto&) -> Result<std::unique_ptr<MetricsReporter>> {
+          return std::make_unique<CapturingReporter>();
+        });
+  });
+}
+
+}  // namespace
+
+// Test fixture that creates an InMemoryCatalog with a CapturingReporter so
+// CommitReports emitted by Transaction::Commit() are observable.
+class FastAppendMetricsTest : public ::testing::Test {
+ protected:
+  static void SetUpTestSuite() {
+    avro::RegisterAll();
+    RegisterCapturingReporter();
+  }
+
+  void SetUp() override {
+    table_ident_ = TableIdentifier{.name = "metrics_test_table"};
+    table_location_ = "/warehouse/metrics_test_table";
+
+    file_io_ = arrow::ArrowFileSystemFileIO::MakeMockFileIO();
+    catalog_ = InMemoryCatalog::Make(
+        "metrics_test_catalog", file_io_, "/warehouse/",
+        {{std::string(kMetricsReporterImpl), "fast.append.test.reporter"}});
+
+    auto arrow_fs = std::dynamic_pointer_cast<::arrow::fs::internal::MockFileSystem>(
+        static_cast<arrow::ArrowFileSystemFileIO&>(*file_io_).fs());
+    ASSERT_TRUE(arrow_fs != nullptr);
+    ASSERT_TRUE(arrow_fs->CreateDir(table_location_ + "/metadata").ok());
+
+    auto metadata_location = std::format("{}/metadata/00001-{}.metadata.json",
+                                         table_location_, Uuid::GenerateV7().ToString());
+    ICEBERG_UNWRAP_OR_FAIL(
+        auto metadata, ReadTableMetadataFromResource("TableMetadataV2ValidMinimal.json"));
+    metadata->location = table_location_;
+    ASSERT_THAT(TableMetadataUtil::Write(*file_io_, metadata_location, *metadata),
+                IsOk());
+    ICEBERG_UNWRAP_OR_FAIL(table_,
+                           catalog_->RegisterTable(table_ident_, metadata_location));
+
+    reporter_ = std::dynamic_pointer_cast<CapturingReporter>(table_->reporter());
+    ASSERT_NE(reporter_, nullptr);
+
+    ICEBERG_UNWRAP_OR_FAIL(spec_, table_->spec());
+    ICEBERG_UNWRAP_OR_FAIL(schema_, table_->schema());
+  }
+
+  std::shared_ptr<DataFile> MakeDataFile(const std::string& path, int64_t record_count,
+                                         int64_t size, int64_t partition_value = 0) {
+    auto data_file = std::make_shared<DataFile>();
+    data_file->content = DataFile::Content::kData;
+    data_file->file_path = table_location_ + path;
+    data_file->file_format = FileFormatType::kParquet;
+    data_file->partition =
+        PartitionValues(std::vector<Literal>{Literal::Long(partition_value)});
+    data_file->file_size_in_bytes = size;
+    data_file->record_count = record_count;
+    data_file->partition_spec_id = spec_->spec_id();
+    return data_file;
+  }
+
+  TableIdentifier table_ident_;
+  std::string table_location_;
+  std::shared_ptr<FileIO> file_io_;
+  std::shared_ptr<InMemoryCatalog> catalog_;
+  std::shared_ptr<Table> table_;
+  std::shared_ptr<PartitionSpec> spec_;
+  std::shared_ptr<Schema> schema_;
+  std::shared_ptr<CapturingReporter> reporter_;
+};
+
+// A CommitReport must be emitted once for each FastAppend commit that creates a
+// new snapshot.  Validate table_name, snapshot_id, operation, and attempt count.
+TEST_F(FastAppendMetricsTest, CommitReportFiredAfterFastAppend) {
+  std::shared_ptr<FastAppend> fast_append;
+  ICEBERG_UNWRAP_OR_FAIL(fast_append, table_->NewFastAppend());
+  fast_append->AppendFile(MakeDataFile("/data/file_a.parquet", 100, 1024, 1024));
+  ASSERT_THAT(fast_append->Commit(), IsOk());
+
+  ASSERT_THAT(table_->Refresh(), IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(auto snapshot, table_->current_snapshot());
+
+  const auto& reports = reporter_->reports();
+  ASSERT_EQ(reports.size(), 1u);
+  ASSERT_TRUE(std::holds_alternative<CommitReport>(reports[0]));
+
+  const auto& report = std::get<CommitReport>(reports[0]);
+  EXPECT_EQ(report.table_name, table_->FullyQualifiedName());
+  EXPECT_EQ(report.table_name, "metrics_test_catalog." + table_ident_.ToString());
+  EXPECT_EQ(report.snapshot_id, snapshot->snapshot_id);
+  EXPECT_EQ(report.operation, "append");
+  ASSERT_TRUE(report.commit_metrics.attempts.has_value());
+  EXPECT_EQ(report.commit_metrics.attempts->value, 1);
+}
+
+// A reporter set directly on the FastAppend via ReportWith() must take precedence
+// over the table's configured reporter, mirroring Java's SnapshotProducer.reportWith().
+TEST_F(FastAppendMetricsTest, ReportWithOverridesTableReporter) {
+  auto override_reporter = std::make_shared<CapturingReporter>();
+
+  std::shared_ptr<FastAppend> fast_append;
+  ICEBERG_UNWRAP_OR_FAIL(fast_append, table_->NewFastAppend());
+  fast_append->ReportWith(override_reporter);
+  fast_append->AppendFile(MakeDataFile("/data/file_a.parquet", 100, 1024, 1024));
+  ASSERT_THAT(fast_append->Commit(), IsOk());
+
+  // The override reporter receives the CommitReport.
+  ASSERT_EQ(override_reporter->reports().size(), 1u);
+  EXPECT_TRUE(std::holds_alternative<CommitReport>(override_reporter->reports()[0]));
+
+  // The table's own reporter must not receive it.
+  EXPECT_TRUE(reporter_->reports().empty());
+}
+
+// A property-only commit must NOT emit a CommitReport because it does not
+// create a new snapshot.  This covers the original bug where comparing a
+// pre-commit snapshot ID of -1 against the existing snapshot ID would be
+// skipped by the has_value() guard.
+TEST_F(FastAppendMetricsTest, CommitReportNotFiredForPropertyOnlyCommit) {
+  // First do a FastAppend to create a snapshot, then clear the recorder.
+  std::shared_ptr<FastAppend> fast_append;
+  ICEBERG_UNWRAP_OR_FAIL(fast_append, table_->NewFastAppend());
+  fast_append->AppendFile(MakeDataFile("/data/file_a.parquet", 100, 1024, 1024));
+  ASSERT_THAT(fast_append->Commit(), IsOk());
+  ASSERT_EQ(reporter_->reports().size(), 1u);
+  reporter_->clear();
+
+  // Property-only commit on a table that already has a snapshot.
+  ASSERT_THAT(table_->Refresh(), IsOk());
+  std::shared_ptr<UpdateProperties> update_props;
+  ICEBERG_UNWRAP_OR_FAIL(update_props, table_->NewUpdateProperties());
+  update_props->Set("test-key", "test-value");
+  ASSERT_THAT(update_props->Commit(), IsOk());
+
+  // No new snapshot was created, so no CommitReport must be emitted.
+  EXPECT_TRUE(reporter_->reports().empty());
+}
+
+// StageOnly() adds a snapshot to table metadata without making it current. The
+// CommitReport must still be fired for the staged snapshot itself.
+TEST_F(FastAppendMetricsTest, CommitReportFiredForStageOnlyCommit) {
+  std::shared_ptr<FastAppend> fast_append;
+  ICEBERG_UNWRAP_OR_FAIL(fast_append, table_->NewFastAppend());
+  fast_append->StageOnly();
+  fast_append->AppendFile(MakeDataFile("/data/file_a.parquet", 100, 1024, 1024));
+  ASSERT_THAT(fast_append->Commit(), IsOk());
+
+  ASSERT_THAT(table_->Refresh(), IsOk());
+
+  // The staged snapshot never became current.
+  EXPECT_EQ(table_->metadata()->current_snapshot_id, kInvalidSnapshotId);
+
+  const auto& reports = reporter_->reports();
+  ASSERT_EQ(reports.size(), 1u);
+  ASSERT_TRUE(std::holds_alternative<CommitReport>(reports[0]));
+
+  // The report must reflect the staged snapshot, which was still added to metadata.
+  const auto& report = std::get<CommitReport>(reports[0]);
+  EXPECT_NE(report.snapshot_id, kInvalidSnapshotId);
+  EXPECT_TRUE(table_->metadata()->SnapshotById(report.snapshot_id).has_value());
+}
+
+// A ReportWith() override set on one snapshot-producing update in a Transaction must
+// apply only to that update. Each mid-transaction Commit() fires its own CommitReport
+TEST_F(FastAppendMetricsTest, ReporterOverrideAppliesOnlyToItsOwnUpdate) {
+  auto override_reporter = std::make_shared<CapturingReporter>();
+
+  ICEBERG_UNWRAP_OR_FAIL(auto txn, table_->NewTransaction());
+
+  ICEBERG_UNWRAP_OR_FAIL(auto first_append, txn->NewFastAppend());
+  first_append->ReportWith(override_reporter);
+  first_append->AppendFile(MakeDataFile("/data/file_a.parquet", 100, 1024, 1024));
+  ASSERT_THAT(first_append->Commit(), IsOk());
+
+  ICEBERG_UNWRAP_OR_FAIL(auto second_append, txn->NewFastAppend());
+  second_append->AppendFile(MakeDataFile("/data/file_b.parquet", 100, 1024, 2048));
+  ASSERT_THAT(second_append->Commit(), IsOk());
+
+  ASSERT_THAT(txn->Commit(), IsOk());
+  ASSERT_THAT(table_->Refresh(), IsOk());
+
+  // Each operation's own commit fires its own report to its own resolved reporter.
+  // The override on first_append must not affect second_append, and vice versa.
+  ASSERT_EQ(override_reporter->reports().size(), 1u);
+  ASSERT_TRUE(std::holds_alternative<CommitReport>(override_reporter->reports()[0]));
+  ASSERT_EQ(reporter_->reports().size(), 1u);
+  ASSERT_TRUE(std::holds_alternative<CommitReport>(reporter_->reports()[0]));
+
+  // Tie each report to the actual snapshot its own update produced.
+  const auto& first_report = std::get<CommitReport>(override_reporter->reports()[0]);
+  const auto& second_report = std::get<CommitReport>(reporter_->reports()[0]);
+
+  ICEBERG_UNWRAP_OR_FAIL(auto current_snapshot, table_->current_snapshot());
+  EXPECT_EQ(second_report.snapshot_id, current_snapshot->snapshot_id);
+  ASSERT_TRUE(current_snapshot->parent_snapshot_id.has_value());
+  EXPECT_EQ(first_report.snapshot_id, current_snapshot->parent_snapshot_id.value());
+
+  // The second report went to the table's default reporter, so it must carry the
+  // table's own fully-qualified name.
+  EXPECT_EQ(second_report.table_name, table_->FullyQualifiedName());
+
+  ASSERT_TRUE(first_report.commit_metrics.attempts.has_value());
+  EXPECT_EQ(first_report.commit_metrics.attempts->value, 1);
+  ASSERT_TRUE(second_report.commit_metrics.attempts.has_value());
+  EXPECT_EQ(second_report.commit_metrics.attempts->value, 1);
 }
 
 }  // namespace iceberg

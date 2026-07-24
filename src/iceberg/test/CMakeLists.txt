@@ -125,6 +125,7 @@ add_iceberg_test(util_test
                  base64_test.cc
                  bucket_util_test.cc
                  config_test.cc
+                 content_file_util_test.cc
                  data_file_set_test.cc
                  decimal_test.cc
                  endian_test.cc
@@ -214,6 +215,7 @@ if(ICEBERG_BUILD_BUNDLE)
                    file_scan_task_test.cc
                    incremental_append_scan_test.cc
                    incremental_changelog_scan_test.cc
+                   scan_planning_metrics_test.cc
                    table_scan_test.cc)
 
   add_iceberg_test(table_update_test
@@ -297,6 +299,7 @@ if(ICEBERG_BUILD_REST)
                         endpoint_test.cc
                         rest_file_io_test.cc
                         rest_json_serde_test.cc
+                        rest_metrics_reporter_test.cc
                         rest_util_test.cc)
 
   if(ICEBERG_SIGV4)

@@ -163,6 +163,11 @@ class ICEBERG_EXPORT Transaction : public std::enable_shared_from_this<Transacti
   /// \brief Whether this transaction can retry after a commit conflict.
   bool CanRetry() const;
 
+  /// \brief Report pending snapshot (if any) using the given commit metrics,
+  /// then clear it.
+
+  void ReportPendingSnapshot(const CommitMetrics& commit_metrics);
+
  private:
   friend class PendingUpdate;
 
@@ -170,6 +175,14 @@ class ICEBERG_EXPORT Transaction : public std::enable_shared_from_this<Transacti
   std::shared_ptr<TransactionContext> ctx_;
   // Keep track of all created pending updates.
   std::vector<std::shared_ptr<PendingUpdate>> pending_updates_;
+
+  // Snapshot and reporter override captured from the most recently applied update.
+  struct PendingSnapshotReport {
+    std::shared_ptr<Snapshot> snapshot;
+    std::shared_ptr<MetricsReporter> reporter_override;
+  };
+  std::optional<PendingSnapshotReport> pending_snapshot_report_;
+
   // To make the state simple, we require updates are added and committed in order.
   bool last_update_committed_ = true;
   // Tracks if transaction has been committed to prevent double-commit

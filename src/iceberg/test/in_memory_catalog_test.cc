@@ -28,6 +28,7 @@
 #include <gtest/gtest.h>
 
 #include "iceberg/arrow/arrow_io_internal.h"
+#include "iceberg/exception.h"
 #include "iceberg/partition_spec.h"
 #include "iceberg/schema.h"
 #include "iceberg/sort_order.h"
@@ -90,6 +91,13 @@ class InMemoryCatalogTest : public ::testing::Test {
   // Used to store temporary paths created during the test
   std::vector<std::string> created_temp_paths_;
 };
+
+TEST_F(InMemoryCatalogTest, InvalidMetricsReporterImplThrows) {
+  std::unordered_map<std::string, std::string> properties = {
+      {"metrics-reporter-impl", "this-reporter-type-does-not-exist"}};
+  EXPECT_THROW(InMemoryCatalog("test_catalog", file_io_, "/tmp/warehouse/", properties),
+               IcebergError);
+}
 
 TEST_F(InMemoryCatalogTest, CatalogName) {
   EXPECT_EQ(catalog_->name(), "test_catalog");

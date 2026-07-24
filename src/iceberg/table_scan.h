@@ -31,6 +31,7 @@
 #include <vector>
 
 #include "iceberg/iceberg_export.h"
+#include "iceberg/metrics/metrics_reporter.h"
 #include "iceberg/result.h"
 #include "iceberg/table_metadata.h"
 #include "iceberg/type_fwd.h"
@@ -228,6 +229,10 @@ struct TableScanContext {
   std::string branch{};
   std::optional<int64_t> min_rows_requested;
   OptionalExecutor plan_executor;
+  /// \brief Fully-qualified table name for metrics reporting.
+  std::string table_name;
+  /// \brief Reporter to receive ScanReport after PlanFiles() completes.
+  std::shared_ptr<MetricsReporter> metrics_reporter;
 
   // Validate the context parameters to see if they have conflicts.
   [[nodiscard]] Status Validate() const;
@@ -380,6 +385,15 @@ class ICEBERG_TEMPLATE_CLASS_EXPORT TableScanBuilder : public ErrorCollector {
   /// \param branch the branch name
   TableScanBuilder& UseBranch(const std::string& branch)
     requires IsIncrementalScan<ScanType>;
+
+  /// \brief Add a metrics reporter for this scan.
+  ///
+  /// May be called multiple times; each call combines with the previous reporter
+  /// via MetricsReporters::Combine(). Mirrors Java TableScan.metricsReporter().
+  TableScanBuilder& MetricsReporter(std::shared_ptr<class MetricsReporter> reporter);
+
+  /// \brief Set the table name for metrics reporting.
+  TableScanBuilder& TableName(std::string table_name);
 
   /// \brief Builds and returns a TableScan instance.
   /// \return A Result containing the TableScan or an error.
