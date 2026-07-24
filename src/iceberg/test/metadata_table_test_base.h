@@ -76,7 +76,7 @@ class MetadataTableTestBase : public ::testing::Test {
   }
 
   /// \brief Import a Scan()-produced ArrowArray into an Arrow RecordBatch.
-  static std::shared_ptr<::arrow::RecordBatch> FinishAndImport(ArrowArray array,
+static std::shared_ptr<::arrow::RecordBatch> FinishAndImport(ArrowArray&& array,
                                                                const Schema& schema) {
     ArrowSchema c_schema{};
     EXPECT_THAT(ToArrowSchema(schema, &c_schema), IsOk());
