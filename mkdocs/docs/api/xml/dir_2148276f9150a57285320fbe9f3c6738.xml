@@ -1,0 +1,17 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="dir_2148276f9150a57285320fbe9f3c6738" kind="dir">
+    <compoundname>iceberg/catalog/rest/auth</compoundname>
+    <innerfile refid="auth__manager_8h">auth_manager.h</innerfile>
+    <innerfile refid="auth__managers_8h">auth_managers.h</innerfile>
+    <innerfile refid="auth__properties_8h">auth_properties.h</innerfile>
+    <innerfile refid="auth__session_8h">auth_session.h</innerfile>
+    <innerfile refid="oauth2__util_8h">oauth2_util.h</innerfile>
+    <innerfile refid="token__refresh__scheduler_8h">token_refresh_scheduler.h</innerfile>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/rest/auth/"/>
+  </compounddef>
+</doxygen>

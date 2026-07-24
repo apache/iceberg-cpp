@@ -1,0 +1,126 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="md_iceberg_2catalog_2sql_2README" kind="page">
+    <compoundname>md_iceberg_2catalog_2sql_2README</compoundname>
+    <title>README</title>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<sect1 id="md_iceberg_2catalog_2sql_2README_1autotoc_md0">
+<title>SQL Catalog</title>
+<para><computeroutput>SqlCatalog</computeroutput> implements the Iceberg <computeroutput>Catalog</computeroutput> API on top of a relational database. Its on-disk schema is compatible with the Apache Iceberg Java <computeroutput>JdbcCatalog</computeroutput>: two tables, <computeroutput>iceberg_tables</computeroutput> and <computeroutput>iceberg_namespace_properties</computeroutput>, scoped by a catalog name so multiple catalogs can share one database.</para>
+<sect2 id="md_iceberg_2catalog_2sql_2README_1autotoc_md1">
+<title>Design</title>
+<para><computeroutput>SqlCatalog</computeroutput> owns the Iceberg catalog behavior. It validates namespaces, reads and writes table metadata files, and performs optimistic-concurrency commits. Database access is delegated to a small storage interface:</para>
+<para><programlisting><codeline><highlight class="normal">Application</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>|</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>v</highlight></codeline>
+<codeline><highlight class="normal">SqlCatalog</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>|</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>|<sp/>CatalogStore<sp/>API</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>v</highlight></codeline>
+<codeline><highlight class="normal">CatalogStore<sp/>implementation</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>|</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>v</highlight></codeline>
+<codeline><highlight class="normal">SQL<sp/>database</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>-<sp/>iceberg_tables</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>-<sp/>iceberg_namespace_properties</highlight></codeline>
+</programlisting></para>
+<para><computeroutput>CatalogStore</computeroutput> (see <ulink url="catalog_store.h"><computeroutput>catalog_store.h</computeroutput></ulink>) exposes typed row operations such as <computeroutput>InsertTable</computeroutput>, <computeroutput>GetTableMetadataLocation</computeroutput>, <computeroutput>UpdateTableMetadataLocation(expected_current)</computeroutput>, namespace-property CRUD, and <computeroutput>RunInTransaction</computeroutput>. It exposes no SQL strings or driver-specific types.</para>
+<para>The project provides built-in <computeroutput>CatalogStore</computeroutput> implementations for SQLite, PostgreSQL, and MySQL. They are implemented with <ulink url="https://github.com/rbock/sqlpp23">sqlpp23</ulink>, and the shared query code lives in <computeroutput>catalog_store_sqlpp23_internal.h</computeroutput>. Users can also provide their own <computeroutput>CatalogStore</computeroutput> implementation for another database, driver, or connection pool.</para>
+<para>sqlpp23 is a build-time-only dependency for the built-in stores. It is compiled into the connector translation units and does not appear in the installed interface, so downstream consumers only need the native client libraries.</para>
+<para><blockquote><para><zwj/>The built-in sqlpp23 connectors require CMake &gt;= 3.28 and C++23; sqlpp23 is fetched automatically via <computeroutput>FetchContent</computeroutput> when at least one built-in connector is enabled. A SQL catalog backed only by a user-supplied <computeroutput>CatalogStore</computeroutput> does not need sqlpp23. The SQL catalog is currently wired into the CMake build only; the Meson build does not build or install it yet. </para>
+</blockquote></para>
+</sect2>
+<sect2 id="md_iceberg_2catalog_2sql_2README_1autotoc_md2">
+<title>Out-of-the-box usage</title>
+<para>Enable the SQL catalog and any built-in connectors at configure time. Built-in connectors pull in their native client libraries via sqlpp23:</para>
+<para><table rows="5" cols="4"><row>
+<entry thead="yes"><para>CMake option   </para>
+</entry><entry thead="yes"><para>Default   </para>
+</entry><entry thead="yes"><para>sqlpp23 target   </para>
+</entry><entry thead="yes"><para>Native dependency    </para>
+</entry></row>
+<row>
+<entry thead="no"><para><computeroutput>ICEBERG_BUILD_SQL_CATALOG</computeroutput>   </para>
+</entry><entry thead="no"><para><computeroutput>OFF</computeroutput>   </para>
+</entry><entry thead="no"><para>-   </para>
+</entry><entry thead="no"><para>-    </para>
+</entry></row>
+<row>
+<entry thead="no"><para><computeroutput>ICEBERG_SQL_SQLITE</computeroutput>   </para>
+</entry><entry thead="no"><para><computeroutput>OFF</computeroutput>   </para>
+</entry><entry thead="no"><para><computeroutput>sqlpp23::sqlite3</computeroutput>   </para>
+</entry><entry thead="no"><para>SQLite3    </para>
+</entry></row>
+<row>
+<entry thead="no"><para><computeroutput>ICEBERG_SQL_POSTGRESQL</computeroutput>   </para>
+</entry><entry thead="no"><para><computeroutput>OFF</computeroutput>   </para>
+</entry><entry thead="no"><para><computeroutput>sqlpp23::postgresql</computeroutput>   </para>
+</entry><entry thead="no"><para>libpq (PostgreSQL)    </para>
+</entry></row>
+<row>
+<entry thead="no"><para><computeroutput>ICEBERG_SQL_MYSQL</computeroutput>   </para>
+</entry><entry thead="no"><para><computeroutput>OFF</computeroutput>   </para>
+</entry><entry thead="no"><para><computeroutput>sqlpp23::mysql</computeroutput>   </para>
+</entry><entry thead="no"><para>libmysqlclient (MySQL)   </para>
+</entry></row>
+</table>
+</para>
+<para><programlisting filename=".bash"><codeline><highlight class="normal">cmake<sp/>-S<sp/>.<sp/>-B<sp/>build<sp/>-DICEBERG_BUILD_SQL_CATALOG=ON<sp/>-DICEBERG_SQL_SQLITE=ON</highlight></codeline>
+</programlisting></para>
+<para><programlisting filename=".cpp"><codeline><highlight class="preprocessor">#include<sp/>&quot;<ref refid="sql__catalog_8h" kindref="compound">iceberg/catalog/sql/sql_catalog.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline><highlight class="normal"></highlight></codeline>
+<codeline><highlight class="normal"></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal"><ref refid="classiceberg_1_1sql_1_1SqlCatalog" kindref="compound">iceberg::sql::SqlCatalog</ref>;</highlight></codeline>
+<codeline><highlight class="normal"></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal"><ref refid="structiceberg_1_1sql_1_1SqlCatalogConfig" kindref="compound">iceberg::sql::SqlCatalogConfig</ref>;</highlight></codeline>
+<codeline><highlight class="normal"></highlight></codeline>
+<codeline><highlight class="normal">SqlCatalogConfig<sp/>config{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>.<ref refid="structiceberg_1_1sql_1_1SqlCatalogConfig_1a8b1dad5745a2992d54dbdda57bbcdc8d" kindref="member">name</ref><sp/>=<sp/></highlight><highlight class="stringliteral">&quot;prod&quot;</highlight><highlight class="normal">,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>.uri<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;/var/lib/iceberg/catalog.db&quot;</highlight><highlight class="normal">,<sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>SQLite<sp/>file<sp/>path</highlight><highlight class="normal"></highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>.warehouse_location<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;s3://my-bucket/warehouse&quot;</highlight><highlight class="normal">,</highlight></codeline>
+<codeline><highlight class="normal">};</highlight></codeline>
+<codeline><highlight class="normal"></highlight></codeline>
+<codeline><highlight class="normal"></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>catalog<sp/>=<sp/>SqlCatalog::MakeSqliteCatalog(config,<sp/>file_io).value();</highlight></codeline>
+<codeline><highlight class="normal"></highlight><highlight class="comment">//<sp/>catalog-&gt;CreateNamespace(...),<sp/>CreateTable(...),<sp/>LoadTable(...),<sp/>...</highlight></codeline>
+</programlisting></para>
+<para><computeroutput>MakePostgreSqlCatalog</computeroutput> and <computeroutput>MakeMySqlCatalog</computeroutput> use the same <computeroutput>[scheme://][user[:password]@]host[:port][/database]</computeroutput> URI form. Connector factories are always declared in the public headers; if a connector was not built, its factory returns <computeroutput>ErrorKind::kNotSupported</computeroutput>. Each enabled factory creates the schema if it does not yet exist.</para>
+<para>The PostgreSQL and MySQL stores use a single sqlpp23 connection when <computeroutput>max_connections &lt;= 1</computeroutput> and a bounded sqlpp23 connection pool otherwise. Transaction bodies reuse the same leased connection for every store operation issued inside <computeroutput>RunInTransaction</computeroutput>. The SQLite store ignores <computeroutput>max_connections</computeroutput> and always uses a single connection: a file database only allows one writer (a pool of write connections would just hit <computeroutput>SQLITE_BUSY</computeroutput>) and a <computeroutput>:memory:</computeroutput> database is private to each connection.</para>
+<para>The backing schema follows the Java/Rust-compatible <computeroutput>iceberg_tables</computeroutput> layout, including the optional <computeroutput>iceberg_type</computeroutput> column. New table rows write <lsquo/>iceberg_type = &apos;TABLE<rsquo/><computeroutput>as the record type; existing rows with</computeroutput>NULL` remain readable for compatibility.</para>
+</sect2>
+<sect2 id="md_iceberg_2catalog_2sql_2README_1autotoc_md3">
+<title>Bring your own store</title>
+<para>To use a database, driver, or connection pool that is not built in, implement <computeroutput>CatalogStore</computeroutput> and inject it. No catalog code changes are required:</para>
+<para><programlisting filename=".cpp"><codeline><highlight class="keyword">class<sp/></highlight><highlight class="normal">MyCatalogStore<sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1sql_1_1CatalogStore" kindref="compound">iceberg::sql::CatalogStore</ref><sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>iceberg::Status<sp/><ref refid="classiceberg_1_1sql_1_1CatalogStore_1ae56f64bd20de171ac60a6b5540f4f7a9" kindref="member">Initialize</ref>()</highlight><highlight class="keyword"><sp/>override<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="comment">/*<sp/>CREATE<sp/>TABLE<sp/>IF<sp/>NOT<sp/>EXISTS<sp/>...<sp/>*/</highlight><highlight class="normal"><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><ref refid="namespaceiceberg_1a9d5594e371beb516b0120e07e69d3af6" kindref="member">iceberg::Result&lt;std::optional&lt;std::string&gt;</ref>&gt;<sp/><ref refid="classiceberg_1_1sql_1_1CatalogStore_1a047c2b1353469bfdda8739b846fbde46" kindref="member">GetTableMetadataLocation</ref>(</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>std::string_view<sp/>ns,<sp/>std::string_view<sp/>name)</highlight><highlight class="keyword"><sp/>override<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="comment">/*<sp/>...<sp/>*/</highlight><highlight class="normal"><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>iceberg::Status<sp/><ref refid="classiceberg_1_1sql_1_1CatalogStore_1a393d3119d8b17efa36f7021189fd02e4" kindref="member">InsertTable</ref>(std::string_view<sp/>ns,<sp/>std::string_view<sp/>name,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::string_view<sp/>metadata_location)</highlight><highlight class="keyword"><sp/>override<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="comment">/*<sp/>...<sp/>*/</highlight><highlight class="normal"><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>...<sp/>the<sp/>remaining<sp/>CatalogStore<sp/>operations<sp/>...</highlight><highlight class="normal"></highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>iceberg::Status<sp/><ref refid="classiceberg_1_1sql_1_1CatalogStore_1aa8662070d94c72e3671367a726f7427e" kindref="member">RunInTransaction</ref>(</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::function&lt;iceberg::Status()&gt;&amp;<sp/>body)</highlight><highlight class="keyword"><sp/>override<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="comment">/*<sp/>...<sp/>*/</highlight><highlight class="normal"><sp/>}</highlight></codeline>
+<codeline><highlight class="normal">};</highlight></codeline>
+<codeline><highlight class="normal"></highlight></codeline>
+<codeline><highlight class="normal"></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>store<sp/>=<sp/>std::make_shared&lt;MyCatalogStore&gt;(</highlight><highlight class="comment">/*<sp/>...<sp/>*/</highlight><highlight class="normal">);</highlight></codeline>
+<codeline><highlight class="normal"></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>catalog<sp/>=<sp/>SqlCatalog::Make(config,<sp/>file_io,<sp/>std::move(store)).value();</highlight></codeline>
+</programlisting></para>
+<sect3 id="md_iceberg_2catalog_2sql_2README_1autotoc_md4">
+<title>Implementation contract</title>
+<para><itemizedlist>
+<listitem><para><bold>Catalog scope</bold>: a store instance is bound to one catalog name; every row it reads or writes must be scoped by that name.</para>
+</listitem><listitem><para><bold>Namespace identifiers</bold>: namespace levels must not be empty and must not contain <computeroutput>.</computeroutput> because the backing schema stores a namespace as a dot-joined string.</para>
+</listitem><listitem><para><bold>Table rows</bold>: new table inserts should write <lsquo/>iceberg_type = &apos;TABLE<rsquo/><computeroutput>as the record type. Reads should treat both</computeroutput>TABLE<computeroutput>and</computeroutput>NULL<computeroutput>as table rows so older databases remain readable.</computeroutput></para>
+</listitem><listitem><para><computeroutput>**Unique violations**:</computeroutput>InsertTable<computeroutput>,</computeroutput>InsertNamespaceProperty<computeroutput>, and </computeroutput>RenameTable<computeroutput>must report a primary-key collision as</computeroutput>ErrorKind::kAlreadyExists<computeroutput>. The catalog relies on this as the authoritative signal for concurrent creates.</computeroutput></para>
+</listitem><listitem><para><computeroutput>**Affected rows**:</computeroutput>UpdateTableMetadataLocation<computeroutput>performs the optimistic compare-and-set; it must return the number of rows updated (0 on a stale base).</computeroutput></para>
+</listitem><listitem><para><computeroutput>**Atomicity**:</computeroutput>RunInTransaction<computeroutput>must commit on success and roll back on any error so the database is left unchanged.</computeroutput></para>
+</listitem><listitem><para><computeroutput>**Threading**: a store may be called from multiple threads; serialize internally or use one connection per concurrent operation. The built-in PostgreSQL and MySQL stores use a bounded sqlpp23 connection pool when </computeroutput>max_connections &gt; 1`; the SQLite store always uses a single connection. </para>
+</listitem></itemizedlist>
+</para>
+</sect3>
+</sect2>
+</sect1>
+    </detaileddescription>
+    <location file="iceberg/catalog/sql/README.md"/>
+  </compounddef>
+</doxygen>

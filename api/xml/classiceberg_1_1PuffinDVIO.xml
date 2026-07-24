@@ -1,0 +1,57 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1PuffinDVIO" kind="class" language="C++" prot="public" abstract="yes">
+    <compoundname>iceberg::PuffinDVIO</compoundname>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1PuffinDVIO_1a144d04333a8be74a0204eeee223060fc" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type></type>
+        <definition>virtual iceberg::PuffinDVIO::~PuffinDVIO</definition>
+        <argsstring>()</argsstring>
+        <name>~PuffinDVIO</name>
+        <qualifiedname>iceberg::PuffinDVIO::~PuffinDVIO</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/puffin_dv_io.h" line="48" column="11"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1PuffinDVIO_1a771c550394f955fb6e18cdf063bf75d4" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type><ref refid="namespaceiceberg_1a9d5594e371beb516b0120e07e69d3af6" kindref="member">Result</ref>&lt; std::vector&lt; std::shared_ptr&lt; <ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref> &gt; &gt; &gt;</type>
+        <definition>virtual Result&lt; std::vector&lt; std::shared_ptr&lt; DataFile &gt; &gt; &gt; iceberg::PuffinDVIO::MergeAndWriteDVs</definition>
+        <argsstring>(std::span&lt; const DeletionVectorMergeGroup &gt; groups, std::string_view output_path, const std::shared_ptr&lt; FileIO &gt; &amp;io)=0</argsstring>
+        <name>MergeAndWriteDVs</name>
+        <qualifiedname>iceberg::PuffinDVIO::MergeAndWriteDVs</qualifiedname>
+        <param>
+          <type>std::span&lt; const <ref refid="structiceberg_1_1DeletionVectorMergeGroup" kindref="compound">DeletionVectorMergeGroup</ref> &gt;</type>
+          <declname>groups</declname>
+        </param>
+        <param>
+          <type>std::string_view</type>
+          <declname>output_path</declname>
+        </param>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref> &gt; &amp;</type>
+          <declname>io</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/puffin_dv_io.h" line="50" column="18"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/puffin_dv_io.h" line="46" column="1" bodyfile="iceberg/puffin_dv_io.h" bodystart="46" bodyend="53"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1PuffinDVIO_1a771c550394f955fb6e18cdf063bf75d4" prot="public" virt="pure-virtual"><scope>iceberg::PuffinDVIO</scope><name>MergeAndWriteDVs</name></member>
+      <member refid="classiceberg_1_1PuffinDVIO_1a144d04333a8be74a0204eeee223060fc" prot="public" virt="virtual"><scope>iceberg::PuffinDVIO</scope><name>~PuffinDVIO</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

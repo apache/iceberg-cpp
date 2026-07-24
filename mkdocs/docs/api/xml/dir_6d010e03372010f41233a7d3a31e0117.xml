@@ -1,0 +1,31 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="dir_6d010e03372010f41233a7d3a31e0117" kind="dir">
+    <compoundname>iceberg/update</compoundname>
+    <innerfile refid="delete__files_8h">delete_files.h</innerfile>
+    <innerfile refid="expire__snapshots_8h">expire_snapshots.h</innerfile>
+    <innerfile refid="fast__append_8h">fast_append.h</innerfile>
+    <innerfile refid="merge__append_8h">merge_append.h</innerfile>
+    <innerfile refid="merging__snapshot__update_8h">merging_snapshot_update.h</innerfile>
+    <innerfile refid="overwrite__files_8h">overwrite_files.h</innerfile>
+    <innerfile refid="pending__update_8h">pending_update.h</innerfile>
+    <innerfile refid="rewrite__files_8h">rewrite_files.h</innerfile>
+    <innerfile refid="row__delta_8h">row_delta.h</innerfile>
+    <innerfile refid="set__snapshot_8h">set_snapshot.h</innerfile>
+    <innerfile refid="snapshot__manager_8h">snapshot_manager.h</innerfile>
+    <innerfile refid="snapshot__update_8h">snapshot_update.h</innerfile>
+    <innerfile refid="update__location_8h">update_location.h</innerfile>
+    <innerfile refid="update__partition__spec_8h">update_partition_spec.h</innerfile>
+    <innerfile refid="update__partition__statistics_8h">update_partition_statistics.h</innerfile>
+    <innerfile refid="update__properties_8h">update_properties.h</innerfile>
+    <innerfile refid="update__schema_8h">update_schema.h</innerfile>
+    <innerfile refid="update__snapshot__reference_8h">update_snapshot_reference.h</innerfile>
+    <innerfile refid="update__sort__order_8h">update_sort_order.h</innerfile>
+    <innerfile refid="update__statistics_8h">update_statistics.h</innerfile>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/update/"/>
+  </compounddef>
+</doxygen>

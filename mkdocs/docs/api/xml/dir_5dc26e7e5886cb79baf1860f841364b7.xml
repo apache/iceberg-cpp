@@ -1,0 +1,19 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="dir_5dc26e7e5886cb79baf1860f841364b7" kind="dir">
+    <compoundname>iceberg/metrics</compoundname>
+    <innerfile refid="commit__report_8h">commit_report.h</innerfile>
+    <innerfile refid="counter_8h">counter.h</innerfile>
+    <innerfile refid="metrics__context_8h">metrics_context.h</innerfile>
+    <innerfile refid="metrics__reporter_8h">metrics_reporter.h</innerfile>
+    <innerfile refid="metrics__reporters_8h">metrics_reporters.h</innerfile>
+    <innerfile refid="metrics__types_8h">metrics_types.h</innerfile>
+    <innerfile refid="scan__report_8h">scan_report.h</innerfile>
+    <innerfile refid="timer_8h">timer.h</innerfile>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/metrics/"/>
+  </compounddef>
+</doxygen>

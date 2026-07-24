@@ -1,0 +1,885 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="namespaceiceberg_1_1internal" kind="namespace" language="C++">
+    <compoundname>iceberg::internal</compoundname>
+    <innerclass refid="structiceberg_1_1internal_1_1EqualityDeleteFile" prot="public">iceberg::internal::EqualityDeleteFile</innerclass>
+    <innerclass refid="classiceberg_1_1internal_1_1EqualityDeletes" prot="public">iceberg::internal::EqualityDeletes</innerclass>
+    <innerclass refid="structiceberg_1_1internal_1_1FmtWithLoc" prot="private">iceberg::internal::FmtWithLoc</innerclass>
+    <innerclass refid="classiceberg_1_1internal_1_1PositionDeletes" prot="public">iceberg::internal::PositionDeletes</innerclass>
+    <innerclass refid="structiceberg_1_1internal_1_1TableScanContext" prot="public">iceberg::internal::TableScanContext</innerclass>
+    <sectiondef kind="var">
+      <memberdef kind="variable" id="temporal__util_8h_1a6aaf850777b4cee02af812b18f0be0e7" prot="public" static="no" constexpr="yes" mutable="no">
+        <type>constexpr int64_t</type>
+        <definition>constexpr int64_t iceberg::internal::kNanosPerMicro</definition>
+        <argsstring></argsstring>
+        <name>kNanosPerMicro</name>
+        <qualifiedname>iceberg::internal::kNanosPerMicro</qualifiedname>
+        <initializer>= 1000</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/temporal_util.h" line="35" column="26" bodyfile="iceberg/util/temporal_util.h" bodystart="35" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="temporal__util_8h_1a87cfb4966366fb32f780ac27ffaefec3" prot="public" static="no" constexpr="yes" mutable="no">
+        <type>constexpr int64_t</type>
+        <definition>constexpr int64_t iceberg::internal::kMicrosPerMilli</definition>
+        <argsstring></argsstring>
+        <name>kMicrosPerMilli</name>
+        <qualifiedname>iceberg::internal::kMicrosPerMilli</qualifiedname>
+        <initializer>= 1000</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/temporal_util.h" line="36" column="26" bodyfile="iceberg/util/temporal_util.h" bodystart="36" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="temporal__util_8h_1a4084cfe82efdc96155e71c83fde66ec5" prot="public" static="no" constexpr="yes" mutable="no">
+        <type>constexpr int64_t</type>
+        <definition>constexpr int64_t iceberg::internal::kMicrosPerSecond</definition>
+        <argsstring></argsstring>
+        <name>kMicrosPerSecond</name>
+        <qualifiedname>iceberg::internal::kMicrosPerSecond</qualifiedname>
+        <initializer>= 1000 * kMicrosPerMilli</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/temporal_util.h" line="37" column="26" bodyfile="iceberg/util/temporal_util.h" bodystart="37" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="temporal__util_8h_1ac748a5742d36787a217cfc9b1041c99c" prot="public" static="no" constexpr="yes" mutable="no">
+        <type>constexpr int64_t</type>
+        <definition>constexpr int64_t iceberg::internal::kSecondsPerMinute</definition>
+        <argsstring></argsstring>
+        <name>kSecondsPerMinute</name>
+        <qualifiedname>iceberg::internal::kSecondsPerMinute</qualifiedname>
+        <initializer>= 60</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/temporal_util.h" line="38" column="26" bodyfile="iceberg/util/temporal_util.h" bodystart="38" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="temporal__util_8h_1a37126b6034af9e5be38d9c2f18b409c6" prot="public" static="no" constexpr="yes" mutable="no">
+        <type>constexpr int64_t</type>
+        <definition>constexpr int64_t iceberg::internal::kMinutesPerHour</definition>
+        <argsstring></argsstring>
+        <name>kMinutesPerHour</name>
+        <qualifiedname>iceberg::internal::kMinutesPerHour</qualifiedname>
+        <initializer>= 60</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/temporal_util.h" line="39" column="26" bodyfile="iceberg/util/temporal_util.h" bodystart="39" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="temporal__util_8h_1a7b9d42e0ed15389089f8644430152d53" prot="public" static="no" constexpr="yes" mutable="no">
+        <type>constexpr int64_t</type>
+        <definition>constexpr int64_t iceberg::internal::kHoursPerDay</definition>
+        <argsstring></argsstring>
+        <name>kHoursPerDay</name>
+        <qualifiedname>iceberg::internal::kHoursPerDay</qualifiedname>
+        <initializer>= 24</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/temporal_util.h" line="40" column="26" bodyfile="iceberg/util/temporal_util.h" bodystart="40" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="temporal__util_8h_1a2a4f13f80ca2d5a3c35d9f5033d5fcdb" prot="public" static="no" constexpr="yes" mutable="no">
+        <type>constexpr int64_t</type>
+        <definition>constexpr int64_t iceberg::internal::kSecondsPerHour</definition>
+        <argsstring></argsstring>
+        <name>kSecondsPerHour</name>
+        <qualifiedname>iceberg::internal::kSecondsPerHour</qualifiedname>
+        <initializer>= kMinutesPerHour * kSecondsPerMinute</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/temporal_util.h" line="41" column="26" bodyfile="iceberg/util/temporal_util.h" bodystart="41" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="temporal__util_8h_1a73cb901f9481d65de81da2fa0af78203" prot="public" static="no" constexpr="yes" mutable="no">
+        <type>constexpr int64_t</type>
+        <definition>constexpr int64_t iceberg::internal::kSecondsPerDay</definition>
+        <argsstring></argsstring>
+        <name>kSecondsPerDay</name>
+        <qualifiedname>iceberg::internal::kSecondsPerDay</qualifiedname>
+        <initializer>= kHoursPerDay * kSecondsPerHour</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/temporal_util.h" line="42" column="26" bodyfile="iceberg/util/temporal_util.h" bodystart="42" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="temporal__util_8h_1adca1f8697c297567d60ff858f8e62059" prot="public" static="no" constexpr="yes" mutable="no">
+        <type>constexpr int64_t</type>
+        <definition>constexpr int64_t iceberg::internal::kMicrosPerDay</definition>
+        <argsstring></argsstring>
+        <name>kMicrosPerDay</name>
+        <qualifiedname>iceberg::internal::kMicrosPerDay</qualifiedname>
+        <initializer>= kSecondsPerDay * kMicrosPerSecond</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/temporal_util.h" line="43" column="26" bodyfile="iceberg/util/temporal_util.h" bodystart="43" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="temporal__util_8h_1a01206aac2d4f418e84892c5d0acaed54" prot="public" static="no" constexpr="yes" mutable="no">
+        <type>constexpr int64_t</type>
+        <definition>constexpr int64_t iceberg::internal::kNanosPerMilli</definition>
+        <argsstring></argsstring>
+        <name>kNanosPerMilli</name>
+        <qualifiedname>iceberg::internal::kNanosPerMilli</qualifiedname>
+        <initializer>= kMicrosPerMilli * kNanosPerMicro</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/temporal_util.h" line="44" column="26" bodyfile="iceberg/util/temporal_util.h" bodystart="44" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="temporal__util_8h_1a061ad5c9c476514c5da1a299526e1c87" prot="public" static="no" constexpr="yes" mutable="no">
+        <type>constexpr int64_t</type>
+        <definition>constexpr int64_t iceberg::internal::kNanosPerSecond</definition>
+        <argsstring></argsstring>
+        <name>kNanosPerSecond</name>
+        <qualifiedname>iceberg::internal::kNanosPerSecond</qualifiedname>
+        <initializer>= kMicrosPerSecond * kNanosPerMicro</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/temporal_util.h" line="45" column="26" bodyfile="iceberg/util/temporal_util.h" bodystart="45" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="temporal__util_8h_1a5b5a48e690ece03cd3fa732f749bfa73" prot="public" static="no" constexpr="yes" mutable="no">
+        <type>constexpr int64_t</type>
+        <definition>constexpr int64_t iceberg::internal::kNanosPerDay</definition>
+        <argsstring></argsstring>
+        <name>kNanosPerDay</name>
+        <qualifiedname>iceberg::internal::kNanosPerDay</qualifiedname>
+        <initializer>= kMicrosPerDay * kNanosPerMicro</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/temporal_util.h" line="46" column="26" bodyfile="iceberg/util/temporal_util.h" bodystart="46" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="temporal__util_8h_1a81eb452884e9c3bfe57f9655b0fce8a1" prot="public" static="no" constexpr="yes" mutable="no">
+        <type>constexpr auto</type>
+        <definition>constexpr auto iceberg::internal::kEpochYmd</definition>
+        <argsstring></argsstring>
+        <name>kEpochYmd</name>
+        <qualifiedname>iceberg::internal::kEpochYmd</qualifiedname>
+        <initializer>= std::chrono::year{1970} / std::chrono::January / 1</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/temporal_util.h" line="48" column="23" bodyfile="iceberg/util/temporal_util.h" bodystart="48" bodyend="48"/>
+      </memberdef>
+      <memberdef kind="variable" id="temporal__util_8h_1a193c519373cf4e9b7d572755ef8c6d2f" prot="public" static="no" constexpr="yes" mutable="no">
+        <type>constexpr auto</type>
+        <definition>constexpr auto iceberg::internal::kEpochDays</definition>
+        <argsstring></argsstring>
+        <name>kEpochDays</name>
+        <qualifiedname>iceberg::internal::kEpochDays</qualifiedname>
+        <initializer>= std::chrono::sys_days{kEpochYmd}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/temporal_util.h" line="49" column="23" bodyfile="iceberg/util/temporal_util.h" bodystart="49" bodyend="49"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="func">
+      <memberdef kind="function" id="delete__file__index_8h_1a7718e6b9a15c9c1cac1f44a361db7e34" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::internal::RangesOverlap</definition>
+        <argsstring>(const Literal &amp;data_lower, const Literal &amp;data_upper, const Literal &amp;delete_lower, const Literal &amp;delete_upper)</argsstring>
+        <name>RangesOverlap</name>
+        <qualifiedname>iceberg::internal::RangesOverlap</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &amp;</type>
+          <declname>data_lower</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &amp;</type>
+          <declname>data_upper</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &amp;</type>
+          <declname>delete_lower</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &amp;</type>
+          <declname>delete_upper</declname>
+        </param>
+        <briefdescription>
+<para>Check if two ranges overlap. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/delete_file_index.h" line="91" column="13" bodyfile="iceberg/delete_file_index.h" bodystart="91" bodyend="100"/>
+      </memberdef>
+      <memberdef kind="function" id="delete__file__index_8h_1a0a1da8b84863a723f8655247133984d5" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::internal::AllNull</definition>
+        <argsstring>(const std::map&lt; int32_t, int64_t &gt; &amp;null_counts, const std::map&lt; int32_t, int64_t &gt; &amp;value_counts, int32_t field_id, bool is_required)</argsstring>
+        <name>AllNull</name>
+        <qualifiedname>iceberg::internal::AllNull</qualifiedname>
+        <param>
+          <type>const std::map&lt; int32_t, int64_t &gt; &amp;</type>
+          <declname>null_counts</declname>
+        </param>
+        <param>
+          <type>const std::map&lt; int32_t, int64_t &gt; &amp;</type>
+          <declname>value_counts</declname>
+        </param>
+        <param>
+          <type>int32_t</type>
+          <declname>field_id</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>is_required</declname>
+        </param>
+        <briefdescription>
+<para>Check if a value count map indicates all values are null. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/delete_file_index.h" line="103" column="13" bodyfile="iceberg/delete_file_index.h" bodystart="103" bodyend="117"/>
+      </memberdef>
+      <memberdef kind="function" id="delete__file__index_8h_1ae8ea1d0a83c7907f293cd8666b632551" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::internal::AllNonNull</definition>
+        <argsstring>(const std::map&lt; int32_t, int64_t &gt; &amp;null_counts, int32_t field_id, bool is_required)</argsstring>
+        <name>AllNonNull</name>
+        <qualifiedname>iceberg::internal::AllNonNull</qualifiedname>
+        <param>
+          <type>const std::map&lt; int32_t, int64_t &gt; &amp;</type>
+          <declname>null_counts</declname>
+        </param>
+        <param>
+          <type>int32_t</type>
+          <declname>field_id</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>is_required</declname>
+        </param>
+        <briefdescription>
+<para>Check if all values are non-null. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/delete_file_index.h" line="120" column="13" bodyfile="iceberg/delete_file_index.h" bodystart="120" bodyend="132"/>
+      </memberdef>
+      <memberdef kind="function" id="delete__file__index_8h_1ae5e7fd90489132c9584c38ce0eae207f" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::internal::ContainsNull</definition>
+        <argsstring>(const std::map&lt; int32_t, int64_t &gt; &amp;null_counts, int32_t field_id, bool is_required)</argsstring>
+        <name>ContainsNull</name>
+        <qualifiedname>iceberg::internal::ContainsNull</qualifiedname>
+        <param>
+          <type>const std::map&lt; int32_t, int64_t &gt; &amp;</type>
+          <declname>null_counts</declname>
+        </param>
+        <param>
+          <type>int32_t</type>
+          <declname>field_id</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>is_required</declname>
+        </param>
+        <briefdescription>
+<para>Check if the column contains any null values. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/delete_file_index.h" line="135" column="13" bodyfile="iceberg/delete_file_index.h" bodystart="135" bodyend="147"/>
+      </memberdef>
+      <memberdef kind="function" id="delete__file__index_8h_1a983aa0e77760b5650fa26b76e72c2e92" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>ICEBERG_EXPORT <ref refid="namespaceiceberg_1a9d5594e371beb516b0120e07e69d3af6" kindref="member">Result</ref>&lt; bool &gt;</type>
+        <definition>ICEBERG_EXPORT Result&lt; bool &gt; iceberg::internal::CanContainEqDeletesForFile</definition>
+        <argsstring>(const DataFile &amp;data_file, const EqualityDeleteFile &amp;delete_file)</argsstring>
+        <name>CanContainEqDeletesForFile</name>
+        <qualifiedname>iceberg::internal::CanContainEqDeletesForFile</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref> &amp;</type>
+          <declname>data_file</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structiceberg_1_1internal_1_1EqualityDeleteFile" kindref="compound">EqualityDeleteFile</ref> &amp;</type>
+          <declname>delete_file</declname>
+        </param>
+        <briefdescription>
+<para>Check if an equality delete file can contain deletes for a data file. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/delete_file_index.h" line="150" column="23" declfile="iceberg/delete_file_index.h" declline="150" declcolumn="23"/>
+      </memberdef>
+      <memberdef kind="function" id="log__macros_8h_1a885e43522698d6e2522924e9ba2a745b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename...</type>
+            <declname>Args</declname>
+            <defname>Args</defname>
+          </param>
+        </templateparamlist>
+        <type>std::string</type>
+        <definition>std::string iceberg::internal::VFormat</definition>
+        <argsstring>(std::string_view fmt, Args &amp;&amp;... args)</argsstring>
+        <name>VFormat</name>
+        <qualifiedname>iceberg::internal::VFormat</qualifiedname>
+        <param>
+          <type>std::string_view</type>
+          <declname>fmt</declname>
+        </param>
+        <param>
+          <type>Args &amp;&amp;...</type>
+          <declname>args</declname>
+        </param>
+        <briefdescription>
+<para>Runtime (non-literal) format-string helper for ICEBERG_LOG_RUNTIME_FMT. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>std::format requires a compile-time format string; this routes a runtime string through std::vformat. Args are bound as named lvalues and the arg-store is held in a named variable so it outlives the vformat call (C++23 make_format_args rejects rvalues <ndash/> P2905 / LWG3631). </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/logging/log_macros.h" line="50" column="13" bodyfile="iceberg/logging/log_macros.h" bodystart="50" bodyend="53"/>
+      </memberdef>
+      <memberdef kind="function" id="log__macros_8h_1ae1daa6f029aa6918a0731f91b039218c" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename MakeMessage</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void iceberg::internal::EmitIfEnabled</definition>
+        <argsstring>(Logger &amp;logger, LogLevel level, const std::source_location &amp;location, MakeMessage &amp;&amp;make_message) noexcept</argsstring>
+        <name>EmitIfEnabled</name>
+        <qualifiedname>iceberg::internal::EmitIfEnabled</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1Logger" kindref="compound">Logger</ref> &amp;</type>
+          <declname>logger</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceiceberg_1ab9922ae0d07dc85678a1a86c872e387b" kindref="member">LogLevel</ref></type>
+          <declname>level</declname>
+        </param>
+        <param>
+          <type>const std::source_location &amp;</type>
+          <declname>location</declname>
+        </param>
+        <param>
+          <type>MakeMessage &amp;&amp;</type>
+          <declname>make_message</declname>
+        </param>
+        <briefdescription>
+<para>Gate on <computeroutput>logger.ShouldLog</computeroutput>, then format (via <computeroutput>make_message</computeroutput>) and emit. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><computeroutput>make_message</computeroutput> is a callable returning the formatted std::string; it is invoked only after the level passes ShouldLog, so a disabled log never evaluates its format arguments. Never throws: a std::formatter that throws (any type) routes to EmitFormatError, so the noexcept logging contract holds. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/logging/log_macros.h" line="62" column="6" bodyfile="iceberg/logging/log_macros.h" bodystart="62" bodyend="70"/>
+      </memberdef>
+      <memberdef kind="function" id="log__macros_8h_1a0c9c016dee2f0483d4f68d86181be0d9" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename MakeMessage</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void iceberg::internal::LogToCurrent</definition>
+        <argsstring>(LogLevel level, const std::source_location &amp;location, MakeMessage &amp;&amp;make_message) noexcept</argsstring>
+        <name>LogToCurrent</name>
+        <qualifiedname>iceberg::internal::LogToCurrent</qualifiedname>
+        <param>
+          <type><ref refid="namespaceiceberg_1ab9922ae0d07dc85678a1a86c872e387b" kindref="member">LogLevel</ref></type>
+          <declname>level</declname>
+        </param>
+        <param>
+          <type>const std::source_location &amp;</type>
+          <declname>location</declname>
+        </param>
+        <param>
+          <type>MakeMessage &amp;&amp;</type>
+          <declname>make_message</declname>
+        </param>
+        <briefdescription>
+<para>Emit to the current (scoped-or-default) logger if enabled. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/logging/log_macros.h" line="74" column="6" bodyfile="iceberg/logging/log_macros.h" bodystart="74" bodyend="80"/>
+      </memberdef>
+      <memberdef kind="function" id="log__macros_8h_1a321eeff5aa4b21fa8b46783c63148555" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename MakeMessage</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void iceberg::internal::LogToCurrentRuntime</definition>
+        <argsstring>(LogLevel level, const std::source_location &amp;location, MakeMessage &amp;&amp;make_message) noexcept</argsstring>
+        <name>LogToCurrentRuntime</name>
+        <qualifiedname>iceberg::internal::LogToCurrentRuntime</qualifiedname>
+        <param>
+          <type><ref refid="namespaceiceberg_1ab9922ae0d07dc85678a1a86c872e387b" kindref="member">LogLevel</ref></type>
+          <declname>level</declname>
+        </param>
+        <param>
+          <type>const std::source_location &amp;</type>
+          <declname>location</declname>
+        </param>
+        <param>
+          <type>MakeMessage &amp;&amp;</type>
+          <declname>make_message</declname>
+        </param>
+        <briefdescription>
+<para>Runtime-level variant against the current logger: emit if enabled, then flush + abort when level == kFatal (using the same acquired logger). </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/logging/log_macros.h" line="85" column="6" bodyfile="iceberg/logging/log_macros.h" bodystart="85" bodyend="95"/>
+      </memberdef>
+      <memberdef kind="function" id="log__macros_8h_1ab3a00ea892a68afcecab1abac51e5361" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename MakeMessage</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void iceberg::internal::LogToExplicitRuntime</definition>
+        <argsstring>(Logger &amp;logger, LogLevel level, const std::source_location &amp;location, MakeMessage &amp;&amp;make_message) noexcept</argsstring>
+        <name>LogToExplicitRuntime</name>
+        <qualifiedname>iceberg::internal::LogToExplicitRuntime</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1Logger" kindref="compound">Logger</ref> &amp;</type>
+          <declname>logger</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceiceberg_1ab9922ae0d07dc85678a1a86c872e387b" kindref="member">LogLevel</ref></type>
+          <declname>level</declname>
+        </param>
+        <param>
+          <type>const std::source_location &amp;</type>
+          <declname>location</declname>
+        </param>
+        <param>
+          <type>MakeMessage &amp;&amp;</type>
+          <declname>make_message</declname>
+        </param>
+        <briefdescription>
+<para>Runtime-level variant against an explicit logger: emit if enabled, then flush + abort when level == kFatal. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/logging/log_macros.h" line="100" column="6" bodyfile="iceberg/logging/log_macros.h" bodystart="100" bodyend="108"/>
+      </memberdef>
+      <memberdef kind="function" id="log__macros_8h_1a39b498af2ff87f8fda25d4f3340b898c" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename MakeMessage</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void iceberg::internal::LogFatal</definition>
+        <argsstring>(const std::source_location &amp;location, MakeMessage &amp;&amp;make_message) noexcept</argsstring>
+        <name>LogFatal</name>
+        <qualifiedname>iceberg::internal::LogFatal</qualifiedname>
+        <param>
+          <type>const std::source_location &amp;</type>
+          <declname>location</declname>
+        </param>
+        <param>
+          <type>MakeMessage &amp;&amp;</type>
+          <declname>make_message</declname>
+        </param>
+        <briefdescription>
+<para>Fatal path: acquire the effective (scoped-or-default) logger ONCE, emit if enabled, flush that same logger, run any registered FatalHandler, then abort. Never returns. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>The message is always formatted here (independent of ShouldLog) so the handler receives it even when the fatal record itself is filtered out. The handler runs after emit+flush and before abort; if it does not itself terminate the process, std::abort() still runs. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/logging/log_macros.h" line="119" column="7" bodyfile="iceberg/logging/log_macros.h" bodystart="119" bodyend="141"/>
+      </memberdef>
+      <memberdef kind="function" id="logger_8h_1a29c1b29e5581f499650269f97f1f7855" prot="private" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type>ICEBERG_EXPORT const std::shared_ptr&lt; <ref refid="classiceberg_1_1Logger" kindref="compound">Logger</ref> &gt; &amp;</type>
+        <definition>ICEBERG_EXPORT const std::shared_ptr&lt; Logger &gt; &amp; iceberg::internal::CurrentLogger</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>CurrentLogger</name>
+        <qualifiedname>iceberg::internal::CurrentLogger</qualifiedname>
+        <briefdescription>
+<para>Hot-path accessor for the default logger. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Returns a reference to a thread-local cached shared_ptr that is refreshed only when the default logger has changed (no lock / no refcount churn in steady state). The reference is valid for the duration of the calling statement. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/logging/logger.h" line="305" column="38" declfile="iceberg/logging/logger.h" declline="305" declcolumn="38"/>
+      </memberdef>
+      <memberdef kind="function" id="logger_8h_1a95afa4d16de9b8a793745827c1ca5eba" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>ICEBERG_EXPORT void</type>
+        <definition>ICEBERG_EXPORT void iceberg::internal::Emit</definition>
+        <argsstring>(Logger &amp;logger, LogLevel level, const std::source_location &amp;location, std::string &amp;&amp;message)</argsstring>
+        <name>Emit</name>
+        <qualifiedname>iceberg::internal::Emit</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1Logger" kindref="compound">Logger</ref> &amp;</type>
+          <declname>logger</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceiceberg_1ab9922ae0d07dc85678a1a86c872e387b" kindref="member">LogLevel</ref></type>
+          <declname>level</declname>
+        </param>
+        <param>
+          <type>const std::source_location &amp;</type>
+          <declname>location</declname>
+        </param>
+        <param>
+          <type>std::string &amp;&amp;</type>
+          <declname>message</declname>
+        </param>
+        <briefdescription>
+<para>Build a <ref refid="structiceberg_1_1LogMessage" kindref="compound">LogMessage</ref> from the already-formatted text and dispatch it. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Declared ICEBERG_EXPORT because the logging helpers/macros expand into this call in consumer translation units. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/logging/logger.h" line="311" column="21" declfile="iceberg/logging/logger.h" declline="311" declcolumn="21"/>
+      </memberdef>
+      <memberdef kind="function" id="logger_8h_1a31154822941e127f0ac14bd5ceeef0ba" prot="private" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type>ICEBERG_EXPORT void</type>
+        <definition>ICEBERG_EXPORT void iceberg::internal::EmitFormatError</definition>
+        <argsstring>(Logger &amp;logger, LogLevel level, const std::source_location &amp;location) noexcept</argsstring>
+        <name>EmitFormatError</name>
+        <qualifiedname>iceberg::internal::EmitFormatError</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1Logger" kindref="compound">Logger</ref> &amp;</type>
+          <declname>logger</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceiceberg_1ab9922ae0d07dc85678a1a86c872e387b" kindref="member">LogLevel</ref></type>
+          <declname>level</declname>
+        </param>
+        <param>
+          <type>const std::source_location &amp;</type>
+          <declname>location</declname>
+        </param>
+        <briefdescription>
+<para>Emit a fixed fallback record when formatting threw. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>noexcept, allocation-light (small/SSO literal), performs no std::format, and does not recurse <ndash/> so the macro&apos;s &quot;logging never throws&quot; guarantee holds even when a format argument throws. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/logging/logger.h" line="319" column="21" declfile="iceberg/logging/logger.h" declline="319" declcolumn="21"/>
+      </memberdef>
+      <memberdef kind="function" id="logger_8h_1a65c294bb0b9dcfbee826e7ca58999e71" prot="private" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename...</type>
+            <declname>Args</declname>
+            <defname>Args</defname>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void iceberg::internal::FormatAndEmit</definition>
+        <argsstring>(Logger &amp;logger, LogLevel level, const std::source_location &amp;loc, std::format_string&lt; Args... &gt; fmt, Args &amp;&amp;... args) noexcept</argsstring>
+        <name>FormatAndEmit</name>
+        <qualifiedname>iceberg::internal::FormatAndEmit</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1Logger" kindref="compound">Logger</ref> &amp;</type>
+          <declname>logger</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceiceberg_1ab9922ae0d07dc85678a1a86c872e387b" kindref="member">LogLevel</ref></type>
+          <declname>level</declname>
+        </param>
+        <param>
+          <type>const std::source_location &amp;</type>
+          <declname>loc</declname>
+        </param>
+        <param>
+          <type>std::format_string&lt; Args... &gt;</type>
+          <declname>fmt</declname>
+        </param>
+        <param>
+          <type>Args &amp;&amp;...</type>
+          <declname>args</declname>
+        </param>
+        <briefdescription>
+<para>Shared gate -&gt; format -&gt; emit body for the function-style <ref refid="namespaceiceberg_1a1aaf619fc9dbd574aa84dea9e41d3288" kindref="member">Log()</ref> API. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Formats only when the logger is enabled for <computeroutput>level</computeroutput>, and never throws (a formatting failure routes to EmitFormatError, matching the macros). </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/logging/logger.h" line="346" column="6" bodyfile="iceberg/logging/logger.h" bodystart="346" bodyend="357"/>
+      </memberdef>
+      <memberdef kind="function" id="checked__cast_8h_1a609a5e20bce1b6cdadaf3507c57f452b" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename OutputType</type>
+          </param>
+          <param>
+            <type>typename InputType</type>
+          </param>
+        </templateparamlist>
+        <type>OutputType</type>
+        <definition>OutputType iceberg::internal::checked_cast</definition>
+        <argsstring>(InputType &amp;&amp;value)</argsstring>
+        <name>checked_cast</name>
+        <qualifiedname>iceberg::internal::checked_cast</qualifiedname>
+        <param>
+          <type>InputType &amp;&amp;</type>
+          <declname>value</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/checked_cast.h" line="34" column="19" bodyfile="iceberg/util/checked_cast.h" bodystart="34" bodyend="46"/>
+      </memberdef>
+      <memberdef kind="function" id="checked__cast_8h_1aae3fa786333b3046bb388f7acb6ba17e" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class T</type>
+          </param>
+          <param>
+            <type>class U</type>
+          </param>
+        </templateparamlist>
+        <type>std::shared_ptr&lt; T &gt;</type>
+        <definition>std::shared_ptr&lt; T &gt; iceberg::internal::checked_pointer_cast</definition>
+        <argsstring>(std::shared_ptr&lt; U &gt; r) noexcept</argsstring>
+        <name>checked_pointer_cast</name>
+        <qualifiedname>iceberg::internal::checked_pointer_cast</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; U &gt;</type>
+          <declname>r</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/checked_cast.h" line="49" column="17" bodyfile="iceberg/util/checked_cast.h" bodystart="49" bodyend="55"/>
+      </memberdef>
+      <memberdef kind="function" id="checked__cast_8h_1a68ee8fe19b20782c8140151ede05598b" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class T</type>
+          </param>
+          <param>
+            <type>class U</type>
+          </param>
+        </templateparamlist>
+        <type>std::unique_ptr&lt; T &gt;</type>
+        <definition>std::unique_ptr&lt; T &gt; iceberg::internal::checked_pointer_cast</definition>
+        <argsstring>(std::unique_ptr&lt; U &gt; r) noexcept</argsstring>
+        <name>checked_pointer_cast</name>
+        <qualifiedname>iceberg::internal::checked_pointer_cast</qualifiedname>
+        <param>
+          <type>std::unique_ptr&lt; U &gt;</type>
+          <declname>r</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/checked_cast.h" line="58" column="17" bodyfile="iceberg/util/checked_cast.h" bodystart="58" bodyend="64"/>
+      </memberdef>
+      <memberdef kind="function" id="config_8h_1a725ca91b7ee015cb95c3f5575133f295" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename U</type>
+          </param>
+        </templateparamlist>
+        <type>std::string</type>
+        <definition>std::string iceberg::internal::DefaultToString</definition>
+        <argsstring>(const U &amp;val)</argsstring>
+        <name>DefaultToString</name>
+        <qualifiedname>iceberg::internal::DefaultToString</qualifiedname>
+        <param>
+          <type>const U &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/config.h" line="37" column="13" bodyfile="iceberg/util/config.h" bodystart="37" bodyend="50"/>
+      </memberdef>
+      <memberdef kind="function" id="config_8h_1a3c336af2b3f606b07c50c22b2f85b63d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename U</type>
+          </param>
+        </templateparamlist>
+        <type>U</type>
+        <definition>U iceberg::internal::DefaultFromString</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>DefaultFromString</name>
+        <qualifiedname>iceberg::internal::DefaultFromString</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/config.h" line="53" column="3" bodyfile="iceberg/util/config.h" bodystart="53" bodyend="66"/>
+      </memberdef>
+      <memberdef kind="function" id="task__group_8h_1a9dc14ad31c0e71a40019bc0a1b9286cf" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>ICEBERG_EXPORT Status</type>
+        <definition>ICEBERG_EXPORT Status iceberg::internal::RunTasksSingleThreaded</definition>
+        <argsstring>(std::vector&lt; FnOnce&lt; Status()&gt; &gt; tasks)</argsstring>
+        <name>RunTasksSingleThreaded</name>
+        <qualifiedname>iceberg::internal::RunTasksSingleThreaded</qualifiedname>
+        <param>
+          <type>std::vector&lt; <ref refid="classiceberg_1_1FnOnce" kindref="compound">FnOnce</ref>&lt; Status()&gt; &gt;</type>
+          <declname>tasks</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/task_group.h" line="53" column="23" declfile="iceberg/util/task_group.h" declline="53" declcolumn="23"/>
+      </memberdef>
+      <memberdef kind="function" id="task__group_8h_1a640a4236e5766c9227837a0c5ac2f225" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>ICEBERG_EXPORT Status</type>
+        <definition>ICEBERG_EXPORT Status iceberg::internal::RunTasksParallel</definition>
+        <argsstring>(Executor &amp;executor, std::vector&lt; FnOnce&lt; Status()&gt; &gt; tasks)</argsstring>
+        <name>RunTasksParallel</name>
+        <qualifiedname>iceberg::internal::RunTasksParallel</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1Executor" kindref="compound">Executor</ref> &amp;</type>
+          <declname>executor</declname>
+        </param>
+        <param>
+          <type>std::vector&lt; <ref refid="classiceberg_1_1FnOnce" kindref="compound">FnOnce</ref>&lt; Status()&gt; &gt;</type>
+          <declname>tasks</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/task_group.h" line="55" column="23" declfile="iceberg/util/task_group.h" declline="55" declcolumn="23"/>
+      </memberdef>
+      <memberdef kind="function" id="transform__util_8h_1a4725c849c3c5ef4ba683f0583e3e5fa5" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::internal::ValidateBucketTransformParameter</definition>
+        <argsstring>(int32_t num_buckets)</argsstring>
+        <name>ValidateBucketTransformParameter</name>
+        <qualifiedname>iceberg::internal::ValidateBucketTransformParameter</qualifiedname>
+        <param>
+          <type>int32_t</type>
+          <declname>num_buckets</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/transform_util.h" line="33" column="15" bodyfile="iceberg/util/transform_util.h" bodystart="33" bodyend="38"/>
+      </memberdef>
+      <memberdef kind="function" id="transform__util_8h_1aed06d32dad1dd25dcf7cbff5d56de4aa" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::internal::ValidateTruncateTransformParameter</definition>
+        <argsstring>(int32_t width)</argsstring>
+        <name>ValidateTruncateTransformParameter</name>
+        <qualifiedname>iceberg::internal::ValidateTruncateTransformParameter</qualifiedname>
+        <param>
+          <type>int32_t</type>
+          <declname>width</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/transform_util.h" line="40" column="15" bodyfile="iceberg/util/transform_util.h" bodystart="40" bodyend="45"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/delete_file_index.h" line="43" column="1"/>
+  </compounddef>
+</doxygen>

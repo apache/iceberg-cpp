@@ -1,0 +1,190 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1Timer_1_1Timed" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::Timer::Timed</compoundname>
+    <includes refid="timer_8h" local="no">timer.h</includes>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1Timer_1_1Timed_1afb6f1878d0809370d1a152f6281eb43f" prot="private" static="no" mutable="no">
+        <type><ref refid="classiceberg_1_1Timer" kindref="compound">Timer</ref> *</type>
+        <definition>Timer* iceberg::Timer::Timed::timer_</definition>
+        <argsstring></argsstring>
+        <name>timer_</name>
+        <qualifiedname>iceberg::Timer::Timed::timer_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/timer.h" line="93" column="11" bodyfile="iceberg/metrics/timer.h" bodystart="93" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1Timer_1_1Timed_1a3e1e0a313aa2051f7efbcd437e1efdd6" prot="private" static="no" mutable="no">
+        <type>std::chrono::steady_clock::time_point</type>
+        <definition>std::chrono::steady_clock::time_point iceberg::Timer::Timed::start_</definition>
+        <argsstring></argsstring>
+        <name>start_</name>
+        <qualifiedname>iceberg::Timer::Timed::start_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/timer.h" line="94" column="43" bodyfile="iceberg/metrics/timer.h" bodystart="94" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1Timer_1_1Timed_1adb2a97ad4cab65b2e75ebae911cdacd6" prot="private" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool iceberg::Timer::Timed::stopped_</definition>
+        <argsstring></argsstring>
+        <name>stopped_</name>
+        <qualifiedname>iceberg::Timer::Timed::stopped_</qualifiedname>
+        <initializer>= false</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/timer.h" line="95" column="10" bodyfile="iceberg/metrics/timer.h" bodystart="95" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1Timer_1_1Timed_1a71c6fd17dbe6dac336c9f535835589dd" prot="public" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::Timer::Timed::Timed</definition>
+        <argsstring>(Timer &amp;timer)</argsstring>
+        <name>Timed</name>
+        <qualifiedname>iceberg::Timer::Timed::Timed</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1Timer" kindref="compound">Timer</ref> &amp;</type>
+          <declname>timer</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/timer.h" line="79" column="14"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Timer_1_1Timed_1af108b8af218de074f9c4280b300d3b5b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::Timer::Timed::~Timed</definition>
+        <argsstring>()</argsstring>
+        <name>~Timed</name>
+        <qualifiedname>iceberg::Timer::Timed::~Timed</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/timer.h" line="80" column="5"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Timer_1_1Timed_1a93ece9e51bea065bf6b85b69c9cd15d9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::Timer::Timed::Timed</definition>
+        <argsstring>(const Timed &amp;)=delete</argsstring>
+        <name>Timed</name>
+        <qualifiedname>iceberg::Timer::Timed::Timed</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Timer_1_1Timed" kindref="compound">Timed</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/timer.h" line="82" column="5"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Timer_1_1Timed_1ae0e7ce0fb299fb5d62b596461958efb9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1Timer_1_1Timed" kindref="compound">Timed</ref> &amp;</type>
+        <definition>Timed &amp; iceberg::Timer::Timed::operator=</definition>
+        <argsstring>(const Timed &amp;)=delete</argsstring>
+        <name>operator=</name>
+        <qualifiedname>iceberg::Timer::Timed::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Timer_1_1Timed" kindref="compound">Timed</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/timer.h" line="83" column="11"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Timer_1_1Timed_1a587c1e2b1ed089285589a3fd3b0db376" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::Timer::Timed::Timed</definition>
+        <argsstring>(Timed &amp;&amp;other) noexcept</argsstring>
+        <name>Timed</name>
+        <qualifiedname>iceberg::Timer::Timed::Timed</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1Timer_1_1Timed" kindref="compound">Timed</ref> &amp;&amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/timer.h" line="84" column="5"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Timer_1_1Timed_1a250828d19d4b638185e2bcc789218caa" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1Timer_1_1Timed" kindref="compound">Timed</ref> &amp;</type>
+        <definition>Timed &amp; iceberg::Timer::Timed::operator=</definition>
+        <argsstring>(Timed &amp;&amp;other) noexcept</argsstring>
+        <name>operator=</name>
+        <qualifiedname>iceberg::Timer::Timed::operator=</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1Timer_1_1Timed" kindref="compound">Timed</ref> &amp;&amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/timer.h" line="85" column="11"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Timer_1_1Timed_1a435fc292cb438022e77ff8584a6c2c40" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::Timer::Timed::Stop</definition>
+        <argsstring>()</argsstring>
+        <name>Stop</name>
+        <qualifiedname>iceberg::Timer::Timed::Stop</qualifiedname>
+        <briefdescription>
+<para>Explicitly stop timing and record the duration. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Subsequent calls (including the destructor) are no-ops. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/timer.h" line="90" column="10"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>RAII guard that records elapsed time into a non-owning <ref refid="classiceberg_1_1Timer" kindref="compound">Timer</ref> on destruction. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/metrics/timer.h" line="77" column="3" bodyfile="iceberg/metrics/timer.h" bodystart="77" bodyend="96"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1Timer_1_1Timed_1ae0e7ce0fb299fb5d62b596461958efb9" prot="public" virt="non-virtual"><scope>iceberg::Timer::Timed</scope><name>operator=</name></member>
+      <member refid="classiceberg_1_1Timer_1_1Timed_1a250828d19d4b638185e2bcc789218caa" prot="public" virt="non-virtual"><scope>iceberg::Timer::Timed</scope><name>operator=</name></member>
+      <member refid="classiceberg_1_1Timer_1_1Timed_1a3e1e0a313aa2051f7efbcd437e1efdd6" prot="private" virt="non-virtual"><scope>iceberg::Timer::Timed</scope><name>start_</name></member>
+      <member refid="classiceberg_1_1Timer_1_1Timed_1a435fc292cb438022e77ff8584a6c2c40" prot="public" virt="non-virtual"><scope>iceberg::Timer::Timed</scope><name>Stop</name></member>
+      <member refid="classiceberg_1_1Timer_1_1Timed_1adb2a97ad4cab65b2e75ebae911cdacd6" prot="private" virt="non-virtual"><scope>iceberg::Timer::Timed</scope><name>stopped_</name></member>
+      <member refid="classiceberg_1_1Timer_1_1Timed_1a71c6fd17dbe6dac336c9f535835589dd" prot="public" virt="non-virtual"><scope>iceberg::Timer::Timed</scope><name>Timed</name></member>
+      <member refid="classiceberg_1_1Timer_1_1Timed_1a93ece9e51bea065bf6b85b69c9cd15d9" prot="public" virt="non-virtual"><scope>iceberg::Timer::Timed</scope><name>Timed</name></member>
+      <member refid="classiceberg_1_1Timer_1_1Timed_1a587c1e2b1ed089285589a3fd3b0db376" prot="public" virt="non-virtual"><scope>iceberg::Timer::Timed</scope><name>Timed</name></member>
+      <member refid="classiceberg_1_1Timer_1_1Timed_1afb6f1878d0809370d1a152f6281eb43f" prot="private" virt="non-virtual"><scope>iceberg::Timer::Timed</scope><name>timer_</name></member>
+      <member refid="classiceberg_1_1Timer_1_1Timed_1af108b8af218de074f9c4280b300d3b5b" prot="public" virt="non-virtual"><scope>iceberg::Timer::Timed</scope><name>~Timed</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

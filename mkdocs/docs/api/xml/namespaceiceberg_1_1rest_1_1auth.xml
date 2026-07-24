@@ -1,0 +1,206 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="namespaceiceberg_1_1rest_1_1auth" kind="namespace" language="C++">
+    <compoundname>iceberg::rest::auth</compoundname>
+    <innerclass refid="classiceberg_1_1rest_1_1auth_1_1AuthManager" prot="public">iceberg::rest::auth::AuthManager</innerclass>
+    <innerclass refid="classiceberg_1_1rest_1_1auth_1_1AuthManagers" prot="public">iceberg::rest::auth::AuthManagers</innerclass>
+    <innerclass refid="classiceberg_1_1rest_1_1auth_1_1AuthProperties" prot="public">iceberg::rest::auth::AuthProperties</innerclass>
+    <innerclass refid="classiceberg_1_1rest_1_1auth_1_1AuthSession" prot="public">iceberg::rest::auth::AuthSession</innerclass>
+    <innerclass refid="classiceberg_1_1rest_1_1auth_1_1TokenRefreshScheduler" prot="public">iceberg::rest::auth::TokenRefreshScheduler</innerclass>
+    <sectiondef kind="typedef">
+      <memberdef kind="typedef" id="namespaceiceberg_1_1rest_1_1auth_1a8dcfa3f158cf6eb8345037e08fef0ef4" prot="public" static="no">
+        <type>std::function&lt; <ref refid="namespaceiceberg_1a9d5594e371beb516b0120e07e69d3af6" kindref="member">Result</ref>&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1rest_1_1auth_1_1AuthManager" kindref="compound">AuthManager</ref> &gt; &gt;(std::string_view name, const std::unordered_map&lt; std::string, std::string &gt; &amp;properties)&gt;</type>
+        <definition>using iceberg::rest::auth::AuthManagerFactory = typedef std::function&lt;Result&lt;std::unique_ptr&lt;AuthManager&gt; &gt;( std::string_view name, const std::unordered_map&lt;std::string, std::string&gt;&amp; properties)&gt;</definition>
+        <argsstring></argsstring>
+        <name>AuthManagerFactory</name>
+        <qualifiedname>iceberg::rest::auth::AuthManagerFactory</qualifiedname>
+        <briefdescription>
+<para>Function that creates an <ref refid="classiceberg_1_1rest_1_1auth_1_1AuthManager" kindref="compound">AuthManager</ref> from its name. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>name</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Name of the auth manager. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>properties</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Properties required by the auth manager. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Newly created manager instance or an error if creation fails. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/auth/auth_managers.h" line="42" column="1" bodyfile="iceberg/catalog/rest/auth/auth_managers.h" bodystart="44" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="var">
+      <memberdef kind="variable" id="namespaceiceberg_1_1rest_1_1auth_1aaab82b5093df29f7bbf881d846b17f28" prot="public" static="no" constexpr="yes" mutable="no">
+        <type>constexpr std::string_view</type>
+        <definition>constexpr std::string_view iceberg::rest::auth::kAuthorizationHeader</definition>
+        <argsstring></argsstring>
+        <name>kAuthorizationHeader</name>
+        <qualifiedname>iceberg::rest::auth::kAuthorizationHeader</qualifiedname>
+        <initializer>= &quot;Authorization&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/auth/oauth2_util.h" line="38" column="35" bodyfile="iceberg/catalog/rest/auth/oauth2_util.h" bodystart="38" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespaceiceberg_1_1rest_1_1auth_1a1d72ebd56c1090015820659e825a01bb" prot="public" static="no" constexpr="yes" mutable="no">
+        <type>constexpr std::string_view</type>
+        <definition>constexpr std::string_view iceberg::rest::auth::kBearerPrefix</definition>
+        <argsstring></argsstring>
+        <name>kBearerPrefix</name>
+        <qualifiedname>iceberg::rest::auth::kBearerPrefix</qualifiedname>
+        <initializer>= &quot;Bearer &quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/auth/oauth2_util.h" line="39" column="35" bodyfile="iceberg/catalog/rest/auth/oauth2_util.h" bodystart="39" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="func">
+      <memberdef kind="function" id="namespaceiceberg_1_1rest_1_1auth_1acfac361cc047e5d2f7894c0753a3b27e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>ICEBERG_REST_EXPORT <ref refid="namespaceiceberg_1a9d5594e371beb516b0120e07e69d3af6" kindref="member">Result</ref>&lt; <ref refid="structiceberg_1_1rest_1_1OAuthTokenResponse" kindref="compound">OAuthTokenResponse</ref> &gt;</type>
+        <definition>ICEBERG_REST_EXPORT Result&lt; OAuthTokenResponse &gt; iceberg::rest::auth::FetchToken</definition>
+        <argsstring>(HttpClient &amp;client, AuthSession &amp;session, const AuthProperties &amp;properties)</argsstring>
+        <name>FetchToken</name>
+        <qualifiedname>iceberg::rest::auth::FetchToken</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1rest_1_1HttpClient" kindref="compound">HttpClient</ref> &amp;</type>
+          <declname>client</declname>
+        </param>
+        <param>
+          <type><ref refid="classiceberg_1_1rest_1_1auth_1_1AuthSession" kindref="compound">AuthSession</ref> &amp;</type>
+          <declname>session</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classiceberg_1_1rest_1_1auth_1_1AuthProperties" kindref="compound">AuthProperties</ref> &amp;</type>
+          <declname>properties</declname>
+        </param>
+        <briefdescription>
+<para>Fetch an OAuth2 token using the client_credentials grant type. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>client</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>HTTP client to use for the request. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>session</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Auth session for the request headers. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>properties</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Auth configuration containing credential, scope, token endpoint, and optional OAuth params. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The token response or an error. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/auth/oauth2_util.h" line="48" column="28" declfile="iceberg/catalog/rest/auth/oauth2_util.h" declline="48" declcolumn="28"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceiceberg_1_1rest_1_1auth_1a5b92549cf00e5e6b0bc3cda44d13574d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>ICEBERG_REST_EXPORT std::unordered_map&lt; std::string, std::string &gt;</type>
+        <definition>ICEBERG_REST_EXPORT std::unordered_map&lt; std::string, std::string &gt; iceberg::rest::auth::AuthHeaders</definition>
+        <argsstring>(const std::string &amp;token)</argsstring>
+        <name>AuthHeaders</name>
+        <qualifiedname>iceberg::rest::auth::AuthHeaders</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>token</declname>
+        </param>
+        <briefdescription>
+<para>Build auth headers from a token string. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>token</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Bearer token string (may be empty). </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Headers map with Authorization header if token is non-empty. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/auth/oauth2_util.h" line="55" column="40" declfile="iceberg/catalog/rest/auth/oauth2_util.h" declline="55" declcolumn="40"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceiceberg_1_1rest_1_1auth_1a15c7be10beaacb3b15f533e279f33731" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>ICEBERG_REST_EXPORT std::optional&lt; int64_t &gt;</type>
+        <definition>ICEBERG_REST_EXPORT std::optional&lt; int64_t &gt; iceberg::rest::auth::ExpiresAtMillis</definition>
+        <argsstring>(std::string_view token)</argsstring>
+        <name>ExpiresAtMillis</name>
+        <qualifiedname>iceberg::rest::auth::ExpiresAtMillis</qualifiedname>
+        <param>
+          <type>std::string_view</type>
+          <declname>token</declname>
+        </param>
+        <briefdescription>
+<para>Extract expiration time from a JWT token. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Decodes the JWT payload (base64url) and reads the &quot;exp&quot; claim. Returns std::nullopt if the token is not a valid JWT or has no &quot;exp&quot; claim.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>token</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>A token string. If it is a JWT (three dot-separated base64url segments), the &quot;exp&quot; claim is extracted from the payload. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Expiration time as milliseconds since epoch, or std::nullopt. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/auth/oauth2_util.h" line="66" column="35" declfile="iceberg/catalog/rest/auth/oauth2_util.h" declline="66" declcolumn="35"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>REST catalog authentication APIs. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/rest/auth/auth_manager.h" line="34" column="1"/>
+  </compounddef>
+</doxygen>

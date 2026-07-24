@@ -1,0 +1,150 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1SnapshotUpdate_1_1ContentFileWithSequenceNumber" kind="struct" language="C++" prot="protected">
+    <compoundname>iceberg::SnapshotUpdate::ContentFileWithSequenceNumber</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1SnapshotUpdate_1_1ContentFileWithSequenceNumber_1a3dd0ede49f56c335057fc796814caea9" prot="public" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;DataFile&gt; iceberg::SnapshotUpdate::ContentFileWithSequenceNumber::file</definition>
+        <argsstring></argsstring>
+        <name>file</name>
+        <qualifiedname>iceberg::SnapshotUpdate::ContentFileWithSequenceNumber::file</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/snapshot_update.h" line="164" column="21" bodyfile="iceberg/update/snapshot_update.h" bodystart="164" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1SnapshotUpdate_1_1ContentFileWithSequenceNumber_1ab459d5024d4bc325eb91741f1b66a50b" prot="public" static="no" mutable="no">
+        <type>std::optional&lt; int64_t &gt;</type>
+        <definition>std::optional&lt;int64_t&gt; iceberg::SnapshotUpdate::ContentFileWithSequenceNumber::data_sequence_number</definition>
+        <argsstring></argsstring>
+        <name>data_sequence_number</name>
+        <qualifiedname>iceberg::SnapshotUpdate::ContentFileWithSequenceNumber::data_sequence_number</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/snapshot_update.h" line="165" column="19" bodyfile="iceberg/update/snapshot_update.h" bodystart="165" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="3">
+        <label>iceberg::DataFile</label>
+        <link refid="structiceberg_1_1DataFile"/>
+        <childnode refid="4" relation="usage">
+          <edgelabel>file_path</edgelabel>
+          <edgelabel>kPartitionDoc</edgelabel>
+          <edgelabel>kPartitionField</edgelabel>
+        </childnode>
+        <childnode refid="6" relation="usage">
+          <edgelabel>partition</edgelabel>
+        </childnode>
+        <childnode refid="8" relation="usage">
+          <edgelabel>column_sizes</edgelabel>
+          <edgelabel>nan_value_counts</edgelabel>
+          <edgelabel>null_value_counts</edgelabel>
+          <edgelabel>value_counts</edgelabel>
+        </childnode>
+        <childnode refid="9" relation="usage">
+          <edgelabel>lower_bounds</edgelabel>
+          <edgelabel>upper_bounds</edgelabel>
+        </childnode>
+        <childnode refid="10" relation="usage">
+          <edgelabel>key_metadata</edgelabel>
+        </childnode>
+        <childnode refid="11" relation="usage">
+          <edgelabel>split_offsets</edgelabel>
+        </childnode>
+        <childnode refid="12" relation="usage">
+          <edgelabel>equality_ids</edgelabel>
+        </childnode>
+        <childnode refid="13" relation="usage">
+          <edgelabel>kColumnSizes</edgelabel>
+          <edgelabel>kContent</edgelabel>
+          <edgelabel>kContentOffset</edgelabel>
+          <edgelabel>kContentSize</edgelabel>
+          <edgelabel>kEqualityIds</edgelabel>
+          <edgelabel>kFileFormat</edgelabel>
+          <edgelabel>kFilePath</edgelabel>
+          <edgelabel>kFileSize</edgelabel>
+          <edgelabel>kFirstRowId</edgelabel>
+          <edgelabel>kKeyMetadata</edgelabel>
+          <edgelabel>...</edgelabel>
+        </childnode>
+      </node>
+      <node id="6">
+        <label>iceberg::PartitionValues</label>
+        <link refid="classiceberg_1_1PartitionValues"/>
+        <childnode refid="7" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="13">
+        <label>iceberg::SchemaField</label>
+        <link refid="classiceberg_1_1SchemaField"/>
+        <childnode refid="14" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::SnapshotUpdate::ContentFileWithSequenceNumber</label>
+        <link refid="structiceberg_1_1SnapshotUpdate_1_1ContentFileWithSequenceNumber"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>file</edgelabel>
+        </childnode>
+      </node>
+      <node id="7">
+        <label>iceberg::StructLike</label>
+        <link refid="classiceberg_1_1StructLike"/>
+      </node>
+      <node id="14">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+      <node id="8">
+        <label>std::map&lt; int32_t, int64_t &gt;</label>
+      </node>
+      <node id="9">
+        <label>std::map&lt; int32_t, std::vector&lt; uint8_t &gt; &gt;</label>
+        <childnode refid="10" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="2">
+        <label>std::shared_ptr&lt; iceberg::DataFile &gt;</label>
+        <childnode refid="3" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="5">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="4">
+        <label>std::string</label>
+        <childnode refid="5" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="12">
+        <label>std::vector&lt; int32_t &gt;</label>
+      </node>
+      <node id="11">
+        <label>std::vector&lt; int64_t &gt;</label>
+      </node>
+      <node id="10">
+        <label>std::vector&lt; uint8_t &gt;</label>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/update/snapshot_update.h" line="163" column="3" bodyfile="iceberg/update/snapshot_update.h" bodystart="163" bodyend="166"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1SnapshotUpdate_1_1ContentFileWithSequenceNumber_1ab459d5024d4bc325eb91741f1b66a50b" prot="public" virt="non-virtual"><scope>iceberg::SnapshotUpdate::ContentFileWithSequenceNumber</scope><name>data_sequence_number</name></member>
+      <member refid="structiceberg_1_1SnapshotUpdate_1_1ContentFileWithSequenceNumber_1a3dd0ede49f56c335057fc796814caea9" prot="public" virt="non-virtual"><scope>iceberg::SnapshotUpdate::ContentFileWithSequenceNumber</scope><name>file</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

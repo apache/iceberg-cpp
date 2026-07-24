@@ -1,0 +1,70 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1CounterResult" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::CounterResult</compoundname>
+    <includes refid="metrics__types_8h" local="no">metrics_types.h</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1CounterResult_1a5d51898a7eb51f203c443f1755b96db3" prot="public" static="no" mutable="no">
+        <type><ref refid="namespaceiceberg_1ab43be837ffa520a0d8a9186d90edac43" kindref="member">CounterUnit</ref></type>
+        <definition>CounterUnit iceberg::CounterResult::unit</definition>
+        <argsstring></argsstring>
+        <name>unit</name>
+        <qualifiedname>iceberg::CounterResult::unit</qualifiedname>
+        <initializer>= CounterUnit::kCount</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/metrics_types.h" line="45" column="15" bodyfile="iceberg/metrics/metrics_types.h" bodystart="45" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1CounterResult_1adf8d7405b97a9d4f31e09d9427398d05" prot="public" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t iceberg::CounterResult::value</definition>
+        <argsstring></argsstring>
+        <name>value</name>
+        <qualifiedname>iceberg::CounterResult::value</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/metrics_types.h" line="46" column="11" bodyfile="iceberg/metrics/metrics_types.h" bodystart="46" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structiceberg_1_1CounterResult_1ad5fb937cece188ea6dcbeb5e60b23385" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::CounterResult::operator==</definition>
+        <argsstring>(const CounterResult &amp;) const =default</argsstring>
+        <name>operator==</name>
+        <qualifiedname>iceberg::CounterResult::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1CounterResult" kindref="compound">CounterResult</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/metrics_types.h" line="48" column="8"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Serialisable snapshot of a single <ref refid="classiceberg_1_1Counter" kindref="compound">Counter</ref> measurement. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>Carries both the unit and value. </para>
+    </detaileddescription>
+    <location file="iceberg/metrics/metrics_types.h" line="44" column="1" bodyfile="iceberg/metrics/metrics_types.h" bodystart="44" bodyend="49"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1CounterResult_1ad5fb937cece188ea6dcbeb5e60b23385" prot="public" virt="non-virtual"><scope>iceberg::CounterResult</scope><name>operator==</name></member>
+      <member refid="structiceberg_1_1CounterResult_1a5d51898a7eb51f203c443f1755b96db3" prot="public" virt="non-virtual"><scope>iceberg::CounterResult</scope><name>unit</name></member>
+      <member refid="structiceberg_1_1CounterResult_1adf8d7405b97a9d4f31e09d9427398d05" prot="public" virt="non-virtual"><scope>iceberg::CounterResult</scope><name>value</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

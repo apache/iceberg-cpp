@@ -1,0 +1,71 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="dir_51d145386ec5f52aa06ebf5e46944abc" kind="dir">
+    <compoundname>iceberg</compoundname>
+    <innerdir refid="dir_b7cf026d9e3f55cae42b23722c36a1cb">iceberg/arrow</innerdir>
+    <innerdir refid="dir_9cc2b4db464abb05599e72c1e44574e5">iceberg/avro</innerdir>
+    <innerdir refid="dir_a7beda0dac529a54d3cdf90e787bdce7">iceberg/catalog</innerdir>
+    <innerdir refid="dir_40a892c7cf92893422212651b7511047">iceberg/data</innerdir>
+    <innerdir refid="dir_2364134ca2c801199e839742b2e563fe">iceberg/deletes</innerdir>
+    <innerdir refid="dir_a5b29b5da04404bbc950d262d6fa2438">iceberg/encryption</innerdir>
+    <innerdir refid="dir_7ac1409b17bc67cf1cb6672572f7a9bb">iceberg/expression</innerdir>
+    <innerdir refid="dir_14ccbd871815ef34e3ece180347ca16f">iceberg/inspect</innerdir>
+    <innerdir refid="dir_e261caeeda3f8e02492ad86220e1178e">iceberg/logging</innerdir>
+    <innerdir refid="dir_533ff46f32578e24c36e8622f02412db">iceberg/manifest</innerdir>
+    <innerdir refid="dir_5dc26e7e5886cb79baf1860f841364b7">iceberg/metrics</innerdir>
+    <innerdir refid="dir_1ccb282d545125210b19e3e39d10b527">iceberg/parquet</innerdir>
+    <innerdir refid="dir_d29ce3c247234cc8bacd7c637d3a05c6">iceberg/puffin</innerdir>
+    <innerdir refid="dir_065fe4922448f367f735be4a03d29a5b">iceberg/row</innerdir>
+    <innerdir refid="dir_6d010e03372010f41233a7d3a31e0117">iceberg/update</innerdir>
+    <innerdir refid="dir_6a066966226cd78a6111c1015733de08">iceberg/util</innerdir>
+    <innerfile refid="arrow__c__data_8h">arrow_c_data.h</innerfile>
+    <innerfile refid="catalog_8h">catalog.h</innerfile>
+    <innerfile refid="constants_8h">constants.h</innerfile>
+    <innerfile refid="delete__file__index_8h">delete_file_index.h</innerfile>
+    <innerfile refid="exception_8h">exception.h</innerfile>
+    <innerfile refid="file__format_8h">file_format.h</innerfile>
+    <innerfile refid="file__io_8h">file_io.h</innerfile>
+    <innerfile refid="file__io__registry_8h">file_io_registry.h</innerfile>
+    <innerfile refid="file__reader_8h">file_reader.h</innerfile>
+    <innerfile refid="file__writer_8h">file_writer.h</innerfile>
+    <innerfile refid="iceberg__bundle__export_8h">iceberg_bundle_export.h</innerfile>
+    <innerfile refid="iceberg__data__export_8h">iceberg_data_export.h</innerfile>
+    <innerfile refid="iceberg__export_8h">iceberg_export.h</innerfile>
+    <innerfile refid="inheritable__metadata_8h">inheritable_metadata.h</innerfile>
+    <innerfile refid="location__provider_8h">location_provider.h</innerfile>
+    <innerfile refid="metadata__columns_8h">metadata_columns.h</innerfile>
+    <innerfile refid="metrics_8h">metrics.h</innerfile>
+    <innerfile refid="metrics__config_8h">metrics_config.h</innerfile>
+    <innerfile refid="name__mapping_8h">name_mapping.h</innerfile>
+    <innerfile refid="partition__field_8h">partition_field.h</innerfile>
+    <innerfile refid="partition__spec_8h">partition_spec.h</innerfile>
+    <innerfile refid="puffin__dv__io_8h">puffin_dv_io.h</innerfile>
+    <innerfile refid="result_8h">result.h</innerfile>
+    <innerfile refid="schema_8h">schema.h</innerfile>
+    <innerfile refid="schema__field_8h">schema_field.h</innerfile>
+    <innerfile refid="schema__util_8h">schema_util.h</innerfile>
+    <innerfile refid="snapshot_8h">snapshot.h</innerfile>
+    <innerfile refid="sort__field_8h">sort_field.h</innerfile>
+    <innerfile refid="sort__order_8h">sort_order.h</innerfile>
+    <innerfile refid="statistics__file_8h">statistics_file.h</innerfile>
+    <innerfile refid="storage__credential_8h">storage_credential.h</innerfile>
+    <innerfile refid="table_8h">table.h</innerfile>
+    <innerfile refid="table__identifier_8h">table_identifier.h</innerfile>
+    <innerfile refid="table__metadata_8h">table_metadata.h</innerfile>
+    <innerfile refid="table__properties_8h">table_properties.h</innerfile>
+    <innerfile refid="table__requirement_8h">table_requirement.h</innerfile>
+    <innerfile refid="table__requirements_8h">table_requirements.h</innerfile>
+    <innerfile refid="table__scan_8h">table_scan.h</innerfile>
+    <innerfile refid="table__update_8h">table_update.h</innerfile>
+    <innerfile refid="transaction_8h">transaction.h</innerfile>
+    <innerfile refid="transform_8h">transform.h</innerfile>
+    <innerfile refid="transform__function_8h">transform_function.h</innerfile>
+    <innerfile refid="type_8h">type.h</innerfile>
+    <innerfile refid="type__fwd_8h">type_fwd.h</innerfile>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/"/>
+  </compounddef>
+</doxygen>

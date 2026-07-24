@@ -1,0 +1,16 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="dir_e261caeeda3f8e02492ad86220e1178e" kind="dir">
+    <compoundname>iceberg/logging</compoundname>
+    <innerfile refid="cerr__logger_8h">cerr_logger.h</innerfile>
+    <innerfile refid="log__level_8h">log_level.h</innerfile>
+    <innerfile refid="log__macros_8h">log_macros.h</innerfile>
+    <innerfile refid="logger_8h">logger.h</innerfile>
+    <innerfile refid="short__log__macros_8h">short_log_macros.h</innerfile>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/logging/"/>
+  </compounddef>
+</doxygen>

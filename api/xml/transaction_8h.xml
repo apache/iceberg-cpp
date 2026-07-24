@@ -1,0 +1,255 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="transaction_8h" kind="file" language="C++">
+    <compoundname>transaction.h</compoundname>
+    <includes local="no">cstdint</includes>
+    <includes local="no">memory</includes>
+    <includes local="no">optional</includes>
+    <includes local="no">string</includes>
+    <includes local="no">string_view</includes>
+    <includes local="no">vector</includes>
+    <includes refid="iceberg__export_8h" local="yes">iceberg/iceberg_export.h</includes>
+    <includes refid="result_8h" local="yes">iceberg/result.h</includes>
+    <includes refid="type__fwd_8h" local="yes">iceberg/type_fwd.h</includes>
+    <incdepgraph>
+      <node id="8">
+        <label>iceberg/iceberg_export.h</label>
+        <link refid="iceberg__export_8h"/>
+      </node>
+      <node id="9">
+        <label>iceberg/result.h</label>
+        <link refid="result_8h"/>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg/transaction.h</label>
+        <link refid="transaction_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+      </node>
+      <node id="14">
+        <label>iceberg/type_fwd.h</label>
+        <link refid="type__fwd_8h"/>
+      </node>
+      <node id="10">
+        <label>concepts</label>
+      </node>
+      <node id="2">
+        <label>cstdint</label>
+      </node>
+      <node id="11">
+        <label>expected</label>
+      </node>
+      <node id="12">
+        <label>format</label>
+      </node>
+      <node id="3">
+        <label>memory</label>
+      </node>
+      <node id="4">
+        <label>optional</label>
+      </node>
+      <node id="5">
+        <label>string</label>
+      </node>
+      <node id="6">
+        <label>string_view</label>
+      </node>
+      <node id="13">
+        <label>type_traits</label>
+      </node>
+      <node id="7">
+        <label>vector</label>
+      </node>
+    </incdepgraph>
+    <innerclass refid="classiceberg_1_1Transaction" prot="public">iceberg::Transaction</innerclass>
+    <innerclass refid="classiceberg_1_1TransactionContext" prot="public">iceberg::TransactionContext</innerclass>
+    <innernamespace refid="namespaceiceberg">iceberg</innernamespace>
+    <briefdescription>
+<para>Define transaction APIs. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="normal"></highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight><highlight class="comment">/*</highlight></codeline>
+<codeline lineno="3"><highlight class="comment"><sp/>*<sp/>Licensed<sp/>to<sp/>the<sp/>Apache<sp/>Software<sp/>Foundation<sp/>(ASF)<sp/>under<sp/>one</highlight></codeline>
+<codeline lineno="4"><highlight class="comment"><sp/>*<sp/>or<sp/>more<sp/>contributor<sp/>license<sp/>agreements.<sp/><sp/>See<sp/>the<sp/>NOTICE<sp/>file</highlight></codeline>
+<codeline lineno="5"><highlight class="comment"><sp/>*<sp/>distributed<sp/>with<sp/>this<sp/>work<sp/>for<sp/>additional<sp/>information</highlight></codeline>
+<codeline lineno="6"><highlight class="comment"><sp/>*<sp/>regarding<sp/>copyright<sp/>ownership.<sp/><sp/>The<sp/>ASF<sp/>licenses<sp/>this<sp/>file</highlight></codeline>
+<codeline lineno="7"><highlight class="comment"><sp/>*<sp/>to<sp/>you<sp/>under<sp/>the<sp/>Apache<sp/>License,<sp/>Version<sp/>2.0<sp/>(the</highlight></codeline>
+<codeline lineno="8"><highlight class="comment"><sp/>*<sp/>&quot;License&quot;);<sp/>you<sp/>may<sp/>not<sp/>use<sp/>this<sp/>file<sp/>except<sp/>in<sp/>compliance</highlight></codeline>
+<codeline lineno="9"><highlight class="comment"><sp/>*<sp/>with<sp/>the<sp/>License.<sp/><sp/>You<sp/>may<sp/>obtain<sp/>a<sp/>copy<sp/>of<sp/>the<sp/>License<sp/>at</highlight></codeline>
+<codeline lineno="10"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="11"><highlight class="comment"><sp/>*<sp/><sp/><sp/>http://www.apache.org/licenses/LICENSE-2.0</highlight></codeline>
+<codeline lineno="12"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="13"><highlight class="comment"><sp/>*<sp/>Unless<sp/>required<sp/>by<sp/>applicable<sp/>law<sp/>or<sp/>agreed<sp/>to<sp/>in<sp/>writing,</highlight></codeline>
+<codeline lineno="14"><highlight class="comment"><sp/>*<sp/>software<sp/>distributed<sp/>under<sp/>the<sp/>License<sp/>is<sp/>distributed<sp/>on<sp/>an</highlight></codeline>
+<codeline lineno="15"><highlight class="comment"><sp/>*<sp/>&quot;AS<sp/>IS&quot;<sp/>BASIS,<sp/>WITHOUT<sp/>WARRANTIES<sp/>OR<sp/>CONDITIONS<sp/>OF<sp/>ANY</highlight></codeline>
+<codeline lineno="16"><highlight class="comment"><sp/>*<sp/>KIND,<sp/>either<sp/>express<sp/>or<sp/>implied.<sp/><sp/>See<sp/>the<sp/>License<sp/>for<sp/>the</highlight></codeline>
+<codeline lineno="17"><highlight class="comment"><sp/>*<sp/>specific<sp/>language<sp/>governing<sp/>permissions<sp/>and<sp/>limitations</highlight></codeline>
+<codeline lineno="18"><highlight class="comment"><sp/>*<sp/>under<sp/>the<sp/>License.</highlight></codeline>
+<codeline lineno="19"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="20"><highlight class="normal"></highlight></codeline>
+<codeline lineno="21"><highlight class="normal"></highlight><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="22"><highlight class="normal"></highlight></codeline>
+<codeline lineno="25"><highlight class="normal"></highlight></codeline>
+<codeline lineno="26"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;cstdint&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="27"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;memory&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="28"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;optional&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="29"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;string&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="30"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;string_view&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="31"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;vector&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="32"><highlight class="normal"></highlight></codeline>
+<codeline lineno="33"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="iceberg__export_8h" kindref="compound">iceberg/iceberg_export.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="34"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="result_8h" kindref="compound">iceberg/result.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="35"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="type__fwd_8h" kindref="compound">iceberg/type_fwd.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="36"><highlight class="normal"></highlight></codeline>
+<codeline lineno="37"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespaceiceberg" kindref="compound">iceberg</ref><sp/>{</highlight></codeline>
+<codeline lineno="38"><highlight class="normal"></highlight></codeline>
+<codeline lineno="40" refid="namespaceiceberg_1a36c3f79b6d1949f8c236ec91562bee4a" refkind="member"><highlight class="keyword">enum<sp/>class</highlight><highlight class="normal"><sp/><ref refid="namespaceiceberg_1a36c3f79b6d1949f8c236ec91562bee4a" kindref="member">TransactionKind</ref><sp/>:<sp/>uint8_t<sp/>{<sp/>kCreate,<sp/>kUpdate<sp/>};</highlight></codeline>
+<codeline lineno="41"><highlight class="normal"></highlight></codeline>
+<codeline lineno="43" refid="classiceberg_1_1Transaction" refkind="compound"><highlight class="keyword">class<sp/></highlight><highlight class="normal">ICEBERG_EXPORT<sp/><ref refid="classiceberg_1_1Transaction" kindref="compound">Transaction</ref><sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/>std::enable_shared_from_this&lt;Transaction&gt;<sp/>{</highlight></codeline>
+<codeline lineno="44"><highlight class="normal"><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="45"><highlight class="normal"><sp/><sp/><ref refid="classiceberg_1_1Transaction" kindref="compound">~Transaction</ref>();</highlight></codeline>
+<codeline lineno="46"><highlight class="normal"></highlight></codeline>
+<codeline lineno="48" refid="classiceberg_1_1Transaction_1a7050c81e44819f3ffa87d3ac530543bd" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/><ref refid="namespaceiceberg_1a9d5594e371beb516b0120e07e69d3af6" kindref="member">Result&lt;std::shared_ptr&lt;Transaction&gt;</ref>&gt;<sp/><ref refid="classiceberg_1_1Transaction_1a7050c81e44819f3ffa87d3ac530543bd" kindref="member">Make</ref>(std::shared_ptr&lt;Table&gt;<sp/>table,</highlight></codeline>
+<codeline lineno="49"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceiceberg_1a36c3f79b6d1949f8c236ec91562bee4a" kindref="member">TransactionKind</ref><sp/>kind);</highlight></codeline>
+<codeline lineno="50"><highlight class="normal"></highlight></codeline>
+<codeline lineno="52" refid="classiceberg_1_1Transaction_1aabbb6aa27a8426bd0c02da73000b858e" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/><ref refid="namespaceiceberg_1a9d5594e371beb516b0120e07e69d3af6" kindref="member">Result&lt;std::shared_ptr&lt;Transaction&gt;</ref>&gt;<sp/><ref refid="classiceberg_1_1Transaction_1aabbb6aa27a8426bd0c02da73000b858e" kindref="member">Make</ref>(</highlight></codeline>
+<codeline lineno="53"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>std::shared_ptr&lt;TransactionContext&gt;<sp/>ctx);</highlight></codeline>
+<codeline lineno="54"><highlight class="normal"></highlight></codeline>
+<codeline lineno="56" refid="classiceberg_1_1Transaction_1a7564979fbb0ecbaaf7d4795e10479b30" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::shared_ptr&lt;Table&gt;&amp;<sp/><ref refid="classiceberg_1_1Transaction_1a7564979fbb0ecbaaf7d4795e10479b30" kindref="member">table</ref>()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="57"><highlight class="normal"></highlight></codeline>
+<codeline lineno="59" refid="classiceberg_1_1Transaction_1a02f087a02ee87cade90d360f1c2acf88" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structiceberg_1_1TableMetadata" kindref="compound">TableMetadata</ref>*<sp/><ref refid="classiceberg_1_1Transaction_1a02f087a02ee87cade90d360f1c2acf88" kindref="member">base</ref>()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="60"><highlight class="normal"></highlight></codeline>
+<codeline lineno="62" refid="classiceberg_1_1Transaction_1a4b4d3f539895d4446c830f473e2d91ab" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structiceberg_1_1TableMetadata" kindref="compound">TableMetadata</ref>&amp;<sp/><ref refid="classiceberg_1_1Transaction_1a4b4d3f539895d4446c830f473e2d91ab" kindref="member">current</ref>()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="63"><highlight class="normal"></highlight></codeline>
+<codeline lineno="68" refid="classiceberg_1_1Transaction_1a8ac70a8aafc809c6fd4ac222ad552214" refkind="member"><highlight class="normal"><sp/><sp/>std::string<sp/><ref refid="classiceberg_1_1Transaction_1a8ac70a8aafc809c6fd4ac222ad552214" kindref="member">MetadataFileLocation</ref>(std::string_view<sp/>filename)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="69"><highlight class="normal"></highlight></codeline>
+<codeline lineno="75" refid="classiceberg_1_1Transaction_1a9ca9c53f2f44580f3dd5398dd9c8e1a5" refkind="member"><highlight class="normal"><sp/><sp/><ref refid="namespaceiceberg_1a9d5594e371beb516b0120e07e69d3af6" kindref="member">Result&lt;std::shared_ptr&lt;Table&gt;</ref>&gt;<sp/><ref refid="classiceberg_1_1Transaction_1a9ca9c53f2f44580f3dd5398dd9c8e1a5" kindref="member">Commit</ref>();</highlight></codeline>
+<codeline lineno="76"><highlight class="normal"></highlight></codeline>
+<codeline lineno="79" refid="classiceberg_1_1Transaction_1aa0a381cce739dbffa448bda11be9d472" refkind="member"><highlight class="normal"><sp/><sp/><ref refid="namespaceiceberg_1a9d5594e371beb516b0120e07e69d3af6" kindref="member">Result&lt;std::shared_ptr&lt;UpdatePartitionSpec&gt;</ref>&gt;<sp/><ref refid="classiceberg_1_1Transaction_1aa0a381cce739dbffa448bda11be9d472" kindref="member">NewUpdatePartitionSpec</ref>();</highlight></codeline>
+<codeline lineno="80"><highlight class="normal"></highlight></codeline>
+<codeline lineno="83" refid="classiceberg_1_1Transaction_1ad0a7901ee21eeb2556d7b8e97cc7e279" refkind="member"><highlight class="normal"><sp/><sp/><ref refid="namespaceiceberg_1a9d5594e371beb516b0120e07e69d3af6" kindref="member">Result&lt;std::shared_ptr&lt;UpdateProperties&gt;</ref>&gt;<sp/><ref refid="classiceberg_1_1Transaction_1ad0a7901ee21eeb2556d7b8e97cc7e279" kindref="member">NewUpdateProperties</ref>();</highlight></codeline>
+<codeline lineno="84"><highlight class="normal"></highlight></codeline>
+<codeline lineno="87" refid="classiceberg_1_1Transaction_1a241229c97cec17d89ca6334a33c026d8" refkind="member"><highlight class="normal"><sp/><sp/><ref refid="namespaceiceberg_1a9d5594e371beb516b0120e07e69d3af6" kindref="member">Result&lt;std::shared_ptr&lt;UpdateSortOrder&gt;</ref>&gt;<sp/><ref refid="classiceberg_1_1Transaction_1a241229c97cec17d89ca6334a33c026d8" kindref="member">NewUpdateSortOrder</ref>();</highlight></codeline>
+<codeline lineno="88"><highlight class="normal"></highlight></codeline>
+<codeline lineno="91" refid="classiceberg_1_1Transaction_1aad5fd7485f0e11f1047adc7416e9da4a" refkind="member"><highlight class="normal"><sp/><sp/><ref refid="namespaceiceberg_1a9d5594e371beb516b0120e07e69d3af6" kindref="member">Result&lt;std::shared_ptr&lt;UpdateSchema&gt;</ref>&gt;<sp/><ref refid="classiceberg_1_1Transaction_1aad5fd7485f0e11f1047adc7416e9da4a" kindref="member">NewUpdateSchema</ref>();</highlight></codeline>
+<codeline lineno="92"><highlight class="normal"></highlight></codeline>
+<codeline lineno="95" refid="classiceberg_1_1Transaction_1a8509403309950e992125d77ba714f92c" refkind="member"><highlight class="normal"><sp/><sp/><ref refid="namespaceiceberg_1a9d5594e371beb516b0120e07e69d3af6" kindref="member">Result&lt;std::shared_ptr&lt;ExpireSnapshots&gt;</ref>&gt;<sp/><ref refid="classiceberg_1_1Transaction_1a8509403309950e992125d77ba714f92c" kindref="member">NewExpireSnapshots</ref>();</highlight></codeline>
+<codeline lineno="96"><highlight class="normal"></highlight></codeline>
+<codeline lineno="99" refid="classiceberg_1_1Transaction_1aa3bf8231c40b912ac2337cfda69bc567" refkind="member"><highlight class="normal"><sp/><sp/><ref refid="namespaceiceberg_1a9d5594e371beb516b0120e07e69d3af6" kindref="member">Result&lt;std::shared_ptr&lt;UpdateStatistics&gt;</ref>&gt;<sp/><ref refid="classiceberg_1_1Transaction_1aa3bf8231c40b912ac2337cfda69bc567" kindref="member">NewUpdateStatistics</ref>();</highlight></codeline>
+<codeline lineno="100"><highlight class="normal"></highlight></codeline>
+<codeline lineno="103" refid="classiceberg_1_1Transaction_1a69bfd3e2afeb35bc3f60e4545bc01d87" refkind="member"><highlight class="normal"><sp/><sp/><ref refid="namespaceiceberg_1a9d5594e371beb516b0120e07e69d3af6" kindref="member">Result&lt;std::shared_ptr&lt;UpdatePartitionStatistics&gt;</ref>&gt;<sp/><ref refid="classiceberg_1_1Transaction_1a69bfd3e2afeb35bc3f60e4545bc01d87" kindref="member">NewUpdatePartitionStatistics</ref>();</highlight></codeline>
+<codeline lineno="104"><highlight class="normal"></highlight></codeline>
+<codeline lineno="107" refid="classiceberg_1_1Transaction_1a7ce15c77e26f8672f4bfe080ec04fec3" refkind="member"><highlight class="normal"><sp/><sp/><ref refid="namespaceiceberg_1a9d5594e371beb516b0120e07e69d3af6" kindref="member">Result&lt;std::shared_ptr&lt;UpdateLocation&gt;</ref>&gt;<sp/><ref refid="classiceberg_1_1Transaction_1a7ce15c77e26f8672f4bfe080ec04fec3" kindref="member">NewUpdateLocation</ref>();</highlight></codeline>
+<codeline lineno="108"><highlight class="normal"></highlight></codeline>
+<codeline lineno="110" refid="classiceberg_1_1Transaction_1a75b55e9339360f09a7d6fa65e6cda236" refkind="member"><highlight class="normal"><sp/><sp/><ref refid="namespaceiceberg_1a9d5594e371beb516b0120e07e69d3af6" kindref="member">Result&lt;std::shared_ptr&lt;FastAppend&gt;</ref>&gt;<sp/><ref refid="classiceberg_1_1Transaction_1a75b55e9339360f09a7d6fa65e6cda236" kindref="member">NewFastAppend</ref>();</highlight></codeline>
+<codeline lineno="111"><highlight class="normal"></highlight></codeline>
+<codeline lineno="113" refid="classiceberg_1_1Transaction_1ac7f982e4bcf060e6427fbc572b615933" refkind="member"><highlight class="normal"><sp/><sp/><ref refid="namespaceiceberg_1a9d5594e371beb516b0120e07e69d3af6" kindref="member">Result&lt;std::shared_ptr&lt;MergeAppend&gt;</ref>&gt;<sp/><ref refid="classiceberg_1_1Transaction_1ac7f982e4bcf060e6427fbc572b615933" kindref="member">NewMergeAppend</ref>();</highlight></codeline>
+<codeline lineno="114"><highlight class="normal"></highlight></codeline>
+<codeline lineno="116" refid="classiceberg_1_1Transaction_1a758efb031620b4bf81b9b2e5536acc2e" refkind="member"><highlight class="normal"><sp/><sp/><ref refid="namespaceiceberg_1a9d5594e371beb516b0120e07e69d3af6" kindref="member">Result&lt;std::shared_ptr&lt;DeleteFiles&gt;</ref>&gt;<sp/><ref refid="classiceberg_1_1Transaction_1a758efb031620b4bf81b9b2e5536acc2e" kindref="member">NewDeleteFiles</ref>();</highlight></codeline>
+<codeline lineno="117"><highlight class="normal"></highlight></codeline>
+<codeline lineno="119" refid="classiceberg_1_1Transaction_1aa2b1a60eb501f29d53d8ddb7d1bcd0ef" refkind="member"><highlight class="normal"><sp/><sp/><ref refid="namespaceiceberg_1a9d5594e371beb516b0120e07e69d3af6" kindref="member">Result&lt;std::shared_ptr&lt;RowDelta&gt;</ref>&gt;<sp/><ref refid="classiceberg_1_1Transaction_1aa2b1a60eb501f29d53d8ddb7d1bcd0ef" kindref="member">NewRowDelta</ref>();</highlight></codeline>
+<codeline lineno="120"><highlight class="normal"></highlight></codeline>
+<codeline lineno="122" refid="classiceberg_1_1Transaction_1ad98cab2758f3417c994bc62af4431e4c" refkind="member"><highlight class="normal"><sp/><sp/><ref refid="namespaceiceberg_1a9d5594e371beb516b0120e07e69d3af6" kindref="member">Result&lt;std::shared_ptr&lt;OverwriteFiles&gt;</ref>&gt;<sp/><ref refid="classiceberg_1_1Transaction_1ad98cab2758f3417c994bc62af4431e4c" kindref="member">NewOverwrite</ref>();</highlight></codeline>
+<codeline lineno="123"><highlight class="normal"></highlight></codeline>
+<codeline lineno="126" refid="classiceberg_1_1Transaction_1ad1ae2d92882565092349d0a88505a357" refkind="member"><highlight class="normal"><sp/><sp/><ref refid="namespaceiceberg_1a9d5594e371beb516b0120e07e69d3af6" kindref="member">Result&lt;std::shared_ptr&lt;RewriteFiles&gt;</ref>&gt;<sp/><ref refid="classiceberg_1_1Transaction_1ad1ae2d92882565092349d0a88505a357" kindref="member">NewRewriteFiles</ref>();</highlight></codeline>
+<codeline lineno="127"><highlight class="normal"></highlight></codeline>
+<codeline lineno="129" refid="classiceberg_1_1Transaction_1a826952b68eea36e8ad8395f127c3c34b" refkind="member"><highlight class="normal"><sp/><sp/><ref refid="namespaceiceberg_1a9d5594e371beb516b0120e07e69d3af6" kindref="member">Result&lt;std::shared_ptr&lt;SnapshotManager&gt;</ref>&gt;<sp/><ref refid="classiceberg_1_1Transaction_1a826952b68eea36e8ad8395f127c3c34b" kindref="member">NewSnapshotManager</ref>();</highlight></codeline>
+<codeline lineno="130"><highlight class="normal"></highlight></codeline>
+<codeline lineno="133" refid="classiceberg_1_1Transaction_1a76bc02e8cb9e5b08ab41b8463d744a45" refkind="member"><highlight class="normal"><sp/><sp/><ref refid="namespaceiceberg_1a9d5594e371beb516b0120e07e69d3af6" kindref="member">Result&lt;std::shared_ptr&lt;SetSnapshot&gt;</ref>&gt;<sp/><ref refid="classiceberg_1_1Transaction_1a76bc02e8cb9e5b08ab41b8463d744a45" kindref="member">NewSetSnapshot</ref>();</highlight></codeline>
+<codeline lineno="134"><highlight class="normal"></highlight></codeline>
+<codeline lineno="137" refid="classiceberg_1_1Transaction_1a02ec5bcd815d52692022ad0ee0f92fd3" refkind="member"><highlight class="normal"><sp/><sp/><ref refid="namespaceiceberg_1a9d5594e371beb516b0120e07e69d3af6" kindref="member">Result&lt;std::shared_ptr&lt;UpdateSnapshotReference&gt;</ref>&gt;<sp/><ref refid="classiceberg_1_1Transaction_1a02ec5bcd815d52692022ad0ee0f92fd3" kindref="member">NewUpdateSnapshotReference</ref>();</highlight></codeline>
+<codeline lineno="138"><highlight class="normal"></highlight></codeline>
+<codeline lineno="139"><highlight class="normal"><sp/></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="140"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">explicit</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1Transaction" kindref="compound">Transaction</ref>(std::shared_ptr&lt;TransactionContext&gt;<sp/>ctx);</highlight></codeline>
+<codeline lineno="141"><highlight class="normal"></highlight></codeline>
+<codeline lineno="142"><highlight class="normal"><sp/><sp/>Status<sp/>AddUpdate(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::shared_ptr&lt;PendingUpdate&gt;&amp;<sp/>update);</highlight></codeline>
+<codeline lineno="143"><highlight class="normal"></highlight></codeline>
+<codeline lineno="145"><highlight class="normal"><sp/><sp/>Status<sp/>Apply(<ref refid="classiceberg_1_1PendingUpdate" kindref="compound">PendingUpdate</ref>&amp;<sp/>updates);</highlight></codeline>
+<codeline lineno="146"><highlight class="normal"></highlight></codeline>
+<codeline lineno="147"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>Helper<sp/>methods<sp/>for<sp/>applying<sp/>different<sp/>types<sp/>of<sp/>updates</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="148"><highlight class="normal"><sp/><sp/>Status<sp/>ApplyExpireSnapshots(<ref refid="classiceberg_1_1ExpireSnapshots" kindref="compound">ExpireSnapshots</ref>&amp;<sp/>update);</highlight></codeline>
+<codeline lineno="149"><highlight class="normal"><sp/><sp/>Status<sp/>ApplySetSnapshot(<ref refid="classiceberg_1_1SetSnapshot" kindref="compound">SetSnapshot</ref>&amp;<sp/>update);</highlight></codeline>
+<codeline lineno="150"><highlight class="normal"><sp/><sp/>Status<sp/>ApplyUpdateLocation(<ref refid="classiceberg_1_1UpdateLocation" kindref="compound">UpdateLocation</ref>&amp;<sp/>update);</highlight></codeline>
+<codeline lineno="151"><highlight class="normal"><sp/><sp/>Status<sp/>ApplyUpdatePartitionSpec(<ref refid="classiceberg_1_1UpdatePartitionSpec" kindref="compound">UpdatePartitionSpec</ref>&amp;<sp/>update);</highlight></codeline>
+<codeline lineno="152"><highlight class="normal"><sp/><sp/>Status<sp/>ApplyUpdatePartitionStatistics(<ref refid="classiceberg_1_1UpdatePartitionStatistics" kindref="compound">UpdatePartitionStatistics</ref>&amp;<sp/>update);</highlight></codeline>
+<codeline lineno="153"><highlight class="normal"><sp/><sp/>Status<sp/>ApplyUpdateProperties(<ref refid="classiceberg_1_1UpdateProperties" kindref="compound">UpdateProperties</ref>&amp;<sp/>update);</highlight></codeline>
+<codeline lineno="154"><highlight class="normal"><sp/><sp/>Status<sp/>ApplyUpdateSchema(<ref refid="classiceberg_1_1UpdateSchema" kindref="compound">UpdateSchema</ref>&amp;<sp/>update);</highlight></codeline>
+<codeline lineno="155"><highlight class="normal"><sp/><sp/>Status<sp/>ApplyUpdateSnapshot(<ref refid="classiceberg_1_1SnapshotUpdate" kindref="compound">SnapshotUpdate</ref>&amp;<sp/>update);</highlight></codeline>
+<codeline lineno="156"><highlight class="normal"><sp/><sp/>Status<sp/>ApplyUpdateSnapshotReference(<ref refid="classiceberg_1_1UpdateSnapshotReference" kindref="compound">UpdateSnapshotReference</ref>&amp;<sp/>update);</highlight></codeline>
+<codeline lineno="157"><highlight class="normal"><sp/><sp/>Status<sp/>ApplyUpdateSortOrder(<ref refid="classiceberg_1_1UpdateSortOrder" kindref="compound">UpdateSortOrder</ref>&amp;<sp/>update);</highlight></codeline>
+<codeline lineno="158"><highlight class="normal"><sp/><sp/>Status<sp/>ApplyUpdateStatistics(<ref refid="classiceberg_1_1UpdateStatistics" kindref="compound">UpdateStatistics</ref>&amp;<sp/>update);</highlight></codeline>
+<codeline lineno="159"><highlight class="normal"></highlight></codeline>
+<codeline lineno="161"><highlight class="normal"><sp/><sp/><ref refid="namespaceiceberg_1a9d5594e371beb516b0120e07e69d3af6" kindref="member">Result&lt;std::shared_ptr&lt;Table&gt;</ref>&gt;<sp/>CommitOnce(</highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>is_first_attempt);</highlight></codeline>
+<codeline lineno="162"><highlight class="normal"></highlight></codeline>
+<codeline lineno="164"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>CanRetry()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="165"><highlight class="normal"></highlight></codeline>
+<codeline lineno="166"><highlight class="normal"><sp/></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="167"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">friend</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classiceberg_1_1PendingUpdate" kindref="compound">PendingUpdate</ref>;</highlight></codeline>
+<codeline lineno="168"><highlight class="normal"></highlight></codeline>
+<codeline lineno="169"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>Shared<sp/>context<sp/>owning<sp/>the<sp/>table,<sp/>metadata<sp/>builder,<sp/>and<sp/>kind.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="170"><highlight class="normal"><sp/><sp/>std::shared_ptr&lt;TransactionContext&gt;<sp/>ctx_;</highlight></codeline>
+<codeline lineno="171"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>Keep<sp/>track<sp/>of<sp/>all<sp/>created<sp/>pending<sp/>updates.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="172"><highlight class="normal"><sp/><sp/>std::vector&lt;std::shared_ptr&lt;PendingUpdate&gt;&gt;<sp/>pending_updates_;</highlight></codeline>
+<codeline lineno="173"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>To<sp/>make<sp/>the<sp/>state<sp/>simple,<sp/>we<sp/>require<sp/>updates<sp/>are<sp/>added<sp/>and<sp/>committed<sp/>in<sp/>order.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="174"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>last_update_committed_<sp/>=<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="175"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>Tracks<sp/>if<sp/>transaction<sp/>has<sp/>been<sp/>committed<sp/>to<sp/>prevent<sp/>double-commit</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="176"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>committed_<sp/>=<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="177"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="178"><highlight class="normal"></highlight></codeline>
+<codeline lineno="180" refid="classiceberg_1_1TransactionContext" refkind="compound"><highlight class="keyword">class<sp/></highlight><highlight class="normal">ICEBERG_EXPORT<sp/><ref refid="classiceberg_1_1TransactionContext" kindref="compound">TransactionContext</ref><sp/>{</highlight></codeline>
+<codeline lineno="181"><highlight class="normal"><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="182"><highlight class="normal"><sp/><sp/><ref refid="classiceberg_1_1TransactionContext" kindref="compound">TransactionContext</ref>();</highlight></codeline>
+<codeline lineno="183"><highlight class="normal"><sp/><sp/><ref refid="classiceberg_1_1TransactionContext" kindref="compound">~TransactionContext</ref>();</highlight></codeline>
+<codeline lineno="184"><highlight class="normal"></highlight></codeline>
+<codeline lineno="185"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/><ref refid="namespaceiceberg_1a9d5594e371beb516b0120e07e69d3af6" kindref="member">Result&lt;std::shared_ptr&lt;TransactionContext&gt;</ref>&gt;<sp/>Make(std::shared_ptr&lt;Table&gt;<sp/>table,</highlight></codeline>
+<codeline lineno="186"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="namespaceiceberg_1a36c3f79b6d1949f8c236ec91562bee4a" kindref="member">TransactionKind</ref><sp/>kind);</highlight></codeline>
+<codeline lineno="187"><highlight class="normal"></highlight></codeline>
+<codeline lineno="188"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structiceberg_1_1TableMetadata" kindref="compound">TableMetadata</ref>*<sp/>base()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="189"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structiceberg_1_1TableMetadata" kindref="compound">TableMetadata</ref>&amp;<sp/>current()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="190"><highlight class="normal"><sp/><sp/>std::string<sp/>MetadataFileLocation(std::string_view<sp/>filename)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="191"><highlight class="normal"><sp/><sp/><ref refid="namespaceiceberg_1a9d5594e371beb516b0120e07e69d3af6" kindref="member">Result&lt;std::unique_ptr&lt;LocationProvider&gt;</ref>&gt;<sp/>NewLocationProvider()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="192"><highlight class="normal"></highlight></codeline>
+<codeline lineno="193"><highlight class="normal"><sp/><sp/>std::shared_ptr&lt;Table&gt;<sp/>table;</highlight></codeline>
+<codeline lineno="194"><highlight class="normal"><sp/><sp/>std::unique_ptr&lt;TableMetadataBuilder&gt;<sp/>metadata_builder;</highlight></codeline>
+<codeline lineno="195"><highlight class="normal"><sp/><sp/><ref refid="namespaceiceberg_1a36c3f79b6d1949f8c236ec91562bee4a" kindref="member">TransactionKind</ref><sp/>kind;</highlight></codeline>
+<codeline lineno="196"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>If<sp/>PendingUpdate<sp/>is<sp/>created<sp/>directly<sp/>from<sp/>Table,<sp/>this<sp/>is<sp/>nullopt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="197"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>otherwise,<sp/>it<sp/>holds<sp/>a<sp/>weak<sp/>pointer<sp/>to<sp/>the<sp/>Transaction<sp/>that<sp/>created<sp/>it.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="198"><highlight class="normal"><sp/><sp/>std::optional&lt;std::weak_ptr&lt;Transaction&gt;&gt;<sp/>transaction;</highlight></codeline>
+<codeline lineno="199"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="200"><highlight class="normal"></highlight></codeline>
+<codeline lineno="201"><highlight class="normal">}<sp/><sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>iceberg</highlight><highlight class="normal"></highlight></codeline>
+    </programlisting>
+    <location file="iceberg/transaction.h"/>
+  </compounddef>
+</doxygen>

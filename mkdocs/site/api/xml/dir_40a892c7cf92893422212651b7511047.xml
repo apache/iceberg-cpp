@@ -1,0 +1,20 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="dir_40a892c7cf92893422212651b7511047" kind="dir">
+    <compoundname>iceberg/data</compoundname>
+    <innerfile refid="data__writer_8h">data_writer.h</innerfile>
+    <innerfile refid="delete__filter_8h">delete_filter.h</innerfile>
+    <innerfile refid="delete__loader_8h">delete_loader.h</innerfile>
+    <innerfile refid="deletion__vector__writer_8h">deletion_vector_writer.h</innerfile>
+    <innerfile refid="equality__delete__writer_8h">equality_delete_writer.h</innerfile>
+    <innerfile refid="file__scan__task__reader_8h">file_scan_task_reader.h</innerfile>
+    <innerfile refid="position__delete__writer_8h">position_delete_writer.h</innerfile>
+    <innerfile refid="puffin__dv__register_8h">puffin_dv_register.h</innerfile>
+    <innerfile refid="writer_8h">writer.h</innerfile>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/data/"/>
+  </compounddef>
+</doxygen>

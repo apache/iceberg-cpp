@@ -1,0 +1,80 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1InputFile" kind="class" language="C++" prot="public" abstract="yes">
+    <compoundname>iceberg::InputFile</compoundname>
+    <includes refid="file__io_8h" local="no">file_io.h</includes>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1InputFile_1ae45533be9b39a243101308c08e74d475" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type></type>
+        <definition>virtual iceberg::InputFile::~InputFile</definition>
+        <argsstring>()=default</argsstring>
+        <name>~InputFile</name>
+        <qualifiedname>iceberg::InputFile::~InputFile</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/file_io.h" line="94" column="11"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1InputFile_1a187e1519accc6da35fdafc779551c303" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
+        <type>std::string_view</type>
+        <definition>virtual std::string_view iceberg::InputFile::location</definition>
+        <argsstring>() const =0</argsstring>
+        <name>location</name>
+        <qualifiedname>iceberg::InputFile::location</qualifiedname>
+        <briefdescription>
+<para>File location represented by this handle. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/file_io.h" line="97" column="28"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1InputFile_1a8c4986b0d2b414dc2791cb528f035837" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
+        <type><ref refid="namespaceiceberg_1a9d5594e371beb516b0120e07e69d3af6" kindref="member">Result</ref>&lt; int64_t &gt;</type>
+        <definition>virtual Result&lt; int64_t &gt; iceberg::InputFile::Size</definition>
+        <argsstring>() const =0</argsstring>
+        <name>Size</name>
+        <qualifiedname>iceberg::InputFile::Size</qualifiedname>
+        <briefdescription>
+<para>Return the total file size in bytes. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/file_io.h" line="100" column="18"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1InputFile_1a6fe70deb243671584f2b02ab473c74f9" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type><ref refid="namespaceiceberg_1a9d5594e371beb516b0120e07e69d3af6" kindref="member">Result</ref>&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1SeekableInputStream" kindref="compound">SeekableInputStream</ref> &gt; &gt;</type>
+        <definition>virtual Result&lt; std::unique_ptr&lt; SeekableInputStream &gt; &gt; iceberg::InputFile::Open</definition>
+        <argsstring>()=0</argsstring>
+        <name>Open</name>
+        <qualifiedname>iceberg::InputFile::Open</qualifiedname>
+        <briefdescription>
+<para>Open a new independent input stream. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/file_io.h" line="103" column="18"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Handle for opening a readable file. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/file_io.h" line="92" column="1" bodyfile="iceberg/file_io.h" bodystart="92" bodyend="104"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1InputFile_1a187e1519accc6da35fdafc779551c303" prot="public" virt="pure-virtual"><scope>iceberg::InputFile</scope><name>location</name></member>
+      <member refid="classiceberg_1_1InputFile_1a6fe70deb243671584f2b02ab473c74f9" prot="public" virt="pure-virtual"><scope>iceberg::InputFile</scope><name>Open</name></member>
+      <member refid="classiceberg_1_1InputFile_1a8c4986b0d2b414dc2791cb528f035837" prot="public" virt="pure-virtual"><scope>iceberg::InputFile</scope><name>Size</name></member>
+      <member refid="classiceberg_1_1InputFile_1ae45533be9b39a243101308c08e74d475" prot="public" virt="virtual"><scope>iceberg::InputFile</scope><name>~InputFile</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,151 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1CommitReport" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::CommitReport</compoundname>
+    <includes refid="commit__report_8h" local="no">commit_report.h</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1CommitReport_1ac144b12706ab05c5a88868bed4222a87" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::CommitReport::table_name</definition>
+        <argsstring></argsstring>
+        <name>table_name</name>
+        <qualifiedname>iceberg::CommitReport::table_name</qualifiedname>
+        <briefdescription>
+<para>The fully qualified name of the table that was modified. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/commit_report.h" line="149" column="15" bodyfile="iceberg/metrics/commit_report.h" bodystart="149" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1CommitReport_1a708037e5a34032c4d912d24103787f0b" prot="public" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t iceberg::CommitReport::snapshot_id</definition>
+        <argsstring></argsstring>
+        <name>snapshot_id</name>
+        <qualifiedname>iceberg::CommitReport::snapshot_id</qualifiedname>
+        <initializer>= kInvalidSnapshotId</initializer>
+        <briefdescription>
+<para>The snapshot ID created by this commit. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/commit_report.h" line="151" column="11" bodyfile="iceberg/metrics/commit_report.h" bodystart="151" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1CommitReport_1ac64191f1882d2462bba5af898c2c6095" prot="public" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t iceberg::CommitReport::sequence_number</definition>
+        <argsstring></argsstring>
+        <name>sequence_number</name>
+        <qualifiedname>iceberg::CommitReport::sequence_number</qualifiedname>
+        <initializer>= kInvalidSequenceNumber</initializer>
+        <briefdescription>
+<para>The sequence number assigned to this commit. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/commit_report.h" line="153" column="11" bodyfile="iceberg/metrics/commit_report.h" bodystart="153" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1CommitReport_1a09ccc3b5b604f51850c64127321a44a5" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::CommitReport::operation</definition>
+        <argsstring></argsstring>
+        <name>operation</name>
+        <qualifiedname>iceberg::CommitReport::operation</qualifiedname>
+        <briefdescription>
+<para>The operation that was performed (write, delete, etc.). </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/commit_report.h" line="155" column="15" bodyfile="iceberg/metrics/commit_report.h" bodystart="155" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1CommitReport_1a98cc0610d4e9f0bd21efe034c26c09b4" prot="public" static="no" mutable="no">
+        <type><ref refid="structiceberg_1_1CommitMetricsResult" kindref="compound">CommitMetricsResult</ref></type>
+        <definition>CommitMetricsResult iceberg::CommitReport::commit_metrics</definition>
+        <argsstring></argsstring>
+        <name>commit_metrics</name>
+        <qualifiedname>iceberg::CommitReport::commit_metrics</qualifiedname>
+        <briefdescription>
+<para><ref refid="structiceberg_1_1Metrics" kindref="compound">Metrics</ref> collected during the commit operation. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/commit_report.h" line="157" column="23" bodyfile="iceberg/metrics/commit_report.h" bodystart="157" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1CommitReport_1afed4601419bcb93a6bddb8dee23930d9" prot="public" static="no" mutable="no">
+        <type>std::unordered_map&lt; std::string, std::string &gt;</type>
+        <definition>std::unordered_map&lt;std::string, std::string&gt; iceberg::CommitReport::metadata</definition>
+        <argsstring></argsstring>
+        <name>metadata</name>
+        <qualifiedname>iceberg::CommitReport::metadata</qualifiedname>
+        <briefdescription>
+<para>Additional key-value metadata. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/commit_report.h" line="159" column="22" bodyfile="iceberg/metrics/commit_report.h" bodystart="159" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Report generated after a commit operation. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>Contains metrics about the changes made in a commit. </para>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="4">
+        <label>iceberg::CommitMetricsResult</label>
+        <link refid="structiceberg_1_1CommitMetricsResult"/>
+      </node>
+      <node id="1">
+        <label>iceberg::CommitReport</label>
+        <link refid="structiceberg_1_1CommitReport"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>operation</edgelabel>
+          <edgelabel>table_name</edgelabel>
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>commit_metrics</edgelabel>
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>metadata</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="2">
+        <label>std::string</label>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>std::unordered_map&lt; std::string, std::string &gt;</label>
+        <childnode refid="2" relation="usage">
+          <edgelabel>elements</edgelabel>
+          <edgelabel>keys</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/metrics/commit_report.h" line="147" column="1" bodyfile="iceberg/metrics/commit_report.h" bodystart="147" bodyend="160"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1CommitReport_1a98cc0610d4e9f0bd21efe034c26c09b4" prot="public" virt="non-virtual"><scope>iceberg::CommitReport</scope><name>commit_metrics</name></member>
+      <member refid="structiceberg_1_1CommitReport_1afed4601419bcb93a6bddb8dee23930d9" prot="public" virt="non-virtual"><scope>iceberg::CommitReport</scope><name>metadata</name></member>
+      <member refid="structiceberg_1_1CommitReport_1a09ccc3b5b604f51850c64127321a44a5" prot="public" virt="non-virtual"><scope>iceberg::CommitReport</scope><name>operation</name></member>
+      <member refid="structiceberg_1_1CommitReport_1ac64191f1882d2462bba5af898c2c6095" prot="public" virt="non-virtual"><scope>iceberg::CommitReport</scope><name>sequence_number</name></member>
+      <member refid="structiceberg_1_1CommitReport_1a708037e5a34032c4d912d24103787f0b" prot="public" virt="non-virtual"><scope>iceberg::CommitReport</scope><name>snapshot_id</name></member>
+      <member refid="structiceberg_1_1CommitReport_1ac144b12706ab05c5a88868bed4222a87" prot="public" virt="non-virtual"><scope>iceberg::CommitReport</scope><name>table_name</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>
