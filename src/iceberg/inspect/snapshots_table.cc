@@ -19,15 +19,18 @@
 
 #include "iceberg/inspect/snapshots_table.h"
 
+#include <chrono>
 #include <memory>
 #include <utility>
 #include <vector>
 
+#include "iceberg/arrow_row_builder_internal.h"
 #include "iceberg/schema.h"
 #include "iceberg/schema_field.h"
 #include "iceberg/table.h"
 #include "iceberg/table_identifier.h"
 #include "iceberg/type.h"
+#include "iceberg/util/macros.h"
 
 namespace iceberg {
 namespace {
@@ -63,6 +66,48 @@ Result<std::unique_ptr<SnapshotsTable>> SnapshotsTable::Make(
     return InvalidArgument("Table cannot be null");
   }
   return std::unique_ptr<SnapshotsTable>(new SnapshotsTable(std::move(table)));
+}
+
+Result<ArrowArray> SnapshotsTable::Scan(
+    const std::optional<SnapshotSelection>& /*snapshot_selection*/) {
+  ICEBERG_ASSIGN_OR_RAISE(auto builder, ArrowRowBuilder::Make(*schema()));
+
+  for (const auto& snapshot : source_table()->snapshots()) {
+    // column 0: committed_at (timestamptz -> int64 micros)
+    ICEBERG_RETURN_UNEXPECTED(AppendInt(
+        builder.column(0), std::chrono::duration_cast<std::chrono::microseconds>(
+                               snapshot->timestamp_ms.time_since_epoch())
+                               .count()));
+
+    // column 1: snapshot_id (long)
+    ICEBERG_RETURN_UNEXPECTED(AppendInt(builder.column(1), snapshot->snapshot_id));
+
+    // column 2: parent_id (long, optional)
+    if (snapshot->parent_snapshot_id.has_value()) {
+      ICEBERG_RETURN_UNEXPECTED(
+          AppendInt(builder.column(2), *snapshot->parent_snapshot_id));
+    } else {
+      ICEBERG_RETURN_UNEXPECTED(AppendNull(builder.column(2)));
+    }
+
+    // column 3: operation (string, optional)
+    auto op = snapshot->Operation();
+    if (op.has_value()) {
+      ICEBERG_RETURN_UNEXPECTED(AppendString(builder.column(3), *op));
+    } else {
+      ICEBERG_RETURN_UNEXPECTED(AppendNull(builder.column(3)));
+    }
+
+    // column 4: manifest_list (string, optional)
+    ICEBERG_RETURN_UNEXPECTED(AppendString(builder.column(4), snapshot->manifest_list));
+
+    // column 5: summary (map<string,string>)
+    ICEBERG_RETURN_UNEXPECTED(AppendStringMap(builder.column(5), snapshot->summary));
+
+    ICEBERG_RETURN_UNEXPECTED(builder.FinishRow());
+  }
+
+  return std::move(builder).Finish();
 }
 
 }  // namespace iceberg

@@ -35,6 +35,13 @@ MetadataTable::MetadataTable(std::shared_ptr<Table> source_table,
 
 MetadataTable::~MetadataTable() = default;
 
+bool MetadataTable::supports_time_travel() const noexcept { return false; }
+
+Result<ArrowArray> MetadataTable::Scan(
+    const std::optional<SnapshotSelection>& /*snapshot_selection*/) {
+  return NotSupported("Scan is not supported for this metadata table type");
+}
+
 Result<std::unique_ptr<MetadataTable>> MetadataTable::Make(std::shared_ptr<Table> table,
                                                            Kind kind) {
   if (table == nullptr) [[unlikely]] {
