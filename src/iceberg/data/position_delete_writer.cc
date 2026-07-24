@@ -62,10 +62,40 @@ class PositionDeleteWriter::Impl {
   }
 
   Status Write(ArrowArray* data) {
+    ICEBERG_PRECHECK(data != nullptr, "Position delete data must not be null");
     ICEBERG_PRECHECK(buffered_paths_.empty(),
                      "Cannot write batch data when there are buffered deletes.");
-    // TODO(anyone): Extract file paths from ArrowArray to update referenced_paths_.
-    return writer_->Write(data);
+
+    ArrowSchema arrow_schema;
+    ICEBERG_RETURN_UNEXPECTED(ToArrowSchema(*delete_schema_, &arrow_schema));
+    internal::ArrowSchemaGuard schema_guard(&arrow_schema);
+
+    ArrowArrayView array_view;
+    internal::ArrowArrayViewGuard view_guard(&array_view);
+    ArrowError error;
+    ICEBERG_NANOARROW_RETURN_UNEXPECTED_WITH_ERROR(
+        ArrowArrayViewInitFromSchema(&array_view, &arrow_schema, &error), error);
+    ICEBERG_NANOARROW_RETURN_UNEXPECTED_WITH_ERROR(
+        ArrowArrayViewSetArray(&array_view, data, &error), error);
+
+    const auto* path_view = array_view.children[0];
+    if (ArrowArrayViewComputeNullCount(path_view) != 0) {
+      return InvalidArrowData("Position delete file paths must not contain null values");
+    }
+
+    std::set<std::string> pending_paths;
+    for (int64_t i = 0; i < data->length; ++i) {
+      auto path = ArrowArrayViewGetStringUnsafe(path_view, i);
+      if (path.size_bytes == 0) {
+        pending_paths.emplace();
+      } else {
+        pending_paths.emplace(path.data, static_cast<size_t>(path.size_bytes));
+      }
+    }
+
+    ICEBERG_RETURN_UNEXPECTED(writer_->Write(data));
+    referenced_paths_.merge(pending_paths);
+    return {};
   }
 
   Status WriteDelete(std::string_view file_path, int64_t pos) {
