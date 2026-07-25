@@ -30,14 +30,17 @@ Status PropertyUtil::ValidateCommitProperties(
   for (const auto& property : TableProperties::commit_properties()) {
     if (auto it = properties.find(property); it != properties.end()) {
       int32_t parsed;
-      auto [ptr, ec] = std::from_chars(it->second.data(),
-                                       it->second.data() + it->second.size(), parsed);
+      const auto* end = it->second.data() + it->second.size();
+      auto [ptr, ec] = std::from_chars(it->second.data(), end, parsed);
       if (ec == std::errc::invalid_argument) {
         return ValidationFailed("Table property {} must have integer value, but got {}",
                                 property, it->second);
       } else if (ec == std::errc::result_out_of_range) {
         return ValidationFailed("Table property {} value out of range {}", property,
                                 it->second);
+      } else if (ptr != end) {
+        return ValidationFailed("Table property {} must have integer value, but got {}",
+                                property, it->second);
       }
       if (parsed < 0) {
         return ValidationFailed(

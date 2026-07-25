@@ -200,6 +200,22 @@ TEST(TableMetadataTest, InvalidProperties) {
                     "Table property {} must have non negative integer value, but got {}",
                     TableProperties::kCommitNumRetries.key(), -1)));
   }
+
+  {
+    // Commit properties must contain only an integer, not a valid integer prefix.
+    ICEBERG_UNWRAP_OR_FAIL(auto schema, CreateDisorderedSchema());
+    for (const auto& value : {"4x", "1.5"}) {
+      std::unordered_map<std::string, std::string> invalid_commit_properties = {
+          {TableProperties::kCommitNumRetries.key(), value}};
+
+      auto res = TableMetadata::Make(*schema, *spec, *order, "s3://bucket/test",
+                                     invalid_commit_properties);
+      EXPECT_THAT(res, IsError(ErrorKind::kValidationFailed));
+      EXPECT_THAT(res, HasErrorMessage(std::format(
+                           "Table property {} must have integer value, but got {}",
+                           TableProperties::kCommitNumRetries.key(), value)));
+    }
+  }
 }
 
 // test construction of TableMetadataBuilder
