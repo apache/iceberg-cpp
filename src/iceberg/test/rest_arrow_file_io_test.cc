@@ -18,12 +18,14 @@
  */
 
 /// \file
-/// \brief Covers REST -> ResolvingFileIO -> FileIORegistry -> ArrowS3FileIO with
-/// the real registered Arrow FileIO, which a mock delegate cannot exercise.
+/// \brief Covers REST -> ResolvingFileIO -> registry -> Arrow FileIO against the
+/// real registered implementations, which mock delegates cannot exercise.
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <string>
+#include <string_view>
 #include <tuple>
 #include <vector>
 
@@ -37,6 +39,7 @@
 #include "iceberg/storage_credential.h"
 #include "iceberg/test/logging_test_helpers.h"
 #include "iceberg/test/matchers.h"
+#include "iceberg/test/temp_file_test_base.h"
 
 namespace iceberg::rest {
 
@@ -48,11 +51,25 @@ bool HasWarning(const CapturingLogger& logger) {
       records, [](const LogMessage& record) { return record.level == LogLevel::kWarn; });
 }
 
-class RestArrowFileIOTest : public ::testing::Test {
+class RestArrowFileIOTest : public TempFileTestBase {
  protected:
   static void SetUpTestSuite() { iceberg::arrow::RegisterAll(); }
   static void TearDownTestSuite() { std::ignore = iceberg::arrow::FinalizeS3(); }
 };
+
+TEST_F(RestArrowFileIOTest, ReadsBackWhatItWroteThroughRealLocalFileIO) {
+  auto io = MakeTableFileIO({{"warehouse", "logical_warehouse_name"}},
+                            /*table_config=*/{}, /*storage_credentials=*/{});
+  ASSERT_THAT(io, IsOk());
+
+  const auto path = CreateNewTempFilePathWithSuffix(".txt");
+  constexpr std::string_view kContent = "resolved through the real local FileIO";
+
+  ASSERT_THAT(io.value()->WriteFile(path, kContent), IsOk());
+  EXPECT_THAT(io.value()->ReadFile(path, std::nullopt),
+              HasValue(::testing::Eq(std::string(kContent))));
+  EXPECT_THAT(io.value()->DeleteFile(path), IsOk());
+}
 
 // A break anywhere in the chain (scheme routing, credential forwarding, or the
 // S3 delegate dropping the `oss://` prefix) shows up as the warning.
