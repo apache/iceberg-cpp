@@ -172,6 +172,7 @@ bool Snapshot::Equals(const Snapshot& other) const {
   return snapshot_id == other.snapshot_id &&
          parent_snapshot_id == other.parent_snapshot_id &&
          sequence_number == other.sequence_number && timestamp_ms == other.timestamp_ms &&
+         manifest_list == other.manifest_list && summary == other.summary &&
          schema_id == other.schema_id && first_row_id == other.first_row_id &&
          added_rows == other.added_rows;
 }
