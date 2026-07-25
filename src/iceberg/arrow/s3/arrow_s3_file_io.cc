@@ -35,7 +35,7 @@
 #include "iceberg/arrow/arrow_io_util.h"
 #include "iceberg/arrow/arrow_status_internal.h"
 #include "iceberg/arrow/s3/s3_properties.h"
-#include "iceberg/logging/logger.h"
+#include "iceberg/logging/log_macros.h"
 #include "iceberg/util/macros.h"
 #include "iceberg/util/string_util.h"
 
@@ -257,7 +257,7 @@ Status ArrowS3FileIO::SetStorageCredentials(
   if (file_io_by_prefix.empty() && !storage_credentials.empty()) {
     // Silent skipping of every vended credential is hard to diagnose: S3 access
     // would proceed with the default credentials and fail only at IO time.
-    Log(LogLevel::kWarn,
+    ICEBERG_LOG_WARN(
         "None of the {} vended storage credential(s) has an S3-compatible prefix; "
         "S3 access will use the default credentials",
         storage_credentials.size());
