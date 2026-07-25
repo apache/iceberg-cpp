@@ -22,6 +22,7 @@
 #include <utility>
 
 #include "iceberg/file_io_registry.h"
+#include "iceberg/resolving_file_io_internal.h"
 #include "iceberg/util/macros.h"
 
 namespace iceberg {
@@ -31,7 +32,7 @@ ResolvingFileIO::ResolvingFileIO(std::unordered_map<std::string, std::string> pr
 
 ResolvingFileIO::~ResolvingFileIO() = default;
 
-Result<std::string_view> ResolvingFileIO::ResolveFileIOName(std::string_view location) {
+Result<std::string_view> ResolveFileIOName(std::string_view location) {
   const auto pos = location.find("://");
   if (pos == std::string_view::npos) {
     return FileIORegistry::kArrowLocalFileIO;
@@ -108,14 +109,11 @@ Status ResolvingFileIO::DeleteFiles(const std::vector<std::string>& file_locatio
 
 Status ResolvingFileIO::SetStorageCredentials(
     const std::vector<StorageCredential>& storage_credentials) {
+  // Rebuild delegates lazily with the new credentials. Updating live delegates
+  // instead would leave the resolver inconsistent if one of them rejected them.
   std::lock_guard lock(mutex_);
   storage_credentials_ = storage_credentials;
-  for (auto& [name, io] : io_by_name_) {
-    if (auto* credentialed = io->AsSupportsStorageCredentials()) {
-      ICEBERG_RETURN_UNEXPECTED(
-          credentialed->SetStorageCredentials(storage_credentials_));
-    }
-  }
+  io_by_name_.clear();
   return {};
 }
 

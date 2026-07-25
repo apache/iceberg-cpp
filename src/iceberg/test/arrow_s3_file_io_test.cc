@@ -17,8 +17,10 @@
  * under the License.
  */
 
+#include <algorithm>
 #include <cstdlib>
 #include <iostream>
+#include <memory>
 #include <optional>
 #include <string>
 #include <string_view>
@@ -36,8 +38,10 @@
 #include "iceberg/arrow/arrow_io_util.h"
 #include "iceberg/arrow/s3/s3_properties.h"
 #include "iceberg/file_io.h"
+#include "iceberg/logging/logger.h"
 #include "iceberg/result.h"
 #include "iceberg/storage_credential.h"
+#include "iceberg/test/logging_test_helpers.h"
 #include "iceberg/test/matchers.h"
 #include "iceberg/util/macros.h"
 
@@ -162,12 +166,9 @@ TEST_F(ArrowS3FileIOTest, SkipsNonS3CredentialPrefix) {
   auto* credentialed = result.value()->AsSupportsStorageCredentials();
   ASSERT_NE(credentialed, nullptr);
 
-  // A server may vend credentials for several storage systems at once;
-  // non-S3 prefixes (here `oss`) are skipped rather than rejected.
+  // A server may vend credentials for several storage systems at once.
   std::vector<StorageCredential> credentials = {
-      {.prefix = "oss://bucket/table",
-       .config = {{std::string(S3Properties::kAccessKeyId), "oss-access-key"},
-                  {std::string(S3Properties::kSecretAccessKey), "oss-secret"}}},
+      {.prefix = "gs://bucket/table", .config = {{"k", "v"}}},
       {.prefix = "s3://bucket/table",
        .config = {{std::string(S3Properties::kAccessKeyId), "access-key"},
                   {std::string(S3Properties::kSecretAccessKey), "secret"}}}};
@@ -175,18 +176,42 @@ TEST_F(ArrowS3FileIOTest, SkipsNonS3CredentialPrefix) {
   EXPECT_EQ(credentialed->credentials(), credentials);
 }
 
-TEST_F(ArrowS3FileIOTest, AcceptsCredentialsWithoutS3Prefix) {
+bool HasWarning(const CapturingLogger& logger) {
+  const auto records = logger.records();
+  return std::ranges::any_of(
+      records, [](const LogMessage& record) { return record.level == LogLevel::kWarn; });
+}
+
+TEST_F(ArrowS3FileIOTest, AppliesOssCredentialWithoutWarning) {
   auto result = MakeS3FileIO({});
   ASSERT_THAT(result, IsOk());
   auto* credentialed = result.value()->AsSupportsStorageCredentials();
   ASSERT_NE(credentialed, nullptr);
 
-  // Even when no vended credential is S3-family, setting them succeeds (a
-  // warning is logged) and S3 access falls back to the default credentials.
+  auto logger = std::make_shared<CapturingLogger>();
+  ScopedDefaultLogger scoped(logger);
+  std::vector<StorageCredential> credentials = {
+      {.prefix = "oss://bucket/table",
+       .config = {{std::string(S3Properties::kAccessKeyId), "access-key"},
+                  {std::string(S3Properties::kSecretAccessKey), "secret"}}}};
+  EXPECT_THAT(credentialed->SetStorageCredentials(credentials), IsOk());
+  EXPECT_FALSE(HasWarning(*logger));
+}
+
+TEST_F(ArrowS3FileIOTest, WarnsWhenNoCredentialApplies) {
+  auto result = MakeS3FileIO({});
+  ASSERT_THAT(result, IsOk());
+  auto* credentialed = result.value()->AsSupportsStorageCredentials();
+  ASSERT_NE(credentialed, nullptr);
+
+  // Succeeds (S3 falls back to the default credentials) but must not be silent.
+  auto logger = std::make_shared<CapturingLogger>();
+  ScopedDefaultLogger scoped(logger);
   std::vector<StorageCredential> credentials = {
       {.prefix = "gs://bucket/table", .config = {{"k", "v"}}}};
   EXPECT_THAT(credentialed->SetStorageCredentials(credentials), IsOk());
   EXPECT_EQ(credentialed->credentials(), credentials);
+  EXPECT_TRUE(HasWarning(*logger));
 }
 
 TEST_F(ArrowS3FileIOTest, RejectsIncompleteStaticCredentials) {

@@ -91,12 +91,11 @@ std::string SplitEndpointScheme(std::string_view endpoint,
   return std::string(endpoint);
 }
 
-// Deliberately narrower than the schemes this FileIO serves: `oss`-prefixed
-// credentials target native OSS connectors, while S3-compatible access is
-// vended under an `s3` prefix (servers vend both side by side).
+// Location prefixes this FileIO can serve: must cover every scheme
+// ResolveFileIOName routes here, or such a credential would be dropped.
 bool IsS3FileIOCredentialPrefix(std::string_view prefix) {
   return prefix == "s3" || prefix.starts_with("s3://") || prefix.starts_with("s3a://") ||
-         prefix.starts_with("s3n://");
+         prefix.starts_with("s3n://") || prefix.starts_with("oss://");
 }
 
 }  // namespace
@@ -185,7 +184,7 @@ Result<std::shared_ptr<::arrow::fs::FileSystem>> BuildArrowS3FileSystem(
   return std::shared_ptr<::arrow::fs::FileSystem>(std::move(fs));
 }
 
-// Keep in sync with ResolvingFileIO::ResolveFileIOName's S3-compatible schemes.
+// Keep in sync with ResolveFileIOName (resolving_file_io.cc).
 std::string CanonicalizeS3Scheme(std::string_view location) {
   for (std::string_view scheme : {"s3a://", "s3n://", "oss://"}) {
     if (location.starts_with(scheme)) {

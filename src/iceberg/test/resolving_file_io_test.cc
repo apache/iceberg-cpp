@@ -28,6 +28,7 @@
 #include <gtest/gtest.h>
 
 #include "iceberg/file_io_registry.h"
+#include "iceberg/resolving_file_io_internal.h"
 #include "iceberg/test/matchers.h"
 
 namespace iceberg {
@@ -104,20 +105,20 @@ void RegisterRecordingFileIOs() {
 }  // namespace
 
 TEST(ResolvingFileIOTest, ResolvesImplementationNameFromScheme) {
-  EXPECT_THAT(ResolvingFileIO::ResolveFileIOName("s3://bucket/path"),
+  EXPECT_THAT(ResolveFileIOName("s3://bucket/path"),
               HasValue(::testing::Eq(FileIORegistry::kArrowS3FileIO)));
-  EXPECT_THAT(ResolvingFileIO::ResolveFileIOName("s3a://bucket/path"),
+  EXPECT_THAT(ResolveFileIOName("s3a://bucket/path"),
               HasValue(::testing::Eq(FileIORegistry::kArrowS3FileIO)));
-  EXPECT_THAT(ResolvingFileIO::ResolveFileIOName("s3n://bucket/path"),
+  EXPECT_THAT(ResolveFileIOName("s3n://bucket/path"),
               HasValue(::testing::Eq(FileIORegistry::kArrowS3FileIO)));
-  EXPECT_THAT(ResolvingFileIO::ResolveFileIOName("oss://bucket/path"),
+  EXPECT_THAT(ResolveFileIOName("oss://bucket/path"),
               HasValue(::testing::Eq(FileIORegistry::kArrowS3FileIO)));
-  EXPECT_THAT(ResolvingFileIO::ResolveFileIOName("file:///tmp/path"),
+  EXPECT_THAT(ResolveFileIOName("file:///tmp/path"),
               HasValue(::testing::Eq(FileIORegistry::kArrowLocalFileIO)));
-  EXPECT_THAT(ResolvingFileIO::ResolveFileIOName("/tmp/path"),
+  EXPECT_THAT(ResolveFileIOName("/tmp/path"),
               HasValue(::testing::Eq(FileIORegistry::kArrowLocalFileIO)));
 
-  auto result = ResolvingFileIO::ResolveFileIOName("gs://bucket/path");
+  auto result = ResolveFileIOName("gs://bucket/path");
   EXPECT_THAT(result, IsError(ErrorKind::kNotSupported));
   EXPECT_THAT(result, HasErrorMessage("not supported for FileIO resolution"));
 }
@@ -164,11 +165,15 @@ TEST(ResolvingFileIOTest, ForwardsAllCredentialsToResolvedImplementations) {
   (void)io.NewInputFile("s3://bucket/db/table/data/file.parquet");
   ASSERT_NE(last_s3_io, nullptr);
   EXPECT_EQ(last_s3_io->credentials(), credentials);
+  EXPECT_EQ(s3_factory_calls, 1);
 
-  // Credentials set after an implementation was resolved reach it as well.
+  // Delegates are rebuilt with the new credentials, not mutated in place.
   std::vector<StorageCredential> refreshed = {{.prefix = "s3", .config = {{"k3", "v3"}}}};
   EXPECT_THAT(io.SetStorageCredentials(refreshed), IsOk());
+  (void)io.NewInputFile("s3://bucket/db/table/data/other.parquet");
+  ASSERT_NE(last_s3_io, nullptr);
   EXPECT_EQ(last_s3_io->credentials(), refreshed);
+  EXPECT_EQ(s3_factory_calls, 2);
 
   // The local FileIO does not support credentials; resolving it still works.
   (void)io.NewInputFile("/tmp/local/file.parquet");

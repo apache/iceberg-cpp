@@ -51,9 +51,6 @@ class ICEBERG_EXPORT ResolvingFileIO final : public FileIO,
   explicit ResolvingFileIO(std::unordered_map<std::string, std::string> properties);
   ~ResolvingFileIO() override;
 
-  /// \brief The FileIORegistry name of the implementation serving `location`.
-  static Result<std::string_view> ResolveFileIOName(std::string_view location);
-
   Result<std::unique_ptr<InputFile>> NewInputFile(std::string file_location) override;
 
   Result<std::unique_ptr<InputFile>> NewInputFile(std::string file_location,
