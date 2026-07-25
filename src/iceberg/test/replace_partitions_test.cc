@@ -180,9 +180,9 @@ class ReplacePartitionsTest : public UpdateTestBase {
     return paths;
   }
 
-  // Number of live delete files (position/equality/DV) in the current snapshot.
-  Result<int> LiveDeleteFileCount() {
-    int count = 0;
+  // Live (non-deleted) delete-file paths in the current snapshot's manifests.
+  Result<std::vector<std::string>> LiveDeleteFilePaths() {
+    std::vector<std::string> paths;
     ICEBERG_ASSIGN_OR_RAISE(auto snapshot, table_->current_snapshot());
     SnapshotCache cache(snapshot.get());
     ICEBERG_ASSIGN_OR_RAISE(auto manifests, cache.DeleteManifests(file_io_));
@@ -192,9 +192,13 @@ class ReplacePartitionsTest : public UpdateTestBase {
       ICEBERG_ASSIGN_OR_RAISE(auto reader,
                               ManifestReader::Make(manifest, file_io_, schema_, spec));
       ICEBERG_ASSIGN_OR_RAISE(auto entries, reader->LiveEntries());
-      count += static_cast<int>(entries.size());
+      for (const auto& entry : entries) {
+        if (entry.data_file) {
+          paths.push_back(entry.data_file->file_path);
+        }
+      }
     }
-    return count;
+    return paths;
   }
 
   Result<std::unique_ptr<ReplacePartitions>> NewReplace() {
@@ -426,6 +430,13 @@ TEST_F(ReplacePartitionsTest, NoValidationSamePartitionConcurrentReplaceCommits)
   op->AddFile(MakeDataFile("/data/replacement_x1.parquet", /*partition_x=*/1L));
   op->ValidateFromSnapshot(first_id);  // no ValidateNoConflicting* calls
   EXPECT_THAT(op->Commit(), IsOk());
+
+  EXPECT_THAT(table_->Refresh(), IsOk());
+  // The concurrent file is replaced along with the original; only the
+  // replacement is live in partition 1.
+  ICEBERG_UNWRAP_OR_FAIL(auto live, LiveDataFilePaths());
+  EXPECT_THAT(live, ::testing::UnorderedElementsAre(table_location_ +
+                                                    "/data/replacement_x1.parquet"));
 }
 
 // An all-void spec (a partition field using the void transform) is unpartitioned,
@@ -442,7 +453,9 @@ TEST_F(ReplacePartitionsTest, AllVoidSpecReplacesWholeTable) {
 
   EXPECT_THAT(table_->Refresh(), IsOk());
   ICEBERG_UNWRAP_OR_FAIL(auto snapshot, table_->current_snapshot());
-  // Both partitioned files replaced by the single all-void file.
+  // The single all-void file is added and both partitioned files are replaced,
+  // leaving it as the only live file.
+  EXPECT_EQ(snapshot->summary.at(SnapshotSummaryFields::kAddedDataFiles), "1");
   EXPECT_EQ(snapshot->summary.at(SnapshotSummaryFields::kDeletedDataFiles), "2");
   EXPECT_EQ(snapshot->summary.at(SnapshotSummaryFields::kTotalDataFiles), "1");
 }
@@ -494,17 +507,17 @@ TEST_F(ReplacePartitionsV3Test, ReplaceCleansUpDeletionVectors) {
   row_delta->AddDeletes(dv);
   EXPECT_THAT(row_delta->Commit(), IsOk());
   EXPECT_THAT(table_->Refresh(), IsOk());
-  ICEBERG_UNWRAP_OR_FAIL(auto before, LiveDeleteFileCount());
-  EXPECT_EQ(before, 1);
+  ICEBERG_UNWRAP_OR_FAIL(auto before, LiveDeleteFilePaths());
+  EXPECT_THAT(before, ::testing::ElementsAre(dv->file_path));
 
   ICEBERG_UNWRAP_OR_FAIL(auto op, NewReplace());
   op->AddFile(MakeDataFile("/data/file_a_new.parquet", /*partition_x=*/1L));
   EXPECT_THAT(op->Commit(), IsOk());
   EXPECT_THAT(table_->Refresh(), IsOk());
 
-  // The DV in the replaced partition is dropped along with the data.
-  ICEBERG_UNWRAP_OR_FAIL(auto after, LiveDeleteFileCount());
-  EXPECT_EQ(after, 0);
+  // The DV referencing file_a in the replaced partition is dropped with the data.
+  ICEBERG_UNWRAP_OR_FAIL(auto after, LiveDeleteFilePaths());
+  EXPECT_THAT(after, ::testing::IsEmpty());
 }
 
 }  // namespace iceberg
