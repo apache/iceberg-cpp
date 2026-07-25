@@ -104,10 +104,8 @@ Result<std::vector<ManifestFile>> ReplacePartitions::Apply(
   if (result.has_value()) {
     return result;
   }
-  // Translate the fail-any-delete error raised when ValidateAppendOnly() is set,
-  // matching Java BaseReplacePartitions.apply(). The base reports "Operation
-  // would delete existing data: <partition>"; surface the partition-conflict
-  // wording Java callers expect.
+  // ValidateAppendOnly() reports a fail-any-delete error when an existing data
+  // file would be dropped. Rewrite it to the partition-conflict message.
   constexpr std::string_view kFailAnyDeletePrefix =
       "Operation would delete existing data: ";
   const Error& error = result.error();
@@ -123,13 +121,11 @@ Result<std::vector<ManifestFile>> ReplacePartitions::Apply(
 
 Status ReplacePartitions::Validate(const TableMetadata& current_metadata,
                                    const std::shared_ptr<Snapshot>& snapshot) {
-  // Require at least one staged data file, all sharing exactly one partition
-  // spec. DataSpec() enforces both invariants. Call it unconditionally, even on
-  // the row-filter path: if an unpartitioned/all-void file is staged first and a
-  // later file comes from a different spec, this rejects the mixed-spec replace
-  // instead of committing a table-wide replace. The returned spec is unused
-  // because replace_by_row_filter_ / replaced_partitions_ already scope
-  // validation.
+  // DataSpec() requires at least one staged data file, all sharing exactly one
+  // partition spec. Call it unconditionally so a replace that stages an
+  // unpartitioned/all-void file first and then a file from another spec is
+  // rejected instead of committing a table-wide replace. The returned spec is
+  // unused; replace_by_row_filter_ / replaced_partitions_ already scope validation.
   ICEBERG_RETURN_UNEXPECTED(DataSpec());
 
   if (snapshot == nullptr) {
@@ -148,11 +144,10 @@ Status ReplacePartitions::Validate(const TableMetadata& current_metadata,
     }
   }
   if (validate_conflicting_deletes_) {
-    // Run ValidateDeletedDataFiles before ValidateNoNewDeleteFiles, matching
-    // Java, so the reported failure is deterministic when both conflict types
-    // are present. The first rejects concurrent removals of data in the
-    // replaced partitions (which would otherwise resurrect deleted rows); the
-    // second rejects delete files added concurrently in those partitions.
+    // Deleted-data validation runs before new-delete validation so the reported
+    // failure is deterministic when both conflict types are present. The first
+    // rejects concurrent removals of data in the replaced partitions; the second
+    // rejects delete files added concurrently there.
     if (replace_by_row_filter_) {
       ICEBERG_RETURN_UNEXPECTED(ValidateDeletedDataFiles(
           current_metadata, starting_snapshot_id_, Expressions::AlwaysTrue(), snapshot,

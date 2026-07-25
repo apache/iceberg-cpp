@@ -28,6 +28,8 @@
 
 #include "iceberg/avro/avro_register.h"
 #include "iceberg/expression/expressions.h"
+#include "iceberg/manifest/manifest_entry.h"
+#include "iceberg/manifest/manifest_reader.h"
 #include "iceberg/partition_field.h"
 #include "iceberg/partition_spec.h"
 #include "iceberg/row/partition_values.h"
@@ -39,6 +41,7 @@
 #include "iceberg/test/update_test_base.h"
 #include "iceberg/transaction.h"
 #include "iceberg/transform.h"
+#include "iceberg/update/delete_files.h"
 #include "iceberg/update/fast_append.h"
 #include "iceberg/update/row_delta.h"
 #include "iceberg/util/macros.h"
@@ -121,6 +124,79 @@ class ReplacePartitionsTest : public UpdateTestBase {
     ASSERT_THAT(table_->metadata()->PartitionSpecById(spec_id), IsOk());
   }
 
+  // Add a spec whose only field uses the void transform. Such a spec has a field
+  // but is still unpartitioned, so a file staged against it drives a table-wide
+  // replace rather than a partition drop.
+  void AddAllVoidSpec(int32_t spec_id, int32_t field_id, const std::string& name) {
+    ICEBERG_UNWRAP_OR_FAIL(
+        auto spec, PartitionSpec::Make(*schema_, spec_id,
+                                       {PartitionField(/*source_id=*/1, field_id, name,
+                                                       Transform::Void())},
+                                       /*allow_missing_fields=*/false));
+    table_->metadata()->partition_specs.push_back(
+        std::shared_ptr<PartitionSpec>(std::move(spec)));
+    ASSERT_THAT(table_->metadata()->PartitionSpecById(spec_id), IsOk());
+  }
+
+  // A data file for an all-void spec: one partition field holding a null value.
+  std::shared_ptr<DataFile> MakeAllVoidFile(const std::string& path, int32_t spec_id) {
+    auto f = std::make_shared<DataFile>();
+    f->content = DataFile::Content::kData;
+    f->file_path = table_location_ + path;
+    f->file_format = FileFormatType::kParquet;
+    f->partition = PartitionValues(std::vector<Literal>{Literal::Null(int64())});
+    f->file_size_in_bytes = 1024;
+    f->record_count = 100;
+    f->partition_spec_id = spec_id;
+    return f;
+  }
+
+  // Commit a DeleteFiles op that removes an existing data file by path.
+  void CommitDeleteDataFile(const std::string& path) {
+    ICEBERG_UNWRAP_OR_FAIL(auto delete_files, table_->NewDeleteFiles());
+    delete_files->DeleteFile(path);
+    EXPECT_THAT(delete_files->Commit(), IsOk());
+    EXPECT_THAT(table_->Refresh(), IsOk());
+  }
+
+  // Live (non-deleted) data file paths across the current snapshot's manifests.
+  Result<std::vector<std::string>> LiveDataFilePaths() {
+    std::vector<std::string> paths;
+    ICEBERG_ASSIGN_OR_RAISE(auto snapshot, table_->current_snapshot());
+    SnapshotCache cache(snapshot.get());
+    ICEBERG_ASSIGN_OR_RAISE(auto manifests, cache.DataManifests(file_io_));
+    for (const auto& manifest : manifests) {
+      ICEBERG_ASSIGN_OR_RAISE(
+          auto spec, table_->metadata()->PartitionSpecById(manifest.partition_spec_id));
+      ICEBERG_ASSIGN_OR_RAISE(auto reader,
+                              ManifestReader::Make(manifest, file_io_, schema_, spec));
+      ICEBERG_ASSIGN_OR_RAISE(auto entries, reader->LiveEntries());
+      for (const auto& entry : entries) {
+        if (entry.data_file) {
+          paths.push_back(entry.data_file->file_path);
+        }
+      }
+    }
+    return paths;
+  }
+
+  // Number of live delete files (position/equality/DV) in the current snapshot.
+  Result<int> LiveDeleteFileCount() {
+    int count = 0;
+    ICEBERG_ASSIGN_OR_RAISE(auto snapshot, table_->current_snapshot());
+    SnapshotCache cache(snapshot.get());
+    ICEBERG_ASSIGN_OR_RAISE(auto manifests, cache.DeleteManifests(file_io_));
+    for (const auto& manifest : manifests) {
+      ICEBERG_ASSIGN_OR_RAISE(
+          auto spec, table_->metadata()->PartitionSpecById(manifest.partition_spec_id));
+      ICEBERG_ASSIGN_OR_RAISE(auto reader,
+                              ManifestReader::Make(manifest, file_io_, schema_, spec));
+      ICEBERG_ASSIGN_OR_RAISE(auto entries, reader->LiveEntries());
+      count += static_cast<int>(entries.size());
+    }
+    return count;
+  }
+
   Result<std::unique_ptr<ReplacePartitions>> NewReplace() {
     ICEBERG_ASSIGN_OR_RAISE(auto ctx,
                             TransactionContext::Make(table_, TransactionKind::kUpdate));
@@ -186,8 +262,14 @@ TEST_F(ReplacePartitionsTest, ReplaceLeavesOtherPartitions) {
   EXPECT_THAT(table_->Refresh(), IsOk());
   ICEBERG_UNWRAP_OR_FAIL(auto snapshot, table_->current_snapshot());
   EXPECT_EQ(snapshot->summary.at(SnapshotSummaryFields::kDeletedDataFiles), "1");
-  // file_b in partition 2 plus the new file in partition 1.
   EXPECT_EQ(snapshot->summary.at(SnapshotSummaryFields::kTotalDataFiles), "2");
+
+  // The old file in partition 1 is gone; file_b in partition 2 survives and the
+  // replacement is live. Summary counts alone cannot tell these files apart.
+  ICEBERG_UNWRAP_OR_FAIL(auto live, LiveDataFilePaths());
+  EXPECT_THAT(live,
+              ::testing::UnorderedElementsAre(
+                  file_b_->file_path, table_location_ + "/data/file_a_new.parquet"));
 }
 
 // An unpartitioned spec triggers a table-wide replace of every existing file.
@@ -255,8 +337,11 @@ TEST_F(ReplacePartitionsTest, AppendOnlyConflictTranslated) {
   op->ValidateAppendOnly();
   auto result = op->Commit();
   EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
-  EXPECT_THAT(result, HasErrorMessage(
-                          "Cannot commit file that conflicts with existing partition"));
+  // Assert the full message including the partition path, so a dropped or
+  // corrupted partition value in Apply() would fail the test.
+  EXPECT_THAT(
+      result,
+      HasErrorMessage("Cannot commit file that conflicts with existing partition: x=1"));
 }
 
 // ValidateAppendOnly passes when the target partition holds no existing files.
@@ -317,12 +402,109 @@ TEST_F(ReplacePartitionsTest, NoConflictingDeletesDifferentPartitionPasses) {
   EXPECT_THAT(op->Commit(), IsOk());
 }
 
+// ValidateNoConflictingDeletes also rejects a concurrent removal of a data file
+// in the replaced partition, not only a newly added delete file.
+TEST_F(ReplacePartitionsTest, NoConflictingDeletesConcurrentDataRemovalFails) {
+  CommitFastAppend(MakeDataFile("/data/existing_x1.parquet", /*partition_x=*/1L));
+  const int64_t base_id = CommitFastAppend(file_a_);  // partition 1
+  CommitDeleteDataFile(table_location_ + "/data/existing_x1.parquet");
+
+  ICEBERG_UNWRAP_OR_FAIL(auto op, NewReplace());
+  op->AddFile(MakeDataFile("/data/replacement_x1.parquet", /*partition_x=*/1L));
+  op->ValidateFromSnapshot(base_id);
+  op->ValidateNoConflictingDeletes();
+  EXPECT_THAT(op->Commit(), IsError(ErrorKind::kValidationFailed));
+}
+
+// With no conflict validation enabled, a same-partition concurrent replace still
+// commits. This locks the default idempotent behavior.
+TEST_F(ReplacePartitionsTest, NoValidationSamePartitionConcurrentReplaceCommits) {
+  const int64_t first_id = CommitFastAppend(file_a_);
+  CommitFastAppend(MakeDataFile("/data/concurrent_x1.parquet", /*partition_x=*/1L));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto op, NewReplace());
+  op->AddFile(MakeDataFile("/data/replacement_x1.parquet", /*partition_x=*/1L));
+  op->ValidateFromSnapshot(first_id);  // no ValidateNoConflicting* calls
+  EXPECT_THAT(op->Commit(), IsOk());
+}
+
+// An all-void spec (a partition field using the void transform) is unpartitioned,
+// so a file staged against it replaces the whole table like an empty spec does.
+TEST_F(ReplacePartitionsTest, AllVoidSpecReplacesWholeTable) {
+  CommitFastAppend(file_a_);
+  CommitFastAppend(file_b_);
+
+  AddAllVoidSpec(/*spec_id=*/1, /*field_id=*/1001, "x_void");
+
+  ICEBERG_UNWRAP_OR_FAIL(auto op, NewReplace());
+  op->AddFile(MakeAllVoidFile("/data/all_void.parquet", /*spec_id=*/1));
+  EXPECT_THAT(op->Commit(), IsOk());
+
+  EXPECT_THAT(table_->Refresh(), IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(auto snapshot, table_->current_snapshot());
+  // Both partitioned files replaced by the single all-void file.
+  EXPECT_EQ(snapshot->summary.at(SnapshotSummaryFields::kDeletedDataFiles), "2");
+  EXPECT_EQ(snapshot->summary.at(SnapshotSummaryFields::kTotalDataFiles), "1");
+}
+
+// On the unpartitioned (row-filter) path, conflict validation covers the whole
+// table: a concurrent append in any partition is a conflict.
+TEST_F(ReplacePartitionsTest, UnpartitionedNoConflictingDataFails) {
+  const int64_t first_id = CommitFastAppend(file_a_);
+  CommitFastAppend(MakeDataFile("/data/concurrent_x2.parquet", /*partition_x=*/2L));
+
+  AddUnpartitionedSpec(/*spec_id=*/1);
+
+  ICEBERG_UNWRAP_OR_FAIL(auto op, NewReplace());
+  op->AddFile(MakeUnpartitionedFile("/data/all.parquet", /*spec_id=*/1));
+  op->ValidateFromSnapshot(first_id);
+  op->ValidateNoConflictingData();
+  EXPECT_THAT(op->Commit(), IsError(ErrorKind::kValidationFailed));
+}
+
 TEST_F(ReplacePartitionsTest, NullAddFileRejected) {
   ICEBERG_UNWRAP_OR_FAIL(auto op, NewReplace());
   op->AddFile(nullptr);
   auto result = op->Commit();
   EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
   EXPECT_THAT(result, HasErrorMessage("Invalid data file: null"));
+}
+
+// Format v3: replacing a partition also drops deletion vectors that reference
+// data files in that partition.
+class ReplacePartitionsV3Test : public ReplacePartitionsTest {
+ protected:
+  std::string MetadataResource() const override {
+    return "TableMetadataV3ValidMinimal.json";
+  }
+};
+
+TEST_F(ReplacePartitionsV3Test, ReplaceCleansUpDeletionVectors) {
+  CommitFastAppend(file_a_);  // partition 1
+
+  // Add a deletion vector referencing file_a_ in partition 1.
+  auto dv = MakeDataFile("/delete/dv_a.puffin", /*partition_x=*/1L);
+  dv->content = DataFile::Content::kPositionDeletes;
+  dv->file_format = FileFormatType::kPuffin;
+  dv->referenced_data_file = file_a_->file_path;
+  dv->content_offset = 0;
+  dv->content_size_in_bytes = 10;
+  dv->record_count = 1;
+  ICEBERG_UNWRAP_OR_FAIL(auto row_delta, table_->NewRowDelta());
+  row_delta->AddDeletes(dv);
+  EXPECT_THAT(row_delta->Commit(), IsOk());
+  EXPECT_THAT(table_->Refresh(), IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(auto before, LiveDeleteFileCount());
+  EXPECT_EQ(before, 1);
+
+  ICEBERG_UNWRAP_OR_FAIL(auto op, NewReplace());
+  op->AddFile(MakeDataFile("/data/file_a_new.parquet", /*partition_x=*/1L));
+  EXPECT_THAT(op->Commit(), IsOk());
+  EXPECT_THAT(table_->Refresh(), IsOk());
+
+  // The DV in the replaced partition is dropped along with the data.
+  ICEBERG_UNWRAP_OR_FAIL(auto after, LiveDeleteFileCount());
+  EXPECT_EQ(after, 0);
 }
 
 }  // namespace iceberg

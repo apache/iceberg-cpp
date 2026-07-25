@@ -51,6 +51,12 @@ namespace iceberg {
 /// Commit conflicts are resolved by re-applying to the new latest snapshot
 /// and reattempting the commit.
 ///
+/// By default no conflict validation is performed: if neither
+/// ValidateNoConflictingData() nor ValidateNoConflictingDeletes() is enabled,
+/// the replace is reapplied and committed even when the table changed
+/// concurrently. Call those methods (with ValidateFromSnapshot()) to detect
+/// conflicting concurrent commits.
+///
 /// \note This is provided to implement SQL compatible with Hive table
 /// operations but is not recommended. Instead, use OverwriteFiles to
 /// explicitly overwrite data.
@@ -73,10 +79,11 @@ class ICEBERG_EXPORT ReplacePartitions : public MergingSnapshotUpdate {
   /// \return Reference to this for method chaining
   ReplacePartitions& AddFile(const std::shared_ptr<DataFile>& file);
 
-  /// \brief Fail the commit if any existing data file would be deleted.
+  /// \brief Fail the commit if any partition would be replaced.
   ///
-  /// This validation is useful to ensure the operation is only applied to
-  /// tables where no data currently exists in the affected partitions.
+  /// Fails if committing would delete any existing data file, or if any delete
+  /// file already exists in the partitions being replaced. Use this to ensure
+  /// the operation only appends into empty partitions.
   ///
   /// \return Reference to this for method chaining
   ReplacePartitions& ValidateAppendOnly();
@@ -118,9 +125,8 @@ class ICEBERG_EXPORT ReplacePartitions : public MergingSnapshotUpdate {
 
   /// \brief Apply changes, translating the fail-any-delete error.
   ///
-  /// Delegates to MergingSnapshotUpdate::Apply and, when ValidateAppendOnly()
-  /// triggers a delete, rewrites the error into the partition-conflict message
-  /// that Java's BaseReplacePartitions.apply() produces.
+  /// Rewrites the delete error raised when ValidateAppendOnly() is set into the
+  /// partition-conflict message.
   Result<std::vector<ManifestFile>> Apply(
       const TableMetadata& current_metadata,
       const std::shared_ptr<Snapshot>& snapshot) override;
