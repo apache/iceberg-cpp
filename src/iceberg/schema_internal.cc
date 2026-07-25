@@ -227,7 +227,7 @@ Status ToArrowSchema(const Schema& schema, ArrowSchema* out) {
 
 namespace {
 
-int32_t GetFieldId(const ArrowSchema& schema) {
+Result<int32_t> GetFieldId(const ArrowSchema& schema) {
   if (schema.metadata == nullptr) {
     return kUnknownFieldId;
   }
@@ -240,9 +240,14 @@ int32_t GetFieldId(const ArrowSchema& schema) {
     return kUnknownFieldId;
   }
 
-  int32_t field_id = kUnknownFieldId;
-  std::from_chars(field_id_value.data, field_id_value.data + field_id_value.size_bytes,
-                  field_id);
+  int32_t field_id = 0;
+  const auto* end = field_id_value.data + field_id_value.size_bytes;
+  const auto [ptr, ec] = std::from_chars(field_id_value.data, end, field_id);
+  if (ec != std::errc{} || ptr != end) {
+    return InvalidSchema(
+        "Invalid Arrow field ID: '{}'",
+        std::string_view(field_id_value.data, field_id_value.size_bytes));
+  }
 
   return field_id;
 }
@@ -252,7 +257,7 @@ Result<std::shared_ptr<Type>> FromArrowSchema(const ArrowSchema& schema) {
       [](const ArrowSchema& schema) -> Result<std::unique_ptr<SchemaField>> {
     ICEBERG_ASSIGN_OR_RAISE(auto field_type, FromArrowSchema(schema));
 
-    auto field_id = GetFieldId(schema);
+    ICEBERG_ASSIGN_OR_RAISE(auto field_id, GetFieldId(schema));
     bool is_optional = (schema.flags & ARROW_FLAG_NULLABLE) != 0;
     if (field_type->type_id() == TypeId::kUnknown && !is_optional) {
       return InvalidSchema("Arrow null field '{}' must be nullable", schema.name);
