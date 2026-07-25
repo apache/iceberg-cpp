@@ -58,10 +58,10 @@ Result<std::optional<bool>> ParseOptionalBool(
   if (value == nullptr) {
     return std::nullopt;
   }
-  if (*value == "true") {
+  if (StringUtils::EqualsIgnoreCase(*value, "true")) {
     return true;
   }
-  if (*value == "false") {
+  if (StringUtils::EqualsIgnoreCase(*value, "false")) {
     return false;
   }
   return InvalidArgument(R"("{}" must be "true" or "false")", key);

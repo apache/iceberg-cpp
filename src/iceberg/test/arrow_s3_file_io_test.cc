@@ -269,25 +269,25 @@ TEST_F(ArrowS3FileIOTest, EndpointScheme) {
 TEST_F(ArrowS3FileIOTest, SslEnabled) {
   auto https =
       ConfigureS3Options({{std::string(S3Properties::kEndpoint), "http://localhost:9000"},
-                          {std::string(S3Properties::kSslEnabled), "true"}});
+                          {std::string(S3Properties::kSslEnabled), "TRUE"}});
   ASSERT_THAT(https, IsOk());
   EXPECT_EQ(https->scheme, "https");
 
   auto http = ConfigureS3Options(
       {{std::string(S3Properties::kEndpoint), "https://localhost:9000"},
-       {std::string(S3Properties::kSslEnabled), "false"}});
+       {std::string(S3Properties::kSslEnabled), "FaLsE"}});
   ASSERT_THAT(http, IsOk());
   EXPECT_EQ(http->scheme, "http");
 }
 
 TEST_F(ArrowS3FileIOTest, PathStyleAccess) {
   auto virtual_addressing =
-      ConfigureS3Options({{std::string(S3Properties::kPathStyleAccess), "false"}});
+      ConfigureS3Options({{std::string(S3Properties::kPathStyleAccess), "FALSE"}});
   ASSERT_THAT(virtual_addressing, IsOk());
   EXPECT_TRUE(virtual_addressing->force_virtual_addressing);
 
   auto path_style =
-      ConfigureS3Options({{std::string(S3Properties::kPathStyleAccess), "true"}});
+      ConfigureS3Options({{std::string(S3Properties::kPathStyleAccess), "TrUe"}});
   ASSERT_THAT(path_style, IsOk());
   EXPECT_FALSE(path_style->force_virtual_addressing);
 }
