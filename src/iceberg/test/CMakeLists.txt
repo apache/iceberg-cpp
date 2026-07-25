@@ -288,7 +288,8 @@ if(ICEBERG_BUILD_REST)
     target_link_libraries(${test_name} PRIVATE GTest::gmock_main iceberg_rest_static)
     if(ARG_USE_BUNDLE)
       target_link_libraries(${test_name}
-                            PRIVATE "$<IF:$<TARGET_EXISTS:iceberg_bundle_static>,iceberg_bundle_static,iceberg_bundle_shared>")
+                            PRIVATE "$<IF:$<TARGET_EXISTS:iceberg_bundle_static>,iceberg_bundle_static,iceberg_bundle_shared>"
+      )
     endif()
     if(MSVC_TOOLCHAIN)
       target_compile_options(${test_name} PRIVATE /bigobj)
