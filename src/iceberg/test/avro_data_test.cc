@@ -17,7 +17,9 @@
  * under the License.
  */
 
+#include <memory>
 #include <ranges>
+#include <vector>
 
 #include <arrow/array/builder_nested.h>
 #include <arrow/array/builder_primitive.h>
