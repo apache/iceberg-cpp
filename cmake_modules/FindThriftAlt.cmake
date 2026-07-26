@@ -86,9 +86,10 @@ endif()
 include(FindPackageHandleStandardArgs)
 if(TARGET thrift::thrift)
   # CONFIG mode already produced the target; satisfy REQUIRED_VARS with it.
+  set(ThriftAlt_TARGET thrift::thrift)
   find_package_handle_standard_args(
     ThriftAlt
-    REQUIRED_VARS thrift::thrift
+    REQUIRED_VARS ThriftAlt_TARGET
     VERSION_VAR ThriftAlt_VERSION)
 else()
   find_package_handle_standard_args(
