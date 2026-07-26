@@ -532,8 +532,52 @@ Result<std::shared_ptr<::arrow::Scalar>> MakeDefaultScalar(
   return scalar;
 }
 
-Status PrepareDefaultScalars(std::span<FieldProjection> projections,
-                             ::arrow::ArrayBuilder* builder) {
+Status PrepareStructDefaultScalars(std::span<FieldProjection> projections,
+                                   ::arrow::ArrayBuilder* builder);
+
+// Recurse into whatever nested builder this projection describes, so a default cached for
+// a struct field is found at any nesting depth (e.g. `list<list<struct<...>>>`) instead
+// of only when the collection's child is an immediate struct.
+Status PrepareNestedDefaultScalars(FieldProjection& projection,
+                                   ::arrow::ArrayBuilder* builder) {
+  if (projection.kind != FieldProjection::Kind::kProjected ||
+      projection.children.empty()) {
+    return {};
+  }
+
+  switch (builder->type()->id()) {
+    case ::arrow::Type::STRUCT:
+      return PrepareStructDefaultScalars(projection.children, builder);
+    case ::arrow::Type::LIST: {
+      // List projections store a single child for the element.
+      auto* list_builder = internal::checked_cast<::arrow::ListBuilder*>(builder);
+      return PrepareNestedDefaultScalars(projection.children[0],
+                                         list_builder->value_builder());
+    }
+    case ::arrow::Type::LARGE_LIST: {
+      auto* list_builder = internal::checked_cast<::arrow::LargeListBuilder*>(builder);
+      return PrepareNestedDefaultScalars(projection.children[0],
+                                         list_builder->value_builder());
+    }
+    case ::arrow::Type::MAP: {
+      auto* map_builder = internal::checked_cast<::arrow::MapBuilder*>(builder);
+      if (projection.children.size() >= 1) {
+        ICEBERG_RETURN_UNEXPECTED(PrepareNestedDefaultScalars(
+            projection.children[0], map_builder->key_builder()));
+      }
+      if (projection.children.size() >= 2) {
+        ICEBERG_RETURN_UNEXPECTED(PrepareNestedDefaultScalars(
+            projection.children[1], map_builder->item_builder()));
+      }
+      return {};
+    }
+    default:
+      return {};
+  }
+}
+
+Status PrepareStructDefaultScalars(std::span<FieldProjection> projections,
+                                   ::arrow::ArrayBuilder* builder) {
   auto* struct_builder = internal::checked_cast<::arrow::StructBuilder*>(builder);
   if (static_cast<size_t>(struct_builder->num_fields()) != projections.size()) {
     return InvalidArgument(
@@ -558,48 +602,8 @@ Status PrepareDefaultScalars(std::span<FieldProjection> projections,
       continue;
     }
 
-    if (field_projection.kind != FieldProjection::Kind::kProjected ||
-        field_projection.children.empty()) {
-      continue;
-    }
-
-    switch (field_builder->type()->id()) {
-      case ::arrow::Type::STRUCT:
-        ICEBERG_RETURN_UNEXPECTED(
-            PrepareDefaultScalars(field_projection.children, field_builder));
-        break;
-      case ::arrow::Type::LIST: {
-        // List projections store a single child for the element. Defaults only appear
-        // on nested struct fields of that element.
-        auto* list_builder = internal::checked_cast<::arrow::ListBuilder*>(field_builder);
-        auto& element_projection = field_projection.children[0];
-        if (element_projection.kind == FieldProjection::Kind::kProjected &&
-            !element_projection.children.empty() &&
-            list_builder->value_builder()->type()->id() == ::arrow::Type::STRUCT) {
-          ICEBERG_RETURN_UNEXPECTED(PrepareDefaultScalars(element_projection.children,
-                                                          list_builder->value_builder()));
-        }
-        break;
-      }
-      case ::arrow::Type::MAP: {
-        auto* map_builder = internal::checked_cast<::arrow::MapBuilder*>(field_builder);
-        if (field_projection.children.size() >= 1 &&
-            !field_projection.children[0].children.empty() &&
-            map_builder->key_builder()->type()->id() == ::arrow::Type::STRUCT) {
-          ICEBERG_RETURN_UNEXPECTED(PrepareDefaultScalars(
-              field_projection.children[0].children, map_builder->key_builder()));
-        }
-        if (field_projection.children.size() >= 2 &&
-            !field_projection.children[1].children.empty() &&
-            map_builder->item_builder()->type()->id() == ::arrow::Type::STRUCT) {
-          ICEBERG_RETURN_UNEXPECTED(PrepareDefaultScalars(
-              field_projection.children[1].children, map_builder->item_builder()));
-        }
-        break;
-      }
-      default:
-        break;
-    }
+    ICEBERG_RETURN_UNEXPECTED(
+        PrepareNestedDefaultScalars(field_projection, field_builder));
   }
   return {};
 }
@@ -608,7 +612,7 @@ Status PrepareDefaultScalars(std::span<FieldProjection> projections,
 
 Status PrepareDefaultScalars(SchemaProjection& projection,
                              ::arrow::ArrayBuilder* root_builder) {
-  return PrepareDefaultScalars(projection.fields, root_builder);
+  return PrepareStructDefaultScalars(projection.fields, root_builder);
 }
 
 Status AppendDefaultToBuilder(const Literal& literal, ::arrow::ArrayBuilder* builder) {

@@ -704,6 +704,63 @@ TEST(AppendDatumToBuilderTest, StructWithMissingDefaultFields) {
                                                      avro_data, expected_json));
 }
 
+TEST(AppendDatumToBuilderTest, NestedListOfListStructWithMissingDefaultField) {
+  // A default on a struct nested two collection levels deep must still be filled, which
+  // requires recursing through both list builders rather than only an immediate struct.
+  auto inner_struct = std::make_shared<StructType>(std::vector<SchemaField>{
+      SchemaField::MakeRequired(5, "x", iceberg::int32()),
+      SchemaField(6, "y", iceberg::int64(), /*optional=*/false, /*doc=*/{},
+                  std::make_shared<const Literal>(Literal::Long(7))),
+  });
+  auto inner_list =
+      std::make_shared<ListType>(SchemaField::MakeRequired(4, "element", inner_struct));
+  auto outer_list =
+      std::make_shared<ListType>(SchemaField::MakeRequired(3, "element", inner_list));
+  Schema iceberg_schema({
+      SchemaField::MakeRequired(1, "id", iceberg::int32()),
+      SchemaField::MakeRequired(2, "matrix", outer_list),
+  });
+
+  // The Avro schema's innermost record only has `x`, so `y` comes from its default.
+  std::string avro_schema_json = R"({
+    "type": "record",
+    "name": "outer",
+    "fields": [
+      {"name": "id", "type": "int", "field-id": 1},
+      {"name": "matrix", "field-id": 2, "type": {
+        "type": "array", "element-id": 3, "items": {
+          "type": "array", "element-id": 4, "items": {
+            "type": "record", "name": "point",
+            "fields": [{"name": "x", "type": "int", "field-id": 5}]
+          }
+        }
+      }}
+    ]
+  })";
+  auto avro_schema = ::avro::compileJsonSchemaFromString(avro_schema_json);
+
+  std::vector<::avro::GenericDatum> avro_data;
+  ::avro::GenericDatum avro_datum(avro_schema.root());
+  auto& record = avro_datum.value<::avro::GenericRecord>();
+  record.fieldAt(0).value<int32_t>() = 1;
+  auto& outer_array = record.fieldAt(1).value<::avro::GenericArray>();
+  ::avro::GenericDatum inner_datum(avro_schema.root()->leafAt(1)->leafAt(0));
+  auto& inner_array = inner_datum.value<::avro::GenericArray>();
+  for (int32_t x : {10, 20}) {
+    ::avro::GenericDatum point_datum(avro_schema.root()->leafAt(1)->leafAt(0)->leafAt(0));
+    point_datum.value<::avro::GenericRecord>().fieldAt(0).value<int32_t>() = x;
+    inner_array.value().push_back(point_datum);
+  }
+  outer_array.value().push_back(inner_datum);
+  avro_data.push_back(avro_datum);
+
+  const std::string expected_json = R"([
+    {"id": 1, "matrix": [[{"x": 10, "y": 7}, {"x": 20, "y": 7}]]}
+  ])";
+  ASSERT_NO_FATAL_FAILURE(VerifyAppendDatumToBuilder(iceberg_schema, avro_schema.root(),
+                                                     avro_data, expected_json));
+}
+
 TEST(AppendDefaultToBuilderTest, AppendsValue) {
   ::arrow::Int64Builder builder;
   ASSERT_THAT(AppendDefaultToBuilder(Literal::Long(42), &builder), IsOk());
@@ -756,6 +813,45 @@ TEST(AppendDefaultToBuilderTest, ReusesPreparedScalar) {
   const auto& long_array = static_cast<const ::arrow::Int64Array&>(*array);
   ASSERT_EQ(long_array.Value(0), 42);
   ASSERT_EQ(long_array.Value(1), 42);
+}
+
+TEST(AppendDefaultToBuilderTest, PreparesScalarUnderNestedCollections) {
+  // A default under `list<list<struct<...>>>` must be prepared too, so decoding reuses
+  // the cached scalar instead of rebuilding it for every element.
+  auto pool = ::arrow::default_memory_pool();
+  auto leaf = std::make_shared<::arrow::Int64Builder>(pool);
+  auto point_builder = std::make_shared<::arrow::StructBuilder>(
+      ::arrow::struct_({::arrow::field("y", ::arrow::int64())}), pool,
+      std::vector<std::shared_ptr<::arrow::ArrayBuilder>>{leaf});
+  auto inner_list = std::make_shared<::arrow::ListBuilder>(pool, point_builder);
+  auto outer_list = std::make_shared<::arrow::ListBuilder>(pool, inner_list);
+  ::arrow::StructBuilder root_builder(
+      ::arrow::struct_({::arrow::field("matrix", outer_list->type())}), pool,
+      std::vector<std::shared_ptr<::arrow::ArrayBuilder>>{outer_list});
+
+  FieldProjection leaf_default;
+  leaf_default.kind = FieldProjection::Kind::kDefault;
+  leaf_default.from = Literal::Long(7);
+
+  FieldProjection point_projection;
+  point_projection.kind = FieldProjection::Kind::kProjected;
+  point_projection.children.push_back(leaf_default);
+
+  FieldProjection inner_element;
+  inner_element.kind = FieldProjection::Kind::kProjected;
+  inner_element.children.push_back(point_projection);
+
+  FieldProjection outer_element;
+  outer_element.kind = FieldProjection::Kind::kProjected;
+  outer_element.children.push_back(inner_element);
+
+  SchemaProjection schema_projection;
+  schema_projection.fields.push_back(outer_element);
+  ASSERT_THAT(PrepareDefaultScalars(schema_projection, &root_builder), IsOk());
+
+  const auto& prepared = schema_projection.fields[0].children[0].children[0].children[0];
+  ASSERT_NE(dynamic_cast<const AvroDefaultAttributes*>(prepared.attributes.get()),
+            nullptr);
 }
 
 TEST(AppendDatumToBuilderTest, NestedStructWithMissingOptionalFields) {
