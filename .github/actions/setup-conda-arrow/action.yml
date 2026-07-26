@@ -1,0 +1,60 @@
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+
+name: Set up conda Arrow
+description: Install Arrow and Parquet from conda-forge for CMake builds.
+
+inputs:
+  runtime-library-path:
+    description: Runtime library path variable to export.
+    required: false
+    default: LD_LIBRARY_PATH
+  extra-packages:
+    description: Extra conda packages to install, space separated.
+    required: false
+    default: ""
+
+runs:
+  using: composite
+  steps:
+    - name: Set up conda
+      uses: conda-incubator/setup-miniconda@8ee1f361103df19b6f8c8655fd3967a8ecb162d5 # v4.0.1
+      with:
+        miniforge-version: latest
+        channels: conda-forge
+        channel-priority: strict
+        activate-environment: arrow
+    - name: Install Arrow and Parquet
+      shell: bash -el {0}
+      env:
+        RUNTIME_LIBRARY_PATH: ${{ inputs.runtime-library-path }}
+        EXTRA_PACKAGES: ${{ inputs.extra-packages }}
+      run: |
+        read -r -a extra_packages <<< "${EXTRA_PACKAGES}"
+        mamba install -y "libarrow=24.0.*" "libparquet=24.0.*" "${extra_packages[@]}"
+        echo "CMAKE_PREFIX_PATH=${CONDA_PREFIX}" >> "$GITHUB_ENV"
+        echo "ICEBERG_REQUIRE_SYSTEM_ARROW=ON" >> "$GITHUB_ENV"
+
+        case "${RUNTIME_LIBRARY_PATH}" in
+          LD_LIBRARY_PATH|DYLD_FALLBACK_LIBRARY_PATH) ;;
+          *)
+            echo "::error::Unsupported runtime-library-path: ${RUNTIME_LIBRARY_PATH}"
+            exit 1
+            ;;
+        esac
+        runtime_path_var="${RUNTIME_LIBRARY_PATH}"
+        echo "${runtime_path_var}=${!runtime_path_var:+${!runtime_path_var}:}${CONDA_PREFIX}/lib" >> "$GITHUB_ENV"
