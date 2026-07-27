@@ -29,6 +29,7 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
+#include "iceberg/constants.h"
 #include "iceberg/inspect/metadata_table.h"
 #include "iceberg/schema.h"
 #include "iceberg/schema_field.h"
@@ -98,7 +99,8 @@ TEST_F(SnapshotsTableTest, SchemaMatchesIcebergSchema) {
 TEST_F(SnapshotsTableTest, Scan) {
   // Scan the snapshots table once and verify all columns of the result.
   ICEBERG_UNWRAP_OR_FAIL(auto array, snapshots_table_->Scan());
-  auto batch = FinishAndImport(std::move(array), *snapshots_table_->schema());
+  ICEBERG_UNWRAP_OR_FAIL(auto batch,
+                         FinishAndImport(std::move(array), *snapshots_table_->schema()));
 
   // Row and column counts.
   EXPECT_EQ(batch->num_rows(), 2);
@@ -152,24 +154,40 @@ TEST_F(SnapshotsTableTest, ScanSnapshotSelectionIgnored) {
   // SnapshotsTable always returns all snapshots regardless of selection.
   SnapshotSelection sel{.snapshot_id = 999};
   ICEBERG_UNWRAP_OR_FAIL(auto array, snapshots_table_->Scan(sel));
-  auto batch = FinishAndImport(std::move(array), *snapshots_table_->schema());
+  ICEBERG_UNWRAP_OR_FAIL(auto batch,
+                         FinishAndImport(std::move(array), *snapshots_table_->schema()));
   // Should still return all 2 snapshots, not filtered to snapshot 999.
   EXPECT_EQ(batch->num_rows(), 2);
 }
 
 TEST_F(SnapshotsTableTest, ScanEmptySnapshotList) {
   // A table with zero snapshots should return zero rows.
-  ICEBERG_UNWRAP_OR_FAIL(auto empty_table,
-                         MakeTableWithSnapshots({}, /*current_snapshot_id=*/-1));
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto empty_table,
+      MakeTableWithSnapshots({}, /*current_snapshot_id=*/kInvalidSnapshotId));
 
   ICEBERG_UNWRAP_OR_FAIL(
       snapshots_table_,
       MetadataTable::Make(empty_table, MetadataTable::Kind::kSnapshots));
 
   ICEBERG_UNWRAP_OR_FAIL(auto array, snapshots_table_->Scan(std::nullopt));
-  auto batch = FinishAndImport(std::move(array), *snapshots_table_->schema());
+  ICEBERG_UNWRAP_OR_FAIL(auto batch,
+                         FinishAndImport(std::move(array), *snapshots_table_->schema()));
   EXPECT_EQ(batch->num_rows(), 0);
   EXPECT_EQ(batch->num_columns(), 6);
+}
+
+TEST_F(SnapshotsTableTest, ScanSkipsNullSnapshots) {
+  auto [snap1, snap2] = MakeTestSnapshots();
+  ICEBERG_UNWRAP_OR_FAIL(auto table, MakeTableWithSnapshots({snap1, nullptr, snap2},
+                                                            /*current_snapshot_id=*/2));
+  ICEBERG_UNWRAP_OR_FAIL(auto snapshots_table,
+                         MetadataTable::Make(table, MetadataTable::Kind::kSnapshots));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto array, snapshots_table->Scan());
+  ICEBERG_UNWRAP_OR_FAIL(auto batch,
+                         FinishAndImport(std::move(array), *snapshots_table->schema()));
+  EXPECT_EQ(batch->num_rows(), 2);
 }
 
 }  // namespace iceberg
