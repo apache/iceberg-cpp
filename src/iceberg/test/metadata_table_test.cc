@@ -22,6 +22,7 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
+#include "iceberg/constants.h"
 #include "iceberg/schema.h"
 #include "iceberg/schema_field.h"
 #include "iceberg/table.h"
@@ -42,7 +43,10 @@ class MetadataTableTest : public ::testing::Test {
                                  SchemaField::MakeOptional(2, "name", string())},
         1);
     auto metadata = std::make_shared<TableMetadata>(
-        TableMetadata{.format_version = 2, .schemas = {schema}, .current_schema_id = 1});
+        TableMetadata{.format_version = 2,
+                      .schemas = {schema},
+                      .current_schema_id = 1,
+                      .current_snapshot_id = kInvalidSnapshotId});
 
     TableIdentifier ident{.ns = Namespace{.levels = {"db"}}, .name = "source_table"};
     ICEBERG_UNWRAP_OR_FAIL(table_, Table::Make(ident, metadata, "s3://bucket/meta.json",
