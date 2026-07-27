@@ -145,8 +145,8 @@ Result<bool> CanContainEqDeletesForFile(const DataFile& data_file,
       continue;  // Missing bounds, assume may match
     }
 
-    auto delete_lower = delete_file.LowerBound(field_id);
-    auto delete_upper = delete_file.UpperBound(field_id);
+    ICEBERG_ASSIGN_OR_RAISE(auto delete_lower, delete_file.LowerBound(field_id));
+    ICEBERG_ASSIGN_OR_RAISE(auto delete_upper, delete_file.UpperBound(field_id));
     if (!delete_lower.has_value() || !delete_upper.has_value()) {
       continue;  // Missing bounds, assume may match
     }
@@ -158,8 +158,8 @@ Result<bool> CanContainEqDeletesForFile(const DataFile& data_file,
     ICEBERG_ASSIGN_OR_RAISE(auto data_upper,
                             Literal::Deserialize(data_upper_it->second, primitive_type));
 
-    if (!RangesOverlap(data_lower, data_upper, delete_lower->value().get(),
-                       delete_upper->value().get())) {
+    if (!RangesOverlap(data_lower, data_upper, delete_lower->get(),
+                       delete_upper->get())) {
       return false;  // Ranges don't overlap - cannot match
     }
   }

@@ -840,6 +840,71 @@ TEST_P(DeleteFileIndexTest, TestEqualityDeletesGroup) {
   }
 }
 
+// Regression test: an equality delete file that carries bounds for some equality
+// fields but not others must not crash. CanContainEqDeletesForFile guarded the
+// missing-bound case with std::expected::has_value() (which only reports the error
+// state), so a field whose bound was absent produced an engaged expected wrapping a
+// disengaged optional, and dereferencing it threw std::bad_optional_access. Such
+// files are produced legitimately by per-column metrics modes (counts/none/truncate)
+// and by cross-engine writers.
+TEST_P(DeleteFileIndexTest, TestEqualityDeletePartialFieldBounds) {
+  auto partition_a = PartitionValues({Literal::Int(0)});
+
+  auto serialize = [](const Literal& literal) {
+    auto result = literal.Serialize();
+    EXPECT_THAT(result, IsOk());
+    return result.value();
+  };
+
+  // Equality delete over fields {1 (int id), 2 (string data)} but with bounds only
+  // for field 1. Field 1's bounds must deserialize cleanly, otherwise
+  // ConvertBoundsIfNeeded fails first and masks the missing-bound path.
+  //
+  // null_value_counts is set to 0 for both fields so the null short-circuits in
+  // CanContainEqDeletesForFile (ContainsNull/AllNull) never fire, which keeps the
+  // repro alive even if the SetUp schema fields are later changed to optional: with a
+  // zero count ContainsNull returns false regardless of nullability, so evaluation
+  // always reaches the range check that dereferences the missing field-2 bound.
+  auto eq_delete = std::make_shared<DataFile>(DataFile{
+      .content = DataFile::Content::kEqualityDeletes,
+      .file_path = "/path/to/eq-delete-partial-bounds.parquet",
+      .file_format = FileFormatType::kParquet,
+      .partition = partition_a,
+      .record_count = 10,
+      .file_size_in_bytes = 100,
+      .null_value_counts = {{1, 0}, {2, 0}},
+      .lower_bounds = {{1, serialize(Literal::Int(0))}},
+      .upper_bounds = {{1, serialize(Literal::Int(100))}},
+      .equality_ids = {1, 2},
+      .partition_spec_id = partitioned_spec_->spec_id(),
+  });
+
+  // Data file with full bounds for both equality fields. Field 1's range overlaps the
+  // delete's, so evaluation proceeds to field 2, which lacks a delete-side bound.
+  auto data_file = std::make_shared<DataFile>(DataFile{
+      .file_path = "/path/to/data-partial-bounds.parquet",
+      .file_format = FileFormatType::kParquet,
+      .partition = partition_a,
+      .record_count = 100,
+      .file_size_in_bytes = 1000,
+      .null_value_counts = {{1, 0}, {2, 0}},
+      .lower_bounds = {{1, serialize(Literal::Int(0))},
+                       {2, serialize(Literal::String("a"))}},
+      .upper_bounds = {{1, serialize(Literal::Int(100))},
+                       {2, serialize(Literal::String("z"))}},
+      .partition_spec_id = partitioned_spec_->spec_id(),
+  });
+
+  internal::EqualityDeletes group(*schema_);
+  auto entry = MakeDeleteEntry(/*snapshot_id=*/1000L, /*sequence_number=*/1, eq_delete);
+  EXPECT_THAT(group.Add(std::move(entry)), IsOk());
+
+  // Must not throw. With a missing field-2 bound the delete may still match, so it is
+  // returned rather than pruned.
+  ICEBERG_UNWRAP_OR_FAIL(auto filtered, group.Filter(/*seq=*/0, *data_file));
+  EXPECT_EQ(filtered.size(), 1);
+}
+
 TEST_P(DeleteFileIndexTest, TestMixDeleteFilesAndDVs) {
   auto version = GetParam();
   if (version < 3) {
