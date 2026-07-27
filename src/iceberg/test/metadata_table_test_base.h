@@ -37,6 +37,7 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
+#include "iceberg/constants.h"
 #include "iceberg/schema.h"
 #include "iceberg/schema_field.h"
 #include "iceberg/schema_internal.h"
@@ -67,7 +68,10 @@ class MetadataTableTestBase : public ::testing::Test {
                                  SchemaField::MakeOptional(2, "name", string())},
         1);
     metadata_ = std::make_shared<TableMetadata>(
-        TableMetadata{.format_version = 2, .schemas = {schema}, .current_schema_id = 1});
+        TableMetadata{.format_version = 2,
+                      .schemas = {schema},
+                      .current_schema_id = 1,
+                      .current_snapshot_id = kInvalidSnapshotId});
 
     TableIdentifier source_ident{.ns = Namespace{.levels = {"db"}},
                                  .name = "source_table"};
@@ -76,14 +80,23 @@ class MetadataTableTestBase : public ::testing::Test {
   }
 
   /// \brief Import a Scan()-produced ArrowArray into an Arrow RecordBatch.
-  static std::shared_ptr<::arrow::RecordBatch> FinishAndImport(ArrowArray&& array,
-                                                               const Schema& schema) {
+  static Result<std::shared_ptr<::arrow::RecordBatch>> FinishAndImport(
+      ArrowArray&& array, const Schema& schema) {
     ArrowSchema c_schema{};
-    EXPECT_THAT(ToArrowSchema(schema, &c_schema), IsOk());
-    auto arrow_schema = ::arrow::ImportSchema(&c_schema).ValueOrDie();
+    ICEBERG_RETURN_UNEXPECTED(ToArrowSchema(schema, &c_schema));
+
+    auto arrow_schema_result = ::arrow::ImportSchema(&c_schema);
+    if (!arrow_schema_result.ok()) {
+      return InvalidArrowData(arrow_schema_result.status().ToString());
+    }
 
     // ImportRecordBatch takes ownership of the array and releases it.
-    return ::arrow::ImportRecordBatch(&array, arrow_schema).ValueOrDie();
+    auto batch_result = ::arrow::ImportRecordBatch(
+        &array, std::move(arrow_schema_result).MoveValueUnsafe());
+    if (!batch_result.ok()) {
+      return InvalidArrowData(batch_result.status().ToString());
+    }
+    return std::move(batch_result).MoveValueUnsafe();
   }
 
   /// \brief Create two snapshots matching the Java TestDataTaskParser test data.

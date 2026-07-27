@@ -73,6 +73,10 @@ Result<ArrowArray> SnapshotsTable::Scan(
   ICEBERG_ASSIGN_OR_RAISE(auto builder, ArrowRowBuilder::Make(*schema()));
 
   for (const auto& snapshot : source_table()->snapshots()) {
+    if (snapshot == nullptr) [[unlikely]] {
+      continue;
+    }
+
     // column 0: committed_at (timestamptz -> int64 micros)
     ICEBERG_RETURN_UNEXPECTED(AppendInt(
         builder.column(0), std::chrono::duration_cast<std::chrono::microseconds>(
