@@ -472,9 +472,10 @@ TEST_F(PositionDeleteWriterTest, WriteBatchRejectsSlicedData) {
   auto sliced = test_data->Slice(1, 1);
   ArrowArray arrow_array;
   ASSERT_TRUE(::arrow::ExportArray(*sliced, &arrow_array).ok());
-  internal::ArrowArrayGuard array_guard(&arrow_array);
 
   auto result = writer->Write(&arrow_array);
+  EXPECT_EQ(arrow_array.release, nullptr);
+  internal::ArrowArrayGuard array_guard(&arrow_array);
   ASSERT_THAT(result, IsError(ErrorKind::kInvalidArgument));
   EXPECT_THAT(
       result,
@@ -558,9 +559,10 @@ TEST_F(PositionDeleteWriterTest, WriteBatchRejectsNullFilePath) {
   auto test_data = CreatePositionDeleteData(R"([[null, 0]])");
   ArrowArray arrow_array;
   ASSERT_TRUE(::arrow::ExportArray(*test_data, &arrow_array).ok());
-  internal::ArrowArrayGuard array_guard(&arrow_array);
 
   auto result = writer->Write(&arrow_array);
+  EXPECT_EQ(arrow_array.release, nullptr);
+  internal::ArrowArrayGuard array_guard(&arrow_array);
   ASSERT_THAT(result, IsError(ErrorKind::kInvalidArrowData));
   EXPECT_THAT(result,
               HasErrorMessage("Position delete file paths must not contain null values"));
