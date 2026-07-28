@@ -63,6 +63,7 @@ class PositionDeleteWriter::Impl {
 
   Status Write(ArrowArray* data) {
     ICEBERG_PRECHECK(data != nullptr, "Position delete data must not be null");
+    internal::ArrowArrayGuard data_guard(data);
     ICEBERG_PRECHECK(data->offset == 0,
                      "Position delete data with a non-zero offset is not supported");
     ICEBERG_PRECHECK(buffered_paths_.empty(),
