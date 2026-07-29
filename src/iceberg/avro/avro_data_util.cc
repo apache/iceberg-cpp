@@ -590,12 +590,11 @@ Status PrepareStructDefaultScalars(std::span<FieldProjection> projections,
     auto* field_builder = struct_builder->field_builder(static_cast<int>(i));
 
     if (field_projection.kind == FieldProjection::Kind::kDefault) {
-      if (dynamic_cast<const AvroDefaultAttributes*>(field_projection.attributes.get()) !=
-          nullptr) {
+      if (field_projection.attributes != nullptr) {
         continue;
       }
-      auto attrs = std::make_shared<AvroDefaultAttributes>();
-      ICEBERG_ASSIGN_OR_RAISE(attrs->scalar,
+      auto attrs = std::make_shared<AvroExtraAttributes>();
+      ICEBERG_ASSIGN_OR_RAISE(attrs->default_scalar,
                               MakeDefaultScalar(std::get<Literal>(field_projection.from),
                                                 field_builder->type()));
       field_projection.attributes = std::move(attrs);
@@ -624,11 +623,15 @@ Status AppendDefaultToBuilder(const Literal& literal, ::arrow::ArrayBuilder* bui
 
 Status AppendDefaultToBuilder(const FieldProjection& projection,
                               ::arrow::ArrayBuilder* builder) {
-  if (const auto* attrs =
-          dynamic_cast<const AvroDefaultAttributes*>(projection.attributes.get());
-      attrs != nullptr && attrs->scalar != nullptr) {
-    ICEBERG_ARROW_RETURN_NOT_OK(builder->AppendScalar(*attrs->scalar));
-    return {};
+  // Avro projections carry a single attributes type, so once one is attached it is an
+  // AvroExtraAttributes; use checked_cast instead of a per-row dynamic_cast.
+  if (projection.attributes != nullptr) {
+    const auto& attrs =
+        internal::checked_cast<const AvroExtraAttributes&>(*projection.attributes);
+    if (attrs.default_scalar != nullptr) {
+      ICEBERG_ARROW_RETURN_NOT_OK(builder->AppendScalar(*attrs.default_scalar));
+      return {};
+    }
   }
   return AppendDefaultToBuilder(std::get<Literal>(projection.from), builder);
 }

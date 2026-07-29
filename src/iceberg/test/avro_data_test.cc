@@ -801,7 +801,7 @@ TEST(AppendDefaultToBuilderTest, ReusesPreparedScalar) {
   SchemaProjection schema_projection;
   schema_projection.fields.push_back(projection);
   ASSERT_THAT(PrepareDefaultScalars(schema_projection, &struct_builder), IsOk());
-  ASSERT_NE(dynamic_cast<const AvroDefaultAttributes*>(
+  ASSERT_NE(dynamic_cast<const AvroExtraAttributes*>(
                 schema_projection.fields[0].attributes.get()),
             nullptr);
 
@@ -852,8 +852,7 @@ TEST(AppendDefaultToBuilderTest, PreparesScalarUnderNestedCollections) {
   ASSERT_THAT(PrepareDefaultScalars(schema_projection, &root_builder), IsOk());
 
   const auto& prepared = schema_projection.fields[0].children[0].children[0].children[0];
-  ASSERT_NE(dynamic_cast<const AvroDefaultAttributes*>(prepared.attributes.get()),
-            nullptr);
+  ASSERT_NE(dynamic_cast<const AvroExtraAttributes*>(prepared.attributes.get()), nullptr);
 }
 
 TEST(AppendDatumToBuilderTest, NestedStructWithMissingOptionalFields) {

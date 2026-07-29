@@ -31,19 +31,22 @@
 
 namespace iceberg::avro {
 
-/// \brief Cached Arrow scalar for a `kDefault` field projection.
+/// \brief Avro-specific per-field projection attributes.
 ///
-/// Materialized once (see `PrepareDefaultScalars`) so row-by-row Avro decode only
-/// needs `AppendScalar` instead of repeating `ToArrowScalar` / `CastTo` per row.
-struct AvroDefaultAttributes : FieldProjection::ExtraAttributes {
-  std::shared_ptr<::arrow::Scalar> scalar;
+/// `FieldProjection` has a single attributes slot, so all Avro-side attributes live in
+/// one container (mirroring `ParquetExtraAttributes`) rather than separate subclasses
+/// that could not coexist. `default_scalar` is the Arrow scalar for a `kDefault` field,
+/// materialized once (see `PrepareDefaultScalars`) so row-by-row decode only needs
+/// `AppendScalar` instead of repeating `ToArrowScalar` / `CastTo` per row.
+struct AvroExtraAttributes : FieldProjection::ExtraAttributes {
+  std::shared_ptr<::arrow::Scalar> default_scalar;
 };
 
 /// \brief Precompute cast Arrow scalars for every `kDefault` field under `projection`.
 ///
 /// Walks `root_builder` in lockstep with the projection so each default is cast to the
 /// builder's Arrow type once per scan. Safe to call repeatedly; existing
-/// `AvroDefaultAttributes` entries are left unchanged.
+/// `AvroExtraAttributes` entries are left unchanged.
 Status PrepareDefaultScalars(SchemaProjection& projection,
                              ::arrow::ArrayBuilder* root_builder);
 
