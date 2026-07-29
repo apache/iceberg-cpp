@@ -130,12 +130,18 @@ Result<Decimal> RescaleHalfUp(const Decimal& unscaled, int32_t from_scale,
     return unscaled;
   }
   if (delta > 0) {
-    // Growing the scale multiplies by 10^delta and is exact; Rescale rejects overflow.
+    // Growing the scale multiplies the coefficient by 10^delta. Report an overflow as an
+    // invalid argument (consistent with the other rejections here) rather than leaking
+    // Rescale's "data loss" error to callers.
     if (delta > Decimal::kMaxScale) {
       return InvalidArgument("scale change {} exceeds the maximum {}", delta,
                              Decimal::kMaxScale);
     }
-    return unscaled.Rescale(from_scale, to_scale);
+    auto rescaled = unscaled.Rescale(from_scale, to_scale);
+    if (!rescaled.has_value()) {
+      return InvalidArgument("value does not fit the target decimal scale");
+    }
+    return rescaled.value();
   }
   // Shrinking the scale drops `drop` digits with HALF_UP rounding. A drop larger than the
   // digits any decimal can hold rounds everything away, so the result is zero (e.g.
@@ -155,6 +161,55 @@ Result<Decimal> RescaleHalfUp(const Decimal& unscaled, int32_t from_scale,
     quotient += negative ? Decimal(-1) : Decimal(1);
   }
   return quotient;
+}
+
+// Parse a `std::to_chars` double rendering (`[-]digits[.digits][e[+-]exp]`) into an
+// integer coefficient and the scale at which it is interpreted (value == coefficient *
+// 10^-scale). The coefficient is just the significant digits, so it never overflows
+// int128; the exponent is folded into the returned scale rather than expanded, leaving
+// RescaleHalfUp to combine it with the target scale.
+Result<Decimal> ParseRealCoefficient(std::string_view str, int32_t* scale) {
+  bool negative = !str.empty() && str.front() == '-';
+  if (negative) {
+    str.remove_prefix(1);
+  }
+
+  int32_t exponent = 0;
+  if (auto e = str.find_first_of("eE"); e != std::string_view::npos) {
+    auto exp_str = str.substr(e + 1);
+    // std::to_chars writes a leading '+' for positive exponents, which from_chars
+    // rejects.
+    if (!exp_str.empty() && exp_str.front() == '+') {
+      exp_str.remove_prefix(1);
+    }
+    if (std::from_chars(exp_str.data(), exp_str.data() + exp_str.size(), exponent).ec !=
+        std::errc{}) {
+      return InvalidArgument("Invalid real value '{}'", str);
+    }
+    str = str.substr(0, e);
+  }
+
+  int32_t frac_digits = 0;
+  std::string digits;
+  digits.reserve(str.size());
+  if (auto dot = str.find('.'); dot != std::string_view::npos) {
+    frac_digits = static_cast<int32_t>(str.size() - dot - 1);
+    digits.append(str.substr(0, dot));
+    digits.append(str.substr(dot + 1));
+  } else {
+    digits.append(str);
+  }
+  if (digits.empty() || digits.find_first_not_of("0123456789") != std::string::npos) {
+    return InvalidArgument("Invalid real value '{}'", str);
+  }
+
+  // Coefficient has scale `frac_digits`; a positive base-10 exponent lowers that scale.
+  *scale = frac_digits - exponent;
+  ICEBERG_ASSIGN_OR_RAISE(auto coefficient, Decimal::FromString(digits));
+  if (negative) {
+    coefficient.Negate();
+  }
+  return coefficient;
 }
 
 }  // namespace
@@ -193,12 +248,18 @@ Result<Literal> LiteralCaster::CastRealToDecimal(
     return InvalidArgument("Cannot cast {} as a {} value", value,
                            target_type->ToString());
   }
-  int32_t parsed_scale = 0;
-  ICEBERG_ASSIGN_OR_RAISE(
-      auto parsed,
-      Decimal::FromString(std::string_view(buf.data(), ptr), nullptr, &parsed_scale));
 
-  ICEBERG_ASSIGN_OR_RAISE(auto unscaled, RescaleHalfUp(parsed, parsed_scale,
+  // Parse the coefficient and its scale directly instead of via Decimal::FromString,
+  // which normalizes a negative scale by multiplying the coefficient by 10^-scale and can
+  // overflow int128 for large magnitudes (e.g. 4e38). The coefficient itself always fits,
+  // and RescaleHalfUp handles the exponent against the target scale (and rejects
+  // overflow).
+  int32_t coeff_scale = 0;
+  ICEBERG_ASSIGN_OR_RAISE(
+      auto coefficient,
+      ParseRealCoefficient(std::string_view(buf.data(), ptr), &coeff_scale));
+
+  ICEBERG_ASSIGN_OR_RAISE(auto unscaled, RescaleHalfUp(coefficient, coeff_scale,
                                                        decimal_type.scale(), value < 0));
   if (!unscaled.FitsInPrecision(decimal_type.precision())) {
     return InvalidArgument("Cannot cast {} as a {} value", value,

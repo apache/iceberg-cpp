@@ -235,6 +235,17 @@ TEST(LiteralTest, RealCastToDecimal) {
   auto neg_scale = Literal::Double(149.0).CastTo(decimal(9, -2));
   ASSERT_THAT(neg_scale, IsOk());
   EXPECT_EQ(*neg_scale, Literal::Decimal(1, 9, -2));
+
+  // A large magnitude must be rejected for exceeding precision, not wrap the int128
+  // coefficient: 4e38 needs 39 digits, over decimal(38, 0)'s precision.
+  EXPECT_THAT(Literal::Double(4e38).CastTo(decimal(38, 0)),
+              IsError(ErrorKind::kInvalidArgument));
+
+  // A large magnitude that IS representable at a negative scale is accepted: 1e39 as
+  // decimal(2, -38) is the unscaled value 10 (10 * 10^38).
+  auto big_neg_scale = Literal::Double(1e39).CastTo(decimal(2, -38));
+  ASSERT_THAT(big_neg_scale, IsOk());
+  EXPECT_EQ(*big_neg_scale, Literal::Decimal(10, 2, -38));
 }
 
 // Error cases for casts
