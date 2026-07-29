@@ -19,9 +19,10 @@
 
 #include "iceberg/util/property_util.h"
 
-#include <charconv>
+#include <cstdint>
 
 #include "iceberg/table_properties.h"
+#include "iceberg/util/string_util.h"
 
 namespace iceberg {
 
@@ -29,19 +30,12 @@ Status PropertyUtil::ValidateCommitProperties(
     const std::unordered_map<std::string, std::string>& properties) {
   for (const auto& property : TableProperties::commit_properties()) {
     if (auto it = properties.find(property); it != properties.end()) {
-      int32_t parsed;
-      const auto* end = it->second.data() + it->second.size();
-      auto [ptr, ec] = std::from_chars(it->second.data(), end, parsed);
-      if (ec == std::errc::invalid_argument) {
-        return ValidationFailed("Table property {} must have integer value, but got {}",
-                                property, it->second);
-      } else if (ec == std::errc::result_out_of_range) {
-        return ValidationFailed("Table property {} value out of range {}", property,
-                                it->second);
-      } else if (ptr != end) {
+      auto parsed_result = StringUtils::ParseNumber<int32_t>(it->second);
+      if (!parsed_result) {
         return ValidationFailed("Table property {} must have integer value, but got {}",
                                 property, it->second);
       }
+      const auto parsed = *parsed_result;
       if (parsed < 0) {
         return ValidationFailed(
             "Table property {} must have non negative integer value, but got {}",
