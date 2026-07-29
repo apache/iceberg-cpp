@@ -89,13 +89,13 @@ endfunction()
 # ICEBERG_CPR_URL            - cpr tarball URL
 #
 # Example usage:
-#   export ICEBERG_ARROW_URL="https://your-mirror.com/apache-arrow-24.0.0.tar.gz"
+#   export ICEBERG_ARROW_URL="https://your-mirror.com/apache-arrow-25.0.0.tar.gz"
 #   cmake -S . -B build
 #
 
-set(ICEBERG_ARROW_BUILD_VERSION "24.0.0")
+set(ICEBERG_ARROW_BUILD_VERSION "25.0.0")
 set(ICEBERG_ARROW_BUILD_SHA256_CHECKSUM
-    "9a8094d24fa33b90c672ab77fdda253f29300c8b0dd3f0b8e55a29dbd98b82c9")
+    "12afc2dc8137bdd4a68876cec939f664c9d55cfc7b75f55b45163ebb4e344d81")
 
 if(DEFINED ENV{ICEBERG_ARROW_URL})
   set(ARROW_SOURCE_URL "$ENV{ICEBERG_ARROW_URL}")
@@ -190,6 +190,18 @@ function(resolve_arrow_dependency)
   set(ZLIB_SOURCE "SYSTEM")
   set(ARROW_VERBOSE_THIRDPARTY_BUILD OFF)
   set(CMAKE_CXX_STANDARD 20)
+
+  # Arrow's bundled Thrift download (Parquet requires Thrift, so this fires even
+  # for non-Hive builds) only lists the live Apache mirrors closer.lua / dlcdn,
+  # which drop older releases. Thrift 0.22.0 (Arrow 24.0.0's pinned version) has
+  # already been removed from them and now 404s, breaking every bundled build.
+  # Point Arrow at archive.apache.org, which retains all releases, mirroring the
+  # archive fallback already used for ARROW_SOURCE_URL / NANOARROW_SOURCE_URL.
+  # Keep the version in sync with Arrow's ARROW_THRIFT_BUILD_VERSION on upgrades.
+  if(NOT DEFINED ENV{ARROW_THRIFT_URL})
+    set(ENV{ARROW_THRIFT_URL}
+        "https://archive.apache.org/dist/thrift/0.22.0/thrift-0.22.0.tar.gz")
+  endif()
 
   fetchcontent_declare(VendoredArrow
                        ${FC_DECLARE_COMMON_OPTIONS}

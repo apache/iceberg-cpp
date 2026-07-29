@@ -29,6 +29,9 @@ on:
       - main
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
+    paths:
+      - '.github/**/*.yml'
+      - '.github/**/*.yaml'
 
 permissions:
   contents: read

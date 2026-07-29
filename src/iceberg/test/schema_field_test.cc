@@ -203,4 +203,23 @@ TEST(SchemaFieldTest, ValidateAcceptsFiniteFloatingDefault) {
   EXPECT_THAT(field.Validate(), IsOk());
 }
 
+TEST(SchemaFieldTest, ValidateRejectsDecimalDefaultExceedingPrecision) {
+  // A decimal default whose unscaled value needs more digits than the field precision has
+  // the matching literal type (decimal(2, 1)) but does not fit; Validate must reject it
+  // so it is never serialized to metadata the reader would later refuse to parse.
+  SchemaField field(/*field_id=*/1, /*name=*/"d", decimal(2, 1),
+                    /*optional=*/true, /*doc=*/"",
+                    std::make_shared<const Literal>(Literal::Decimal(999, 2, 1)));
+  auto status = field.Validate();
+  EXPECT_THAT(status, IsError(ErrorKind::kInvalidSchema));
+  EXPECT_THAT(status, HasErrorMessage("does not fit precision"));
+}
+
+TEST(SchemaFieldTest, ValidateAcceptsDecimalDefaultWithinPrecision) {
+  SchemaField field(/*field_id=*/1, /*name=*/"d", decimal(4, 1),
+                    /*optional=*/true, /*doc=*/"",
+                    std::make_shared<const Literal>(Literal::Decimal(999, 4, 1)));
+  EXPECT_THAT(field.Validate(), IsOk());
+}
+
 }  // namespace iceberg
