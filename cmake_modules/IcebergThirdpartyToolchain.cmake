@@ -89,13 +89,13 @@ endfunction()
 # ICEBERG_CPR_URL            - cpr tarball URL
 #
 # Example usage:
-#   export ICEBERG_ARROW_URL="https://your-mirror.com/apache-arrow-24.0.0.tar.gz"
+#   export ICEBERG_ARROW_URL="https://your-mirror.com/apache-arrow-25.0.0.tar.gz"
 #   cmake -S . -B build
 #
 
-set(ICEBERG_ARROW_BUILD_VERSION "24.0.0")
+set(ICEBERG_ARROW_BUILD_VERSION "25.0.0")
 set(ICEBERG_ARROW_BUILD_SHA256_CHECKSUM
-    "9a8094d24fa33b90c672ab77fdda253f29300c8b0dd3f0b8e55a29dbd98b82c9")
+    "12afc2dc8137bdd4a68876cec939f664c9d55cfc7b75f55b45163ebb4e344d81")
 
 if(DEFINED ENV{ICEBERG_ARROW_URL})
   set(ARROW_SOURCE_URL "$ENV{ICEBERG_ARROW_URL}")
