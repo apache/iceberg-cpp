@@ -444,7 +444,9 @@ std::strong_ordering CompareFloat(T lhs, T rhs) {
   // and -NAN < NAN.
   bool lhs_is_negative = std::signbit(lhs);
   bool rhs_is_negative = std::signbit(rhs);
-  return lhs_is_negative <=> rhs_is_negative;
+  // A negative sign bit sorts below a positive one (-NaN < +NaN), so a
+  // negative operand must compare as less.
+  return rhs_is_negative <=> lhs_is_negative;
 }
 
 namespace {
