@@ -19,6 +19,7 @@
 
 #include "iceberg/expression/literal.h"
 
+#include <cmath>
 #include <limits>
 #include <numbers>
 #include <unordered_set>
@@ -217,8 +218,10 @@ TEST(LiteralTest, FloatNaNComparison) {
 }
 
 TEST(LiteralTest, FloatSignedNaNComparison) {
-  auto neg_nan = Literal::Float(-std::numeric_limits<float>::quiet_NaN());
-  auto pos_nan = Literal::Float(std::numeric_limits<float>::quiet_NaN());
+  auto neg_nan =
+      Literal::Float(std::copysign(std::numeric_limits<float>::quiet_NaN(), -1.0f));
+  auto pos_nan =
+      Literal::Float(std::copysign(std::numeric_limits<float>::quiet_NaN(), +1.0f));
 
   // Per the total ordering -NaN < ... < +NaN, a negative NaN sorts below a
   // positive NaN.
@@ -278,8 +281,10 @@ TEST(LiteralTest, DoubleNaNComparison) {
 }
 
 TEST(LiteralTest, DoubleSignedNaNComparison) {
-  auto neg_nan = Literal::Double(-std::numeric_limits<double>::quiet_NaN());
-  auto pos_nan = Literal::Double(std::numeric_limits<double>::quiet_NaN());
+  auto neg_nan =
+      Literal::Double(std::copysign(std::numeric_limits<double>::quiet_NaN(), -1.0));
+  auto pos_nan =
+      Literal::Double(std::copysign(std::numeric_limits<double>::quiet_NaN(), +1.0));
 
   // Per the total ordering -NaN < ... < +NaN, a negative NaN sorts below a
   // positive NaN.
