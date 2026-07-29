@@ -68,8 +68,8 @@ jobs:
       - name: Build Iceberg
         shell: bash
         env:
-          CC: gcc-14
-          CXX: g++-14
+          CC: clang-22
+          CXX: clang-22 --driver-mode=g++
         run: ci/scripts/build_iceberg.sh $(pwd) ON ON OFF OFF ON ${{ matrix.cmake_build_type }}
       - name: Save sccache
         if: always()
