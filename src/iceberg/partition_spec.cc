@@ -66,6 +66,12 @@ int32_t PartitionSpec::spec_id() const { return spec_id_; }
 
 std::span<const PartitionField> PartitionSpec::fields() const { return fields_; }
 
+bool PartitionSpec::IsUnpartitioned() const {
+  return std::ranges::all_of(fields_, [](const PartitionField& field) {
+    return field.transform()->transform_type() == TransformType::kVoid;
+  });
+}
+
 Result<std::unique_ptr<StructType>> PartitionSpec::PartitionType(
     const Schema& schema) const {
   if (fields_.empty()) {

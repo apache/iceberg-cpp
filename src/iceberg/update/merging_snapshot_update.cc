@@ -463,6 +463,10 @@ Status MergingSnapshotUpdate::AddDataFile(std::shared_ptr<DataFile> file) {
   if (!file) {
     return InvalidArgument("Cannot add a null data file");
   }
+  if (file->content != DataFile::Content::kData) {
+    return InvalidArgument("Invalid data file to add: {} has delete-file content",
+                           file->file_path);
+  }
   if (!file->partition_spec_id.has_value()) {
     return InvalidArgument("Data file must have a partition spec ID");
   }

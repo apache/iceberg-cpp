@@ -60,6 +60,20 @@ TEST(PartitionSpecTest, Basics) {
   }
 }
 
+TEST(PartitionSpecTest, IsUnpartitioned) {
+  ICEBERG_UNWRAP_OR_FAIL(auto empty_spec, PartitionSpec::Make(100, {}));
+  EXPECT_TRUE(empty_spec->IsUnpartitioned());
+
+  PartitionField void_field(5, 1000, "void", Transform::Void());
+  ICEBERG_UNWRAP_OR_FAIL(auto all_void_spec, PartitionSpec::Make(101, {void_field}));
+  EXPECT_TRUE(all_void_spec->IsUnpartitioned());
+
+  PartitionField identity_field(7, 1001, "identity", Transform::Identity());
+  ICEBERG_UNWRAP_OR_FAIL(auto partitioned_spec,
+                         PartitionSpec::Make(102, {void_field, identity_field}));
+  EXPECT_FALSE(partitioned_spec->IsUnpartitioned());
+}
+
 TEST(PartitionSpecTest, Equality) {
   SchemaField field1(5, "ts", timestamp(), true);
   SchemaField field2(7, "bar", string(), true);

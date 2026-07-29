@@ -19,7 +19,6 @@
 
 #include "iceberg/update/replace_partitions.h"
 
-#include <algorithm>
 #include <string_view>
 
 #include "iceberg/expression/expressions.h"
@@ -28,7 +27,6 @@
 #include "iceberg/table.h"  // IWYU pragma: keep
 #include "iceberg/table_metadata.h"
 #include "iceberg/transaction.h"
-#include "iceberg/transform.h"
 #include "iceberg/util/error_collector.h"
 #include "iceberg/util/macros.h"
 
@@ -45,7 +43,7 @@ Result<std::unique_ptr<ReplacePartitions>> ReplacePartitions::Make(
 ReplacePartitions::ReplacePartitions(std::string table_name,
                                      std::shared_ptr<TransactionContext> ctx)
     : MergingSnapshotUpdate(std::move(table_name), std::move(ctx)) {
-  SetSummaryProperty(SnapshotSummaryFields::kReplacePartitions, "true");
+  Set(SnapshotSummaryFields::kReplacePartitions, "true");
 }
 
 ReplacePartitions& ReplacePartitions::AddFile(const std::shared_ptr<DataFile>& file) {
@@ -54,25 +52,9 @@ ReplacePartitions& ReplacePartitions::AddFile(const std::shared_ptr<DataFile>& f
                         "Data file must have partition spec ID");
 
   int32_t spec_id = file->partition_spec_id.value();
-  ICEBERG_BUILDER_ASSIGN_OR_RETURN(auto spec, base().PartitionSpecById(spec_id));
-
+  ICEBERG_BUILDER_RETURN_IF_ERROR(DropPartition(spec_id, file->partition));
+  replaced_partitions_.add(spec_id, file->partition);
   ICEBERG_BUILDER_RETURN_IF_ERROR(AddDataFile(file));
-  // Specs with no non-void transforms are unpartitioned.
-  auto is_unpartitioned = [](const PartitionSpec& s) {
-    return s.fields().empty() ||
-           std::all_of(s.fields().begin(), s.fields().end(), [](const PartitionField& f) {
-             return f.transform()->transform_type() == TransformType::kVoid;
-           });
-  };
-  if (is_unpartitioned(*spec)) {
-    // Unpartitioned: replace the whole table and validate conflicts against an
-    // AlwaysTrue row filter instead of a spec-scoped partition set.
-    ICEBERG_BUILDER_RETURN_IF_ERROR(DeleteByRowFilter(Expressions::AlwaysTrue()));
-    replace_by_row_filter_ = true;
-  } else {
-    ICEBERG_BUILDER_RETURN_IF_ERROR(DropPartition(spec_id, file->partition));
-    replaced_partitions_.add(spec_id, file->partition);
-  }
   return *this;
 }
 
@@ -100,12 +82,16 @@ std::string ReplacePartitions::operation() { return DataOperation::kOverwrite; }
 
 Result<std::vector<ManifestFile>> ReplacePartitions::Apply(
     const TableMetadata& metadata_to_update, const std::shared_ptr<Snapshot>& snapshot) {
+  ICEBERG_ASSIGN_OR_RAISE(auto data_spec, DataSpec());
+  if (data_spec->IsUnpartitioned()) {
+    ICEBERG_RETURN_UNEXPECTED(DeleteByRowFilter(Expressions::AlwaysTrue()));
+  }
+
   auto result = MergingSnapshotUpdate::Apply(metadata_to_update, snapshot);
   if (result.has_value()) {
     return result;
   }
-  // ValidateAppendOnly() reports a fail-any-delete error when an existing data
-  // file would be dropped. Rewrite it to the partition-conflict message.
+  // Translate append-only conflicts to the ReplacePartitions error.
   constexpr std::string_view kFailAnyDeletePrefix =
       "Operation would delete existing data: ";
   const Error& error = result.error();
@@ -121,12 +107,7 @@ Result<std::vector<ManifestFile>> ReplacePartitions::Apply(
 
 Status ReplacePartitions::Validate(const TableMetadata& current_metadata,
                                    const std::shared_ptr<Snapshot>& snapshot) {
-  // DataSpec() requires at least one staged data file, all sharing exactly one
-  // partition spec. Call it unconditionally so a replace that stages an
-  // unpartitioned/all-void file first and then a file from another spec is
-  // rejected instead of committing a table-wide replace. The returned spec is
-  // unused; replace_by_row_filter_ / replaced_partitions_ already scope validation.
-  ICEBERG_RETURN_UNEXPECTED(DataSpec());
+  ICEBERG_ASSIGN_OR_RAISE(auto data_spec, DataSpec());
 
   if (snapshot == nullptr) {
     return {};
@@ -134,7 +115,7 @@ Status ReplacePartitions::Validate(const TableMetadata& current_metadata,
 
   auto io = ctx_->table->io();
   if (validate_conflicting_data_) {
-    if (replace_by_row_filter_) {
+    if (data_spec->IsUnpartitioned()) {
       ICEBERG_RETURN_UNEXPECTED(ValidateAddedDataFiles(
           current_metadata, starting_snapshot_id_, Expressions::AlwaysTrue(), snapshot,
           io, IsCaseSensitive()));
@@ -144,11 +125,8 @@ Status ReplacePartitions::Validate(const TableMetadata& current_metadata,
     }
   }
   if (validate_conflicting_deletes_) {
-    // Deleted-data validation runs before new-delete validation so the reported
-    // failure is deterministic when both conflict types are present. The first
-    // rejects concurrent removals of data in the replaced partitions; the second
-    // rejects delete files added concurrently there.
-    if (replace_by_row_filter_) {
+    // Check deleted data files before newly added delete files.
+    if (data_spec->IsUnpartitioned()) {
       ICEBERG_RETURN_UNEXPECTED(ValidateDeletedDataFiles(
           current_metadata, starting_snapshot_id_, Expressions::AlwaysTrue(), snapshot,
           io, IsCaseSensitive()));

@@ -61,6 +61,9 @@ class ICEBERG_EXPORT PartitionSpec : public util::Formattable {
   /// \brief Get a list view of the partition fields.
   std::span<const PartitionField> fields() const;
 
+  /// \brief Return whether this spec has no non-void partition fields.
+  bool IsUnpartitioned() const;
+
   /// \brief Get the partition type binding to the input schema.
   Result<std::unique_ptr<StructType>> PartitionType(const Schema& schema) const;
 
