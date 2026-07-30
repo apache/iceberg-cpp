@@ -79,53 +79,24 @@ void LogToCurrent(LogLevel level, const std::source_location& location,
   }
 }
 
-/// \brief Runtime-level variant against the current logger: emit if enabled, then
-/// flush + abort when level == kFatal (using the same acquired logger).
-template <typename MakeMessage>
-void LogToCurrentRuntime(LogLevel level, const std::source_location& location,
-                         MakeMessage&& make_message) noexcept {
-  const std::shared_ptr<Logger>& logger = CurrentLogger();
-  if (logger) {
-    EmitIfEnabled(*logger, level, location, std::forward<MakeMessage>(make_message));
-  }
-  if (level == LogLevel::kFatal) {
-    if (logger) logger->Flush();
-    std::abort();
-  }
-}
-
-/// \brief Runtime-level variant against an explicit logger: emit if enabled, then
-/// flush + abort when level == kFatal.
-template <typename MakeMessage>
-void LogToExplicitRuntime(Logger& logger, LogLevel level,
-                          const std::source_location& location,
-                          MakeMessage&& make_message) noexcept {
-  EmitIfEnabled(logger, level, location, std::forward<MakeMessage>(make_message));
-  if (level == LogLevel::kFatal) {
-    logger.Flush();
-    std::abort();
-  }
-}
-
-/// \brief Fatal path: acquire the effective (scoped-or-default) logger ONCE, emit
-/// if enabled, flush that same logger, run any registered FatalHandler, then
-/// abort. Never returns.
+/// \brief The one fatal sequence, shared by every kFatal path: format the message
+/// once, emit it if \p logger is enabled, flush \p logger, run any registered
+/// FatalHandler, then std::abort(). Never returns.
 ///
-/// The message is always formatted here (independent of ShouldLog) so the handler
-/// receives it even when the fatal record itself is filtered out. The handler runs
-/// after emit+flush and before abort; if it does not itself terminate the process,
-/// std::abort() still runs.
+/// \p logger may be null (no sink). The message is formatted regardless of
+/// ShouldLog so the handler always receives it, even when the record is filtered
+/// out. The handler runs after emit+flush and before abort; if it does not itself
+/// terminate the process, std::abort() still runs.
 template <typename MakeMessage>
-[[noreturn]] void LogFatal(const std::source_location& location,
-                           MakeMessage&& make_message) noexcept {
+[[noreturn]] void DispatchFatal(Logger* logger, const std::source_location& location,
+                                MakeMessage&& make_message) noexcept {
   std::string message;
   try {
     message = std::forward<MakeMessage>(make_message)();
   } catch (...) {
     message = "<fmt error>";
   }
-  auto logger = GetCurrentLogger();
-  if (logger) {
+  if (logger != nullptr) {
     if (logger->ShouldLog(LogLevel::kFatal)) {
       Emit(*logger, LogLevel::kFatal, location, std::string(message));
     }
@@ -138,6 +109,41 @@ template <typename MakeMessage>
     }
   }
   std::abort();
+}
+
+/// \brief Runtime-level variant against the current logger: on kFatal run the
+/// shared fatal sequence; otherwise emit if enabled.
+template <typename MakeMessage>
+void LogToCurrentRuntime(LogLevel level, const std::source_location& location,
+                         MakeMessage&& make_message) noexcept {
+  const std::shared_ptr<Logger>& logger = CurrentLogger();
+  if (level == LogLevel::kFatal) {
+    DispatchFatal(logger.get(), location, std::forward<MakeMessage>(make_message));
+  }
+  if (logger) {
+    EmitIfEnabled(*logger, level, location, std::forward<MakeMessage>(make_message));
+  }
+}
+
+/// \brief Runtime-level variant against an explicit logger: on kFatal run the
+/// shared fatal sequence; otherwise emit if enabled.
+template <typename MakeMessage>
+void LogToExplicitRuntime(Logger& logger, LogLevel level,
+                          const std::source_location& location,
+                          MakeMessage&& make_message) noexcept {
+  if (level == LogLevel::kFatal) {
+    DispatchFatal(&logger, location, std::forward<MakeMessage>(make_message));
+  }
+  EmitIfEnabled(logger, level, location, std::forward<MakeMessage>(make_message));
+}
+
+/// \brief Fixed-severity fatal path (ICEBERG_LOG_FATAL): route the effective
+/// (scoped-or-default) logger through the shared fatal sequence. Never returns.
+template <typename MakeMessage>
+[[noreturn]] void LogFatal(const std::source_location& location,
+                           MakeMessage&& make_message) noexcept {
+  auto logger = GetCurrentLogger();  // keep the shared_ptr alive across the call
+  DispatchFatal(logger.get(), location, std::forward<MakeMessage>(make_message));
 }
 
 }  // namespace iceberg::internal
