@@ -536,9 +536,9 @@ DeleteFileIndex::Builder& DeleteFileIndex::Builder::PlanWith(OptionalExecutor ex
   executor_ = executor;
   return *this;
 }
-DeleteFileIndex::Builder& DeleteFileIndex::Builder::ScanMetrics(
-    class iceberg::ScanMetrics* scan_metrics) {
-  scan_metrics_ = scan_metrics;
+DeleteFileIndex::Builder& DeleteFileIndex::Builder::WithScanMetrics(
+    std::shared_ptr<ScanMetrics> scan_metrics) {
+  scan_metrics_ = std::move(scan_metrics);
   return *this;
 }
 
@@ -688,9 +688,6 @@ Result<std::vector<ManifestEntry>> DeleteFileIndex::Builder::LoadDeleteFiles() {
             ContentFileUtil::DropUnselectedStats(*entry.data_file, columns);
             manifest_result.emplace_back(std::move(entry));
           }
-          // Entries filtered out by min_sequence_number_ are not counted as skipped;
-          // Java's ScanMetricsUtil only counts manifest-level and partition-evaluator
-          // skips, not sequence-number-based dedup filtering.
         }
         return manifest_result;
       });

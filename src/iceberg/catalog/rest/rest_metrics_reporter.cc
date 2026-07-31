@@ -17,18 +17,15 @@
  * under the License.
  */
 
-#include "iceberg/catalog/rest/rest_metrics_reporter.h"
-
-#include <cstdio>
 #include <utility>
 
 #include <nlohmann/json.hpp>
 
 #include "iceberg/catalog/rest/auth/auth_session.h"
-#include "iceberg/catalog/rest/error_handlers.h"
-#include "iceberg/catalog/rest/http_client.h"
+#include "iceberg/catalog/rest/rest_metrics_reporter_internal.h"
 #include "iceberg/metrics/json_serde_internal.h"
 #include "iceberg/metrics/metrics_reporter.h"
+#include "iceberg/util/executor.h"
 
 namespace iceberg::rest {
 
@@ -40,12 +37,13 @@ constexpr std::string_view kCommitReportType = "commit-report";
 
 }  // namespace
 
-RestMetricsReporter::RestMetricsReporter(std::shared_ptr<HttpClientBase> client,
-                                         std::string metrics_endpoint,
-                                         std::shared_ptr<auth::AuthSession> session)
-    : client_(std::move(client)),
-      metrics_endpoint_(std::move(metrics_endpoint)),
-      session_(std::move(session)) {}
+RestMetricsReporter::RestMetricsReporter(std::string metrics_endpoint,
+                                         std::shared_ptr<auth::AuthSession> session,
+                                         Executor* executor, RestMetricsPost post)
+    : metrics_endpoint_(std::move(metrics_endpoint)),
+      session_(std::move(session)),
+      executor_(executor),
+      post_(std::move(post)) {}
 
 Result<std::string> RestMetricsReporter::BuildRequestBody(const MetricsReport& report) {
   ICEBERG_ASSIGN_OR_RAISE(
@@ -53,7 +51,6 @@ Result<std::string> RestMetricsReporter::BuildRequestBody(const MetricsReport& r
       std::visit([](const auto& r) -> Result<nlohmann::json> { return ToJson(r); },
                  report));
 
-  // Inject "report-type" required by the REST spec (not included in core ToJson).
   json[kReportType] =
       std::holds_alternative<ScanReport>(report) ? kScanReportType : kCommitReportType;
   return json.dump();
@@ -62,17 +59,23 @@ Result<std::string> RestMetricsReporter::BuildRequestBody(const MetricsReport& r
 Status RestMetricsReporter::Report(const MetricsReport& report) {
   try {
     auto body_result = BuildRequestBody(report);
-    if (!body_result) {
+    if (!body_result || !session_ || !post_) {
       return {};
     }
 
-    // POST to the metrics endpoint; suppress errors to match Java fire-and-forget
-    // behavior.
-    // TODO(evindj) make this post async.
-    std::ignore = client_->Post(metrics_endpoint_, *body_result, /*headers=*/{},
-                                *DefaultErrorHandler::Instance(), *session_);
-  } catch (const std::exception&) {
-    return {};
+    ExecutorTask task([post = post_, endpoint = metrics_endpoint_,
+                       body = std::move(*body_result), session = session_]() mutable {
+      try {
+        post(endpoint, body, *session);
+      } catch (...) {
+      }
+    });
+    if (executor_) {
+      std::ignore = executor_->Submit(std::move(task));
+    } else {
+      std::move(task)();
+    }
+  } catch (...) {
   }
   return {};
 }

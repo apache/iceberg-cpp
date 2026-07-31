@@ -75,8 +75,9 @@ class UpdateSchemaTest : public ::testing::Test {
           return mock_file_io_ptr->FileIO::WriteFile(file_location, content);
         });
     file_io_ = std::move(mock_file_io);
-    catalog_ =
-        InMemoryCatalog::Make("test_catalog", file_io_, "/warehouse/", /*properties=*/{});
+    ICEBERG_UNWRAP_OR_FAIL(catalog_,
+                           InMemoryCatalog::Make("test_catalog", file_io_, "/warehouse/",
+                                                 /*properties=*/{}));
   }
 
   void RegisterTable(std::unique_ptr<TableMetadata> metadata) {

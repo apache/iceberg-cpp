@@ -33,6 +33,7 @@
 #include "iceberg/file_reader.h"
 #include "iceberg/inheritable_metadata.h"
 #include "iceberg/manifest/manifest_reader.h"
+#include "iceberg/type_fwd.h"
 #include "iceberg/util/partition_value_util.h"
 
 namespace iceberg {

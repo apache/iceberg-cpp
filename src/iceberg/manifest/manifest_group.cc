@@ -199,8 +199,7 @@ ManifestGroup& ManifestGroup::PlanWith(OptionalExecutor executor) {
   return *this;
 }
 
-ManifestGroup& ManifestGroup::ScanMetrics(
-    std::shared_ptr<class ScanMetrics> scan_metrics) {
+ManifestGroup& ManifestGroup::WithScanMetrics(std::shared_ptr<ScanMetrics> scan_metrics) {
   scan_metrics_ = std::move(scan_metrics);
   return *this;
 }
@@ -219,9 +218,8 @@ Result<std::vector<std::shared_ptr<FileScanTask>>> ManifestGroup::PlanFiles() {
         ContentFileUtil::DropUnselectedStats(*entry.data_file, ctx.columns_to_keep_stats);
       }
       ICEBERG_ASSIGN_OR_RAISE(auto delete_files, ctx.deletes->ForEntry(entry));
-      // Mirrors Java's ScanMetricsUtil.fileTask(): counted once per FileScanTask (i.e.
-      // once per data file), so a delete file shared by N data files contributes here
-      // N times, unlike indexed_delete_files which is deduplicated in DeleteFileIndex.
+      // Count result metrics once per data file task. A delete file shared by
+      // multiple data files contributes once to each task, unlike indexed delete files.
       if (scan_metrics_) {
         scan_metrics_->total_file_size_in_bytes->Increment(
             ContentFileUtil::ContentSizeInBytes(*entry.data_file));
@@ -251,7 +249,6 @@ Result<std::vector<std::shared_ptr<FileScanTask>>> ManifestGroup::PlanFiles() {
   for (auto& task : tasks) {
     file_tasks.push_back(internal::checked_pointer_cast<FileScanTask>(task));
   }
-
   return file_tasks;
 }
 
@@ -277,9 +274,7 @@ Result<std::vector<std::shared_ptr<ScanTask>>> ManifestGroup::Plan(
     return residual_cache[spec_id].get();
   };
 
-  if (scan_metrics_) {
-    delete_index_builder_.ScanMetrics(scan_metrics_.get());
-  }
+  delete_index_builder_.WithScanMetrics(scan_metrics_);
   ICEBERG_ASSIGN_OR_RAISE(auto delete_index, delete_index_builder_.Build());
 
   bool drop_stats = ManifestReader::ShouldDropStats(columns_);

@@ -86,6 +86,9 @@ std::string SanitizeTimestamp(int64_t micros, int64_t now) {
 }
 
 std::string SanitizeNumber(double value, std::string_view type) {
+  if (!std::isfinite(value)) {
+    return std::format("({})", type);
+  }
   int32_t num_digits =
       value == 0 ? 1 : static_cast<int32_t>(std::log10(std::abs(value))) + 1;
   return std::format("({}-digit-{})", num_digits, type);
@@ -142,8 +145,6 @@ Result<std::string> SanitizeString(std::string_view value, int64_t now, int32_t 
     }
     return SanitizeSimpleString(value);
   } catch (const std::exception&) {
-    // Don't throw when parsing failed in sanitizeString default to simple string
-    // sanitization.
     return SanitizeSimpleString(value);
   }
 }
@@ -176,6 +177,9 @@ Result<std::string> SanitizePlaceholder(const Literal& literal, int64_t now,
       return SanitizeNumber(std::get<float>(value), "float");
     case TypeId::kDouble:
       return SanitizeNumber(std::get<double>(value), "float");
+    case TypeId::kBinary:
+    case TypeId::kFixed:
+      return SanitizeSimpleString(literal.ToString());
     default:
       return SanitizeSimpleString(literal.ToString());
   }
@@ -186,16 +190,11 @@ Result<Literal> SanitizeLiteral(const Literal& literal, int64_t now, int32_t tod
   return Literal::String(std::move(placeholder));
 }
 
-// Mirrors Java's ExpressionUtil.unbind(BoundTerm): a transform term (bucket/day/etc.)
-// is rebuilt as a transform term over a fresh reference, instead of being collapsed to
-// a plain column reference.
 Result<std::shared_ptr<UnboundTerm<BoundTransform>>> MakeSanitizedTransformTerm(
     std::string_view name, const std::shared_ptr<Transform>& transform) {
-  ICEBERG_ASSIGN_OR_RAISE(auto named_ref, NamedReference::Make(std::string(name)));
-  std::shared_ptr<NamedReference> shared_ref = std::move(named_ref);
-  ICEBERG_ASSIGN_OR_RAISE(auto unbound_transform,
-                          UnboundTransform::Make(std::move(shared_ref), transform));
-  return std::shared_ptr<UnboundTerm<BoundTransform>>(std::move(unbound_transform));
+  ICEBERG_ASSIGN_OR_RAISE(std::shared_ptr<NamedReference> named_ref,
+                          NamedReference::Make(std::string(name)));
+  return UnboundTransform::Make(std::move(named_ref), transform);
 }
 
 template <typename B>
@@ -203,17 +202,12 @@ Result<std::shared_ptr<Expression>> MakeSanitizedPredicateOverTerm(
     Expression::Operation op, std::shared_ptr<UnboundTerm<B>> term,
     std::vector<Literal> values) {
   if (values.empty()) {
-    ICEBERG_ASSIGN_OR_RAISE(auto pred, UnboundPredicateImpl<B>::Make(op, term));
-    return std::shared_ptr<Expression>(std::move(pred));
+    return UnboundPredicateImpl<B>::Make(op, term);
   }
   if (values.size() == 1) {
-    ICEBERG_ASSIGN_OR_RAISE(
-        auto pred, UnboundPredicateImpl<B>::Make(op, term, std::move(values[0])));
-    return std::shared_ptr<Expression>(std::move(pred));
+    return UnboundPredicateImpl<B>::Make(op, term, std::move(values[0]));
   }
-  ICEBERG_ASSIGN_OR_RAISE(auto pred,
-                          UnboundPredicateImpl<B>::Make(op, term, std::move(values)));
-  return std::shared_ptr<Expression>(std::move(pred));
+  return UnboundPredicateImpl<B>::Make(op, term, std::move(values));
 }
 
 // Rebuilds a sanitized predicate over a bound `term`, preserving whether it was a plain
@@ -232,49 +226,36 @@ Result<std::shared_ptr<Expression>> MakeSanitizedPredicate(
   }
   ICEBERG_ASSIGN_OR_RAISE(auto named_ref,
                           NamedReference::Make(std::string(term->reference()->name())));
-  std::shared_ptr<UnboundTerm<BoundReference>> ref_term = std::move(named_ref);
-  return MakeSanitizedPredicateOverTerm<BoundReference>(op, std::move(ref_term),
+  return MakeSanitizedPredicateOverTerm<BoundReference>(op, std::move(named_ref),
                                                         std::move(values));
 }
 
-// Rebuilds a sanitized predicate over an unbound `term`.
-Result<std::shared_ptr<Expression>> MakeSanitizedPredicate(Expression::Operation op,
-                                                           const Term& term,
-                                                           std::vector<Literal> values) {
-  if (term.kind() == Term::Kind::kTransform) {
-    const auto& unbound_transform = internal::checked_cast<const UnboundTransform&>(term);
-    // reference() is non-const on Unbound<B> but never mutates state; same pattern as
-    // json_serde.cc's ToJson(const UnboundTransform&).
-    auto& mut = const_cast<UnboundTransform&>(unbound_transform);
-    ICEBERG_ASSIGN_OR_RAISE(auto transform_term,
-                            MakeSanitizedTransformTerm(mut.reference()->name(),
-                                                       unbound_transform.transform()));
-    return MakeSanitizedPredicateOverTerm<BoundTransform>(op, std::move(transform_term),
-                                                          std::move(values));
+template <typename B>
+Result<std::shared_ptr<Expression>> MakeSanitizedUnboundPredicate(
+    const std::shared_ptr<UnboundPredicate>& pred, std::vector<Literal> values) {
+  auto typed_pred = std::dynamic_pointer_cast<UnboundPredicateImpl<B>>(pred);
+  if (typed_pred == nullptr) [[unlikely]] {
+    return InvalidExpression("Unexpected unbound predicate term type");
   }
-  const auto& named_reference = internal::checked_cast<const NamedReference&>(term);
-  ICEBERG_ASSIGN_OR_RAISE(auto named_ref,
-                          NamedReference::Make(std::string(named_reference.name())));
-  std::shared_ptr<UnboundTerm<BoundReference>> ref_term = std::move(named_ref);
-  return MakeSanitizedPredicateOverTerm<BoundReference>(op, std::move(ref_term),
-                                                        std::move(values));
+  return MakeSanitizedPredicateOverTerm<B>(pred->op(), typed_pred->term(),
+                                           std::move(values));
 }
 
 }  // namespace
 
 SanitizeExpression::SanitizeExpression() {
-  auto now = std::chrono::system_clock::now();
-  now_ = std::chrono::duration_cast<std::chrono::microseconds>(now.time_since_epoch())
-             .count();
+  auto now = std::chrono::system_clock::now().time_since_epoch();
+  auto now_millis = std::chrono::duration_cast<std::chrono::milliseconds>(now);
+  now_ = std::chrono::duration_cast<std::chrono::microseconds>(now_millis).count();
   today_ = static_cast<int32_t>(
-      std::chrono::duration_cast<std::chrono::days>(now.time_since_epoch()).count());
+      std::chrono::duration_cast<std::chrono::days>(now_millis).count());
 }
 
 Result<std::shared_ptr<Expression>> SanitizeExpression::Sanitize(
     const std::shared_ptr<Expression>& expr) {
   ICEBERG_DCHECK(expr != nullptr, "Expression cannot be null");
   SanitizeExpression visitor;
-  return iceberg::Visit<std::shared_ptr<Expression>, SanitizeExpression>(expr, visitor);
+  return Visit<std::shared_ptr<Expression>, SanitizeExpression>(expr, visitor);
 }
 
 Result<std::shared_ptr<Expression>> SanitizeExpression::AlwaysTrue() {
@@ -287,19 +268,19 @@ Result<std::shared_ptr<Expression>> SanitizeExpression::AlwaysFalse() {
 
 Result<std::shared_ptr<Expression>> SanitizeExpression::Not(
     const std::shared_ptr<Expression>& child_result) {
-  return iceberg::Not::MakeFolded(child_result);
+  return Not::MakeFolded(child_result);
 }
 
 Result<std::shared_ptr<Expression>> SanitizeExpression::And(
     const std::shared_ptr<Expression>& left_result,
     const std::shared_ptr<Expression>& right_result) {
-  return iceberg::And::MakeFolded(left_result, right_result);
+  return And::MakeFolded(left_result, right_result);
 }
 
 Result<std::shared_ptr<Expression>> SanitizeExpression::Or(
     const std::shared_ptr<Expression>& left_result,
     const std::shared_ptr<Expression>& right_result) {
-  return iceberg::Or::MakeFolded(left_result, right_result);
+  return Or::MakeFolded(left_result, right_result);
 }
 
 Result<std::shared_ptr<Expression>> SanitizeExpression::Predicate(
@@ -330,6 +311,28 @@ Result<std::shared_ptr<Expression>> SanitizeExpression::Predicate(
 
 Result<std::shared_ptr<Expression>> SanitizeExpression::Predicate(
     const std::shared_ptr<UnboundPredicate>& pred) {
+  switch (pred->op()) {
+    case Expression::Operation::kIsNull:
+    case Expression::Operation::kNotNull:
+    case Expression::Operation::kIsNan:
+    case Expression::Operation::kNotNan:
+      return pred;
+    case Expression::Operation::kLt:
+    case Expression::Operation::kLtEq:
+    case Expression::Operation::kGt:
+    case Expression::Operation::kGtEq:
+    case Expression::Operation::kEq:
+    case Expression::Operation::kNotEq:
+    case Expression::Operation::kStartsWith:
+    case Expression::Operation::kNotStartsWith:
+    case Expression::Operation::kIn:
+    case Expression::Operation::kNotIn:
+      break;
+    default:
+      return InvalidExpression(
+          "Unsupported unbound predicate operation for sanitization");
+  }
+
   auto literals = pred->literals();
   std::vector<Literal> placeholders;
   placeholders.reserve(literals.size());
@@ -337,8 +340,15 @@ Result<std::shared_ptr<Expression>> SanitizeExpression::Predicate(
     ICEBERG_ASSIGN_OR_RAISE(auto placeholder, SanitizeLiteral(literal, now_, today_));
     placeholders.push_back(std::move(placeholder));
   }
-  return MakeSanitizedPredicate(pred->op(), pred->unbound_term(),
-                                std::move(placeholders));
+  switch (pred->unbound_term().kind()) {
+    case Term::Kind::kReference:
+      return MakeSanitizedUnboundPredicate<BoundReference>(pred, std::move(placeholders));
+    case Term::Kind::kTransform:
+      return MakeSanitizedUnboundPredicate<BoundTransform>(pred, std::move(placeholders));
+    case Term::Kind::kExtract:
+      return NotSupported("Cannot sanitize an extract predicate");
+  }
+  std::unreachable();
 }
 
 Result<std::shared_ptr<Expression>> SanitizeExpression::Sanitize(

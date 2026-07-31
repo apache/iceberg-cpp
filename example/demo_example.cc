@@ -18,6 +18,7 @@
  */
 
 #include <iostream>
+#include <utility>
 
 #include "iceberg/arrow/arrow_io_util.h"
 #include "iceberg/avro/avro_register.h"
@@ -42,8 +43,14 @@ int main(int argc, char** argv) {
   iceberg::avro::RegisterAll();
   iceberg::parquet::RegisterAll();
 
-  auto catalog = iceberg::InMemoryCatalog::Make("test", iceberg::arrow::MakeLocalFileIO(),
-                                                warehouse_location, properties);
+  auto catalog_result = iceberg::InMemoryCatalog::Make(
+      "test", iceberg::arrow::MakeLocalFileIO(), warehouse_location, properties);
+  if (!catalog_result.has_value()) {
+    std::cerr << "Failed to create catalog: " << catalog_result.error().message
+              << std::endl;
+    return 1;
+  }
+  auto catalog = std::move(catalog_result.value());
 
   auto register_result = catalog->RegisterTable({.name = table_name}, table_location);
   if (!register_result.has_value()) {

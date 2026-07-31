@@ -17,10 +17,6 @@
  * under the License.
  */
 
-/// \file scan_planning_metrics_test.cc
-/// End-to-end tests for scan planning metrics, mirroring Java's
-/// ScanPlanningAndReportingTestBase.
-
 #include <memory>
 #include <optional>
 #include <string>
@@ -36,9 +32,11 @@
 #include "iceberg/metrics/scan_report.h"
 #include "iceberg/result.h"
 #include "iceberg/snapshot.h"
+#include "iceberg/table.h"
 #include "iceberg/table_metadata.h"
 #include "iceberg/table_scan.h"
 #include "iceberg/test/matchers.h"
+#include "iceberg/test/mock_catalog.h"
 #include "iceberg/test/scan_test_base.h"
 #include "iceberg/transform.h"
 #include "iceberg/util/timepoint.h"
@@ -47,7 +45,6 @@ namespace iceberg {
 
 namespace {
 
-/// Reporter that captures the most recent ScanReport for assertions.
 class CapturingReporter final : public MetricsReporter {
  public:
   Status Report(const MetricsReport& report) override {
@@ -58,7 +55,6 @@ class CapturingReporter final : public MetricsReporter {
   }
 
   const std::optional<ScanReport>& last() const { return last_; }
-  void clear() { last_.reset(); }
 
  private:
   std::optional<ScanReport> last_;
@@ -79,7 +75,6 @@ class ScanPlanningMetricsTest : public ScanTestBase {
                                             Transform::Identity())}));
   }
 
-  /// \brief Build a DataFile with optional lower/upper bounds on the "id" field.
   std::shared_ptr<DataFile> MakeDataFile(const std::string& path,
                                          const PartitionValues& partition,
                                          int32_t spec_id, int64_t record_count = 1,
@@ -103,7 +98,6 @@ class ScanPlanningMetricsTest : public ScanTestBase {
     return file;
   }
 
-  /// \brief Build a positional-delete DataFile.
   std::shared_ptr<DataFile> MakePositionDeleteFile(
       const std::string& path, const PartitionValues& partition, int32_t spec_id,
       std::optional<std::string> referenced_file = std::nullopt) {
@@ -119,7 +113,23 @@ class ScanPlanningMetricsTest : public ScanTestBase {
     });
   }
 
-  /// \brief Build a global (unpartitioned) equality-delete DataFile.
+  std::shared_ptr<DataFile> MakeDV(const std::string& path,
+                                   const PartitionValues& partition, int32_t spec_id,
+                                   const std::string& referenced_file) {
+    return std::make_shared<DataFile>(DataFile{
+        .content = DataFile::Content::kPositionDeletes,
+        .file_path = path,
+        .file_format = FileFormatType::kPuffin,
+        .partition = partition,
+        .record_count = 1,
+        .file_size_in_bytes = 10,
+        .referenced_data_file = referenced_file,
+        .content_offset = 4,
+        .content_size_in_bytes = 6,
+        .partition_spec_id = spec_id,
+    });
+  }
+
   std::shared_ptr<DataFile> MakeEqualityDeleteFile(const std::string& path,
                                                    const PartitionValues& partition,
                                                    int32_t spec_id,
@@ -136,29 +146,33 @@ class ScanPlanningMetricsTest : public ScanTestBase {
     });
   }
 
-  /// \brief Build a single-snapshot TableMetadata from a manifest list path.
   std::shared_ptr<TableMetadata> BuildMetadata(
-      int64_t snapshot_id, const std::string& manifest_list_path,
+      int8_t format_version, int64_t snapshot_id, int64_t sequence_number,
+      const std::string& manifest_list_path,
       std::shared_ptr<PartitionSpec> spec = nullptr) {
     if (!spec) spec = partitioned_spec_;
+    std::vector<std::shared_ptr<PartitionSpec>> specs = {spec};
+    if (spec->spec_id() != unpartitioned_spec_->spec_id()) {
+      specs.push_back(unpartitioned_spec_);
+    }
     const auto ts = TimePointMsFromUnixMs(1609459200000L);
     auto snapshot =
         std::make_shared<Snapshot>(Snapshot{.snapshot_id = snapshot_id,
                                             .parent_snapshot_id = std::nullopt,
-                                            .sequence_number = 1L,
+                                            .sequence_number = sequence_number,
                                             .timestamp_ms = ts,
                                             .manifest_list = manifest_list_path,
                                             .schema_id = schema_->schema_id()});
     return std::make_shared<TableMetadata>(
-        TableMetadata{.format_version = 2,
+        TableMetadata{.format_version = format_version,
                       .table_uuid = "test-table-uuid",
                       .location = "/tmp/table",
-                      .last_sequence_number = 1L,
+                      .last_sequence_number = sequence_number,
                       .last_updated_ms = ts,
                       .last_column_id = 2,
                       .schemas = {schema_},
                       .current_schema_id = schema_->schema_id(),
-                      .partition_specs = {spec, unpartitioned_spec_},
+                      .partition_specs = std::move(specs),
                       .default_spec_id = spec->spec_id(),
                       .last_partition_id = 1001,
                       .current_snapshot_id = snapshot_id,
@@ -171,7 +185,6 @@ class ScanPlanningMetricsTest : public ScanTestBase {
                                             .retention = SnapshotRef::Branch{}})}}});
   }
 
-  /// \brief Wrapper matching WriteManifestList(format_version, snap_id, seq, manifests).
   std::string WriteManifestList(int8_t format_version, int64_t snapshot_id,
                                 int64_t sequence_number,
                                 const std::vector<ManifestFile>& manifests) {
@@ -184,11 +197,7 @@ class ScanPlanningMetricsTest : public ScanTestBase {
   std::shared_ptr<PartitionSpec> id_identity_spec_;
 };
 
-// ---------------------------------------------------------------------------
-// Test 1: Verify a ScanReport is fired and contains basic accurate fields.
-// Mirrors Java's scanningWithMultipleReporters().
-// ---------------------------------------------------------------------------
-TEST_P(ScanPlanningMetricsTest, ScanReportFiredAfterPlanFiles) {
+TEST_P(ScanPlanningMetricsTest, ReportsToTableAndScanReporters) {
   auto version = GetParam();
   constexpr int64_t kSnapshotId = 2000L;
   const auto part = PartitionValues({Literal::Int(0)});
@@ -202,11 +211,18 @@ TEST_P(ScanPlanningMetricsTest, ScanReportFiredAfterPlanFiles) {
       partitioned_spec_);
   auto manifest_list =
       WriteManifestList(version, kSnapshotId, /*sequence_number=*/1, {data_manifest});
-  auto metadata = BuildMetadata(kSnapshotId, manifest_list);
+  auto metadata =
+      BuildMetadata(version, kSnapshotId, /*sequence_number=*/1, manifest_list);
 
-  reporter_->clear();
-  ICEBERG_UNWRAP_OR_FAIL(auto builder, DataTableScanBuilder::Make(metadata, file_io_));
-  builder->MetricsReporter(reporter_).TableName("test.table");
+  auto catalog = std::make_shared<::testing::NiceMock<MockCatalog>>();
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto table,
+      Table::Make(TableIdentifier{.ns = Namespace{.levels = {"db"}}, .name = "table"},
+                  metadata, "/tmp/table/metadata.json", file_io_, catalog, "test.table",
+                  reporter_));
+  ICEBERG_UNWRAP_OR_FAIL(auto builder, DataTableScanBuilder::Make(*table));
+  auto scan_reporter = std::make_shared<CapturingReporter>();
+  builder->ReportWith(scan_reporter);
   ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
   ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
   ASSERT_EQ(tasks.size(), 1u);
@@ -221,12 +237,10 @@ TEST_P(ScanPlanningMetricsTest, ScanReportFiredAfterPlanFiles) {
   EXPECT_EQ(m.total_planning_duration->count, 1);
   ASSERT_TRUE(m.result_data_files.has_value());
   EXPECT_EQ(m.result_data_files->value, 1);
+  ASSERT_TRUE(scan_reporter->last().has_value());
+  EXPECT_EQ(scan_reporter->last()->table_name, "test.table");
 }
 
-// ---------------------------------------------------------------------------
-// Test: ScanReport.filter is sanitized against the bound, case-insensitive-resolved
-// filter, not the raw unbound one.
-// ---------------------------------------------------------------------------
 TEST_P(ScanPlanningMetricsTest, ScanReportFilterUsesBoundCaseInsensitiveResolution) {
   auto version = GetParam();
   constexpr int64_t kSnapshotId = 2000L;
@@ -241,17 +255,15 @@ TEST_P(ScanPlanningMetricsTest, ScanReportFilterUsesBoundCaseInsensitiveResoluti
       partitioned_spec_);
   auto manifest_list =
       WriteManifestList(version, kSnapshotId, /*sequence_number=*/1, {data_manifest});
-  auto metadata = BuildMetadata(kSnapshotId, manifest_list);
+  auto metadata =
+      BuildMetadata(version, kSnapshotId, /*sequence_number=*/1, manifest_list);
 
-  reporter_->clear();
-  ICEBERG_UNWRAP_OR_FAIL(auto builder, DataTableScanBuilder::Make(metadata, file_io_));
+  ICEBERG_UNWRAP_OR_FAIL(auto builder, MakeScanBuilder<DataTableScan>(metadata));
   // "ID" only resolves against the "id" schema field when binding is case-insensitive;
   // the sanitized filter should reflect the resolved bound reference, not fail/pass
   // through unresolved.
-  builder->MetricsReporter(reporter_)
-      .TableName("test.table")
-      .CaseSensitive(false)
-      .Filter(Expressions::Equal("ID", Literal::Int(10)));
+  builder->ReportWith(reporter_).CaseSensitive(false).Filter(
+      Expressions::Equal("ID", Literal::Int(10)));
   ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
   ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
 
@@ -261,10 +273,6 @@ TEST_P(ScanPlanningMetricsTest, ScanReportFilterUsesBoundCaseInsensitiveResoluti
   EXPECT_EQ(report.filter->ToString(), "ref(name=\"id\") == \"(2-digit-int)\"");
 }
 
-// ---------------------------------------------------------------------------
-// Test 2: Two manifests, 3 total data files — verify all 12 counters.
-// Mirrors Java's scanningWithMultipleDataManifests() (unfiltered sub-scan).
-// ---------------------------------------------------------------------------
 TEST_P(ScanPlanningMetricsTest, ScanningWithMultipleDataManifests) {
   auto version = GetParam();
   constexpr int64_t kSnapshotId = 2001L;
@@ -289,11 +297,11 @@ TEST_P(ScanPlanningMetricsTest, ScanningWithMultipleDataManifests) {
 
   auto manifest_list = WriteManifestList(version, kSnapshotId, /*sequence_number=*/1,
                                          {manifest1, manifest2});
-  auto metadata = BuildMetadata(kSnapshotId, manifest_list);
+  auto metadata =
+      BuildMetadata(version, kSnapshotId, /*sequence_number=*/1, manifest_list);
 
-  reporter_->clear();
-  ICEBERG_UNWRAP_OR_FAIL(auto builder, DataTableScanBuilder::Make(metadata, file_io_));
-  builder->MetricsReporter(reporter_).TableName("test.table");
+  ICEBERG_UNWRAP_OR_FAIL(auto builder, MakeScanBuilder<DataTableScan>(metadata));
+  builder->ReportWith(reporter_);
   ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
   ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
   ASSERT_EQ(tasks.size(), 3u);
@@ -317,18 +325,16 @@ TEST_P(ScanPlanningMetricsTest, ScanningWithMultipleDataManifests) {
   EXPECT_EQ(m.total_data_manifests->value, 2);
   ASSERT_TRUE(m.total_delete_manifests.has_value());
   EXPECT_EQ(m.total_delete_manifests->value, 0);
+  ASSERT_TRUE(m.total_file_size_in_bytes.has_value());
+  EXPECT_EQ(m.total_file_size_in_bytes->value, 30);
+  ASSERT_TRUE(m.total_delete_file_size_in_bytes.has_value());
+  EXPECT_EQ(m.total_delete_file_size_in_bytes->value, 0);
   ASSERT_TRUE(m.skipped_data_files.has_value());
   EXPECT_EQ(m.skipped_data_files->value, 0);
   ASSERT_TRUE(m.skipped_delete_files.has_value());
   EXPECT_EQ(m.skipped_delete_files->value, 0);
 }
 
-// ---------------------------------------------------------------------------
-// Test 3: Partition filter prunes one of two manifests.
-// Uses an identity(id) partition so the manifest evaluator can prune by
-// the id range recorded in each manifest's partition field summary.
-// Mirrors Java's scanningWithMultipleDataManifests() (filtered sub-scan).
-// ---------------------------------------------------------------------------
 TEST_P(ScanPlanningMetricsTest, ScanningWithManifestPruning) {
   auto version = GetParam();
   constexpr int64_t kSnapshotId = 2002L;
@@ -353,14 +359,12 @@ TEST_P(ScanPlanningMetricsTest, ScanningWithManifestPruning) {
 
   auto manifest_list = WriteManifestList(version, kSnapshotId, /*sequence_number=*/1,
                                          {manifest1, manifest2});
-  auto metadata = BuildMetadata(kSnapshotId, manifest_list, id_identity_spec_);
+  auto metadata = BuildMetadata(version, kSnapshotId, /*sequence_number=*/1,
+                                manifest_list, id_identity_spec_);
 
   // Filter id = 1: only manifest 1 survives the manifest-level evaluator.
-  reporter_->clear();
-  ICEBERG_UNWRAP_OR_FAIL(auto builder, DataTableScanBuilder::Make(metadata, file_io_));
-  builder->MetricsReporter(reporter_)
-      .TableName("test.table")
-      .Filter(Expressions::Equal("id", Literal::Int(1)));
+  ICEBERG_UNWRAP_OR_FAIL(auto builder, MakeScanBuilder<DataTableScan>(metadata));
+  builder->ReportWith(reporter_).Filter(Expressions::Equal("id", Literal::Int(1)));
   ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
   ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
   ASSERT_EQ(tasks.size(), 1u);
@@ -381,12 +385,6 @@ TEST_P(ScanPlanningMetricsTest, ScanningWithManifestPruning) {
   EXPECT_EQ(m.skipped_data_files->value, 0);
 }
 
-// ---------------------------------------------------------------------------
-// Test 4: Row-stats filter skips one entry inside a scanned manifest.
-// Both files live in the same manifest; only the inclusive metrics evaluator
-// (lower/upper bounds on "id") can distinguish them.
-// Mirrors Java's scanningWithSkippedDataFiles().
-// ---------------------------------------------------------------------------
 TEST_P(ScanPlanningMetricsTest, ScanningWithSkippedDataFiles) {
   auto version = GetParam();
   constexpr int64_t kSnapshotId = 2003L;
@@ -405,14 +403,12 @@ TEST_P(ScanPlanningMetricsTest, ScanningWithSkippedDataFiles) {
       partitioned_spec_);
   auto manifest_list =
       WriteManifestList(version, kSnapshotId, /*sequence_number=*/1, {data_manifest});
-  auto metadata = BuildMetadata(kSnapshotId, manifest_list);
+  auto metadata =
+      BuildMetadata(version, kSnapshotId, /*sequence_number=*/1, manifest_list);
 
   // Filter id = 25: within file_a's range, outside file_b's range.
-  reporter_->clear();
-  ICEBERG_UNWRAP_OR_FAIL(auto builder, DataTableScanBuilder::Make(metadata, file_io_));
-  builder->MetricsReporter(reporter_)
-      .TableName("test.table")
-      .Filter(Expressions::Equal("id", Literal::Int(25)));
+  ICEBERG_UNWRAP_OR_FAIL(auto builder, MakeScanBuilder<DataTableScan>(metadata));
+  builder->ReportWith(reporter_).Filter(Expressions::Equal("id", Literal::Int(25)));
   ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
   ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
   ASSERT_EQ(tasks.size(), 1u);
@@ -433,10 +429,6 @@ TEST_P(ScanPlanningMetricsTest, ScanningWithSkippedDataFiles) {
   EXPECT_EQ(m.skipped_data_files->value, 1);
 }
 
-// ---------------------------------------------------------------------------
-// Test 5: Scan with positional delete files — verify delete file counters.
-// Mirrors Java's scanningWithDeletes().
-// ---------------------------------------------------------------------------
 TEST_P(ScanPlanningMetricsTest, ScanningWithDeleteFiles) {
   auto version = GetParam();
   if (version < 2) {
@@ -455,22 +447,25 @@ TEST_P(ScanPlanningMetricsTest, ScanningWithDeleteFiles) {
            MakeDataFile("/data/file_b.parquet", part, partitioned_spec_->spec_id()))},
       partitioned_spec_);
 
-  // One positional-delete file covering file_a.
-  auto delete_manifest = WriteDeleteManifest(
-      version, kSnapshotId,
-      {MakeEntry(
-          ManifestStatus::kAdded, kSnapshotId, /*sequence_number=*/2,
-          MakePositionDeleteFile("/data/pos_delete.parquet", part,
-                                 partitioned_spec_->spec_id(), "/data/file_a.parquet"))},
-      partitioned_spec_);
+  auto delete_file =
+      version == 2
+          ? MakePositionDeleteFile("/data/pos_delete.parquet", part,
+                                   partitioned_spec_->spec_id(), "/data/file_a.parquet")
+          : MakeDV("/data/dv.puffin", part, partitioned_spec_->spec_id(),
+                   "/data/file_a.parquet");
+  auto delete_manifest =
+      WriteDeleteManifest(version, kSnapshotId,
+                          {MakeEntry(ManifestStatus::kAdded, kSnapshotId,
+                                     /*sequence_number=*/2, std::move(delete_file))},
+                          partitioned_spec_);
 
   auto manifest_list = WriteManifestList(version, kSnapshotId, /*sequence_number=*/2,
                                          {data_manifest, delete_manifest});
-  auto metadata = BuildMetadata(kSnapshotId, manifest_list);
+  auto metadata =
+      BuildMetadata(version, kSnapshotId, /*sequence_number=*/2, manifest_list);
 
-  reporter_->clear();
-  ICEBERG_UNWRAP_OR_FAIL(auto builder, DataTableScanBuilder::Make(metadata, file_io_));
-  builder->MetricsReporter(reporter_).TableName("test.table");
+  ICEBERG_UNWRAP_OR_FAIL(auto builder, MakeScanBuilder<DataTableScan>(metadata));
+  builder->ReportWith(reporter_);
   ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
   ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
   ASSERT_EQ(tasks.size(), 2u);
@@ -490,19 +485,20 @@ TEST_P(ScanPlanningMetricsTest, ScanningWithDeleteFiles) {
   EXPECT_EQ(m.total_data_manifests->value, 1);
   ASSERT_TRUE(m.total_delete_manifests.has_value());
   EXPECT_EQ(m.total_delete_manifests->value, 1);
+  ASSERT_TRUE(m.total_file_size_in_bytes.has_value());
+  EXPECT_EQ(m.total_file_size_in_bytes->value, 20);
+  ASSERT_TRUE(m.total_delete_file_size_in_bytes.has_value());
+  EXPECT_EQ(m.total_delete_file_size_in_bytes->value, version == 2 ? 10 : 6);
   ASSERT_TRUE(m.indexed_delete_files.has_value());
   EXPECT_EQ(m.indexed_delete_files->value, 1);
   ASSERT_TRUE(m.positional_delete_files.has_value());
-  EXPECT_EQ(m.positional_delete_files->value, 1);
+  EXPECT_EQ(m.positional_delete_files->value, version == 2 ? 1 : 0);
   ASSERT_TRUE(m.equality_delete_files.has_value());
   EXPECT_EQ(m.equality_delete_files->value, 0);
   ASSERT_TRUE(m.dvs.has_value());
-  EXPECT_EQ(m.dvs->value, 0);
+  EXPECT_EQ(m.dvs->value, version == 3 ? 1 : 0);
 }
 
-// ---------------------------------------------------------------------------
-// Test 6: IgnoreDeleted manifest-level skip.
-// ---------------------------------------------------------------------------
 TEST_P(ScanPlanningMetricsTest, ScanningWithIgnoreDeletedManifest) {
   auto version = GetParam();
   constexpr int64_t kSnapshotId = 2006L;
@@ -528,11 +524,11 @@ TEST_P(ScanPlanningMetricsTest, ScanningWithIgnoreDeletedManifest) {
 
   auto manifest_list = WriteManifestList(version, kSnapshotId, /*sequence_number=*/1,
                                          {deleted_only_manifest, added_manifest});
-  auto metadata = BuildMetadata(kSnapshotId, manifest_list);
+  auto metadata =
+      BuildMetadata(version, kSnapshotId, /*sequence_number=*/1, manifest_list);
 
-  reporter_->clear();
-  ICEBERG_UNWRAP_OR_FAIL(auto builder, DataTableScanBuilder::Make(metadata, file_io_));
-  builder->MetricsReporter(reporter_).TableName("test.table");
+  ICEBERG_UNWRAP_OR_FAIL(auto builder, MakeScanBuilder<DataTableScan>(metadata));
+  builder->ReportWith(reporter_);
   ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
   ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
   ASSERT_EQ(tasks.size(), 1u);
@@ -543,8 +539,6 @@ TEST_P(ScanPlanningMetricsTest, ScanningWithIgnoreDeletedManifest) {
 
   ASSERT_TRUE(m.total_data_manifests.has_value());
   EXPECT_EQ(m.total_data_manifests->value, 2);
-  // The deleted-only manifest is skipped at the manifest level, so it must
-  // appear in skipped_data_manifests.
   ASSERT_TRUE(m.scanned_data_manifests.has_value());
   EXPECT_EQ(m.scanned_data_manifests->value, 1);
   ASSERT_TRUE(m.skipped_data_manifests.has_value());
@@ -555,12 +549,6 @@ TEST_P(ScanPlanningMetricsTest, ScanningWithIgnoreDeletedManifest) {
   EXPECT_EQ(m.result_data_files->value, 1);
 }
 
-// ---------------------------------------------------------------------------
-// Test: a single delete file applying to multiple data files is deduplicated in
-// indexed_delete_files (counted once, at index-build time), but result_delete_files and
-// total_delete_file_size_in_bytes are counted once per FileScanTask/data file, mirroring
-// Java's ScanMetricsUtil.fileTask() vs. ScanMetricsUtil.indexedDeleteFile() split.
-// ---------------------------------------------------------------------------
 TEST_P(ScanPlanningMetricsTest, ScanningWithDeleteFileSharedAcrossDataFiles) {
   auto version = GetParam();
   if (version < 2) {
@@ -589,11 +577,11 @@ TEST_P(ScanPlanningMetricsTest, ScanningWithDeleteFileSharedAcrossDataFiles) {
 
   auto manifest_list = WriteManifestList(version, kSnapshotId, /*sequence_number=*/2,
                                          {data_manifest, delete_manifest});
-  auto metadata = BuildMetadata(kSnapshotId, manifest_list, unpartitioned_spec_);
+  auto metadata = BuildMetadata(version, kSnapshotId, /*sequence_number=*/2,
+                                manifest_list, unpartitioned_spec_);
 
-  reporter_->clear();
-  ICEBERG_UNWRAP_OR_FAIL(auto builder, DataTableScanBuilder::Make(metadata, file_io_));
-  builder->MetricsReporter(reporter_).TableName("test.table");
+  ICEBERG_UNWRAP_OR_FAIL(auto builder, MakeScanBuilder<DataTableScan>(metadata));
+  builder->ReportWith(reporter_);
   ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
   ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
   ASSERT_EQ(tasks.size(), 2u);
@@ -601,23 +589,17 @@ TEST_P(ScanPlanningMetricsTest, ScanningWithDeleteFileSharedAcrossDataFiles) {
   ASSERT_TRUE(reporter_->last().has_value());
   const auto& m = reporter_->last()->scan_metrics;
 
-  // Deduplicated: the delete file is indexed once, regardless of how many data files it
-  // matches.
   ASSERT_TRUE(m.indexed_delete_files.has_value());
   EXPECT_EQ(m.indexed_delete_files->value, 1);
   ASSERT_TRUE(m.equality_delete_files.has_value());
   EXPECT_EQ(m.equality_delete_files->value, 1);
 
-  // Not deduplicated: counted once per FileScanTask, so the shared delete file
-  // contributes to both data files' tasks.
   ASSERT_TRUE(m.result_delete_files.has_value());
   EXPECT_EQ(m.result_delete_files->value, 2);
+  ASSERT_TRUE(m.total_delete_file_size_in_bytes.has_value());
+  EXPECT_EQ(m.total_delete_file_size_in_bytes->value, 20);
 }
 
-// ---------------------------------------------------------------------------
-// Test: ScanReport includes nested projected field ids/names, not just the
-// top-level struct field. Mirrors Java's use of TypeUtil.getProjectedIds().
-// ---------------------------------------------------------------------------
 TEST_P(ScanPlanningMetricsTest, ScanReportIncludesNestedProjectedFields) {
   auto version = GetParam();
   constexpr int64_t kSnapshotId = 2020L;
@@ -641,11 +623,11 @@ TEST_P(ScanPlanningMetricsTest, ScanReportIncludesNestedProjectedFields) {
       unpartitioned_spec_);
   auto manifest_list =
       WriteManifestList(version, kSnapshotId, /*sequence_number=*/1, {data_manifest});
-  auto metadata = BuildMetadata(kSnapshotId, manifest_list, unpartitioned_spec_);
+  auto metadata = BuildMetadata(version, kSnapshotId, /*sequence_number=*/1,
+                                manifest_list, unpartitioned_spec_);
 
-  reporter_->clear();
-  ICEBERG_UNWRAP_OR_FAIL(auto builder, DataTableScanBuilder::Make(metadata, file_io_));
-  builder->MetricsReporter(reporter_).TableName("test.table");
+  ICEBERG_UNWRAP_OR_FAIL(auto builder, MakeScanBuilder<DataTableScan>(metadata));
+  builder->ReportWith(reporter_);
   ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
   ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
   ASSERT_EQ(tasks.size(), 1u);

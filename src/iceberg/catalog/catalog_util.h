@@ -19,29 +19,20 @@
 
 #pragma once
 
-/// \file iceberg/catalog/rest/type_fwd.h
-/// Forward declarations and enum definitions for Iceberg REST API types.
+#include <string>
+#include <string_view>
 
-namespace iceberg::rest {
+#include "iceberg/iceberg_export.h"
+#include "iceberg/type_fwd.h"
 
-struct ErrorResponse;
-struct CommitTableResponse;
-struct LoadTableResult;
-struct OAuthTokenResponse;
+namespace iceberg {
 
-class Endpoint;
-class ErrorHandler;
-class HttpClient;
-class ResourcePaths;
-class RestCatalog;
-class RestCatalogProperties;
+/// \brief Utilities for working with catalogs.
+class ICEBERG_EXPORT CatalogUtil {
+ public:
+  /// \brief Return the fully-qualified name for a table in a catalog.
+  static std::string FullTableName(std::string_view catalog_name,
+                                   const TableIdentifier& identifier);
+};
 
-}  // namespace iceberg::rest
-
-namespace iceberg::rest::auth {
-
-class AuthManager;
-class AuthProperties;
-class AuthSession;
-
-}  // namespace iceberg::rest::auth
+}  // namespace iceberg

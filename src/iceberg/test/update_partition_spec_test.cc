@@ -51,7 +51,8 @@ class UpdatePartitionSpecTest : public ::testing::TestWithParam<int8_t> {
  protected:
   void SetUp() override {
     file_io_ = arrow::ArrowFileSystemFileIO::MakeMockFileIO();
-    catalog_ = InMemoryCatalog::Make("test_catalog", file_io_, "/warehouse/", {});
+    ICEBERG_UNWRAP_OR_FAIL(
+        catalog_, InMemoryCatalog::Make("test_catalog", file_io_, "/warehouse/", {}));
     format_version_ = GetParam();
     test_schema_ = std::make_shared<Schema>(
         std::vector<SchemaField>{SchemaField::MakeRequired(1, "id", int64()),

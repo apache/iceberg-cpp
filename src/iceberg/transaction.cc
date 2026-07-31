@@ -20,12 +20,9 @@
 
 #include <format>
 #include <memory>
-#include <optional>
 
 #include "iceberg/catalog.h"
 #include "iceberg/location_provider.h"
-#include "iceberg/metrics/commit_report.h"
-#include "iceberg/metrics/metrics_context.h"
 #include "iceberg/schema.h"
 #include "iceberg/snapshot.h"
 #include "iceberg/statistics_file.h"
@@ -283,11 +280,6 @@ Status Transaction::ApplyUpdateSnapshot(SnapshotUpdate& update) {
 
   ICEBERG_ASSIGN_OR_RAISE(auto result, update.Apply());
 
-  pending_snapshot_report_ = PendingSnapshotReport{
-      .snapshot = result.snapshot,
-      .reporter_override = update.reporter(),
-  };
-
   // Create a temp builder to check if this is an empty update
   auto temp_update = TableMetadataBuilder::BuildFrom(&base);
   if (base.SnapshotById(result.snapshot->snapshot_id).has_value()) {
@@ -383,22 +375,14 @@ Result<std::shared_ptr<Table>> Transaction::Commit() {
   int32_t max_wait_ms = props.Get(TableProperties::kCommitMaxRetryWaitMs);
   int32_t total_timeout_ms = props.Get(TableProperties::kCommitTotalRetryTimeMs);
 
-  auto metrics_context = MetricsContext::Default();
-  auto commit_metrics = CommitMetrics::Make(*metrics_context);
-  auto timed = commit_metrics->total_duration->Start();
-
   bool is_first_attempt = true;
   auto commit_result =
       MakeCommitRetryRunner(num_retries, min_wait_ms, max_wait_ms, total_timeout_ms)
-          .Run([this, &is_first_attempt,
-                &commit_metrics]() -> Result<std::shared_ptr<Table>> {
-            commit_metrics->attempts->Increment(1);
+          .Run([this, &is_first_attempt]() -> Result<std::shared_ptr<Table>> {
             auto result = CommitOnce(is_first_attempt);
             is_first_attempt = false;
             return result;
           });
-
-  timed.Stop();
 
   Result<const TableMetadata*> finalize_result =
       commit_result.has_value()
@@ -415,33 +399,7 @@ Result<std::shared_ptr<Table>> Transaction::Commit() {
   committed_ = true;
   ctx_->table = std::move(commit_result.value());
 
-  ReportPendingSnapshot(*commit_metrics);
-
   return ctx_->table;
-}
-
-void Transaction::ReportPendingSnapshot(const CommitMetrics& commit_metrics) {
-  if (!pending_snapshot_report_) {
-    return;
-  }
-  std::shared_ptr<MetricsReporter> reporter =
-      pending_snapshot_report_->reporter_override
-          ? pending_snapshot_report_->reporter_override
-          : ctx_->table->reporter();
-  if (reporter) {
-    const auto& snapshot = pending_snapshot_report_->snapshot;
-    const auto op = snapshot->Operation();
-    CommitReport report{
-        .table_name = ctx_->table->FullyQualifiedName(),
-        .snapshot_id = snapshot->snapshot_id,
-        .sequence_number = snapshot->sequence_number,
-        .operation = op.has_value() ? std::string(op.value()) : "",
-        .commit_metrics = CommitMetricsResult::From(commit_metrics, snapshot->summary),
-        .metadata = {},
-    };
-    (void)reporter->Report(report);
-  }
-  pending_snapshot_report_.reset();
 }
 
 Result<std::shared_ptr<Table>> Transaction::CommitOnce(bool is_first_attempt) {
@@ -460,7 +418,7 @@ Result<std::shared_ptr<Table>> Transaction::CommitOnce(bool is_first_attempt) {
         ctx_->metadata_builder =
             TableMetadataBuilder::BuildFrom(ctx_->table->metadata().get());
         for (const auto& update : pending_updates_) {
-          ICEBERG_RETURN_UNEXPECTED(Apply(*update));
+          ICEBERG_RETURN_UNEXPECTED(update->Commit());
         }
       }
       ICEBERG_ASSIGN_OR_RAISE(requirements, TableRequirements::ForUpdateTable(

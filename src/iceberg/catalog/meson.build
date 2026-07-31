@@ -18,7 +18,7 @@
 subdir('memory')
 
 install_headers(
-    ['session_catalog.h', 'session_context.h'],
+    ['catalog_util.h', 'session_catalog.h', 'session_context.h'],
     subdir: 'iceberg/catalog',
 )
 

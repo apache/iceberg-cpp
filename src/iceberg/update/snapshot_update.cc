@@ -31,6 +31,9 @@
 #include "iceberg/manifest/manifest_reader.h"
 #include "iceberg/manifest/manifest_writer.h"
 #include "iceberg/manifest/rolling_manifest_writer.h"
+#include "iceberg/metrics/commit_report.h"
+#include "iceberg/metrics/metrics_context.h"
+#include "iceberg/metrics/metrics_reporter.h"
 #include "iceberg/partition_summary_internal.h"
 #include "iceberg/table.h"  // IWYU pragma: keep
 #include "iceberg/transaction.h"
@@ -194,7 +197,36 @@ SnapshotUpdate::SnapshotUpdate(std::shared_ptr<TransactionContext> ctx)
           base().properties.Get(TableProperties::kSnapshotIdInheritanceEnabled)),
       commit_uuid_(Uuid::GenerateV7().ToString()),
       target_manifest_size_bytes_(
-          base().properties.Get(TableProperties::kManifestTargetSizeBytes)) {}
+          base().properties.Get(TableProperties::kManifestTargetSizeBytes)),
+      commit_metrics_(CommitMetrics::Make(*MetricsContext::Default())),
+      reporter_(ctx_->table->reporter()) {}
+
+Status SnapshotUpdate::Commit() {
+  commit_metrics_->attempts->Increment();
+  [[maybe_unused]] auto commit_timer = commit_metrics_->total_duration->Start();
+  return PendingUpdate::Commit();
+}
+
+void SnapshotUpdate::ReportCommit() const {
+  ICEBERG_DCHECK(staged_snapshot_ != nullptr,
+                 "Staged snapshot is null after a successful commit");
+
+  if (!reporter_) {
+    return;
+  }
+
+  const auto operation = staged_snapshot_->Operation();
+  CommitReport report{
+      .table_name = ctx_->table->full_name(),
+      .snapshot_id = staged_snapshot_->snapshot_id,
+      .sequence_number = staged_snapshot_->sequence_number,
+      .operation = operation.has_value() ? std::string(operation.value()) : "",
+      .commit_metrics =
+          CommitMetricsResult::From(*commit_metrics_, staged_snapshot_->summary),
+      .metadata = {},
+  };
+  std::ignore = reporter_->Report(report);
+}
 
 void SnapshotUpdate::SetSummaryProperty(const std::string& property,
                                         const std::string& value) {
@@ -385,6 +417,8 @@ Status SnapshotUpdate::Finalize(Result<const TableMetadata*> commit_result) {
       std::ignore = DeleteFile(manifest_list);
     }
   }
+
+  ReportCommit();
 
   return {};
 }

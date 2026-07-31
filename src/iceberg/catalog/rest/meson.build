@@ -95,7 +95,6 @@ install_headers(
         'resource_paths.h',
         'rest_catalog.h',
         'rest_file_io.h',
-        'rest_metrics_reporter.h',
         'rest_util.h',
         'type_fwd.h',
         'types.h',

@@ -40,8 +40,6 @@
 
 namespace iceberg {
 
-class ScanMetrics;
-
 namespace internal {
 
 /// \brief Wrapper for equality delete files that caches converted bounds.
@@ -364,10 +362,9 @@ class ICEBERG_EXPORT DeleteFileIndex::Builder : public ErrorCollector {
   /// \param executor Executor to use, or std::nullopt to read manifests serially.
   /// \return Reference to this for method chaining.
   Builder& PlanWith(OptionalExecutor executor);
+
   /// \brief Attach scan metrics for counting scanned/skipped delete manifests.
-  ///
-  /// Non-owning pointer; the pointed-to ScanMetrics must outlive the Build() call.
-  Builder& ScanMetrics(class iceberg::ScanMetrics* scan_metrics);
+  Builder& WithScanMetrics(std::shared_ptr<ScanMetrics> scan_metrics);
 
   /// \brief Build the DeleteFileIndex.
   Result<std::unique_ptr<DeleteFileIndex>> Build();
@@ -404,7 +401,7 @@ class ICEBERG_EXPORT DeleteFileIndex::Builder : public ErrorCollector {
   OptionalExecutor executor_;
   bool case_sensitive_ = true;
   bool ignore_residuals_ = false;
-  class iceberg::ScanMetrics* scan_metrics_ = nullptr;
+  std::shared_ptr<ScanMetrics> scan_metrics_;
 };
 
 }  // namespace iceberg

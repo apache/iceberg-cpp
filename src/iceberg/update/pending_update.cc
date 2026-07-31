@@ -19,8 +19,6 @@
 
 #include "iceberg/update/pending_update.h"
 
-#include "iceberg/metrics/commit_report.h"
-#include "iceberg/metrics/metrics_context.h"
 #include "iceberg/result.h"
 #include "iceberg/table.h"
 #include "iceberg/transaction.h"
@@ -56,16 +54,7 @@ Status PendingUpdate::Commit() {
   if (!txn) {
     return CommitFailed("Transaction has been destroyed");
   }
-  auto metrics_context = MetricsContext::Default();
-  auto commit_metrics = CommitMetrics::Make(*metrics_context);
-  auto timed = commit_metrics->total_duration->Start();
-  auto apply_status = txn->Apply(*this);
-  timed.Stop();
-  ICEBERG_RETURN_UNEXPECTED(apply_status);
-
-  commit_metrics->attempts->Increment(1);
-  txn->ReportPendingSnapshot(*commit_metrics);
-  return {};
+  return txn->Apply(*this);
 }
 
 Status PendingUpdate::Finalize(

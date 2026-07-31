@@ -38,11 +38,14 @@
 #include "iceberg/partition_spec.h"
 #include "iceberg/schema.h"
 #include "iceberg/snapshot.h"
+#include "iceberg/table.h"
 #include "iceberg/table_metadata.h"
 #include "iceberg/table_scan.h"
 #include "iceberg/test/matchers.h"
+#include "iceberg/test/mock_catalog.h"
 #include "iceberg/transform.h"
 #include "iceberg/type.h"
+#include "iceberg/util/macros.h"
 
 namespace iceberg {
 
@@ -66,6 +69,17 @@ class ScanTestBase : public testing::TestWithParam<int8_t> {
         PartitionSpec::Make(
             /*spec_id=*/1, {PartitionField(/*source_id=*/2, /*field_id=*/1000,
                                            "data_bucket_16_2", Transform::Bucket(16))}));
+  }
+
+  template <typename ScanType>
+  Result<std::unique_ptr<TableScanBuilder<ScanType>>> MakeScanBuilder(
+      std::shared_ptr<TableMetadata> metadata) {
+    ICEBERG_ASSIGN_OR_RAISE(
+        auto table,
+        Table::Make(TableIdentifier{.name = "table"}, std::move(metadata),
+                    "/tmp/table/metadata.json", file_io_,
+                    std::make_shared<::testing::NiceMock<MockCatalog>>(), "test.table"));
+    return TableScanBuilder<ScanType>::Make(*table);
   }
 
   /// \brief Generate a unique manifest file path.

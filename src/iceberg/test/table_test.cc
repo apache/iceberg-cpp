@@ -110,6 +110,7 @@ TYPED_TEST(TypedTableTest, BasicMetadata) {
 
   EXPECT_EQ(table->name().name, "test_table");
   EXPECT_EQ(table->name().ns.levels, (std::vector<std::string>{"db"}));
+  EXPECT_EQ(table->full_name(), "db.test_table");
   EXPECT_EQ(table->metadata()->format_version, 2);
   EXPECT_EQ(table->metadata()->schemas.size(), 1);
 }
@@ -154,9 +155,11 @@ TEST(StaticTableTest, NewMutatingOperationsAreNotSupported) {
   auto metadata = std::make_shared<TableMetadata>(
       TableMetadata{.format_version = 2, .schemas = {schema}, .current_schema_id = 1});
   TableIdentifier ident{.ns = Namespace{.levels = {"db"}}, .name = "test_table"};
-  ICEBERG_UNWRAP_OR_FAIL(auto table, StaticTable::Make(ident, std::move(metadata),
-                                                       "s3://bucket/meta.json", io));
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto table, StaticTable::Make(ident, std::move(metadata), "s3://bucket/meta.json",
+                                    io, "catalog.db.test_table"));
 
+  EXPECT_EQ(table->full_name(), "catalog.db.test_table");
   EXPECT_THAT(table->NewUpdateStatistics(), IsError(ErrorKind::kNotSupported));
   EXPECT_THAT(table->NewUpdatePartitionStatistics(), IsError(ErrorKind::kNotSupported));
   EXPECT_THAT(table->NewFastAppend(), IsError(ErrorKind::kNotSupported));
@@ -166,55 +169,6 @@ TEST(StaticTableTest, NewMutatingOperationsAreNotSupported) {
   EXPECT_THAT(table->NewOverwrite(), IsError(ErrorKind::kNotSupported));
   EXPECT_THAT(table->NewRewriteFiles(), IsError(ErrorKind::kNotSupported));
   EXPECT_THAT(table->NewSnapshotManager(), IsError(ErrorKind::kNotSupported));
-}
-
-class TableFullyQualifiedNameTest : public ::testing::Test {
- protected:
-  void SetUp() override {
-    io_ = std::make_shared<MockFileIO>();
-    catalog_ = std::make_shared<MockCatalog>();
-    auto schema = std::make_shared<Schema>(
-        std::vector<SchemaField>{SchemaField::MakeRequired(1, "id", int64())}, 1);
-    metadata_ = std::make_shared<TableMetadata>(
-        TableMetadata{.format_version = 2, .schemas = {schema}, .current_schema_id = 1});
-  }
-
-  Result<std::shared_ptr<Table>> MakeTable(std::shared_ptr<Catalog> catalog) {
-    TableIdentifier ident{.ns = Namespace{.levels = {"db"}}, .name = "test_table"};
-    return Table::Make(ident, metadata_, "s3://bucket/meta.json", io_,
-                       std::move(catalog));
-  }
-
-  std::shared_ptr<MockFileIO> io_;
-  std::shared_ptr<MockCatalog> catalog_;
-  std::shared_ptr<TableMetadata> metadata_;
-};
-
-TEST_F(TableFullyQualifiedNameTest, NoCatalog) {
-  TableIdentifier ident{.ns = Namespace{.levels = {"db"}}, .name = "test_table"};
-  ICEBERG_UNWRAP_OR_FAIL(
-      auto table, StaticTable::Make(ident, metadata_, "s3://bucket/meta.json", io_));
-  EXPECT_EQ(table->FullyQualifiedName(), "db.test_table");
-}
-
-TEST_F(TableFullyQualifiedNameTest, DotJoinedCatalogName) {
-  EXPECT_CALL(*catalog_, name()).WillRepeatedly(::testing::Return("my_catalog"));
-  ICEBERG_UNWRAP_OR_FAIL(auto table, MakeTable(catalog_));
-  EXPECT_EQ(table->FullyQualifiedName(), "my_catalog.db.test_table");
-}
-
-TEST_F(TableFullyQualifiedNameTest, UriCatalogNameWithoutTrailingSlash) {
-  EXPECT_CALL(*catalog_, name())
-      .WillRepeatedly(::testing::Return("thrift://localhost:9083"));
-  ICEBERG_UNWRAP_OR_FAIL(auto table, MakeTable(catalog_));
-  EXPECT_EQ(table->FullyQualifiedName(), "thrift://localhost:9083/db.test_table");
-}
-
-TEST_F(TableFullyQualifiedNameTest, UriCatalogNameWithTrailingSlash) {
-  EXPECT_CALL(*catalog_, name())
-      .WillRepeatedly(::testing::Return("hdfs://nameservice/warehouse/"));
-  ICEBERG_UNWRAP_OR_FAIL(auto table, MakeTable(catalog_));
-  EXPECT_EQ(table->FullyQualifiedName(), "hdfs://nameservice/warehouse/db.test_table");
 }
 
 }  // namespace iceberg

@@ -56,8 +56,9 @@ class UpdateTestBase : public ::testing::Test {
   /// \brief Initialize file IO and create necessary directories.
   void InitializeFileIO() {
     file_io_ = arrow::ArrowFileSystemFileIO::MakeMockFileIO();
-    catalog_ =
-        InMemoryCatalog::Make("test_catalog", file_io_, "/warehouse/", /*properties=*/{});
+    ICEBERG_UNWRAP_OR_FAIL(catalog_,
+                           InMemoryCatalog::Make("test_catalog", file_io_, "/warehouse/",
+                                                 /*properties=*/{}));
 
     // Arrow MockFS cannot automatically create directories.
     auto arrow_fs = std::dynamic_pointer_cast<::arrow::fs::internal::MockFileSystem>(

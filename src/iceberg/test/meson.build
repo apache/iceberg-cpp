@@ -47,6 +47,7 @@ iceberg_tests = {
     },
     'table_test': {
         'sources': files(
+            'catalog_util_test.cc',
             'location_provider_test.cc',
             'metadata_table_test.cc',
             'metrics_config_test.cc',

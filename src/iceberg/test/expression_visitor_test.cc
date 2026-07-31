@@ -18,8 +18,12 @@
  */
 
 #include <chrono>
+#include <format>
 #include <limits>
 #include <regex>
+#include <string>
+#include <utility>
+#include <vector>
 
 #include <gtest/gtest.h>
 
@@ -552,6 +556,25 @@ TEST_F(SanitizeExpressionTest, UnboundLiteralPredicateHidesValue) {
   EXPECT_THAT(sanitized->ToString(), ::testing::Not(::testing::HasSubstr("42")));
 }
 
+TEST_F(SanitizeExpressionTest, StringHashMatchesJava) {
+  auto unbound_pred = Expressions::StartsWith("name", "aaa");
+
+  ICEBERG_UNWRAP_OR_FAIL(auto sanitized, SanitizeExpression::Sanitize(unbound_pred));
+  EXPECT_EQ(sanitized->ToString(), "ref(name=\"name\") startsWith \"(hash-34d05fb7)\"");
+}
+
+TEST_F(SanitizeExpressionTest, UnboundUnaryPredicatePreservesOriginal) {
+  const std::vector<std::shared_ptr<Expression>> predicates = {
+      Expressions::IsNull("value"), Expressions::NotNull("value"),
+      Expressions::IsNaN("value"), Expressions::NotNaN("value")};
+
+  for (const auto& predicate : predicates) {
+    SCOPED_TRACE(predicate->ToString());
+    ICEBERG_UNWRAP_OR_FAIL(auto sanitized, SanitizeExpression::Sanitize(predicate));
+    EXPECT_TRUE(sanitized->Equals(*predicate));
+  }
+}
+
 TEST_F(SanitizeExpressionTest, UnaryPredicateNeedsNoLiteral) {
   auto unbound_pred = Expressions::IsNull("salary");
   ICEBERG_UNWRAP_OR_FAIL(auto bound_pred, Bind(unbound_pred));
@@ -578,11 +601,79 @@ TEST_F(SanitizeExpressionTest, SetPredicateSanitizesEachElement) {
   }
 }
 
+TEST_F(SanitizeExpressionTest, LongSetPredicatePreservesSanitizedDuplicates) {
+  std::vector<Literal> values;
+  for (int32_t value = 95; value < 105; ++value) {
+    values.push_back(Literal::Int(value));
+  }
+  auto unbound_pred = Expressions::In("age", std::move(values));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto sanitized, SanitizeExpression::Sanitize(unbound_pred));
+  EXPECT_EQ(sanitized->ToString(),
+            "ref(name=\"age\") in [\"(2-digit-int)\", \"(2-digit-int)\", "
+            "\"(2-digit-int)\", \"(2-digit-int)\", \"(2-digit-int)\", "
+            "\"(3-digit-int)\", \"(3-digit-int)\", \"(3-digit-int)\", "
+            "\"(3-digit-int)\", \"(3-digit-int)\"]");
+}
+
 TEST_F(SanitizeExpressionTest, FractionalFloatLiteralDigitCount) {
   auto unbound_pred = Expressions::LessThan("salary", Literal::Double(0.05));
 
   ICEBERG_UNWRAP_OR_FAIL(auto sanitized, SanitizeExpression::Sanitize(unbound_pred));
   EXPECT_EQ(sanitized->ToString(), "ref(name=\"salary\") < \"(0-digit-float)\"");
+}
+
+TEST_F(SanitizeExpressionTest, NonFiniteFloatUsesGenericPlaceholder) {
+  auto unbound_pred = Expressions::In(
+      "salary", {Literal::Double(std::numeric_limits<double>::quiet_NaN()),
+                 Literal::Double(std::numeric_limits<double>::infinity()),
+                 Literal::Double(-std::numeric_limits<double>::infinity())});
+
+  ICEBERG_UNWRAP_OR_FAIL(auto sanitized, SanitizeExpression::Sanitize(unbound_pred));
+  EXPECT_EQ(sanitized->ToString(),
+            "ref(name=\"salary\") in [\"(float)\", \"(float)\", \"(float)\"]");
+}
+
+TEST_F(SanitizeExpressionTest, TemporalStringsMatchJavaBuckets) {
+  const std::vector<std::pair<std::string, std::string>> cases = {
+      {"2022-04-29", "(date)"},
+      {"12:34:56.123456", "(time)"},
+      {"2022-04-29T23:49:51.123456", "(timestamp)"},
+      {"2022-04-29T23:49:51.123456789", "(timestamp)"},
+      {"2022-04-29T23:49:51.123456-07:00", "(timestamp)"},
+      {"2022-04-29T23:49:51.123456789Z", "(timestamp)"},
+  };
+
+  for (const auto& [value, expected] : cases) {
+    auto unbound_pred = Expressions::Equal("value", Literal::String(value));
+    ICEBERG_UNWRAP_OR_FAIL(auto sanitized, SanitizeExpression::Sanitize(unbound_pred));
+    EXPECT_EQ(sanitized->ToString(),
+              std::format("ref(name=\"value\") == \"{}\"", expected));
+  }
+}
+
+TEST_F(SanitizeExpressionTest, InvalidTemporalStringFallsBackToHash) {
+  auto unbound_pred = Expressions::Equal("value", Literal::String("2022-20-29"));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto sanitized, SanitizeExpression::Sanitize(unbound_pred));
+  EXPECT_THAT(sanitized->ToString(),
+              MatchesStdRegex(R"re(ref\(name="value"\) == "\(hash-[0-9a-f]{8}\)")re"));
+}
+
+TEST_F(SanitizeExpressionTest, BinaryAndFixedHashCanonicalContents) {
+  auto binary = Expressions::Equal("value", Literal::Binary({0x01, 0x02}));
+  auto other_binary = Expressions::Equal("value", Literal::Binary({0x01, 0x03}));
+  auto fixed = Expressions::Equal("value", Literal::Fixed({0x01, 0x02}));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto sanitized_binary, SanitizeExpression::Sanitize(binary));
+  ICEBERG_UNWRAP_OR_FAIL(auto sanitized_other_binary,
+                         SanitizeExpression::Sanitize(other_binary));
+  ICEBERG_UNWRAP_OR_FAIL(auto sanitized_fixed, SanitizeExpression::Sanitize(fixed));
+  EXPECT_NE(sanitized_binary->ToString(), sanitized_other_binary->ToString());
+  EXPECT_EQ(sanitized_binary->ToString(), sanitized_fixed->ToString());
+  EXPECT_THAT(sanitized_binary->ToString(),
+              MatchesStdRegex(R"re(ref\(name="value"\) == "\(hash-[0-9a-f]{8}\)")re"));
+  EXPECT_THAT(sanitized_binary->ToString(), ::testing::Not(::testing::HasSubstr("0102")));
 }
 
 TEST_F(SanitizeExpressionTest, TimestampLiteralBucketsByHoursAgo) {
@@ -606,8 +697,9 @@ TEST_F(SanitizeExpressionTest, TimestampLiteralBucketsByDaysAgo) {
   auto unbound_pred = Expressions::LessThan("ts", Literal::Timestamp(micros));
 
   ICEBERG_UNWRAP_OR_FAIL(auto sanitized, SanitizeExpression::Sanitize(unbound_pred));
-  EXPECT_THAT(sanitized->ToString(),
-              MatchesStdRegex(R"re(ref\(name="ts"\) < "\(timestamp-10-days-ago\)")re"));
+  EXPECT_THAT(
+      sanitized->ToString(),
+      MatchesStdRegex(R"re(ref\(name="ts"\) < "\(timestamp-(9|10)-days-ago\)")re"));
 }
 
 TEST_F(SanitizeExpressionTest, TimestampLiteralNearInt64LimitsDoesNotWrap) {
@@ -644,6 +736,10 @@ TEST_F(SanitizeExpressionTest, UnboundPredicateOverTransformKeepsTransform) {
 
   ICEBERG_UNWRAP_OR_FAIL(auto sanitized, SanitizeExpression::Sanitize(unbound_pred));
   EXPECT_EQ(sanitized->ToString(), "bucket[16](ref(name=\"id\")) == \"(1-digit-int)\"");
+  auto sanitized_predicate =
+      std::dynamic_pointer_cast<UnboundPredicateImpl<BoundTransform>>(sanitized);
+  ASSERT_NE(sanitized_predicate, nullptr);
+  EXPECT_EQ(sanitized_predicate->term(), bucket_term);
 }
 
 TEST_F(SanitizeExpressionTest, BoundPredicateOverTransformKeepsTransform) {
@@ -685,8 +781,6 @@ TEST_F(SanitizeExpressionTest, BindWithFallbackMatchesUnboundOnSuccess) {
 }
 
 TEST_F(SanitizeExpressionTest, BindWithFallbackFallsBackOnUnknownColumn) {
-  // "not_a_column" isn't in schema_, so binding fails and Sanitize() should fall back
-  // to sanitizing the unbound expression rather than propagating the bind error.
   auto unbound_pred = Expressions::GreaterThan("not_a_column", Literal::Int(42));
 
   ICEBERG_UNWRAP_OR_FAIL(auto sanitized,

@@ -17,74 +17,84 @@
  * under the License.
  */
 
-#include "iceberg/catalog/rest/rest_metrics_reporter.h"
-
 #include <memory>
+#include <optional>
+#include <stdexcept>
 #include <string>
-#include <unordered_map>
 #include <utility>
 #include <vector>
 
-#include <gmock/gmock.h>
 #include <gtest/gtest.h>
 #include <nlohmann/json.hpp>
 
 #include "iceberg/catalog/rest/auth/auth_session.h"
-#include "iceberg/catalog/rest/error_handlers.h"
-#include "iceberg/catalog/rest/http_client.h"
+#include "iceberg/catalog/rest/rest_metrics_reporter_internal.h"
 #include "iceberg/metrics/commit_report.h"
 #include "iceberg/metrics/metrics_reporter.h"
 #include "iceberg/metrics/scan_report.h"
 #include "iceberg/result.h"
 #include "iceberg/test/matchers.h"
+#include "iceberg/util/executor.h"
 
 namespace iceberg::rest {
 
 namespace {
 
-// A minimal HttpClientBase test double: RestMetricsReporter only ever calls Post(), so
-// only that method needs to be mockable (see the migration comment on HttpClientBase).
-class MockHttpClient : public HttpClientBase {
+class ManualExecutor final : public Executor {
  public:
-  MOCK_METHOD(Result<HttpResponse>, Post,
-              (const std::string& path, const std::string& body,
-               (const std::unordered_map<std::string, std::string>& headers),
-               const ErrorHandler& error_handler, auth::AuthSession& session),
-              (override));
+  Status Submit(ExecutorTask task) override {
+    task_ = std::move(task);
+    return {};
+  }
+
+  bool HasTask() const { return task_.has_value(); }
+
+  void Run() {
+    auto task = std::move(*task_);
+    task_.reset();
+    std::move(task)();
+  }
+
+ private:
+  std::optional<ExecutorTask> task_;
+};
+
+class RejectingExecutor final : public Executor {
+ public:
+  Status Submit(ExecutorTask /*task*/) override {
+    return IOError("executor rejected task");
+  }
 };
 
 }  // namespace
 
 class RestMetricsReporterTest : public ::testing::Test {
  protected:
-  void SetUp() override {
-    client_ = std::make_shared<HttpClient>();
-    session_ = auth::AuthSession::MakeDefault({});
-  }
+  void SetUp() override { session_ = auth::AuthSession::MakeDefault({}); }
 
-  std::shared_ptr<HttpClient> client_;
   std::shared_ptr<auth::AuthSession> session_;
 };
 
 namespace {
 
-// A Scan/Commit report test case: the report to send plus what a correct request for
-// it must contain. Parameterizing over this collapses what would otherwise be 3
-// near-identical Scan/Commit test-body pairs into 3 bodies total.
 struct ReportTestCase {
-  std::string name;  // instantiation test-name suffix, e.g. "ScanReport"
+  std::string name;
   MetricsReport report;
   std::string expected_report_type;
   std::vector<std::pair<std::string, nlohmann::json>> expected_fields;
 };
 
-ReportTestCase MakeScanReportCase() {
+ScanReport MakeScanReport() {
   ScanReport report;
   report.table_name = "ns.tbl";
   report.snapshot_id = 42;
   report.schema_id = 0;
+  return report;
+}
+
+ReportTestCase MakeScanReportCase() {
   return {.name = "ScanReport",
-          .report = report,
+          .report = MakeScanReport(),
           .expected_report_type = "scan-report",
           .expected_fields = {{"table-name", "ns.tbl"}, {"snapshot-id", 42}}};
 }
@@ -110,36 +120,37 @@ class RestMetricsReporterPayloadTest
     : public RestMetricsReporterTest,
       public ::testing::WithParamInterface<ReportTestCase> {};
 
-// Report() must return OK even when the HTTP call fails (connection refused).
-// This validates the fire-and-forget error-suppression contract matching Java behavior.
-TEST_P(RestMetricsReporterPayloadTest, ReportSuppressesHttpErrors) {
-  RestMetricsReporter reporter(client_, "http://localhost:0/v1/ns/tables/tbl/metrics",
-                               session_);
-  EXPECT_THAT(reporter.Report(GetParam().report), IsOk());
+TEST_F(RestMetricsReporterTest, SuppressesHttpErrors) {
+  ManualExecutor executor;
+  RestMetricsReporter reporter(
+      "http://localhost:0/v1/ns/tables/tbl/metrics", session_, &executor,
+      [](const std::string&, const std::string&, auth::AuthSession&) {
+        throw std::runtime_error("HTTP failure");
+      });
+  MetricsReport report = MakeScanReport();
+  EXPECT_THAT(reporter.Report(report), IsOk());
+  ASSERT_TRUE(executor.HasTask());
+  EXPECT_NO_THROW(executor.Run());
 }
 
-// Verify that Report() actually calls Post() with the configured metrics endpoint and
-// the correct serialized body, including the `report-type` field required by the REST
-// metrics spec.
-TEST_P(RestMetricsReporterPayloadTest, ReportPostsToConfiguredEndpoint) {
+TEST_P(RestMetricsReporterPayloadTest, PostsSerializedPayloadToConfiguredEndpoint) {
   const auto& test_case = GetParam();
-  auto mock_client = std::make_shared<MockHttpClient>();
+  ManualExecutor executor;
   const std::string endpoint = "http://mock-host/v1/ns/tables/tbl/metrics";
 
   std::string captured_path;
   std::string captured_body;
-  EXPECT_CALL(*mock_client,
-              Post(::testing::_, ::testing::_, ::testing::_, ::testing::_, ::testing::_))
-      .WillOnce([&](const std::string& path, const std::string& body,
-                    const std::unordered_map<std::string, std::string>&,
-                    const ErrorHandler&, auth::AuthSession&) -> Result<HttpResponse> {
+  RestMetricsReporter reporter(
+      endpoint, session_, &executor,
+      [&](const std::string& path, const std::string& body, auth::AuthSession&) {
         captured_path = path;
         captured_body = body;
-        return {HttpResponse{}};
       });
 
-  RestMetricsReporter reporter(mock_client, endpoint, session_);
   EXPECT_THAT(reporter.Report(test_case.report), IsOk());
+  EXPECT_TRUE(captured_path.empty());
+  ASSERT_TRUE(executor.HasTask());
+  executor.Run();
 
   EXPECT_EQ(captured_path, endpoint);
   auto json = nlohmann::json::parse(captured_body);
@@ -147,6 +158,27 @@ TEST_P(RestMetricsReporterPayloadTest, ReportPostsToConfiguredEndpoint) {
   for (const auto& [key, value] : test_case.expected_fields) {
     EXPECT_EQ(json.at(key), value);
   }
+}
+
+TEST_F(RestMetricsReporterTest, PostsSynchronouslyWithoutExecutor) {
+  bool posted = false;
+  RestMetricsReporter reporter(
+      "http://mock-host/v1/ns/tables/tbl/metrics", session_, nullptr,
+      [&](const std::string&, const std::string&, auth::AuthSession&) { posted = true; });
+
+  MetricsReport report = MakeScanReport();
+  EXPECT_THAT(reporter.Report(report), IsOk());
+  EXPECT_TRUE(posted);
+}
+
+TEST_F(RestMetricsReporterTest, SuppressesExecutorRejection) {
+  RejectingExecutor executor;
+  RestMetricsReporter reporter(
+      "http://mock-host/v1/ns/tables/tbl/metrics", session_, &executor,
+      [](const std::string&, const std::string&, auth::AuthSession&) {});
+
+  MetricsReport report = MakeScanReport();
+  EXPECT_THAT(reporter.Report(report), IsOk());
 }
 
 INSTANTIATE_TEST_SUITE_P(ScanAndCommit, RestMetricsReporterPayloadTest,

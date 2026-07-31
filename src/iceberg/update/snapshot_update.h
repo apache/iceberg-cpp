@@ -33,7 +33,6 @@
 #include <vector>
 
 #include "iceberg/iceberg_export.h"
-#include "iceberg/metrics/metrics_reporter.h"
 #include "iceberg/result.h"
 #include "iceberg/snapshot.h"
 #include "iceberg/type_fwd.h"
@@ -60,6 +59,7 @@ class ICEBERG_EXPORT SnapshotUpdate : public PendingUpdate {
 
   Kind kind() const override { return Kind::kUpdateSnapshot; }
   bool IsRetryable() const override { return true; }
+  Status Commit() override;
 
   /// \brief Set the metrics reporter for this snapshot update.
   ///
@@ -69,11 +69,6 @@ class ICEBERG_EXPORT SnapshotUpdate : public PendingUpdate {
     static_cast<SnapshotUpdate&>(self).reporter_ = std::move(reporter);
     return self;
   }
-
-  /// \brief Get the metrics reporter explicitly set via ReportWith(), if any.
-  ///
-  /// \return The reporter override for this operation, or null if none was set.
-  const std::shared_ptr<MetricsReporter>& reporter() const { return reporter_; }
 
   /// \brief Set a callback to delete files instead of the table's default.
   ///
@@ -274,10 +269,6 @@ class ICEBERG_EXPORT SnapshotUpdate : public PendingUpdate {
   SnapshotSummaryBuilder BuildManifestCountSummary(
       std::span<const ManifestFile> manifests, int32_t replaced_manifests_count);
 
- protected:
-  /// \brief Reporter to receive CommitReport after a successful commit.
-  std::shared_ptr<MetricsReporter> reporter_;
-
  private:
   /// \brief Returns the snapshot summary from the implementation and updates totals.
   Result<std::unordered_map<std::string, std::string>> ComputeSummary(
@@ -285,6 +276,9 @@ class ICEBERG_EXPORT SnapshotUpdate : public PendingUpdate {
 
   /// \brief Clean up all uncommitted files
   Status CleanAll();
+
+  /// \brief Report metrics for the most recently staged snapshot.
+  void ReportCommit() const;
 
  protected:
   SnapshotSummaryBuilder summary_;
@@ -304,6 +298,8 @@ class ICEBERG_EXPORT SnapshotUpdate : public PendingUpdate {
   std::function<Status(const std::string&)> delete_func_;
   std::string target_branch_{SnapshotRef::kMainBranch};
   std::shared_ptr<Snapshot> staged_snapshot_;
+  std::unique_ptr<CommitMetrics> commit_metrics_;
+  std::shared_ptr<MetricsReporter> reporter_;
 };
 
 }  // namespace iceberg

@@ -19,6 +19,7 @@
 
 #include <unistd.h>
 
+#include <atomic>
 #include <chrono>
 #include <memory>
 #include <print>
@@ -41,6 +42,8 @@
 #include "iceberg/catalog/rest/rest_catalog.h"
 #include "iceberg/catalog/session_context.h"
 #include "iceberg/file_io_registry.h"
+#include "iceberg/metrics/metrics_reporter.h"
+#include "iceberg/metrics/metrics_reporters.h"
 #include "iceberg/partition_spec.h"
 #include "iceberg/result.h"
 #include "iceberg/schema.h"
@@ -68,6 +71,11 @@ constexpr std::string_view kCatalogName = "test_catalog";
 constexpr std::string_view kWarehouseName = "default";
 constexpr std::string_view kLocalhostUri = "http://localhost";
 constexpr std::string_view kStdFileIOImpl = "test.StdFileIO";
+
+class TestMetricsReporter final : public MetricsReporter {
+ public:
+  Status Report(const MetricsReport& /*report*/) override { return {}; }
+};
 
 /// \brief Check if a localhost port is ready to accept connections.
 bool CheckServiceReady(uint16_t port) {
@@ -201,6 +209,39 @@ TEST_F(RestCatalogIntegrationTest, MakeCatalogSuccess) {
   EXPECT_NE(first_context, second_context);
 
   EXPECT_THAT(root->WithContext(SessionContext{}), IsError(ErrorKind::kInvalidArgument));
+}
+
+TEST_F(RestCatalogIntegrationTest, LoadsConfiguredMetricsReporter) {
+  auto loaded = std::make_shared<std::atomic<bool>>(false);
+  ASSERT_THAT(MetricsReporters::Register(
+                  "rest.catalog.test",
+                  [loaded](const std::unordered_map<std::string, std::string>&)
+                      -> Result<std::unique_ptr<MetricsReporter>> {
+                    loaded->store(true);
+                    return std::make_unique<TestMetricsReporter>();
+                  }),
+              IsOk());
+
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto catalog,
+      CreateCatalogWithProperties(
+          {{std::string(kMetricsReporterImpl), "rest.catalog.test"},
+           {RestCatalogProperties::kMetricsReportingEnabled.key(), "false"}}));
+  EXPECT_NE(catalog, nullptr);
+  EXPECT_TRUE(loaded->load());
+}
+
+TEST_F(RestCatalogIntegrationTest, AttachesRestMetricsReporterWithoutExecutor) {
+  ICEBERG_UNWRAP_OR_FAIL(auto catalog, CreateCatalog());
+  Namespace ns{.levels = {"test_metrics_reporter_without_executor"}};
+  ASSERT_THAT(catalog->CreateNamespace(ns, {}), IsOk());
+
+  TableIdentifier table_id{.ns = ns, .name = "events"};
+  ICEBERG_UNWRAP_OR_FAIL(auto table, CreateDefaultTable(catalog, table_id));
+  EXPECT_NE(table->reporter(), nullptr);
+
+  ASSERT_THAT(catalog->DropTable(table_id, /*purge=*/false), IsOk());
+  ASSERT_THAT(catalog->DropNamespace(ns), IsOk());
 }
 
 TEST_F(RestCatalogIntegrationTest, DefaultCatalogCacheDoesNotKeepRootAlive) {
@@ -375,9 +416,22 @@ TEST_F(RestCatalogIntegrationTest, CreateTable) {
   EXPECT_EQ(table->name().ns.levels,
             (std::vector<std::string>{"test_create_table", "apple", "ios"}));
   EXPECT_EQ(table->name().name, "t1");
+  EXPECT_EQ(table->full_name(), "test_catalog.test_create_table.apple.ios.t1");
 
   // Duplicate creation should fail
   EXPECT_THAT(CreateDefaultTable(catalog, table_id), IsError(ErrorKind::kAlreadyExists));
+}
+
+TEST_F(RestCatalogIntegrationTest, FullNameAlwaysUsesDotSeparator) {
+  ICEBERG_UNWRAP_OR_FAIL(auto catalog,
+                         CreateCatalogWithProperties(
+                             {{RestCatalogProperties::kName.key(), "rest/catalog"}}));
+  Namespace ns{.levels = {"test_rest_full_name"}};
+  ASSERT_THAT(catalog->CreateNamespace(ns, {}), IsOk());
+
+  TableIdentifier table_id{.ns = ns, .name = "events"};
+  ICEBERG_UNWRAP_OR_FAIL(auto table, CreateDefaultTable(catalog, table_id));
+  EXPECT_EQ(table->full_name(), "rest/catalog.test_rest_full_name.events");
 }
 
 TEST_F(RestCatalogIntegrationTest, ListTables) {

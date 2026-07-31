@@ -26,42 +26,56 @@
 
 namespace iceberg {
 
-TEST(ContentFileUtilTest, ContentSizeInBytesUsesFileSizeForNonDVFiles) {
-  // Regression test: content_size_in_bytes is only meaningful for deletion vectors.
-  // A regular data/delete file that happens to carry a content_size_in_bytes value
-  // different from file_size_in_bytes must still report file_size_in_bytes.
+TEST(ContentFileUtilTest, ContentSizeInBytesUsesFileSizeForDataFile) {
   DataFile file{
-      .content = DataFile::Content::kPositionDeletes,
+      .content = DataFile::Content::kData,
+      .file_path = "data.parquet",
       .file_format = FileFormatType::kParquet,
+      .record_count = 10,
       .file_size_in_bytes = 100,
-      .content_size_in_bytes = 999,
   };
 
   EXPECT_FALSE(ContentFileUtil::IsDV(file));
   EXPECT_EQ(ContentFileUtil::ContentSizeInBytes(file), 100);
 }
 
-TEST(ContentFileUtilTest, ContentSizeInBytesUsesContentSizeForDVFiles) {
+TEST(ContentFileUtilTest, ContentSizeInBytesUsesFileSizeForNonDVDeleteFiles) {
+  DataFile positional_delete{
+      .content = DataFile::Content::kPositionDeletes,
+      .file_path = "position-deletes.parquet",
+      .file_format = FileFormatType::kParquet,
+      .record_count = 10,
+      .file_size_in_bytes = 100,
+  };
+  DataFile equality_delete{
+      .content = DataFile::Content::kEqualityDeletes,
+      .file_path = "equality-deletes.parquet",
+      .file_format = FileFormatType::kParquet,
+      .record_count = 10,
+      .file_size_in_bytes = 200,
+      .equality_ids = {1},
+  };
+
+  EXPECT_FALSE(ContentFileUtil::IsDV(positional_delete));
+  EXPECT_EQ(ContentFileUtil::ContentSizeInBytes(positional_delete), 100);
+  EXPECT_FALSE(ContentFileUtil::IsDV(equality_delete));
+  EXPECT_EQ(ContentFileUtil::ContentSizeInBytes(equality_delete), 200);
+}
+
+TEST(ContentFileUtilTest, ContentSizeInBytesUsesContentSizeForDVFile) {
   DataFile file{
       .content = DataFile::Content::kPositionDeletes,
+      .file_path = "deletes.puffin",
       .file_format = FileFormatType::kPuffin,
+      .record_count = 10,
       .file_size_in_bytes = 100,
+      .referenced_data_file = "data.parquet",
+      .content_offset = 4,
       .content_size_in_bytes = 42,
   };
 
   EXPECT_TRUE(ContentFileUtil::IsDV(file));
   EXPECT_EQ(ContentFileUtil::ContentSizeInBytes(file), 42);
-}
-
-TEST(ContentFileUtilTest, ContentSizeInBytesFallsBackToFileSizeWhenDVSizeMissing) {
-  DataFile file{
-      .content = DataFile::Content::kPositionDeletes,
-      .file_format = FileFormatType::kPuffin,
-      .file_size_in_bytes = 100,
-  };
-
-  EXPECT_TRUE(ContentFileUtil::IsDV(file));
-  EXPECT_EQ(ContentFileUtil::ContentSizeInBytes(file), 100);
 }
 
 }  // namespace iceberg

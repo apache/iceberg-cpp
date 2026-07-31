@@ -29,7 +29,6 @@
 #include <vector>
 
 #include "iceberg/iceberg_export.h"
-#include "iceberg/metrics/metrics_reporter.h"
 #include "iceberg/snapshot.h"
 #include "iceberg/table_identifier.h"
 #include "iceberg/type_fwd.h"
@@ -47,12 +46,14 @@ class ICEBERG_EXPORT Table : public std::enable_shared_from_this<Table> {
   /// \param[in] metadata_location The location of the table metadata file.
   /// \param[in] io The FileIO to read and write table data and metadata files.
   /// \param[in] catalog The catalog that this table belongs to.
+  /// \param[in] full_name The fully-qualified name of this table. Defaults to the
+  ///            string representation of identifier when empty.
   /// \param[in] reporter Optional metrics reporter for this table. Defaults to nullptr
   ///            (noop).
   static Result<std::shared_ptr<Table>> Make(
       TableIdentifier identifier, std::shared_ptr<TableMetadata> metadata,
       std::string metadata_location, std::shared_ptr<FileIO> io,
-      std::shared_ptr<Catalog> catalog,
+      std::shared_ptr<Catalog> catalog, std::string full_name = "",
       std::shared_ptr<MetricsReporter> reporter = nullptr);
 
   virtual ~Table();
@@ -60,11 +61,8 @@ class ICEBERG_EXPORT Table : public std::enable_shared_from_this<Table> {
   /// \brief Returns the identifier of this table
   const TableIdentifier& name() const { return identifier_; }
 
-  /// \brief Returns the fully-qualified name of this table for metrics reporting.
-  ///
-  /// Combines the owning catalog's name with the table identifier (e.g.
-  /// "catalog.namespace.table")
-  std::string FullyQualifiedName() const;
+  /// \brief Returns the fully-qualified name of this table.
+  const std::string& full_name() const { return full_name_; }
 
   /// \brief Returns the UUID of the table
   const std::string& uuid() const;
@@ -131,12 +129,6 @@ class ICEBERG_EXPORT Table : public std::enable_shared_from_this<Table> {
 
   /// \brief Returns the metrics reporter for this table.
   const std::shared_ptr<MetricsReporter>& reporter() const;
-
-  /// \brief Add an additional metrics reporter, combining with any existing one.
-  ///
-  /// If a reporter is already set,
-  /// the new reporter is combined into a CompositeMetricsReporter.
-  void CombineReporter(std::shared_ptr<MetricsReporter> additional);
 
   /// \brief Returns a LocationProvider for this table
   Result<std::unique_ptr<LocationProvider>> location_provider() const;
@@ -219,10 +211,11 @@ class ICEBERG_EXPORT Table : public std::enable_shared_from_this<Table> {
  protected:
   Table(TableIdentifier identifier, std::shared_ptr<TableMetadata> metadata,
         std::string metadata_location, std::shared_ptr<FileIO> io,
-        std::shared_ptr<Catalog> catalog,
+        std::shared_ptr<Catalog> catalog, std::string full_name,
         std::shared_ptr<MetricsReporter> reporter = nullptr);
 
   const TableIdentifier identifier_;
+  const std::string full_name_;
   std::shared_ptr<TableMetadata> metadata_;
   std::string metadata_location_;
   std::shared_ptr<FileIO> io_;
@@ -237,7 +230,7 @@ class ICEBERG_EXPORT StagedTable final : public Table {
   static Result<std::shared_ptr<StagedTable>> Make(
       TableIdentifier identifier, std::shared_ptr<TableMetadata> metadata,
       std::string metadata_location, std::shared_ptr<FileIO> io,
-      std::shared_ptr<Catalog> catalog,
+      std::shared_ptr<Catalog> catalog, std::string full_name = "",
       std::shared_ptr<MetricsReporter> reporter = nullptr);
 
   ~StagedTable() override;
@@ -256,7 +249,8 @@ class ICEBERG_EXPORT StaticTable : public Table {
  public:
   static Result<std::shared_ptr<StaticTable>> Make(
       TableIdentifier identifier, std::shared_ptr<TableMetadata> metadata,
-      std::string metadata_location, std::shared_ptr<FileIO> io);
+      std::string metadata_location, std::shared_ptr<FileIO> io,
+      std::string full_name = "");
 
   ~StaticTable() override;
 

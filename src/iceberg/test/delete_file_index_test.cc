@@ -193,7 +193,7 @@ class DeleteFileIndexTest : public testing::TestWithParam<int8_t> {
   Result<std::unique_ptr<DeleteFileIndex>> BuildIndex(
       std::vector<ManifestFile> delete_manifests,
       std::optional<int64_t> after_sequence_number = std::nullopt,
-      ScanMetrics* scan_metrics = nullptr) {
+      std::shared_ptr<ScanMetrics> scan_metrics = nullptr) {
     ICEBERG_ASSIGN_OR_RAISE(auto builder,
                             DeleteFileIndex::BuilderFor(file_io_, schema_, GetSpecsById(),
                                                         std::move(delete_manifests)));
@@ -201,7 +201,7 @@ class DeleteFileIndexTest : public testing::TestWithParam<int8_t> {
       builder.AfterSequenceNumber(after_sequence_number.value());
     }
     if (scan_metrics != nullptr) {
-      builder.ScanMetrics(scan_metrics);
+      builder.WithScanMetrics(std::move(scan_metrics));
     }
     return builder.Build();
   }
@@ -289,20 +289,19 @@ TEST_P(DeleteFileIndexTest, TestMinSequenceNumberFilteringDoesNotCountAsSkipped)
                                       unpartitioned_spec_);
 
   auto metrics_context = MetricsContext::Default();
-  auto scan_metrics = ScanMetrics::Make(*metrics_context);
-  ICEBERG_UNWRAP_OR_FAIL(auto index, BuildIndex({manifest}, /*after_sequence_number=*/4,
-                                                scan_metrics.get()));
+  std::shared_ptr<ScanMetrics> scan_metrics = ScanMetrics::Make(*metrics_context);
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto index, BuildIndex({manifest}, /*after_sequence_number=*/4, scan_metrics));
 
   ICEBERG_UNWRAP_OR_FAIL(auto deletes, index->ForDataFile(0, *unpartitioned_file_));
   EXPECT_EQ(deletes.size(), 1);
 
-  // Java drops delete files filtered out by min_sequence_number without counting them
-  // as skipped; only the kept file should be counted as indexed.
+  // Sequence-number filtering does not contribute to Java's skipped-file metric.
   EXPECT_EQ(scan_metrics->skipped_delete_files->value(), 0);
   EXPECT_EQ(scan_metrics->indexed_delete_files->value(), 1);
 }
 
-TEST_P(DeleteFileIndexTest, TestEmptyDeleteManifestCountsAsSkippedManifest) {
+TEST_P(DeleteFileIndexTest, TestDeleteManifestWithOnlyDeletedEntriesCountsAsSkipped) {
   auto version = GetParam();
 
   auto eq_delete = MakeEqualityDeleteFile("/path/to/eq-delete.parquet",
@@ -310,8 +309,6 @@ TEST_P(DeleteFileIndexTest, TestEmptyDeleteManifestCountsAsSkippedManifest) {
                                           unpartitioned_spec_->spec_id());
 
   std::vector<ManifestEntry> entries;
-  // A kDeleted entry produces a manifest with no added/existing files,
-  // which is a manifest-level skip before any entries are read.
   entries.push_back(MakeDeleteEntry(/*snapshot_id=*/1000L, /*sequence_number=*/4,
                                     eq_delete, ManifestStatus::kDeleted));
 
@@ -319,21 +316,17 @@ TEST_P(DeleteFileIndexTest, TestEmptyDeleteManifestCountsAsSkippedManifest) {
                                       unpartitioned_spec_);
 
   auto metrics_context = MetricsContext::Default();
-  auto scan_metrics = ScanMetrics::Make(*metrics_context);
+  std::shared_ptr<ScanMetrics> scan_metrics = ScanMetrics::Make(*metrics_context);
   ICEBERG_UNWRAP_OR_FAIL(
       auto index,
-      BuildIndex({manifest}, /*after_sequence_number=*/std::nullopt, scan_metrics.get()));
+      BuildIndex({manifest}, /*after_sequence_number=*/std::nullopt, scan_metrics));
 
   EXPECT_TRUE(index->empty());
   EXPECT_EQ(scan_metrics->skipped_delete_manifests->value(), 1);
   EXPECT_EQ(scan_metrics->scanned_delete_manifests->value(), 0);
 }
 
-// BuildIndex() never sets a partition/data filter on the builder, so the manifest
-// evaluator built internally is null. A non-empty delete manifest must still be counted
-// as scanned in that case, matching Java's DeleteFileIndex, which counts every manifest
-// that survives filtering via CloseableIterable.count() regardless of whether an
-// evaluator was constructed.
+// A manifest is scanned even when no manifest evaluator is configured.
 TEST_P(DeleteFileIndexTest, TestScannedDeleteManifestCountedWithoutFilter) {
   auto version = GetParam();
 
@@ -349,10 +342,10 @@ TEST_P(DeleteFileIndexTest, TestScannedDeleteManifestCountedWithoutFilter) {
                                       unpartitioned_spec_);
 
   auto metrics_context = MetricsContext::Default();
-  auto scan_metrics = ScanMetrics::Make(*metrics_context);
+  std::shared_ptr<ScanMetrics> scan_metrics = ScanMetrics::Make(*metrics_context);
   ICEBERG_UNWRAP_OR_FAIL(
       auto index,
-      BuildIndex({manifest}, /*after_sequence_number=*/std::nullopt, scan_metrics.get()));
+      BuildIndex({manifest}, /*after_sequence_number=*/std::nullopt, scan_metrics));
 
   EXPECT_FALSE(index->empty());
   EXPECT_EQ(scan_metrics->skipped_delete_manifests->value(), 0);
@@ -383,8 +376,8 @@ TEST_P(DeleteFileIndexTest, TestPartitionSetFilterCountsSkippedDeleteFiles) {
       auto builder,
       DeleteFileIndex::BuilderFor(file_io_, schema_, GetSpecsById(), {manifest}));
   auto metrics_context = MetricsContext::Default();
-  auto scan_metrics = ScanMetrics::Make(*metrics_context);
-  builder.FilterPartitions(partition_set).ScanMetrics(scan_metrics.get());
+  std::shared_ptr<ScanMetrics> scan_metrics = ScanMetrics::Make(*metrics_context);
+  builder.FilterPartitions(partition_set).WithScanMetrics(scan_metrics);
   ICEBERG_UNWRAP_OR_FAIL(auto index, builder.Build());
 
   ICEBERG_UNWRAP_OR_FAIL(auto deletes, index->ForDataFile(1, *file_a_));
@@ -1187,7 +1180,6 @@ TEST_P(DeleteFileIndexTest, TestReferencedDeleteFiles) {
 TEST_P(DeleteFileIndexTest, TestDeleteFileCountedOnceAcrossMultipleDataFiles) {
   auto version = GetParam();
 
-  // A single global equality delete file applies to every unpartitioned data file.
   auto global_eq_delete = MakeEqualityDeleteFile("/path/to/global-eq-delete.parquet",
                                                  PartitionValues(std::vector<Literal>{}),
                                                  unpartitioned_spec_->spec_id());
@@ -1200,12 +1192,11 @@ TEST_P(DeleteFileIndexTest, TestDeleteFileCountedOnceAcrossMultipleDataFiles) {
                                       unpartitioned_spec_);
 
   auto metrics_context = MetricsContext::Default();
-  auto scan_metrics = ScanMetrics::Make(*metrics_context);
+  std::shared_ptr<ScanMetrics> scan_metrics = ScanMetrics::Make(*metrics_context);
   ICEBERG_UNWRAP_OR_FAIL(
       auto index,
-      BuildIndex({manifest}, /*after_sequence_number=*/std::nullopt, scan_metrics.get()));
+      BuildIndex({manifest}, /*after_sequence_number=*/std::nullopt, scan_metrics));
 
-  // The same delete file matches two different data files...
   auto other_unpartitioned_file =
       MakeDataFile("/path/to/data-other.parquet", PartitionValues(std::vector<Literal>{}),
                    unpartitioned_spec_->spec_id());
@@ -1216,11 +1207,7 @@ TEST_P(DeleteFileIndexTest, TestDeleteFileCountedOnceAcrossMultipleDataFiles) {
   EXPECT_EQ(deletes_for_first.size(), 1);
   EXPECT_EQ(deletes_for_second.size(), 1);
 
-  // ...but it must only be counted once in indexed_delete_files/type counters, since
-  // those are counted at index-build time rather than once per data file it is matched
-  // against. result_delete_files/total_delete_file_size_in_bytes are not incremented
-  // here at all -- they are counted once per FileScanTask in ManifestGroup, mirroring
-  // Java's ScanMetricsUtil.fileTask() (BuildIndex() alone doesn't exercise that path).
+  // Index metrics count the delete file once; task-level metrics are recorded elsewhere.
   EXPECT_EQ(scan_metrics->indexed_delete_files->value(), 1);
   EXPECT_EQ(scan_metrics->result_delete_files->value(), 0);
   EXPECT_EQ(scan_metrics->equality_delete_files->value(), 1);

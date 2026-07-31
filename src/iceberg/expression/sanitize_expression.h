@@ -32,23 +32,18 @@
 
 namespace iceberg {
 
-/// \brief Rewrites an expression tree so that literal values are replaced with
-/// type-aware placeholders (e.g. "(2-digit-int)", "(hash-3f9a1c02)",
-/// "(date-5-days-ago)"), while preserving the predicate/column/operator structure.
-///
-/// Mirrors Java's `org.apache.iceberg.expressions.ExpressionUtil.sanitize`. Used before
-/// handing a scan's row filter to a MetricsReporter so that literal predicate values
-/// (which may be sensitive, e.g. PII) are never exposed to metrics consumers.
+/// \brief Rewrites an expression tree as an unbound expression whose literal values
+/// are replaced with type-aware placeholders (e.g. "(2-digit-int)",
+/// "(hash-3f9a1c02)", "(date-5-days-ago)").
 class ICEBERG_EXPORT SanitizeExpression
     : public ExpressionVisitor<std::shared_ptr<Expression>> {
  public:
-  /// \brief Sanitize an expression tree, replacing literals with placeholders.
+  /// \brief Sanitize an expression tree and return an unbound expression.
   static Result<std::shared_ptr<Expression>> Sanitize(
       const std::shared_ptr<Expression>& expr);
 
   /// \brief Bind `expr` to `schema` first, falling back to sanitizing the unbound
-  /// expression if binding fails. Mirrors Java's `ExpressionUtil.sanitize(StructType,
-  /// Expression, boolean)`.
+  /// expression if binding fails.
   static Result<std::shared_ptr<Expression>> Sanitize(
       const Schema& schema, const std::shared_ptr<Expression>& expr, bool case_sensitive);
 
@@ -70,9 +65,9 @@ class ICEBERG_EXPORT SanitizeExpression
  private:
   SanitizeExpression();
 
-  /// Current time, microseconds since epoch, captured once per Sanitize() call.
+  // Microseconds since the Unix epoch, at millisecond precision.
   int64_t now_;
-  /// Current day, days since epoch (UTC), captured once per Sanitize() call.
+  // UTC days since the Unix epoch.
   int32_t today_;
 };
 

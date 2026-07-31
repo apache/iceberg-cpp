@@ -104,8 +104,8 @@ TEST_P(IncrementalChangelogScanTest, DataFilters) {
   EXPECT_THAT(file_io_->DeleteFile(manifest_a.manifest_path), IsOk());
 
   // Filter by data="k" which should match only file_b (bucket("k", 16) = 1)
-  ICEBERG_UNWRAP_OR_FAIL(auto builder, IncrementalChangelogScanBuilder::Make(
-                                           partitioned_metadata, file_io_));
+  ICEBERG_UNWRAP_OR_FAIL(auto builder,
+                         MakeScanBuilder<IncrementalChangelogScan>(partitioned_metadata));
   builder->Filter(Expressions::Equal("data", Literal::String("k")));
   builder->ToSnapshot(2000L);
   ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
@@ -142,7 +142,7 @@ TEST_P(IncrementalChangelogScanTest, Overwrites) {
 
   // from_snapshot_exclusive(snap1).to_snapshot(snap2) should return 2 tasks
   ICEBERG_UNWRAP_OR_FAIL(auto builder,
-                         IncrementalChangelogScanBuilder::Make(metadata, file_io_));
+                         MakeScanBuilder<IncrementalChangelogScan>(metadata));
   builder->FromSnapshot(1000L, /*inclusive=*/false).ToSnapshot(2000L);
   ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
   ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
@@ -208,7 +208,7 @@ TEST_P(IncrementalChangelogScanTest, DuplicatedManifests) {
                     .snapshot_id = 2000L, .retention = SnapshotRef::Branch{}})}});
 
   ICEBERG_UNWRAP_OR_FAIL(auto builder,
-                         IncrementalChangelogScanBuilder::Make(metadata, file_io_));
+                         MakeScanBuilder<IncrementalChangelogScan>(metadata));
   builder->ToSnapshot(2000L);
   ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
   ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
@@ -247,7 +247,7 @@ TEST_P(IncrementalChangelogScanTest, FileDeletes) {
                     .snapshot_id = 2000L, .retention = SnapshotRef::Branch{}})}});
 
   ICEBERG_UNWRAP_OR_FAIL(auto builder,
-                         IncrementalChangelogScanBuilder::Make(metadata, file_io_));
+                         MakeScanBuilder<IncrementalChangelogScan>(metadata));
   builder->FromSnapshot(1000L, /*inclusive=*/false).ToSnapshot(2000L);
   ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
   ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
@@ -302,7 +302,7 @@ TEST_P(IncrementalChangelogScanTest, ExistingEntriesInNewDataManifestsAreIgnored
   // When scanning from_snapshot_inclusive(C).to_snapshot(C), should only return file_c
   // because file_a and file_b are marked as EXISTING entries
   ICEBERG_UNWRAP_OR_FAIL(auto builder,
-                         IncrementalChangelogScanBuilder::Make(metadata, file_io_));
+                         MakeScanBuilder<IncrementalChangelogScan>(metadata));
   builder->FromSnapshot(3000L, /*inclusive=*/true).ToSnapshot(3000L);
   ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
   ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
@@ -355,7 +355,7 @@ TEST_P(IncrementalChangelogScanTest, DataFileRewrites) {
   // The changelog should only show the original appends (A and B),
   // not the replace operation
   ICEBERG_UNWRAP_OR_FAIL(auto builder,
-                         IncrementalChangelogScanBuilder::Make(metadata, file_io_));
+                         MakeScanBuilder<IncrementalChangelogScan>(metadata));
   builder->ToSnapshot(3000L);
   ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
   ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
@@ -422,7 +422,7 @@ TEST_P(IncrementalChangelogScanTest, ManifestRewritesAreIgnored) {
   // The changelog should show all 3 files from the original appends,
   // ignoring the manifest rewrite snapshot
   ICEBERG_UNWRAP_OR_FAIL(auto builder,
-                         IncrementalChangelogScanBuilder::Make(metadata, file_io_));
+                         MakeScanBuilder<IncrementalChangelogScan>(metadata));
   builder->ToSnapshot(4000L);
   ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
   ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
@@ -508,7 +508,7 @@ TEST_P(IncrementalChangelogScanTest, DeleteFilesAreNotSupported) {
                     .snapshot_id = 2000L, .retention = SnapshotRef::Branch{}})}});
 
   ICEBERG_UNWRAP_OR_FAIL(auto builder,
-                         IncrementalChangelogScanBuilder::Make(metadata, file_io_));
+                         MakeScanBuilder<IncrementalChangelogScan>(metadata));
   builder->ToSnapshot(2000L);
   ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
   EXPECT_THAT(scan->PlanFiles(),

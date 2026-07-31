@@ -172,7 +172,8 @@ class ICEBERG_SQL_CATALOG_EXPORT SqlCatalog
 
  private:
   SqlCatalog(SqlCatalogConfig config, std::shared_ptr<FileIO> file_io,
-             std::shared_ptr<CatalogStore> store);
+             std::shared_ptr<CatalogStore> store,
+             std::shared_ptr<MetricsReporter> reporter);
 
   /// \brief Resolve the current metadata location for a table, or NoSuchTable.
   Result<std::string> GetTableMetadataLocation(const TableIdentifier& identifier) const;
@@ -184,7 +185,7 @@ class ICEBERG_SQL_CATALOG_EXPORT SqlCatalog
   SqlCatalogConfig config_;
   std::shared_ptr<FileIO> file_io_;
   std::shared_ptr<CatalogStore> store_;
-  std::shared_ptr<iceberg::MetricsReporter> reporter_;
+  std::shared_ptr<MetricsReporter> reporter_;
 };
 
 }  // namespace iceberg::sql

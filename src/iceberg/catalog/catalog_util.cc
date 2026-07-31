@@ -17,31 +17,33 @@
  * under the License.
  */
 
-#pragma once
+#include "iceberg/catalog/catalog_util.h"
 
-/// \file iceberg/catalog/rest/type_fwd.h
-/// Forward declarations and enum definitions for Iceberg REST API types.
+#include "iceberg/table_identifier.h"
 
-namespace iceberg::rest {
+namespace iceberg {
 
-struct ErrorResponse;
-struct CommitTableResponse;
-struct LoadTableResult;
-struct OAuthTokenResponse;
+std::string CatalogUtil::FullTableName(std::string_view catalog_name,
+                                       const TableIdentifier& identifier) {
+  if (catalog_name.empty()) {
+    return identifier.ToString();
+  }
 
-class Endpoint;
-class ErrorHandler;
-class HttpClient;
-class ResourcePaths;
-class RestCatalog;
-class RestCatalogProperties;
+  std::string result;
+  if (catalog_name.contains('/') || catalog_name.contains(':')) {
+    result = catalog_name;
+    if (!catalog_name.ends_with('/')) {
+      result += '/';
+    }
+  } else {
+    result = std::string(catalog_name) + '.';
+  }
 
-}  // namespace iceberg::rest
+  for (const auto& level : identifier.ns.levels) {
+    result += level + '.';
+  }
+  result += identifier.name;
+  return result;
+}
 
-namespace iceberg::rest::auth {
-
-class AuthManager;
-class AuthProperties;
-class AuthSession;
-
-}  // namespace iceberg::rest::auth
+}  // namespace iceberg
