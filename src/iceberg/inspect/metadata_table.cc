@@ -22,40 +22,33 @@
 #include <memory>
 #include <utility>
 
-#include "iceberg/inspect/history_table.h"
-#include "iceberg/inspect/snapshots_table.h"
-
 namespace iceberg {
 
-MetadataTable::MetadataTable(std::shared_ptr<Table> source_table,
-                             TableIdentifier identifier, std::shared_ptr<Schema> schema)
-    : identifier_(std::move(identifier)),
-      schema_(std::move(schema)),
-      source_table_(std::move(source_table)) {}
+MetadataTable::MetadataTable(std::shared_ptr<Table> source_table)
+    : source_table_(std::move(source_table)) {}
 
 MetadataTable::~MetadataTable() = default;
 
 bool MetadataTable::supports_time_travel() const noexcept { return false; }
 
-Result<ArrowArray> MetadataTable::Scan(
-    const std::optional<SnapshotSelection>& /*snapshot_selection*/) {
-  return NotSupported("Scan is not supported for this metadata table type");
+const std::shared_ptr<Table>& MetadataTable::source_table() const {
+  return source_table_;
 }
 
-Result<std::unique_ptr<MetadataTable>> MetadataTable::Make(std::shared_ptr<Table> table,
-                                                           Kind kind) {
-  if (table == nullptr) [[unlikely]] {
-    return InvalidArgument("Table cannot be null");
-  }
+TimeTravelMetadataTable::TimeTravelMetadataTable(std::shared_ptr<Table> source_table)
+    : MetadataTable(std::move(source_table)) {}
 
-  switch (kind) {
-    case Kind::kSnapshots:
-      return SnapshotsTable::Make(table);
-    case Kind::kHistory:
-      return HistoryTable::Make(table);
-  }
+TimeTravelMetadataTable::~TimeTravelMetadataTable() = default;
 
-  return NotSupported("Unsupported metadata table type");
+bool TimeTravelMetadataTable::supports_time_travel() const noexcept { return true; }
+
+Result<ArrowArrayStream> TimeTravelMetadataTable::Scan() {
+  return ScanSnapshot(SnapshotSelection{});
+}
+
+Result<ArrowArrayStream> TimeTravelMetadataTable::Scan(
+    const SnapshotSelection& snapshot_selection) {
+  return ScanSnapshot(snapshot_selection);
 }
 
 }  // namespace iceberg

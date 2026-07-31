@@ -20,7 +20,7 @@
 /// \file metadata_table_test_base.h
 /// Shared test base for all metadata table tests.
 ///
-/// Provides common helpers (FinishAndImport, MakeTestSnapshots,
+/// Provides common helpers (ReadAllBatches, MakeTestSnapshots,
 /// MakeTableWithSnapshots) and the MockFileIO + MockCatalog fixture that
 /// every metadata table test needs.
 
@@ -79,24 +79,19 @@ class MetadataTableTestBase : public ::testing::Test {
                                                "s3://bucket/meta.json", io_, catalog_));
   }
 
-  /// \brief Import a Scan()-produced ArrowArray into an Arrow RecordBatch.
-  static Result<std::shared_ptr<::arrow::RecordBatch>> FinishAndImport(
-      ArrowArray&& array, const Schema& schema) {
-    ArrowSchema c_schema{};
-    ICEBERG_RETURN_UNEXPECTED(ToArrowSchema(schema, &c_schema));
-
-    auto arrow_schema_result = ::arrow::ImportSchema(&c_schema);
-    if (!arrow_schema_result.ok()) {
-      return InvalidArrowData(arrow_schema_result.status().ToString());
+  /// \brief Import and consume a Scan()-produced ArrowArrayStream.
+  static Result<std::vector<std::shared_ptr<::arrow::RecordBatch>>> ReadAllBatches(
+      ArrowArrayStream&& stream) {
+    auto reader_result = ::arrow::ImportRecordBatchReader(&stream);
+    if (!reader_result.ok()) {
+      return InvalidArrowData(reader_result.status().ToString());
     }
 
-    // ImportRecordBatch takes ownership of the array and releases it.
-    auto batch_result = ::arrow::ImportRecordBatch(
-        &array, std::move(arrow_schema_result).MoveValueUnsafe());
-    if (!batch_result.ok()) {
-      return InvalidArrowData(batch_result.status().ToString());
+    auto batches_result = reader_result.ValueUnsafe()->ToRecordBatches();
+    if (!batches_result.ok()) {
+      return InvalidArrowData(batches_result.status().ToString());
     }
-    return std::move(batch_result).MoveValueUnsafe();
+    return std::move(batches_result).MoveValueUnsafe();
   }
 
   /// \brief Create two snapshots matching the Java TestDataTaskParser test data.

@@ -20,6 +20,8 @@
 /// \file history_table_test.cc
 /// Unit tests for HistoryTable.
 
+#include "iceberg/inspect/history_table.h"
+
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
@@ -46,8 +48,7 @@ std::shared_ptr<Schema> MakeHistorySchema() {
 class HistoryTableTest : public MetadataTableTestBase {};
 
 TEST_F(HistoryTableTest, SchemaMatchesIcebergSchema) {
-  ICEBERG_UNWRAP_OR_FAIL(auto history_table,
-                         MetadataTable::Make(table_, MetadataTable::Kind::kHistory));
+  ICEBERG_UNWRAP_OR_FAIL(auto history_table, MetadataTable::Make<HistoryTable>(table_));
   EXPECT_TRUE(*history_table->schema() == *MakeHistorySchema());
 }
 
