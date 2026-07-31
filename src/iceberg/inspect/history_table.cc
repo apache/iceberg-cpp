@@ -26,37 +26,32 @@
 #include "iceberg/schema.h"
 #include "iceberg/schema_field.h"
 #include "iceberg/table.h"
-#include "iceberg/table_identifier.h"
 #include "iceberg/type.h"
+#include "iceberg/util/macros.h"
 
 namespace iceberg {
-namespace {
 
-std::shared_ptr<Schema> MakeHistoryTableSchema() {
-  return std::make_shared<Schema>(std::vector<SchemaField>{
+HistoryTable::HistoryTable(std::shared_ptr<Table> table)
+    : MetadataTable(std::move(table)) {}
+
+HistoryTable::~HistoryTable() = default;
+
+const std::shared_ptr<Schema>& HistoryTable::schema() const {
+  static const auto schema = std::make_shared<Schema>(std::vector<SchemaField>{
       SchemaField::MakeRequired(1, "made_current_at", timestamp_tz()),
       SchemaField::MakeRequired(2, "snapshot_id", int64()),
       SchemaField::MakeOptional(3, "parent_id", int64()),
       SchemaField::MakeRequired(4, "is_current_ancestor", boolean())});
+  return schema;
 }
-
-TableIdentifier MakeHistoryTableName(const TableIdentifier& source_name) {
-  return TableIdentifier{.ns = source_name.ns, .name = source_name.name + ".history"};
-}
-
-}  // namespace
-
-HistoryTable::HistoryTable(std::shared_ptr<Table> table)
-    : MetadataTable(table, MakeHistoryTableName(table->name()),
-                    MakeHistoryTableSchema()) {}
-
-HistoryTable::~HistoryTable() = default;
 
 Result<std::unique_ptr<HistoryTable>> HistoryTable::Make(std::shared_ptr<Table> table) {
-  if (table == nullptr) [[unlikely]] {
-    return InvalidArgument("Table cannot be null");
-  }
+  ICEBERG_PRECHECK(table != nullptr, "Table cannot be null");
   return std::unique_ptr<HistoryTable>(new HistoryTable(std::move(table)));
+}
+
+Result<ArrowArrayStream> HistoryTable::Scan() {
+  return NotSupported("Scan is not supported for the history table");
 }
 
 }  // namespace iceberg

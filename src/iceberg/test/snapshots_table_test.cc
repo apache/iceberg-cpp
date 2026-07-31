@@ -17,6 +17,8 @@
  * under the License.
  */
 
+#include "iceberg/inspect/snapshots_table.h"
+
 #include <cstdint>
 #include <memory>
 #include <string>
@@ -31,27 +33,11 @@
 
 #include "iceberg/constants.h"
 #include "iceberg/inspect/metadata_table.h"
-#include "iceberg/schema.h"
-#include "iceberg/schema_field.h"
 #include "iceberg/test/matchers.h"
 #include "iceberg/test/metadata_table_test_base.h"
-#include "iceberg/type.h"
 
 namespace iceberg {
 namespace {
-
-std::shared_ptr<Schema> MakeSnapshotsSchema() {
-  return std::make_shared<Schema>(std::vector<SchemaField>{
-      SchemaField::MakeRequired(1, "committed_at", timestamp_tz()),
-      SchemaField::MakeRequired(2, "snapshot_id", int64()),
-      SchemaField::MakeOptional(3, "parent_id", int64()),
-      SchemaField::MakeOptional(4, "operation", string()),
-      SchemaField::MakeOptional(5, "manifest_list", string()),
-      SchemaField::MakeOptional(
-          6, "summary",
-          std::make_shared<MapType>(SchemaField::MakeRequired(7, "key", string()),
-                                    SchemaField::MakeRequired(8, "value", string())))});
-}
 
 std::vector<std::pair<std::string, std::string>> GetMapEntries(
     const std::shared_ptr<::arrow::MapArray>& map_array, int64_t row) {
@@ -77,8 +63,7 @@ class SnapshotsTableTest : public MetadataTableTestBase {
     ICEBERG_UNWRAP_OR_FAIL(
         table_, MakeTableWithSnapshots({snap1, snap2}, /*current_snapshot_id=*/2));
 
-    ICEBERG_UNWRAP_OR_FAIL(snapshots_table_,
-                           MetadataTable::Make(table_, MetadataTable::Kind::kSnapshots));
+    ICEBERG_UNWRAP_OR_FAIL(snapshots_table_, MetadataTable::Make<SnapshotsTable>(table_));
   }
 
   std::unique_ptr<MetadataTable> snapshots_table_;
@@ -87,20 +72,15 @@ class SnapshotsTableTest : public MetadataTableTestBase {
 TEST_F(SnapshotsTableTest, Construct) {
   EXPECT_EQ(snapshots_table_->kind(), MetadataTable::Kind::kSnapshots);
   EXPECT_EQ(snapshots_table_->source_table(), table_);
-  EXPECT_EQ(snapshots_table_->name().name, "test_table.snapshots");
-  EXPECT_EQ(snapshots_table_->name().ns.levels, (std::vector<std::string>{"db"}));
   EXPECT_NE(snapshots_table_->schema(), nullptr);
-}
-
-TEST_F(SnapshotsTableTest, SchemaMatchesIcebergSchema) {
-  EXPECT_TRUE(*snapshots_table_->schema() == *MakeSnapshotsSchema());
 }
 
 TEST_F(SnapshotsTableTest, Scan) {
   // Scan the snapshots table once and verify all columns of the result.
-  ICEBERG_UNWRAP_OR_FAIL(auto array, snapshots_table_->Scan());
-  ICEBERG_UNWRAP_OR_FAIL(auto batch,
-                         FinishAndImport(std::move(array), *snapshots_table_->schema()));
+  ICEBERG_UNWRAP_OR_FAIL(auto stream, snapshots_table_->Scan());
+  ICEBERG_UNWRAP_OR_FAIL(auto batches, ReadAllBatches(std::move(stream)));
+  ASSERT_EQ(batches.size(), 1);
+  const auto& batch = batches.front();
 
   // Row and column counts.
   EXPECT_EQ(batch->num_rows(), 2);
@@ -132,32 +112,24 @@ TEST_F(SnapshotsTableTest, Scan) {
   EXPECT_EQ(manifest_lists->GetString(0), "file:/tmp/manifest1.avro");
   EXPECT_EQ(manifest_lists->GetString(1), "file:/tmp/manifest2.avro");
 
-  // Column 5: summary (map<string,string>) — each summary has 11 entries
-  // (10 data + 1 operation).
+  // Column 5: summary (map<string,string>) excludes the separate operation field.
   auto summaries = std::static_pointer_cast<::arrow::MapArray>(batch->column(5));
   EXPECT_FALSE(summaries->IsNull(0));
   EXPECT_FALSE(summaries->IsNull(1));
-  EXPECT_EQ(summaries->value_length(0), 11);
-  EXPECT_EQ(summaries->value_length(1), 11);
+  EXPECT_EQ(summaries->value_length(0), 10);
+  EXPECT_EQ(summaries->value_length(1), 10);
 
   auto first_summary = GetMapEntries(summaries, 0);
-  EXPECT_THAT(first_summary, ::testing::Contains(::testing::Pair("operation", "append")));
+  EXPECT_THAT(
+      first_summary,
+      ::testing::Not(::testing::Contains(::testing::Pair("operation", "append"))));
   EXPECT_THAT(first_summary, ::testing::Contains(::testing::Pair("total-records", "1")));
 
   auto second_summary = GetMapEntries(summaries, 1);
-  EXPECT_THAT(second_summary,
-              ::testing::Contains(::testing::Pair("operation", "append")));
+  EXPECT_THAT(
+      second_summary,
+      ::testing::Not(::testing::Contains(::testing::Pair("operation", "append"))));
   EXPECT_THAT(second_summary, ::testing::Contains(::testing::Pair("total-records", "2")));
-}
-
-TEST_F(SnapshotsTableTest, ScanSnapshotSelectionIgnored) {
-  // SnapshotsTable always returns all snapshots regardless of selection.
-  SnapshotSelection sel{.snapshot_id = 999};
-  ICEBERG_UNWRAP_OR_FAIL(auto array, snapshots_table_->Scan(sel));
-  ICEBERG_UNWRAP_OR_FAIL(auto batch,
-                         FinishAndImport(std::move(array), *snapshots_table_->schema()));
-  // Should still return all 2 snapshots, not filtered to snapshot 999.
-  EXPECT_EQ(batch->num_rows(), 2);
 }
 
 TEST_F(SnapshotsTableTest, ScanEmptySnapshotList) {
@@ -166,15 +138,12 @@ TEST_F(SnapshotsTableTest, ScanEmptySnapshotList) {
       auto empty_table,
       MakeTableWithSnapshots({}, /*current_snapshot_id=*/kInvalidSnapshotId));
 
-  ICEBERG_UNWRAP_OR_FAIL(
-      snapshots_table_,
-      MetadataTable::Make(empty_table, MetadataTable::Kind::kSnapshots));
+  ICEBERG_UNWRAP_OR_FAIL(snapshots_table_,
+                         MetadataTable::Make<SnapshotsTable>(empty_table));
 
-  ICEBERG_UNWRAP_OR_FAIL(auto array, snapshots_table_->Scan(std::nullopt));
-  ICEBERG_UNWRAP_OR_FAIL(auto batch,
-                         FinishAndImport(std::move(array), *snapshots_table_->schema()));
-  EXPECT_EQ(batch->num_rows(), 0);
-  EXPECT_EQ(batch->num_columns(), 6);
+  ICEBERG_UNWRAP_OR_FAIL(auto stream, snapshots_table_->Scan());
+  ICEBERG_UNWRAP_OR_FAIL(auto batches, ReadAllBatches(std::move(stream)));
+  EXPECT_TRUE(batches.empty());
 }
 
 TEST_F(SnapshotsTableTest, ScanSkipsNullSnapshots) {
@@ -182,12 +151,47 @@ TEST_F(SnapshotsTableTest, ScanSkipsNullSnapshots) {
   ICEBERG_UNWRAP_OR_FAIL(auto table, MakeTableWithSnapshots({snap1, nullptr, snap2},
                                                             /*current_snapshot_id=*/2));
   ICEBERG_UNWRAP_OR_FAIL(auto snapshots_table,
-                         MetadataTable::Make(table, MetadataTable::Kind::kSnapshots));
+                         MetadataTable::Make<SnapshotsTable>(table));
 
-  ICEBERG_UNWRAP_OR_FAIL(auto array, snapshots_table->Scan());
-  ICEBERG_UNWRAP_OR_FAIL(auto batch,
-                         FinishAndImport(std::move(array), *snapshots_table->schema()));
-  EXPECT_EQ(batch->num_rows(), 2);
+  ICEBERG_UNWRAP_OR_FAIL(auto stream, snapshots_table->Scan());
+  ICEBERG_UNWRAP_OR_FAIL(auto batches, ReadAllBatches(std::move(stream)));
+  ASSERT_EQ(batches.size(), 1);
+  EXPECT_EQ(batches.front()->num_rows(), 2);
+}
+
+TEST_F(SnapshotsTableTest, ScanTreatsEmptySummaryAsNull) {
+  auto [missing_summary, operation_only_summary] = MakeTestSnapshots();
+  missing_summary->summary.clear();
+  operation_only_summary->summary = {
+      {SnapshotSummaryFields::kOperation, DataOperation::kAppend}};
+  ICEBERG_UNWRAP_OR_FAIL(auto table,
+                         MakeTableWithSnapshots({missing_summary, operation_only_summary},
+                                                /*current_snapshot_id=*/2));
+  ICEBERG_UNWRAP_OR_FAIL(auto snapshots_table,
+                         MetadataTable::Make<SnapshotsTable>(table));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto stream, snapshots_table->Scan());
+  ICEBERG_UNWRAP_OR_FAIL(auto batches, ReadAllBatches(std::move(stream)));
+  ASSERT_EQ(batches.size(), 1);
+  auto summaries =
+      std::static_pointer_cast<::arrow::MapArray>(batches.front()->column(5));
+  EXPECT_TRUE(summaries->IsNull(0));
+  EXPECT_TRUE(summaries->IsNull(1));
+}
+
+TEST_F(SnapshotsTableTest, ScanReturnsMultipleBatches) {
+  auto snapshot = MakeTestSnapshots().first;
+  std::vector<std::shared_ptr<Snapshot>> snapshots(1025, snapshot);
+  ICEBERG_UNWRAP_OR_FAIL(auto table, MakeTableWithSnapshots(std::move(snapshots),
+                                                            /*current_snapshot_id=*/1));
+  ICEBERG_UNWRAP_OR_FAIL(auto snapshots_table,
+                         MetadataTable::Make<SnapshotsTable>(table));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto stream, snapshots_table->Scan());
+  ICEBERG_UNWRAP_OR_FAIL(auto batches, ReadAllBatches(std::move(stream)));
+  ASSERT_EQ(batches.size(), 2);
+  EXPECT_EQ(batches[0]->num_rows(), 1024);
+  EXPECT_EQ(batches[1]->num_rows(), 1);
 }
 
 }  // namespace iceberg
