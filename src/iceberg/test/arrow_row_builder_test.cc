@@ -73,6 +73,7 @@ TEST(ArrowRowBuilderTest, BuildsRowsWithTypedValues) {
   ICEBERG_UNWRAP_OR_FAIL(auto builder, ArrowRowBuilder::Make(*schema));
 
   ASSERT_EQ(builder.num_columns(), 5);
+  ASSERT_EQ(builder.num_rows(), 0);
 
   // Row 0
   ASSERT_THAT(AppendInt(builder.column(0), 1), IsOk());
@@ -81,6 +82,7 @@ TEST(ArrowRowBuilderTest, BuildsRowsWithTypedValues) {
   ASSERT_THAT(AppendBoolean(builder.column(3), true), IsOk());
   ASSERT_THAT(AppendStringMap(builder.column(4), {{"k", "v"}}), IsOk());
   ASSERT_THAT(builder.FinishRow(), IsOk());
+  ASSERT_EQ(builder.num_rows(), 1);
 
   // Row 1
   ASSERT_THAT(AppendInt(builder.column(0), 2), IsOk());
@@ -89,6 +91,7 @@ TEST(ArrowRowBuilderTest, BuildsRowsWithTypedValues) {
   ASSERT_THAT(AppendBoolean(builder.column(3), false), IsOk());
   ASSERT_THAT(AppendStringMap(builder.column(4), {}), IsOk());
   ASSERT_THAT(builder.FinishRow(), IsOk());
+  ASSERT_EQ(builder.num_rows(), 2);
 
   auto batch = FinishAndImport(std::move(builder), *schema);
   ASSERT_EQ(batch->num_rows(), 2);

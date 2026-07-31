@@ -85,6 +85,9 @@ class ICEBERG_EXPORT ArrowRowBuilder {
   /// \brief The number of top-level columns in the batch.
   int64_t num_columns() const;
 
+  /// \brief The number of completed rows in the batch.
+  int64_t num_rows() const;
+
   /// \brief Access the nanoarrow child builder for a top-level column.
   ///
   /// \param index Zero-based column index. Returns nullptr if out of range.
