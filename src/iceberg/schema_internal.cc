@@ -25,6 +25,7 @@
 #include <optional>
 #include <string>
 
+#include "iceberg/arrow_c_data_guard_internal.h"
 #include "iceberg/constants.h"
 #include "iceberg/schema.h"
 #include "iceberg/type.h"
@@ -71,6 +72,7 @@ ArrowErrorCode ToArrowSchema(const Type& type, bool optional, std::string_view n
                              std::optional<int32_t> field_id, ArrowSchema* schema) {
   ArrowBuffer metadata_buffer;
   NANOARROW_RETURN_NOT_OK(ArrowMetadataBuilderInit(&metadata_buffer, nullptr));
+  internal::ArrowArrayBufferGuard metadata_buffer_guard(&metadata_buffer);
   if (field_id.has_value()) {
     NANOARROW_RETURN_NOT_OK(ArrowMetadataBuilderAppend(
         &metadata_buffer, ArrowCharView(std::string(kParquetFieldIdKey).c_str()),
@@ -183,7 +185,6 @@ ArrowErrorCode ToArrowSchema(const Type& type, bool optional, std::string_view n
     case TypeId::kVariant:
     case TypeId::kGeometry:
     case TypeId::kGeography:
-      ArrowBufferReset(&metadata_buffer);
       return EINVAL;
   }
 
@@ -193,7 +194,6 @@ ArrowErrorCode ToArrowSchema(const Type& type, bool optional, std::string_view n
 
   NANOARROW_RETURN_NOT_OK(ArrowSchemaSetMetadata(
       schema, reinterpret_cast<const char*>(metadata_buffer.data)));
-  ArrowBufferReset(&metadata_buffer);
 
   if (optional) {
     schema->flags |= ARROW_FLAG_NULLABLE;
@@ -214,6 +214,7 @@ Status ToArrowSchema(const Schema& schema, ArrowSchema* out) {
   ICEBERG_RETURN_UNEXPECTED(CheckArrowCompatible(schema));
 
   ArrowSchemaInit(out);
+  internal::ArrowSchemaGuard schema_guard(out);
 
   if (ArrowErrorCode errorCode = ToArrowSchema(schema, /*optional=*/false, /*name=*/"",
                                                /*field_id=*/std::nullopt, out);
@@ -222,6 +223,7 @@ Status ToArrowSchema(const Schema& schema, ArrowSchema* out) {
         "Failed to convert Iceberg schema to Arrow schema, error code: {}", errorCode);
   }
 
+  schema_guard.Release();
   return {};
 }
 

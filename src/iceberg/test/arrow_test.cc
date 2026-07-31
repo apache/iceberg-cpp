@@ -130,10 +130,21 @@ TEST(ToArrowSchemaTest, UnsupportedV3Types) {
     Schema schema(
         {SchemaField::MakeOptional(/*field_id=*/1, "unsupported", unsupported_type)},
         /*schema_id=*/0);
-    ArrowSchema arrow_schema;
+    ArrowSchema arrow_schema{};
     ASSERT_THAT(ToArrowSchema(schema, &arrow_schema),
                 HasErrorMessage("is not supported by Arrow conversion"));
+    EXPECT_EQ(arrow_schema.release, nullptr);
   }
+}
+
+TEST(ToArrowSchemaTest, ReleasesSchemaOnConversionFailure) {
+  // fixed(0) passes CheckArrowCompatible but nanoarrow rejects its non-positive width.
+  Schema schema({SchemaField::MakeOptional(/*field_id=*/1, "invalid_fixed", fixed(0))},
+                /*schema_id=*/0);
+  ArrowSchema arrow_schema{};
+
+  EXPECT_THAT(ToArrowSchema(schema, &arrow_schema), IsError(ErrorKind::kInvalidSchema));
+  EXPECT_EQ(arrow_schema.release, nullptr);
 }
 
 namespace {
