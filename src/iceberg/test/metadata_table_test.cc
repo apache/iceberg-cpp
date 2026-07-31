@@ -23,6 +23,8 @@
 #include <gtest/gtest.h>
 
 #include "iceberg/constants.h"
+#include "iceberg/inspect/history_table.h"
+#include "iceberg/inspect/snapshots_table.h"
 #include "iceberg/schema.h"
 #include "iceberg/schema_field.h"
 #include "iceberg/table.h"
@@ -58,18 +60,17 @@ class MetadataTableTest : public ::testing::Test {
 };
 
 TEST_F(MetadataTableTest, FactoryRejectsNullSourceTable) {
-  auto result = MetadataTable::Make(nullptr, MetadataTable::Kind::kSnapshots);
+  auto result = MetadataTable::Make<SnapshotsTable>(nullptr);
   EXPECT_THAT(result, IsError(ErrorKind::kInvalidArgument));
   EXPECT_THAT(result, HasErrorMessage("Table cannot be null"));
 }
 
 TEST_F(MetadataTableTest, SupportsTimeTravel) {
   ICEBERG_UNWRAP_OR_FAIL(auto snapshots_table,
-                         MetadataTable::Make(table_, MetadataTable::Kind::kSnapshots));
+                         MetadataTable::Make<SnapshotsTable>(table_));
   EXPECT_FALSE(snapshots_table->supports_time_travel());
 
-  ICEBERG_UNWRAP_OR_FAIL(auto history_table,
-                         MetadataTable::Make(table_, MetadataTable::Kind::kHistory));
+  ICEBERG_UNWRAP_OR_FAIL(auto history_table, MetadataTable::Make<HistoryTable>(table_));
   EXPECT_FALSE(history_table->supports_time_travel());
 }
 
