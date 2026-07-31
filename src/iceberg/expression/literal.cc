@@ -430,23 +430,13 @@ Result<Literal> Literal::CastTo(const std::shared_ptr<PrimitiveType>& target_typ
   return LiteralCaster::CastTo(*this, target_type);
 }
 
-// Template function for floating point comparison following Iceberg rules:
-// -NaN < NaN, but all NaN values (qNaN, sNaN) are treated as equivalent within their sign
+// Template function for floating point comparison following the Iceberg total
+// ordering: -NaN < -Infinity < ... < +Infinity < +NaN. std::strong_order
+// implements the IEEE 754 totalOrder predicate on IEC 559 types, which matches
+// this requirement (and orders -0 below +0).
 template <std::floating_point T>
 std::strong_ordering CompareFloat(T lhs, T rhs) {
-  // If both are NaN, check their signs
-  bool all_nan = std::isnan(lhs) && std::isnan(rhs);
-  if (!all_nan) {
-    // If not both NaN, use strong ordering
-    return std::strong_order(lhs, rhs);
-  }
-  // Same sign NaN values are equivalent (no qNaN vs sNaN distinction),
-  // and -NAN < NAN.
-  bool lhs_is_negative = std::signbit(lhs);
-  bool rhs_is_negative = std::signbit(rhs);
-  // A negative sign bit sorts below a positive one (-NaN < +NaN), so a
-  // negative operand must compare as less.
-  return rhs_is_negative <=> lhs_is_negative;
+  return std::strong_order(lhs, rhs);
 }
 
 namespace {
