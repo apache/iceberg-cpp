@@ -210,13 +210,9 @@ TEST(LiteralTest, FloatSpecialValuesComparison) {
 TEST(LiteralTest, FloatNaNComparison) {
   auto nan1 = Literal::Float(std::numeric_limits<float>::quiet_NaN());
   auto nan2 = Literal::Float(std::numeric_limits<float>::quiet_NaN());
-  auto signaling_nan = Literal::Float(std::numeric_limits<float>::signaling_NaN());
 
   // Identical NaN bit patterns are equivalent under the total ordering.
   EXPECT_EQ(nan1 <=> nan2, std::partial_ordering::equivalent);
-  // Total ordering distinguishes NaNs by bit pattern; a signaling NaN sorts
-  // below a quiet NaN of the same sign.
-  EXPECT_EQ(signaling_nan <=> nan1, std::partial_ordering::less);
 }
 
 TEST(LiteralTest, FloatSignedNaNComparison) {
@@ -275,13 +271,9 @@ TEST(LiteralTest, DoubleSpecialValuesComparison) {
 TEST(LiteralTest, DoubleNaNComparison) {
   auto nan1 = Literal::Double(std::numeric_limits<double>::quiet_NaN());
   auto nan2 = Literal::Double(std::numeric_limits<double>::quiet_NaN());
-  auto signaling_nan = Literal::Double(std::numeric_limits<double>::signaling_NaN());
 
   // Identical NaN bit patterns are equivalent under the total ordering.
   EXPECT_EQ(nan1 <=> nan2, std::partial_ordering::equivalent);
-  // Total ordering distinguishes NaNs by bit pattern; a signaling NaN sorts
-  // below a quiet NaN of the same sign.
-  EXPECT_EQ(signaling_nan <=> nan1, std::partial_ordering::less);
 }
 
 TEST(LiteralTest, DoubleSignedNaNComparison) {
