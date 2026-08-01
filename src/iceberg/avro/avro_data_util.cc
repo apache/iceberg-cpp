@@ -590,14 +590,24 @@ Status PrepareStructDefaultScalars(std::span<FieldProjection> projections,
     auto* field_builder = struct_builder->field_builder(static_cast<int>(i));
 
     if (field_projection.kind == FieldProjection::Kind::kDefault) {
-      if (field_projection.attributes != nullptr) {
-        continue;
+      // Get-or-create the single Avro attributes container: another Avro attribute may
+      // have created it already, so guard on `default_scalar` being unset rather than on
+      // the container's presence (otherwise a pre-existing container would skip
+      // preparation and silently fall back to per-row scalar rebuilding).
+      std::shared_ptr<AvroExtraAttributes> attrs;
+      if (field_projection.attributes == nullptr) {
+        attrs = std::make_shared<AvroExtraAttributes>();
+        field_projection.attributes = attrs;
+      } else {
+        attrs =
+            std::static_pointer_cast<AvroExtraAttributes>(field_projection.attributes);
       }
-      auto attrs = std::make_shared<AvroExtraAttributes>();
-      ICEBERG_ASSIGN_OR_RAISE(attrs->default_scalar,
-                              MakeDefaultScalar(std::get<Literal>(field_projection.from),
-                                                field_builder->type()));
-      field_projection.attributes = std::move(attrs);
+      if (attrs->default_scalar == nullptr) {
+        ICEBERG_ASSIGN_OR_RAISE(
+            attrs->default_scalar,
+            MakeDefaultScalar(std::get<Literal>(field_projection.from),
+                              field_builder->type()));
+      }
       continue;
     }
 

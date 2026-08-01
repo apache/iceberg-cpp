@@ -817,6 +817,32 @@ TEST(AppendDefaultToBuilderTest, ReusesPreparedScalar) {
   ASSERT_EQ(long_array.Value(1), 42);
 }
 
+TEST(AppendDefaultToBuilderTest, PreparesScalarWhenContainerAlreadyExists) {
+  // The Avro attributes container may already exist (e.g. attached by another Avro
+  // attribute) with default_scalar unset. Preparation must still fill default_scalar
+  // rather than skip on the container's mere presence, otherwise the append path falls
+  // back to rebuilding the scalar per row.
+  auto pool = ::arrow::default_memory_pool();
+  auto child = std::make_shared<::arrow::Int64Builder>(pool);
+  ::arrow::StructBuilder struct_builder(
+      ::arrow::struct_({::arrow::field("d", ::arrow::int64())}), pool, {child});
+
+  FieldProjection projection;
+  projection.kind = FieldProjection::Kind::kDefault;
+  projection.from = Literal::Long(42);
+  // Pre-attach an empty container, simulating another attribute having created it.
+  projection.attributes = std::make_shared<AvroExtraAttributes>();
+
+  SchemaProjection schema_projection;
+  schema_projection.fields.push_back(projection);
+  ASSERT_THAT(PrepareDefaultScalars(schema_projection, &struct_builder), IsOk());
+
+  const auto* attrs = dynamic_cast<const AvroExtraAttributes*>(
+      schema_projection.fields[0].attributes.get());
+  ASSERT_NE(attrs, nullptr);
+  ASSERT_NE(attrs->default_scalar, nullptr);
+}
+
 TEST(AppendDefaultToBuilderTest, PreparesScalarUnderNestedCollections) {
   // A default under `list<list<struct<...>>>` must be prepared too, so decoding reuses
   // the cached scalar instead of rebuilding it for every element.
