@@ -35,11 +35,11 @@
 
 namespace iceberg {
 
-Result<std::unique_ptr<FastAppend>> FastAppend::Make(
+Result<std::shared_ptr<FastAppend>> FastAppend::Make(
     std::string table_name, std::shared_ptr<TransactionContext> ctx) {
   ICEBERG_PRECHECK(!table_name.empty(), "Table name cannot be empty");
   ICEBERG_PRECHECK(ctx != nullptr, "Cannot create FastAppend without a context");
-  return std::unique_ptr<FastAppend>(
+  return std::shared_ptr<FastAppend>(
       new FastAppend(std::move(table_name), std::move(ctx)));
 }
 

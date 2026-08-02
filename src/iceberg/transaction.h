@@ -50,8 +50,8 @@ class ICEBERG_EXPORT Transaction : public std::enable_shared_from_this<Transacti
 
   /// \brief Create a detached transaction from an existing context.
   ///
-  /// Used by PendingUpdate::Commit for table-created updates. The transaction is not
-  /// stored in TransactionContext because it exists only for that commit call.
+  /// This overload is used by PendingUpdate::Commit for standalone updates and does not
+  /// attach the temporary transaction to the context.
   static Result<std::shared_ptr<Transaction>> Make(
       std::shared_ptr<TransactionContext> ctx);
 
@@ -166,6 +166,9 @@ class ICEBERG_EXPORT Transaction : public std::enable_shared_from_this<Transacti
   /// \brief Whether this transaction can retry after a commit conflict.
   bool CanRetry() const;
 
+  /// \brief Finalize all registered updates exactly once.
+  void FinalizeUpdates(const Result<const TableMetadata*>& commit_result);
+
  private:
   friend class PendingUpdate;
 
@@ -178,6 +181,12 @@ class ICEBERG_EXPORT Transaction : public std::enable_shared_from_this<Transacti
   bool last_update_committed_ = true;
   // Tracks if transaction has been committed to prevent double-commit
   bool committed_ = false;
+  // Tracks whether registered updates have reached a terminal state.
+  bool finalized_ = false;
+  // True while Commit() is running its retry loop. Re-applying an update may fail
+  // with a retryable error; PendingUpdate::Commit() must not finalize the
+  // transaction in that window or the retry would see a finalized transaction.
+  bool committing_ = false;
 };
 
 /// \brief Shared context between Transaction and PendingUpdate instances.
