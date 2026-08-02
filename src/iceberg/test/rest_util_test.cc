@@ -103,6 +103,14 @@ TEST(RestUtilTest, ResourcePathsRejectsEmptyNamespaceSeparator) {
   EXPECT_THAT(result, HasErrorMessage("REST namespace separator cannot be empty"));
 }
 
+TEST(RestUtilTest, OAuth2TokensPathDoesNotUseCatalogPrefix) {
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto paths, ResourcePaths::Make("https://catalog.example.com", "warehouse", "%1F"));
+
+  EXPECT_THAT(paths->OAuth2Tokens(),
+              HasValue(::testing::Eq("https://catalog.example.com/v1/oauth/tokens")));
+}
+
 TEST(RestUtilTest, EncodeString) {
   // RFC 3986 unreserved characters should not be encoded
   EXPECT_THAT(EncodeString("abc123XYZ"), HasValue(::testing::Eq("abc123XYZ")));
