@@ -20,6 +20,7 @@
 #pragma once
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <unordered_map>
 
@@ -32,6 +33,16 @@
 /// \brief Authentication session interface for REST catalog.
 
 namespace iceberg::rest::auth {
+
+/// \brief OAuth2 metadata used to derive child authentication sessions.
+struct ICEBERG_REST_EXPORT OAuth2SessionInfo {
+  std::string token;
+  std::string issued_token_type;
+  std::string credential;
+  std::string scope;
+  std::string oauth2_server_uri;
+  std::unordered_map<std::string, std::string> optional_oauth_params;
+};
 
 /// \brief An authentication session that can authenticate outgoing HTTP requests.
 class ICEBERG_REST_EXPORT AuthSession {
@@ -53,6 +64,9 @@ class ICEBERG_REST_EXPORT AuthSession {
   ///         - IOError: Network or connection errors when reaching auth server
   ///         - RestError: HTTP errors from authentication service
   virtual Result<HttpRequest> Authenticate(HttpRequest request) = 0;
+
+  /// \brief Return OAuth2 metadata when this is an OAuth2 session.
+  virtual std::optional<OAuth2SessionInfo> OAuth2Info() const { return std::nullopt; }
 
   /// \brief Close the session and release any resources.
   ///

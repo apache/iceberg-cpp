@@ -82,6 +82,20 @@ class ICEBERG_REST_EXPORT AuthProperties : public ConfigBase<AuthProperties> {
   inline static Entry<std::string> kAudience{"audience", ""};
   inline static Entry<std::string> kResource{"resource", ""};
 
+  // ---- OAuth2 token type constants ----
+
+  inline static const std::string kAccessTokenType =
+      "urn:ietf:params:oauth:token-type:access_token";
+  inline static const std::string kRefreshTokenType =
+      "urn:ietf:params:oauth:token-type:refresh_token";
+  inline static const std::string kIdTokenType =
+      "urn:ietf:params:oauth:token-type:id_token";
+  inline static const std::string kSaml1TokenType =
+      "urn:ietf:params:oauth:token-type:saml1";
+  inline static const std::string kSaml2TokenType =
+      "urn:ietf:params:oauth:token-type:saml2";
+  inline static const std::string kJwtTokenType = "urn:ietf:params:oauth:token-type:jwt";
+
   /// \brief Build an AuthProperties from a properties map.
   static Result<AuthProperties> FromProperties(
       const std::unordered_map<std::string, std::string>& properties);

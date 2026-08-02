@@ -85,6 +85,18 @@ class OAuth2AuthSession : public AuthSession,
     return request;
   }
 
+  std::optional<OAuth2SessionInfo> OAuth2Info() const override {
+    std::shared_lock lock(mutex_);
+    return OAuth2SessionInfo{
+        .token = token_,
+        .issued_token_type = issued_token_type_,
+        .credential = Credential(config_),
+        .scope = config_.scope,
+        .oauth2_server_uri = config_.token_endpoint,
+        .optional_oauth_params = config_.optional_oauth_params,
+    };
+  }
+
   Status Close() override { return CloseImpl(); }
 
   ~OAuth2AuthSession() override { std::ignore = CloseImpl(); }
@@ -107,12 +119,15 @@ class OAuth2AuthSession : public AuthSession,
     return {};
   }
 
+  static std::string Credential(const Config& config) {
+    return config.client_id.empty() ? config.client_secret
+                                    : config.client_id + ":" + config.client_secret;
+  }
+
   static Result<AuthProperties> MakeRefreshProperties(const Config& config) {
     std::unordered_map<std::string, std::string> properties =
         config.optional_oauth_params;
-    properties[AuthProperties::kCredential.key()] =
-        config.client_id.empty() ? config.client_secret
-                                 : config.client_id + ":" + config.client_secret;
+    properties[AuthProperties::kCredential.key()] = Credential(config);
     properties[AuthProperties::kScope.key()] = config.scope;
     properties[AuthProperties::kOAuth2ServerUri.key()] = config.token_endpoint;
 
@@ -141,11 +156,14 @@ class OAuth2AuthSession : public AuthSession,
     OAuth2AuthSession& session_;
   };
 
-  void SetInitialToken(const OAuthTokenResponse& token_response) {
+  void UpdateTokenState(const OAuthTokenResponse& token_response) {
     token_ = token_response.access_token;
-    headers_ = {{std::string(kAuthorizationHeader), std::string(kBearerPrefix) + token_}};
+    issued_token_type_ = token_response.issued_token_type.empty()
+                             ? AuthProperties::kAccessTokenType
+                             : token_response.issued_token_type;
+    headers_ = AuthHeaders(token_);
 
-    // Determine expiration time
+    expires_at_ = std::chrono::steady_clock::time_point{};
     if (token_response.expires_in_secs.has_value()) {
       expires_at_ = std::chrono::steady_clock::now() +
                     std::chrono::seconds(*token_response.expires_in_secs);
@@ -157,6 +175,10 @@ class OAuth2AuthSession : public AuthSession,
           std::chrono::system_clock::time_point(std::chrono::milliseconds(*exp_ms));
       expires_at_ = now_steady + (exp_sys - now_sys);
     }
+  }
+
+  void SetInitialToken(const OAuthTokenResponse& token_response) {
+    UpdateTokenState(token_response);
 
     if (config_.keep_refreshed &&
         expires_at_ != std::chrono::steady_clock::time_point{}) {
@@ -184,23 +206,7 @@ class OAuth2AuthSession : public AuthSession,
       auto& response = result.value();
       {
         std::unique_lock lock(mutex_);
-        token_ = response.access_token;
-        headers_ = {
-            {std::string(kAuthorizationHeader), std::string(kBearerPrefix) + token_}};
-
-        // Reset before deriving new expiry
-        expires_at_ = std::chrono::steady_clock::time_point{};
-
-        if (response.expires_in_secs.has_value()) {
-          expires_at_ = std::chrono::steady_clock::now() +
-                        std::chrono::seconds(*response.expires_in_secs);
-        } else if (auto exp_ms = ExpiresAtMillis(token_); exp_ms.has_value()) {
-          auto now_sys = std::chrono::system_clock::now();
-          auto now_steady = std::chrono::steady_clock::now();
-          auto exp_sys =
-              std::chrono::system_clock::time_point(std::chrono::milliseconds(*exp_ms));
-          expires_at_ = now_steady + (exp_sys - now_sys);
-        }
+        UpdateTokenState(response);
       }
       // Note: ScheduleRefresh must be called outside the lock.
       ScheduleRefresh();
@@ -262,8 +268,9 @@ class OAuth2AuthSession : public AuthSession,
     return std::max(wait_time, std::chrono::milliseconds(10));
   }
 
-  mutable std::shared_mutex mutex_;  // protects token_, headers_, expires_at_
+  mutable std::shared_mutex mutex_;  // protects token state, headers, and expiration
   std::string token_;
+  std::string issued_token_type_;
   std::unordered_map<std::string, std::string> headers_;
   std::chrono::steady_clock::time_point expires_at_{};
 
