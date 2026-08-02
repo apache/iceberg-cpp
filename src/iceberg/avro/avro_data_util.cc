@@ -599,8 +599,11 @@ Status PrepareStructDefaultScalars(std::span<FieldProjection> projections,
         attrs = std::make_shared<AvroExtraAttributes>();
         field_projection.attributes = attrs;
       } else {
-        attrs =
-            std::static_pointer_cast<AvroExtraAttributes>(field_projection.attributes);
+        // Avro attaches only AvroExtraAttributes; checked_pointer_cast asserts that
+        // invariant in debug rather than silently reinterpreting a foreign attributes
+        // type.
+        attrs = internal::checked_pointer_cast<AvroExtraAttributes>(
+            field_projection.attributes);
       }
       if (attrs->default_scalar == nullptr) {
         ICEBERG_ASSIGN_OR_RAISE(
