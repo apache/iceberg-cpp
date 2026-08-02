@@ -39,11 +39,11 @@ RewriteFiles::RewriteFiles(std::string table_name,
   FailMissingDeletePaths();
 }
 
-Result<std::unique_ptr<RewriteFiles>> RewriteFiles::Make(
+Result<std::shared_ptr<RewriteFiles>> RewriteFiles::Make(
     std::string table_name, std::shared_ptr<TransactionContext> ctx) {
   ICEBERG_PRECHECK(!table_name.empty(), "Table name cannot be empty");
   ICEBERG_PRECHECK(ctx != nullptr, "Cannot create RewriteFiles without a context");
-  return std::unique_ptr<RewriteFiles>(
+  return std::shared_ptr<RewriteFiles>(
       new RewriteFiles(std::move(table_name), std::move(ctx)));
 }
 

@@ -19,19 +19,37 @@
 
 #include "iceberg/transaction.h"
 
+#include <format>
+#include <memory>
+#include <stdexcept>
+#include <string>
+#include <vector>
+
 #include "iceberg/expression/expressions.h"
 #include "iceberg/expression/term.h"
 #include "iceberg/sort_order.h"
+#include "iceberg/table_metadata.h"
 #include "iceberg/test/matchers.h"
 #include "iceberg/test/mock_catalog.h"
 #include "iceberg/test/update_test_base.h"
 #include "iceberg/transform.h"
 #include "iceberg/type.h"
+#include "iceberg/update/fast_append.h"
+#include "iceberg/update/set_snapshot.h"
 #include "iceberg/update/update_properties.h"
 #include "iceberg/update/update_schema.h"
 #include "iceberg/update/update_sort_order.h"
 
 namespace iceberg {
+
+class TestPendingUpdate final : public PendingUpdate {
+ public:
+  explicit TestPendingUpdate(std::shared_ptr<TransactionContext> ctx)
+      : PendingUpdate(std::move(ctx)) {}
+
+  Kind kind() const override { return Kind::kUpdateProperties; }
+  bool IsRetryable() const override { return true; }
+};
 
 class TransactionTest : public UpdateTestBase {};
 
@@ -44,6 +62,58 @@ TEST_F(TransactionTest, CreateTransaction) {
 TEST_F(TransactionTest, CommitEmptyTransaction) {
   ICEBERG_UNWRAP_OR_FAIL(auto txn, table_->NewTransaction());
   EXPECT_THAT(txn->Commit(), IsOk());
+}
+
+TEST_F(TransactionTest, TemporaryTransactionDoesNotAttachToContext) {
+  ICEBERG_UNWRAP_OR_FAIL(auto ctx,
+                         TransactionContext::Make(table_, TransactionKind::kUpdate));
+  ASSERT_FALSE(ctx->transaction.has_value());
+
+  ICEBERG_UNWRAP_OR_FAIL(auto txn, Transaction::Make(ctx));
+
+  EXPECT_NE(txn, nullptr);
+  EXPECT_FALSE(ctx->transaction.has_value());
+}
+
+TEST_F(TransactionTest, StandaloneCommitRequiresSharedOwnership) {
+  ICEBERG_UNWRAP_OR_FAIL(auto ctx,
+                         TransactionContext::Make(table_, TransactionKind::kUpdate));
+  auto update = std::make_unique<TestPendingUpdate>(ctx);
+
+  EXPECT_THAT(update->Commit(),
+              ::testing::AllOf(
+                  IsError(ErrorKind::kInvalidArgument),
+                  HasErrorMessage("PendingUpdate must be owned by std::shared_ptr")));
+  EXPECT_FALSE(ctx->transaction.has_value());
+}
+
+TEST_F(TransactionTest, StandaloneCommitClearsTemporaryTransactionBinding) {
+  ICEBERG_UNWRAP_OR_FAIL(auto ctx,
+                         TransactionContext::Make(table_, TransactionKind::kUpdate));
+  ICEBERG_UNWRAP_OR_FAIL(auto update, UpdateProperties::Make(ctx));
+  update->Set("standalone.property", "standalone.value");
+
+  EXPECT_THAT(update->Commit(), IsOk());
+  EXPECT_FALSE(ctx->transaction.has_value());
+}
+
+TEST_F(TransactionTest, CommitNoOpUpdate) {
+  ICEBERG_UNWRAP_OR_FAIL(auto txn, table_->NewTransaction());
+  ICEBERG_UNWRAP_OR_FAIL(auto update, txn->NewSetSnapshot());
+
+  EXPECT_THAT(update->Commit(), IsOk());
+  EXPECT_THAT(txn->Commit(), IsOk());
+}
+
+TEST_F(TransactionTest, ApplyFailureFinalizesTransaction) {
+  ICEBERG_UNWRAP_OR_FAIL(auto txn, table_->NewTransaction());
+  ICEBERG_UNWRAP_OR_FAIL(auto update, txn->NewFastAppend());
+  update->AppendFile(nullptr);
+
+  EXPECT_THAT(update->Commit(), IsError(ErrorKind::kValidationFailed));
+  EXPECT_THAT(txn->Commit(),
+              ::testing::AllOf(IsError(ErrorKind::kValidationFailed),
+                               HasErrorMessage("Transaction already finalized")));
 }
 
 TEST_F(TransactionTest, CommitTransactionWithPropertyUpdate) {
@@ -151,6 +221,39 @@ TEST_F(TransactionRetryTest, CommitRetrySucceedsAfterConflict) {
   EXPECT_EQ(update_call_count, 2);
 }
 
+TEST_F(TransactionRetryTest, StandaloneCommitRetryReappliesUpdate) {
+  std::vector<size_t> update_counts;
+  ON_CALL(*mock_catalog_, UpdateTable(::testing::_, ::testing::_, ::testing::_))
+      .WillByDefault(
+          [this, &update_counts](const TableIdentifier&,
+                                 const std::vector<std::unique_ptr<TableRequirement>>&,
+                                 const std::vector<std::unique_ptr<TableUpdate>>& updates)
+              -> Result<std::shared_ptr<Table>> {
+            update_counts.push_back(updates.size());
+            if (update_counts.size() == 1) {
+              return CommitFailed("conflict on first attempt");
+            }
+            return Table::Make(mock_table_->name(), mock_table_->metadata(),
+                               std::string(mock_table_->metadata_file_location()),
+                               mock_table_->io(), mock_catalog_);
+          });
+  EXPECT_CALL(*mock_catalog_, LoadTable(::testing::_))
+      .WillOnce([this](const TableIdentifier&) -> Result<std::shared_ptr<Table>> {
+        auto builder = TableMetadataBuilder::BuildFrom(mock_table_->metadata().get());
+        ICEBERG_ASSIGN_OR_RAISE(auto metadata, builder->Build());
+        return Table::Make(
+            mock_table_->name(), std::shared_ptr<TableMetadata>(std::move(metadata)),
+            std::format("{}.refreshed", mock_table_->metadata_file_location()),
+            mock_table_->io(), mock_catalog_);
+      });
+
+  ICEBERG_UNWRAP_OR_FAIL(auto update, mock_table_->NewUpdateProperties());
+  update->Set("retry.test", "value");
+
+  EXPECT_THAT(update->Commit(), IsOk());
+  EXPECT_THAT(update_counts, ::testing::ElementsAre(1U, 1U));
+}
+
 TEST_F(TransactionRetryTest, CommitRetryExhausted) {
   int update_call_count = 0;
   ON_CALL(*mock_catalog_, UpdateTable(::testing::_, ::testing::_, ::testing::_))
@@ -193,6 +296,34 @@ TEST_F(TransactionRetryTest, CommitNonRetryableErrorStopsImmediately) {
   auto result = txn->Commit();
   EXPECT_THAT(result, IsError(ErrorKind::kCommitStateUnknown));
   EXPECT_EQ(update_call_count, 1);  // Should not retry
+}
+
+TEST_F(TransactionRetryTest, CommitExceptionRestoresLifecycleState) {
+  int update_call_count = 0;
+  ON_CALL(*mock_catalog_, UpdateTable(::testing::_, ::testing::_, ::testing::_))
+      .WillByDefault(
+          [&update_call_count](const TableIdentifier&,
+                               const std::vector<std::unique_ptr<TableRequirement>>&,
+                               const std::vector<std::unique_ptr<TableUpdate>>&)
+              -> Result<std::shared_ptr<Table>> {
+            ++update_call_count;
+            throw std::runtime_error("injected catalog failure");
+          });
+
+  ICEBERG_UNWRAP_OR_FAIL(auto txn, mock_table_->NewTransaction());
+  ICEBERG_UNWRAP_OR_FAIL(auto properties, txn->NewUpdateProperties());
+  properties->Set("exception.test", "value");
+  EXPECT_THAT(properties->Commit(), IsOk());
+
+  EXPECT_THROW(std::ignore = txn->Commit(), std::runtime_error);
+
+  ICEBERG_UNWRAP_OR_FAIL(auto append, txn->NewFastAppend());
+  append->AppendFile(nullptr);
+  EXPECT_THAT(append->Commit(), IsError(ErrorKind::kValidationFailed));
+  EXPECT_THAT(txn->Commit(),
+              ::testing::AllOf(IsError(ErrorKind::kValidationFailed),
+                               HasErrorMessage("Transaction already finalized")));
+  EXPECT_EQ(update_call_count, 1);
 }
 
 TEST_F(TransactionRetryTest, CreateTransactionDoesNotRetry) {

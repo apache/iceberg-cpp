@@ -110,11 +110,11 @@ class ScopedPuffinDVIORegistry {
 /// \brief Concrete subclass of MergingSnapshotUpdate for testing.
 class TestMergeAppend : public MergingSnapshotUpdate {
  public:
-  static Result<std::unique_ptr<TestMergeAppend>> Make(std::string table_name,
+  static Result<std::shared_ptr<TestMergeAppend>> Make(std::string table_name,
                                                        std::shared_ptr<Table> table) {
     ICEBERG_ASSIGN_OR_RAISE(
         auto ctx, TransactionContext::Make(std::move(table), TransactionKind::kUpdate));
-    return std::unique_ptr<TestMergeAppend>(
+    return std::shared_ptr<TestMergeAppend>(
         new TestMergeAppend(std::move(table_name), std::move(ctx)));
   }
 
@@ -256,11 +256,11 @@ class TestMergeAppend : public MergingSnapshotUpdate {
 
 class TestOverwriteUpdate : public MergingSnapshotUpdate {
  public:
-  static Result<std::unique_ptr<TestOverwriteUpdate>> Make(std::string table_name,
+  static Result<std::shared_ptr<TestOverwriteUpdate>> Make(std::string table_name,
                                                            std::shared_ptr<Table> table) {
     ICEBERG_ASSIGN_OR_RAISE(
         auto ctx, TransactionContext::Make(std::move(table), TransactionKind::kUpdate));
-    return std::unique_ptr<TestOverwriteUpdate>(
+    return std::shared_ptr<TestOverwriteUpdate>(
         new TestOverwriteUpdate(std::move(table_name), std::move(ctx)));
   }
 
@@ -336,11 +336,11 @@ class MergingSnapshotUpdateTest : public MinimalUpdateTestBase {
     return f;
   }
 
-  Result<std::unique_ptr<TestMergeAppend>> NewMergeAppend() {
+  Result<std::shared_ptr<TestMergeAppend>> NewMergeAppend() {
     return TestMergeAppend::Make(TableName(), table_);
   }
 
-  Result<std::unique_ptr<TestOverwriteUpdate>> NewOverwriteUpdate() {
+  Result<std::shared_ptr<TestOverwriteUpdate>> NewOverwriteUpdate() {
     return TestOverwriteUpdate::Make(TableName(), table_);
   }
 
@@ -983,7 +983,7 @@ class MergingSnapshotUpdateV1Test : public UpdateTestBase {
     return f;
   }
 
-  Result<std::unique_ptr<TestMergeAppend>> NewMergeAppend() {
+  Result<std::shared_ptr<TestMergeAppend>> NewMergeAppend() {
     return TestMergeAppend::Make(TableName(), table_);
   }
 
