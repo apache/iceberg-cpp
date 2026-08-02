@@ -20,6 +20,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 #include <gmock/gmock.h>
@@ -586,6 +587,57 @@ TEST_P(IncrementalAppendScanTest, MultipleRootSnapshots) {
                          HasErrorMessage("Starting snapshot (inclusive) 2000 is not an "
                                          "ancestor of end snapshot 4000")));
   }
+}
+
+TEST_P(IncrementalAppendScanTest, PlanRowLineage) {
+  if (GetParam() < 3) {
+    GTEST_SKIP() << "Row lineage is only assigned in v3 manifests";
+  }
+
+  auto snapshot_a =
+      MakeAppendSnapshot(3, 1000L, std::nullopt, 5L, {"/path/to/file_a.parquet"});
+  snapshot_a->first_row_id = 0;
+  snapshot_a->added_rows = 1;
+
+  auto file_b = MakeDataFile("/path/to/file_b.parquet");
+  auto entry_b = MakeEntry(ManifestStatus::kAdded, 2000L, 7L, file_b);
+  auto manifest_b = WriteDataManifest(3, 2000L, {std::move(entry_b)});
+  manifest_b.first_row_id = 1;
+  auto manifest_list_b = WriteManifestList(3, 2000L, 1000L, 7L, {manifest_b});
+  auto snapshot_b = std::make_shared<Snapshot>(Snapshot{
+      .snapshot_id = 2000L,
+      .parent_snapshot_id = 1000L,
+      .sequence_number = 7L,
+      .timestamp_ms = TimePointMsFromUnixMs(1609459200000L + 2000),
+      .manifest_list = manifest_list_b,
+      .summary = {{"operation", "append"}},
+      .schema_id = schema_->schema_id(),
+      .first_row_id = 1L,
+      .added_rows = 1L,
+  });
+  auto metadata = MakeTableMetadata(
+      {snapshot_a, snapshot_b}, 2000L,
+      {{"main", std::make_shared<SnapshotRef>(SnapshotRef{
+                    .snapshot_id = 2000L, .retention = SnapshotRef::Branch{}})}});
+  metadata->next_row_id = 2;
+
+  ICEBERG_UNWRAP_OR_FAIL(auto builder, MakeScanBuilder<IncrementalAppendScan>(metadata));
+  builder->FromSnapshot(1000L, /*inclusive=*/true).ToSnapshot(2000L);
+  ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
+  ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
+  ASSERT_EQ(tasks.size(), 2);
+
+  std::unordered_map<std::string, std::shared_ptr<FileScanTask>> tasks_by_path;
+  for (const auto& task : tasks) {
+    tasks_by_path.emplace(task->data_file()->file_path, task);
+  }
+  ASSERT_EQ(tasks_by_path.size(), 2);
+  EXPECT_EQ(tasks_by_path.at("/path/to/file_a.parquet")->data_file()->first_row_id, 0);
+  EXPECT_EQ(
+      tasks_by_path.at("/path/to/file_a.parquet")->data_file()->data_sequence_number, 5);
+  EXPECT_EQ(tasks_by_path.at("/path/to/file_b.parquet")->data_file()->first_row_id, 1);
+  EXPECT_EQ(
+      tasks_by_path.at("/path/to/file_b.parquet")->data_file()->data_sequence_number, 7);
 }
 
 INSTANTIATE_TEST_SUITE_P(IncrementalAppendScanVersions, IncrementalAppendScanTest,

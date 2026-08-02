@@ -52,6 +52,7 @@
 #include "iceberg/transaction.h"
 #include "iceberg/update/fast_append.h"
 #include "iceberg/update/merge_append.h"
+#include "iceberg/update/row_delta.h"
 #include "iceberg/update/snapshot_manager.h"
 #include "iceberg/update/update_properties.h"
 #include "iceberg/util/macros.h"
@@ -273,6 +274,7 @@ class TestOverwriteUpdate : public MergingSnapshotUpdate {
   Status AddDelete(std::shared_ptr<DataFile> file, int64_t data_sequence_number) {
     return AddDeleteFile(std::move(file), data_sequence_number);
   }
+  Status AddFile(std::shared_ptr<DataFile> file) { return AddDataFile(std::move(file)); }
   Status RemoveDataFile(std::shared_ptr<DataFile> file) {
     return DeleteDataFile(std::move(file));
   }
@@ -294,6 +296,7 @@ class MergingSnapshotUpdateTest : public MinimalUpdateTestBase {
 
     file_a_ = MakeDataFile("/data/file_a.parquet", /*partition_x=*/1L);
     file_b_ = MakeDataFile("/data/file_b.parquet", /*partition_x=*/2L);
+    file_c_ = MakeDataFile("/data/file_c.parquet", /*partition_x=*/3L);
   }
 
   std::shared_ptr<DataFile> MakeDataFile(const std::string& path, int64_t partition_x) {
@@ -369,6 +372,28 @@ class MergingSnapshotUpdateTest : public MinimalUpdateTestBase {
     fa->AppendFile(file_a_);
     EXPECT_THAT(fa->Commit(), IsOk());
     EXPECT_THAT(table_->Refresh(), IsOk());
+  }
+
+  void CommitV2FilesBeforeUpgrade() {
+    ASSERT_EQ(table_->metadata()->format_version, 2);
+
+    ICEBERG_UNWRAP_OR_FAIL(auto append, table_->NewFastAppend());
+    append->AppendFile(file_a_).AppendFile(file_b_);
+    ASSERT_THAT(append->Commit(), IsOk());
+    ASSERT_THAT(table_->Refresh(), IsOk());
+
+    auto equality_delete =
+        MakeEqualityDeleteFile("/delete/upgrade_eq_delete.parquet", 1L);
+    ICEBERG_UNWRAP_OR_FAIL(auto delta, table_->NewRowDelta());
+    delta->AddDeletes(equality_delete);
+    ASSERT_THAT(delta->Commit(), IsOk());
+    ASSERT_THAT(table_->Refresh(), IsOk());
+
+    ICEBERG_UNWRAP_OR_FAIL(auto overwrite, NewOverwriteUpdate());
+    ASSERT_THAT(overwrite->RemoveDataFile(file_b_), IsOk());
+    ASSERT_THAT(overwrite->AddFile(file_c_), IsOk());
+    ASSERT_THAT(overwrite->Commit(), IsOk());
+    ASSERT_THAT(table_->Refresh(), IsOk());
   }
 
   // Read all entries from a list of ManifestFiles.
@@ -487,6 +512,7 @@ class MergingSnapshotUpdateTest : public MinimalUpdateTestBase {
   std::shared_ptr<Schema> schema_;
   std::shared_ptr<DataFile> file_a_;
   std::shared_ptr<DataFile> file_b_;
+  std::shared_ptr<DataFile> file_c_;
 };
 
 // -------------------------------------------------------------------------
@@ -656,6 +682,79 @@ TEST_F(MergingSnapshotUpdateTest, V3RetryRowIds) {
   EXPECT_EQ(first_row_ids.at(file_b_->file_path), std::make_optional<int64_t>(0));
   EXPECT_EQ(first_row_ids.at(file_a_->file_path),
             std::make_optional(file_b_->record_count));
+}
+
+TEST_F(MergingSnapshotUpdateTest, V3UpgradeLeavesExistingRowsUnassigned) {
+  CommitV2FilesBeforeUpgrade();
+
+  const auto v2_snapshot_id = table_->metadata()->current_snapshot_id;
+  UpgradeTableToV3();
+
+  EXPECT_EQ(table_->metadata()->next_row_id, 0);
+  for (const auto& snapshot : table_->metadata()->snapshots) {
+    EXPECT_EQ(snapshot->first_row_id, std::nullopt);
+    EXPECT_EQ(snapshot->added_rows, std::nullopt);
+  }
+  ICEBERG_UNWRAP_OR_FAIL(auto current, table_->current_snapshot());
+  EXPECT_EQ(current->snapshot_id, v2_snapshot_id);
+  EXPECT_EQ(current->first_row_id, std::nullopt);
+  EXPECT_EQ(current->added_rows, std::nullopt);
+
+  SnapshotCache snapshot_cache(current.get());
+  ICEBERG_UNWRAP_OR_FAIL(auto data_manifest_range,
+                         snapshot_cache.DataManifests(file_io_));
+  std::vector<ManifestFile> data_manifests(data_manifest_range.begin(),
+                                           data_manifest_range.end());
+  ASSERT_FALSE(data_manifests.empty());
+  for (const auto& manifest : data_manifests) {
+    EXPECT_EQ(manifest.first_row_id, std::nullopt);
+  }
+
+  ICEBERG_UNWRAP_OR_FAIL(auto first_row_ids,
+                         DataFileFirstRowIds(current, *table_->metadata()));
+  EXPECT_EQ(first_row_ids.at(file_a_->file_path), std::nullopt);
+  EXPECT_EQ(first_row_ids.at(file_b_->file_path), std::nullopt);
+  EXPECT_EQ(first_row_ids.at(file_c_->file_path), std::nullopt);
+
+  ICEBERG_UNWRAP_OR_FAIL(auto delete_manifest_range,
+                         snapshot_cache.DeleteManifests(file_io_));
+  ASSERT_FALSE(delete_manifest_range.empty());
+  for (const auto& manifest : delete_manifest_range) {
+    EXPECT_EQ(manifest.first_row_id, std::nullopt);
+  }
+}
+
+TEST_F(MergingSnapshotUpdateTest, V3FirstCommitAssignsExistingRowsAfterUpgrade) {
+  CommitV2FilesBeforeUpgrade();
+
+  UpgradeTableToV3();
+
+  ICEBERG_UNWRAP_OR_FAIL(auto append, table_->NewFastAppend());
+  ASSERT_THAT(append->Commit(), IsOk());
+  ASSERT_THAT(table_->Refresh(), IsOk());
+
+  const auto expected_rows = file_a_->record_count + file_c_->record_count;
+  ICEBERG_UNWRAP_OR_FAIL(auto assigned, table_->current_snapshot());
+  EXPECT_EQ(assigned->first_row_id, 0);
+  EXPECT_EQ(assigned->added_rows, expected_rows);
+  EXPECT_EQ(table_->metadata()->next_row_id, expected_rows);
+
+  ICEBERG_UNWRAP_OR_FAIL(auto first_row_ids,
+                         DataFileFirstRowIds(assigned, *table_->metadata()));
+  ASSERT_TRUE(first_row_ids.at(file_a_->file_path).has_value());
+  ASSERT_TRUE(first_row_ids.at(file_c_->file_path).has_value());
+  EXPECT_EQ(first_row_ids.at(file_b_->file_path), std::nullopt);
+  EXPECT_NE(first_row_ids.at(file_a_->file_path), first_row_ids.at(file_c_->file_path));
+  EXPECT_THAT((std::vector<int64_t>{*first_row_ids.at(file_a_->file_path),
+                                    *first_row_ids.at(file_c_->file_path)}),
+              ::testing::UnorderedElementsAre(0, file_a_->record_count));
+
+  SnapshotCache snapshot_cache(assigned.get());
+  ICEBERG_UNWRAP_OR_FAIL(auto delete_manifests, snapshot_cache.DeleteManifests(file_io_));
+  ASSERT_FALSE(delete_manifests.empty());
+  for (const auto& manifest : delete_manifests) {
+    EXPECT_EQ(manifest.first_row_id, std::nullopt);
+  }
 }
 
 TEST_F(MergingSnapshotUpdateTest, CommitMultipleDataFiles) {

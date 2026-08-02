@@ -64,9 +64,10 @@ class RewriteFilesTest : public MinimalUpdateTestBase {
         MakeDataFile("/data/file_a_rewritten.parquet", /*partition_x=*/1L);
     rewritten_file_b_ =
         MakeDataFile("/data/file_b_rewritten.parquet", /*partition_x=*/2L);
-    delete_file_a_ = MakeDeleteFile("/data/delete_a.parquet", /*partition_x=*/1L);
-    rewritten_delete_file_a_ =
-        MakeDeleteFile("/data/delete_a_rewritten.parquet", /*partition_x=*/1L);
+    delete_file_a_ = MakePositionDeleteFile("/data/delete_a.parquet", /*partition_x=*/1L,
+                                            file_a_->file_path);
+    rewritten_delete_file_a_ = MakePositionDeleteFile(
+        "/data/delete_a_rewritten.parquet", /*partition_x=*/1L, file_a_->file_path);
     eq_delete_file_ =
         MakeEqualityDeleteFile("/data/eq_delete_a.parquet", /*partition_x=*/1L);
   }
@@ -83,18 +84,26 @@ class RewriteFilesTest : public MinimalUpdateTestBase {
     return f;
   }
 
-  std::shared_ptr<DataFile> MakeDeleteFile(const std::string& path, int64_t partition_x) {
-    auto f = MakeDataFile(path, partition_x);
-    f->content = DataFile::Content::kPositionDeletes;
-    return f;
+  std::shared_ptr<DataFile> MakePositionDeleteFile(
+      const std::string& path, int64_t partition_x,
+      const std::string& referenced_data_file) {
+    auto file = MakeDataFile(path, partition_x);
+    file->content = DataFile::Content::kPositionDeletes;
+    if (table_->metadata()->format_version >= 3) {
+      file->file_format = FileFormatType::kPuffin;
+      file->referenced_data_file = referenced_data_file;
+      file->content_offset = 0;
+      file->content_size_in_bytes = 10;
+    }
+    return file;
   }
 
   std::shared_ptr<DataFile> MakeEqualityDeleteFile(const std::string& path,
                                                    int64_t partition_x) {
-    auto f = MakeDeleteFile(path, partition_x);
-    f->content = DataFile::Content::kEqualityDeletes;
-    f->equality_ids = {1};
-    return f;
+    auto file = MakeDataFile(path, partition_x);
+    file->content = DataFile::Content::kEqualityDeletes;
+    file->equality_ids = {1};
+    return file;
   }
 
   Result<std::shared_ptr<RewriteFiles>> NewRewriteFiles() {
@@ -310,6 +319,13 @@ TEST_P(RewriteFilesFormatVersionTest, RewriteDeleteFilesCopiesCallerFiles) {
     GTEST_SKIP() << "Requires format version >= 2";
   }
   CommitFileA();
+
+  if (format_version() >= 3) {
+    EXPECT_TRUE(delete_file_a_->IsDeletionVector());
+    EXPECT_EQ(delete_file_a_->referenced_data_file, file_a_->file_path);
+  } else {
+    EXPECT_FALSE(delete_file_a_->IsDeletionVector());
+  }
 
   {
     ICEBERG_UNWRAP_OR_FAIL(auto row_delta, table_->NewRowDelta());
@@ -544,9 +560,10 @@ TEST_P(RewriteFilesFormatVersionTest, DataSequenceNumber) {
     GTEST_SKIP() << "Requires format version >= 2";
   }
   CommitFileA();
+  const auto data_sequence_number = table_->metadata()->last_sequence_number;
 
   ICEBERG_UNWRAP_OR_FAIL(auto rw, NewRewriteFiles());
-  rw->SetDataSequenceNumber(5);
+  rw->SetDataSequenceNumber(data_sequence_number);
   rw->DeleteDataFile(file_a_);
   rw->AddDataFile(rewritten_file_a_);
   EXPECT_THAT(rw->Commit(), IsOk());
@@ -555,6 +572,23 @@ TEST_P(RewriteFilesFormatVersionTest, DataSequenceNumber) {
   ICEBERG_UNWRAP_OR_FAIL(auto snapshot, table_->current_snapshot());
   EXPECT_EQ(snapshot->summary.at(SnapshotSummaryFields::kOperation),
             DataOperation::kReplace);
+
+  ICEBERG_UNWRAP_OR_FAIL(auto manifests, DataManifests(snapshot));
+  bool found_rewritten = false;
+  for (const auto& manifest : manifests) {
+    ICEBERG_UNWRAP_OR_FAIL(auto entries, ReadAllEntries(std::span{&manifest, 1}));
+    for (const auto& entry : entries) {
+      if (entry.data_file != nullptr &&
+          entry.data_file->file_path == rewritten_file_a_->file_path) {
+        found_rewritten = true;
+        EXPECT_EQ(entry.status, ManifestStatus::kAdded);
+        EXPECT_EQ(entry.sequence_number, data_sequence_number);
+        EXPECT_EQ(manifest.sequence_number, snapshot->sequence_number);
+      }
+    }
+  }
+  EXPECT_TRUE(found_rewritten) << "Rewritten data file should be present";
+  EXPECT_EQ(snapshot->sequence_number, table_->metadata()->last_sequence_number);
 }
 
 // Bulk rewrite with sequence number via the RewriteDataFiles convenience method.
@@ -773,8 +807,10 @@ TEST_P(RewriteFilesFormatVersionTest, ReplaceEqualityDeletesWithPositionDeletes)
             DataOperation::kReplace);
   EXPECT_EQ(
       std::stoll(snapshot->summary.at(SnapshotSummaryFields::kRemovedEqDeleteFiles)), 1);
-  EXPECT_EQ(std::stoll(snapshot->summary.at(SnapshotSummaryFields::kAddedPosDeleteFiles)),
-            1);
+  const auto& added_delete_summary = format_version() >= 3
+                                         ? SnapshotSummaryFields::kAddedDVs
+                                         : SnapshotSummaryFields::kAddedPosDeleteFiles;
+  EXPECT_EQ(std::stoll(snapshot->summary.at(added_delete_summary)), 1);
 
   // Verify the delete manifest shows the eq delete as DELETED and pos delete as ADDED
   ICEBERG_UNWRAP_OR_FAIL(auto delete_manifests, DeleteManifests(snapshot));
@@ -792,7 +828,7 @@ TEST_P(RewriteFilesFormatVersionTest, ReplaceEqualityDeletesWithPositionDeletes)
     }
   }
   EXPECT_TRUE(found_deleted_eq) << "Equality delete should be marked DELETED";
-  EXPECT_TRUE(found_added_pos) << "Position delete should be marked ADDED";
+  EXPECT_TRUE(found_added_pos) << "Position delete or DV should be marked ADDED";
 }
 
 // Remove all deletes: create a data file and an associated equality delete,
@@ -987,15 +1023,78 @@ TEST_P(RewriteFilesFormatVersionTest, RecoverWhenRewriteBothDataAndDeleteFiles) 
             1);
 }
 
+TEST_F(RewriteFilesTest, V3RewriteSuppressesCallerFirstRowId) {
+  ICEBERG_UNWRAP_OR_FAIL(auto props, table_->NewUpdateProperties());
+  props->Set(TableProperties::kFormatVersion.key(), "3");
+  ASSERT_THAT(props->Commit(), IsOk());
+  ASSERT_THAT(table_->Refresh(), IsOk());
+
+  CommitFileA();
+  ASSERT_EQ(table_->metadata()->next_row_id, file_a_->record_count);
+
+  rewritten_file_a_->first_row_id = 9999;
+  ICEBERG_UNWRAP_OR_FAIL(auto rewrite, NewRewriteFiles());
+  rewrite->RewriteDataFiles({file_a_}, {rewritten_file_a_}, /*sequence_number=*/1);
+  ASSERT_THAT(rewrite->Commit(), IsOk());
+  ASSERT_THAT(table_->Refresh(), IsOk());
+
+  ICEBERG_UNWRAP_OR_FAIL(auto snapshot, table_->current_snapshot());
+  ICEBERG_UNWRAP_OR_FAIL(auto manifests, DataManifests(snapshot));
+  ICEBERG_UNWRAP_OR_FAIL(auto entries, ReadAllEntries(manifests));
+  auto rewritten_entry =
+      std::ranges::find_if(entries, [this](const ManifestEntry& entry) {
+        return entry.status == ManifestStatus::kAdded && entry.data_file != nullptr &&
+               entry.data_file->file_path == rewritten_file_a_->file_path;
+      });
+  ASSERT_NE(rewritten_entry, entries.end());
+  EXPECT_EQ(rewritten_entry->data_file->first_row_id, file_a_->record_count);
+  EXPECT_NE(rewritten_entry->data_file->first_row_id, rewritten_file_a_->first_row_id);
+  EXPECT_EQ(table_->metadata()->next_row_id,
+            file_a_->record_count + rewritten_file_a_->record_count);
+}
+
+TEST_F(RewriteFilesTest, RemovingDataFileAlsoRemovesDV) {
+  ICEBERG_UNWRAP_OR_FAIL(auto props, table_->NewUpdateProperties());
+  props->Set(TableProperties::kFormatVersion.key(), "3");
+  ASSERT_THAT(props->Commit(), IsOk());
+  ASSERT_THAT(table_->Refresh(), IsOk());
+
+  auto dv_a =
+      MakePositionDeleteFile("/data/dv_a.puffin", /*partition_x=*/1L, file_a_->file_path);
+  auto dv_b =
+      MakePositionDeleteFile("/data/dv_b.puffin", /*partition_x=*/2L, file_b_->file_path);
+  ASSERT_TRUE(dv_a->IsDeletionVector());
+  ASSERT_TRUE(dv_b->IsDeletionVector());
+
+  ICEBERG_UNWRAP_OR_FAIL(auto delta, table_->NewRowDelta());
+  delta->AddRows(file_a_).AddRows(file_b_).AddDeletes(dv_a).AddDeletes(dv_b);
+  ASSERT_THAT(delta->Commit(), IsOk());
+  ASSERT_THAT(table_->Refresh(), IsOk());
+
+  ICEBERG_UNWRAP_OR_FAIL(auto base_snapshot, table_->current_snapshot());
+  ICEBERG_UNWRAP_OR_FAIL(auto rewrite, NewRewriteFiles());
+  rewrite->ValidateFromSnapshot(base_snapshot->snapshot_id);
+  rewrite->DeleteDataFile(file_a_);
+  ASSERT_THAT(rewrite->Commit(), IsOk());
+  ASSERT_THAT(table_->Refresh(), IsOk());
+
+  ICEBERG_UNWRAP_OR_FAIL(auto snapshot, table_->current_snapshot());
+  ICEBERG_UNWRAP_OR_FAIL(auto delete_manifests, DeleteManifests(snapshot));
+  ICEBERG_UNWRAP_OR_FAIL(auto entries, ReadAllEntries(delete_manifests));
+  ASSERT_EQ(entries.size(), 2);
+  EXPECT_TRUE(std::ranges::any_of(entries, [&dv_a](const ManifestEntry& entry) {
+    return entry.status == ManifestStatus::kDeleted && entry.data_file != nullptr &&
+           entry.data_file->file_path == dv_a->file_path;
+  }));
+  EXPECT_TRUE(std::ranges::any_of(entries, [&dv_b](const ManifestEntry& entry) {
+    return entry.status == ManifestStatus::kExisting && entry.data_file != nullptr &&
+           entry.data_file->file_path == dv_b->file_path;
+  }));
+}
+
 // ============================================================================
 // TODO(WZhuo): Tests blocked on missing infrastructure in iceberg-cpp.
 // ============================================================================
-//
-// TODO(RemovingDataFileAlsoRemovesDV):
-//   Blocked by: format v3 DV auto-cleanup not yet supported.
-//   Creates data+delete files via RowDelta (v3), rewrites with deleteFile.
-//   Verifies the DV for the removed data file is automatically cleaned up.
-//   Java guard: assumeThat(formatVersion).isGreaterThanOrEqualTo(3)
 //
 // TODO(DeleteWithDuplicateEntriesInManifest):
 //   Blocked by: cannot yet append the same file twice to create duplicate manifest
@@ -1004,6 +1103,6 @@ TEST_P(RewriteFilesFormatVersionTest, RecoverWhenRewriteBothDataAndDeleteFiles) 
 //   Java guard: none (runs on all versions)
 
 INSTANTIATE_TEST_SUITE_P(FormatVersions, RewriteFilesFormatVersionTest,
-                         ::testing::Values(int8_t{1}, int8_t{2}));
+                         ::testing::Values(int8_t{1}, int8_t{2}, int8_t{3}));
 
 }  // namespace iceberg

@@ -454,6 +454,104 @@ TEST_P(IncrementalChangelogScanTest, ManifestRewritesAreIgnored) {
   EXPECT_EQ(insert_t3->data_file()->file_path, "/path/to/file_c.parquet");
 }
 
+TEST_P(IncrementalChangelogScanTest, PlanAddedRowLineage) {
+  if (GetParam() < 3) {
+    GTEST_SKIP() << "Row lineage is only assigned in v3 manifests";
+  }
+
+  auto snapshot_a =
+      MakeAppendSnapshot(3, 1000L, std::nullopt, 5L, {"/path/to/file_a.parquet"});
+  snapshot_a->first_row_id = 0;
+  snapshot_a->added_rows = 1;
+
+  auto file_b = MakeDataFile("/path/to/file_b.parquet");
+  auto entry_b = MakeEntry(ManifestStatus::kAdded, 2000L, 7L, file_b);
+  auto manifest_b = WriteDataManifest(3, 2000L, {std::move(entry_b)});
+  manifest_b.first_row_id = 1;
+  auto manifest_list_b = WriteManifestList(3, 2000L, 1000L, 7L, {manifest_b});
+  auto snapshot_b = std::make_shared<Snapshot>(Snapshot{
+      .snapshot_id = 2000L,
+      .parent_snapshot_id = 1000L,
+      .sequence_number = 7L,
+      .timestamp_ms = TimePointMsFromUnixMs(1609459200000L + 2000),
+      .manifest_list = manifest_list_b,
+      .summary = {{"operation", "append"}},
+      .schema_id = schema_->schema_id(),
+      .first_row_id = 1L,
+      .added_rows = 1L,
+  });
+  auto metadata = MakeTableMetadata(
+      {snapshot_a, snapshot_b}, 2000L,
+      {{"main", std::make_shared<SnapshotRef>(SnapshotRef{
+                    .snapshot_id = 2000L, .retention = SnapshotRef::Branch{}})}});
+  metadata->next_row_id = 2;
+
+  ICEBERG_UNWRAP_OR_FAIL(auto builder,
+                         MakeScanBuilder<IncrementalChangelogScan>(metadata));
+  builder->FromSnapshot(1000L, /*inclusive=*/true).ToSnapshot(2000L);
+  ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
+  ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
+  ASSERT_EQ(tasks.size(), 2);
+  SortTasks(tasks);
+
+  auto added_a = std::dynamic_pointer_cast<AddedRowsScanTask>(tasks[0]);
+  ASSERT_NE(added_a, nullptr);
+  EXPECT_EQ(added_a->commit_snapshot_id(), 1000L);
+  EXPECT_EQ(added_a->data_file()->first_row_id, 0);
+  EXPECT_EQ(added_a->data_file()->data_sequence_number, 5);
+
+  auto added_b = std::dynamic_pointer_cast<AddedRowsScanTask>(tasks[1]);
+  ASSERT_NE(added_b, nullptr);
+  EXPECT_EQ(added_b->commit_snapshot_id(), 2000L);
+  EXPECT_EQ(added_b->data_file()->first_row_id, 1);
+  EXPECT_EQ(added_b->data_file()->data_sequence_number, 7);
+}
+
+TEST_P(IncrementalChangelogScanTest, PlanDeletedRowLineage) {
+  if (GetParam() < 3) {
+    GTEST_SKIP() << "Row lineage is only assigned in v3 manifests";
+  }
+
+  auto snapshot_a =
+      MakeAppendSnapshot(3, 1000L, std::nullopt, 5L, {"/path/to/file_a.parquet"});
+
+  auto deleted_file = MakeDataFile("/path/to/file_a.parquet");
+  deleted_file->first_row_id = 10;
+  auto deleted_entry = MakeEntry(ManifestStatus::kDeleted, /*snapshot_id=*/2000L,
+                                 /*sequence_number=*/5L, deleted_file);
+  auto delete_manifest =
+      WriteDataManifest(3, 2000L, {std::move(deleted_entry)}, unpartitioned_spec_);
+  auto manifest_list = WriteManifestList(3, 2000L, 1000L, 7L, {delete_manifest});
+  auto snapshot_b = std::make_shared<Snapshot>(Snapshot{
+      .snapshot_id = 2000L,
+      .parent_snapshot_id = 1000L,
+      .sequence_number = 7L,
+      .timestamp_ms = TimePointMsFromUnixMs(1609459200000L + 2000),
+      .manifest_list = manifest_list,
+      .summary = {{"operation", "overwrite"}},
+      .schema_id = schema_->schema_id(),
+      .first_row_id = 1L,
+      .added_rows = 0L,
+  });
+  auto metadata = MakeTableMetadata(
+      {snapshot_a, snapshot_b}, 2000L,
+      {{"main", std::make_shared<SnapshotRef>(SnapshotRef{
+                    .snapshot_id = 2000L, .retention = SnapshotRef::Branch{}})}});
+
+  ICEBERG_UNWRAP_OR_FAIL(auto builder,
+                         MakeScanBuilder<IncrementalChangelogScan>(metadata));
+  builder->FromSnapshot(1000L, /*inclusive=*/false).ToSnapshot(2000L);
+  ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
+  ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
+  ASSERT_EQ(tasks.size(), 1);
+
+  auto deleted = std::dynamic_pointer_cast<DeletedDataFileScanTask>(tasks[0]);
+  ASSERT_NE(deleted, nullptr);
+  EXPECT_EQ(deleted->data_file()->first_row_id, 10);
+  EXPECT_EQ(deleted->data_file()->data_sequence_number, 5);
+  EXPECT_EQ(deleted->commit_snapshot_id(), 2000L);
+}
+
 TEST_P(IncrementalChangelogScanTest, DeleteFilesAreNotSupported) {
   auto version = GetParam();
   if (version < 2) {
