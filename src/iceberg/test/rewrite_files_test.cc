@@ -84,19 +84,23 @@ class RewriteFilesTest : public MinimalUpdateTestBase {
     return f;
   }
 
-  std::shared_ptr<DataFile> MakePositionDeleteFile(
-      const std::string& path, int64_t partition_x,
-      const std::string& referenced_data_file) {
-    auto file = MakeDataFile(path, partition_x);
-    file->content = DataFile::Content::kPositionDeletes;
-    if (table_->metadata()->format_version >= 3) {
-      file->file_format = FileFormatType::kPuffin;
-      file->referenced_data_file = referenced_data_file;
-      file->content_offset = 0;
-      file->content_size_in_bytes = 10;
-    }
-    return file;
+std::shared_ptr<DataFile> MakePositionDeleteFile(
+    const std::string& path, int64_t partition_x,
+    const std::string& referenced_data_file) {
+  std::string effective_path = path;
+  if (table_->metadata()->format_version >= 3 && effective_path.ends_with(".parquet")) {
+    effective_path = effective_path.substr(0, effective_path.size() - 7) + ".puffin";
   }
+  auto file = MakeDataFile(effective_path, partition_x);
+  file->content = DataFile::Content::kPositionDeletes;
+  if (table_->metadata()->format_version >= 3) {
+    file->file_format = FileFormatType::kPuffin;
+    file->referenced_data_file = referenced_data_file;
+    file->content_offset = 0;
+    file->content_size_in_bytes = 10;
+  }
+  return file;
+}
 
   std::shared_ptr<DataFile> MakeEqualityDeleteFile(const std::string& path,
                                                    int64_t partition_x) {
