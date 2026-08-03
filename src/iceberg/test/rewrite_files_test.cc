@@ -23,6 +23,7 @@
 #include <cstdint>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include <arrow/filesystem/filesystem.h>
@@ -68,6 +69,9 @@ class RewriteFilesTest : public MinimalUpdateTestBase {
                                             file_a_->file_path);
     rewritten_delete_file_a_ = MakePositionDeleteFile(
         "/data/delete_a_rewritten.parquet", /*partition_x=*/1L, file_a_->file_path);
+    delete_file_for_rewritten_file_a_ =
+        MakePositionDeleteFile("/data/delete_for_file_a_rewritten.parquet",
+                               /*partition_x=*/1L, rewritten_file_a_->file_path);
     eq_delete_file_ =
         MakeEqualityDeleteFile("/data/eq_delete_a.parquet", /*partition_x=*/1L);
   }
@@ -87,13 +91,14 @@ class RewriteFilesTest : public MinimalUpdateTestBase {
   std::shared_ptr<DataFile> MakePositionDeleteFile(
       const std::string& path, int64_t partition_x,
       const std::string& referenced_data_file) {
-    std::string effective_path = path;
-    if (table_->metadata()->format_version >= 3 && effective_path.ends_with(".parquet")) {
-      effective_path = effective_path.substr(0, effective_path.size() - 7) + ".puffin";
-    }
-    auto file = MakeDataFile(effective_path, partition_x);
+    auto file = MakeDataFile(path, partition_x);
     file->content = DataFile::Content::kPositionDeletes;
     if (table_->metadata()->format_version >= 3) {
+      constexpr std::string_view kParquetSuffix = ".parquet";
+      if (file->file_path.ends_with(kParquetSuffix)) {
+        file->file_path.replace(file->file_path.size() - kParquetSuffix.size(),
+                                kParquetSuffix.size(), ".puffin");
+      }
       file->file_format = FileFormatType::kPuffin;
       file->referenced_data_file = referenced_data_file;
       file->content_offset = 0;
@@ -249,6 +254,7 @@ class RewriteFilesTest : public MinimalUpdateTestBase {
   std::shared_ptr<DataFile> rewritten_file_b_;
   std::shared_ptr<DataFile> delete_file_a_;
   std::shared_ptr<DataFile> rewritten_delete_file_a_;
+  std::shared_ptr<DataFile> delete_file_for_rewritten_file_a_;
   std::shared_ptr<DataFile> eq_delete_file_;
 
   /// \brief Mock catalogs kept alive during the test (for failure injection).
@@ -326,7 +332,12 @@ TEST_P(RewriteFilesFormatVersionTest, RewriteDeleteFilesCopiesCallerFiles) {
 
   if (format_version() >= 3) {
     EXPECT_TRUE(delete_file_a_->IsDeletionVector());
+    EXPECT_EQ(delete_file_a_->file_path, table_location_ + "/data/delete_a.puffin");
     EXPECT_EQ(delete_file_a_->referenced_data_file, file_a_->file_path);
+    EXPECT_TRUE(rewritten_delete_file_a_->IsDeletionVector());
+    EXPECT_EQ(rewritten_delete_file_a_->file_path,
+              table_location_ + "/data/delete_a_rewritten.puffin");
+    EXPECT_EQ(rewritten_delete_file_a_->referenced_data_file, file_a_->file_path);
   } else {
     EXPECT_FALSE(delete_file_a_->IsDeletionVector());
   }
@@ -689,12 +700,16 @@ TEST_P(RewriteFilesFormatVersionTest, RewriteDataAndDeleteFiles) {
 
   // Rewrite both data and delete files
   {
+    if (format_version() >= 3) {
+      EXPECT_EQ(delete_file_for_rewritten_file_a_->referenced_data_file,
+                rewritten_file_a_->file_path);
+    }
     ICEBERG_UNWRAP_OR_FAIL(auto rw, NewRewriteFiles());
     rw->ValidateFromSnapshot(after_delta_snapshot->snapshot_id);
     rw->DeleteDataFile(file_a_);
     rw->DeleteDeleteFile(delete_file_a_);
     rw->AddDataFile(rewritten_file_a_);
-    rw->AddDeleteFile(rewritten_delete_file_a_);
+    rw->AddDeleteFile(delete_file_for_rewritten_file_a_);
     EXPECT_THAT(rw->Commit(), IsOk());
     EXPECT_THAT(table_->Refresh(), IsOk());
   }
@@ -732,7 +747,8 @@ TEST_P(RewriteFilesFormatVersionTest, RewriteDataAndDeleteFiles) {
   for (const auto& entry : delete_entries) {
     if (entry.data_file->file_path == delete_file_a_->file_path) {
       EXPECT_EQ(entry.status, ManifestStatus::kDeleted);
-    } else if (entry.data_file->file_path == rewritten_delete_file_a_->file_path) {
+    } else if (entry.data_file->file_path ==
+               delete_file_for_rewritten_file_a_->file_path) {
       EXPECT_EQ(entry.status, ManifestStatus::kAdded);
       EXPECT_EQ(entry.snapshot_id, snapshot->snapshot_id);
     } else {
@@ -801,7 +817,7 @@ TEST_P(RewriteFilesFormatVersionTest, ReplaceEqualityDeletesWithPositionDeletes)
     rw->DeleteDataFile(file_a_);
     rw->DeleteDeleteFile(eq_delete_file_);
     rw->AddDataFile(rewritten_file_a_);
-    rw->AddDeleteFile(rewritten_delete_file_a_);
+    rw->AddDeleteFile(delete_file_for_rewritten_file_a_);
     EXPECT_THAT(rw->Commit(), IsOk());
     EXPECT_THAT(table_->Refresh(), IsOk());
   }
@@ -964,7 +980,7 @@ TEST_P(RewriteFilesFormatVersionTest, FailureWhenRewriteBothDataAndDeleteFiles) 
   rw->DeleteDataFile(file_a_);
   rw->DeleteDeleteFile(delete_file_a_);
   rw->AddDataFile(rewritten_file_a_);
-  rw->AddDeleteFile(rewritten_delete_file_a_);
+  rw->AddDeleteFile(delete_file_for_rewritten_file_a_);
 
   auto result = rw->Commit();
   EXPECT_THAT(result, IsError(ErrorKind::kCommitFailed));
@@ -1007,7 +1023,7 @@ TEST_P(RewriteFilesFormatVersionTest, RecoverWhenRewriteBothDataAndDeleteFiles) 
   rw->DeleteDataFile(file_a_);
   rw->DeleteDeleteFile(delete_file_a_);
   rw->AddDataFile(rewritten_file_a_);
-  rw->AddDeleteFile(rewritten_delete_file_a_);
+  rw->AddDeleteFile(delete_file_for_rewritten_file_a_);
 
   EXPECT_THAT(rw->Commit(), IsOk());
   EXPECT_THAT(table_->Refresh(), IsOk());
