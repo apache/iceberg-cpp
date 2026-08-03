@@ -19,8 +19,6 @@
 
 #include "iceberg/schema_internal.h"
 
-#include <cerrno>
-#include <charconv>
 #include <cstring>
 #include <optional>
 #include <string>
@@ -29,6 +27,7 @@
 #include "iceberg/schema.h"
 #include "iceberg/type.h"
 #include "iceberg/util/macros.h"
+#include "iceberg/util/string_util.h"
 
 namespace iceberg {
 
@@ -240,16 +239,14 @@ Result<int32_t> GetFieldId(const ArrowSchema& schema) {
     return kUnknownFieldId;
   }
 
-  int32_t field_id = 0;
-  const auto* end = field_id_value.data + field_id_value.size_bytes;
-  const auto [ptr, ec] = std::from_chars(field_id_value.data, end, field_id);
-  if (ec != std::errc{} || ptr != end) {
+  std::string_view field_id(field_id_value.data, field_id_value.size_bytes);
+  auto field_id_result = StringUtils::ParseNumber<int32_t>(field_id);
+  if (!field_id_result.has_value()) {
     return InvalidSchema(
-        "Invalid Arrow field ID: '{}'",
-        std::string_view(field_id_value.data, field_id_value.size_bytes));
+        "Invalid Arrow field ID: '{}'", field_id);
   }
 
-  return field_id;
+  return field_id_result.value();
 }
 
 Result<std::shared_ptr<Type>> FromArrowSchema(const ArrowSchema& schema) {
