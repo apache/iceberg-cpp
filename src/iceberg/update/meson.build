@@ -26,6 +26,7 @@ install_headers(
         'pending_update.h',
         'replace_partitions.h',
         'rewrite_files.h',
+        'rewrite_manifests.h',
         'row_delta.h',
         'set_snapshot.h',
         'snapshot_manager.h',
