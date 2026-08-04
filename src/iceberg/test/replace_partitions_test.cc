@@ -216,7 +216,7 @@ class ReplacePartitionsTest : public UpdateTestBase {
     return paths;
   }
 
-  Result<std::unique_ptr<ReplacePartitions>> NewReplace() {
+  Result<std::shared_ptr<ReplacePartitions>> NewReplace() {
     ICEBERG_ASSIGN_OR_RAISE(auto ctx,
                             TransactionContext::Make(table_, TransactionKind::kUpdate));
     return ReplacePartitions::Make(TableName(), std::move(ctx));

@@ -32,11 +32,11 @@
 
 namespace iceberg {
 
-Result<std::unique_ptr<ReplacePartitions>> ReplacePartitions::Make(
+Result<std::shared_ptr<ReplacePartitions>> ReplacePartitions::Make(
     std::string table_name, std::shared_ptr<TransactionContext> ctx) {
   ICEBERG_PRECHECK(!table_name.empty(), "Table name cannot be empty");
   ICEBERG_PRECHECK(ctx != nullptr, "Cannot create ReplacePartitions without a context");
-  return std::unique_ptr<ReplacePartitions>(
+  return std::shared_ptr<ReplacePartitions>(
       new ReplacePartitions(std::move(table_name), std::move(ctx)));
 }
 

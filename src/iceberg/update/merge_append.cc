@@ -29,11 +29,11 @@
 
 namespace iceberg {
 
-Result<std::unique_ptr<MergeAppend>> MergeAppend::Make(
+Result<std::shared_ptr<MergeAppend>> MergeAppend::Make(
     std::string table_name, std::shared_ptr<TransactionContext> ctx) {
   ICEBERG_PRECHECK(!table_name.empty(), "Table name cannot be empty");
   ICEBERG_PRECHECK(ctx != nullptr, "Cannot create MergeAppend without a context");
-  return std::unique_ptr<MergeAppend>(
+  return std::shared_ptr<MergeAppend>(
       new MergeAppend(std::move(table_name), std::move(ctx)));
 }
 
