@@ -586,10 +586,10 @@ TEST_F(ParquetReaderTest, ReadListAsLargeList) {
 }
 
 TEST_F(ParquetReaderTest, ReadListAsLargeListWithArrowSchema) {
-  // A file written with serialized ARROW:schema metadata keeps its original list type, as
-  // Arrow ignores the requested large_list type in that case. The output schema must keep
-  // describing the arrays that are actually produced, otherwise projecting the record
-  // batch casts a list array to a large_list array.
+  // Reading a file that carries serialized ARROW:schema metadata must report an output
+  // schema that describes the arrays the reader actually produces. Arrow decides the list
+  // type of the arrays, so the output schema follows the schema of the reader instead of
+  // assuming that the requested large_list type was applied.
   CreateListParquetFileWithArrowSchema();
 
   auto schema = std::make_shared<Schema>(std::vector<SchemaField>{
@@ -613,14 +613,19 @@ TEST_F(ParquetReaderTest, ReadListAsLargeListWithArrowSchema) {
   ASSERT_THAT(schema_result, IsOk());
   auto arrow_c_schema = std::move(schema_result.value());
   auto arrow_type = ::arrow::ImportType(&arrow_c_schema).ValueOrDie();
-  ASSERT_EQ(arrow_type->field(1)->type()->id(), ::arrow::Type::LIST);
+  auto list_type_id = arrow_type->field(1)->type()->id();
+  ASSERT_TRUE(list_type_id == ::arrow::Type::LIST ||
+              list_type_id == ::arrow::Type::LARGE_LIST)
+      << "unexpected list type: " << arrow_type->field(1)->type()->ToString();
 
   auto data = reader->Next();
   ASSERT_THAT(data, IsOk());
   ASSERT_TRUE(data.value().has_value());
   auto arrow_c_array = data.value().value();
 
-  // Importing the array against the reported schema fails if the two disagree.
+  // Importing the array against the reported schema fails if the two disagree, which is
+  // what this test guards: the output schema must not claim a list type that the reader
+  // did not produce.
   auto import_result = ::arrow::ImportArray(&arrow_c_array, arrow_type);
   ASSERT_TRUE(import_result.ok()) << import_result.status().ToString();
   auto arrow_array = import_result.ValueOrDie();
@@ -635,10 +640,19 @@ TEST_F(ParquetReaderTest, ReadListAsLargeListWithArrowSchema) {
   ASSERT_EQ(id_array.Value(0), 1);
   ASSERT_EQ(id_array.Value(1), 2);
 
-  const auto& numbers_array =
-      internal::checked_cast<const ::arrow::ListArray&>(*struct_array.field(1));
-  ASSERT_EQ(numbers_array.value_slice(0)->length(), 2);
-  ASSERT_EQ(numbers_array.value_slice(1)->length(), 1);
+  // The list offsets are 32 or 64 bit wide depending on the type the reader produced.
+  ASSERT_EQ(struct_array.field(1)->type()->id(), list_type_id);
+  if (list_type_id == ::arrow::Type::LARGE_LIST) {
+    const auto& numbers_array =
+        internal::checked_cast<const ::arrow::LargeListArray&>(*struct_array.field(1));
+    ASSERT_EQ(numbers_array.value_slice(0)->length(), 2);
+    ASSERT_EQ(numbers_array.value_slice(1)->length(), 1);
+  } else {
+    const auto& numbers_array =
+        internal::checked_cast<const ::arrow::ListArray&>(*struct_array.field(1));
+    ASSERT_EQ(numbers_array.value_slice(0)->length(), 2);
+    ASSERT_EQ(numbers_array.value_slice(1)->length(), 1);
+  }
 }
 
 TEST_F(ParquetReaderTest, ReadSplit) {
