@@ -294,6 +294,38 @@ class ParquetReaderTest : public TempFileTestBase {
                                         .data_sequence_number = data_sequence_number});
   }
 
+  // Writes a list parquet file through parquet::arrow::WriteTable, which serializes the
+  // Arrow schema of the table into the ARROW:schema key value metadata of the file.
+  void CreateListParquetFileWithArrowSchema() {
+    const std::string kParquetFieldIdKey = "PARQUET:field_id";
+    auto arrow_schema = ::arrow::schema(
+        {::arrow::field("id", ::arrow::int32(), /*nullable=*/false,
+                        ::arrow::KeyValueMetadata::Make({kParquetFieldIdKey}, {"1"})),
+         ::arrow::field(
+             "numbers",
+             ::arrow::list(::arrow::field(
+                 "element", ::arrow::int32(), /*nullable=*/true,
+                 ::arrow::KeyValueMetadata::Make({kParquetFieldIdKey}, {"101"}))),
+             /*nullable=*/true,
+             ::arrow::KeyValueMetadata::Make({kParquetFieldIdKey}, {"2"}))});
+    auto batch =
+        ::arrow::RecordBatch::FromStructArray(
+            ::arrow::json::ArrayFromJSONString(::arrow::struct_(arrow_schema->fields()),
+                                               R"([[1, [1, 2]], [2, [3]]])")
+                .ValueOrDie())
+            .ValueOrDie();
+    auto table = ::arrow::Table::FromRecordBatches(arrow_schema, {batch}).ValueOrDie();
+
+    auto io = internal::checked_cast<arrow::ArrowFileSystemFileIO&>(*file_io_);
+    auto outfile = io.fs()->OpenOutputStream(temp_parquet_file_).ValueOrDie();
+
+    // write a single row group so that one batch holds every row
+    ASSERT_TRUE(::parquet::arrow::WriteTable(*table, ::arrow::default_memory_pool(),
+                                             outfile, table->num_rows())
+                    .ok());
+    ASSERT_TRUE(outfile->Close().ok());
+  }
+
   void VerifyNextBatch(Reader& reader, std::string_view expected_json) {
     // Boilerplate to get Arrow schema
     auto schema_result = reader.Schema();
@@ -551,6 +583,62 @@ TEST_F(ParquetReaderTest, ReadListAsLargeList) {
   ASSERT_TRUE(numbers_array.IsNull(2));
 
   ASSERT_NO_FATAL_FAILURE(VerifyExhausted(*reader));
+}
+
+TEST_F(ParquetReaderTest, ReadListAsLargeListWithArrowSchema) {
+  // A file written with serialized ARROW:schema metadata keeps its original list type, as
+  // Arrow ignores the requested large_list type in that case. The output schema must keep
+  // describing the arrays that are actually produced, otherwise projecting the record
+  // batch casts a list array to a large_list array.
+  CreateListParquetFileWithArrowSchema();
+
+  auto schema = std::make_shared<Schema>(std::vector<SchemaField>{
+      SchemaField::MakeRequired(1, "id", int32()),
+      SchemaField::MakeOptional(2, "numbers",
+                                std::make_shared<ListType>(SchemaField::MakeOptional(
+                                    /*field_id=*/101, "element", int32())))});
+
+  ReaderProperties reader_properties;
+  reader_properties.Set(ReaderProperties::kArrowUseLargeList, true);
+
+  auto reader_result = ReaderFactoryRegistry::Open(
+      FileFormatType::kParquet, {.path = temp_parquet_file_,
+                                 .io = file_io_,
+                                 .projection = schema,
+                                 .properties = std::move(reader_properties)});
+  ASSERT_THAT(reader_result, IsOk());
+  auto reader = std::move(reader_result.value());
+
+  auto schema_result = reader->Schema();
+  ASSERT_THAT(schema_result, IsOk());
+  auto arrow_c_schema = std::move(schema_result.value());
+  auto arrow_type = ::arrow::ImportType(&arrow_c_schema).ValueOrDie();
+  ASSERT_EQ(arrow_type->field(1)->type()->id(), ::arrow::Type::LIST);
+
+  auto data = reader->Next();
+  ASSERT_THAT(data, IsOk());
+  ASSERT_TRUE(data.value().has_value());
+  auto arrow_c_array = data.value().value();
+
+  // Importing the array against the reported schema fails if the two disagree.
+  auto import_result = ::arrow::ImportArray(&arrow_c_array, arrow_type);
+  ASSERT_TRUE(import_result.ok()) << import_result.status().ToString();
+  auto arrow_array = import_result.ValueOrDie();
+  ASSERT_TRUE(arrow_array->ValidateFull().ok());
+
+  const auto& struct_array =
+      internal::checked_cast<const ::arrow::StructArray&>(*arrow_array);
+  ASSERT_EQ(struct_array.length(), 2);
+
+  const auto& id_array =
+      internal::checked_cast<const ::arrow::Int32Array&>(*struct_array.field(0));
+  ASSERT_EQ(id_array.Value(0), 1);
+  ASSERT_EQ(id_array.Value(1), 2);
+
+  const auto& numbers_array =
+      internal::checked_cast<const ::arrow::ListArray&>(*struct_array.field(1));
+  ASSERT_EQ(numbers_array.value_slice(0)->length(), 2);
+  ASSERT_EQ(numbers_array.value_slice(1)->length(), 1);
 }
 
 TEST_F(ParquetReaderTest, ReadSplit) {

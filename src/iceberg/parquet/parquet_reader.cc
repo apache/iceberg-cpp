@@ -19,6 +19,7 @@
 
 #include "iceberg/parquet/parquet_reader.h"
 
+#include <algorithm>
 #include <numeric>
 
 #include <arrow/c/bridge.h>
@@ -85,6 +86,7 @@ class EmptyRecordBatchReader : public ::arrow::RecordBatchReader {
   }
 };
 
+// forward declaration to unblock cycle dependence.
 std::shared_ptr<::arrow::Field> UseLargeListField(
     const std::shared_ptr<::arrow::Field>& field);
 
@@ -118,6 +120,42 @@ std::shared_ptr<::arrow::DataType> UseLargeListType(
 std::shared_ptr<::arrow::Field> UseLargeListField(
     const std::shared_ptr<::arrow::Field>& field) {
   return field->WithType(UseLargeListType(field->type()));
+}
+
+// Rewrite all fields in a field vector to use large_list instead of list.
+::arrow::FieldVector UseLargeListFields(const ::arrow::FieldVector& fields) {
+  ::arrow::FieldVector rewritten;
+  rewritten.reserve(fields.size());
+  for (const auto& field : fields) {
+    rewritten.push_back(UseLargeListField(field));
+  }
+  return rewritten;
+}
+
+// Returns true if the type contains a large_list, at any level of nesting.
+bool ContainsLargeList(const ::arrow::DataType& type) {
+  if (type.id() == ::arrow::Type::LARGE_LIST) {
+    return true;
+  }
+  return std::ranges::any_of(
+      type.fields(), [](const auto& field) { return ContainsLargeList(*field->type()); });
+}
+
+// Returns true if the reader produces large_list arrays.
+//
+// Arrow honors the requested large_list type only when it derives the Arrow schema from
+// the Parquet schema. A file that carries serialized ARROW:schema metadata keeps its
+// original list type instead, so whether large lists are produced can only be told from
+// the schema of the reader.
+bool ProducesLargeList(const ::arrow::RecordBatchReader& reader) {
+  const auto& schema = reader.schema();
+  if (schema == nullptr) {
+    // an empty reader produces no arrays to be described
+    return false;
+  }
+  return std::ranges::any_of(schema->fields(), [](const auto& field) {
+    return ContainsLargeList(*field->type());
+  });
 }
 
 }  // namespace
@@ -252,23 +290,6 @@ class ParquetReader::Impl {
   Status InitReadContext() {
     context_ = std::make_unique<ReadContext>();
 
-    // Build the output Arrow schema
-    ArrowSchema arrow_schema;
-    ICEBERG_RETURN_UNEXPECTED(ToArrowSchema(*read_schema_, &arrow_schema));
-    ICEBERG_ARROW_ASSIGN_OR_RETURN(context_->output_arrow_schema_,
-                                   ::arrow::ImportSchema(&arrow_schema));
-    if (use_large_list_) {
-      // Align the output schema with the large_list arrays produced by the
-      // Parquet reader when kArrowUseLargeList is enabled.
-      ::arrow::FieldVector fields;
-      fields.reserve(context_->output_arrow_schema_->fields().size());
-      for (const auto& field : context_->output_arrow_schema_->fields()) {
-        fields.push_back(UseLargeListField(field));
-      }
-      context_->output_arrow_schema_ =
-          ::arrow::schema(std::move(fields), context_->output_arrow_schema_->metadata());
-    }
-
     // Row group pruning based on the split
     // TODO(gangwu): add row group filtering based on zone map, bloom filter, etc.
     std::vector<int> row_group_indices;
@@ -299,6 +320,24 @@ class ParquetReader::Impl {
       ICEBERG_ARROW_ASSIGN_OR_RETURN(
           context_->record_batch_reader_,
           reader_->GetRecordBatchReader(row_group_indices, column_indices));
+    }
+
+    // Build the output Arrow schema from the projected Iceberg schema. This schema is the
+    // target of ProjectRecordBatch, so it must describe the projected schema rather than
+    // the schema of the file.
+    ArrowSchema arrow_schema;
+    ICEBERG_RETURN_UNEXPECTED(ToArrowSchema(*read_schema_, &arrow_schema));
+    ICEBERG_ARROW_ASSIGN_OR_RETURN(context_->output_arrow_schema_,
+                                   ::arrow::ImportSchema(&arrow_schema));
+
+    if (use_large_list_ && ProducesLargeList(*context_->record_batch_reader_)) {
+      // Align the output schema with the large_list arrays produced by the Parquet
+      // reader. Note that Arrow ignores the requested list type when the file carries
+      // serialized ARROW:schema metadata, in which case the reader keeps producing plain
+      // list arrays and the output schema must keep describing them as such.
+      context_->output_arrow_schema_ =
+          ::arrow::schema(UseLargeListFields(context_->output_arrow_schema_->fields()),
+                          context_->output_arrow_schema_->metadata());
     }
 
     return {};
