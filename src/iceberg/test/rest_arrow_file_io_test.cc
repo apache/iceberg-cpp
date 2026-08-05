@@ -45,12 +45,6 @@ namespace iceberg::rest {
 
 namespace {
 
-bool HasWarning(const CapturingLogger& logger) {
-  const auto records = logger.records();
-  return std::ranges::any_of(
-      records, [](const LogMessage& record) { return record.level == LogLevel::kWarn; });
-}
-
 class RestArrowFileIOTest : public TempFileTestBase {
  protected:
   static void SetUpTestSuite() { iceberg::arrow::RegisterAll(); }
@@ -72,6 +66,12 @@ TEST_F(RestArrowFileIOTest, ReadsBackWhatItWroteThroughRealLocalFileIO) {
 }
 
 #if ICEBERG_S3_ENABLED
+
+bool HasWarning(const CapturingLogger& logger) {
+  const auto records = logger.records();
+  return std::ranges::any_of(
+      records, [](const LogMessage& record) { return record.level == LogLevel::kWarn; });
+}
 
 TEST_F(RestArrowFileIOTest, AppliesOssCredentialThroughRealArrowS3FileIO) {
   auto logger = std::make_shared<CapturingLogger>();

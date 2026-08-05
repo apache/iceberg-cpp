@@ -130,6 +130,12 @@ class ArrowS3FileIOTest : public ::testing::Test {
   std::optional<std::string> base_uri_;
 };
 
+bool HasWarning(const CapturingLogger& logger) {
+  const auto records = logger.records();
+  return std::ranges::any_of(
+      records, [](const LogMessage& record) { return record.level == LogLevel::kWarn; });
+}
+
 Status CheckReadWrite(FileIO& io, const std::string& object_uri,
                       std::string_view content) {
   ICEBERG_RETURN_UNEXPECTED(io.WriteFile(object_uri, content));
@@ -167,6 +173,8 @@ TEST_F(ArrowS3FileIOTest, SkipsNonS3CredentialPrefix) {
   ASSERT_NE(credentialed, nullptr);
 
   // A server may vend credentials for several storage systems at once.
+  auto logger = std::make_shared<CapturingLogger>();
+  ScopedDefaultLogger scoped(logger);
   std::vector<StorageCredential> credentials = {
       {.prefix = "gs://bucket/table", .config = {{"k", "v"}}},
       {.prefix = "s3://bucket/table",
@@ -174,28 +182,32 @@ TEST_F(ArrowS3FileIOTest, SkipsNonS3CredentialPrefix) {
                   {std::string(S3Properties::kSecretAccessKey), "secret"}}}};
   EXPECT_THAT(credentialed->SetStorageCredentials(credentials), IsOk());
   EXPECT_EQ(credentialed->credentials(), credentials);
-}
-
-bool HasWarning(const CapturingLogger& logger) {
-  const auto records = logger.records();
-  return std::ranges::any_of(
-      records, [](const LogMessage& record) { return record.level == LogLevel::kWarn; });
-}
-
-TEST_F(ArrowS3FileIOTest, AppliesOssCredentialWithoutWarning) {
-  auto result = MakeS3FileIO({});
-  ASSERT_THAT(result, IsOk());
-  auto* credentialed = result.value()->AsSupportsStorageCredentials();
-  ASSERT_NE(credentialed, nullptr);
-
-  auto logger = std::make_shared<CapturingLogger>();
-  ScopedDefaultLogger scoped(logger);
-  std::vector<StorageCredential> credentials = {
-      {.prefix = "oss://bucket/table",
-       .config = {{std::string(S3Properties::kAccessKeyId), "access-key"},
-                  {std::string(S3Properties::kSecretAccessKey), "secret"}}}};
-  EXPECT_THAT(credentialed->SetStorageCredentials(credentials), IsOk());
+  // The whole list is retained, but only the S3 one is applied — and it must
+  // be, otherwise the skip silently degrades to "no credentials at all".
   EXPECT_FALSE(HasWarning(*logger));
+}
+
+// Every prefix form this FileIO claims to serve must actually be applied: a
+// credential that is silently skipped leaves S3 access on the default
+// credentials, which only surfaces much later as an auth error.
+TEST_F(ArrowS3FileIOTest, AppliesEveryS3CompatibleCredentialPrefix) {
+  for (std::string_view prefix : {"s3", "s3://bucket/table", "s3a://bucket/table",
+                                  "s3n://bucket/table", "oss://bucket/table"}) {
+    SCOPED_TRACE(prefix);
+    auto result = MakeS3FileIO({});
+    ASSERT_THAT(result, IsOk());
+    auto* credentialed = result.value()->AsSupportsStorageCredentials();
+    ASSERT_NE(credentialed, nullptr);
+
+    auto logger = std::make_shared<CapturingLogger>();
+    ScopedDefaultLogger scoped(logger);
+    std::vector<StorageCredential> credentials = {
+        {.prefix = std::string(prefix),
+         .config = {{std::string(S3Properties::kAccessKeyId), "access-key"},
+                    {std::string(S3Properties::kSecretAccessKey), "secret"}}}};
+    EXPECT_THAT(credentialed->SetStorageCredentials(credentials), IsOk());
+    EXPECT_FALSE(HasWarning(*logger));
+  }
 }
 
 TEST_F(ArrowS3FileIOTest, WarnsWhenNoCredentialApplies) {
