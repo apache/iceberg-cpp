@@ -17,8 +17,10 @@
  * under the License.
  */
 
+#include <algorithm>
 #include <cstdlib>
 #include <iostream>
+#include <memory>
 #include <optional>
 #include <string>
 #include <string_view>
@@ -36,8 +38,10 @@
 #include "iceberg/arrow/arrow_io_util.h"
 #include "iceberg/arrow/s3/s3_properties.h"
 #include "iceberg/file_io.h"
+#include "iceberg/logging/logger.h"
 #include "iceberg/result.h"
 #include "iceberg/storage_credential.h"
+#include "iceberg/test/logging_test_helpers.h"
 #include "iceberg/test/matchers.h"
 #include "iceberg/util/macros.h"
 
@@ -126,6 +130,12 @@ class ArrowS3FileIOTest : public ::testing::Test {
   std::optional<std::string> base_uri_;
 };
 
+bool HasWarning(const CapturingLogger& logger) {
+  const auto records = logger.records();
+  return std::ranges::any_of(
+      records, [](const LogMessage& record) { return record.level == LogLevel::kWarn; });
+}
+
 Status CheckReadWrite(FileIO& io, const std::string& object_uri,
                       std::string_view content) {
   ICEBERG_RETURN_UNEXPECTED(io.WriteFile(object_uri, content));
@@ -156,18 +166,64 @@ TEST_F(ArrowS3FileIOTest, StoresCredentials) {
   EXPECT_EQ(credentialed->credentials(), credentials);
 }
 
-TEST_F(ArrowS3FileIOTest, RejectsCredentialPrefix) {
+TEST_F(ArrowS3FileIOTest, SkipsNonS3CredentialPrefix) {
   auto result = MakeS3FileIO({});
   ASSERT_THAT(result, IsOk());
   auto* credentialed = result.value()->AsSupportsStorageCredentials();
   ASSERT_NE(credentialed, nullptr);
 
-  auto status = credentialed->SetStorageCredentials(
-      {{.prefix = "gs://bucket/table",
-        .config = {{std::string(S3Properties::kAccessKeyId), "access-key"},
-                   {std::string(S3Properties::kSecretAccessKey), "secret"}}}});
-  EXPECT_THAT(status, IsError(ErrorKind::kNotSupported));
-  EXPECT_THAT(status, HasErrorMessage("unsupported by Arrow S3 FileIO"));
+  // A server may vend credentials for several storage systems at once.
+  auto logger = std::make_shared<CapturingLogger>();
+  ScopedDefaultLogger scoped(logger);
+  std::vector<StorageCredential> credentials = {
+      {.prefix = "gs://bucket/table", .config = {{"k", "v"}}},
+      {.prefix = "s3://bucket/table",
+       .config = {{std::string(S3Properties::kAccessKeyId), "access-key"},
+                  {std::string(S3Properties::kSecretAccessKey), "secret"}}}};
+  EXPECT_THAT(credentialed->SetStorageCredentials(credentials), IsOk());
+  EXPECT_EQ(credentialed->credentials(), credentials);
+  // The whole list is retained, but only the S3 one is applied — and it must
+  // be, otherwise the skip silently degrades to "no credentials at all".
+  EXPECT_FALSE(HasWarning(*logger));
+}
+
+// Every prefix form this FileIO claims to serve must actually be applied: a
+// credential that is silently skipped leaves S3 access on the default
+// credentials, which only surfaces much later as an auth error.
+TEST_F(ArrowS3FileIOTest, AppliesEveryS3CompatibleCredentialPrefix) {
+  for (std::string_view prefix : {"s3", "s3://bucket/table", "s3a://bucket/table",
+                                  "s3n://bucket/table", "oss://bucket/table"}) {
+    SCOPED_TRACE(prefix);
+    auto result = MakeS3FileIO({});
+    ASSERT_THAT(result, IsOk());
+    auto* credentialed = result.value()->AsSupportsStorageCredentials();
+    ASSERT_NE(credentialed, nullptr);
+
+    auto logger = std::make_shared<CapturingLogger>();
+    ScopedDefaultLogger scoped(logger);
+    std::vector<StorageCredential> credentials = {
+        {.prefix = std::string(prefix),
+         .config = {{std::string(S3Properties::kAccessKeyId), "access-key"},
+                    {std::string(S3Properties::kSecretAccessKey), "secret"}}}};
+    EXPECT_THAT(credentialed->SetStorageCredentials(credentials), IsOk());
+    EXPECT_FALSE(HasWarning(*logger));
+  }
+}
+
+TEST_F(ArrowS3FileIOTest, WarnsWhenNoCredentialApplies) {
+  auto result = MakeS3FileIO({});
+  ASSERT_THAT(result, IsOk());
+  auto* credentialed = result.value()->AsSupportsStorageCredentials();
+  ASSERT_NE(credentialed, nullptr);
+
+  // Succeeds (S3 falls back to the default credentials) but must not be silent.
+  auto logger = std::make_shared<CapturingLogger>();
+  ScopedDefaultLogger scoped(logger);
+  std::vector<StorageCredential> credentials = {
+      {.prefix = "gs://bucket/table", .config = {{"k", "v"}}}};
+  EXPECT_THAT(credentialed->SetStorageCredentials(credentials), IsOk());
+  EXPECT_EQ(credentialed->credentials(), credentials);
+  EXPECT_TRUE(HasWarning(*logger));
 }
 
 TEST_F(ArrowS3FileIOTest, RejectsIncompleteStaticCredentials) {

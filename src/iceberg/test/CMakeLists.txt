@@ -139,6 +139,7 @@ add_iceberg_test(util_test
                  roaring_position_bitmap_test.cc
                  position_delete_index_test.cc
                  position_delete_range_consumer_test.cc
+                 resolving_file_io_test.cc
                  retry_util_test.cc
                  string_util_test.cc
                  struct_like_set_test.cc
@@ -288,11 +289,21 @@ if(ICEBERG_BUILD_REST)
     target_include_directories(${test_name} PRIVATE "${CMAKE_BINARY_DIR}/iceberg/test/")
     target_sources(${test_name} PRIVATE ${ARG_SOURCES})
     target_link_libraries(${test_name} PRIVATE GTest::gmock_main iceberg_rest_static)
+    if(ARG_USE_BUNDLE)
+      target_link_libraries(${test_name}
+                            PRIVATE "$<IF:$<TARGET_EXISTS:iceberg_bundle_static>,iceberg_bundle_static,iceberg_bundle_shared>"
+      )
+    endif()
     if(MSVC_TOOLCHAIN)
       target_compile_options(${test_name} PRIVATE /bigobj)
     endif()
     add_test(NAME ${test_name} COMMAND ${test_name})
   endfunction()
+
+  if(ICEBERG_BUILD_BUNDLE)
+    add_rest_iceberg_test(rest_arrow_file_io_test USE_BUNDLE SOURCES
+                          rest_arrow_file_io_test.cc)
+  endif()
 
   add_rest_iceberg_test(rest_catalog_test
                         SOURCES

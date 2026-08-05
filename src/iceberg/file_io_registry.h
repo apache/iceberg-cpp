@@ -43,6 +43,8 @@ class ICEBERG_EXPORT FileIORegistry {
  public:
   static constexpr std::string_view kArrowLocalFileIO = "arrow-fs-local";
   static constexpr std::string_view kArrowS3FileIO = "arrow-fs-s3";
+  /// Always registered; resolves the concrete FileIO per file-path scheme.
+  static constexpr std::string_view kResolvingFileIO = "resolving-file-io";
 
   /// Factory function type for creating FileIO instances.
   using Factory = std::function<Result<std::unique_ptr<FileIO>>(
