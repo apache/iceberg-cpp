@@ -297,7 +297,7 @@ if(ICEBERG_BUILD_REST)
     add_test(NAME ${test_name} COMMAND ${test_name})
   endfunction()
 
-  if(ICEBERG_S3 AND ICEBERG_BUILD_BUNDLE)
+  if(ICEBERG_BUILD_BUNDLE)
     add_rest_iceberg_test(rest_arrow_file_io_test USE_BUNDLE SOURCES
                           rest_arrow_file_io_test.cc)
   endif()

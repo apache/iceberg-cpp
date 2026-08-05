@@ -45,6 +45,11 @@ namespace iceberg {
 /// from FileIORegistry with this FileIO's properties and cached. Vended
 /// credentials are forwarded in full to every resolved FileIO that supports
 /// them; each applies the prefixes it understands and ignores the rest.
+///
+/// Lazy resolution is internally synchronized, so file operations may run
+/// concurrently. Credentials are not: install them before sharing the instance,
+/// since credentials() hands out a reference that SetStorageCredentials
+/// replaces.
 class ICEBERG_EXPORT ResolvingFileIO final : public FileIO,
                                              public SupportsStorageCredentials {
  public:

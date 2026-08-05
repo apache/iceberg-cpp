@@ -71,8 +71,8 @@ TEST_F(RestArrowFileIOTest, ReadsBackWhatItWroteThroughRealLocalFileIO) {
   EXPECT_THAT(io.value()->DeleteFile(path), IsOk());
 }
 
-// A break anywhere in the chain (scheme routing, credential forwarding, or the
-// S3 delegate dropping the `oss://` prefix) shows up as the warning.
+#if ICEBERG_S3_ENABLED
+
 TEST_F(RestArrowFileIOTest, AppliesOssCredentialThroughRealArrowS3FileIO) {
   auto logger = std::make_shared<CapturingLogger>();
   ScopedDefaultLogger scoped(logger);
@@ -82,11 +82,15 @@ TEST_F(RestArrowFileIOTest, AppliesOssCredentialThroughRealArrowS3FileIO) {
                       {{.prefix = "oss://bucket/table", .config = {{"k", "v"}}}});
   ASSERT_THAT(io, IsOk());
 
-  // Opening builds the delegate and applies the credential; the open itself
-  // hits the network, so its result is irrelevant here.
-  std::ignore = io.value()->NewInputFile("oss://bucket/table/data/file.parquet");
+  // Opening builds the delegate and applies the credential. The open itself hits
+  // the network, so only the failure modes before that are asserted: a routing
+  // break surfaces as kNotSupported, and a dropped credential as the warning.
+  auto input = io.value()->NewInputFile("oss://bucket/table/data/file.parquet");
+  EXPECT_THAT(input, ::testing::Not(IsError(ErrorKind::kNotSupported)));
   EXPECT_FALSE(HasWarning(*logger));
 }
+
+#endif  // ICEBERG_S3_ENABLED
 
 }  // namespace
 
