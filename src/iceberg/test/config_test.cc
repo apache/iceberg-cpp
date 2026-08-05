@@ -126,4 +126,18 @@ TEST(ConfigTest, BasicOperations) {
   ASSERT_EQ(config.Get(TestConfig::kDoubleConfig), 3.14);
 }
 
+TEST(ConfigTest, ParseBooleanIgnoringCase) {
+  auto config = TestConfig::default_properties();
+
+  for (const auto& value : {"true", "TRUE", "TrUe"}) {
+    config.mutable_configs()[TestConfig::kBoolConfig.key()] = value;
+    EXPECT_TRUE(config.Get(TestConfig::kBoolConfig));
+  }
+
+  for (const auto& value : {"false", "FALSE", "not-a-boolean"}) {
+    config.mutable_configs()[TestConfig::kBoolConfig.key()] = value;
+    EXPECT_FALSE(config.Get(TestConfig::kBoolConfig));
+  }
+}
+
 }  // namespace iceberg
