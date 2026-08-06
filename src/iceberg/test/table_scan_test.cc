@@ -389,9 +389,9 @@ TEST_P(TableScanTest, PlanFilesWithDataManifests) {
   scan.reset();
   ICEBERG_UNWRAP_OR_FAIL(auto streamed_tasks, iterator->ToVector());
   ASSERT_EQ(streamed_tasks.size(), 2);
-  EXPECT_THAT(GetPaths(streamed_tasks),
-              testing::UnorderedElementsAre("/path/to/data1.parquet",
-                                            "/path/to/data2.parquet"));
+  EXPECT_THAT(
+      GetPaths(streamed_tasks),
+      testing::UnorderedElementsAre("/path/to/data1.parquet", "/path/to/data2.parquet"));
 }
 
 TEST_P(TableScanTest, PlanRowLineage) {

@@ -709,15 +709,14 @@ class VectorIterator final : public Iterator<T> {
 
 class ManifestEntryIteratorImpl final : public Iterator<ManifestEntry> {
  public:
-  ManifestEntryIteratorImpl(
-      std::unique_ptr<Reader> reader, std::shared_ptr<Schema> file_schema,
-      ArrowSchema arrow_schema,
-      std::shared_ptr<InheritableMetadata> inheritable_metadata,
-      std::optional<int64_t> first_row_id, bool is_committed, bool only_live,
-      std::unique_ptr<Evaluator> evaluator,
-      std::unique_ptr<InclusiveMetricsEvaluator> metrics_evaluator,
-      std::shared_ptr<PartitionSet> partition_set, std::shared_ptr<Counter> skip_counter,
-      bool drop_stats)
+  ManifestEntryIteratorImpl(std::unique_ptr<Reader> reader,
+                            std::shared_ptr<Schema> file_schema, ArrowSchema arrow_schema,
+                            std::shared_ptr<InheritableMetadata> inheritable_metadata,
+                            std::optional<int64_t> first_row_id, bool is_committed,
+                            bool only_live, std::unique_ptr<Evaluator> evaluator,
+                            std::unique_ptr<InclusiveMetricsEvaluator> metrics_evaluator,
+                            std::shared_ptr<PartitionSet> partition_set,
+                            std::shared_ptr<Counter> skip_counter, bool drop_stats)
       : reader_(std::move(reader)),
         file_schema_(std::move(file_schema)),
         arrow_schema_(std::exchange(arrow_schema, ArrowSchema{})),
@@ -744,9 +743,8 @@ class ManifestEntryIteratorImpl final : public Iterator<ManifestEntry> {
 
         ICEBERG_DCHECK(entry.data_file != nullptr, "Data file cannot be null");
         if (evaluator_) {
-          ICEBERG_ASSIGN_OR_RAISE(
-              bool partition_match,
-              evaluator_->Evaluate(entry.data_file->partition));
+          ICEBERG_ASSIGN_OR_RAISE(bool partition_match,
+                                  evaluator_->Evaluate(entry.data_file->partition));
           if (!partition_match) {
             IncrementSkipCounter();
             continue;
@@ -1010,12 +1008,13 @@ Result<std::unique_ptr<Iterator<ManifestEntry>>> ManifestReaderImpl::EntriesIter
   return MakeEntriesIterator(/*only_live=*/false);
 }
 
-Result<std::unique_ptr<Iterator<ManifestEntry>>> ManifestReaderImpl::LiveEntriesIterator() {
+Result<std::unique_ptr<Iterator<ManifestEntry>>>
+ManifestReaderImpl::LiveEntriesIterator() {
   return MakeEntriesIterator(/*only_live=*/true);
 }
 
-Result<std::unique_ptr<Iterator<ManifestEntry>>>
-ManifestReaderImpl::MakeEntriesIterator(bool only_live) {
+Result<std::unique_ptr<Iterator<ManifestEntry>>> ManifestReaderImpl::MakeEntriesIterator(
+    bool only_live) {
   ICEBERG_ASSIGN_OR_RAISE(auto partition_type, spec_->RawPartitionType(*schema_));
   auto data_file_schema = DataFile::Type(std::move(partition_type))->ToSchema();
 
