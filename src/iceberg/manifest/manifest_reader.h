@@ -51,8 +51,8 @@ class ICEBERG_EXPORT ManifestReader {
   /// \brief Lazily read manifest entries.
   ///
   /// The returned iterator reads and filters one underlying record batch at a time. This
-  /// bounds memory use for large manifests. The iterator owns its reader resources and may
-  /// outlive this ManifestReader.
+  /// bounds memory use for large manifests. The iterator owns its reader resources and
+  /// may outlive this ManifestReader.
   virtual Result<std::unique_ptr<Iterator<ManifestEntry>>> EntriesIterator();
 
   /// \brief Lazily read only live (non-deleted) manifest entries.
