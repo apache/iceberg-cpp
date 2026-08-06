@@ -417,10 +417,6 @@ struct ICEBERG_EXPORT Snapshot {
   /// The upper bound of rows with assigned row IDs in this snapshot.
   std::optional<int64_t> added_rows;
 
-  /// Internal lazy state shared by Snapshot copies so manifest lists are parsed once.
-  mutable std::shared_ptr<internal::SnapshotCacheData> cache_data =
-      internal::MakeSnapshotCacheData();
-
   /// \brief Create a new Snapshot instance with validation on the inputs.
   static Result<std::unique_ptr<Snapshot>> Make(
       int64_t sequence_number, int64_t snapshot_id,
@@ -473,8 +469,8 @@ struct ICEBERG_EXPORT Snapshot {
 /// \brief A snapshot with cached manifest loading capabilities.
 ///
 /// This class wraps a Snapshot pointer and provides lazy-loading of manifests. Parsed
-/// manifest-list entries are stored on the Snapshot so separate wrappers and scans reuse
-/// them.
+/// manifest-list entries are stored in FileIO-owned internal state so separate wrappers
+/// and scans reuse them without changing Snapshot's public layout.
 class ICEBERG_EXPORT SnapshotCache {
  public:
   explicit SnapshotCache(const Snapshot* snapshot) : snapshot_(snapshot) {}

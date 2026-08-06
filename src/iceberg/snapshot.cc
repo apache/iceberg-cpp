@@ -303,10 +303,9 @@ Result<SnapshotCache::ManifestsCache> SnapshotCache::InitManifestsCache(
 Result<std::span<const ManifestFile>> SnapshotCache::Manifests(
     std::shared_ptr<FileIO> file_io) const {
   ICEBERG_PRECHECK(snapshot_ != nullptr, "Cannot cache manifests for a null snapshot");
-  ICEBERG_PRECHECK(snapshot_->cache_data != nullptr,
-                   "Snapshot manifest cache state is null");
-  ICEBERG_ASSIGN_OR_RAISE(auto cache_ref,
-                          snapshot_->cache_data->Get(snapshot_, std::move(file_io)));
+  ICEBERG_PRECHECK(file_io != nullptr, "Cannot cache manifests: FileIO is null");
+  auto cache_data = file_io->GetSnapshotCacheData();
+  ICEBERG_ASSIGN_OR_RAISE(auto cache_ref, cache_data->Get(snapshot_, std::move(file_io)));
   auto& cache = cache_ref.get();
   return std::span<const ManifestFile>(cache.first.data(), cache.first.size());
 }
@@ -314,10 +313,9 @@ Result<std::span<const ManifestFile>> SnapshotCache::Manifests(
 Result<std::span<const ManifestFile>> SnapshotCache::DataManifests(
     std::shared_ptr<FileIO> file_io) const {
   ICEBERG_PRECHECK(snapshot_ != nullptr, "Cannot cache manifests for a null snapshot");
-  ICEBERG_PRECHECK(snapshot_->cache_data != nullptr,
-                   "Snapshot manifest cache state is null");
-  ICEBERG_ASSIGN_OR_RAISE(auto cache_ref,
-                          snapshot_->cache_data->Get(snapshot_, std::move(file_io)));
+  ICEBERG_PRECHECK(file_io != nullptr, "Cannot cache manifests: FileIO is null");
+  auto cache_data = file_io->GetSnapshotCacheData();
+  ICEBERG_ASSIGN_OR_RAISE(auto cache_ref, cache_data->Get(snapshot_, std::move(file_io)));
   auto& cache = cache_ref.get();
   return std::span<const ManifestFile>(cache.first.data(), cache.second);
 }
@@ -325,10 +323,9 @@ Result<std::span<const ManifestFile>> SnapshotCache::DataManifests(
 Result<std::span<const ManifestFile>> SnapshotCache::DeleteManifests(
     std::shared_ptr<FileIO> file_io) const {
   ICEBERG_PRECHECK(snapshot_ != nullptr, "Cannot cache manifests for a null snapshot");
-  ICEBERG_PRECHECK(snapshot_->cache_data != nullptr,
-                   "Snapshot manifest cache state is null");
-  ICEBERG_ASSIGN_OR_RAISE(auto cache_ref,
-                          snapshot_->cache_data->Get(snapshot_, std::move(file_io)));
+  ICEBERG_PRECHECK(file_io != nullptr, "Cannot cache manifests: FileIO is null");
+  auto cache_data = file_io->GetSnapshotCacheData();
+  ICEBERG_ASSIGN_OR_RAISE(auto cache_ref, cache_data->Get(snapshot_, std::move(file_io)));
   auto& cache = cache_ref.get();
   const size_t delete_start = cache.second;
   const size_t delete_count = cache.first.size() - delete_start;

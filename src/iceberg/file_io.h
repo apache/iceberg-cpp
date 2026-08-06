@@ -41,6 +41,10 @@ namespace iceberg {
 
 class SupportsStorageCredentials;
 class MetadataCache;
+class SnapshotCache;
+namespace internal {
+class SnapshotCacheData;
+}
 
 /// \brief Seekable byte stream for reading file contents.
 class ICEBERG_EXPORT SeekableInputStream {
@@ -215,12 +219,16 @@ class ICEBERG_EXPORT FileIO {
   struct MetadataCacheState {
     std::mutex mutex;
     std::shared_ptr<MetadataCache> cache;
+    std::shared_ptr<internal::SnapshotCacheData> snapshot_cache;
   };
 
   std::shared_ptr<MetadataCache> GetMetadataCache() const;
+  std::shared_ptr<internal::SnapshotCacheData> GetSnapshotCacheData() const;
 
   std::shared_ptr<MetadataCacheState> metadata_cache_state_ =
       std::make_shared<MetadataCacheState>();
+
+  friend class SnapshotCache;
 };
 
 /// \brief Mix-in for FileIO implementations that route object paths to

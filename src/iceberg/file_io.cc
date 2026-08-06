@@ -25,6 +25,7 @@
 #include <utility>
 
 #include "iceberg/metadata_cache.h"
+#include "iceberg/snapshot.h"
 #include "iceberg/util/macros.h"
 
 namespace iceberg {
@@ -223,7 +224,7 @@ Result<std::unique_ptr<InputFile>> FileIO::NewCachedInputFile(
   if (size < 0) {
     return Invalid("Invalid negative file size {} for {}", size, file_location);
   }
-  if (static_cast<size_t>(size) > cache->options().max_content_length) {
+  if (std::cmp_greater(size, cache->options().max_content_length)) {
     return input_file;
   }
   return std::make_unique<CachedInputFile>(std::move(input_file), std::move(cache), size);
@@ -282,6 +283,14 @@ void FileIO::ClearMetadataCache() {
 std::shared_ptr<MetadataCache> FileIO::GetMetadataCache() const {
   std::lock_guard lock(metadata_cache_state_->mutex);
   return metadata_cache_state_->cache;
+}
+
+std::shared_ptr<internal::SnapshotCacheData> FileIO::GetSnapshotCacheData() const {
+  std::lock_guard lock(metadata_cache_state_->mutex);
+  if (metadata_cache_state_->snapshot_cache == nullptr) {
+    metadata_cache_state_->snapshot_cache = internal::MakeSnapshotCacheData();
+  }
+  return metadata_cache_state_->snapshot_cache;
 }
 
 Status FileIO::WriteFile(const std::string& file_location, std::string_view content) {
