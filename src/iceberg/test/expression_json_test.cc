@@ -490,10 +490,24 @@ INSTANTIATE_TEST_SUITE_P(
         InvalidLiteralFromJsonTypedParam{"DecimalScaleMismatch", nlohmann::json("123.45"),
                                          decimal(9, 4)},
         InvalidLiteralFromJsonTypedParam{"DecimalNotString", nlohmann::json(123.45),
-                                         decimal(9, 2)}),
+                                         decimal(9, 2)},
+        // nlohmann reports unsigned integers as is_number_integer(), and
+        // get<int64_t>() wraps silently for values above INT64_MAX, so an
+        // out-of-range integer must be rejected explicitly.
+        InvalidLiteralFromJsonTypedParam{
+            "IntUnsignedOverflow", nlohmann::json(18446744073709551615ULL), int32()},
+        InvalidLiteralFromJsonTypedParam{
+            "LongUnsignedOverflow", nlohmann::json(9223372036854775808ULL), int64()}),
     [](const ::testing::TestParamInfo<InvalidLiteralFromJsonTypedParam>& info) {
       return info.param.name;
     });
+
+// The untyped overload infers long from any integral JSON node, so it needs the
+// same out-of-range guard as the type-aware one.
+TEST(LiteralFromJsonTest, RejectsUnsignedOverflowUntyped) {
+  EXPECT_FALSE(LiteralFromJson(nlohmann::json(9223372036854775808ULL)).has_value());
+  EXPECT_FALSE(LiteralFromJson(nlohmann::json(18446744073709551615ULL)).has_value());
+}
 
 struct SchemaAwarePredicateParam {
   std::string name;

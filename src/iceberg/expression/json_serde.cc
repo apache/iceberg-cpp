@@ -305,6 +305,21 @@ Result<nlohmann::json> ToJson(const Literal& literal) {
   }
 }
 
+/// \brief Read an integral JSON node as int64_t, rejecting out-of-range values.
+///
+/// nlohmann reports unsigned integers as is_number_integer(), and get<int64_t>()
+/// converts values above INT64_MAX silently rather than throwing, so the range
+/// has to be checked before the conversion. Mirrors Java's canConvertToLong().
+Result<int64_t> GetInt64Checked(const nlohmann::json& json) {
+  if (json.is_number_unsigned() &&
+      json.get<uint64_t>() > static_cast<uint64_t>(std::numeric_limits<int64_t>::max()))
+      [[unlikely]] {
+    return JsonParseError("Cannot parse {} as a long value: out of range",
+                          SafeDumpJson(json));
+  }
+  return json.get<int64_t>();
+}
+
 Result<Literal> LiteralFromJson(const nlohmann::json& json, const Type* type) {
   // If {"type": "literal", "value": <actual>} wrapper is present, unwrap it first.
   if (json.is_object() && json.contains(kType) &&
@@ -326,7 +341,7 @@ Result<Literal> LiteralFromJson(const nlohmann::json& json, const Type* type) {
       if (!json.is_number_integer()) [[unlikely]] {
         return JsonParseError("Cannot parse {} as an int value", SafeDumpJson(json));
       }
-      auto val = json.get<int64_t>();
+      ICEBERG_ASSIGN_OR_RAISE(auto val, GetInt64Checked(json));
       if (val < std::numeric_limits<int32_t>::min() ||
           val > std::numeric_limits<int32_t>::max()) [[unlikely]] {
         return JsonParseError("Cannot parse {} as an int value: out of range",
@@ -335,11 +350,13 @@ Result<Literal> LiteralFromJson(const nlohmann::json& json, const Type* type) {
       return Literal::Int(static_cast<int32_t>(val));
     }
 
-    case TypeId::kLong:
+    case TypeId::kLong: {
       if (!json.is_number_integer()) [[unlikely]] {
         return JsonParseError("Cannot parse {} as a long value", SafeDumpJson(json));
       }
-      return Literal::Long(json.get<int64_t>());
+      ICEBERG_ASSIGN_OR_RAISE(auto val, GetInt64Checked(json));
+      return Literal::Long(val);
+    }
 
     case TypeId::kFloat:
       if (!json.is_number_float()) [[unlikely]] {
@@ -484,7 +501,8 @@ Result<Literal> LiteralFromJson(const nlohmann::json& json) {
     return Literal::Boolean(json.get<bool>());
   }
   if (json.is_number_integer()) {
-    return Literal::Long(json.get<int64_t>());
+    ICEBERG_ASSIGN_OR_RAISE(auto val, GetInt64Checked(json));
+    return Literal::Long(val);
   }
   if (json.is_number_float()) {
     return Literal::Double(json.get<double>());
