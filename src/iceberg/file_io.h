@@ -212,10 +212,15 @@ class ICEBERG_EXPORT FileIO {
   virtual SupportsStorageCredentials* AsSupportsStorageCredentials() { return nullptr; }
 
  private:
+  struct MetadataCacheState {
+    std::mutex mutex;
+    std::shared_ptr<MetadataCache> cache;
+  };
+
   std::shared_ptr<MetadataCache> GetMetadataCache() const;
 
-  mutable std::mutex metadata_cache_mutex_;
-  std::shared_ptr<MetadataCache> metadata_cache_;
+  std::shared_ptr<MetadataCacheState> metadata_cache_state_ =
+      std::make_shared<MetadataCacheState>();
 };
 
 /// \brief Mix-in for FileIO implementations that route object paths to

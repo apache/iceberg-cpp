@@ -249,12 +249,12 @@ Status FileIO::ConfigureMetadataCache(
     const std::unordered_map<std::string, std::string>& properties) {
   ICEBERG_ASSIGN_OR_RAISE(auto options, MetadataCacheOptions::FromProperties(properties));
   ICEBERG_ASSIGN_OR_RAISE(auto cache, MetadataCache::Make(options));
-  std::lock_guard lock(metadata_cache_mutex_);
-  if (metadata_cache_ == nullptr) {
-    metadata_cache_ = std::move(cache);
+  std::lock_guard lock(metadata_cache_state_->mutex);
+  if (metadata_cache_state_->cache == nullptr) {
+    metadata_cache_state_->cache = std::move(cache);
     return {};
   }
-  if (metadata_cache_->options() == options) {
+  if (metadata_cache_state_->cache->options() == options) {
     return {};
   }
   return InvalidArgument("Metadata cache is already configured with different options");
@@ -280,8 +280,8 @@ void FileIO::ClearMetadataCache() {
 }
 
 std::shared_ptr<MetadataCache> FileIO::GetMetadataCache() const {
-  std::lock_guard lock(metadata_cache_mutex_);
-  return metadata_cache_;
+  std::lock_guard lock(metadata_cache_state_->mutex);
+  return metadata_cache_state_->cache;
 }
 
 Status FileIO::WriteFile(const std::string& file_location, std::string_view content) {
