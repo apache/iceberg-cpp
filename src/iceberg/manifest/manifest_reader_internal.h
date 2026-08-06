@@ -66,6 +66,10 @@ class ManifestReaderImpl : public ManifestReader {
 
   Result<std::vector<ManifestEntry>> LiveEntries() override;
 
+  Result<std::unique_ptr<Iterator<ManifestEntry>>> EntriesIterator() override;
+
+  Result<std::unique_ptr<Iterator<ManifestEntry>>> LiveEntriesIterator() override;
+
   ManifestReader& Select(const std::vector<std::string>& columns) override;
 
   ManifestReader& FilterPartitions(std::shared_ptr<Expression> expr) override;
@@ -81,8 +85,8 @@ class ManifestReaderImpl : public ManifestReader {
   ManifestReader& SkipCounter(std::shared_ptr<Counter> counter) override;
 
  private:
-  /// \brief Read entries with optional live-only filtering.
-  Result<std::vector<ManifestEntry>> ReadEntries(bool only_live);
+  /// \brief Create an entry iterator with optional live-only filtering.
+  Result<std::unique_ptr<Iterator<ManifestEntry>>> MakeEntriesIterator(bool only_live);
 
   /// \brief Lazily open the underlying Avro reader with appropriate schema projection.
   Status OpenReader(std::shared_ptr<Schema> projection);
@@ -108,7 +112,7 @@ class ManifestReaderImpl : public ManifestReader {
   const std::shared_ptr<FileIO> file_io_;
   const std::shared_ptr<Schema> schema_;
   const std::shared_ptr<PartitionSpec> spec_;
-  const std::unique_ptr<InheritableMetadata> inheritable_metadata_;
+  const std::shared_ptr<InheritableMetadata> inheritable_metadata_;
   std::optional<int64_t> first_row_id_;
   bool is_committed_;
 

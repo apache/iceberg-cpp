@@ -33,6 +33,7 @@
 #include "iceberg/metrics/counter.h"
 #include "iceberg/result.h"
 #include "iceberg/type_fwd.h"
+#include "iceberg/util/iterator.h"
 
 namespace iceberg {
 
@@ -42,12 +43,23 @@ class ICEBERG_EXPORT ManifestReader {
   virtual ~ManifestReader() = default;
 
   /// \brief Read all manifest entries in the manifest file.
-  ///
-  /// TODO(gangwu): provide a lazy-evaluated iterator interface for better performance.
   virtual Result<std::vector<ManifestEntry>> Entries() = 0;
 
   /// \brief Read only live (non-deleted) manifest entries.
   virtual Result<std::vector<ManifestEntry>> LiveEntries() = 0;
+
+  /// \brief Lazily read manifest entries.
+  ///
+  /// The returned iterator reads and filters one underlying record batch at a time. This
+  /// bounds memory use for large manifests. The iterator owns its reader resources and may
+  /// outlive this ManifestReader.
+  virtual Result<std::unique_ptr<Iterator<ManifestEntry>>> EntriesIterator();
+
+  /// \brief Lazily read only live (non-deleted) manifest entries.
+  ///
+  /// The default implementation adapts LiveEntries() for compatibility with custom reader
+  /// implementations. Built-in readers override this with a streaming implementation.
+  virtual Result<std::unique_ptr<Iterator<ManifestEntry>>> LiveEntriesIterator();
 
   /// \brief Select specific columns of data file to read from the manifest entries.
   ///
