@@ -20,7 +20,6 @@
 #include "iceberg/file_io.h"
 
 #include <algorithm>
-#include <atomic>
 #include <cstring>
 #include <limits>
 #include <utility>
@@ -202,7 +201,7 @@ Result<std::unique_ptr<InputFile>> FileIO::NewCachedInputFile(
     ICEBERG_ASSIGN_OR_RAISE(input_file, NewInputFile(file_location));
   }
 
-  auto cache = std::atomic_load_explicit(&metadata_cache_, std::memory_order_acquire);
+  auto cache = GetMetadataCache();
   if (cache == nullptr || !cache->options().enabled) {
     return input_file;
   }
@@ -232,7 +231,7 @@ Result<std::unique_ptr<InputFile>> FileIO::NewCachedInputFile(
 
 Result<std::string> FileIO::ReadFileCached(const std::string& file_location,
                                            std::optional<size_t> length) {
-  auto cache = std::atomic_load_explicit(&metadata_cache_, std::memory_order_acquire);
+  auto cache = GetMetadataCache();
   if (cache == nullptr || !cache->options().enabled) {
     return ReadFile(file_location, length);
   }
@@ -250,37 +249,39 @@ Status FileIO::ConfigureMetadataCache(
     const std::unordered_map<std::string, std::string>& properties) {
   ICEBERG_ASSIGN_OR_RAISE(auto options, MetadataCacheOptions::FromProperties(properties));
   ICEBERG_ASSIGN_OR_RAISE(auto cache, MetadataCache::Make(options));
-  std::shared_ptr<MetadataCache> expected;
-  while (expected == nullptr) {
-    if (std::atomic_compare_exchange_strong_explicit(
-            &metadata_cache_, &expected, cache, std::memory_order_acq_rel,
-            std::memory_order_acquire)) {
-      return {};
-    }
+  std::lock_guard lock(metadata_cache_mutex_);
+  if (metadata_cache_ == nullptr) {
+    metadata_cache_ = std::move(cache);
+    return {};
   }
-  if (expected->options() == options) {
+  if (metadata_cache_->options() == options) {
     return {};
   }
   return InvalidArgument("Metadata cache is already configured with different options");
 }
 
-bool FileIO::MetadataCacheEnabled() const noexcept {
-  auto cache = std::atomic_load_explicit(&metadata_cache_, std::memory_order_acquire);
+bool FileIO::MetadataCacheEnabled() const {
+  auto cache = GetMetadataCache();
   return cache != nullptr && cache->options().enabled;
 }
 
 void FileIO::InvalidateMetadataCache(std::string_view file_location) {
-  if (auto cache =
-          std::atomic_load_explicit(&metadata_cache_, std::memory_order_acquire)) {
+  auto cache = GetMetadataCache();
+  if (cache != nullptr) {
     cache->Invalidate(file_location);
   }
 }
 
 void FileIO::ClearMetadataCache() {
-  if (auto cache =
-          std::atomic_load_explicit(&metadata_cache_, std::memory_order_acquire)) {
+  auto cache = GetMetadataCache();
+  if (cache != nullptr) {
     cache->Clear();
   }
+}
+
+std::shared_ptr<MetadataCache> FileIO::GetMetadataCache() const {
+  std::lock_guard lock(metadata_cache_mutex_);
+  return metadata_cache_;
 }
 
 Status FileIO::WriteFile(const std::string& file_location, std::string_view content) {

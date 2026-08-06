@@ -25,6 +25,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <memory>
+#include <mutex>
 #include <optional>
 #include <span>
 #include <string>
@@ -174,7 +175,7 @@ class ICEBERG_EXPORT FileIO {
       const std::unordered_map<std::string, std::string>& properties);
 
   /// \brief Return whether metadata content caching is enabled.
-  bool MetadataCacheEnabled() const noexcept;
+  bool MetadataCacheEnabled() const;
 
   /// \brief Invalidate a cached metadata file location.
   void InvalidateMetadataCache(std::string_view file_location);
@@ -211,6 +212,9 @@ class ICEBERG_EXPORT FileIO {
   virtual SupportsStorageCredentials* AsSupportsStorageCredentials() { return nullptr; }
 
  private:
+  std::shared_ptr<MetadataCache> GetMetadataCache() const;
+
+  mutable std::mutex metadata_cache_mutex_;
   std::shared_ptr<MetadataCache> metadata_cache_;
 };
 
