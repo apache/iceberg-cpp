@@ -140,8 +140,7 @@ class ManifestGroup::FilePlanningIterator final
     ICEBERG_RETURN_UNEXPECTED(group->CheckErrors());
 
     group->delete_index_builder_.WithScanMetrics(group->scan_metrics_);
-    ICEBERG_ASSIGN_OR_RAISE(auto delete_index,
-                            group->delete_index_builder_.Build());
+    ICEBERG_ASSIGN_OR_RAISE(auto delete_index, group->delete_index_builder_.Build());
 
     const bool drop_stats = ManifestReader::ShouldDropStats(group->columns_);
     if (delete_index->has_equality_deletes()) {
@@ -178,8 +177,7 @@ class ManifestGroup::FilePlanningIterator final
       }
 
       auto value = std::move(entry).value();
-      if (group_->ignore_existing_ &&
-          value.status == ManifestStatus::kExisting) {
+      if (group_->ignore_existing_ && value.status == ManifestStatus::kExisting) {
         IncrementSkippedDataFiles();
         continue;
       }
@@ -210,24 +208,19 @@ class ManifestGroup::FilePlanningIterator final
       ICEBERG_ASSIGN_OR_RAISE(auto delete_files, delete_index_->ForEntry(value));
       UpdateResultMetrics(*value.data_file, delete_files);
 
-      ICEBERG_ASSIGN_OR_RAISE(auto residuals,
-                              GetResidualEvaluator(current_spec_id_));
-      ICEBERG_ASSIGN_OR_RAISE(
-          auto residual,
-          residuals->ResidualFor(value.data_file->partition));
+      ICEBERG_ASSIGN_OR_RAISE(auto residuals, GetResidualEvaluator(current_spec_id_));
+      ICEBERG_ASSIGN_OR_RAISE(auto residual,
+                              residuals->ResidualFor(value.data_file->partition));
 
-      return std::optional<std::shared_ptr<FileScanTask>>{
-          std::make_shared<FileScanTask>(std::move(value.data_file),
-                                         std::move(delete_files),
-                                         std::move(residual))};
+      return std::optional<std::shared_ptr<FileScanTask>>{std::make_shared<FileScanTask>(
+          std::move(value.data_file), std::move(delete_files), std::move(residual))};
     }
   }
 
  private:
   FilePlanningIterator(std::unique_ptr<ManifestGroup> group,
                        std::unique_ptr<DeleteFileIndex> delete_index,
-                       std::unique_ptr<Evaluator> data_file_evaluator,
-                       bool drop_stats)
+                       std::unique_ptr<Evaluator> data_file_evaluator, bool drop_stats)
       : group_(std::move(group)),
         delete_index_(std::move(delete_index)),
         data_file_evaluator_(std::move(data_file_evaluator)),
@@ -248,14 +241,12 @@ class ManifestGroup::FilePlanningIterator final
         Projections::Inclusive(*spec, *group_->schema_, group_->case_sensitive_);
     ICEBERG_ASSIGN_OR_RAISE(auto partition_filter,
                             projector->Project(group_->data_filter_));
-    ICEBERG_ASSIGN_OR_RAISE(
-        partition_filter,
-        And::Make(std::move(partition_filter), group_->partition_filter_));
-    ICEBERG_ASSIGN_OR_RAISE(
-        auto evaluator,
-        ManifestEvaluator::MakePartitionFilter(std::move(partition_filter), spec,
-                                               *group_->schema_,
-                                               group_->case_sensitive_));
+    ICEBERG_ASSIGN_OR_RAISE(partition_filter, And::Make(std::move(partition_filter),
+                                                        group_->partition_filter_));
+    ICEBERG_ASSIGN_OR_RAISE(auto evaluator,
+                            ManifestEvaluator::MakePartitionFilter(
+                                std::move(partition_filter), spec, *group_->schema_,
+                                group_->case_sensitive_));
     auto* result = evaluator.get();
     manifest_evaluators_.emplace(spec_id, std::move(evaluator));
     return result;
@@ -286,10 +277,8 @@ class ManifestGroup::FilePlanningIterator final
       const auto& manifest = group_->data_manifests_[next_manifest_++];
       const int32_t spec_id = manifest.partition_spec_id;
 
-      ICEBERG_ASSIGN_OR_RAISE(auto evaluator,
-                              GetManifestEvaluator(spec_id));
-      ICEBERG_ASSIGN_OR_RAISE(bool should_match,
-                              evaluator->Evaluate(manifest));
+      ICEBERG_ASSIGN_OR_RAISE(auto evaluator, GetManifestEvaluator(spec_id));
+      ICEBERG_ASSIGN_OR_RAISE(bool should_match, evaluator->Evaluate(manifest));
       if (!should_match) {
         IncrementSkippedDataManifests();
         continue;
@@ -310,10 +299,9 @@ class ManifestGroup::FilePlanningIterator final
       }
 
       ICEBERG_ASSIGN_OR_RAISE(auto reader, group_->MakeReader(manifest));
-      ICEBERG_ASSIGN_OR_RAISE(
-          entry_iterator_,
-          group_->ignore_deleted_ ? reader->LiveEntriesIterator()
-                                  : reader->EntriesIterator());
+      ICEBERG_ASSIGN_OR_RAISE(entry_iterator_, group_->ignore_deleted_
+                                                   ? reader->LiveEntriesIterator()
+                                                   : reader->EntriesIterator());
       current_spec_id_ = spec_id;
       return true;
     }
@@ -332,9 +320,8 @@ class ManifestGroup::FilePlanningIterator final
     }
   }
 
-  void UpdateResultMetrics(
-      const DataFile& data_file,
-      const std::vector<std::shared_ptr<DataFile>>& delete_files) {
+  void UpdateResultMetrics(const DataFile& data_file,
+                           const std::vector<std::shared_ptr<DataFile>>& delete_files) {
     if (!group_->scan_metrics_) {
       return;
     }
@@ -354,10 +341,8 @@ class ManifestGroup::FilePlanningIterator final
   std::unique_ptr<ManifestGroup> group_;
   std::unique_ptr<DeleteFileIndex> delete_index_;
   std::unique_ptr<Evaluator> data_file_evaluator_;
-  std::unordered_map<int32_t, std::unique_ptr<ManifestEvaluator>>
-      manifest_evaluators_;
-  std::unordered_map<int32_t, std::shared_ptr<ResidualEvaluator>>
-      residual_evaluators_;
+  std::unordered_map<int32_t, std::unique_ptr<ManifestEvaluator>> manifest_evaluators_;
+  std::unordered_map<int32_t, std::shared_ptr<ResidualEvaluator>> residual_evaluators_;
   std::unique_ptr<Iterator<ManifestEntry>> entry_iterator_;
   size_t next_manifest_ = 0;
   int32_t current_spec_id_ = 0;

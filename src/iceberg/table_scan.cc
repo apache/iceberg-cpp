@@ -91,10 +91,9 @@ Result<ScanReport> MakeScanReport(const DataTableScan& scan, const Snapshot& sna
     projected_field_names.emplace_back(*field_name);
   }
 
-  ICEBERG_ASSIGN_OR_RAISE(
-      auto sanitized_filter,
-      SanitizeExpression::Sanitize(*schema_ptr, scan.filter(),
-                                   scan.context().case_sensitive));
+  ICEBERG_ASSIGN_OR_RAISE(auto sanitized_filter,
+                          SanitizeExpression::Sanitize(*schema_ptr, scan.filter(),
+                                                       scan.context().case_sensitive));
 
   return ScanReport{
       .table_name = scan.context().table_name,
@@ -108,8 +107,7 @@ Result<ScanReport> MakeScanReport(const DataTableScan& scan, const Snapshot& sna
   };
 }
 
-class ReportingFileTaskIterator final
-    : public Iterator<std::shared_ptr<FileScanTask>> {
+class ReportingFileTaskIterator final : public Iterator<std::shared_ptr<FileScanTask>> {
  public:
   ReportingFileTaskIterator(
       std::unique_ptr<Iterator<std::shared_ptr<FileScanTask>>> iterator,
@@ -780,10 +778,9 @@ DataTableScan::PlanFilesIterator() const {
   }
 
   return std::unique_ptr<Iterator<std::shared_ptr<FileScanTask>>>(
-      new ReportingFileTaskIterator(
-          std::move(iterator), std::move(scan_metrics), planning_duration,
-          context_.metrics_reporter,
-          std::move(report).value()));
+      new ReportingFileTaskIterator(std::move(iterator), std::move(scan_metrics),
+                                    planning_duration, context_.metrics_reporter,
+                                    std::move(report).value()));
 }
 
 // Friend function template for IncrementalScan that implements the shared PlanFiles

@@ -144,8 +144,7 @@ class ICEBERG_EXPORT ManifestGroup : public ErrorCollector {
   /// and scan tasks. Creating the iterator consumes this group's configuration. Streaming
   /// planning is pull-based and does not eagerly submit manifests to the executor set by
   /// PlanWith().
-  Result<std::unique_ptr<Iterator<std::shared_ptr<FileScanTask>>>>
-  PlanFilesIterator();
+  Result<std::unique_ptr<Iterator<std::shared_ptr<FileScanTask>>>> PlanFilesIterator();
 
   /// \brief Get all matching manifest entries.
   Result<std::vector<ManifestEntry>> Entries();
