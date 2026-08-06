@@ -15,12 +15,28 @@
 # specific language governing permissions and limitations
 # under the License.
 
+# Generate the .cc-only logging backend config header. ALWAYS generated (logger.cc
+# includes it in both configurations); only the definedness of ICEBERG_HAS_SPDLOG
+# varies with the `spdlog` feature option -- mirroring CMake's ICEBERG_SPDLOG. When
+# disabled, CerrLogger is the default sink and spdlog is neither compiled nor
+# linked. Generated into build/src/iceberg/logging/config.h (resolved via
+# include_directories('..'), which exposes both the source and build trees); not
+# installed.
+logging_config_data = configuration_data()
+if spdlog_enabled
+    logging_config_data.set('ICEBERG_HAS_SPDLOG', 1)
+endif
+configure_file(output: 'config.h', configuration: logging_config_data)
+
+# Public logging headers. The build-generated config.h and the internal
+# SpdLogger header are intentionally NOT installed.
 install_headers(
     [
         'cerr_logger.h',
         'log_level.h',
         'log_macros.h',
         'logger.h',
+        'loggers.h',
         'short_log_macros.h',
     ],
     subdir: 'iceberg/logging',

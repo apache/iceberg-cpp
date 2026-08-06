@@ -51,6 +51,13 @@ option(
     value: 'disabled',
 )
 
+option(
+    'spdlog',
+    type: 'feature',
+    description: 'Use spdlog as the default logging backend (CMake: ICEBERG_SPDLOG)',
+    value: 'enabled',
+)
+
 option('tests', type: 'feature', description: 'Build tests', value: 'enabled')
 
 option(
