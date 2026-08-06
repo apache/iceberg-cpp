@@ -36,6 +36,7 @@
 #include "iceberg/type_fwd.h"
 #include "iceberg/util/error_collector.h"
 #include "iceberg/util/executor.h"
+#include "iceberg/util/iterator.h"
 
 namespace iceberg {
 
@@ -462,6 +463,13 @@ class ICEBERG_EXPORT DataTableScan : public TableScan {
   /// \brief Plans the scan tasks by resolving manifests and data files.
   /// \return A Result containing scan tasks or an error.
   Result<std::vector<std::shared_ptr<FileScanTask>>> PlanFiles() const;
+
+  /// \brief Lazily plans scan tasks by resolving manifests and data files on demand.
+  ///
+  /// Unlike PlanFiles(), this method does not materialize all manifest entries and scan
+  /// tasks. The iterator owns its planning resources and can outlive this scan.
+  Result<std::unique_ptr<Iterator<std::shared_ptr<FileScanTask>>>>
+  PlanFilesIterator() const;
 
  private:
   Status ReportScan(const Snapshot& snapshot, const ScanMetrics& scan_metrics) const;

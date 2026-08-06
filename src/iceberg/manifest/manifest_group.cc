@@ -132,6 +132,238 @@ ManifestGroup::~ManifestGroup() = default;
 ManifestGroup::ManifestGroup(ManifestGroup&&) noexcept = default;
 ManifestGroup& ManifestGroup::operator=(ManifestGroup&&) noexcept = default;
 
+class ManifestGroup::FilePlanningIterator final
+    : public Iterator<std::shared_ptr<FileScanTask>> {
+ public:
+  static Result<std::unique_ptr<Iterator<std::shared_ptr<FileScanTask>>>> Make(
+      std::unique_ptr<ManifestGroup> group) {
+    ICEBERG_RETURN_UNEXPECTED(group->CheckErrors());
+
+    group->delete_index_builder_.WithScanMetrics(group->scan_metrics_);
+    ICEBERG_ASSIGN_OR_RAISE(auto delete_index,
+                            group->delete_index_builder_.Build());
+
+    const bool drop_stats = ManifestReader::ShouldDropStats(group->columns_);
+    if (delete_index->has_equality_deletes()) {
+      group->columns_ = ManifestReader::WithStatsColumns(group->columns_);
+    }
+
+    std::unique_ptr<Evaluator> data_file_evaluator;
+    if (group->file_filter_ &&
+        group->file_filter_->op() != Expression::Operation::kTrue) {
+      ICEBERG_ASSIGN_OR_RAISE(
+          data_file_evaluator,
+          Evaluator::Make(*DataFileFilterSchema(), group->file_filter_,
+                          group->case_sensitive_));
+    }
+
+    return std::unique_ptr<Iterator<std::shared_ptr<FileScanTask>>>(
+        new FilePlanningIterator(std::move(group), std::move(delete_index),
+                                 std::move(data_file_evaluator), drop_stats));
+  }
+
+  Result<std::optional<std::shared_ptr<FileScanTask>>> Next() override {
+    while (true) {
+      if (!entry_iterator_) {
+        ICEBERG_ASSIGN_OR_RAISE(bool opened, OpenNextManifest());
+        if (!opened) {
+          return std::nullopt;
+        }
+      }
+
+      ICEBERG_ASSIGN_OR_RAISE(auto entry, entry_iterator_->Next());
+      if (!entry.has_value()) {
+        entry_iterator_.reset();
+        continue;
+      }
+
+      auto value = std::move(entry).value();
+      if (group_->ignore_existing_ &&
+          value.status == ManifestStatus::kExisting) {
+        IncrementSkippedDataFiles();
+        continue;
+      }
+
+      ICEBERG_DCHECK(value.data_file != nullptr, "Data file cannot be null");
+      if (data_file_evaluator_) {
+        DataFileStructLike data_file(*value.data_file);
+        ICEBERG_ASSIGN_OR_RAISE(bool should_match,
+                                data_file_evaluator_->Evaluate(data_file));
+        if (!should_match) {
+          IncrementSkippedDataFiles();
+          continue;
+        }
+      }
+
+      if (!group_->manifest_entry_predicate_(value)) {
+        IncrementSkippedDataFiles();
+        continue;
+      }
+
+      if (drop_stats_) {
+        ContentFileUtil::DropAllStats(*value.data_file);
+      } else if (!group_->columns_to_keep_stats_.empty()) {
+        ContentFileUtil::DropUnselectedStats(*value.data_file,
+                                             group_->columns_to_keep_stats_);
+      }
+
+      ICEBERG_ASSIGN_OR_RAISE(auto delete_files, delete_index_->ForEntry(value));
+      UpdateResultMetrics(*value.data_file, delete_files);
+
+      ICEBERG_ASSIGN_OR_RAISE(auto residuals,
+                              GetResidualEvaluator(current_spec_id_));
+      ICEBERG_ASSIGN_OR_RAISE(
+          auto residual,
+          residuals->ResidualFor(value.data_file->partition));
+
+      return std::optional<std::shared_ptr<FileScanTask>>{
+          std::make_shared<FileScanTask>(std::move(value.data_file),
+                                         std::move(delete_files),
+                                         std::move(residual))};
+    }
+  }
+
+ private:
+  FilePlanningIterator(std::unique_ptr<ManifestGroup> group,
+                       std::unique_ptr<DeleteFileIndex> delete_index,
+                       std::unique_ptr<Evaluator> data_file_evaluator,
+                       bool drop_stats)
+      : group_(std::move(group)),
+        delete_index_(std::move(delete_index)),
+        data_file_evaluator_(std::move(data_file_evaluator)),
+        drop_stats_(drop_stats) {}
+
+  Result<ManifestEvaluator*> GetManifestEvaluator(int32_t spec_id) {
+    auto cached = manifest_evaluators_.find(spec_id);
+    if (cached != manifest_evaluators_.end()) {
+      return cached->second.get();
+    }
+
+    auto spec_iter = group_->specs_by_id_.find(spec_id);
+    ICEBERG_CHECK(spec_iter != group_->specs_by_id_.cend(),
+                  "Cannot find partition spec for ID {}", spec_id);
+
+    const auto& spec = spec_iter->second;
+    auto projector =
+        Projections::Inclusive(*spec, *group_->schema_, group_->case_sensitive_);
+    ICEBERG_ASSIGN_OR_RAISE(auto partition_filter,
+                            projector->Project(group_->data_filter_));
+    ICEBERG_ASSIGN_OR_RAISE(
+        partition_filter,
+        And::Make(std::move(partition_filter), group_->partition_filter_));
+    ICEBERG_ASSIGN_OR_RAISE(
+        auto evaluator,
+        ManifestEvaluator::MakePartitionFilter(std::move(partition_filter), spec,
+                                               *group_->schema_,
+                                               group_->case_sensitive_));
+    auto* result = evaluator.get();
+    manifest_evaluators_.emplace(spec_id, std::move(evaluator));
+    return result;
+  }
+
+  Result<ResidualEvaluator*> GetResidualEvaluator(int32_t spec_id) {
+    auto cached = residual_evaluators_.find(spec_id);
+    if (cached != residual_evaluators_.end()) {
+      return cached->second.get();
+    }
+
+    auto spec_iter = group_->specs_by_id_.find(spec_id);
+    ICEBERG_CHECK(spec_iter != group_->specs_by_id_.cend(),
+                  "Cannot find partition spec for ID {}", spec_id);
+
+    ICEBERG_ASSIGN_OR_RAISE(
+        auto evaluator,
+        ResidualEvaluator::Make(
+            (group_->ignore_residuals_ ? True::Instance() : group_->data_filter_),
+            *spec_iter->second, *group_->schema_, group_->case_sensitive_));
+    auto* result = evaluator.get();
+    residual_evaluators_.emplace(spec_id, std::move(evaluator));
+    return result;
+  }
+
+  Result<bool> OpenNextManifest() {
+    while (next_manifest_ < group_->data_manifests_.size()) {
+      const auto& manifest = group_->data_manifests_[next_manifest_++];
+      const int32_t spec_id = manifest.partition_spec_id;
+
+      ICEBERG_ASSIGN_OR_RAISE(auto evaluator,
+                              GetManifestEvaluator(spec_id));
+      ICEBERG_ASSIGN_OR_RAISE(bool should_match,
+                              evaluator->Evaluate(manifest));
+      if (!should_match) {
+        IncrementSkippedDataManifests();
+        continue;
+      }
+      if (group_->ignore_deleted_ && !manifest.has_added_files() &&
+          !manifest.has_existing_files()) {
+        IncrementSkippedDataManifests();
+        continue;
+      }
+      if (group_->ignore_existing_ && !manifest.has_added_files() &&
+          !manifest.has_deleted_files()) {
+        IncrementSkippedDataManifests();
+        continue;
+      }
+
+      if (group_->scan_metrics_) {
+        group_->scan_metrics_->scanned_data_manifests->Increment(1);
+      }
+
+      ICEBERG_ASSIGN_OR_RAISE(auto reader, group_->MakeReader(manifest));
+      ICEBERG_ASSIGN_OR_RAISE(
+          entry_iterator_,
+          group_->ignore_deleted_ ? reader->LiveEntriesIterator()
+                                  : reader->EntriesIterator());
+      current_spec_id_ = spec_id;
+      return true;
+    }
+    return false;
+  }
+
+  void IncrementSkippedDataManifests() {
+    if (group_->scan_metrics_) {
+      group_->scan_metrics_->skipped_data_manifests->Increment(1);
+    }
+  }
+
+  void IncrementSkippedDataFiles() {
+    if (group_->scan_metrics_) {
+      group_->scan_metrics_->skipped_data_files->Increment(1);
+    }
+  }
+
+  void UpdateResultMetrics(
+      const DataFile& data_file,
+      const std::vector<std::shared_ptr<DataFile>>& delete_files) {
+    if (!group_->scan_metrics_) {
+      return;
+    }
+
+    group_->scan_metrics_->total_file_size_in_bytes->Increment(
+        ContentFileUtil::ContentSizeInBytes(data_file));
+    group_->scan_metrics_->result_data_files->Increment(1);
+    group_->scan_metrics_->result_delete_files->Increment(
+        static_cast<int64_t>(delete_files.size()));
+    int64_t deletes_size = 0;
+    for (const auto& delete_file : delete_files) {
+      deletes_size += ContentFileUtil::ContentSizeInBytes(*delete_file);
+    }
+    group_->scan_metrics_->total_delete_file_size_in_bytes->Increment(deletes_size);
+  }
+
+  std::unique_ptr<ManifestGroup> group_;
+  std::unique_ptr<DeleteFileIndex> delete_index_;
+  std::unique_ptr<Evaluator> data_file_evaluator_;
+  std::unordered_map<int32_t, std::unique_ptr<ManifestEvaluator>>
+      manifest_evaluators_;
+  std::unordered_map<int32_t, std::shared_ptr<ResidualEvaluator>>
+      residual_evaluators_;
+  std::unique_ptr<Iterator<ManifestEntry>> entry_iterator_;
+  size_t next_manifest_ = 0;
+  int32_t current_spec_id_ = 0;
+  bool drop_stats_;
+};
+
 ManifestGroup& ManifestGroup::FilterData(std::shared_ptr<Expression> filter) {
   ICEBERG_BUILDER_ASSIGN_OR_RETURN(data_filter_, And::Make(data_filter_, filter));
   delete_index_builder_.DataFilter(std::move(filter));
@@ -250,6 +482,12 @@ Result<std::vector<std::shared_ptr<FileScanTask>>> ManifestGroup::PlanFiles() {
     file_tasks.push_back(internal::checked_pointer_cast<FileScanTask>(task));
   }
   return file_tasks;
+}
+
+Result<std::unique_ptr<Iterator<std::shared_ptr<FileScanTask>>>>
+ManifestGroup::PlanFilesIterator() {
+  auto group = std::make_unique<ManifestGroup>(std::move(*this));
+  return FilePlanningIterator::Make(std::move(group));
 }
 
 Result<std::vector<std::shared_ptr<ScanTask>>> ManifestGroup::Plan(
