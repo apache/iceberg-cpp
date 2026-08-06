@@ -111,6 +111,7 @@ iceberg_tests = {
             'lazy_test.cc',
             'location_util_test.cc',
             'math_util_internal_test.cc',
+            'metadata_cache_test.cc',
             'position_delete_index_test.cc',
             'position_delete_range_consumer_test.cc',
             'resolving_file_io_test.cc',

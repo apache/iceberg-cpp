@@ -23,6 +23,7 @@
 #include <utility>
 
 #include "iceberg/resolving_file_io.h"
+#include "iceberg/util/macros.h"
 
 namespace iceberg {
 
@@ -68,7 +69,10 @@ Result<std::unique_ptr<FileIO>> FileIORegistry::Load(
     }
     factory = it->second;
   }
-  return factory(properties);
+  ICEBERG_ASSIGN_OR_RAISE(auto io, factory(properties));
+  ICEBERG_PRECHECK(io != nullptr, "FileIO factory returned null for {}", name);
+  ICEBERG_RETURN_UNEXPECTED(io->ConfigureMetadataCache(properties));
+  return io;
 }
 
 }  // namespace iceberg
