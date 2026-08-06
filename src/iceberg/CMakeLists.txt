@@ -68,6 +68,7 @@ set(ICEBERG_SOURCES
     manifest/v1_metadata.cc
     manifest/v2_metadata.cc
     manifest/v3_metadata.cc
+    metadata_cache.cc
     metadata_columns.cc
     metrics_config.cc
     metrics/commit_report.cc

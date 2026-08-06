@@ -40,7 +40,8 @@ namespace iceberg::arrow {
 /// implement NewInputFile.
 ICEBERG_BUNDLE_EXPORT Result<std::shared_ptr<::arrow::io::RandomAccessFile>>
 OpenArrowInputStream(const std::shared_ptr<FileIO>& io, const std::string& path,
-                     std::optional<size_t> length = std::nullopt);
+                     std::optional<size_t> length = std::nullopt,
+                     bool cache_content = false);
 
 /// \brief Open a FileIO output as an Arrow output stream.
 ///

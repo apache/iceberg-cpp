@@ -22,6 +22,7 @@
 /// \file iceberg/file_io.h
 /// \brief Define the FileIO abstraction and file stream interfaces.
 
+#include <atomic>
 #include <cstddef>
 #include <cstdint>
 #include <memory>
@@ -29,6 +30,7 @@
 #include <span>
 #include <string>
 #include <string_view>
+#include <unordered_map>
 #include <vector>
 
 #include "iceberg/iceberg_export.h"
@@ -38,6 +40,7 @@
 namespace iceberg {
 
 class SupportsStorageCredentials;
+class MetadataCache;
 
 /// \brief Seekable byte stream for reading file contents.
 class ICEBERG_EXPORT SeekableInputStream {
@@ -153,6 +156,33 @@ class ICEBERG_EXPORT FileIO {
   virtual Result<std::string> ReadFile(const std::string& file_location,
                                        std::optional<size_t> length);
 
+  /// \brief Create an input handle backed by the metadata content cache when enabled.
+  ///
+  /// This is intended for immutable Iceberg metadata files, including metadata JSON,
+  /// manifest lists, and manifests. Data files should use NewInputFile directly.
+  Result<std::unique_ptr<InputFile>> NewCachedInputFile(
+      std::string file_location, std::optional<size_t> length = std::nullopt);
+
+  /// \brief Read an immutable Iceberg metadata file through the content cache.
+  Result<std::string> ReadFileCached(const std::string& file_location,
+                                     std::optional<size_t> length);
+
+  /// \brief Configure metadata caching from catalog/FileIO properties.
+  ///
+  /// Configuration is immutable after the first call. Repeating the same configuration
+  /// is allowed; attempting to replace it returns an error.
+  Status ConfigureMetadataCache(
+      const std::unordered_map<std::string, std::string>& properties);
+
+  /// \brief Return whether metadata content caching is enabled.
+  bool MetadataCacheEnabled() const noexcept;
+
+  /// \brief Invalidate a cached metadata file location.
+  void InvalidateMetadataCache(std::string_view file_location);
+
+  /// \brief Clear cached metadata file content.
+  void ClearMetadataCache();
+
   /// \brief Write the given content to the file at the given location.
   ///
   /// \param file_location The location of the file to write.
@@ -180,6 +210,9 @@ class ICEBERG_EXPORT FileIO {
 
   /// \brief Return storage-credential support when implemented by this FileIO.
   virtual SupportsStorageCredentials* AsSupportsStorageCredentials() { return nullptr; }
+
+ private:
+  std::atomic<std::shared_ptr<MetadataCache>> metadata_cache_;
 };
 
 /// \brief Mix-in for FileIO implementations that route object paths to
