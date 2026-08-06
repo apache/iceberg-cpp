@@ -1047,11 +1047,11 @@ Result<std::unique_ptr<Iterator<ManifestEntry>>> ManifestReaderImpl::MakeEntries
   std::unique_ptr<Evaluator> evaluator;
   std::unique_ptr<InclusiveMetricsEvaluator> metrics_evaluator;
   if (HasPartitionFilter() || HasRowFilter()) {
-    ICEBERG_ASSIGN_OR_RAISE(std::ignore, GetEvaluator());
+    ICEBERG_RETURN_UNEXPECTED(GetEvaluator());
     evaluator = std::move(evaluator_);
   }
   if (HasRowFilter()) {
-    ICEBERG_ASSIGN_OR_RAISE(std::ignore, GetMetricsEvaluator());
+    ICEBERG_RETURN_UNEXPECTED(GetMetricsEvaluator());
     metrics_evaluator = std::move(metrics_evaluator_);
   }
 
