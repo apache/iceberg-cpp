@@ -19,8 +19,8 @@
 
 #pragma once
 
-/// \file iceberg/inspect/history_table.h
-/// \brief Define the history metadata table.
+/// \file iceberg/inspect/branches_table.h
+/// \brief Define the branches metadata table.
 
 #include <memory>
 
@@ -31,21 +31,21 @@
 
 namespace iceberg {
 
-/// \brief History metadata table.
-class ICEBERG_EXPORT HistoryTable : public MetadataTable {
+/// \brief Metadata table containing the table's branch snapshot references.
+class ICEBERG_EXPORT BranchesTable : public MetadataTable {
  public:
-  static Result<std::unique_ptr<HistoryTable>> Make(std::shared_ptr<Table> table);
+  static Result<std::unique_ptr<BranchesTable>> Make(std::shared_ptr<Table> table);
 
-  ~HistoryTable() override;
+  ~BranchesTable() override;
 
-  Kind kind() const noexcept override { return Kind::kHistory; }
+  Kind kind() const noexcept override { return Kind::kBranches; }
 
   const std::shared_ptr<Schema>& schema() const override;
 
   Result<ArrowArrayStream> Scan() override;
 
  private:
-  explicit HistoryTable(std::shared_ptr<Table> table);
+  explicit BranchesTable(std::shared_ptr<Table> table);
 };
 
 }  // namespace iceberg

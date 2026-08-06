@@ -19,8 +19,8 @@
 
 #pragma once
 
-/// \file iceberg/inspect/history_table.h
-/// \brief Define the history metadata table.
+/// \file iceberg/inspect/partitions_table.h
+/// \brief Define the partitions metadata table.
 
 #include <memory>
 
@@ -31,21 +31,27 @@
 
 namespace iceberg {
 
-/// \brief History metadata table.
-class ICEBERG_EXPORT HistoryTable : public MetadataTable {
+/// \brief Metadata table containing aggregate file statistics by partition.
+class ICEBERG_EXPORT PartitionsTable : public TimeTravelMetadataTable {
  public:
-  static Result<std::unique_ptr<HistoryTable>> Make(std::shared_ptr<Table> table);
+  static Result<std::unique_ptr<PartitionsTable>> Make(std::shared_ptr<Table> table);
 
-  ~HistoryTable() override;
+  ~PartitionsTable() override;
 
-  Kind kind() const noexcept override { return Kind::kHistory; }
+  Kind kind() const noexcept override { return Kind::kPartitions; }
 
   const std::shared_ptr<Schema>& schema() const override;
 
-  Result<ArrowArrayStream> Scan() override;
+ protected:
+  Result<ArrowArrayStream> ScanSnapshot(
+      const SnapshotSelection& snapshot_selection) override;
 
  private:
-  explicit HistoryTable(std::shared_ptr<Table> table);
+  PartitionsTable(std::shared_ptr<Table> table, std::shared_ptr<Schema> schema,
+                  std::shared_ptr<StructType> partition_type);
+
+  std::shared_ptr<Schema> schema_;
+  std::shared_ptr<StructType> partition_type_;
 };
 
 }  // namespace iceberg
