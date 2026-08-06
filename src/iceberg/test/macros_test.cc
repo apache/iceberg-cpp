@@ -204,4 +204,30 @@ TEST(MacrosDeathTest, FatalHandlerRunsEvenWhenRecordSuppressed) {
       "H\\[suppressed 7\\]");
 }
 
+// The FatalHandler also runs when kFatal is reached via the runtime-level generic
+// macro (not just fixed ICEBERG_LOG_FATAL).
+TEST(MacrosDeathTest, FatalHandlerRunsOnGenericRuntimeFatal) {
+  EXPECT_DEATH(
+      {
+        SetFatalHandler([](const std::source_location&, std::string_view message) {
+          std::cerr << "GEN[" << message << "]\n";
+        });
+        ICEBERG_LOG(LogLevel::kFatal, "gen {}", 5);
+      },
+      "GEN\\[gen 5\\]");
+}
+
+// ...and when kFatal is reached via ICEBERG_LOG_TO on an explicit logger.
+TEST(MacrosDeathTest, FatalHandlerRunsOnLogToFatal) {
+  EXPECT_DEATH(
+      {
+        SetFatalHandler([](const std::source_location&, std::string_view message) {
+          std::cerr << "TO[" << message << "]\n";
+        });
+        CerrLogger sink(LogLevel::kTrace);
+        ICEBERG_LOG_TO(sink, LogLevel::kFatal, "to {}", 6);
+      },
+      "TO\\[to 6\\]");
+}
+
 }  // namespace iceberg
