@@ -22,7 +22,6 @@
 /// \file iceberg/file_io.h
 /// \brief Define the FileIO abstraction and file stream interfaces.
 
-#include <atomic>
 #include <cstddef>
 #include <cstdint>
 #include <memory>
@@ -212,7 +211,7 @@ class ICEBERG_EXPORT FileIO {
   virtual SupportsStorageCredentials* AsSupportsStorageCredentials() { return nullptr; }
 
  private:
-  std::atomic<std::shared_ptr<MetadataCache>> metadata_cache_;
+  std::shared_ptr<MetadataCache> metadata_cache_;
 };
 
 /// \brief Mix-in for FileIO implementations that route object paths to

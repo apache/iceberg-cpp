@@ -20,6 +20,7 @@
 #include "iceberg/file_io.h"
 
 #include <algorithm>
+#include <atomic>
 #include <cstring>
 #include <limits>
 #include <utility>
@@ -201,7 +202,7 @@ Result<std::unique_ptr<InputFile>> FileIO::NewCachedInputFile(
     ICEBERG_ASSIGN_OR_RAISE(input_file, NewInputFile(file_location));
   }
 
-  auto cache = metadata_cache_.load(std::memory_order_acquire);
+  auto cache = std::atomic_load_explicit(&metadata_cache_, std::memory_order_acquire);
   if (cache == nullptr || !cache->options().enabled) {
     return input_file;
   }
@@ -231,7 +232,7 @@ Result<std::unique_ptr<InputFile>> FileIO::NewCachedInputFile(
 
 Result<std::string> FileIO::ReadFileCached(const std::string& file_location,
                                            std::optional<size_t> length) {
-  auto cache = metadata_cache_.load(std::memory_order_acquire);
+  auto cache = std::atomic_load_explicit(&metadata_cache_, std::memory_order_acquire);
   if (cache == nullptr || !cache->options().enabled) {
     return ReadFile(file_location, length);
   }
@@ -251,8 +252,9 @@ Status FileIO::ConfigureMetadataCache(
   ICEBERG_ASSIGN_OR_RAISE(auto cache, MetadataCache::Make(options));
   std::shared_ptr<MetadataCache> expected;
   while (expected == nullptr) {
-    if (metadata_cache_.compare_exchange_strong(
-            expected, cache, std::memory_order_release, std::memory_order_acquire)) {
+    if (std::atomic_compare_exchange_strong_explicit(
+            &metadata_cache_, &expected, cache, std::memory_order_acq_rel,
+            std::memory_order_acquire)) {
       return {};
     }
   }
@@ -263,18 +265,20 @@ Status FileIO::ConfigureMetadataCache(
 }
 
 bool FileIO::MetadataCacheEnabled() const noexcept {
-  auto cache = metadata_cache_.load(std::memory_order_acquire);
+  auto cache = std::atomic_load_explicit(&metadata_cache_, std::memory_order_acquire);
   return cache != nullptr && cache->options().enabled;
 }
 
 void FileIO::InvalidateMetadataCache(std::string_view file_location) {
-  if (auto cache = metadata_cache_.load(std::memory_order_acquire)) {
+  if (auto cache =
+          std::atomic_load_explicit(&metadata_cache_, std::memory_order_acquire)) {
     cache->Invalidate(file_location);
   }
 }
 
 void FileIO::ClearMetadataCache() {
-  if (auto cache = metadata_cache_.load(std::memory_order_acquire)) {
+  if (auto cache =
+          std::atomic_load_explicit(&metadata_cache_, std::memory_order_acquire)) {
     cache->Clear();
   }
 }

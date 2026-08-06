@@ -31,6 +31,7 @@
 
 #include <gtest/gtest.h>
 
+#include "iceberg/file_io_registry.h"
 #include "iceberg/test/matchers.h"
 #include "iceberg/test/mock_io.h"
 #include "iceberg/util/macros.h"
@@ -135,6 +136,25 @@ TEST(MetadataCacheTest, FileIORejectsConflictingReconfiguration) {
 
   EXPECT_THAT(file_io.ConfigureMetadataCache(properties),
               IsError(ErrorKind::kInvalidArgument));
+}
+
+TEST(MetadataCacheTest, RegistryWithoutCachePropertiesAllowsLaterConfiguration) {
+  constexpr std::string_view kFileIOName = "metadata-cache-test";
+  FileIORegistry::Register(
+      std::string(kFileIOName),
+      [](const std::unordered_map<std::string, std::string>& /*properties*/)
+          -> Result<std::unique_ptr<FileIO>> {
+        return std::make_unique<CountingMockFileIO>();
+      });
+
+  auto loaded = FileIORegistry::Load(std::string(kFileIOName), {});
+  ASSERT_THAT(loaded, IsOk());
+  auto file_io = std::move(loaded).value();
+  EXPECT_FALSE(file_io->MetadataCacheEnabled());
+  EXPECT_THAT(file_io->ConfigureMetadataCache(
+                  {{std::string(MetadataCacheOptions::kEnabled), "true"}}),
+              IsOk());
+  EXPECT_TRUE(file_io->MetadataCacheEnabled());
 }
 
 TEST(MetadataCacheTest, FileIORejectsConcurrentConflictingConfiguration) {
@@ -365,6 +385,15 @@ TEST(MetadataCacheTest, RejectsInvalidEnabledConfiguration) {
   options.expiration_interval_ms = -1;
 
   EXPECT_THAT(MetadataCache::Make(options), IsError(ErrorKind::kInvalidArgument));
+}
+
+TEST(MetadataCacheTest, InvalidNumericPropertyErrorIncludesPropertyName) {
+  auto options = MetadataCacheOptions::FromProperties(
+      {{std::string(MetadataCacheOptions::kEnabled), "true"},
+       {std::string(MetadataCacheOptions::kMaxTotalBytes), "invalid"}});
+
+  EXPECT_THAT(options,
+              HasErrorMessage(std::string(MetadataCacheOptions::kMaxTotalBytes)));
 }
 
 }  // namespace

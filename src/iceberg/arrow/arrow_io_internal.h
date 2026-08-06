@@ -88,7 +88,7 @@ class ICEBERG_BUNDLE_EXPORT ArrowFileSystemFileIO : public FileIO {
  private:
   friend Result<std::shared_ptr<::arrow::io::RandomAccessFile>> OpenArrowInputStream(
       const std::shared_ptr<FileIO>& io, const std::string& path,
-      std::optional<size_t> length);
+      std::optional<size_t> length, bool cache_content);
 
   friend Result<std::shared_ptr<::arrow::io::OutputStream>> OpenArrowOutputStream(
       const std::shared_ptr<FileIO>& io, const std::string& path, bool overwrite);
