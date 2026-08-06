@@ -320,6 +320,10 @@ TEST_P(TableScanTest, DataTableScanPlanFilesEmpty) {
   ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
   ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
   EXPECT_TRUE(tasks.empty());
+
+  ICEBERG_UNWRAP_OR_FAIL(auto iterator, scan->PlanFilesIterator());
+  ICEBERG_UNWRAP_OR_FAIL(auto next, iterator->Next());
+  EXPECT_FALSE(next.has_value());
 }
 
 TEST_P(TableScanTest, PlanFilesWithDataManifests) {
@@ -380,6 +384,14 @@ TEST_P(TableScanTest, PlanFilesWithDataManifests) {
   ASSERT_EQ(tasks.size(), 2);
   EXPECT_THAT(GetPaths(tasks), testing::UnorderedElementsAre("/path/to/data1.parquet",
                                                              "/path/to/data2.parquet"));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto iterator, scan->PlanFilesIterator());
+  scan.reset();
+  ICEBERG_UNWRAP_OR_FAIL(auto streamed_tasks, iterator->ToVector());
+  ASSERT_EQ(streamed_tasks.size(), 2);
+  EXPECT_THAT(GetPaths(streamed_tasks),
+              testing::UnorderedElementsAre("/path/to/data1.parquet",
+                                            "/path/to/data2.parquet"));
 }
 
 TEST_P(TableScanTest, PlanRowLineage) {

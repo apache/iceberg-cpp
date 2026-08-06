@@ -20,6 +20,7 @@
 #include "iceberg/table_scan.h"
 
 #include <algorithm>
+#include <chrono>
 #include <cstdint>
 #include <utility>
 
@@ -63,6 +64,95 @@ const std::vector<std::string> kScanColumnsWithStats = [] {
   cols.insert(cols.end(), kStatsColumns.begin(), kStatsColumns.end());
   return cols;
 }();
+
+template <typename T>
+class EmptyIterator final : public Iterator<T> {
+ public:
+  Result<std::optional<T>> NextImpl() override { return std::nullopt; }
+};
+
+Result<ScanReport> MakeScanReport(const DataTableScan& scan, const Snapshot& snapshot,
+                                  ScanMetricsResult scan_metrics) {
+  ICEBERG_ASSIGN_OR_RAISE(auto schema_ptr, scan.schema());
+
+  ICEBERG_ASSIGN_OR_RAISE(
+      auto projected_id_set,
+      GetProjectedIdsVisitor::GetProjectedIds(*schema_ptr, /*include_struct_ids=*/true));
+  std::vector<int32_t> projected_field_ids(projected_id_set.begin(),
+                                           projected_id_set.end());
+  std::ranges::sort(projected_field_ids);
+
+  std::vector<std::string> projected_field_names;
+  projected_field_names.reserve(projected_field_ids.size());
+  for (int32_t field_id : projected_field_ids) {
+    ICEBERG_ASSIGN_OR_RAISE(auto field_name, schema_ptr->FindColumnNameById(field_id));
+    ICEBERG_CHECK(field_name.has_value(), "Projected field {} not found in schema",
+                  field_id);
+    projected_field_names.emplace_back(*field_name);
+  }
+
+  ICEBERG_ASSIGN_OR_RAISE(
+      auto sanitized_filter,
+      SanitizeExpression::Sanitize(*schema_ptr, scan.filter(),
+                                   scan.context().case_sensitive));
+
+  return ScanReport{
+      .table_name = scan.context().table_name,
+      .snapshot_id = snapshot.snapshot_id,
+      .filter = std::move(sanitized_filter),
+      .schema_id = schema_ptr->schema_id(),
+      .projected_field_ids = std::move(projected_field_ids),
+      .projected_field_names = std::move(projected_field_names),
+      .scan_metrics = std::move(scan_metrics),
+      .metadata = scan.context().options,
+  };
+}
+
+class ReportingFileTaskIterator final
+    : public Iterator<std::shared_ptr<FileScanTask>> {
+ public:
+  ReportingFileTaskIterator(
+      std::unique_ptr<Iterator<std::shared_ptr<FileScanTask>>> iterator,
+      std::shared_ptr<ScanMetrics> scan_metrics,
+      std::chrono::nanoseconds planning_duration,
+      std::shared_ptr<MetricsReporter> reporter, ScanReport report)
+      : iterator_(std::move(iterator)),
+        scan_metrics_(std::move(scan_metrics)),
+        planning_duration_(std::move(planning_duration)),
+        reporter_(std::move(reporter)),
+        report_(std::move(report)) {}
+
+  ~ReportingFileTaskIterator() override { Finalize(); }
+
+  Result<std::optional<std::shared_ptr<FileScanTask>>> NextImpl() override {
+    auto start = std::chrono::steady_clock::now();
+    auto result = iterator_->Next();
+    planning_duration_ += std::chrono::duration_cast<std::chrono::nanoseconds>(
+        std::chrono::steady_clock::now() - start);
+    if (result.has_value() && !result.value().has_value()) {
+      Finalize();
+    }
+    return result;
+  }
+
+ private:
+  void Finalize() {
+    if (finalized_) {
+      return;
+    }
+    finalized_ = true;
+    scan_metrics_->total_planning_duration->Record(planning_duration_);
+    report_.scan_metrics = scan_metrics_->ToResult();
+    std::ignore = reporter_->Report(report_);
+  }
+
+  std::unique_ptr<Iterator<std::shared_ptr<FileScanTask>>> iterator_;
+  std::shared_ptr<ScanMetrics> scan_metrics_;
+  std::chrono::nanoseconds planning_duration_;
+  std::shared_ptr<MetricsReporter> reporter_;
+  ScanReport report_;
+  bool finalized_ = false;
+};
 
 }  // namespace
 
@@ -572,39 +662,8 @@ Status DataTableScan::ReportScan(const Snapshot& snapshot,
     return {};
   }
 
-  ICEBERG_ASSIGN_OR_RAISE(auto projected_schema, ResolveProjectedSchema());
-  const auto& schema_ptr = projected_schema.get();
-
-  ICEBERG_ASSIGN_OR_RAISE(
-      auto projected_id_set,
-      GetProjectedIdsVisitor::GetProjectedIds(*schema_ptr, /*include_struct_ids=*/true));
-  std::vector<int32_t> projected_field_ids(projected_id_set.begin(),
-                                           projected_id_set.end());
-  std::ranges::sort(projected_field_ids);
-
-  std::vector<std::string> projected_field_names;
-  projected_field_names.reserve(projected_field_ids.size());
-  for (int32_t field_id : projected_field_ids) {
-    ICEBERG_ASSIGN_OR_RAISE(auto field_name, schema_ptr->FindColumnNameById(field_id));
-    ICEBERG_CHECK(field_name.has_value(), "Projected field {} not found in schema",
-                  field_id);
-    projected_field_names.emplace_back(*field_name);
-  }
-
-  ICEBERG_ASSIGN_OR_RAISE(
-      auto sanitized_filter,
-      SanitizeExpression::Sanitize(*schema_ptr, filter(), context_.case_sensitive));
-
-  ScanReport report{
-      .table_name = context_.table_name,
-      .snapshot_id = snapshot.snapshot_id,
-      .filter = std::move(sanitized_filter),
-      .schema_id = schema_ptr->schema_id(),
-      .projected_field_ids = std::move(projected_field_ids),
-      .projected_field_names = std::move(projected_field_names),
-      .scan_metrics = scan_metrics.ToResult(),
-      .metadata = context_.options,
-  };
+  ICEBERG_ASSIGN_OR_RAISE(auto report,
+                          MakeScanReport(*this, snapshot, scan_metrics.ToResult()));
   return context_.metrics_reporter->Report(report);
 }
 
@@ -659,6 +718,72 @@ Result<std::vector<std::shared_ptr<FileScanTask>>> DataTableScan::PlanFiles() co
   }
 
   return tasks;
+}
+
+Result<std::unique_ptr<Iterator<std::shared_ptr<FileScanTask>>>>
+DataTableScan::PlanFilesIterator() const {
+  ICEBERG_ASSIGN_OR_RAISE(auto snapshot, this->snapshot());
+  if (!snapshot) {
+    return std::make_unique<EmptyIterator<std::shared_ptr<FileScanTask>>>();
+  }
+
+  std::shared_ptr<ScanMetrics> scan_metrics;
+  std::optional<std::chrono::steady_clock::time_point> planning_start;
+  if (context_.metrics_reporter) {
+    auto metrics_context = MetricsContext::Default();
+    scan_metrics = ScanMetrics::Make(*metrics_context);
+    planning_start = std::chrono::steady_clock::now();
+  }
+
+  TableMetadataCache metadata_cache(metadata_.get());
+  ICEBERG_ASSIGN_OR_RAISE(auto specs_by_id, metadata_cache.GetPartitionSpecsById());
+
+  SnapshotCache snapshot_cache(snapshot.get());
+  ICEBERG_ASSIGN_OR_RAISE(auto data_manifests, snapshot_cache.DataManifests(io_));
+  ICEBERG_ASSIGN_OR_RAISE(auto delete_manifests, snapshot_cache.DeleteManifests(io_));
+
+  if (scan_metrics) {
+    scan_metrics->total_data_manifests->Increment(
+        static_cast<int64_t>(data_manifests.size()));
+    scan_metrics->total_delete_manifests->Increment(
+        static_cast<int64_t>(delete_manifests.size()));
+  }
+
+  ICEBERG_ASSIGN_OR_RAISE(
+      auto manifest_group,
+      ManifestGroup::Make(io_, schema_, specs_by_id,
+                          {data_manifests.begin(), data_manifests.end()},
+                          {delete_manifests.begin(), delete_manifests.end()}));
+  manifest_group->CaseSensitive(context_.case_sensitive)
+      .Select(ScanColumns())
+      .FilterData(filter())
+      .IgnoreDeleted()
+      .ColumnsToKeepStats(context_.columns_to_keep_stats)
+      .PlanWith(context_.plan_executor)
+      .WithScanMetrics(scan_metrics);
+  if (context_.ignore_residuals) {
+    manifest_group->IgnoreResiduals();
+  }
+
+  ICEBERG_ASSIGN_OR_RAISE(auto iterator, manifest_group->PlanFilesIterator());
+  if (!planning_start.has_value()) {
+    return iterator;
+  }
+
+  auto planning_duration = std::chrono::duration_cast<std::chrono::nanoseconds>(
+      std::chrono::steady_clock::now() - planning_start.value());
+
+  auto report = MakeScanReport(*this, *snapshot, ScanMetricsResult{});
+  if (!report.has_value()) {
+    // Scan reporting is best effort, matching PlanFiles().
+    return iterator;
+  }
+
+  return std::unique_ptr<Iterator<std::shared_ptr<FileScanTask>>>(
+      new ReportingFileTaskIterator(
+          std::move(iterator), std::move(scan_metrics), planning_duration,
+          context_.metrics_reporter,
+          std::move(report).value()));
 }
 
 // Friend function template for IncrementalScan that implements the shared PlanFiles

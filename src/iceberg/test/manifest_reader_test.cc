@@ -190,6 +190,37 @@ TEST_P(TestManifestReader, TestManifestReaderWithEmptyInheritableMetadata) {
   EXPECT_EQ(read_entry.snapshot_id, 1000L);
 }
 
+TEST_P(TestManifestReader, EntriesIteratorOwnsReaderResources) {
+  auto version = GetParam();
+  auto file_a =
+      MakeDataFile("/path/to/data-a.parquet", PartitionValues({Literal::Int(0)}));
+  auto file_b =
+      MakeDataFile("/path/to/data-b.parquet", PartitionValues({Literal::Int(1)}));
+
+  std::vector<ManifestEntry> entries;
+  entries.push_back(
+      MakeEntry(ManifestStatus::kAdded, /*snapshot_id=*/1000L, std::move(file_a)));
+  entries.push_back(
+      MakeEntry(ManifestStatus::kAdded, /*snapshot_id=*/1000L, std::move(file_b)));
+  auto manifest = WriteManifest(version, /*snapshot_id=*/1000L, entries);
+
+  ICEBERG_UNWRAP_OR_FAIL(auto reader,
+                         ManifestReader::Make(manifest, file_io_, schema_, spec_));
+  ICEBERG_UNWRAP_OR_FAIL(auto iterator, reader->EntriesIterator());
+  reader.reset();
+
+  ICEBERG_UNWRAP_OR_FAIL(auto first, iterator->Next());
+  ASSERT_TRUE(first.has_value());
+  EXPECT_EQ(first->data_file->file_path, "/path/to/data-a.parquet");
+
+  ICEBERG_UNWRAP_OR_FAIL(auto second, iterator->Next());
+  ASSERT_TRUE(second.has_value());
+  EXPECT_EQ(second->data_file->file_path, "/path/to/data-b.parquet");
+
+  ICEBERG_UNWRAP_OR_FAIL(auto end, iterator->Next());
+  EXPECT_FALSE(end.has_value());
+}
+
 TEST_P(TestManifestReader, DeletedEntriesDoNotInheritFirstRowId) {
   auto version = GetParam();
   if (version < 3) {
