@@ -52,7 +52,12 @@ Result<T> ParseNumberProperty(
   if (it == properties.end()) {
     return default_value;
   }
-  return StringUtils::ParseNumber<T>(it->second);
+  auto value = StringUtils::ParseNumber<T>(it->second);
+  if (!value.has_value()) {
+    return InvalidArgument("Invalid numeric value '{}' for property '{}': {}", it->second,
+                           key, value.error().message);
+  }
+  return value;
 }
 
 }  // namespace
