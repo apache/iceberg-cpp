@@ -265,9 +265,14 @@ class DeleteLoader;
 class PositionDeleteIndex;
 
 /// \brief Metadata tables.
+class BranchesTable;
+class FilesTable;
 class HistoryTable;
+class ManifestsTable;
 class MetadataTable;
+class PartitionsTable;
 class SnapshotsTable;
+class TagsTable;
 
 /// \brief Table encryption
 struct EncryptedKey;

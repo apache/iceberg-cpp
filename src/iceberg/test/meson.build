@@ -54,6 +54,7 @@ iceberg_tests = {
             'metrics_test.cc',
             'snapshot_test.cc',
             'snapshot_util_test.cc',
+            'system_metadata_tables_test.cc',
             'table_metadata_builder_test.cc',
             'table_requirement_test.cc',
             'table_requirements_test.cc',
