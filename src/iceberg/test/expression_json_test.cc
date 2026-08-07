@@ -17,6 +17,8 @@
  * under the License.
  */
 
+#include <cstdint>
+#include <limits>
 #include <memory>
 #include <optional>
 #include <string>
@@ -438,6 +440,18 @@ INSTANTIATE_TEST_SUITE_P(
                                   "123"},
         LiteralFromJsonTypedParam{"Long", nlohmann::json(9876543210LL), int64(),
                                   TypeId::kLong, "9876543210"},
+        // Guard both halves of the out-of-range check in GetInt64Checked: an
+        // unsigned node at INT64_MAX must be accepted (not off-by-one rejected),
+        // and negative nodes must not be mistaken for huge unsigned ones. The ULL
+        // suffix below is load-bearing: a signed INT64_MAX node skips the unsigned
+        // branch of the guard entirely.
+        LiteralFromJsonTypedParam{"LongMax", nlohmann::json(9223372036854775807ULL),
+                                  int64(), TypeId::kLong, "9223372036854775807"},
+        LiteralFromJsonTypedParam{"LongMin",
+                                  nlohmann::json(std::numeric_limits<int64_t>::min()),
+                                  int64(), TypeId::kLong, "-9223372036854775808"},
+        LiteralFromJsonTypedParam{"IntNegative", nlohmann::json(-123), int32(),
+                                  TypeId::kInt, "-123"},
         LiteralFromJsonTypedParam{"Float", nlohmann::json(1.5), float32(), TypeId::kFloat,
                                   std::nullopt},
         LiteralFromJsonTypedParam{"Double", nlohmann::json(3.14), float64(),
@@ -490,10 +504,41 @@ INSTANTIATE_TEST_SUITE_P(
         InvalidLiteralFromJsonTypedParam{"DecimalScaleMismatch", nlohmann::json("123.45"),
                                          decimal(9, 4)},
         InvalidLiteralFromJsonTypedParam{"DecimalNotString", nlohmann::json(123.45),
-                                         decimal(9, 2)}),
+                                         decimal(9, 2)},
+        // nlohmann reports unsigned integers as is_number_integer(), and
+        // get<int64_t>() wraps silently for values above INT64_MAX, so an
+        // out-of-range integer must be rejected explicitly.
+        InvalidLiteralFromJsonTypedParam{
+            "IntUnsignedOverflow", nlohmann::json(18446744073709551615ULL), int32()},
+        InvalidLiteralFromJsonTypedParam{"LongUnsignedOverflow",
+                                         nlohmann::json(9223372036854775808ULL), int64()},
+        // Within int64 but outside int32: caught by the narrower range check that
+        // follows the shared int64 guard.
+        InvalidLiteralFromJsonTypedParam{"IntAboveInt32Max", nlohmann::json(3000000000LL),
+                                         int32()},
+        InvalidLiteralFromJsonTypedParam{"IntBelowInt32Min",
+                                         nlohmann::json(-3000000000LL), int32()}),
     [](const ::testing::TestParamInfo<InvalidLiteralFromJsonTypedParam>& info) {
       return info.param.name;
     });
+
+// The untyped overload infers long from any integral JSON node, so it needs the
+// same out-of-range guard as the type-aware one. Matching on the message keeps the
+// assertion tied to the range check if someone later rejects these nodes elsewhere.
+TEST(LiteralFromJsonTest, RejectsUnsignedOverflowUntyped) {
+  EXPECT_THAT(LiteralFromJson(nlohmann::json(9223372036854775808ULL)),
+              HasErrorMessage("out of range"));
+  EXPECT_THAT(LiteralFromJson(nlohmann::json(18446744073709551615ULL)),
+              HasErrorMessage("out of range"));
+}
+
+// Negative literals must survive the untyped path too: get<uint64_t>() on them
+// would compare above INT64_MAX if the is_number_unsigned() guard were dropped.
+TEST(LiteralFromJsonTest, AcceptsNegativeIntegerUntyped) {
+  ICEBERG_UNWRAP_OR_FAIL(auto lit, LiteralFromJson(nlohmann::json(-123)));
+  EXPECT_EQ(lit.type()->type_id(), TypeId::kLong);
+  EXPECT_EQ(lit.ToString(), "-123");
+}
 
 struct SchemaAwarePredicateParam {
   std::string name;
