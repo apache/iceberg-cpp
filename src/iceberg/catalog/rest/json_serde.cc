@@ -130,6 +130,7 @@ constexpr std::string_view kReferencedDataFile = "referenced-data-file";
 constexpr std::string_view kContentOffset = "content-offset";
 constexpr std::string_view kContentSizeInBytes = "content-size-in-bytes";
 constexpr std::string_view kDataFile = "data-file";
+constexpr std::string_view kDataSequenceNumber = "data-sequence-number";
 constexpr std::string_view kDeleteFileReferences = "delete-file-references";
 constexpr std::string_view kResidualFilter = "residual-filter";
 constexpr std::string_view kMapKeys = "keys";
@@ -323,10 +324,11 @@ Result<std::vector<std::shared_ptr<FileScanTask>>> FileScanTasksFromJson(
                             GetJsonValue<nlohmann::json>(task_json, kDataFile));
     ICEBERG_ASSIGN_OR_RAISE(
         auto data_file, DataFileFromJson(data_file_json, partition_spec_by_id, schema));
-    // FIXME: REST scan-task DataFile JSON currently carries first-row-id,
-    // but not the manifest-entry data sequence number. Until the REST API exposes
-    // it, REST-planned tasks cannot inherit _last_updated_sequence_number.
-    // See https://github.com/apache/iceberg-cpp/issues/834.
+    if (task_json.contains(kDataSequenceNumber) &&
+        !task_json.at(kDataSequenceNumber).is_null()) {
+      ICEBERG_ASSIGN_OR_RAISE(data_file.data_sequence_number,
+                              GetJsonValue<int64_t>(task_json, kDataSequenceNumber));
+    }
 
     std::vector<std::shared_ptr<DataFile>> task_delete_files;
     if (task_json.contains(kDeleteFileReferences) &&
@@ -497,6 +499,10 @@ Result<nlohmann::json> ScanTaskFieldsToJson(
             auto data_file_json,
             ToJson(*task->data_file(), partition_specs_by_id, schema));
         task_json[kDataFile] = std::move(data_file_json);
+        if (task->data_file()->data_sequence_number.has_value()) {
+          task_json[kDataSequenceNumber] =
+              task->data_file()->data_sequence_number.value();
+        }
       }
       if (!task->delete_files().empty()) {
         std::vector<int32_t> refs;

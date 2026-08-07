@@ -2280,14 +2280,32 @@ TEST(FileScanTasksFromJsonTest, SingleTaskNoDeleteFiles) {
   const auto& task = result.value()[0];
   ASSERT_NE(task->data_file(), nullptr);
   EXPECT_EQ(task->data_file()->file_path, "s3://bucket/data/file.parquet");
+  EXPECT_FALSE(task->data_file()->data_sequence_number.has_value());
   EXPECT_TRUE(task->delete_files().empty());
   EXPECT_EQ(task->residual_filter(), nullptr);
 }
 
-TEST(FileScanTasksFromJsonTest, RowLineageSequence) {
-  GTEST_SKIP() << "REST scan-task JSON does not expose data-sequence-number yet: "
-               << "https://github.com/apache/iceberg-cpp/issues/834";
+TEST(FileScanTasksFromJsonTest, NullDataSequenceNumber) {
+  auto json = R"([{
+    "data-file": {
+      "content": "data",
+      "file-path": "s3://bucket/data/file.parquet",
+      "file-format": "PARQUET",
+      "spec-id": 0,
+      "partition": [],
+      "file-size-in-bytes": 12345,
+      "record-count": 100
+    },
+    "data-sequence-number": null
+  }])"_json;
 
+  auto result = FileScanTasksFromJson(json, {}, UnpartitionedSpecs(), Schema({}, 0));
+  ASSERT_THAT(result, IsOk());
+  ASSERT_EQ(result.value().size(), 1U);
+  EXPECT_FALSE(result.value()[0]->data_file()->data_sequence_number.has_value());
+}
+
+TEST(FileScanTasksFromJsonTest, RowLineageSequence) {
   auto json = R"([{
     "data-file": {
       "content": "data",
@@ -2297,9 +2315,9 @@ TEST(FileScanTasksFromJsonTest, RowLineageSequence) {
       "partition": [],
       "file-size-in-bytes": 12345,
       "record-count": 100,
-      "first-row-id": 100,
-      "data-sequence-number": 7
-    }
+      "first-row-id": 100
+    },
+    "data-sequence-number": 7
   }])"_json;
 
   auto result = FileScanTasksFromJson(json, {}, UnpartitionedSpecs(), Schema({}, 0));
@@ -2309,6 +2327,13 @@ TEST(FileScanTasksFromJsonTest, RowLineageSequence) {
   ASSERT_NE(data_file, nullptr);
   EXPECT_EQ(data_file->first_row_id, 100);
   EXPECT_EQ(data_file->data_sequence_number, 7);
+
+  FetchScanTasksResponse response;
+  response.file_scan_tasks = std::move(result.value());
+  ICEBERG_UNWRAP_OR_FAIL(auto roundtrip_json,
+                         ToJson(response, UnpartitionedSpecs(), Schema({}, 0)));
+  ASSERT_EQ(roundtrip_json["file-scan-tasks"].size(), 1);
+  EXPECT_EQ(roundtrip_json["file-scan-tasks"][0]["data-sequence-number"], 7);
 }
 
 TEST(FileScanTasksFromJsonTest, TaskWithDeleteFileReferences) {
