@@ -82,6 +82,17 @@ TEST(RestFileIOTest, DetectBuiltinKindFromScheme) {
               HasValue(::testing::Eq(BuiltinFileIOKind::kArrowLocal)));
 }
 
+// Regression test for #341: file: URIs with fewer than 3 slashes
+TEST(RestFileIOTest, DetectBuiltinKindFileUriSingleSlash) {
+  EXPECT_THAT(DetectBuiltinFileIO("file:/tmp/warehouse"),
+              HasValue(::testing::Eq(BuiltinFileIOKind::kArrowLocal)));
+  EXPECT_THAT(DetectBuiltinFileIO("file:/C:/iceberg_warehouse/db"),
+              HasValue(::testing::Eq(BuiltinFileIOKind::kArrowLocal)));
+  // Windows drive letter (single char before ':') → local path, not a URI
+  EXPECT_THAT(DetectBuiltinFileIO("C:/iceberg_warehouse/db"),
+              HasValue(::testing::Eq(BuiltinFileIOKind::kArrowLocal)));
+}
+
 TEST(RestFileIOTest, DetectBuiltinKindRejectsUnsupportedScheme) {
   auto result = DetectBuiltinFileIO("gs://bucket/warehouse");
   EXPECT_THAT(result, IsError(ErrorKind::kNotSupported));
