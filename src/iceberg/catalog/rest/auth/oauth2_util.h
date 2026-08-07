@@ -19,6 +19,7 @@
 
 #pragma once
 
+#include <array>
 #include <cstdint>
 #include <optional>
 #include <string>
@@ -38,6 +39,19 @@ namespace iceberg::rest::auth {
 inline constexpr std::string_view kAuthorizationHeader = "Authorization";
 inline constexpr std::string_view kBearerPrefix = "Bearer ";
 
+struct ICEBERG_REST_EXPORT OAuth2Token {
+  std::string token_type;
+  std::string token;
+};
+
+struct ICEBERG_REST_EXPORT TokenExchangeRequest {
+  std::string oauth2_server_uri;
+  OAuth2Token subject;
+  std::optional<OAuth2Token> actor;
+  std::string scope;
+  std::unordered_map<std::string, std::string> optional_oauth_params;
+};
+
 /// \brief Fetch an OAuth2 token using the client_credentials grant type.
 ///
 /// \param client HTTP client to use for the request.
@@ -54,6 +68,40 @@ ICEBERG_REST_EXPORT Result<OAuthTokenResponse> FetchToken(
 /// \return Headers map with Authorization header if token is non-empty.
 ICEBERG_REST_EXPORT std::unordered_map<std::string, std::string> AuthHeaders(
     const std::string& token);
+
+/// \brief Return whether a token type is a supported RFC token type.
+ICEBERG_REST_EXPORT bool IsValidTokenType(std::string_view token_type);
+
+/// \brief Return the preferred order for typed OAuth tokens.
+ICEBERG_REST_EXPORT std::array<std::string_view, 5> TokenPreferenceOrder();
+
+/// \brief Find the highest-preference typed OAuth token in credentials.
+ICEBERG_REST_EXPORT std::optional<OAuth2Token> FindPreferredTypedToken(
+    const std::unordered_map<std::string, std::string>& credentials);
+
+/// \brief Filter table session properties to allowed OAuth credentials.
+ICEBERG_REST_EXPORT std::unordered_map<std::string, std::string>
+FilterTableSessionProperties(
+    const std::unordered_map<std::string, std::string>& properties);
+
+/// \brief Build RFC 8693 token exchange form data.
+///
+/// \param request Token exchange request values.
+/// \return Form data or an error if token values are invalid.
+ICEBERG_REST_EXPORT Result<std::unordered_map<std::string, std::string>>
+BuildTokenExchangeForm(const TokenExchangeRequest& request);
+
+/// \brief Exchange an OAuth2 token using the RFC 8693 grant type.
+///
+/// \param client HTTP client to use for the request.
+/// \param session Auth session for the request headers.
+/// \param extra_headers Request headers applied before session authentication.
+/// \param request Token exchange endpoint and form values.
+/// \return The token response or an error.
+ICEBERG_REST_EXPORT Result<OAuthTokenResponse> ExchangeToken(
+    HttpClient& client, AuthSession& session,
+    const std::unordered_map<std::string, std::string>& extra_headers,
+    const TokenExchangeRequest& request);
 
 /// \brief Extract expiration time from a JWT token.
 ///
