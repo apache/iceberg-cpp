@@ -1,0 +1,41 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1CatalogUtil" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::CatalogUtil</compoundname>
+    <includes refid="catalog__util_8h" local="no">catalog_util.h</includes>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classiceberg_1_1CatalogUtil_1a6207a826f02713def4c93dc765d1ae89" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::string</type>
+        <definition>static std::string iceberg::CatalogUtil::FullTableName</definition>
+        <argsstring>(std::string_view catalog_name, const TableIdentifier &amp;identifier)</argsstring>
+        <name>FullTableName</name>
+        <qualifiedname>iceberg::CatalogUtil::FullTableName</qualifiedname>
+        <param>
+          <type>std::string_view</type>
+          <declname>catalog_name</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structiceberg_1_1TableIdentifier" kindref="compound">TableIdentifier</ref> &amp;</type>
+          <declname>identifier</declname>
+        </param>
+        <briefdescription>
+<para>Return the fully-qualified name for a table in a catalog. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/catalog_util.h" line="34" column="22"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Utilities for working with catalogs. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/catalog_util.h" line="31" column="1" bodyfile="iceberg/catalog/catalog_util.h" bodystart="31" bodyend="36"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1CatalogUtil_1a6207a826f02713def4c93dc765d1ae89" prot="public" virt="non-virtual"><scope>iceberg::CatalogUtil</scope><name>FullTableName</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

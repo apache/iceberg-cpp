@@ -1,0 +1,190 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1DefaultTimer" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::DefaultTimer</compoundname>
+    <basecompoundref refid="classiceberg_1_1Timer" prot="public" virt="non-virtual">iceberg::Timer</basecompoundref>
+    <includes refid="timer_8h" local="no">timer.h</includes>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1DefaultTimer_1ab3a27568194618bd923dc8c0a7feaf27" prot="private" static="no" mutable="no">
+        <type>std::atomic&lt; int64_t &gt;</type>
+        <definition>std::atomic&lt;int64_t&gt; iceberg::DefaultTimer::count_</definition>
+        <argsstring></argsstring>
+        <name>count_</name>
+        <qualifiedname>iceberg::DefaultTimer::count_</qualifiedname>
+        <initializer>{0}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/timer.h" line="160" column="15" bodyfile="iceberg/metrics/timer.h" bodystart="160" bodyend="160"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1DefaultTimer_1aeb8fd92249bfa476484445c3ccfa9135" prot="private" static="no" mutable="no">
+        <type>std::atomic&lt; int64_t &gt;</type>
+        <definition>std::atomic&lt;int64_t&gt; iceberg::DefaultTimer::total_nanos_</definition>
+        <argsstring></argsstring>
+        <name>total_nanos_</name>
+        <qualifiedname>iceberg::DefaultTimer::total_nanos_</qualifiedname>
+        <initializer>{0}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/timer.h" line="161" column="15" bodyfile="iceberg/metrics/timer.h" bodystart="161" bodyend="161"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1DefaultTimer_1acb554fee9cdcb81939e5bc787a13904b" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceiceberg_1a392862e5026f65af0f58105ede04659a" kindref="member">TimerUnit</ref></type>
+        <definition>TimerUnit iceberg::DefaultTimer::unit_</definition>
+        <argsstring></argsstring>
+        <name>unit_</name>
+        <qualifiedname>iceberg::DefaultTimer::unit_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/timer.h" line="162" column="13" bodyfile="iceberg/metrics/timer.h" bodystart="162" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1DefaultTimer_1a45fdcd3c79b7eeead193039d44e82f38" prot="public" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::DefaultTimer::DefaultTimer</definition>
+        <argsstring>(TimerUnit unit=TimerUnit::kNanoseconds)</argsstring>
+        <name>DefaultTimer</name>
+        <qualifiedname>iceberg::DefaultTimer::DefaultTimer</qualifiedname>
+        <param>
+          <type><ref refid="namespaceiceberg_1a392862e5026f65af0f58105ede04659a" kindref="member">TimerUnit</ref></type>
+          <declname>unit</declname>
+          <defval>TimerUnit::kNanoseconds</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/timer.h" line="152" column="12"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1DefaultTimer_1a0680281fb49a3b28f17b3534beeb7849" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>int64_t</type>
+        <definition>int64_t iceberg::DefaultTimer::Count</definition>
+        <argsstring>() const override</argsstring>
+        <name>Count</name>
+        <qualifiedname>iceberg::DefaultTimer::Count</qualifiedname>
+        <reimplements refid="classiceberg_1_1Timer_1a221670653142490dd9b0d8f503a93fe0">Count</reimplements>
+        <briefdescription>
+<para>Number of timing recordings made so far. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/timer.h" line="154" column="11"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1DefaultTimer_1a2344941bb8e0ac6872833b067695cde0" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>std::chrono::nanoseconds</type>
+        <definition>std::chrono::nanoseconds iceberg::DefaultTimer::TotalDuration</definition>
+        <argsstring>() const override</argsstring>
+        <name>TotalDuration</name>
+        <qualifiedname>iceberg::DefaultTimer::TotalDuration</qualifiedname>
+        <reimplements refid="classiceberg_1_1Timer_1a9cb0b951b21d13fbab08d62ce8152ee6">TotalDuration</reimplements>
+        <briefdescription>
+<para>Total accumulated duration across all recordings. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/timer.h" line="155" column="28"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1DefaultTimer_1a5f12e8509b6cda2f688d175787088279" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void iceberg::DefaultTimer::Record</definition>
+        <argsstring>(std::chrono::nanoseconds duration) override</argsstring>
+        <name>Record</name>
+        <qualifiedname>iceberg::DefaultTimer::Record</qualifiedname>
+        <reimplements refid="classiceberg_1_1Timer_1aea567b5246f94785cac35eaab22472d0">Record</reimplements>
+        <param>
+          <type>std::chrono::nanoseconds</type>
+          <declname>duration</declname>
+        </param>
+        <briefdescription>
+<para>Record a nanosecond duration directly. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Use the template overload below to record any std::chrono duration type with automatic unit conversion. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/timer.h" line="156" column="8"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1DefaultTimer_1a730501496959c45605b4735823760a25" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
+        <type>std::string_view</type>
+        <definition>std::string_view iceberg::DefaultTimer::Unit</definition>
+        <argsstring>() const override</argsstring>
+        <name>Unit</name>
+        <qualifiedname>iceberg::DefaultTimer::Unit</qualifiedname>
+        <reimplements refid="classiceberg_1_1Timer_1a4a4910174c81ea6545a130e42412ad03">Unit</reimplements>
+        <briefdescription>
+<para>Return the time unit used by this timer. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/timer.h" line="157" column="20" bodyfile="iceberg/metrics/timer.h" bodystart="157" bodyend="157"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Thread-safe timer backed by std::atomic&lt;int64_t&gt;. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>iceberg::DefaultTimer</label>
+        <link refid="classiceberg_1_1DefaultTimer"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::Timer</label>
+        <link refid="classiceberg_1_1Timer"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::DefaultTimer</label>
+        <link refid="classiceberg_1_1DefaultTimer"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::Timer</label>
+        <link refid="classiceberg_1_1Timer"/>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/metrics/timer.h" line="150" column="1" bodyfile="iceberg/metrics/timer.h" bodystart="150" bodyend="163"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1DefaultTimer_1a0680281fb49a3b28f17b3534beeb7849" prot="public" virt="virtual"><scope>iceberg::DefaultTimer</scope><name>Count</name></member>
+      <member refid="classiceberg_1_1DefaultTimer_1ab3a27568194618bd923dc8c0a7feaf27" prot="private" virt="non-virtual"><scope>iceberg::DefaultTimer</scope><name>count_</name></member>
+      <member refid="classiceberg_1_1DefaultTimer_1a45fdcd3c79b7eeead193039d44e82f38" prot="public" virt="non-virtual"><scope>iceberg::DefaultTimer</scope><name>DefaultTimer</name></member>
+      <member refid="classiceberg_1_1Timer_1a625487b1476a9c96e4c2be7443afc2aa" prot="public" virt="virtual"><scope>iceberg::DefaultTimer</scope><name>IsNoop</name></member>
+      <member refid="classiceberg_1_1Timer_1aa52e69efb7f9bedcdc150a46f2b7c08c" prot="public" virt="non-virtual"><scope>iceberg::DefaultTimer</scope><name>Noop</name></member>
+      <member refid="classiceberg_1_1DefaultTimer_1a5f12e8509b6cda2f688d175787088279" prot="public" virt="virtual"><scope>iceberg::DefaultTimer</scope><name>Record</name></member>
+      <member refid="classiceberg_1_1Timer_1a42e9476ad403c7bcd61327f585e51922" prot="public" virt="non-virtual" ambiguityscope="iceberg::Timer::"><scope>iceberg::DefaultTimer</scope><name>Record</name></member>
+      <member refid="classiceberg_1_1Timer_1af19032db807f4c8890aae045e3384a7f" prot="public" virt="non-virtual"><scope>iceberg::DefaultTimer</scope><name>Start</name></member>
+      <member refid="classiceberg_1_1Timer_1a1a40cd3e1bd699ba5cf6787ecbb59395" prot="public" virt="non-virtual"><scope>iceberg::DefaultTimer</scope><name>Time</name></member>
+      <member refid="classiceberg_1_1DefaultTimer_1aeb8fd92249bfa476484445c3ccfa9135" prot="private" virt="non-virtual"><scope>iceberg::DefaultTimer</scope><name>total_nanos_</name></member>
+      <member refid="classiceberg_1_1DefaultTimer_1a2344941bb8e0ac6872833b067695cde0" prot="public" virt="virtual"><scope>iceberg::DefaultTimer</scope><name>TotalDuration</name></member>
+      <member refid="classiceberg_1_1DefaultTimer_1a730501496959c45605b4735823760a25" prot="public" virt="virtual"><scope>iceberg::DefaultTimer</scope><name>Unit</name></member>
+      <member refid="classiceberg_1_1DefaultTimer_1acb554fee9cdcb81939e5bc787a13904b" prot="private" virt="non-virtual"><scope>iceberg::DefaultTimer</scope><name>unit_</name></member>
+      <member refid="classiceberg_1_1Timer_1abf1ce3bb2234cdec3c4b1d2f179c7bf8" prot="public" virt="virtual"><scope>iceberg::DefaultTimer</scope><name>~Timer</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

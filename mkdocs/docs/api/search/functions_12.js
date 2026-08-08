@@ -1,0 +1,28 @@
+var searchData=
+[
+  ['unbound_5fterm_0',['unbound_term',['../classiceberg_1_1UnboundPredicateImpl.html#a69a16eae16d9eccef5765d7d76e72f4a',1,'iceberg::UnboundPredicateImpl::unbound_term()'],['../classiceberg_1_1UnboundPredicate.html#adddd7df2f07a9cb070abb41045046f93',1,'iceberg::UnboundPredicate::unbound_term()']]],
+  ['unionbynamewith_1',['UnionByNameWith',['../classiceberg_1_1UpdateSchema.html#af64c10fbbad83b9080e49808293087d5',1,'iceberg::UpdateSchema']]],
+  ['unit_2',['unit',['../classiceberg_1_1Counter.html#af8acff891a14876b873ea95a6cb28416',1,'iceberg::Counter::unit()'],['../classiceberg_1_1DefaultCounter.html#ad3683916f690d75bc3bb55d1c52808fc',1,'iceberg::DefaultCounter::unit()'],['../classiceberg_1_1Timer.html#a4a4910174c81ea6545a130e42412ad03',1,'iceberg::Timer::Unit()'],['../classiceberg_1_1DefaultTimer.html#a730501496959c45605b4735823760a25',1,'iceberg::DefaultTimer::Unit()']]],
+  ['unixmsfromtimepointms_3',['UnixMsFromTimePointMs',['../namespaceiceberg.html#a5cf9aeeb3ad0a712224c348265624505',1,'iceberg']]],
+  ['unixnsfromtimepointns_4',['UnixNsFromTimePointNs',['../namespaceiceberg.html#aa82a3b1da10f7909f3089baed934ccb7',1,'iceberg']]],
+  ['unknown_5',['unknown',['../group__type-factories.html#ga6ecefd416644889f46479d5603691b99',1,'iceberg']]],
+  ['unpartitioned_6',['unpartitioned',['../classiceberg_1_1PartitionSpec.html#a2520ae03001d336297e0e3ad91ab9c0a',1,'iceberg::PartitionSpec::Unpartitioned()'],['../classiceberg_1_1ResidualEvaluator.html#a4dabdb65055bf2463338d877467ec55d',1,'iceberg::ResidualEvaluator::Unpartitioned()']]],
+  ['unsorted_7',['Unsorted',['../classiceberg_1_1SortOrder.html#aabdf79223b16bcf0f52838eddf15d85b',1,'iceberg::SortOrder']]],
+  ['update_8',['update',['../classiceberg_1_1AggregateEvaluator.html#a89241d85a97d0d3639c07af91256840a',1,'iceberg::AggregateEvaluator::Update(const StructLike &amp;data)=0'],['../classiceberg_1_1AggregateEvaluator.html#a43b31fc656bb1a1eae31eadc81b0cb6d',1,'iceberg::AggregateEvaluator::Update(const DataFile &amp;file)=0']]],
+  ['updatecolumn_9',['UpdateColumn',['../classiceberg_1_1UpdateSchema.html#aa6ac92fec0adb669df589f27e23ab484',1,'iceberg::UpdateSchema']]],
+  ['updatecolumndefault_10',['UpdateColumnDefault',['../classiceberg_1_1UpdateSchema.html#afc6197fc1d0b2066c8aca32435373e8a',1,'iceberg::UpdateSchema']]],
+  ['updatecolumndoc_11',['UpdateColumnDoc',['../classiceberg_1_1UpdateSchema.html#afd90953253b97c4cb3b75c2fb196bf3c',1,'iceberg::UpdateSchema']]],
+  ['updatemapping_12',['UpdateMapping',['../namespaceiceberg.html#a1ed6c89ed6d5a75e604fd05d4abb1d8a',1,'iceberg']]],
+  ['updatenamespaceproperties_13',['updatenamespaceproperties',['../classiceberg_1_1Catalog.html#a45740f35337266cce1dcf7257e561e0d',1,'iceberg::Catalog::UpdateNamespaceProperties()'],['../classiceberg_1_1hive_1_1HiveCatalog.html#aaa2e07c7038895f9fbba4c3129861ce5',1,'iceberg::hive::HiveCatalog::UpdateNamespaceProperties()'],['../classiceberg_1_1InMemoryCatalog.html#a3c65a9fb5b8abf7e512bb797236be04d',1,'iceberg::InMemoryCatalog::UpdateNamespaceProperties()'],['../classiceberg_1_1sql_1_1SqlCatalog.html#acd9d6b81e29f3a52ebae536af567f7e5',1,'iceberg::sql::SqlCatalog::UpdateNamespaceProperties()']]],
+  ['updatetable_14',['updatetable',['../classiceberg_1_1Catalog.html#a6af4029f0916dea3671d54c45ead31e5',1,'iceberg::Catalog::UpdateTable()'],['../classiceberg_1_1sql_1_1SqlCatalog.html#a7aa815bc4971c045763ec42d1f804b51',1,'iceberg::sql::SqlCatalog::UpdateTable()'],['../classiceberg_1_1InMemoryCatalog.html#a58c55240c881f25919ebec71fb11455a',1,'iceberg::InMemoryCatalog::UpdateTable()'],['../classiceberg_1_1hive_1_1HiveCatalog.html#abff2513ac1d55e5bb014cdd6e479efce',1,'iceberg::hive::HiveCatalog::UpdateTable()']]],
+  ['updatetablemetadatalocation_15',['UpdateTableMetadataLocation',['../classiceberg_1_1sql_1_1CatalogStore.html#a56167796110713ca46b7b6980b7e6949',1,'iceberg::sql::CatalogStore']]],
+  ['upgradeformatversion_16',['UpgradeFormatVersion',['../classiceberg_1_1TableMetadataBuilder.html#ac035c8ba028e276800710040cf5f55ad',1,'iceberg::TableMetadataBuilder']]],
+  ['upperbound_17',['UpperBound',['../structiceberg_1_1internal_1_1EqualityDeleteFile.html#a0b3e2012c50ca34aef20089cd8cd5e72',1,'iceberg::internal::EqualityDeleteFile']]],
+  ['uri_18',['uri',['../classiceberg_1_1hive_1_1HiveCatalogProperties.html#a580be1f476acdcb1abebca0a6cd3d141',1,'iceberg::hive::HiveCatalogProperties::Uri()'],['../classiceberg_1_1rest_1_1RestCatalogProperties.html#af8eeb47310c0d8565929f96372bac654',1,'iceberg::rest::RestCatalogProperties::Uri()']]],
+  ['urldecode_19',['UrlDecode',['../classiceberg_1_1Base64.html#a41463139e44cccfb068986b5abe5d0f1',1,'iceberg::Base64']]],
+  ['urlencode_20',['UrlEncode',['../classiceberg_1_1Base64.html#a05001378fe15eebeab3b9ce88d593e13',1,'iceberg::Base64']]],
+  ['usebranch_21',['UseBranch',['../classiceberg_1_1TableScanBuilder.html#a90b993db9e44991822e3555030dcd5bf',1,'iceberg::TableScanBuilder']]],
+  ['useref_22',['UseRef',['../classiceberg_1_1TableScanBuilder.html#a0a1bddf2fb325c6153384e7afd27e305',1,'iceberg::TableScanBuilder']]],
+  ['usesnapshot_23',['UseSnapshot',['../classiceberg_1_1TableScanBuilder.html#a99ed250d4ac594f0e0855d3905a87ae7',1,'iceberg::TableScanBuilder']]],
+  ['uuid_24',['uuid',['../classiceberg_1_1Table.html#aa20b8f513435c2ea5c10eeacd48d9a6b',1,'iceberg::Table::uuid()'],['../group__type-factories.html#gafcf0f5e6522390678b91a9515b174bcf',1,'iceberg::uuid()']]]
+];

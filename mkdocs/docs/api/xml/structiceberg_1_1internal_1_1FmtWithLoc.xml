@@ -1,0 +1,86 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1internal_1_1FmtWithLoc" kind="struct" language="C++" prot="private">
+    <compoundname>iceberg::internal::FmtWithLoc</compoundname>
+    <templateparamlist>
+      <param>
+        <type>typename...</type>
+        <declname>Args</declname>
+        <defname>Args</defname>
+      </param>
+    </templateparamlist>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1internal_1_1FmtWithLoc_1a692dd4d94a00296d47f91b2dd49085b5" prot="public" static="no" mutable="no">
+        <type>std::format_string&lt; Args... &gt;</type>
+        <definition>std::format_string&lt;Args...&gt; iceberg::internal::FmtWithLoc&lt; Args &gt;::fmt</definition>
+        <argsstring></argsstring>
+        <name>fmt</name>
+        <qualifiedname>iceberg::internal::FmtWithLoc::fmt</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/logging/logger.h" line="330" column="22" bodyfile="iceberg/logging/logger.h" bodystart="330" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1internal_1_1FmtWithLoc_1af64390d40d84ac00070cd6b1c132afbf" prot="public" static="no" mutable="no">
+        <type>std::source_location</type>
+        <definition>std::source_location iceberg::internal::FmtWithLoc&lt; Args &gt;::loc</definition>
+        <argsstring></argsstring>
+        <name>loc</name>
+        <qualifiedname>iceberg::internal::FmtWithLoc::loc</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/logging/logger.h" line="331" column="24" bodyfile="iceberg/logging/logger.h" bodystart="331" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structiceberg_1_1internal_1_1FmtWithLoc_1a66b592ca8b76d59e907c3a426555d173" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename T</type>
+          </param>
+        </templateparamlist>
+        <type>consteval</type>
+        <definition>consteval iceberg::internal::FmtWithLoc&lt; Args &gt;::FmtWithLoc</definition>
+        <argsstring>(const T &amp;s, std::source_location loc=std::source_location::current())</argsstring>
+        <name>FmtWithLoc</name>
+        <qualifiedname>iceberg::internal::FmtWithLoc::FmtWithLoc</qualifiedname>
+        <param>
+          <type>const T &amp;</type>
+          <declname>s</declname>
+        </param>
+        <param>
+          <type>std::source_location</type>
+          <declname>loc</declname>
+          <defval>std::source_location::current()</defval>
+        </param>
+    <requiresclause>std::convertible_to&lt;const T&amp;, std::format_string&lt;Args...&gt;&gt;    </requiresclause>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/logging/logger.h" line="335" column="13" bodyfile="iceberg/logging/logger.h" bodystart="335" bodyend="338"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>A checked format string bundled with the caller&apos;s source_location. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>The consteval constructor preserves std::format&apos;s compile-time format-string checking while capturing the call site (the std::print/println technique), so the function-style <ref refid="namespaceiceberg_1a1aaf619fc9dbd574aa84dea9e41d3288" kindref="member">Log()</ref> can record an accurate <ulink url="file:line">file:line</ulink> without a macro. Used as a non-deduced parameter so the trailing args drive deduction. </para>
+    </detaileddescription>
+    <location file="iceberg/logging/logger.h" line="329" column="1" bodyfile="iceberg/logging/logger.h" bodystart="329" bodyend="339"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1internal_1_1FmtWithLoc_1a692dd4d94a00296d47f91b2dd49085b5" prot="public" virt="non-virtual"><scope>iceberg::internal::FmtWithLoc</scope><name>fmt</name></member>
+      <member refid="structiceberg_1_1internal_1_1FmtWithLoc_1a66b592ca8b76d59e907c3a426555d173" prot="public" virt="non-virtual"><scope>iceberg::internal::FmtWithLoc</scope><name>FmtWithLoc</name></member>
+      <member refid="structiceberg_1_1internal_1_1FmtWithLoc_1af64390d40d84ac00070cd6b1c132afbf" prot="public" virt="non-virtual"><scope>iceberg::internal::FmtWithLoc</scope><name>loc</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

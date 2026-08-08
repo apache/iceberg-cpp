@@ -1,0 +1,207 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1DeletionVectorMergeGroup" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::DeletionVectorMergeGroup</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1DeletionVectorMergeGroup_1ade0a5c2c4e31df88270ef1061cbc9894" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::DeletionVectorMergeGroup::referenced_data_file</definition>
+        <argsstring></argsstring>
+        <name>referenced_data_file</name>
+        <qualifiedname>iceberg::DeletionVectorMergeGroup::referenced_data_file</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/puffin_dv_io.h" line="40" column="15" bodyfile="iceberg/puffin_dv_io.h" bodystart="40" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1DeletionVectorMergeGroup_1ae002f6524c3aa5f1095305e51b86d26d" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; std::shared_ptr&lt; <ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref> &gt; &gt;</type>
+        <definition>std::vector&lt;std::shared_ptr&lt;DataFile&gt; &gt; iceberg::DeletionVectorMergeGroup::delete_files</definition>
+        <argsstring></argsstring>
+        <name>delete_files</name>
+        <qualifiedname>iceberg::DeletionVectorMergeGroup::delete_files</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/puffin_dv_io.h" line="41" column="15" bodyfile="iceberg/puffin_dv_io.h" bodystart="41" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1DeletionVectorMergeGroup_1aa5540cdbd33d85a010367ec6bfb50570" prot="public" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1PartitionSpec" kindref="compound">PartitionSpec</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;PartitionSpec&gt; iceberg::DeletionVectorMergeGroup::spec</definition>
+        <argsstring></argsstring>
+        <name>spec</name>
+        <qualifiedname>iceberg::DeletionVectorMergeGroup::spec</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/puffin_dv_io.h" line="42" column="19" bodyfile="iceberg/puffin_dv_io.h" bodystart="42" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1DeletionVectorMergeGroup_1a06e47b3adef6654d0ca92aad0449be5f" prot="public" static="no" mutable="no">
+        <type><ref refid="classiceberg_1_1PartitionValues" kindref="compound">PartitionValues</ref></type>
+        <definition>PartitionValues iceberg::DeletionVectorMergeGroup::partition</definition>
+        <argsstring></argsstring>
+        <name>partition</name>
+        <qualifiedname>iceberg::DeletionVectorMergeGroup::partition</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/puffin_dv_io.h" line="43" column="19" bodyfile="iceberg/puffin_dv_io.h" bodystart="43" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="6">
+        <label>iceberg::DataFile</label>
+        <link refid="structiceberg_1_1DataFile"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>file_path</edgelabel>
+          <edgelabel>kPartitionDoc</edgelabel>
+          <edgelabel>kPartitionField</edgelabel>
+        </childnode>
+        <childnode refid="7" relation="usage">
+          <edgelabel>partition</edgelabel>
+        </childnode>
+        <childnode refid="9" relation="usage">
+          <edgelabel>column_sizes</edgelabel>
+          <edgelabel>nan_value_counts</edgelabel>
+          <edgelabel>null_value_counts</edgelabel>
+          <edgelabel>value_counts</edgelabel>
+        </childnode>
+        <childnode refid="10" relation="usage">
+          <edgelabel>lower_bounds</edgelabel>
+          <edgelabel>upper_bounds</edgelabel>
+        </childnode>
+        <childnode refid="11" relation="usage">
+          <edgelabel>key_metadata</edgelabel>
+        </childnode>
+        <childnode refid="12" relation="usage">
+          <edgelabel>split_offsets</edgelabel>
+        </childnode>
+        <childnode refid="13" relation="usage">
+          <edgelabel>equality_ids</edgelabel>
+        </childnode>
+        <childnode refid="14" relation="usage">
+          <edgelabel>kColumnSizes</edgelabel>
+          <edgelabel>kContent</edgelabel>
+          <edgelabel>kContentOffset</edgelabel>
+          <edgelabel>kContentSize</edgelabel>
+          <edgelabel>kEqualityIds</edgelabel>
+          <edgelabel>kFileFormat</edgelabel>
+          <edgelabel>kFilePath</edgelabel>
+          <edgelabel>kFileSize</edgelabel>
+          <edgelabel>kFirstRowId</edgelabel>
+          <edgelabel>kKeyMetadata</edgelabel>
+          <edgelabel>...</edgelabel>
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::DeletionVectorMergeGroup</label>
+        <link refid="structiceberg_1_1DeletionVectorMergeGroup"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>referenced_data_file</edgelabel>
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>delete_files</edgelabel>
+        </childnode>
+        <childnode refid="16" relation="usage">
+          <edgelabel>spec</edgelabel>
+        </childnode>
+        <childnode refid="7" relation="usage">
+          <edgelabel>partition</edgelabel>
+        </childnode>
+      </node>
+      <node id="17">
+        <label>iceberg::PartitionSpec</label>
+        <link refid="classiceberg_1_1PartitionSpec"/>
+        <childnode refid="15" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="7">
+        <label>iceberg::PartitionValues</label>
+        <link refid="classiceberg_1_1PartitionValues"/>
+        <childnode refid="8" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="14">
+        <label>iceberg::SchemaField</label>
+        <link refid="classiceberg_1_1SchemaField"/>
+        <childnode refid="15" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="8">
+        <label>iceberg::StructLike</label>
+        <link refid="classiceberg_1_1StructLike"/>
+      </node>
+      <node id="15">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+      <node id="9">
+        <label>std::map&lt; int32_t, int64_t &gt;</label>
+      </node>
+      <node id="10">
+        <label>std::map&lt; int32_t, std::vector&lt; uint8_t &gt; &gt;</label>
+        <childnode refid="11" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="5">
+        <label>std::shared_ptr&lt; iceberg::DataFile &gt;</label>
+        <childnode refid="6" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="16">
+        <label>std::shared_ptr&lt; iceberg::PartitionSpec &gt;</label>
+        <childnode refid="17" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="2">
+        <label>std::string</label>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="13">
+        <label>std::vector&lt; int32_t &gt;</label>
+      </node>
+      <node id="12">
+        <label>std::vector&lt; int64_t &gt;</label>
+      </node>
+      <node id="4">
+        <label>std::vector&lt; std::shared_ptr&lt; iceberg::DataFile &gt; &gt;</label>
+        <childnode refid="5" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="11">
+        <label>std::vector&lt; uint8_t &gt;</label>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/puffin_dv_io.h" line="39" column="1" bodyfile="iceberg/puffin_dv_io.h" bodystart="39" bodyend="44"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1DeletionVectorMergeGroup_1ae002f6524c3aa5f1095305e51b86d26d" prot="public" virt="non-virtual"><scope>iceberg::DeletionVectorMergeGroup</scope><name>delete_files</name></member>
+      <member refid="structiceberg_1_1DeletionVectorMergeGroup_1a06e47b3adef6654d0ca92aad0449be5f" prot="public" virt="non-virtual"><scope>iceberg::DeletionVectorMergeGroup</scope><name>partition</name></member>
+      <member refid="structiceberg_1_1DeletionVectorMergeGroup_1ade0a5c2c4e31df88270ef1061cbc9894" prot="public" virt="non-virtual"><scope>iceberg::DeletionVectorMergeGroup</scope><name>referenced_data_file</name></member>
+      <member refid="structiceberg_1_1DeletionVectorMergeGroup_1aa5540cdbd33d85a010367ec6bfb50570" prot="public" virt="non-virtual"><scope>iceberg::DeletionVectorMergeGroup</scope><name>spec</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

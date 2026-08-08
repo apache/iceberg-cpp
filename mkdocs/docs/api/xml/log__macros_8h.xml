@@ -1,0 +1,609 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="log__macros_8h" kind="file" language="C++">
+    <compoundname>log_macros.h</compoundname>
+    <includes local="no">cstdlib</includes>
+    <includes local="no">format</includes>
+    <includes local="no">memory</includes>
+    <includes local="no">source_location</includes>
+    <includes local="no">string</includes>
+    <includes local="no">string_view</includes>
+    <includes local="no">utility</includes>
+    <includes refid="log__level_8h" local="yes">iceberg/logging/log_level.h</includes>
+    <includes refid="logger_8h" local="yes">iceberg/logging/logger.h</includes>
+    <includedby refid="short__log__macros_8h" local="yes">iceberg/logging/short_log_macros.h</includedby>
+    <incdepgraph>
+      <node id="14">
+        <label>iceberg/iceberg_export.h</label>
+        <link refid="iceberg__export_8h"/>
+      </node>
+      <node id="9">
+        <label>iceberg/logging/log_level.h</label>
+        <link refid="log__level_8h"/>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg/logging/log_macros.h</label>
+        <link refid="log__macros_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="23" relation="include">
+        </childnode>
+      </node>
+      <node id="23">
+        <label>iceberg/logging/logger.h</label>
+        <link refid="logger_8h"/>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="25" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+      </node>
+      <node id="10">
+        <label>iceberg/result.h</label>
+        <link refid="result_8h"/>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+      </node>
+      <node id="15">
+        <label>iceberg/util/string_util.h</label>
+        <link refid="string__util_8h"/>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+      </node>
+      <node id="16">
+        <label>algorithm</label>
+      </node>
+      <node id="17">
+        <label>cerrno</label>
+      </node>
+      <node id="18">
+        <label>charconv</label>
+      </node>
+      <node id="11">
+        <label>concepts</label>
+      </node>
+      <node id="2">
+        <label>cstdlib</label>
+      </node>
+      <node id="12">
+        <label>expected</label>
+      </node>
+      <node id="3">
+        <label>format</label>
+      </node>
+      <node id="24">
+        <label>functional</label>
+      </node>
+      <node id="4">
+        <label>memory</label>
+      </node>
+      <node id="19">
+        <label>optional</label>
+      </node>
+      <node id="20">
+        <label>ranges</label>
+      </node>
+      <node id="5">
+        <label>source_location</label>
+      </node>
+      <node id="6">
+        <label>string</label>
+      </node>
+      <node id="7">
+        <label>string_view</label>
+      </node>
+      <node id="13">
+        <label>type_traits</label>
+      </node>
+      <node id="21">
+        <label>typeinfo</label>
+      </node>
+      <node id="25">
+        <label>unordered_map</label>
+      </node>
+      <node id="8">
+        <label>utility</label>
+      </node>
+      <node id="22">
+        <label>vector</label>
+      </node>
+    </incdepgraph>
+    <invincdepgraph>
+      <node id="1">
+        <label>iceberg/logging/log_macros.h</label>
+        <link refid="log__macros_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg/logging/short_log_macros.h</label>
+        <link refid="short__log__macros_8h"/>
+      </node>
+    </invincdepgraph>
+    <innernamespace refid="namespaceiceberg">iceberg</innernamespace>
+    <innernamespace refid="namespaceiceberg_1_1internal">iceberg::internal</innernamespace>
+    <sectiondef kind="define">
+      <memberdef kind="define" id="log__macros_8h_1a79326338ec95f3929a34aa00e16de94e" prot="public" static="no">
+        <name>ICEBERG_LOG_ACTIVE_LEVEL</name>
+        <initializer>::iceberg::LogLevel::kTrace</initializer>
+        <briefdescription>
+<para>Compile-time severity floor: statements below this level are discarded via <computeroutput>if constexpr</computeroutput>, so no emit code runs and no format call / source_location is generated for them (the compiler is free to optimize the dead branch away). The statement must still be well-formed <ndash/> a bad format string or a non-formattable argument is a compile error even when the branch is discarded. Defaults to keeping everything. ICEBERG_LOG_FATAL is never gated by this floor <ndash/> its abort is always compiled in. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/logging/log_macros.h" line="188" column="11" bodyfile="iceberg/logging/log_macros.h" bodystart="188" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="log__macros_8h_1a9b552e378f7354e05027af4b803750b0" prot="public" static="no">
+        <name>ICEBERG_INTERNAL_LOG_MESSAGE</name>
+        <param><defname>FMT_</defname></param>
+        <param><defname>...</defname></param>
+        <initializer>  [&amp;]() -&gt; ::std::string { return ::std::format((FMT_)__VA_OPT__(, ) __VA_ARGS__); }</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/logging/log_macros.h" line="193" column="9" bodyfile="iceberg/logging/log_macros.h" bodystart="193" bodyend="194"/>
+      </memberdef>
+      <memberdef kind="define" id="log__macros_8h_1a8a8f79872324dbb006074cc55122b1c1" prot="public" static="no">
+        <name>ICEBERG_INTERNAL_LOG</name>
+        <param><defname>level_</defname></param>
+        <param><defname>FMT_</defname></param>
+        <param><defname>...</defname></param>
+        <initializer>  do {                                                                    \
+    if constexpr ((level_) &gt;= <ref refid="log__macros_8h_1a79326338ec95f3929a34aa00e16de94e" kindref="member">ICEBERG_LOG_ACTIVE_LEVEL</ref>) {                 \
+      <ref refid="log__macros_8h_1a0c9c016dee2f0483d4f68d86181be0d9" kindref="member">::iceberg::internal::LogToCurrent</ref>(                                  \
+          (level_), ::std::source_location::current(),                    \
+          ICEBERG_INTERNAL_LOG_MESSAGE(FMT_ __VA_OPT__(, ) __VA_ARGS__)); \
+    }                                                                     \
+  } while (0)</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/logging/log_macros.h" line="198" column="9" bodyfile="iceberg/logging/log_macros.h" bodystart="198" bodyend="205"/>
+      </memberdef>
+      <memberdef kind="define" id="log__macros_8h_1a2488e4504be66bb830ed602261b73a8b" prot="public" static="no">
+        <name>ICEBERG_LOG_TRACE</name>
+        <param><defname>...</defname></param>
+        <initializer>  ICEBERG_INTERNAL_LOG(::iceberg::LogLevel::kTrace, __VA_ARGS__)</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/logging/log_macros.h" line="207" column="9" bodyfile="iceberg/logging/log_macros.h" bodystart="207" bodyend="208"/>
+      </memberdef>
+      <memberdef kind="define" id="log__macros_8h_1a265209c77e3fa9a24221f6d63d1a7097" prot="public" static="no">
+        <name>ICEBERG_LOG_DEBUG</name>
+        <param><defname>...</defname></param>
+        <initializer>  ICEBERG_INTERNAL_LOG(::iceberg::LogLevel::kDebug, __VA_ARGS__)</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/logging/log_macros.h" line="209" column="9" bodyfile="iceberg/logging/log_macros.h" bodystart="209" bodyend="210"/>
+      </memberdef>
+      <memberdef kind="define" id="log__macros_8h_1a38515226daec219074f61724d1df28f6" prot="public" static="no">
+        <name>ICEBERG_LOG_INFO</name>
+        <param><defname>...</defname></param>
+        <initializer>  ICEBERG_INTERNAL_LOG(::iceberg::LogLevel::kInfo, __VA_ARGS__)</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/logging/log_macros.h" line="211" column="9" bodyfile="iceberg/logging/log_macros.h" bodystart="211" bodyend="212"/>
+      </memberdef>
+      <memberdef kind="define" id="log__macros_8h_1ad138243efa6766bb5a63d67f8563048e" prot="public" static="no">
+        <name>ICEBERG_LOG_WARN</name>
+        <param><defname>...</defname></param>
+        <initializer>  ICEBERG_INTERNAL_LOG(::iceberg::LogLevel::kWarn, __VA_ARGS__)</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/logging/log_macros.h" line="213" column="9" bodyfile="iceberg/logging/log_macros.h" bodystart="213" bodyend="214"/>
+      </memberdef>
+      <memberdef kind="define" id="log__macros_8h_1a11648e4e943965676ef8706540c7619a" prot="public" static="no">
+        <name>ICEBERG_LOG_ERROR</name>
+        <param><defname>...</defname></param>
+        <initializer>  ICEBERG_INTERNAL_LOG(::iceberg::LogLevel::kError, __VA_ARGS__)</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/logging/log_macros.h" line="215" column="9" bodyfile="iceberg/logging/log_macros.h" bodystart="215" bodyend="216"/>
+      </memberdef>
+      <memberdef kind="define" id="log__macros_8h_1a8aa2e154509953b60dc53a935239dbec" prot="public" static="no">
+        <name>ICEBERG_LOG_CRITICAL</name>
+        <param><defname>...</defname></param>
+        <initializer>  ICEBERG_INTERNAL_LOG(::iceberg::LogLevel::kCritical, __VA_ARGS__)</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/logging/log_macros.h" line="217" column="9" bodyfile="iceberg/logging/log_macros.h" bodystart="217" bodyend="218"/>
+      </memberdef>
+      <memberdef kind="define" id="log__macros_8h_1a3d39316a3333941bdf550d80a5364199" prot="public" static="no">
+        <name>ICEBERG_LOG_FATAL</name>
+        <param><defname>FMT_</defname></param>
+        <param><defname>...</defname></param>
+        <initializer>  <ref refid="log__macros_8h_1a39b498af2ff87f8fda25d4f3340b898c" kindref="member">::iceberg::internal::LogFatal</ref>(         \
+      ::std::source_location::current(), \
+      ICEBERG_INTERNAL_LOG_MESSAGE(FMT_ __VA_OPT__(, ) __VA_ARGS__))</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/logging/log_macros.h" line="223" column="9" bodyfile="iceberg/logging/log_macros.h" bodystart="223" bodyend="226"/>
+      </memberdef>
+      <memberdef kind="define" id="log__macros_8h_1a70dfbb4fc1e64a9d7e7e74c161ffbc3c" prot="public" static="no">
+        <name>ICEBERG_LOG</name>
+        <param><defname>level_</defname></param>
+        <param><defname>FMT_</defname></param>
+        <param><defname>...</defname></param>
+        <initializer>  <ref refid="log__macros_8h_1a321eeff5aa4b21fa8b46783c63148555" kindref="member">::iceberg::internal::LogToCurrentRuntime</ref>(        \
+      (level_), ::std::source_location::current(), \
+      ICEBERG_INTERNAL_LOG_MESSAGE(FMT_ __VA_OPT__(, ) __VA_ARGS__))</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/logging/log_macros.h" line="230" column="9" bodyfile="iceberg/logging/log_macros.h" bodystart="230" bodyend="233"/>
+      </memberdef>
+      <memberdef kind="define" id="log__macros_8h_1aecf94e493238a9678e6dc41733dc6675" prot="public" static="no">
+        <name>ICEBERG_LOG_TO</name>
+        <param><defname>logger_</defname></param>
+        <param><defname>level_</defname></param>
+        <param><defname>FMT_</defname></param>
+        <param><defname>...</defname></param>
+        <initializer>  <ref refid="log__macros_8h_1ab3a00ea892a68afcecab1abac51e5361" kindref="member">::iceberg::internal::LogToExplicitRuntime</ref>(                  \
+      (logger_), (level_), ::std::source_location::current(), \
+      ICEBERG_INTERNAL_LOG_MESSAGE(FMT_ __VA_OPT__(, ) __VA_ARGS__))</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/logging/log_macros.h" line="237" column="9" bodyfile="iceberg/logging/log_macros.h" bodystart="237" bodyend="240"/>
+      </memberdef>
+      <memberdef kind="define" id="log__macros_8h_1a92d28323a5d6431a013e7119b02d7421" prot="public" static="no">
+        <name>ICEBERG_LOG_RUNTIME_FMT</name>
+        <param><defname>level_</defname></param>
+        <param><defname>FMT_</defname></param>
+        <param><defname>...</defname></param>
+        <initializer>  <ref refid="log__macros_8h_1a321eeff5aa4b21fa8b46783c63148555" kindref="member">::iceberg::internal::LogToCurrentRuntime</ref>(                                    \
+      (level_), ::std::source_location::current(), [&amp;]() -&gt; ::std::string {    \
+        return <ref refid="log__macros_8h_1a885e43522698d6e2522924e9ba2a745b" kindref="member">::iceberg::internal::VFormat</ref>((FMT_)__VA_OPT__(, ) __VA_ARGS__); \
+      })</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/logging/log_macros.h" line="244" column="9" bodyfile="iceberg/logging/log_macros.h" bodystart="244" bodyend="248"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Iceberg-prefixed logging macros (ICEBERG_LOG_*). </para>
+    </briefdescription>
+    <detaileddescription>
+<para>Kept out of <ref refid="logger_8h" kindref="compound">logger.h</ref> so consumers of the C++ logging API (Logger, Log(), ScopedLogger) are not forced to pull in these macros or the conforming preprocessor they require. Include this header to use the macros; include <ref refid="short__log__macros_8h" kindref="compound">short_log_macros.h</ref> for the bare LOG_* aliases. </para>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="comment">/*</highlight></codeline>
+<codeline lineno="2"><highlight class="comment"><sp/>*<sp/>Licensed<sp/>to<sp/>the<sp/>Apache<sp/>Software<sp/>Foundation<sp/>(ASF)<sp/>under<sp/>one</highlight></codeline>
+<codeline lineno="3"><highlight class="comment"><sp/>*<sp/>or<sp/>more<sp/>contributor<sp/>license<sp/>agreements.<sp/><sp/>See<sp/>the<sp/>NOTICE<sp/>file</highlight></codeline>
+<codeline lineno="4"><highlight class="comment"><sp/>*<sp/>distributed<sp/>with<sp/>this<sp/>work<sp/>for<sp/>additional<sp/>information</highlight></codeline>
+<codeline lineno="5"><highlight class="comment"><sp/>*<sp/>regarding<sp/>copyright<sp/>ownership.<sp/><sp/>The<sp/>ASF<sp/>licenses<sp/>this<sp/>file</highlight></codeline>
+<codeline lineno="6"><highlight class="comment"><sp/>*<sp/>to<sp/>you<sp/>under<sp/>the<sp/>Apache<sp/>License,<sp/>Version<sp/>2.0<sp/>(the</highlight></codeline>
+<codeline lineno="7"><highlight class="comment"><sp/>*<sp/>&quot;License&quot;);<sp/>you<sp/>may<sp/>not<sp/>use<sp/>this<sp/>file<sp/>except<sp/>in<sp/>compliance</highlight></codeline>
+<codeline lineno="8"><highlight class="comment"><sp/>*<sp/>with<sp/>the<sp/>License.<sp/><sp/>You<sp/>may<sp/>obtain<sp/>a<sp/>copy<sp/>of<sp/>the<sp/>License<sp/>at</highlight></codeline>
+<codeline lineno="9"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="10"><highlight class="comment"><sp/>*<sp/><sp/><sp/>http://www.apache.org/licenses/LICENSE-2.0</highlight></codeline>
+<codeline lineno="11"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="12"><highlight class="comment"><sp/>*<sp/>Unless<sp/>required<sp/>by<sp/>applicable<sp/>law<sp/>or<sp/>agreed<sp/>to<sp/>in<sp/>writing,</highlight></codeline>
+<codeline lineno="13"><highlight class="comment"><sp/>*<sp/>software<sp/>distributed<sp/>under<sp/>the<sp/>License<sp/>is<sp/>distributed<sp/>on<sp/>an</highlight></codeline>
+<codeline lineno="14"><highlight class="comment"><sp/>*<sp/>&quot;AS<sp/>IS&quot;<sp/>BASIS,<sp/>WITHOUT<sp/>WARRANTIES<sp/>OR<sp/>CONDITIONS<sp/>OF<sp/>ANY</highlight></codeline>
+<codeline lineno="15"><highlight class="comment"><sp/>*<sp/>KIND,<sp/>either<sp/>express<sp/>or<sp/>implied.<sp/><sp/>See<sp/>the<sp/>License<sp/>for<sp/>the</highlight></codeline>
+<codeline lineno="16"><highlight class="comment"><sp/>*<sp/>specific<sp/>language<sp/>governing<sp/>permissions<sp/>and<sp/>limitations</highlight></codeline>
+<codeline lineno="17"><highlight class="comment"><sp/>*<sp/>under<sp/>the<sp/>License.</highlight></codeline>
+<codeline lineno="18"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="19"><highlight class="normal"></highlight></codeline>
+<codeline lineno="20"><highlight class="normal"></highlight><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="21"><highlight class="normal"></highlight></codeline>
+<codeline lineno="29"><highlight class="normal"></highlight></codeline>
+<codeline lineno="30"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;cstdlib&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="31"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;format&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="32"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;memory&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="33"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;source_location&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="34"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;string&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="35"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;string_view&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="36"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;utility&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="37"><highlight class="normal"></highlight></codeline>
+<codeline lineno="38"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="log__level_8h" kindref="compound">iceberg/logging/log_level.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="39"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="logger_8h" kindref="compound">iceberg/logging/logger.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="40"><highlight class="normal"></highlight></codeline>
+<codeline lineno="41"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">iceberg::internal<sp/>{</highlight></codeline>
+<codeline lineno="42"><highlight class="normal"></highlight></codeline>
+<codeline lineno="49"><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal">...<sp/>Args&gt;</highlight></codeline>
+<codeline lineno="50" refid="log__macros_8h_1a885e43522698d6e2522924e9ba2a745b" refkind="member"><highlight class="normal">std::string<sp/><ref refid="log__macros_8h_1a885e43522698d6e2522924e9ba2a745b" kindref="member">VFormat</ref>(std::string_view<sp/>fmt,<sp/>Args&amp;&amp;...<sp/>args)<sp/>{</highlight></codeline>
+<codeline lineno="51"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>store<sp/>=<sp/>std::make_format_args(args...);</highlight></codeline>
+<codeline lineno="52"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>std::vformat(fmt,<sp/>store);</highlight></codeline>
+<codeline lineno="53"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="54"><highlight class="normal"></highlight></codeline>
+<codeline lineno="61"><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>MakeMessage&gt;</highlight></codeline>
+<codeline lineno="62" refid="log__macros_8h_1ae1daa6f029aa6918a0731f91b039218c" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="log__macros_8h_1ae1daa6f029aa6918a0731f91b039218c" kindref="member">EmitIfEnabled</ref>(<ref refid="classiceberg_1_1Logger" kindref="compound">Logger</ref>&amp;<sp/>logger,<sp/><ref refid="namespaceiceberg_1ab9922ae0d07dc85678a1a86c872e387b" kindref="member">LogLevel</ref><sp/>level,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::source_location&amp;<sp/>location,</highlight></codeline>
+<codeline lineno="63"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>MakeMessage&amp;&amp;<sp/>make_message)<sp/></highlight><highlight class="keyword">noexcept</highlight><highlight class="normal"><sp/>{</highlight></codeline>
+<codeline lineno="64"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(!logger.ShouldLog(level))<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="65"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">try</highlight><highlight class="normal"><sp/>{</highlight></codeline>
+<codeline lineno="66"><highlight class="normal"><sp/><sp/><sp/><sp/>Emit(logger,<sp/>level,<sp/>location,<sp/>std::forward&lt;MakeMessage&gt;(make_message)());</highlight></codeline>
+<codeline lineno="67"><highlight class="normal"><sp/><sp/>}<sp/></highlight><highlight class="keywordflow">catch</highlight><highlight class="normal"><sp/>(...)<sp/>{</highlight></codeline>
+<codeline lineno="68"><highlight class="normal"><sp/><sp/><sp/><sp/>EmitFormatError(logger,<sp/>level,<sp/>location);</highlight></codeline>
+<codeline lineno="69"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="70"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="71"><highlight class="normal"></highlight></codeline>
+<codeline lineno="73"><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>MakeMessage&gt;</highlight></codeline>
+<codeline lineno="74" refid="log__macros_8h_1a0c9c016dee2f0483d4f68d86181be0d9" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="log__macros_8h_1a0c9c016dee2f0483d4f68d86181be0d9" kindref="member">LogToCurrent</ref>(<ref refid="namespaceiceberg_1ab9922ae0d07dc85678a1a86c872e387b" kindref="member">LogLevel</ref><sp/>level,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::source_location&amp;<sp/>location,</highlight></codeline>
+<codeline lineno="75"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>MakeMessage&amp;&amp;<sp/>make_message)<sp/></highlight><highlight class="keyword">noexcept</highlight><highlight class="normal"><sp/>{</highlight></codeline>
+<codeline lineno="76"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::shared_ptr&lt;Logger&gt;&amp;<sp/>logger<sp/>=<sp/>CurrentLogger();</highlight></codeline>
+<codeline lineno="77"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(logger)<sp/>{</highlight></codeline>
+<codeline lineno="78"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="log__macros_8h_1ae1daa6f029aa6918a0731f91b039218c" kindref="member">EmitIfEnabled</ref>(*logger,<sp/>level,<sp/>location,<sp/>std::forward&lt;MakeMessage&gt;(make_message));</highlight></codeline>
+<codeline lineno="79"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="80"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="81"><highlight class="normal"></highlight></codeline>
+<codeline lineno="84"><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>MakeMessage&gt;</highlight></codeline>
+<codeline lineno="85" refid="log__macros_8h_1a321eeff5aa4b21fa8b46783c63148555" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="log__macros_8h_1a321eeff5aa4b21fa8b46783c63148555" kindref="member">LogToCurrentRuntime</ref>(<ref refid="namespaceiceberg_1ab9922ae0d07dc85678a1a86c872e387b" kindref="member">LogLevel</ref><sp/>level,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::source_location&amp;<sp/>location,</highlight></codeline>
+<codeline lineno="86"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>MakeMessage&amp;&amp;<sp/>make_message)<sp/></highlight><highlight class="keyword">noexcept</highlight><highlight class="normal"><sp/>{</highlight></codeline>
+<codeline lineno="87"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::shared_ptr&lt;Logger&gt;&amp;<sp/>logger<sp/>=<sp/>CurrentLogger();</highlight></codeline>
+<codeline lineno="88"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(logger)<sp/>{</highlight></codeline>
+<codeline lineno="89"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="log__macros_8h_1ae1daa6f029aa6918a0731f91b039218c" kindref="member">EmitIfEnabled</ref>(*logger,<sp/>level,<sp/>location,<sp/>std::forward&lt;MakeMessage&gt;(make_message));</highlight></codeline>
+<codeline lineno="90"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="91"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(level<sp/>==<sp/>LogLevel::kFatal)<sp/>{</highlight></codeline>
+<codeline lineno="92"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(logger)<sp/>logger-&gt;Flush();</highlight></codeline>
+<codeline lineno="93"><highlight class="normal"><sp/><sp/><sp/><sp/>std::abort();</highlight></codeline>
+<codeline lineno="94"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="95"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="96"><highlight class="normal"></highlight></codeline>
+<codeline lineno="99"><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>MakeMessage&gt;</highlight></codeline>
+<codeline lineno="100" refid="log__macros_8h_1ab3a00ea892a68afcecab1abac51e5361" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="log__macros_8h_1ab3a00ea892a68afcecab1abac51e5361" kindref="member">LogToExplicitRuntime</ref>(<ref refid="classiceberg_1_1Logger" kindref="compound">Logger</ref>&amp;<sp/>logger,<sp/><ref refid="namespaceiceberg_1ab9922ae0d07dc85678a1a86c872e387b" kindref="member">LogLevel</ref><sp/>level,</highlight></codeline>
+<codeline lineno="101"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::source_location&amp;<sp/>location,</highlight></codeline>
+<codeline lineno="102"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>MakeMessage&amp;&amp;<sp/>make_message)<sp/></highlight><highlight class="keyword">noexcept</highlight><highlight class="normal"><sp/>{</highlight></codeline>
+<codeline lineno="103"><highlight class="normal"><sp/><sp/><ref refid="log__macros_8h_1ae1daa6f029aa6918a0731f91b039218c" kindref="member">EmitIfEnabled</ref>(logger,<sp/>level,<sp/>location,<sp/>std::forward&lt;MakeMessage&gt;(make_message));</highlight></codeline>
+<codeline lineno="104"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(level<sp/>==<sp/>LogLevel::kFatal)<sp/>{</highlight></codeline>
+<codeline lineno="105"><highlight class="normal"><sp/><sp/><sp/><sp/>logger.Flush();</highlight></codeline>
+<codeline lineno="106"><highlight class="normal"><sp/><sp/><sp/><sp/>std::abort();</highlight></codeline>
+<codeline lineno="107"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="108"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="109"><highlight class="normal"></highlight></codeline>
+<codeline lineno="118"><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>MakeMessage&gt;</highlight></codeline>
+<codeline lineno="119" refid="log__macros_8h_1a39b498af2ff87f8fda25d4f3340b898c" refkind="member"><highlight class="normal">[[noreturn]]<sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="log__macros_8h_1a39b498af2ff87f8fda25d4f3340b898c" kindref="member">LogFatal</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::source_location&amp;<sp/>location,</highlight></codeline>
+<codeline lineno="120"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>MakeMessage&amp;&amp;<sp/>make_message)<sp/></highlight><highlight class="keyword">noexcept</highlight><highlight class="normal"><sp/>{</highlight></codeline>
+<codeline lineno="121"><highlight class="normal"><sp/><sp/>std::string<sp/>message;</highlight></codeline>
+<codeline lineno="122"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">try</highlight><highlight class="normal"><sp/>{</highlight></codeline>
+<codeline lineno="123"><highlight class="normal"><sp/><sp/><sp/><sp/>message<sp/>=<sp/>std::forward&lt;MakeMessage&gt;(make_message)();</highlight></codeline>
+<codeline lineno="124"><highlight class="normal"><sp/><sp/>}<sp/></highlight><highlight class="keywordflow">catch</highlight><highlight class="normal"><sp/>(...)<sp/>{</highlight></codeline>
+<codeline lineno="125"><highlight class="normal"><sp/><sp/><sp/><sp/>message<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;&lt;fmt<sp/>error&gt;&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="126"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="127"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>logger<sp/>=<sp/><ref refid="namespaceiceberg_1a71a0404fee81a92cc327ce2cec8c4290" kindref="member">GetCurrentLogger</ref>();</highlight></codeline>
+<codeline lineno="128"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(logger)<sp/>{</highlight></codeline>
+<codeline lineno="129"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(logger-&gt;ShouldLog(LogLevel::kFatal))<sp/>{</highlight></codeline>
+<codeline lineno="130"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>Emit(*logger,<sp/>LogLevel::kFatal,<sp/>location,<sp/>std::string(message));</highlight></codeline>
+<codeline lineno="131"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="132"><highlight class="normal"><sp/><sp/><sp/><sp/>logger-&gt;Flush();</highlight></codeline>
+<codeline lineno="133"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="134"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>handler<sp/>=<sp/><ref refid="namespaceiceberg_1a02c78b12379222b1535bd2531e40b89b" kindref="member">GetFatalHandler</ref>())<sp/>{</highlight></codeline>
+<codeline lineno="135"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">try</highlight><highlight class="normal"><sp/>{</highlight></codeline>
+<codeline lineno="136"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>handler(location,<sp/>message);</highlight></codeline>
+<codeline lineno="137"><highlight class="normal"><sp/><sp/><sp/><sp/>}<sp/></highlight><highlight class="keywordflow">catch</highlight><highlight class="normal"><sp/>(...)<sp/>{<sp/><sp/></highlight><highlight class="comment">//<sp/>a<sp/>throwing<sp/>handler<sp/>must<sp/>not<sp/>prevent<sp/>the<sp/>abort</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="138"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="139"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="140"><highlight class="normal"><sp/><sp/>std::abort();</highlight></codeline>
+<codeline lineno="141"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="142"><highlight class="normal"></highlight></codeline>
+<codeline lineno="143"><highlight class="normal">}<sp/><sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>iceberg::internal</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="144"><highlight class="normal"></highlight></codeline>
+<codeline lineno="145"><highlight class="normal"></highlight><highlight class="comment">//<sp/>---------------------------------------------------------------------------</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="146"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Logging<sp/>macros.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="147"><highlight class="normal"></highlight><highlight class="comment">//</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="148"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Every<sp/>macro<sp/>takes<sp/>a<sp/>std::format<sp/>string<sp/>followed<sp/>by<sp/>its<sp/>arguments.<sp/>The</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="149"><highlight class="normal"></highlight><highlight class="comment">//<sp/>rendered<sp/>line<sp/>depends<sp/>on<sp/>the<sp/>active<sp/>backend<sp/>(see<sp/>cerr_logger.h<sp/>for<sp/>the</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="150"><highlight class="normal"></highlight><highlight class="comment">//<sp/>std::cerr<sp/>layout,<sp/>or<sp/>the<sp/>spdlog<sp/>pattern);<sp/>the<sp/>examples<sp/>below<sp/>show<sp/>the<sp/>call</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="151"><highlight class="normal"></highlight><highlight class="comment">//<sp/>site<sp/>and,<sp/>for<sp/>the<sp/>default<sp/>CerrLogger,<sp/>the<sp/>line<sp/>it<sp/>produces.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="152"><highlight class="normal"></highlight><highlight class="comment">//</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="153"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/>ICEBERG_LOG_TRACE(&quot;entering<sp/>scan<sp/>for<sp/>{}&quot;,<sp/>table);</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="154"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/>2026-06-16T10:59:41.186Z<sp/>trace<sp/>[12345]<sp/>[table_scan.cc:88]<sp/>entering<sp/>scan<sp/>for<sp/>db.t</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="155"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/>ICEBERG_LOG_DEBUG(&quot;cache<sp/>miss<sp/>key={}&quot;,<sp/>key);</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="156"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/>2026-06-16T10:59:41.186Z<sp/>debug<sp/>[12345]<sp/>[cache.cc:42]<sp/>cache<sp/>miss<sp/>key=manifest-7</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="157"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/>ICEBERG_LOG_INFO(&quot;loaded<sp/>{}<sp/>manifests<sp/>in<sp/>{}<sp/>ms&quot;,<sp/>n,<sp/>ms);</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="158"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/>2026-06-16T10:59:41.186Z<sp/>info<sp/>[12345]<sp/>[table_scan.cc:91]<sp/>loaded<sp/>5<sp/>manifests<sp/>in<sp/>12</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="159"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/>ms</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="160"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/>ICEBERG_LOG_WARN(&quot;retry<sp/>{}<sp/>after<sp/>{}&quot;,<sp/>attempt,<sp/>err);</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="161"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/>2026-06-16T10:59:41.186Z<sp/>warn<sp/>[12345]<sp/>[io.cc:51]<sp/>retry<sp/>2<sp/>after<sp/>timeout</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="162"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/>ICEBERG_LOG_ERROR(&quot;commit<sp/>failed:<sp/>{}&quot;,<sp/>status);</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="163"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/>2026-06-16T10:59:41.186Z<sp/>error<sp/>[12345]<sp/>[txn.cc:77]<sp/>commit<sp/>failed:<sp/>conflict</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="164"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/>ICEBERG_LOG_CRITICAL(&quot;metadata<sp/>unreadable<sp/>at<sp/>{}&quot;,<sp/>path);</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="165"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/>2026-06-16T10:59:41.186Z<sp/>critical<sp/>[12345]<sp/>[meta.cc:30]<sp/>metadata<sp/>unreadable<sp/>at</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="166"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/>s3://b/m.json</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="167"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/>ICEBERG_LOG_FATAL(&quot;unrecoverable:<sp/>{}&quot;,<sp/>reason);<sp/><sp/><sp/>//<sp/>emits,<sp/>flushes,<sp/>then</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="168"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/>std::abort()</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="169"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/><sp/><sp/>2026-06-16T10:59:41.186Z<sp/>fatal<sp/>[12345]<sp/>[boot.cc:19]<sp/>unrecoverable:<sp/>bad<sp/>config</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="170"><highlight class="normal"></highlight><highlight class="comment">//</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="171"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Less<sp/>common<sp/>forms:</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="172"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/>ICEBERG_LOG(level,<sp/>&quot;level<sp/>chosen<sp/>at<sp/>runtime:<sp/>{}&quot;,<sp/>x);<sp/><sp/><sp/><sp/><sp/>//<sp/>runtime<sp/>severity</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="173"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/>ICEBERG_LOG_TO(logger,<sp/>level,<sp/>&quot;to<sp/>an<sp/>explicit<sp/>logger<sp/>{}&quot;,<sp/>y);</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="174"><highlight class="normal"></highlight><highlight class="comment">//<sp/><sp/><sp/>ICEBERG_LOG_RUNTIME_FMT(level,<sp/>fmt_string,<sp/>args...);<sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>non-literal<sp/>format</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="175"><highlight class="normal"></highlight><highlight class="comment">//</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="176"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Include<sp/>short_log_macros.h<sp/>for<sp/>bare<sp/>aliases<sp/>(LOG_INFO,<sp/>...).<sp/>A<sp/>format<sp/>string<sp/>is</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="177"><highlight class="normal"></highlight><highlight class="comment">//<sp/>mandatory;<sp/>zero<sp/>extra<sp/>args<sp/>is<sp/>fine<sp/>(ICEBERG_LOG_INFO(&quot;done&quot;)).</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="178"><highlight class="normal"></highlight><highlight class="comment">//<sp/>---------------------------------------------------------------------------</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="179"><highlight class="normal"></highlight></codeline>
+<codeline lineno="187"><highlight class="preprocessor">#ifndef<sp/>ICEBERG_LOG_ACTIVE_LEVEL</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="188" refid="log__macros_8h_1a79326338ec95f3929a34aa00e16de94e" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#<sp/><sp/>define<sp/>ICEBERG_LOG_ACTIVE_LEVEL<sp/>::iceberg::LogLevel::kTrace</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="189"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="190"><highlight class="normal"></highlight></codeline>
+<codeline lineno="191"><highlight class="normal"></highlight><highlight class="comment">//<sp/>A<sp/>message-builder<sp/>lambda<sp/>that<sp/>formats<sp/>lazily<sp/>(only<sp/>invoked<sp/>past<sp/>ShouldLog<sp/>by<sp/>the</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="192"><highlight class="normal"></highlight><highlight class="comment">//<sp/>EmitIfEnabled<sp/>helpers),<sp/>so<sp/>disabled<sp/>logs<sp/>never<sp/>evaluate<sp/>their<sp/>arguments.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="193"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>ICEBERG_INTERNAL_LOG_MESSAGE(FMT_,<sp/>...)<sp/>\</highlight></codeline>
+<codeline lineno="194"><highlight class="preprocessor"><sp/><sp/>[&amp;]()<sp/>-&gt;<sp/>::std::string<sp/>{<sp/>return<sp/>::std::format((FMT_)__VA_OPT__(,<sp/>)<sp/>__VA_ARGS__);<sp/>}</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="195"><highlight class="normal"></highlight></codeline>
+<codeline lineno="196"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Fixed-severity<sp/>emit<sp/>with<sp/>a<sp/>compile-time<sp/>floor<sp/>(`if<sp/>constexpr`)<sp/>then<sp/>the<sp/>shared</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="197"><highlight class="normal"></highlight><highlight class="comment">//<sp/>current-logger<sp/>path.<sp/>Formatting<sp/>happens<sp/>only<sp/>on<sp/>the<sp/>taken<sp/>path<sp/>and<sp/>never<sp/>throws.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="198"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>ICEBERG_INTERNAL_LOG(level_,<sp/>FMT_,<sp/>...)<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="199"><highlight class="preprocessor"><sp/><sp/>do<sp/>{<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="200"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>if<sp/>constexpr<sp/>((level_)<sp/>&gt;=<sp/>ICEBERG_LOG_ACTIVE_LEVEL)<sp/>{<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="201"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/>::iceberg::internal::LogToCurrent(<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="202"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(level_),<sp/>::std::source_location::current(),<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="203"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ICEBERG_INTERNAL_LOG_MESSAGE(FMT_<sp/>__VA_OPT__(,<sp/>)<sp/>__VA_ARGS__));<sp/>\</highlight></codeline>
+<codeline lineno="204"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>}<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="205"><highlight class="preprocessor"><sp/><sp/>}<sp/>while<sp/>(0)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="206"><highlight class="normal"></highlight></codeline>
+<codeline lineno="207"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>ICEBERG_LOG_TRACE(...)<sp/>\</highlight></codeline>
+<codeline lineno="208"><highlight class="preprocessor"><sp/><sp/>ICEBERG_INTERNAL_LOG(::iceberg::LogLevel::kTrace,<sp/>__VA_ARGS__)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="209"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>ICEBERG_LOG_DEBUG(...)<sp/>\</highlight></codeline>
+<codeline lineno="210"><highlight class="preprocessor"><sp/><sp/>ICEBERG_INTERNAL_LOG(::iceberg::LogLevel::kDebug,<sp/>__VA_ARGS__)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="211"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>ICEBERG_LOG_INFO(...)<sp/>\</highlight></codeline>
+<codeline lineno="212"><highlight class="preprocessor"><sp/><sp/>ICEBERG_INTERNAL_LOG(::iceberg::LogLevel::kInfo,<sp/>__VA_ARGS__)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="213"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>ICEBERG_LOG_WARN(...)<sp/>\</highlight></codeline>
+<codeline lineno="214"><highlight class="preprocessor"><sp/><sp/>ICEBERG_INTERNAL_LOG(::iceberg::LogLevel::kWarn,<sp/>__VA_ARGS__)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="215"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>ICEBERG_LOG_ERROR(...)<sp/>\</highlight></codeline>
+<codeline lineno="216"><highlight class="preprocessor"><sp/><sp/>ICEBERG_INTERNAL_LOG(::iceberg::LogLevel::kError,<sp/>__VA_ARGS__)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="217"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>ICEBERG_LOG_CRITICAL(...)<sp/>\</highlight></codeline>
+<codeline lineno="218"><highlight class="preprocessor"><sp/><sp/>ICEBERG_INTERNAL_LOG(::iceberg::LogLevel::kCritical,<sp/>__VA_ARGS__)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="219"><highlight class="normal"></highlight></codeline>
+<codeline lineno="220"><highlight class="normal"></highlight><highlight class="comment">//<sp/>FATAL:<sp/>emit<sp/>if<sp/>enabled<sp/>(never<sp/>compile-stripped),<sp/>then<sp/>ALWAYS<sp/>flush<sp/>+<sp/>abort.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="221"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Acquires<sp/>the<sp/>effective<sp/>(scoped-or-default)<sp/>logger<sp/>ONCE<sp/>so<sp/>a<sp/>concurrent</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="222"><highlight class="normal"></highlight><highlight class="comment">//<sp/>SetDefaultLogger<sp/>cannot<sp/>flush<sp/>a<sp/>different<sp/>logger<sp/>than<sp/>it<sp/>emitted<sp/>to.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="223"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>ICEBERG_LOG_FATAL(FMT_,<sp/>...)<sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="224"><highlight class="preprocessor"><sp/><sp/>::iceberg::internal::LogFatal(<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="225"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/>::std::source_location::current(),<sp/>\</highlight></codeline>
+<codeline lineno="226"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/>ICEBERG_INTERNAL_LOG_MESSAGE(FMT_<sp/>__VA_OPT__(,<sp/>)<sp/>__VA_ARGS__))</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="227"><highlight class="normal"></highlight></codeline>
+<codeline lineno="228"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Generic,<sp/>runtime-level<sp/>form<sp/>against<sp/>the<sp/>default<sp/>logger.<sp/>No<sp/>compile-time<sp/>floor</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="229"><highlight class="normal"></highlight><highlight class="comment">//<sp/>(the<sp/>level<sp/>is<sp/>not<sp/>a<sp/>constant).<sp/>Aborts<sp/>when<sp/>level<sp/>==<sp/>kFatal.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="230"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>ICEBERG_LOG(level_,<sp/>FMT_,<sp/>...)<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="231"><highlight class="preprocessor"><sp/><sp/>::iceberg::internal::LogToCurrentRuntime(<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="232"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/>(level_),<sp/>::std::source_location::current(),<sp/>\</highlight></codeline>
+<codeline lineno="233"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/>ICEBERG_INTERNAL_LOG_MESSAGE(FMT_<sp/>__VA_OPT__(,<sp/>)<sp/>__VA_ARGS__))</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="234"><highlight class="normal"></highlight></codeline>
+<codeline lineno="235"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Generic<sp/>form<sp/>targeting<sp/>an<sp/>EXPLICIT<sp/>logger<sp/>(must<sp/>be<sp/>an<sp/>lvalue<sp/>Logger&amp;).<sp/>Honors</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="236"><highlight class="normal"></highlight><highlight class="comment">//<sp/>only<sp/>that<sp/>logger&apos;s<sp/>ShouldLog.<sp/>Aborts<sp/>when<sp/>level<sp/>==<sp/>kFatal.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="237"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>ICEBERG_LOG_TO(logger_,<sp/>level_,<sp/>FMT_,<sp/>...)<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="238"><highlight class="preprocessor"><sp/><sp/>::iceberg::internal::LogToExplicitRuntime(<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="239"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/>(logger_),<sp/>(level_),<sp/>::std::source_location::current(),<sp/>\</highlight></codeline>
+<codeline lineno="240"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/>ICEBERG_INTERNAL_LOG_MESSAGE(FMT_<sp/>__VA_OPT__(,<sp/>)<sp/>__VA_ARGS__))</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="241"><highlight class="normal"></highlight></codeline>
+<codeline lineno="242"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Runtime<sp/>(non-literal)<sp/>format<sp/>string<sp/>against<sp/>the<sp/>default<sp/>logger.<sp/>Aborts<sp/>when</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="243"><highlight class="normal"></highlight><highlight class="comment">//<sp/>level<sp/>==<sp/>kFatal.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="244"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>ICEBERG_LOG_RUNTIME_FMT(level_,<sp/>FMT_,<sp/>...)<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="245"><highlight class="preprocessor"><sp/><sp/>::iceberg::internal::LogToCurrentRuntime(<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="246"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/>(level_),<sp/>::std::source_location::current(),<sp/>[&amp;]()<sp/>-&gt;<sp/>::std::string<sp/>{<sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="247"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>return<sp/>::iceberg::internal::VFormat((FMT_)__VA_OPT__(,<sp/>)<sp/>__VA_ARGS__);<sp/>\</highlight></codeline>
+<codeline lineno="248"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/>})</highlight></codeline>
+    </programlisting>
+    <location file="iceberg/logging/log_macros.h"/>
+  </compounddef>
+</doxygen>

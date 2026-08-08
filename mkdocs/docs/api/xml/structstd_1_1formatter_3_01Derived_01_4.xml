@@ -1,0 +1,75 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structstd_1_1formatter_3_01Derived_01_4" kind="struct" language="C++" prot="public">
+    <compoundname>std::formatter&lt; Derived &gt;</compoundname>
+    <basecompoundref prot="public" virt="non-virtual">std::formatter&lt; std::string_view &gt;</basecompoundref>
+    <includes refid="formatter_8h" local="no">formatter.h</includes>
+    <templateparamlist>
+      <param>
+        <type>std::derived_from&lt; <ref refid="classiceberg_1_1util_1_1Formattable" kindref="compound">iceberg::util::Formattable</ref> &gt;</type>
+        <declname>Derived</declname>
+        <defname>Derived</defname>
+      </param>
+    </templateparamlist>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structstd_1_1formatter_3_01Derived_01_4_1adc8c85b345c516f79d0a459789ce53af" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class FormatContext</type>
+          </param>
+        </templateparamlist>
+        <type>auto</type>
+        <definition>auto std::formatter&lt; Derived &gt;::format</definition>
+        <argsstring>(const iceberg::util::Formattable &amp;obj, FormatContext &amp;ctx) const</argsstring>
+        <name>format</name>
+        <qualifiedname>std::formatter&lt; Derived &gt;::format</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1util_1_1Formattable" kindref="compound">iceberg::util::Formattable</ref> &amp;</type>
+          <declname>obj</declname>
+        </param>
+        <param>
+          <type>FormatContext &amp;</type>
+          <declname>ctx</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/formatter.h" line="39" column="8" bodyfile="iceberg/util/formatter.h" bodystart="39" bodyend="41"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Make all classes deriving from <ref refid="classiceberg_1_1util_1_1Formattable" kindref="compound">iceberg::util::Formattable</ref> formattable with std::format. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>std::formatter&lt; Derived &gt;</label>
+        <link refid="structstd_1_1formatter_3_01Derived_01_4"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>std::formatter&lt; std::string_view &gt;</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>std::formatter&lt; Derived &gt;</label>
+        <link refid="structstd_1_1formatter_3_01Derived_01_4"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>std::formatter&lt; std::string_view &gt;</label>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/util/formatter.h" line="37" column="1" bodyfile="iceberg/util/formatter.h" bodystart="37" bodyend="42"/>
+    <listofallmembers>
+      <member refid="structstd_1_1formatter_3_01Derived_01_4_1adc8c85b345c516f79d0a459789ce53af" prot="public" virt="non-virtual"><scope>std::formatter&lt; Derived &gt;</scope><name>format</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

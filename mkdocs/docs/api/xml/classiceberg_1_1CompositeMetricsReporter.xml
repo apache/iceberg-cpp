@@ -1,0 +1,131 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1CompositeMetricsReporter" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::CompositeMetricsReporter</compoundname>
+    <basecompoundref refid="classiceberg_1_1MetricsReporter" prot="public" virt="non-virtual">iceberg::MetricsReporter</basecompoundref>
+    <includes refid="metrics__reporters_8h" local="no">metrics_reporters.h</includes>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1CompositeMetricsReporter_1aa6e30985125675377e46f379edbcd824" prot="private" static="no" mutable="no">
+        <type>std::unordered_set&lt; std::shared_ptr&lt; <ref refid="classiceberg_1_1MetricsReporter" kindref="compound">MetricsReporter</ref> &gt; &gt;</type>
+        <definition>std::unordered_set&lt;std::shared_ptr&lt;MetricsReporter&gt; &gt; iceberg::CompositeMetricsReporter::reporters_</definition>
+        <argsstring></argsstring>
+        <name>reporters_</name>
+        <qualifiedname>iceberg::CompositeMetricsReporter::reporters_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/metrics_reporters.h" line="76" column="22" bodyfile="iceberg/metrics/metrics_reporters.h" bodystart="76" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1CompositeMetricsReporter_1a94c26ea86bf0d9c4b87d50debd86b70b" prot="public" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::CompositeMetricsReporter::CompositeMetricsReporter</definition>
+        <argsstring>(std::unordered_set&lt; std::shared_ptr&lt; MetricsReporter &gt; &gt; reporters)</argsstring>
+        <name>CompositeMetricsReporter</name>
+        <qualifiedname>iceberg::CompositeMetricsReporter::CompositeMetricsReporter</qualifiedname>
+        <param>
+          <type>std::unordered_set&lt; std::shared_ptr&lt; <ref refid="classiceberg_1_1MetricsReporter" kindref="compound">MetricsReporter</ref> &gt; &gt;</type>
+          <declname>reporters</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/metrics_reporters.h" line="65" column="12"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1CompositeMetricsReporter_1adc3c44f92b0a28b28b620d373d26861f" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>Status</type>
+        <definition>Status iceberg::CompositeMetricsReporter::Report</definition>
+        <argsstring>(const MetricsReport &amp;report) override</argsstring>
+        <name>Report</name>
+        <qualifiedname>iceberg::CompositeMetricsReporter::Report</qualifiedname>
+        <reimplements refid="classiceberg_1_1MetricsReporter_1ada754787bbf4f5625b4739ee489296c7">Report</reimplements>
+        <param>
+          <type>const <ref refid="namespaceiceberg_1af4c8144c46c4c1e12da2bf476817c800" kindref="member">MetricsReport</ref> &amp;</type>
+          <declname>report</declname>
+        </param>
+        <briefdescription>
+<para>Report a metrics report. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Implementations should handle the report according to their purpose (e.g., logging, sending to a metrics service, etc.).</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>report</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The metrics report to process. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/metrics_reporters.h" line="68" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1CompositeMetricsReporter_1a5e4766b4a4d9a8ff8cec6b07e918ca61" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>const std::unordered_set&lt; std::shared_ptr&lt; <ref refid="classiceberg_1_1MetricsReporter" kindref="compound">MetricsReporter</ref> &gt; &gt; &amp;</type>
+        <definition>const std::unordered_set&lt; std::shared_ptr&lt; MetricsReporter &gt; &gt; &amp; iceberg::CompositeMetricsReporter::Reporters</definition>
+        <argsstring>() const</argsstring>
+        <name>Reporters</name>
+        <qualifiedname>iceberg::CompositeMetricsReporter::Reporters</qualifiedname>
+        <briefdescription>
+<para>The reporters contained in this composite. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Used by <ref refid="classiceberg_1_1MetricsReporters_1a208634a42c0e0d3ec983fe2d9ce6db6d" kindref="member">MetricsReporters::Combine()</ref> for flattening. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/metrics_reporters.h" line="73" column="28"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>A <ref refid="classiceberg_1_1MetricsReporter" kindref="compound">MetricsReporter</ref> that delegates to multiple reporters. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>Combines several reporters so that every report is delivered to each of them. Implementations must not throw; return an error Status instead. All reporters receive the report regardless of individual failures. If any reporters fail, the first error Status is returned.</para>
+<para>Use <ref refid="classiceberg_1_1MetricsReporters_1a208634a42c0e0d3ec983fe2d9ce6db6d" kindref="member">MetricsReporters::Combine()</ref> to create instances — that helper flattens nested composites and deduplicates reporters by identity. </para>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>iceberg::CompositeMetricsReporter</label>
+        <link refid="classiceberg_1_1CompositeMetricsReporter"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::MetricsReporter</label>
+        <link refid="classiceberg_1_1MetricsReporter"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::CompositeMetricsReporter</label>
+        <link refid="classiceberg_1_1CompositeMetricsReporter"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::MetricsReporter</label>
+        <link refid="classiceberg_1_1MetricsReporter"/>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/metrics/metrics_reporters.h" line="63" column="1" bodyfile="iceberg/metrics/metrics_reporters.h" bodystart="63" bodyend="77"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1CompositeMetricsReporter_1a94c26ea86bf0d9c4b87d50debd86b70b" prot="public" virt="non-virtual"><scope>iceberg::CompositeMetricsReporter</scope><name>CompositeMetricsReporter</name></member>
+      <member refid="classiceberg_1_1MetricsReporter_1a4a61bb9e321d19b3cbf3364c849e08f7" prot="public" virt="virtual"><scope>iceberg::CompositeMetricsReporter</scope><name>Initialize</name></member>
+      <member refid="classiceberg_1_1CompositeMetricsReporter_1adc3c44f92b0a28b28b620d373d26861f" prot="public" virt="virtual"><scope>iceberg::CompositeMetricsReporter</scope><name>Report</name></member>
+      <member refid="classiceberg_1_1CompositeMetricsReporter_1a5e4766b4a4d9a8ff8cec6b07e918ca61" prot="public" virt="non-virtual"><scope>iceberg::CompositeMetricsReporter</scope><name>Reporters</name></member>
+      <member refid="classiceberg_1_1CompositeMetricsReporter_1aa6e30985125675377e46f379edbcd824" prot="private" virt="non-virtual"><scope>iceberg::CompositeMetricsReporter</scope><name>reporters_</name></member>
+      <member refid="classiceberg_1_1MetricsReporter_1a67e7d83391a15f8c28b608ca2949cef1" prot="public" virt="virtual"><scope>iceberg::CompositeMetricsReporter</scope><name>~MetricsReporter</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

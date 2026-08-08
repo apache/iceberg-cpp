@@ -1,0 +1,108 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1PartitionStatisticsFile" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::PartitionStatisticsFile</compoundname>
+    <includes refid="statistics__file_8h" local="no">statistics_file.h</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1PartitionStatisticsFile_1aae2a7f546dbbbfc5ab27b06f887de129" prot="public" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t iceberg::PartitionStatisticsFile::snapshot_id</definition>
+        <argsstring></argsstring>
+        <name>snapshot_id</name>
+        <qualifiedname>iceberg::PartitionStatisticsFile::snapshot_id</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para><ref refid="structiceberg_1_1Snapshot" kindref="compound">Snapshot</ref> ID of the Iceberg table&apos;s snapshot the partition statistics file is associated with </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/statistics_file.h" line="72" column="11" bodyfile="iceberg/statistics_file.h" bodystart="72" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1PartitionStatisticsFile_1ab2f5786ce6b9a7a4ecb1a7fec8cf6efc" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::PartitionStatisticsFile::path</definition>
+        <argsstring></argsstring>
+        <name>path</name>
+        <qualifiedname>iceberg::PartitionStatisticsFile::path</qualifiedname>
+        <briefdescription>
+<para>Fully qualified path to the file. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/statistics_file.h" line="74" column="15" bodyfile="iceberg/statistics_file.h" bodystart="74" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1PartitionStatisticsFile_1aba9393e232f859d1931ec23feea9b65f" prot="public" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t iceberg::PartitionStatisticsFile::file_size_in_bytes</definition>
+        <argsstring></argsstring>
+        <name>file_size_in_bytes</name>
+        <qualifiedname>iceberg::PartitionStatisticsFile::file_size_in_bytes</qualifiedname>
+        <briefdescription>
+<para>The size of the partition statistics file in bytes. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/statistics_file.h" line="76" column="11" bodyfile="iceberg/statistics_file.h" bodystart="76" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="friend">
+      <memberdef kind="friend" id="structiceberg_1_1PartitionStatisticsFile_1aecbdcc088ef3f23462a8d8e997fe3089" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool operator==</definition>
+        <argsstring>(const PartitionStatisticsFile &amp;lhs, const PartitionStatisticsFile &amp;rhs)=default</argsstring>
+        <name>operator==</name>
+        <qualifiedname>iceberg::PartitionStatisticsFile::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1PartitionStatisticsFile" kindref="compound">PartitionStatisticsFile</ref> &amp;</type>
+          <declname>lhs</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structiceberg_1_1PartitionStatisticsFile" kindref="compound">PartitionStatisticsFile</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+<para>Compare two PartitionStatisticsFiles for equality. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/statistics_file.h" line="79" column="15"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Represents a partition statistics file. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::PartitionStatisticsFile</label>
+        <link refid="structiceberg_1_1PartitionStatisticsFile"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>path</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="2">
+        <label>std::string</label>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/statistics_file.h" line="69" column="1" bodyfile="iceberg/statistics_file.h" bodystart="69" bodyend="81"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1PartitionStatisticsFile_1aba9393e232f859d1931ec23feea9b65f" prot="public" virt="non-virtual"><scope>iceberg::PartitionStatisticsFile</scope><name>file_size_in_bytes</name></member>
+      <member refid="structiceberg_1_1PartitionStatisticsFile_1aecbdcc088ef3f23462a8d8e997fe3089" prot="public" virt="non-virtual"><scope>iceberg::PartitionStatisticsFile</scope><name>operator==</name></member>
+      <member refid="structiceberg_1_1PartitionStatisticsFile_1ab2f5786ce6b9a7a4ecb1a7fec8cf6efc" prot="public" virt="non-virtual"><scope>iceberg::PartitionStatisticsFile</scope><name>path</name></member>
+      <member refid="structiceberg_1_1PartitionStatisticsFile_1aae2a7f546dbbbfc5ab27b06f887de129" prot="public" virt="non-virtual"><scope>iceberg::PartitionStatisticsFile</scope><name>snapshot_id</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

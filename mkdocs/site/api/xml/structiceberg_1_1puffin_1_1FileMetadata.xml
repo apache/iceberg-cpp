@@ -1,0 +1,122 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1puffin_1_1FileMetadata" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::puffin::FileMetadata</compoundname>
+    <includes refid="file__metadata_8h" local="no">file_metadata.h</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1puffin_1_1FileMetadata_1ae417cdc697fbcbebeafba45bf4495125" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; <ref refid="structiceberg_1_1puffin_1_1BlobMetadata" kindref="compound">BlobMetadata</ref> &gt;</type>
+        <definition>std::vector&lt;BlobMetadata&gt; iceberg::puffin::FileMetadata::blobs</definition>
+        <argsstring></argsstring>
+        <name>blobs</name>
+        <qualifiedname>iceberg::puffin::FileMetadata::blobs</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/puffin/file_metadata.h" line="112" column="15" bodyfile="iceberg/puffin/file_metadata.h" bodystart="112" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1puffin_1_1FileMetadata_1a6b59a374953a6bc3ae2e97b902637d52" prot="public" static="no" mutable="no">
+        <type>std::unordered_map&lt; std::string, std::string &gt;</type>
+        <definition>std::unordered_map&lt;std::string, std::string&gt; iceberg::puffin::FileMetadata::properties</definition>
+        <argsstring></argsstring>
+        <name>properties</name>
+        <qualifiedname>iceberg::puffin::FileMetadata::properties</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/puffin/file_metadata.h" line="113" column="22" bodyfile="iceberg/puffin/file_metadata.h" bodystart="113" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="friend">
+      <memberdef kind="friend" id="structiceberg_1_1puffin_1_1FileMetadata_1a996b9a1a59bf57493bfead650c40d5c5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool operator==</definition>
+        <argsstring>(const FileMetadata &amp;lhs, const FileMetadata &amp;rhs)=default</argsstring>
+        <name>operator==</name>
+        <qualifiedname>iceberg::puffin::FileMetadata::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1puffin_1_1FileMetadata" kindref="compound">FileMetadata</ref> &amp;</type>
+          <declname>lhs</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structiceberg_1_1puffin_1_1FileMetadata" kindref="compound">FileMetadata</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/puffin/file_metadata.h" line="115" column="15"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Metadata about a Puffin file. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="3">
+        <label>iceberg::puffin::BlobMetadata</label>
+        <link refid="structiceberg_1_1puffin_1_1BlobMetadata"/>
+        <childnode refid="4" relation="usage">
+          <edgelabel>compression_codec</edgelabel>
+          <edgelabel>type</edgelabel>
+        </childnode>
+        <childnode refid="6" relation="usage">
+          <edgelabel>input_fields</edgelabel>
+        </childnode>
+        <childnode refid="7" relation="usage">
+          <edgelabel>properties</edgelabel>
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::puffin::FileMetadata</label>
+        <link refid="structiceberg_1_1puffin_1_1FileMetadata"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>blobs</edgelabel>
+        </childnode>
+        <childnode refid="7" relation="usage">
+          <edgelabel>properties</edgelabel>
+        </childnode>
+      </node>
+      <node id="5">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="4">
+        <label>std::string</label>
+        <childnode refid="5" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="7">
+        <label>std::unordered_map&lt; std::string, std::string &gt;</label>
+        <childnode refid="4" relation="usage">
+          <edgelabel>elements</edgelabel>
+          <edgelabel>keys</edgelabel>
+        </childnode>
+      </node>
+      <node id="2">
+        <label>std::vector&lt; iceberg::puffin::BlobMetadata &gt;</label>
+        <childnode refid="3" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="6">
+        <label>std::vector&lt; int32_t &gt;</label>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/puffin/file_metadata.h" line="111" column="1" bodyfile="iceberg/puffin/file_metadata.h" bodystart="111" bodyend="116"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1puffin_1_1FileMetadata_1ae417cdc697fbcbebeafba45bf4495125" prot="public" virt="non-virtual"><scope>iceberg::puffin::FileMetadata</scope><name>blobs</name></member>
+      <member refid="structiceberg_1_1puffin_1_1FileMetadata_1a996b9a1a59bf57493bfead650c40d5c5" prot="public" virt="non-virtual"><scope>iceberg::puffin::FileMetadata</scope><name>operator==</name></member>
+      <member refid="structiceberg_1_1puffin_1_1FileMetadata_1a6b59a374953a6bc3ae2e97b902637d52" prot="public" virt="non-virtual"><scope>iceberg::puffin::FileMetadata</scope><name>properties</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

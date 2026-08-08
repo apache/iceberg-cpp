@@ -1,0 +1,147 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1Base64" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::Base64</compoundname>
+    <includes refid="base64_8h" local="no">base64.h</includes>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classiceberg_1_1Base64_1a011efb328aa6be553c786c086d5d9a66" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::string</type>
+        <definition>static std::string iceberg::Base64::Encode</definition>
+        <argsstring>(std::string_view data)</argsstring>
+        <name>Encode</name>
+        <qualifiedname>iceberg::Base64::Encode</qualifiedname>
+        <param>
+          <type>std::string_view</type>
+          <declname>data</declname>
+        </param>
+        <briefdescription>
+<para><ref refid="classiceberg_1_1Base64" kindref="compound">Base64</ref> encode a string (standard alphabet: +/). </para>
+        </briefdescription>
+        <detaileddescription>
+<para>The output is padded with &apos;=&apos; to a multiple of 4 characters.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>data</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The string to encode. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The base64-encoded string. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/base64.h" line="42" column="22"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Base64_1a9737593d0adc427e8f933ad650c25e3c" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceiceberg_1a9d5594e371beb516b0120e07e69d3af6" kindref="member">Result</ref>&lt; std::string &gt;</type>
+        <definition>static Result&lt; std::string &gt; iceberg::Base64::Decode</definition>
+        <argsstring>(std::string_view encoded)</argsstring>
+        <name>Decode</name>
+        <qualifiedname>iceberg::Base64::Decode</qualifiedname>
+        <param>
+          <type>std::string_view</type>
+          <declname>encoded</declname>
+        </param>
+        <briefdescription>
+<para><ref refid="classiceberg_1_1Base64" kindref="compound">Base64</ref> decode a string (standard alphabet: +/). </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Handles optional padding (&apos;=&apos;). <parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>encoded</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The base64-encoded string. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Decoded string, or an error if the input contains invalid characters. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/base64.h" line="49" column="17"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Base64_1a05001378fe15eebeab3b9ce88d593e13" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::string</type>
+        <definition>static std::string iceberg::Base64::UrlEncode</definition>
+        <argsstring>(std::string_view data)</argsstring>
+        <name>UrlEncode</name>
+        <qualifiedname>iceberg::Base64::UrlEncode</qualifiedname>
+        <param>
+          <type>std::string_view</type>
+          <declname>data</declname>
+        </param>
+        <briefdescription>
+<para>Base64url encode a string (URL-safe alphabet: -_). </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This variant uses &apos;-&apos; and &apos;_&apos; instead of &apos;+&apos; and &apos;/&apos; per RFC 4648 §5 and emits no &apos;=&apos; padding, matching the encoding commonly used by JWTs.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>data</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The string to encode. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The base64url-encoded string (without padding). </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/base64.h" line="58" column="22"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Base64_1a41463139e44cccfb068986b5abe5d0f1" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceiceberg_1a9d5594e371beb516b0120e07e69d3af6" kindref="member">Result</ref>&lt; std::string &gt;</type>
+        <definition>static Result&lt; std::string &gt; iceberg::Base64::UrlDecode</definition>
+        <argsstring>(std::string_view encoded)</argsstring>
+        <name>UrlDecode</name>
+        <qualifiedname>iceberg::Base64::UrlDecode</qualifiedname>
+        <param>
+          <type>std::string_view</type>
+          <declname>encoded</declname>
+        </param>
+        <briefdescription>
+<para>Base64url decode a string (URL-safe alphabet: -_). </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Handles optional padding (&apos;=&apos;). This variant uses &apos;-&apos; and &apos;_&apos; instead of &apos;+&apos; and &apos;/&apos; per RFC 4648 §5. <parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>encoded</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The base64url-encoded string. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Decoded string, or an error if the input contains invalid characters. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/base64.h" line="66" column="17"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Utilities for base64 and base64url encoding and decoding. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/util/base64.h" line="34" column="1" bodyfile="iceberg/util/base64.h" bodystart="34" bodyend="67"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1Base64_1a9737593d0adc427e8f933ad650c25e3c" prot="public" virt="non-virtual"><scope>iceberg::Base64</scope><name>Decode</name></member>
+      <member refid="classiceberg_1_1Base64_1a011efb328aa6be553c786c086d5d9a66" prot="public" virt="non-virtual"><scope>iceberg::Base64</scope><name>Encode</name></member>
+      <member refid="classiceberg_1_1Base64_1a41463139e44cccfb068986b5abe5d0f1" prot="public" virt="non-virtual"><scope>iceberg::Base64</scope><name>UrlDecode</name></member>
+      <member refid="classiceberg_1_1Base64_1a05001378fe15eebeab3b9ce88d593e13" prot="public" virt="non-virtual"><scope>iceberg::Base64</scope><name>UrlEncode</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>
