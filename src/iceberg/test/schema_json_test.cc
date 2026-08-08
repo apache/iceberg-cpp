@@ -67,18 +67,13 @@ INSTANTIATE_TEST_SUITE_P(
         SchemaJsonParam{.json = "\"uuid\"", .type = iceberg::uuid()},
         SchemaJsonParam{.json = "\"unknown\"", .type = iceberg::unknown()},
         SchemaJsonParam{.json = "\"variant\"", .type = iceberg::variant()},
-        SchemaJsonParam{.json = "\"geometry\"", .type = iceberg::geometry()},
+        SchemaJsonParam{.json = "\"geometry(OGC:CRS84)\"", .type = iceberg::geometry()},
         SchemaJsonParam{.json = "\"geometry(srid:4326)\"",
                         .type = iceberg::geometry("srid:4326")},
-        SchemaJsonParam{.json = "\"geography\"", .type = iceberg::geography()},
-        SchemaJsonParam{.json = "\"geography(srid:4326)\"",
+        SchemaJsonParam{.json = "\"geography(OGC:CRS84, spherical)\"",
+                        .type = iceberg::geography()},
+        SchemaJsonParam{.json = "\"geography(srid:4326, spherical)\"",
                         .type = iceberg::geography("srid:4326")},
-        SchemaJsonParam{
-            .json = "\"geography(srid:4326, spherical)\"",
-            .type = iceberg::geography("srid:4326", EdgeAlgorithm::kSpherical)},
-        SchemaJsonParam{
-            .json = "\"geography(OGC:CRS84, spherical)\"",
-            .type = iceberg::geography("OGC:CRS84", EdgeAlgorithm::kSpherical)},
         SchemaJsonParam{.json = "\"geography(srid:4326, karney)\"",
                         .type = iceberg::geography("srid:4326", EdgeAlgorithm::kKarney)},
         SchemaJsonParam{.json = "\"fixed[8]\"", .type = iceberg::fixed(8)},
@@ -144,13 +139,19 @@ TEST(TypeJsonTest, FromJsonV3TypesWithSpacesAndCase) {
             *iceberg::geography("srid:4269", EdgeAlgorithm::kKarney));
 }
 
+TEST(TypeJsonTest, FromJsonAcceptsBareGeospatialTypes) {
+  ICEBERG_UNWRAP_OR_FAIL(auto geometry_type,
+                         TypeFromJson(nlohmann::json::parse("\"geometry\"")));
+  ASSERT_EQ(*geometry_type, *iceberg::geometry());
+
+  ICEBERG_UNWRAP_OR_FAIL(auto geography_type,
+                         TypeFromJson(nlohmann::json::parse("\"geography\"")));
+  ASSERT_EQ(*geography_type, *iceberg::geography());
+}
+
 TEST(TypeJsonTest, InvalidV3Types) {
   auto invalid_geometry = TypeFromJson(nlohmann::json::parse("\"geometry()\""));
   ASSERT_THAT(invalid_geometry, HasErrorMessage("Invalid geometry type"));
-
-  auto invalid_geometry_with_spaces =
-      TypeFromJson(nlohmann::json::parse("\"geometry( )\""));
-  ASSERT_THAT(invalid_geometry_with_spaces, HasErrorMessage("Invalid geometry type"));
 
   auto invalid_geography = TypeFromJson(nlohmann::json::parse("\"geography()\""));
   ASSERT_THAT(invalid_geography, HasErrorMessage("Invalid geography type"));

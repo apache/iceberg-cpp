@@ -20,6 +20,8 @@
 #include <functional>
 #include <memory>
 #include <mutex>
+#include <string>
+#include <string_view>
 #include <thread>
 #include <unordered_map>
 #include <utility>
@@ -115,6 +117,10 @@ INSTANTIATE_TEST_SUITE_P(
                            .arrow_type = ::arrow::utf8()},
         ToArrowSchemaParam{.iceberg_type = iceberg::binary(),
                            .arrow_type = ::arrow::binary()},
+        ToArrowSchemaParam{.iceberg_type = iceberg::geometry(),
+                           .arrow_type = ::arrow::binary()},
+        ToArrowSchemaParam{.iceberg_type = iceberg::geography(),
+                           .arrow_type = ::arrow::binary()},
         ToArrowSchemaParam{.iceberg_type = iceberg::uuid(),
                            .arrow_type = ::arrow::extension::uuid()},
         ToArrowSchemaParam{.iceberg_type = iceberg::fixed(20),
@@ -123,8 +129,7 @@ INSTANTIATE_TEST_SUITE_P(
                            .arrow_type = ::arrow::null()}));
 
 TEST(ToArrowSchemaTest, UnsupportedV3Types) {
-  const std::vector<std::shared_ptr<Type>> unsupported_types = {
-      iceberg::variant(), iceberg::geometry(), iceberg::geography()};
+  const std::vector<std::shared_ptr<Type>> unsupported_types = {iceberg::variant()};
 
   for (const auto& unsupported_type : unsupported_types) {
     Schema schema(

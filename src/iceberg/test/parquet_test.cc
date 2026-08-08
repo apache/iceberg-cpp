@@ -53,6 +53,7 @@
 #include "iceberg/test/matchers.h"
 #include "iceberg/test/std_io.h"
 #include "iceberg/test/temp_file_test_base.h"
+#include "iceberg/test/test_resource.h"
 #include "iceberg/type.h"
 #include "iceberg/util/checked_cast.h"
 #include "iceberg/util/macros.h"
@@ -948,6 +949,57 @@ TEST_F(ParquetReadWrite, UuidRoundTrip) {
   std::shared_ptr<::arrow::Array> out;
   DoRoundtrip(array, schema, out);
 
+  ASSERT_TRUE(out->Equals(*array)) << "actual:\n"
+                                   << out->ToString() << "\nexpected:\n"
+                                   << array->ToString();
+}
+
+TEST_F(ParquetReadWrite, GeospatialWkbRoundTrip) {
+  auto schema = std::make_shared<Schema>(std::vector<SchemaField>{
+      SchemaField::MakeOptional(1, "geom", geometry()),
+      SchemaField::MakeOptional(2, "geog",
+                                geography("EPSG:4326", EdgeAlgorithm::kAndoyer)),
+      SchemaField::MakeOptional(
+          3, "nested",
+          struct_({SchemaField::MakeOptional(4, "geom", geometry("EPSG:3857"))})),
+  });
+
+  ::arrow::BinaryBuilder geometry_builder;
+  const std::array<uint8_t, 4> arbitrary_geometry = {0xff, 0x00, 0x7f, 0x42};
+  ASSERT_TRUE(
+      geometry_builder.Append(arbitrary_geometry.data(), arbitrary_geometry.size()).ok());
+  ASSERT_TRUE(geometry_builder.AppendNull().ok());
+
+  ::arrow::BinaryBuilder geography_builder;
+  const std::array<uint8_t, 5> arbitrary_geography = {0x01, 0x02, 0x03, 0x04, 0x05};
+  ASSERT_TRUE(geography_builder.AppendNull().ok());
+  ASSERT_TRUE(
+      geography_builder.Append(arbitrary_geography.data(), arbitrary_geography.size())
+          .ok());
+
+  ::arrow::BinaryBuilder nested_geometry_builder;
+  const std::array<uint8_t, 3> arbitrary_nested_geometry = {0xde, 0xad, 0xbe};
+  ASSERT_TRUE(
+      nested_geometry_builder
+          .Append(arbitrary_nested_geometry.data(), arbitrary_nested_geometry.size())
+          .ok());
+  ASSERT_TRUE(nested_geometry_builder.AppendNull().ok());
+  auto nested =
+      ::arrow::StructArray::Make({nested_geometry_builder.Finish().ValueOrDie()},
+                                 {::arrow::field("geom", ::arrow::binary())})
+          .ValueOrDie();
+
+  auto array =
+      ::arrow::StructArray::Make({geometry_builder.Finish().ValueOrDie(),
+                                  geography_builder.Finish().ValueOrDie(), nested},
+                                 {::arrow::field("geom", ::arrow::binary()),
+                                  ::arrow::field("geog", ::arrow::binary()),
+                                  ::arrow::field("nested", nested->type())})
+          .ValueOrDie();
+
+  std::shared_ptr<::arrow::Array> out;
+  DoRoundtrip(array, schema, out);
+  ASSERT_NE(out, nullptr);
   ASSERT_TRUE(out->Equals(*array)) << "actual:\n"
                                    << out->ToString() << "\nexpected:\n"
                                    << array->ToString();

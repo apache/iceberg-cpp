@@ -583,7 +583,7 @@ class ICEBERG_EXPORT GeometryType : public PrimitiveType {
   GeometryType() = default;
   explicit GeometryType(std::string crs);
 
-  std::string crs_;
+  std::string crs_{kDefaultCrs};
 };
 
 /// \brief A data type representing OGC geography in WKB format.
@@ -613,8 +613,8 @@ class ICEBERG_EXPORT GeographyType : public PrimitiveType {
   explicit GeographyType(std::string crs);
   GeographyType(std::string crs, EdgeAlgorithm algorithm);
 
-  std::string crs_;
-  std::optional<EdgeAlgorithm> algorithm_;
+  std::string crs_{kDefaultCrs};
+  EdgeAlgorithm algorithm_{kDefaultAlgorithm};
 };
 
 /// @}

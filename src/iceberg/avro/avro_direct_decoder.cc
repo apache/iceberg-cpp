@@ -465,7 +465,9 @@ Status DecodePrimitiveValueToBuilder(const ::avro::NodePtr& avro_node,
       return {};
     }
 
-    case TypeId::kBinary: {
+    case TypeId::kBinary:
+    case TypeId::kGeometry:
+    case TypeId::kGeography: {
       if (avro_node->type() != ::avro::AVRO_BYTES) {
         return InvalidArgument("Expected Avro bytes for binary field, got: {}",
                                ToString(avro_node));

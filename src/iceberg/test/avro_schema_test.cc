@@ -245,9 +245,14 @@ TEST(ToAvroNodeVisitorTest, FixedType) {
 }
 
 TEST(ToAvroNodeVisitorTest, BinaryType) {
-  ::avro::NodePtr node;
-  EXPECT_THAT(ToAvroNodeVisitor{}.Visit(BinaryType{}, &node), IsOk());
-  EXPECT_EQ(node->type(), ::avro::AVRO_BYTES);
+  auto assert_bytes = [](const auto& type) {
+    ::avro::NodePtr node;
+    EXPECT_THAT(ToAvroNodeVisitor{}.Visit(type, &node), IsOk());
+    EXPECT_EQ(node->type(), ::avro::AVRO_BYTES);
+  };
+  assert_bytes(BinaryType{});
+  assert_bytes(*iceberg::geometry());
+  assert_bytes(*iceberg::geography());
 }
 
 TEST(ToAvroNodeVisitorTest, UnknownType) {
@@ -775,6 +780,32 @@ TEST(AvroSchemaProjectionTest, ProjectIdenticalSchemas) {
     ASSERT_EQ(projection.fields[i].kind, FieldProjection::Kind::kProjected);
     ASSERT_EQ(std::get<1>(projection.fields[i].from), i);
   }
+}
+
+TEST(AvroSchemaProjectionTest, ProjectGeospatialTypesFromBytes) {
+  Schema expected_schema({
+      SchemaField::MakeRequired(/*field_id=*/1, "geom", iceberg::geometry()),
+      SchemaField::MakeOptional(/*field_id=*/2, "geog", iceberg::geography()),
+  });
+  auto avro_schema = ::avro::compileJsonSchemaFromString(R"({
+    "type": "record",
+    "name": "iceberg_schema",
+    "fields": [
+      {"name": "geog", "type": ["null", "bytes"], "field-id": 2},
+      {"name": "geom", "type": "bytes", "field-id": 1}
+    ]
+  })");
+
+  auto projection_result =
+      Project(expected_schema, avro_schema.root(), /*prune_source=*/false);
+  ASSERT_THAT(projection_result, IsOk());
+
+  const auto& projection = *projection_result;
+  ASSERT_EQ(projection.fields.size(), 2);
+  EXPECT_EQ(projection.fields[0].kind, FieldProjection::Kind::kProjected);
+  EXPECT_EQ(std::get<1>(projection.fields[0].from), 1);
+  EXPECT_EQ(projection.fields[1].kind, FieldProjection::Kind::kProjected);
+  EXPECT_EQ(std::get<1>(projection.fields[1].from), 0);
 }
 
 TEST(AvroSchemaProjectionTest, ProjectSubsetSchema) {
