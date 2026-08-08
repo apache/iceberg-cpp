@@ -50,6 +50,7 @@
 #include "iceberg/test/matchers.h"
 #include "iceberg/test/std_io.h"
 #include "iceberg/test/temp_file_test_base.h"
+#include "iceberg/test/test_resource.h"
 #include "iceberg/type.h"
 #include "iceberg/util/checked_cast.h"
 #include "iceberg/util/uuid.h"
@@ -1077,6 +1078,37 @@ TEST_P(AvroWriterTest, WriteUuidType) {
                                           << read_array->ToString() << "\nexpected:\n"
                                           << array->ToString();
   ASSERT_NO_FATAL_FAILURE(VerifyExhausted(*reader));
+}
+
+TEST_P(AvroWriterTest, WriteGeospatialTypesAsOpaqueBytes) {
+  auto schema = std::make_shared<iceberg::Schema>(std::vector<SchemaField>{
+      SchemaField::MakeOptional(1, "geom", iceberg::geometry()),
+      SchemaField::MakeRequired(
+          2, "nested",
+          iceberg::struct_({SchemaField::MakeOptional(
+              3, "geog", iceberg::geography("EPSG:4326", EdgeAlgorithm::kVincenty))})),
+  });
+
+  ::arrow::BinaryBuilder geometry_builder;
+  const std::array<uint8_t, 3> geometry_bytes = {0xff, 0x00, 0x42};
+  ASSERT_TRUE(geometry_builder.Append(geometry_bytes.data(), geometry_bytes.size()).ok());
+  ASSERT_TRUE(geometry_builder.AppendNull().ok());
+
+  ::arrow::BinaryBuilder geography_builder;
+  const std::array<uint8_t, 4> geography_bytes = {0x01, 0x02, 0x03, 0x04};
+  ASSERT_TRUE(geography_builder.AppendNull().ok());
+  ASSERT_TRUE(
+      geography_builder.Append(geography_bytes.data(), geography_bytes.size()).ok());
+  auto nested = ::arrow::StructArray::Make({geography_builder.Finish().ValueOrDie()},
+                                           {::arrow::field("geog", ::arrow::binary())})
+                    .ValueOrDie();
+
+  auto array = ::arrow::StructArray::Make(
+                   {geometry_builder.Finish().ValueOrDie(), nested},
+                   {::arrow::field("geom", ::arrow::binary()),
+                    ::arrow::field("nested", nested->type(), /*nullable=*/false)})
+                   .ValueOrDie();
+  ASSERT_NO_FATAL_FAILURE(WriteArrowArrayAndVerify(schema, array));
 }
 
 TEST_P(AvroWriterTest, WriteUuidListType) {

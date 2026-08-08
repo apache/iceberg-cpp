@@ -47,6 +47,7 @@ set(ICEBERG_SOURCES
     file_io_registry.cc
     file_reader.cc
     file_writer.cc
+    geospatial.cc
     inspect/history_table.cc
     inspect/metadata_table.cc
     inspect/snapshots_table.cc

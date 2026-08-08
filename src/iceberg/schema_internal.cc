@@ -43,8 +43,6 @@ constexpr int32_t kUnknownFieldId = -1;
 Status CheckArrowCompatible(const Type& type) {
   switch (type.type_id()) {
     case TypeId::kVariant:
-    case TypeId::kGeometry:
-    case TypeId::kGeography:
       return NotSupported("Iceberg type {} is not supported by Arrow conversion",
                           type.ToString());
     case TypeId::kStruct:
@@ -165,6 +163,8 @@ ArrowErrorCode ToArrowSchema(const Type& type, bool optional, std::string_view n
       NANOARROW_RETURN_NOT_OK(ArrowSchemaSetType(schema, NANOARROW_TYPE_STRING));
       break;
     case TypeId::kBinary:
+    case TypeId::kGeometry:
+    case TypeId::kGeography:
       NANOARROW_RETURN_NOT_OK(ArrowSchemaSetType(schema, NANOARROW_TYPE_BINARY));
       break;
     case TypeId::kFixed: {
@@ -183,8 +183,7 @@ ArrowErrorCode ToArrowSchema(const Type& type, bool optional, std::string_view n
       NANOARROW_RETURN_NOT_OK(ArrowSchemaSetType(schema, NANOARROW_TYPE_NA));
       break;
     case TypeId::kVariant:
-    case TypeId::kGeometry:
-    case TypeId::kGeography:
+      ArrowBufferReset(&metadata_buffer);
       return EINVAL;
   }
 
