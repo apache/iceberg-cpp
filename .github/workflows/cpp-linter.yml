@@ -26,6 +26,7 @@ on:
     branches:
       - main
     paths-ignore:
+      - '.asf.yaml'
       - '.devcontainer/**'
       - '.github/**'
       - '**/*.md'
