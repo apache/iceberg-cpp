@@ -52,7 +52,7 @@ github:
   ghp_path: /
   copilot_code_review:
     enabled: true
-    review_drafts: false
+    review_drafts: true
     review_on_push: true
 
 notifications:
