@@ -26,6 +26,7 @@
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
+#include <variant>
 #include <vector>
 
 #include <gmock/gmock.h>
@@ -37,6 +38,8 @@
 #include "iceberg/manifest/manifest_entry.h"
 #include "iceberg/manifest/manifest_reader.h"
 #include "iceberg/manifest/manifest_writer.h"
+#include "iceberg/metrics/commit_report.h"
+#include "iceberg/metrics/metrics_reporter.h"
 #include "iceberg/partition_spec.h"
 #include "iceberg/puffin_dv_io.h"
 #include "iceberg/row/partition_values.h"
@@ -58,6 +61,20 @@
 #include "iceberg/util/macros.h"
 
 namespace iceberg {
+
+namespace {
+
+class MergingSnapshotCapturingReporter final : public MetricsReporter {
+ public:
+  Status Report(const MetricsReport& report) override {
+    reports.push_back(report);
+    return {};
+  }
+
+  std::vector<MetricsReport> reports;
+};
+
+}  // namespace
 
 class RecordingPuffinDVIO final : public PuffinDVIO {
  public:
@@ -562,6 +579,29 @@ TEST_F(MergingSnapshotUpdateTest, CommitNewDataFile) {
   ICEBERG_UNWRAP_OR_FAIL(auto snapshot, table_->current_snapshot());
   EXPECT_EQ(snapshot->summary.at(SnapshotSummaryFields::kAddedDataFiles), "1");
   EXPECT_EQ(snapshot->summary.at(SnapshotSummaryFields::kAddedRecords), "100");
+}
+
+TEST_F(MergingSnapshotUpdateTest, CommitReportsCreatedSnapshot) {
+  auto reporter = std::make_shared<MergingSnapshotCapturingReporter>();
+  ICEBERG_UNWRAP_OR_FAIL(auto op, NewMergeAppend());
+  op->ReportWith(reporter);
+  EXPECT_THAT(op->AddFile(file_a_), IsOk());
+  EXPECT_THAT(op->Commit(), IsOk());
+
+  ASSERT_EQ(reporter->reports.size(), 1U);
+  ASSERT_TRUE(std::holds_alternative<CommitReport>(reporter->reports.front()));
+  const auto& report = std::get<CommitReport>(reporter->reports.front());
+
+  EXPECT_THAT(table_->Refresh(), IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(auto snapshot, table_->current_snapshot());
+  EXPECT_EQ(report.table_name, table_->full_name());
+  EXPECT_EQ(report.operation, DataOperation::kAppend);
+  EXPECT_EQ(report.snapshot_id, snapshot->snapshot_id);
+  EXPECT_EQ(report.sequence_number, snapshot->sequence_number);
+  ASSERT_TRUE(report.commit_metrics.added_data_files.has_value());
+  EXPECT_EQ(report.commit_metrics.added_data_files->value, 1);
+  ASSERT_TRUE(report.commit_metrics.added_records.has_value());
+  EXPECT_EQ(report.commit_metrics.added_records->value, 100);
 }
 
 TEST_F(MergingSnapshotUpdateTest, CommitV3NewDataFileAssignsRowLineage) {

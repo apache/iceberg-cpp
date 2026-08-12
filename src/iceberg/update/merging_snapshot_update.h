@@ -60,12 +60,6 @@ namespace iceberg {
 ///   5. Write new delete manifests (cached for commit retry)
 ///   6. Merge data manifests (via data_merge_manager_)
 ///   7. Merge delete manifests (via delete_merge_manager_)
-///
-/// TODO(Guotao): Java MergingSnapshotProducer overrides updateEvent() to return a
-/// CreateSnapshotEvent(tableName, operation, snapshotId, sequenceNumber, summary)
-/// for commit listeners. The C++ update framework does not yet have an event
-/// notification mechanism, so this is intentionally not implemented here. Add it
-/// once an equivalent CreateSnapshotEvent / listener facility exists.
 class ICEBERG_EXPORT MergingSnapshotUpdate : public SnapshotUpdate {
  public:
   ~MergingSnapshotUpdate() override = default;
