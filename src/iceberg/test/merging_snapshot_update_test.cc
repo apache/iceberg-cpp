@@ -139,6 +139,10 @@ class TestMergeAppend : public MergingSnapshotUpdate {
   std::string operation() override { return "append"; }
 
   // Expose protected API for test access
+  using MergingSnapshotUpdate::Apply;
+  using MergingSnapshotUpdate::CleanUncommitted;
+  using MergingSnapshotUpdate::Summary;
+
   Status AddFile(std::shared_ptr<DataFile> file) { return AddDataFile(std::move(file)); }
   Status AddDelete(std::shared_ptr<DataFile> file) {
     return AddDeleteFile(std::move(file));
@@ -284,6 +288,8 @@ class TestOverwriteUpdate : public MergingSnapshotUpdate {
 
   std::string operation() override { return DataOperation::kOverwrite; }
   int64_t GeneratedSnapshotId() { return SnapshotId(); }
+
+  using MergingSnapshotUpdate::Apply;
 
   Status AddDelete(std::shared_ptr<DataFile> file) {
     return AddDeleteFile(std::move(file));

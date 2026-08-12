@@ -64,6 +64,7 @@ class ICEBERG_EXPORT MergingSnapshotUpdate : public SnapshotUpdate {
  public:
   ~MergingSnapshotUpdate() override = default;
 
+ protected:
   // SnapshotUpdate overrides
   Result<std::vector<ManifestFile>> Apply(
       const TableMetadata& metadata_to_update,
@@ -73,7 +74,6 @@ class ICEBERG_EXPORT MergingSnapshotUpdate : public SnapshotUpdate {
 
   std::unordered_map<std::string, std::string> Summary() override;
 
- protected:
   /// \brief Constructor; reads merge configuration from table properties.
   explicit MergingSnapshotUpdate(std::string table_name,
                                  std::shared_ptr<TransactionContext> ctx);
