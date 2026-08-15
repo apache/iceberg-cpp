@@ -27,7 +27,9 @@
 
 #include <gtest/gtest.h>
 
+#include "iceberg/logging/cerr_logger.h"
 #include "iceberg/logging/log_level.h"
+#include "iceberg/logging/spdlog_logger_internal.h"
 #include "iceberg/test/logging_test_helpers.h"
 #include "iceberg/test/matchers.h"
 
@@ -43,7 +45,15 @@ TEST(LoggerTest, NoopIsSharedImmortalAndSilent) {
   EXPECT_EQ(noop.get(), Logger::Noop().get());
 }
 
-TEST(LoggerTest, DefaultLoggerIsNeverNull) { EXPECT_NE(GetDefaultLogger(), nullptr); }
+TEST(LoggerTest, DefaultLoggerMatchesBuildConfiguration) {
+  auto logger = GetDefaultLogger();
+  ASSERT_NE(logger, nullptr);
+#ifdef ICEBERG_HAS_SPDLOG
+  EXPECT_NE(dynamic_cast<internal::SpdLogger*>(logger.get()), nullptr);
+#else
+  EXPECT_NE(dynamic_cast<CerrLogger*>(logger.get()), nullptr);
+#endif
+}
 
 TEST(LoggerTest, SetAndGetDefaultLogger) {
   auto capturing = std::make_shared<CapturingLogger>();

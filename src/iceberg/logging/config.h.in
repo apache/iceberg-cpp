@@ -19,12 +19,7 @@
 
 #pragma once
 
-// Internal, build-generated configuration for the logging backend.
-// This header is NOT installed and must only be included from .cc files
-// (logger.cc, internal/spdlog_logger.cc) -- never from a public header.
-//
-// ICEBERG_HAS_SPDLOG is defined when the project is built with -DICEBERG_SPDLOG=ON
-// and left undefined otherwise. Always test it with #ifdef / #ifndef, never #if
-// (it carries no value).
+// Internal, build-generated configuration; not installed.
+// ICEBERG_HAS_SPDLOG is defined when the spdlog backend is available.
 
 #cmakedefine ICEBERG_HAS_SPDLOG

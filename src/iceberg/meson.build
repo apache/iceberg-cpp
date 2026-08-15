@@ -63,12 +63,11 @@ configure_file(
     install_dir: get_option('includedir') / 'iceberg',
 )
 
-# spdlog logging backend, mirroring CMake's ICEBERG_SPDLOG. Resolved before
-# subdir('logging') because config.h's ICEBERG_HAS_SPDLOG depends on it.
-spdlog_enabled = get_option('spdlog').allowed()
+# Resolve spdlog before generating logging/config.h. The feature value controls
+# whether a missing dependency is allowed.
+spdlog_dep = dependency('spdlog', required: get_option('spdlog'))
+spdlog_enabled = spdlog_dep.found()
 
-# Generate iceberg/logging/config.h (must precede the library() that compiles
-# the logging sources which include it).
 subdir('logging')
 
 iceberg_include_dir = include_directories('..')
@@ -109,6 +108,7 @@ iceberg_sources = files(
     'location_provider.cc',
     'logging/cerr_logger.cc',
     'logging/logger.cc',
+    'logging/spdlog_logger.cc',
     'manifest/manifest_adapter.cc',
     'manifest/manifest_entry.cc',
     'manifest/manifest_filter_manager.cc',
@@ -204,12 +204,6 @@ iceberg_sources = files(
     'util/uuid.cc',
 )
 
-# The spdlog sink is compiled only when the backend is enabled; with it off the
-# core library has no spdlog dependency and CerrLogger is the default sink.
-if spdlog_enabled
-    iceberg_sources += files('logging/internal/spdlog_logger.cc')
-endif
-
 iceberg_data_sources = files(
     'data/data_writer.cc',
     'data/delete_filter.cc',
@@ -256,10 +250,7 @@ zlib_dep = dependency('zlib')
 
 iceberg_deps = [nanoarrow_dep, nlohmann_json_dep, utf8proc_dep, zlib_dep]
 
-# spdlog is looked up and linked only when the backend is enabled, so a
-# -Dspdlog=disabled build needs neither the dependency nor the sink.
 if spdlog_enabled
-    spdlog_dep = dependency('spdlog')
     iceberg_deps += spdlog_dep
 endif
 

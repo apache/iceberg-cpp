@@ -19,52 +19,28 @@
 
 #pragma once
 
-/// \file iceberg/logging/internal/spdlog_logger.h
-/// \brief spdlog-backed logging sink.
-///
-/// INTERNAL, NOT INSTALLED. Included only from .cc files (logger.cc and
-/// spdlog_logger.cc). It pulls in the build-generated config.h itself and gates
-/// its entire body on ICEBERG_HAS_SPDLOG, so it compiles to nothing unless the
-/// project was built with ICEBERG_SPDLOG=ON. SpdLogger is not a
-/// consumer-constructible public type -- applications obtain it via the default
-/// logger or the "logger-impl"="spdlog" registry factory.
+/// \file iceberg/logging/spdlog_logger_internal.h
+/// \brief Internal spdlog-backed logging sink.
 
 #include "iceberg/logging/config.h"
 
 #ifdef ICEBERG_HAS_SPDLOG
 
 #  include <atomic>
-#  include <memory>
 
 #  include <spdlog/logger.h>
 
-#  include "iceberg/logging/log_level.h"
 #  include "iceberg/logging/logger.h"
 
 namespace iceberg::internal {
 
-/// \brief Logger backed by spdlog (synchronous only in v1).
-///
-/// Synchronous because spdlog::source_loc holds non-owning const char* that are
-/// unsafe to forward into an async logger (spdlog #3227).
-/// ICEBERG_EXPORT so the symbol is linkable from in-tree tests (and any
-/// internal consumer) under -fvisibility=hidden / MSVC DLL builds. The header
-/// is still not installed -- this is a binary-visibility detail, not public API.
 class ICEBERG_EXPORT SpdLogger : public Logger {
  public:
-  /// \brief Construct over a default stderr-backed spdlog logger.
   explicit SpdLogger(LogLevel level = LogLevel::kInfo);
 
-  /// \brief Construct over a caller-provided spdlog logger.
-  ///
-  /// The logger MUST be synchronous. Log() forwards spdlog::source_loc, which
-  /// borrows the std::source_location's const char* pointers; an async spdlog
-  /// logger would queue them past their lifetime (spdlog #3227 -> UB). This is a
-  /// caller contract -- spdlog exposes no reliable sync/async query to assert on.
-  explicit SpdLogger(std::shared_ptr<spdlog::logger> logger,
-                     LogLevel level = LogLevel::kInfo);
+  /// \brief Construct with a synchronous logger using thread-safe sinks.
+  explicit SpdLogger(spdlog::logger logger, LogLevel level = LogLevel::kInfo);
 
-  /// \brief Apply the "pattern" property (spdlog set_pattern), then "level".
   Status Initialize(
       const std::unordered_map<std::string, std::string>& properties) override;
 
@@ -81,7 +57,7 @@ class ICEBERG_EXPORT SpdLogger : public Logger {
   void Flush() noexcept override;
 
  private:
-  std::shared_ptr<spdlog::logger> logger_;
+  spdlog::logger logger_;
   std::atomic<LogLevel> level_;
 };
 

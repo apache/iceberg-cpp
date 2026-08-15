@@ -17,7 +17,7 @@
  * under the License.
  */
 
-#include "iceberg/logging/internal/spdlog_logger.h"
+#include "iceberg/logging/spdlog_logger_internal.h"
 
 #ifdef ICEBERG_HAS_SPDLOG
 
@@ -47,7 +47,7 @@ spdlog::level::level_enum ToSpdLevel(LogLevel level) noexcept {
       return spdlog::level::err;
     case LogLevel::kCritical:
     case LogLevel::kFatal:
-      // spdlog has no "fatal"; the process abort is owned by the macro layer.
+      // spdlog has no fatal level; the macro layer handles termination.
       return spdlog::level::critical;
     case LogLevel::kOff:
       return spdlog::level::off;
@@ -55,36 +55,24 @@ spdlog::level::level_enum ToSpdLevel(LogLevel level) noexcept {
   return spdlog::level::off;
 }
 
-/// \brief The built-in sink: a color stderr spdlog logger.
-std::shared_ptr<spdlog::logger> MakeDefaultSpdLogger() {
-  return std::make_shared<spdlog::logger>(
-      "iceberg", std::make_shared<spdlog::sinks::stderr_color_sink_mt>());
-}
-
 }  // namespace
 
-SpdLogger::SpdLogger(LogLevel level) : SpdLogger(MakeDefaultSpdLogger(), level) {}
+SpdLogger::SpdLogger(LogLevel level)
+    : SpdLogger(spdlog::logger("iceberg",
+                               std::make_shared<spdlog::sinks::stderr_color_sink_mt>()),
+                level) {}
+
+SpdLogger::SpdLogger(spdlog::logger logger, LogLevel level)
+    : logger_(std::move(logger)), level_(level) {
+  logger_.set_level(spdlog::level::trace);
+}
 
 Status SpdLogger::Initialize(
     const std::unordered_map<std::string, std::string>& properties) {
   if (auto it = properties.find(std::string(kPatternProperty)); it != properties.end()) {
-    logger_->set_pattern(it->second);
+    logger_.set_pattern(it->second);
   }
-  // Apply "level" via the base implementation.
   return Logger::Initialize(properties);
-}
-
-SpdLogger::SpdLogger(std::shared_ptr<spdlog::logger> logger, LogLevel level)
-    : logger_(std::move(logger)), level_(level) {
-  // logger_ is non-null for the rest of this object's life, so Initialize/Log/Flush
-  // may dereference it unconditionally. Enforced by substitution rather than an
-  // assertion, which would vanish under NDEBUG and leave a release-build crash: a
-  // null argument falls back to the same stderr-backed logger the default
-  // constructor builds, so a caller mistake degrades to the default sink.
-  if (!logger_) {
-    logger_ = MakeDefaultSpdLogger();
-  }
-  logger_->set_level(spdlog::level::trace);  // filtering is done by ShouldLog
 }
 
 void SpdLogger::Log(LogMessage&& message) noexcept {
@@ -92,12 +80,9 @@ void SpdLogger::Log(LogMessage&& message) noexcept {
     spdlog::source_loc loc{message.location.file_name(),
                            static_cast<int>(message.location.line()),
                            message.location.function_name()};
-    // Raw-message overload: the text is already formatted, so hand spdlog the bytes
-    // directly instead of running them back through fmt (which would re-parse and
-    // copy the whole message, allocating for long ones). It also means braces in the
-    // message can never be interpreted as format placeholders.
-    logger_->log(loc, ToSpdLevel(message.level),
-                 spdlog::string_view_t{message.message.data(), message.message.size()});
+    // LogMessage is already formatted; use spdlog's raw-message overload.
+    logger_.log(loc, ToSpdLevel(message.level),
+                spdlog::string_view_t{message.message.data(), message.message.size()});
   } catch (...) {
     // Logging must never throw.
   }
@@ -105,7 +90,7 @@ void SpdLogger::Log(LogMessage&& message) noexcept {
 
 void SpdLogger::Flush() noexcept {
   try {
-    logger_->flush();
+    logger_.flush();
   } catch (...) {
   }
 }

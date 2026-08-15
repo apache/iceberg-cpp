@@ -136,19 +136,28 @@ TEST(MacrosDeathTest, FatalAbortsEvenWhenRuntimeDisabled) {
       "");
 }
 
-TEST(MacrosDeathTest, GenericRuntimeFatalEmitsThenAborts) {
-  // ICEBERG_LOG with a runtime kFatal level must also emit then abort.
-  EXPECT_DEATH({ ICEBERG_LOG(LogLevel::kFatal, "gfatal {}", 1); }, "gfatal 1");
-}
-
-TEST(MacrosDeathTest, LogToFatalEmitsThenAborts) {
-  // ICEBERG_LOG_TO with kFatal must emit to the explicit logger then abort.
+TEST(MacrosDeathTest, GenericRuntimeFatalRunsHandlerWhenSuppressed) {
   EXPECT_DEATH(
       {
-        CerrLogger sink(LogLevel::kTrace);
+        SetDefaultLevel(LogLevel::kOff);
+        SetFatalHandler([](const std::source_location&, std::string_view message) {
+          std::cerr << "H[" << message << "]\n";
+        });
+        ICEBERG_LOG(LogLevel::kFatal, "gfatal {}", 1);
+      },
+      "H\\[gfatal 1\\]");
+}
+
+TEST(MacrosDeathTest, LogToFatalRunsHandlerWhenSuppressed) {
+  EXPECT_DEATH(
+      {
+        CerrLogger sink(LogLevel::kOff);
+        SetFatalHandler([](const std::source_location&, std::string_view message) {
+          std::cerr << "H[" << message << "]\n";
+        });
         ICEBERG_LOG_TO(sink, LogLevel::kFatal, "tofatal {}", 2);
       },
-      "tofatal 2");
+      "H\\[tofatal 2\\]");
 }
 
 // Regression guard: ICEBERG_LOG_FATAL must route through the active ScopedLogger

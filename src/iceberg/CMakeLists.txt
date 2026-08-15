@@ -18,17 +18,6 @@
 set(ICEBERG_INCLUDES "$<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/src>"
                      "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/src>")
 
-# Generate the logging backend config header. ALWAYS generated (not gated by
-# ICEBERG_SPDLOG) so logging/logger.cc can include it in both ON and OFF builds;
-# only the definedness of ICEBERG_HAS_SPDLOG varies. Generated into the build
-# tree (already on ICEBERG_INCLUDES), included as "iceberg/logging/config.h", and
-# NOT installed (it must never appear in a public/installed header).
-if(ICEBERG_SPDLOG)
-  set(ICEBERG_HAS_SPDLOG ON)
-endif()
-configure_file("${CMAKE_CURRENT_SOURCE_DIR}/logging/config.h.in"
-               "${CMAKE_CURRENT_BINARY_DIR}/logging/config.h")
-
 set(ICEBERG_SOURCES
     arrow_c_data_guard_internal.cc
     arrow_c_data_util.cc
@@ -67,6 +56,7 @@ set(ICEBERG_SOURCES
     location_provider.cc
     logging/cerr_logger.cc
     logging/logger.cc
+    logging/spdlog_logger.cc
     manifest/manifest_adapter.cc
     manifest/manifest_entry.cc
     manifest/manifest_filter_manager.cc
@@ -188,10 +178,8 @@ list(APPEND
      "$<IF:$<BOOL:${NLOHMANN_JSON_VENDORED}>,iceberg::nlohmann_json,$<IF:$<TARGET_EXISTS:nlohmann_json::nlohmann_json>,nlohmann_json::nlohmann_json,nlohmann_json::nlohmann_json>>"
      "$<IF:$<BOOL:${UTF8PROC_VENDORED}>,iceberg::utf8proc,utf8proc::utf8proc>")
 
-# spdlog backend: linked and compiled only when ICEBERG_SPDLOG is ON. When OFF,
-# the core library has no spdlog dependency and CerrLogger is the default sink.
 if(ICEBERG_SPDLOG)
-  list(APPEND ICEBERG_SOURCES logging/internal/spdlog_logger.cc)
+  set(ICEBERG_HAS_SPDLOG ON)
   list(APPEND ICEBERG_STATIC_BUILD_INTERFACE_LIBS spdlog::spdlog)
   list(APPEND ICEBERG_SHARED_BUILD_INTERFACE_LIBS spdlog::spdlog)
   list(APPEND ICEBERG_STATIC_INSTALL_INTERFACE_LIBS
@@ -199,6 +187,9 @@ if(ICEBERG_SPDLOG)
   list(APPEND ICEBERG_SHARED_INSTALL_INTERFACE_LIBS
        "$<IF:$<BOOL:${SPDLOG_VENDORED}>,iceberg::spdlog,spdlog::spdlog>")
 endif()
+
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/logging/config.h.in"
+               "${CMAKE_CURRENT_BINARY_DIR}/logging/config.h")
 
 add_iceberg_lib(iceberg
                 SOURCES

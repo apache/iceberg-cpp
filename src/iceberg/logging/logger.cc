@@ -26,13 +26,8 @@
 #include <tuple>
 #include <utility>
 
-// Build-generated, .cc-only (never from a public header). Defines
-// ICEBERG_HAS_SPDLOG when built with -DICEBERG_SPDLOG=ON; tested with #ifdef.
 #include "iceberg/logging/cerr_logger.h"
-#include "iceberg/logging/config.h"
-#ifdef ICEBERG_HAS_SPDLOG
-#  include "iceberg/logging/internal/spdlog_logger.h"
-#endif
+#include "iceberg/logging/spdlog_logger_internal.h"
 
 namespace iceberg {
 
@@ -48,10 +43,7 @@ class NoopLogger final : public Logger {
   bool IsNoop() const override { return true; }
 };
 
-/// \brief Construct the process default logger for this build configuration.
-///
-/// Prefers the spdlog backend when compiled in; otherwise the always-available
-/// std::cerr logger.
+/// \brief Construct the configured process default logger.
 std::shared_ptr<Logger> MakeDefaultLogger() {
 #ifdef ICEBERG_HAS_SPDLOG
   return std::make_shared<internal::SpdLogger>();
