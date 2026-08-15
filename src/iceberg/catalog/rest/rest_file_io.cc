@@ -28,6 +28,7 @@
 #include "iceberg/file_io.h"
 #include "iceberg/file_io_registry.h"
 #include "iceberg/util/macros.h"
+#include "iceberg/util/uri.h"
 
 namespace iceberg::rest {
 
@@ -51,12 +52,16 @@ std::unordered_map<std::string, std::string> MergeFileIOProperties(
 }  // namespace
 
 Result<BuiltinFileIOKind> DetectBuiltinFileIO(std::string_view location) {
-  const auto pos = location.find("://");
-  if (pos == std::string_view::npos) {
+  // Detect URI scheme using RFC 3986 rules.
+  // See iceberg/util/uri.h for the scheme grammar.
+  std::size_t colon_pos = 0;
+  bool is_uri = IsUriScheme(location, &colon_pos);
+
+  if (!is_uri) {
     return BuiltinFileIOKind::kArrowLocal;
   }
 
-  const auto scheme = location.substr(0, pos);
+  const auto scheme = location.substr(0, colon_pos);
   if (scheme == "file") {
     return BuiltinFileIOKind::kArrowLocal;
   }
