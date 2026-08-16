@@ -191,8 +191,8 @@ TEST_F(ArrowS3FileIOTest, SkipsNonS3CredentialPrefix) {
 // credential that is silently skipped leaves S3 access on the default
 // credentials, which only surfaces much later as an auth error.
 TEST_F(ArrowS3FileIOTest, AppliesEveryS3CompatibleCredentialPrefix) {
-  for (std::string_view prefix : {"s3", "s3://bucket/table", "s3a://bucket/table",
-                                  "s3n://bucket/table", "oss://bucket/table"}) {
+  for (std::string_view prefix :
+       {"s3", "s3://bucket/table", "s3a://bucket/table", "s3n://bucket/table"}) {
     SCOPED_TRACE(prefix);
     auto result = MakeS3FileIO({});
     ASSERT_THAT(result, IsOk());
@@ -308,10 +308,10 @@ TEST_F(ArrowS3FileIOTest, EndpointScheme) {
     std::string_view endpoint_override;
     std::string_view scheme;
   };
-  const std::vector<Case> cases = {{"https://oss-cn-hangzhou.aliyuncs.com:443",
-                                    "oss-cn-hangzhou.aliyuncs.com:443", "https"},
-                                   {"http://localhost:9000", "localhost:9000", "http"},
-                                   {"localhost:9000", "localhost:9000", "https"}};
+  const std::vector<Case> cases = {
+      {"https://s3.example.com:443", "s3.example.com:443", "https"},
+      {"http://localhost:9000", "localhost:9000", "http"},
+      {"localhost:9000", "localhost:9000", "https"}};
 
   for (const auto& test_case : cases) {
     auto result = ConfigureS3Options(

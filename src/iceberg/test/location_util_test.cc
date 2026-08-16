@@ -61,4 +61,15 @@ TEST(LocationUtilTest, StripTrailingSlash) {
   ASSERT_EQ("/path///to/dir", LocationUtil::StripTrailingSlash("/path///to/dir/"));
 }
 
+TEST(LocationUtilTest, ParseScheme) {
+  auto s3 = LocationUtil::ParseScheme("S3://bucket/path");
+  EXPECT_EQ(s3, "S3");
+
+  auto no_scheme = LocationUtil::ParseScheme("/tmp/file.parquet");
+  EXPECT_TRUE(no_scheme.empty());
+
+  auto empty_scheme = LocationUtil::ParseScheme("://bucket/path");
+  EXPECT_TRUE(empty_scheme.empty());
+}
+
 }  // namespace iceberg

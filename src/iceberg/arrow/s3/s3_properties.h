@@ -22,6 +22,8 @@
 /// \file iceberg/arrow/s3/s3_properties.h
 /// \brief Define S3 configuration property keys.
 
+#include <algorithm>
+#include <array>
 #include <string_view>
 
 namespace iceberg::arrow {
@@ -53,5 +55,16 @@ struct S3Properties {
   /// Socket timeout in milliseconds
   static constexpr std::string_view kSocketTimeoutMs = "s3.socket-timeout-ms";
 };
+
+/// \brief URI schemes served by the Arrow S3 FileIO, lower-case.
+///
+/// Single source of truth: both the registry registration and IsS3Scheme derive
+/// from this list, so a new alias only has to be added here.
+inline constexpr std::array<std::string_view, 3> kS3Schemes = {"s3", "s3a", "s3n"};
+
+/// \brief Return whether a normalized URI scheme is S3-compatible.
+inline constexpr bool IsS3Scheme(std::string_view scheme) {
+  return std::ranges::contains(kS3Schemes, scheme);
+}
 
 }  // namespace iceberg::arrow

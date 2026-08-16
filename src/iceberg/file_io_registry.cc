@@ -19,27 +19,28 @@
 
 #include "iceberg/file_io_registry.h"
 
+#include <algorithm>
 #include <mutex>
+#include <ranges>
+#include <string>
 #include <utility>
+#include <vector>
 
-#include "iceberg/resolving_file_io.h"
+#include "iceberg/util/macros.h"
+#include "iceberg/util/string_util.h"
 
 namespace iceberg {
 
 namespace {
 
 struct RegistryState {
-  std::mutex mutex;
-  std::unordered_map<std::string, FileIORegistry::Factory> registry;
+  struct Entry {
+    std::string name;
+    FileIORegistry::Factory factory;
+  };
 
-  RegistryState() {
-    // Always available: the scheme-resolving FileIO lives in the core library.
-    registry[std::string(FileIORegistry::kResolvingFileIO)] =
-        [](const std::unordered_map<std::string, std::string>& properties)
-        -> Result<std::unique_ptr<FileIO>> {
-      return std::make_unique<ResolvingFileIO>(properties);
-    };
-  }
+  std::mutex mutex;
+  std::vector<Entry> registrations;
 };
 
 RegistryState& State() {
@@ -47,28 +48,69 @@ RegistryState& State() {
   return state;
 }
 
-}  // namespace
-
-void FileIORegistry::Register(const std::string& name, Factory factory) {
+// Copy entries so user callbacks run outside the registry lock.
+std::vector<RegistryState::Entry> SnapshotEntries() {
   auto& state = State();
   std::lock_guard lock(state.mutex);
-  state.registry[name] = std::move(factory);
+  return state.registrations;
 }
 
-Result<std::unique_ptr<FileIO>> FileIORegistry::Load(
-    const std::string& name,
-    const std::unordered_map<std::string, std::string>& properties) {
-  Factory factory;
+std::string FormatNames(const std::vector<RegistryState::Entry>& entries) {
+  std::string result;
+  for (const auto& entry : entries) {
+    if (!result.empty()) {
+      result += ", ";
+    }
+    result += entry.name;
+  }
+  return result.empty() ? "(none registered)" : result;
+}
+
+}  // namespace
+
+void FileIORegistry::Register(std::string name, Factory factory) {
+  auto& state = State();
+  std::lock_guard lock(state.mutex);
+  std::erase_if(state.registrations, [&name](const RegistryState::Entry& entry) {
+    return entry.name == name;
+  });
+  state.registrations.emplace_back(std::move(name), std::move(factory));
+}
+
+Result<std::unique_ptr<FileIO>> FileIORegistry::Load(std::string_view name,
+                                                     const Properties& properties) {
+  Factory::CreateFunction create;
   {
     auto& state = State();
     std::lock_guard lock(state.mutex);
-    auto it = state.registry.find(name);
-    if (it == state.registry.end()) {
-      return NotFound("FileIO implementation not found: {}", name);
+    const auto entry =
+        std::ranges::find(state.registrations, name, &RegistryState::Entry::name);
+    if (entry == state.registrations.end()) {
+      return NotFound("FileIO not found: {}", name);
     }
-    factory = it->second;
+    create = entry->factory.create;
   }
-  return factory(properties);
+  if (!create) {
+    return InvalidArgument("FileIO '{}' has no create function", name);
+  }
+  ICEBERG_ASSIGN_OR_RAISE(auto io, create(properties));
+  if (!io) {
+    return InvalidArgument("FileIO '{}' returned a null instance", name);
+  }
+  return std::move(io);
+}
+
+Result<std::string> FileIORegistry::Resolve(std::string_view scheme) {
+  const std::string normalized_scheme = StringUtils::ToLower(scheme);
+  const auto entries = SnapshotEntries();
+  // Newest registrations take precedence.
+  for (const auto& entry : std::ranges::reverse_view(entries)) {
+    if (entry.factory.accepts && entry.factory.accepts(normalized_scheme)) {
+      return entry.name;
+    }
+  }
+  return NotSupported("No FileIO registered for URI scheme '{}'; registered: {}",
+                      normalized_scheme, FormatNames(entries));
 }
 
 }  // namespace iceberg

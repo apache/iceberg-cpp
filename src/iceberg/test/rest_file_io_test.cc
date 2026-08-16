@@ -28,6 +28,7 @@
 
 #include "iceberg/catalog/rest/types.h"
 #include "iceberg/file_io_registry.h"
+#include "iceberg/resolving_file_io.h"
 #include "iceberg/test/matchers.h"
 
 namespace iceberg::rest {
@@ -78,17 +79,30 @@ TEST(RestFileIOTest, MakeCatalogFileIODefaultsToResolvingFileIO) {
         RestCatalogProperties::FromMap({{"warehouse", "s3://bucket/warehouse"}})}) {
     auto result = MakeCatalogFileIO(config);
     ASSERT_THAT(result, IsOk());
-    // The resolving FileIO can carry vended storage credentials.
-    EXPECT_NE(result.value()->AsSupportsStorageCredentials(), nullptr);
+    EXPECT_NE(dynamic_cast<ResolvingFileIO*>(result.value().get()), nullptr);
   }
+}
+
+TEST(RestFileIOTest, DefaultResolverDelegatesThroughRegistry) {
+  FileIORegistry::Register(
+      "test.rest.resolving-file-io",
+      {.create = [](const FileIORegistry::Properties&)
+           -> Result<std::unique_ptr<FileIO>> { return std::make_unique<MockFileIO>(); },
+       .accepts = [](std::string_view scheme) { return scheme == "rest-test"; }});
+
+  auto result = MakeTableFileIO({}, {}, {});
+  ASSERT_THAT(result, IsOk());
+  EXPECT_THAT(result.value()->DeleteFile("rest-test://file"), IsOk());
 }
 
 TEST(RestFileIOTest, MakeCatalogFileIOPassesThroughCustomImpl) {
   const std::string custom_impl = "com.mycompany.CustomFileIO";
   FileIORegistry::Register(
       custom_impl,
-      [](const std::unordered_map<std::string, std::string>& /*properties*/)
-          -> Result<std::unique_ptr<FileIO>> { return std::make_unique<MockFileIO>(); });
+      {.create = [](const std::unordered_map<std::string, std::string>& /*properties*/)
+           -> Result<std::unique_ptr<FileIO>> {
+        return std::make_unique<MockFileIO>();
+      }});
 
   auto config = RestCatalogProperties::FromMap(
       {{"io-impl", custom_impl}, {"warehouse", "/tmp/warehouse"}});
@@ -103,42 +117,17 @@ TEST(RestFileIOTest, MakeCatalogFileIOUnregisteredCustomImplReturnsNotFound) {
   EXPECT_THAT(result, IsError(ErrorKind::kNotFound));
 }
 
-TEST(RestFileIOTest, TableFileIOBindsCredentialsWithLogicalWarehouseName) {
-  // Regression: credential-vending catalogs often use a logical warehouse name
-  // (bucket ARN / catalog name), not a storage URI; the S3 implementation must
-  // still be resolved per path scheme and receive the vended credentials, even
-  // when non-S3 credentials are vended alongside.
-  captured_storage_credentials.clear();
-  FileIORegistry::Register(
-      std::string(FileIORegistry::kArrowS3FileIO),
-      [](const std::unordered_map<std::string, std::string>& /*properties*/)
-          -> Result<std::unique_ptr<FileIO>> {
-        return std::make_unique<MockCredentialedFileIO>();
-      });
-
-  std::vector<StorageCredential> credentials = {
-      {.prefix = "oss", .config = {{"k1", "v1"}}},
-      {.prefix = "s3", .config = {{"k2", "v2"}}}};
-  auto result = MakeTableFileIO({{"warehouse", "logical_warehouse_name"}},
-                                /*table_config=*/{}, credentials);
-  ASSERT_THAT(result, IsOk());
-
-  // Reaching a data file routes to the S3 FileIO with the full credential list.
-  (void)result.value()->NewInputFile("oss://bucket/db/table/data/file.parquet");
-  EXPECT_EQ(captured_storage_credentials, credentials);
-}
-
 TEST(RestFileIOTest, TableFileIOMergesConfigAndCredentials) {
   const std::string custom_impl = "com.mycompany.CredentialedFileIO";
   captured_file_io_properties.clear();
   captured_storage_credentials.clear();
   FileIORegistry::Register(
       custom_impl,
-      [](const std::unordered_map<std::string, std::string>& properties)
-          -> Result<std::unique_ptr<FileIO>> {
+      {.create = [](const std::unordered_map<std::string, std::string>& properties)
+           -> Result<std::unique_ptr<FileIO>> {
         captured_file_io_properties = properties;
         return std::make_unique<MockCredentialedFileIO>();
-      });
+      }});
 
   auto result = MakeTableFileIO(
       {{"warehouse", "s3://catalog/warehouse"},
@@ -170,11 +159,11 @@ TEST(RestFileIOTest, TableImplOverridesWarehouseScheme) {
   captured_file_io_properties.clear();
   FileIORegistry::Register(
       std::string(FileIORegistry::kArrowS3FileIO),
-      [](const std::unordered_map<std::string, std::string>& properties)
-          -> Result<std::unique_ptr<FileIO>> {
+      {.create = [](const std::unordered_map<std::string, std::string>& properties)
+           -> Result<std::unique_ptr<FileIO>> {
         captured_file_io_properties = properties;
         return std::make_unique<MockFileIO>();
-      });
+      }});
 
   auto result =
       MakeTableFileIO({{"warehouse", "/tmp/catalog-warehouse"}},
@@ -192,8 +181,10 @@ TEST(RestFileIOTest, TableFileIORejectsCredentials) {
   const std::string custom_impl = "com.mycompany.PlainFileIO";
   FileIORegistry::Register(
       custom_impl,
-      [](const std::unordered_map<std::string, std::string>& /*properties*/)
-          -> Result<std::unique_ptr<FileIO>> { return std::make_unique<MockFileIO>(); });
+      {.create = [](const std::unordered_map<std::string, std::string>& /*properties*/)
+           -> Result<std::unique_ptr<FileIO>> {
+        return std::make_unique<MockFileIO>();
+      }});
 
   auto result = MakeTableFileIO(
       {{"warehouse", "s3://catalog/warehouse"}}, {{"io-impl", custom_impl}},

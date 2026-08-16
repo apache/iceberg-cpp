@@ -26,6 +26,7 @@
 #include "iceberg/catalog/rest/types.h"
 #include "iceberg/file_io.h"
 #include "iceberg/file_io_registry.h"
+#include "iceberg/resolving_file_io.h"
 #include "iceberg/util/macros.h"
 
 namespace iceberg::rest {
@@ -45,16 +46,11 @@ std::unordered_map<std::string, std::string> MergeFileIOProperties(
 }  // namespace
 
 Result<std::unique_ptr<FileIO>> MakeCatalogFileIO(const RestCatalogProperties& config) {
-  std::string io_impl = config.Get(RestCatalogProperties::kIOImpl);
+  const std::string io_impl = config.Get(RestCatalogProperties::kIOImpl);
   if (io_impl.empty()) {
-    // Resolve the FileIO per file-path scheme instead of guessing from
-    // `warehouse`, which is often a logical identifier rather than a storage
-    // URI (Java defaults to ResolvingFileIO likewise).
-    io_impl = std::string(FileIORegistry::kResolvingFileIO);
+    return std::make_unique<ResolvingFileIO>(config.configs());
   }
 
-  // TODO(gangwu): Support Java-style customized FileIO creation flows instead of
-  // resolving a single catalog-scoped FileIO instance only from properties.
   return FileIORegistry::Load(io_impl, config.configs());
 }
 

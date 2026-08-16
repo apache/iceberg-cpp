@@ -30,6 +30,13 @@ namespace iceberg {
 
 class ICEBERG_EXPORT LocationUtil {
  public:
+  /// \brief Extract the URI scheme from a location.
+  ///
+  /// This follows Java's ResolvingFileIO: the text before the first colon is
+  /// the scheme; an empty result means that no scheme was found. It does not
+  /// validate the rest of the location.
+  static std::string_view ParseScheme(std::string_view location);
+
   static std::string_view StripTrailingSlash(std::string_view path) {
     if (path.empty()) {
       return "";

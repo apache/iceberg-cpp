@@ -188,6 +188,7 @@ iceberg_sources = files(
     'util/conversions.cc',
     'util/decimal.cc',
     'util/gzip_internal.cc',
+    'util/location_util.cc',
     'util/murmurhash3_internal.cc',
     'util/property_util.cc',
     'util/retry_util.cc',

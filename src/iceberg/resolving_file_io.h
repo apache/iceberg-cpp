@@ -23,7 +23,7 @@
 /// \brief FileIO that resolves the concrete implementation per file-path scheme.
 
 #include <memory>
-#include <mutex>
+#include <shared_mutex>
 #include <string>
 #include <string_view>
 #include <unordered_map>
@@ -37,19 +37,7 @@
 
 namespace iceberg {
 
-/// \brief FileIO that uses the location scheme to choose the concrete FileIO,
-/// mirroring Java's ResolvingFileIO.
-///
-/// Resolution is per file path and independent of `warehouse` (often a logical
-/// identifier rather than a storage URI). Implementations are loaded lazily
-/// from FileIORegistry with this FileIO's properties and cached. Vended
-/// credentials are forwarded in full to every resolved FileIO that supports
-/// them; each applies the prefixes it understands and ignores the rest.
-///
-/// Lazy resolution is internally synchronized, so file operations may run
-/// concurrently. Credentials are not: install them before sharing the instance,
-/// since credentials() hands out a reference that SetStorageCredentials
-/// replaces.
+/// \brief FileIO that resolves each location to a registered implementation.
 class ICEBERG_EXPORT ResolvingFileIO final : public FileIO,
                                              public SupportsStorageCredentials {
  public:
@@ -76,13 +64,13 @@ class ICEBERG_EXPORT ResolvingFileIO final : public FileIO,
 
  private:
   /// \brief Load (or return the cached) implementation serving `location`.
-  Result<FileIO*> FileIOForPath(std::string_view location);
+  Result<std::shared_ptr<FileIO>> FileIOForPath(std::string_view location);
 
   std::unordered_map<std::string, std::string> properties_;
-  // Guards lazy resolution; set credentials before sharing across threads.
-  std::mutex mutex_;
+  // Guards lazy resolution and credential refresh.
+  std::shared_mutex mutex_;
   std::vector<StorageCredential> storage_credentials_;
-  std::unordered_map<std::string, std::unique_ptr<FileIO>, StringHash, StringEqual>
+  std::unordered_map<std::string, std::shared_ptr<FileIO>, StringHash, StringEqual>
       io_by_name_;
 };
 

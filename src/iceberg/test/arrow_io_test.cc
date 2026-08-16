@@ -21,6 +21,7 @@
 #include <array>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include <arrow/filesystem/localfs.h>
@@ -29,6 +30,9 @@
 #include <gtest/gtest.h>
 
 #include "iceberg/arrow/arrow_io_internal.h"
+#include "iceberg/arrow/arrow_register.h"
+#include "iceberg/file_io_registry.h"
+#include "iceberg/resolving_file_io.h"
 #include "iceberg/test/matchers.h"
 #include "iceberg/test/std_io.h"
 #include "iceberg/test/temp_file_test_base.h"
@@ -308,6 +312,23 @@ class PermissiveOutputFileIO : public FileIO {
 };
 
 }  // namespace
+
+TEST(ArrowRegisterTest, RegistersBuiltInFileIOs) {
+  arrow::RegisterAll();
+
+  ResolvingFileIO io({});
+  EXPECT_THAT(io.NewInputFile("/tmp/file"), IsOk());
+  EXPECT_THAT(io.NewInputFile("file:///tmp/file"), IsOk());
+
+#if ICEBERG_S3_ENABLED
+  for (std::string_view scheme : {"s3", "s3a", "s3n"}) {
+    EXPECT_THAT(FileIORegistry::Resolve(scheme),
+                HasValue(::testing::Eq(FileIORegistry::kArrowS3FileIO)));
+  }
+#else
+  EXPECT_THAT(FileIORegistry::Resolve("s3"), IsError(ErrorKind::kNotSupported));
+#endif
+}
 
 class LocalFileIOTest : public TempFileTestBase {
  protected:

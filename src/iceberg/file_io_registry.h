@@ -43,27 +43,39 @@ class ICEBERG_EXPORT FileIORegistry {
  public:
   static constexpr std::string_view kArrowLocalFileIO = "arrow-fs-local";
   static constexpr std::string_view kArrowS3FileIO = "arrow-fs-s3";
-  /// Always registered; resolves the concrete FileIO per file-path scheme.
-  static constexpr std::string_view kResolvingFileIO = "resolving-file-io";
 
-  /// Factory function type for creating FileIO instances.
-  using Factory = std::function<Result<std::unique_ptr<FileIO>>(
-      const std::unordered_map<std::string, std::string>& properties)>;
+  using Properties = std::unordered_map<std::string, std::string>;
+
+  /// Factory for explicit loading and optional scheme-based routing.
+  struct Factory {
+    using CreateFunction =
+        std::function<Result<std::unique_ptr<FileIO>>(const Properties& properties)>;
+    using AcceptsFunction = std::function<bool(std::string_view scheme)>;
+
+    /// Required for explicit loading.
+    CreateFunction create;
+    /// Receives a lower-case scheme. Empty means explicit-only.
+    AcceptsFunction accepts;
+  };
 
   /// \brief Register a FileIO factory under the given name.
   ///
   /// \param name The implementation name (e.g., "local", "s3")
   /// \param factory The factory function that creates the FileIO instance.
-  static void Register(const std::string& name, Factory factory);
+  static void Register(std::string name, Factory factory);
 
   /// \brief Load a FileIO implementation by name.
   ///
   /// \param name The implementation name to look up.
   /// \param properties Configuration properties to pass to the factory.
   /// \return A unique_ptr to the FileIO instance, or an error if not found.
-  static Result<std::unique_ptr<FileIO>> Load(
-      const std::string& name,
-      const std::unordered_map<std::string, std::string>& properties);
+  static Result<std::unique_ptr<FileIO>> Load(std::string_view name,
+                                              const Properties& properties);
+
+  /// \brief Returns the latest registered factory accepting `scheme`.
+  ///
+  /// Matching is case-insensitive; later registrations take precedence.
+  static Result<std::string> Resolve(std::string_view scheme);
 };
 
 }  // namespace iceberg

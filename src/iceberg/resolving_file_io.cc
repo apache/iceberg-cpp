@@ -19,11 +19,14 @@
 
 #include "iceberg/resolving_file_io.h"
 
+#include <mutex>
+#include <shared_mutex>
 #include <utility>
 
 #include "iceberg/file_io_registry.h"
-#include "iceberg/resolving_file_io_internal.h"
+#include "iceberg/util/location_util.h"
 #include "iceberg/util/macros.h"
+#include "iceberg/util/string_util.h"
 
 namespace iceberg {
 
@@ -32,33 +35,22 @@ ResolvingFileIO::ResolvingFileIO(std::unordered_map<std::string, std::string> pr
 
 ResolvingFileIO::~ResolvingFileIO() = default;
 
-Result<std::string_view> ResolveFileIOName(std::string_view location) {
-  const auto pos = location.find("://");
-  if (pos == std::string_view::npos) {
-    return FileIORegistry::kArrowLocalFileIO;
+Result<std::shared_ptr<FileIO>> ResolvingFileIO::FileIOForPath(
+    std::string_view location) {
+  const auto scheme = StringUtils::ToLower(LocationUtil::ParseScheme(location));
+  ICEBERG_ASSIGN_OR_RAISE(const auto name, FileIORegistry::Resolve(scheme));
+
+  {
+    std::shared_lock lock(mutex_);
+    if (const auto cached = io_by_name_.find(name); cached != io_by_name_.end()) {
+      return cached->second;
+    }
   }
 
-  const auto scheme = location.substr(0, pos);
-  if (scheme == "file") {
-    return FileIORegistry::kArrowLocalFileIO;
-  }
-  // S3-compatible schemes served by the S3 FileIO (Java: SCHEME_TO_FILE_IO).
-  // Keep in sync with CanonicalizeS3Scheme in arrow_s3_file_io.cc.
-  if (scheme == "s3" || scheme == "s3a" || scheme == "s3n" || scheme == "oss") {
-    return FileIORegistry::kArrowS3FileIO;
-  }
-
-  return NotSupported("URI scheme '{}' is not supported for FileIO resolution", scheme);
-}
-
-Result<FileIO*> ResolvingFileIO::FileIOForPath(std::string_view location) {
-  ICEBERG_ASSIGN_OR_RAISE(const auto name, ResolveFileIOName(location));
-
-  std::lock_guard lock(mutex_);
+  std::unique_lock lock(mutex_);
   auto it = io_by_name_.find(name);
   if (it == io_by_name_.end()) {
-    ICEBERG_ASSIGN_OR_RAISE(auto io,
-                            FileIORegistry::Load(std::string(name), properties_));
+    ICEBERG_ASSIGN_OR_RAISE(auto io, FileIORegistry::Load(name, properties_));
     // Forward all credentials; each implementation applies the prefixes it
     // understands.
     if (!storage_credentials_.empty()) {
@@ -69,36 +61,36 @@ Result<FileIO*> ResolvingFileIO::FileIOForPath(std::string_view location) {
     }
     it = io_by_name_.emplace(std::string(name), std::move(io)).first;
   }
-  return it->second.get();
+  return it->second;
 }
 
 Result<std::unique_ptr<InputFile>> ResolvingFileIO::NewInputFile(
     std::string file_location) {
-  ICEBERG_ASSIGN_OR_RAISE(auto* io, FileIOForPath(file_location));
+  ICEBERG_ASSIGN_OR_RAISE(auto io, FileIOForPath(file_location));
   return io->NewInputFile(std::move(file_location));
 }
 
 Result<std::unique_ptr<InputFile>> ResolvingFileIO::NewInputFile(
     std::string file_location, size_t length) {
-  ICEBERG_ASSIGN_OR_RAISE(auto* io, FileIOForPath(file_location));
+  ICEBERG_ASSIGN_OR_RAISE(auto io, FileIOForPath(file_location));
   return io->NewInputFile(std::move(file_location), length);
 }
 
 Result<std::unique_ptr<OutputFile>> ResolvingFileIO::NewOutputFile(
     std::string file_location) {
-  ICEBERG_ASSIGN_OR_RAISE(auto* io, FileIOForPath(file_location));
+  ICEBERG_ASSIGN_OR_RAISE(auto io, FileIOForPath(file_location));
   return io->NewOutputFile(std::move(file_location));
 }
 
 Status ResolvingFileIO::DeleteFile(const std::string& file_location) {
-  ICEBERG_ASSIGN_OR_RAISE(auto* io, FileIOForPath(file_location));
+  ICEBERG_ASSIGN_OR_RAISE(auto io, FileIOForPath(file_location));
   return io->DeleteFile(file_location);
 }
 
 Status ResolvingFileIO::DeleteFiles(const std::vector<std::string>& file_locations) {
-  std::unordered_map<FileIO*, std::vector<std::string>> locations_by_io;
+  std::unordered_map<std::shared_ptr<FileIO>, std::vector<std::string>> locations_by_io;
   for (const auto& file_location : file_locations) {
-    ICEBERG_ASSIGN_OR_RAISE(auto* io, FileIOForPath(file_location));
+    ICEBERG_ASSIGN_OR_RAISE(auto io, FileIOForPath(file_location));
     locations_by_io[io].push_back(file_location);
   }
   for (auto& [io, locations] : locations_by_io) {
@@ -111,7 +103,7 @@ Status ResolvingFileIO::SetStorageCredentials(
     const std::vector<StorageCredential>& storage_credentials) {
   // Rebuild delegates lazily with the new credentials. Updating live delegates
   // instead would leave the resolver inconsistent if one of them rejected them.
-  std::lock_guard lock(mutex_);
+  std::unique_lock lock(mutex_);
   storage_credentials_ = storage_credentials;
   io_by_name_.clear();
   return {};

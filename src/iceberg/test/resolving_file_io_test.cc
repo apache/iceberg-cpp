@@ -28,7 +28,6 @@
 #include <gtest/gtest.h>
 
 #include "iceberg/file_io_registry.h"
-#include "iceberg/resolving_file_io_internal.h"
 #include "iceberg/test/matchers.h"
 
 namespace iceberg {
@@ -43,7 +42,13 @@ class RecordingFileIO : public FileIO {
     return NotImplemented("recording mock");
   }
 
+  Status DeleteFiles(const std::vector<std::string>& file_locations) override {
+    deleted_batches.push_back(file_locations);
+    return {};
+  }
+
   std::vector<std::string> locations;
+  std::vector<std::vector<std::string>> deleted_batches;
 };
 
 class RecordingCredentialedFileIO : public RecordingFileIO,
@@ -83,44 +88,64 @@ void RegisterRecordingFileIOs() {
   last_local_io = nullptr;
   FileIORegistry::Register(
       std::string(FileIORegistry::kArrowS3FileIO),
-      [](const std::unordered_map<std::string, std::string>& properties)
-          -> Result<std::unique_ptr<FileIO>> {
-        ++s3_factory_calls;
-        s3_factory_properties = properties;
-        auto io = std::make_unique<RecordingCredentialedFileIO>();
-        last_s3_io = io.get();
-        return io;
-      });
+      {.create = [](const std::unordered_map<std::string, std::string>& properties)
+           -> Result<std::unique_ptr<FileIO>> {
+         ++s3_factory_calls;
+         s3_factory_properties = properties;
+         auto io = std::make_unique<RecordingCredentialedFileIO>();
+         last_s3_io = io.get();
+         return io;
+       },
+       .accepts =
+           [](std::string_view scheme) {
+             return scheme == "s3" || scheme == "s3a" || scheme == "s3n";
+           }});
   FileIORegistry::Register(
       std::string(FileIORegistry::kArrowLocalFileIO),
-      [](const std::unordered_map<std::string, std::string>& /*properties*/)
-          -> Result<std::unique_ptr<FileIO>> {
-        ++local_factory_calls;
-        auto io = std::make_unique<RecordingFileIO>();
-        last_local_io = io.get();
-        return io;
-      });
+      {.create = [](const std::unordered_map<std::string, std::string>& /*properties*/)
+           -> Result<std::unique_ptr<FileIO>> {
+         ++local_factory_calls;
+         auto io = std::make_unique<RecordingFileIO>();
+         last_local_io = io.get();
+         return io;
+       },
+       .accepts =
+           [](std::string_view scheme) { return scheme.empty() || scheme == "file"; }});
 }
 
 }  // namespace
 
-TEST(ResolvingFileIOTest, ResolvesImplementationNameFromScheme) {
-  EXPECT_THAT(ResolveFileIOName("s3://bucket/path"),
-              HasValue(::testing::Eq(FileIORegistry::kArrowS3FileIO)));
-  EXPECT_THAT(ResolveFileIOName("s3a://bucket/path"),
-              HasValue(::testing::Eq(FileIORegistry::kArrowS3FileIO)));
-  EXPECT_THAT(ResolveFileIOName("s3n://bucket/path"),
-              HasValue(::testing::Eq(FileIORegistry::kArrowS3FileIO)));
-  EXPECT_THAT(ResolveFileIOName("oss://bucket/path"),
-              HasValue(::testing::Eq(FileIORegistry::kArrowS3FileIO)));
-  EXPECT_THAT(ResolveFileIOName("file:///tmp/path"),
-              HasValue(::testing::Eq(FileIORegistry::kArrowLocalFileIO)));
-  EXPECT_THAT(ResolveFileIOName("/tmp/path"),
-              HasValue(::testing::Eq(FileIORegistry::kArrowLocalFileIO)));
+TEST(FileIORegistryTest, ResolvesLatestAndReplacedRegistration) {
+  FileIORegistry::Register(
+      "test.file-io.old",
+      {.create =
+           [](const FileIORegistry::Properties&) -> Result<std::unique_ptr<FileIO>> {
+         return std::make_unique<RecordingFileIO>();
+       },
+       .accepts = [](std::string_view scheme) { return scheme == "custom"; }});
+  FileIORegistry::Register(
+      "test.file-io.new",
+      {.create =
+           [](const FileIORegistry::Properties&) -> Result<std::unique_ptr<FileIO>> {
+         return std::make_unique<RecordingFileIO>();
+       },
+       .accepts = [](std::string_view scheme) { return scheme == "custom"; }});
 
-  auto result = ResolveFileIOName("gs://bucket/path");
-  EXPECT_THAT(result, IsError(ErrorKind::kNotSupported));
-  EXPECT_THAT(result, HasErrorMessage("not supported for FileIO resolution"));
+  EXPECT_THAT(FileIORegistry::Resolve("CUSTOM"),
+              HasValue(::testing::Eq("test.file-io.new")));
+
+  FileIORegistry::Register(
+      "test.file-io.old",
+      {.create =
+           [](const FileIORegistry::Properties&) -> Result<std::unique_ptr<FileIO>> {
+         return std::make_unique<RecordingFileIO>();
+       },
+       .accepts = [](std::string_view scheme) { return scheme == "replacement"; }});
+
+  EXPECT_THAT(FileIORegistry::Resolve("custom"),
+              HasValue(::testing::Eq("test.file-io.new")));
+  EXPECT_THAT(FileIORegistry::Resolve("replacement"),
+              HasValue(::testing::Eq("test.file-io.old")));
 }
 
 TEST(ResolvingFileIOTest, RoutesPathsAndCachesResolvedImplementations) {
@@ -128,19 +153,20 @@ TEST(ResolvingFileIOTest, RoutesPathsAndCachesResolvedImplementations) {
   ResolvingFileIO io({{"k", "v"}});
 
   // Errors come from the recording mock; routing is what is under test.
-  (void)io.NewInputFile("oss://bucket/db/table/data/file.parquet");
+  (void)io.NewInputFile("s3a://bucket/db/table/data/file.parquet");
   (void)io.NewInputFile("s3://bucket/db/table/data/file.parquet");
   (void)io.NewInputFile("/tmp/local/file.parquet");
 
   ASSERT_NE(last_s3_io, nullptr);
   ASSERT_NE(last_local_io, nullptr);
   EXPECT_THAT(last_s3_io->locations,
-              ::testing::ElementsAre("oss://bucket/db/table/data/file.parquet",
+              ::testing::ElementsAre("s3a://bucket/db/table/data/file.parquet",
                                      "s3://bucket/db/table/data/file.parquet"));
   EXPECT_THAT(last_local_io->locations,
               ::testing::ElementsAre("/tmp/local/file.parquet"));
 
-  // Resolved instances are cached; properties pass through to the factory.
+  // One instance per implementation despite two distinct S3 schemes routed to
+  // it; properties pass through to the factory.
   EXPECT_EQ(s3_factory_calls, 1);
   EXPECT_EQ(local_factory_calls, 1);
   EXPECT_THAT(s3_factory_properties,
@@ -150,6 +176,56 @@ TEST(ResolvingFileIOTest, RoutesPathsAndCachesResolvedImplementations) {
   EXPECT_THAT(unsupported, IsError(ErrorKind::kNotSupported));
 }
 
+TEST(ResolvingFileIOTest, GroupsBulkDeletesByResolvedImplementation) {
+  RegisterRecordingFileIOs();
+  ResolvingFileIO io({});
+
+  EXPECT_THAT(io.DeleteFiles({"s3://bucket/a", "/tmp/local-a", "s3a://bucket/b",
+                              "file:///tmp/local-b"}),
+              IsOk());
+
+  ASSERT_NE(last_s3_io, nullptr);
+  ASSERT_NE(last_local_io, nullptr);
+  ASSERT_EQ(last_s3_io->deleted_batches.size(), 1);
+  EXPECT_THAT(last_s3_io->deleted_batches.front(),
+              ::testing::ElementsAre("s3://bucket/a", "s3a://bucket/b"));
+  ASSERT_EQ(last_local_io->deleted_batches.size(), 1);
+  EXPECT_THAT(last_local_io->deleted_batches.front(),
+              ::testing::ElementsAre("/tmp/local-a", "file:///tmp/local-b"));
+}
+
+TEST(ResolvingFileIOTest, DoesNotDeleteWhenPathResolutionFails) {
+  RegisterRecordingFileIOs();
+  ResolvingFileIO io({});
+
+  auto result = io.DeleteFiles({"s3://bucket/a", "gs://bucket/unknown"});
+  EXPECT_THAT(result, IsError(ErrorKind::kNotSupported));
+  ASSERT_NE(last_s3_io, nullptr);
+  EXPECT_TRUE(last_s3_io->deleted_batches.empty());
+}
+
+TEST(ResolvingFileIOTest, DoesNotFallbackAfterSelectedFactoryFails) {
+  FileIORegistry::Register(
+      "test.file-io.fallback",
+      {.create =
+           [](const FileIORegistry::Properties&) -> Result<std::unique_ptr<FileIO>> {
+         return std::make_unique<RecordingFileIO>();
+       },
+       .accepts = [](std::string_view scheme) { return scheme == "failure"; }});
+  FileIORegistry::Register(
+      "test.file-io.selected",
+      {.create =
+           [](const FileIORegistry::Properties&) -> Result<std::unique_ptr<FileIO>> {
+         return InvalidArgument("selected factory failed");
+       },
+       .accepts = [](std::string_view scheme) { return scheme == "failure"; }});
+
+  ResolvingFileIO io({});
+  auto result = io.NewInputFile("failure://bucket/file");
+  EXPECT_THAT(result, IsError(ErrorKind::kInvalidArgument));
+  EXPECT_THAT(result, HasErrorMessage("selected factory failed"));
+}
+
 TEST(ResolvingFileIOTest, ForwardsAllCredentialsToResolvedImplementations) {
   RegisterRecordingFileIOs();
   ResolvingFileIO io({});
@@ -157,7 +233,7 @@ TEST(ResolvingFileIOTest, ForwardsAllCredentialsToResolvedImplementations) {
   // The full credential list is forwarded; each implementation applies the
   // prefixes it understands.
   std::vector<StorageCredential> credentials = {
-      {.prefix = "oss", .config = {{"k1", "v1"}}},
+      {.prefix = "s3a://bucket", .config = {{"k1", "v1"}}},
       {.prefix = "s3", .config = {{"k2", "v2"}}}};
   EXPECT_THAT(io.SetStorageCredentials(credentials), IsOk());
   EXPECT_EQ(io.credentials(), credentials);

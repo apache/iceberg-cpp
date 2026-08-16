@@ -109,10 +109,10 @@ class RestCatalogIntegrationTest : public ::testing::Test {
   static void SetUpTestSuite() {
     FileIORegistry::Register(
         std::string(kStdFileIOImpl),
-        [](const std::unordered_map<std::string, std::string>& /*properties*/)
-            -> Result<std::unique_ptr<FileIO>> {
+        {.create = [](const std::unordered_map<std::string, std::string>& /*properties*/)
+             -> Result<std::unique_ptr<FileIO>> {
           return std::make_unique<test::StdFileIO>();
-        });
+        }});
     docker_compose_ = std::make_unique<DockerCompose>(
         std::string{kDockerProjectName}, GetResourcePath("iceberg-rest-fixture"));
     docker_compose_->Up();

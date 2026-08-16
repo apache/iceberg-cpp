@@ -17,20 +17,16 @@
  * under the License.
  */
 
-#pragma once
-
-/// \file iceberg/resolving_file_io_internal.h
-/// \brief Internal helpers for ResolvingFileIO. Not part of the public API.
-
-#include <string_view>
-
-#include "iceberg/iceberg_export.h"
-#include "iceberg/result.h"
+#include "iceberg/util/location_util.h"
 
 namespace iceberg {
 
-/// \brief The FileIORegistry name of the implementation serving `location`,
-/// chosen by its URI scheme. Exported so tests can link it in shared builds.
-ICEBERG_EXPORT Result<std::string_view> ResolveFileIOName(std::string_view location);
+std::string_view LocationUtil::ParseScheme(std::string_view location) {
+  const auto colon = location.find(':');
+  if (colon == std::string_view::npos || colon == 0) {
+    return {};
+  }
+  return location.substr(0, colon);
+}
 
 }  // namespace iceberg
