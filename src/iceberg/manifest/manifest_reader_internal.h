@@ -43,7 +43,7 @@ namespace iceberg {
 /// This implementation supports lazy reader creation and filtering based on
 /// partition expressions, row expressions, and partition sets. Following the
 /// Java implementation pattern.
-class ManifestReaderImpl : public ManifestReader {
+class ManifestReaderImpl : public ManifestReader, public SupportsManifestEntryIteration {
  public:
   /// \brief Construct a ManifestReaderImpl for lazy initialization.
   ///

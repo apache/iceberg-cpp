@@ -42,6 +42,66 @@
 
 namespace iceberg {
 
+namespace {
+
+class LegacyManifestReader : public ManifestReader {
+ public:
+  Result<std::vector<ManifestEntry>> Entries() override {
+    ++entries_calls;
+    return std::vector<ManifestEntry>{};
+  }
+
+  Result<std::vector<ManifestEntry>> LiveEntries() override {
+    ++live_entries_calls;
+    return std::vector<ManifestEntry>{};
+  }
+
+  ManifestReader& Select(const std::vector<std::string>& /*columns*/) override {
+    return *this;
+  }
+
+  ManifestReader& FilterPartitions(std::shared_ptr<Expression> /*expr*/) override {
+    return *this;
+  }
+
+  ManifestReader& FilterPartitions(
+      std::shared_ptr<PartitionSet> /*partition_set*/) override {
+    return *this;
+  }
+
+  ManifestReader& FilterRows(std::shared_ptr<Expression> /*expr*/) override {
+    return *this;
+  }
+
+  ManifestReader& CaseSensitive(bool /*case_sensitive*/) override { return *this; }
+
+  ManifestReader& TryDropStats() override { return *this; }
+
+  ManifestReader& SkipCounter(std::shared_ptr<Counter> /*counter*/) override {
+    return *this;
+  }
+
+  int entries_calls = 0;
+  int live_entries_calls = 0;
+};
+
+TEST(ManifestReaderCompatibilityTest, IteratorHelpersAdaptLegacyReaders) {
+  LegacyManifestReader reader;
+  ManifestReader& base_reader = reader;
+
+  ICEBERG_UNWRAP_OR_FAIL(auto entries, base_reader.EntriesIterator());
+  ICEBERG_UNWRAP_OR_FAIL(auto entry, entries->Next());
+  EXPECT_FALSE(entry.has_value());
+  EXPECT_EQ(reader.entries_calls, 1);
+
+  ICEBERG_UNWRAP_OR_FAIL(auto live_entries, base_reader.LiveEntriesIterator());
+  ICEBERG_UNWRAP_OR_FAIL(auto live_entry, live_entries->Next());
+  EXPECT_FALSE(live_entry.has_value());
+  EXPECT_EQ(reader.live_entries_calls, 1);
+}
+
+}  // namespace
+
 class TestManifestReader : public testing::TestWithParam<int8_t> {
  protected:
   void SetUp() override {
