@@ -97,11 +97,11 @@ class ManifestReaderImpl : public ManifestReader {
   /// \brief Check if there's a non-trivial row filter.
   bool HasRowFilter() const;
 
-  /// \brief Get or create the partition evaluator.
-  Result<Evaluator*> GetEvaluator();
+  /// \brief Get or create and transfer ownership of the partition evaluator.
+  Result<std::unique_ptr<Evaluator>> TakeEvaluator();
 
-  /// \brief Get or create the metrics evaluator.
-  Result<InclusiveMetricsEvaluator*> GetMetricsEvaluator();
+  /// \brief Get or create and transfer ownership of the metrics evaluator.
+  Result<std::unique_ptr<InclusiveMetricsEvaluator>> TakeMetricsEvaluator();
 
   /// \brief Check if a partition is in the partition set.
   Result<bool> InPartitionSet(const DataFile& file) const;
