@@ -856,7 +856,7 @@ bool ManifestReader::ShouldDropStats(const std::vector<std::string>& columns) {
 
 std::vector<std::string> ManifestReader::WithStatsColumns(
     const std::vector<std::string>& columns) {
-  if (std::ranges::contains(columns, Schema::kAllColumns)) {
+  if (columns.empty() || std::ranges::contains(columns, Schema::kAllColumns)) {
     return columns;
   } else {
     std::vector<std::string> updated_columns{columns};
