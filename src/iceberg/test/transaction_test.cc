@@ -21,7 +21,9 @@
 
 #include "iceberg/expression/expressions.h"
 #include "iceberg/expression/term.h"
+#include "iceberg/logging/log_level.h"
 #include "iceberg/sort_order.h"
+#include "iceberg/test/logging_test_helpers.h"
 #include "iceberg/test/matchers.h"
 #include "iceberg/test/mock_catalog.h"
 #include "iceberg/test/update_test_base.h"
@@ -171,6 +173,89 @@ TEST_F(TransactionRetryTest, CommitRetryExhausted) {
   auto result = txn->Commit();
   EXPECT_THAT(result, IsError(ErrorKind::kCommitFailed));
   EXPECT_EQ(update_call_count, 5);
+}
+
+namespace {
+// True if any captured record has the given level and a message containing `needle`.
+bool HasRecord(const std::vector<LogMessage>& records, LogLevel level,
+               std::string_view needle) {
+  for (const auto& record : records) {
+    if (record.level == level && record.message.find(needle) != std::string::npos) {
+      return true;
+    }
+  }
+  return false;
+}
+}  // namespace
+
+// A commit that succeeds after one retryable conflict emits a WARN for the retry
+// (carrying the prior error) and an INFO for the eventual success.
+TEST_F(TransactionRetryTest, CommitRetryEmitsRetryAndSuccessLogs) {
+  auto capturing = std::make_shared<CapturingLogger>();
+  capturing->SetLevel(LogLevel::kTrace);
+  ScopedDefaultLogger guard(capturing);
+
+  int update_call_count = 0;
+  ON_CALL(*mock_catalog_, UpdateTable(::testing::_, ::testing::_, ::testing::_))
+      .WillByDefault([this, &update_call_count](
+                         const TableIdentifier&,
+                         const std::vector<std::unique_ptr<TableRequirement>>&,
+                         const std::vector<std::unique_ptr<TableUpdate>>&)
+                         -> Result<std::shared_ptr<Table>> {
+        ++update_call_count;
+        if (update_call_count == 1) {
+          return CommitFailed("conflict on first attempt");
+        }
+        return Table::Make(mock_table_->name(), mock_table_->metadata(),
+                           std::string(mock_table_->metadata_file_location()),
+                           mock_table_->io(), mock_catalog_);
+      });
+
+  ICEBERG_UNWRAP_OR_FAIL(auto txn, mock_table_->NewTransaction());
+  ICEBERG_UNWRAP_OR_FAIL(auto update, txn->NewUpdateProperties());
+  update->Set("retry.test", "value");
+  EXPECT_THAT(update->Commit(), IsOk());
+  EXPECT_THAT(txn->Commit(), IsOk());
+
+  auto records = capturing->records();
+  EXPECT_TRUE(
+      HasRecord(records, LogLevel::kWarn, "Retrying transaction commit (attempt 2)"))
+      << "expected a retry WARN";
+  EXPECT_TRUE(HasRecord(records, LogLevel::kWarn, "conflict on first attempt"))
+      << "retry WARN should carry the prior error";
+  EXPECT_TRUE(HasRecord(records, LogLevel::kInfo, "succeeded after 2 attempts"))
+      << "expected a success INFO";
+}
+
+// A commit that exhausts its retries emits an ERROR with the attempt count and the
+// final error.
+TEST_F(TransactionRetryTest, CommitRetryExhaustedEmitsErrorLog) {
+  auto capturing = std::make_shared<CapturingLogger>();
+  capturing->SetLevel(LogLevel::kTrace);
+  ScopedDefaultLogger guard(capturing);
+
+  ON_CALL(*mock_catalog_, UpdateTable(::testing::_, ::testing::_, ::testing::_))
+      .WillByDefault([](const TableIdentifier&,
+                        const std::vector<std::unique_ptr<TableRequirement>>&,
+                        const std::vector<std::unique_ptr<TableUpdate>>&)
+                         -> Result<std::shared_ptr<Table>> {
+        return CommitFailed("always conflicts");
+      });
+
+  ICEBERG_UNWRAP_OR_FAIL(auto txn, mock_table_->NewTransaction());
+  ICEBERG_UNWRAP_OR_FAIL(auto update, txn->NewUpdateProperties());
+  update->Set("retry.test", "value");
+  EXPECT_THAT(update->Commit(), IsOk());
+  EXPECT_THAT(txn->Commit(), IsError(ErrorKind::kCommitFailed));
+
+  auto records = capturing->records();
+  EXPECT_TRUE(HasRecord(records, LogLevel::kError, "failed after 5 attempt(s)"))
+      << "expected a final ERROR with the attempt count";
+  EXPECT_TRUE(HasRecord(records, LogLevel::kError, "always conflicts"))
+      << "final ERROR should carry the last error";
+  // Retries 2..5 each log a WARN.
+  EXPECT_TRUE(
+      HasRecord(records, LogLevel::kWarn, "Retrying transaction commit (attempt 5)"));
 }
 
 TEST_F(TransactionRetryTest, CommitNonRetryableErrorStopsImmediately) {

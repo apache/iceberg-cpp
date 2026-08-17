@@ -20,9 +20,11 @@
 
 #include <format>
 #include <memory>
+#include <string>
 
 #include "iceberg/catalog.h"
 #include "iceberg/location_provider.h"
+#include "iceberg/logging/log_macros.h"
 #include "iceberg/schema.h"
 #include "iceberg/snapshot.h"
 #include "iceberg/statistics_file.h"
@@ -376,13 +378,35 @@ Result<std::shared_ptr<Table>> Transaction::Commit() {
   int32_t total_timeout_ms = props.Get(TableProperties::kCommitTotalRetryTimeMs);
 
   bool is_first_attempt = true;
+  int32_t attempt = 0;
+  std::string last_error;
   auto commit_result =
       MakeCommitRetryRunner(num_retries, min_wait_ms, max_wait_ms, total_timeout_ms)
-          .Run([this, &is_first_attempt]() -> Result<std::shared_ptr<Table>> {
+          .Run([this, &is_first_attempt, &attempt,
+                &last_error]() -> Result<std::shared_ptr<Table>> {
+            ++attempt;
+            // The runner only re-invokes this task when it has decided to retry, so
+            // attempt > 1 here means a genuine retry after a retryable failure.
+            if (attempt > 1) {
+              ICEBERG_LOG_WARN("Retrying transaction commit (attempt {}) after: {}",
+                               attempt, last_error);
+            }
             auto result = CommitOnce(is_first_attempt);
             is_first_attempt = false;
+            if (!result.has_value()) {
+              last_error = result.error().message;
+            }
             return result;
           });
+
+  if (commit_result.has_value()) {
+    if (attempt > 1) {
+      ICEBERG_LOG_INFO("Transaction commit succeeded after {} attempts", attempt);
+    }
+  } else {
+    ICEBERG_LOG_ERROR("Transaction commit failed after {} attempt(s): {}", attempt,
+                      commit_result.error().message);
+  }
 
   Result<const TableMetadata*> finalize_result =
       commit_result.has_value()
