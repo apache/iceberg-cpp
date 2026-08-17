@@ -296,6 +296,10 @@ class ICEBERG_EXPORT ScopedLogger {
 
 namespace internal {
 
+/// \brief Construct a fresh no-op logger. Shared by Logger::Noop() (which caches a
+/// single instance) and the "noop" registry factory (which needs an owned one).
+ICEBERG_EXPORT std::unique_ptr<Logger> MakeNoopLogger();
+
 /// \brief Hot-path accessor for the default logger.
 ///
 /// Returns a reference to a thread-local cached shared_ptr that is refreshed

@@ -83,7 +83,7 @@ struct ThreadCache {
 std::shared_ptr<Logger> Logger::Noop() {
   // Intentionally leaked: reachable via the function-local static (LSan-clean)
   // and never destroyed, so logging during static teardown stays safe.
-  static auto* instance = new std::shared_ptr<Logger>(std::make_shared<NoopLogger>());
+  static auto* instance = new std::shared_ptr<Logger>(internal::MakeNoopLogger());
   return *instance;
 }
 
@@ -140,6 +140,8 @@ FatalHandler GetFatalHandler() {
 }
 
 namespace internal {
+
+std::unique_ptr<Logger> MakeNoopLogger() { return std::make_unique<NoopLogger>(); }
 
 namespace {
 

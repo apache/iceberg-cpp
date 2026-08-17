@@ -39,16 +39,6 @@ namespace iceberg {
 
 namespace {
 
-/// \brief Registry-constructible no-op logger (Load returns unique_ptr).
-class NoopLogger final : public Logger {
- public:
-  bool ShouldLog(LogLevel /*level*/) const noexcept override { return false; }
-  void Log(LogMessage&& /*message*/) noexcept override {}
-  void SetLevel(LogLevel /*level*/) noexcept override {}
-  LogLevel level() const noexcept override { return LogLevel::kOff; }
-  bool IsNoop() const override { return true; }
-};
-
 /// \brief Extract the logger type, defaulting to the compiled-in backend.
 std::string InferLoggerType(
     const std::unordered_map<std::string, std::string>& properties) {
@@ -74,7 +64,7 @@ LoggerRegistryState& GetRegistry() {
                                   {std::string(kLoggerTypeNoop),
                                    [](const std::unordered_map<std::string, std::string>&)
                                        -> Result<std::unique_ptr<Logger>> {
-                                     return std::make_unique<NoopLogger>();
+                                     return internal::MakeNoopLogger();
                                    }},
                                   {std::string(kLoggerTypeCerr),
                                    [](const std::unordered_map<std::string, std::string>&)
