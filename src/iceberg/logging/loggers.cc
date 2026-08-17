@@ -123,6 +123,9 @@ Result<std::unique_ptr<Logger>> Loggers::Load(
   }
 
   try {
+    // Run the (user-supplied) factory outside the registry lock so it cannot
+    // deadlock or re-enter the registry; the try/catch turns a throwing factory
+    // into an error instead of propagating.
     ICEBERG_ASSIGN_OR_RAISE(auto logger, factory(properties));
     if (!logger) {
       return InvalidArgument("Logger factory for '{}' returned null", logger_type);
