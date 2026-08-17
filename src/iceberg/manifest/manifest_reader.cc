@@ -816,11 +816,17 @@ class ManifestEntryIteratorImpl final : public Iterator<ManifestEntry> {
 }  // namespace
 
 Result<std::unique_ptr<Iterator<ManifestEntry>>> ManifestReader::EntriesIterator() {
+  if (auto* iterable = dynamic_cast<SupportsManifestEntryIteration*>(this)) {
+    return iterable->EntriesIterator();
+  }
   ICEBERG_ASSIGN_OR_RAISE(auto entries, Entries());
   return std::make_unique<VectorIterator<ManifestEntry>>(std::move(entries));
 }
 
 Result<std::unique_ptr<Iterator<ManifestEntry>>> ManifestReader::LiveEntriesIterator() {
+  if (auto* iterable = dynamic_cast<SupportsManifestEntryIteration*>(this)) {
+    return iterable->LiveEntriesIterator();
+  }
   ICEBERG_ASSIGN_OR_RAISE(auto entries, LiveEntries());
   return std::make_unique<VectorIterator<ManifestEntry>>(std::move(entries));
 }
