@@ -639,6 +639,12 @@ TEST(ManifestReaderStaticTest, TestShouldDropStats) {
       ManifestReader::ShouldDropStats({"file_path", "record_count", "value_counts"}));
 }
 
+TEST(ManifestReaderStaticTest, WithStatsColumnsPreservesSelectAll) {
+  EXPECT_TRUE(ManifestReader::WithStatsColumns({}).empty());
+  EXPECT_THAT(ManifestReader::WithStatsColumns({std::string(Schema::kAllColumns)}),
+              testing::ElementsAre(Schema::kAllColumns));
+}
+
 INSTANTIATE_TEST_SUITE_P(ManifestReaderVersions, TestManifestReader,
                          testing::Values(1, 2, 3));
 
