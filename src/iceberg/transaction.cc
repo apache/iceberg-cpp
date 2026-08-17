@@ -400,6 +400,9 @@ Status Transaction::ApplyUpdatePartitionStatistics(UpdatePartitionStatistics& up
 Result<std::shared_ptr<Table>> Transaction::Commit() {
   ICEBERG_RETURN_UNEXPECTED(CheckReady());
   Result<std::shared_ptr<Table>> commit_result = ctx_->table;
+  // Snapshot id before the commit, to detect whether this commit advanced it (a
+  // data commit) versus a metadata-only commit that adds no snapshot.
+  const int64_t base_current_snapshot_id = ctx_->table->metadata()->current_snapshot_id;
   int32_t attempt = 0;
   std::string last_error;
   try {
@@ -441,8 +444,23 @@ Result<std::shared_ptr<Table>> Transaction::Commit() {
   }
 
   if (commit_result) {
+    // Name the resulting snapshot only when this commit produced one (current
+    // snapshot advanced); metadata-only commits report a plain success.
+    std::string detail;
+    if (auto snapshot = commit_result.value()->metadata()->Snapshot();
+        snapshot.has_value() &&
+        snapshot.value()->snapshot_id != base_current_snapshot_id) {
+      const auto& summary = snapshot.value()->summary;
+      auto op = summary.find(SnapshotSummaryFields::kOperation);
+      detail =
+          std::format(": committed snapshot {} (op={})", snapshot.value()->snapshot_id,
+                      op != summary.end() ? op->second : "unknown");
+    }
     if (attempt > 1) {
-      ICEBERG_LOG_INFO("Transaction commit succeeded after {} attempts", attempt);
+      ICEBERG_LOG_INFO("Transaction commit succeeded after {} attempts{}", attempt,
+                       detail);
+    } else {
+      ICEBERG_LOG_INFO("Transaction commit succeeded{}", detail);
     }
   } else {
     ICEBERG_LOG_ERROR("Transaction commit failed after {} attempt(s): {}", attempt,
