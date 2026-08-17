@@ -20,9 +20,11 @@
 
 #include <format>
 #include <memory>
+#include <string>
 
 #include "iceberg/catalog.h"
 #include "iceberg/location_provider.h"
+#include "iceberg/logging/log_macros.h"
 #include "iceberg/schema.h"
 #include "iceberg/snapshot.h"
 #include "iceberg/statistics_file.h"
@@ -398,6 +400,8 @@ Status Transaction::ApplyUpdatePartitionStatistics(UpdatePartitionStatistics& up
 Result<std::shared_ptr<Table>> Transaction::Commit() {
   ICEBERG_RETURN_UNEXPECTED(CheckReady());
   Result<std::shared_ptr<Table>> commit_result = ctx_->table;
+  int32_t attempt = 0;
+  std::string last_error;
   try {
     auto builder_status = ctx_->metadata_builder->CheckErrors();
     if (!builder_status) {
@@ -413,9 +417,18 @@ Result<std::shared_ptr<Table>> Transaction::Commit() {
                                 props.Get(TableProperties::kCommitMinRetryWaitMs),
                                 props.Get(TableProperties::kCommitMaxRetryWaitMs),
                                 props.Get(TableProperties::kCommitTotalRetryTimeMs))
-              .Run([this, &is_first_attempt]() -> Result<std::shared_ptr<Table>> {
+              .Run([this, &is_first_attempt, &attempt,
+                    &last_error]() -> Result<std::shared_ptr<Table>> {
+                ++attempt;
+                if (attempt > 1) {
+                  ICEBERG_LOG_WARN("Retrying transaction commit (attempt {}) after: {}",
+                                   attempt, last_error);
+                }
                 auto result = CommitOnce(is_first_attempt);
                 is_first_attempt = false;
+                if (!result) {
+                  last_error = result.error().message;
+                }
                 return result;
               });
     }
@@ -425,6 +438,15 @@ Result<std::shared_ptr<Table>> Transaction::Commit() {
   } catch (...) {
     commit_result =
         ValidationFailed("Transaction preparation threw an unknown exception");
+  }
+
+  if (commit_result) {
+    if (attempt > 1) {
+      ICEBERG_LOG_INFO("Transaction commit succeeded after {} attempts", attempt);
+    }
+  } else {
+    ICEBERG_LOG_ERROR("Transaction commit failed after {} attempt(s): {}", attempt,
+                      commit_result.error().message);
   }
 
   if (!commit_result) {
