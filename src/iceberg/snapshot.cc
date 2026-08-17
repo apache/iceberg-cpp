@@ -30,6 +30,7 @@
 #include "iceberg/manifest/manifest_entry.h"
 #include "iceberg/manifest/manifest_list.h"
 #include "iceberg/manifest/manifest_reader.h"
+#include "iceberg/metadata_cache.h"
 #include "iceberg/util/macros.h"
 #include "iceberg/util/string_util.h"
 
@@ -39,59 +40,107 @@ namespace internal {
 
 class SnapshotCacheData {
  public:
-  Result<std::reference_wrapper<SnapshotCache::ManifestsCache>> Get(
+  explicit SnapshotCacheData(std::shared_ptr<MetadataCache> metadata_cache)
+      : metadata_cache_(std::move(metadata_cache)) {}
+
+  Result<std::shared_ptr<const SnapshotCache::ManifestsCache>> Get(
       const Snapshot* snapshot, std::shared_ptr<FileIO> file_io) {
-    std::shared_ptr<Entry> entry;
-    {
-      std::unique_lock lock(mutex_);
-      while (true) {
-        auto [it, inserted] = entries_.try_emplace(snapshot->manifest_list);
-        if (inserted) {
-          it->second = std::make_shared<Entry>();
-        }
-        entry = it->second;
-        if (entry->value.has_value()) {
-          return std::ref(*entry->value);
-        }
-        if (!entry->loading) {
-          entry->loading = true;
-          break;
-        }
-        entry->loaded.wait(lock, [&entry] { return !entry->loading; });
-      }
+    if (metadata_cache_ == nullptr || !metadata_cache_->options().enabled) {
+      ICEBERG_ASSIGN_OR_RAISE(
+          auto loaded, SnapshotCache::LoadManifestsCache(snapshot, std::move(file_io)));
+      return std::make_shared<const SnapshotCache::ManifestsCache>(std::move(loaded));
     }
 
-    auto loaded = SnapshotCache::InitManifestsCache(snapshot, std::move(file_io));
+    const auto& location = snapshot->manifest_list;
+    std::shared_ptr<Entry> entry;
+    while (true) {
+      // Checking the content cache also applies its expiration policy and refreshes its
+      // LRU position. Parsed entries are reusable only while the matching bytes remain
+      // cached.
+      auto content = metadata_cache_->GetIfPresent(location);
+      std::unique_lock lock(mutex_);
+      PruneExpired();
+      auto [it, inserted] = entries_.try_emplace(location);
+      if (inserted) {
+        it->second = std::make_shared<Entry>();
+      }
+      entry = it->second;
+      if (entry->value != nullptr) {
+        if (content != nullptr && entry->content.lock() == content) {
+          return entry->value;
+        }
+        entries_.erase(it);
+        continue;
+      }
+      if (entry->loading) {
+        entry->loaded.wait(lock, [&entry] { return !entry->loading; });
+        if (entry->error.has_value()) {
+          return std::unexpected<Error>(*entry->error);
+        }
+        if (entry->value != nullptr) {
+          return entry->value;
+        }
+        continue;
+      }
+      entry->loading = true;
+      break;
+    }
+
+    auto loaded = SnapshotCache::LoadManifestsCache(snapshot, std::move(file_io));
+    auto content = metadata_cache_->GetIfPresent(location);
     std::lock_guard lock(mutex_);
-    auto it = entries_.find(snapshot->manifest_list);
+    auto it = entries_.find(location);
     if (!loaded.has_value()) {
       if (it != entries_.end() && it->second == entry) {
         entries_.erase(it);
       }
+      entry->error = loaded.error();
       entry->loading = false;
       entry->loaded.notify_all();
       return std::unexpected<Error>(std::move(loaded).error());
     }
 
-    entry->value = std::move(loaded).value();
+    entry->value =
+        std::make_shared<const SnapshotCache::ManifestsCache>(std::move(loaded).value());
+    if (content != nullptr) {
+      entry->content = content;
+    } else if (it != entries_.end() && it->second == entry) {
+      // Oversized content is not retained by MetadataCache, so do not retain its parsed
+      // representation in the cross-query cache either.
+      entries_.erase(it);
+    }
     entry->loading = false;
     entry->loaded.notify_all();
-    return std::ref(*entry->value);
+    return entry->value;
   }
 
  private:
   struct Entry {
     bool loading = false;
-    std::optional<SnapshotCache::ManifestsCache> value;
+    std::shared_ptr<const SnapshotCache::ManifestsCache> value;
+    std::weak_ptr<const std::string> content;
+    std::optional<Error> error;
     std::condition_variable loaded;
   };
 
+  void PruneExpired() {
+    for (auto it = entries_.begin(); it != entries_.end();) {
+      if (!it->second->loading && it->second->content.expired()) {
+        it = entries_.erase(it);
+      } else {
+        ++it;
+      }
+    }
+  }
+
+  std::shared_ptr<MetadataCache> metadata_cache_;
   std::mutex mutex_;
   std::unordered_map<std::string, std::shared_ptr<Entry>> entries_;
 };
 
-std::shared_ptr<SnapshotCacheData> MakeSnapshotCacheData() {
-  return std::make_shared<SnapshotCacheData>();
+std::shared_ptr<SnapshotCacheData> MakeSnapshotCacheData(
+    std::shared_ptr<MetadataCache> metadata_cache) {
+  return std::make_shared<SnapshotCacheData>(std::move(metadata_cache));
 }
 
 }  // namespace internal
@@ -267,7 +316,14 @@ Result<std::unique_ptr<Snapshot>> Snapshot::Make(
   });
 }
 
-Result<SnapshotCache::ManifestsCache> SnapshotCache::InitManifestsCache(
+Result<std::shared_ptr<const SnapshotCache::ManifestsCache>>
+SnapshotCache::InitManifestsCache(const Snapshot* snapshot,
+                                  std::shared_ptr<FileIO> file_io) {
+  auto cache_data = file_io->GetSnapshotCacheData();
+  return cache_data->Get(snapshot, std::move(file_io));
+}
+
+Result<SnapshotCache::ManifestsCache> SnapshotCache::LoadManifestsCache(
     const Snapshot* snapshot, std::shared_ptr<FileIO> file_io) {
   if (file_io == nullptr) {
     return InvalidArgument("Cannot cache manifests: FileIO is null");
@@ -304,9 +360,9 @@ Result<std::span<const ManifestFile>> SnapshotCache::Manifests(
     std::shared_ptr<FileIO> file_io) const {
   ICEBERG_PRECHECK(snapshot_ != nullptr, "Cannot cache manifests for a null snapshot");
   ICEBERG_PRECHECK(file_io != nullptr, "Cannot cache manifests: FileIO is null");
-  auto cache_data = file_io->GetSnapshotCacheData();
-  ICEBERG_ASSIGN_OR_RAISE(auto cache_ref, cache_data->Get(snapshot_, std::move(file_io)));
-  auto& cache = cache_ref.get();
+  ICEBERG_ASSIGN_OR_RAISE(auto cache_ref,
+                          manifests_cache_.Get(snapshot_, std::move(file_io)));
+  const auto& cache = *cache_ref.get();
   return std::span<const ManifestFile>(cache.first.data(), cache.first.size());
 }
 
@@ -314,9 +370,9 @@ Result<std::span<const ManifestFile>> SnapshotCache::DataManifests(
     std::shared_ptr<FileIO> file_io) const {
   ICEBERG_PRECHECK(snapshot_ != nullptr, "Cannot cache manifests for a null snapshot");
   ICEBERG_PRECHECK(file_io != nullptr, "Cannot cache manifests: FileIO is null");
-  auto cache_data = file_io->GetSnapshotCacheData();
-  ICEBERG_ASSIGN_OR_RAISE(auto cache_ref, cache_data->Get(snapshot_, std::move(file_io)));
-  auto& cache = cache_ref.get();
+  ICEBERG_ASSIGN_OR_RAISE(auto cache_ref,
+                          manifests_cache_.Get(snapshot_, std::move(file_io)));
+  const auto& cache = *cache_ref.get();
   return std::span<const ManifestFile>(cache.first.data(), cache.second);
 }
 
@@ -324,9 +380,9 @@ Result<std::span<const ManifestFile>> SnapshotCache::DeleteManifests(
     std::shared_ptr<FileIO> file_io) const {
   ICEBERG_PRECHECK(snapshot_ != nullptr, "Cannot cache manifests for a null snapshot");
   ICEBERG_PRECHECK(file_io != nullptr, "Cannot cache manifests: FileIO is null");
-  auto cache_data = file_io->GetSnapshotCacheData();
-  ICEBERG_ASSIGN_OR_RAISE(auto cache_ref, cache_data->Get(snapshot_, std::move(file_io)));
-  auto& cache = cache_ref.get();
+  ICEBERG_ASSIGN_OR_RAISE(auto cache_ref,
+                          manifests_cache_.Get(snapshot_, std::move(file_io)));
+  const auto& cache = *cache_ref.get();
   const size_t delete_start = cache.second;
   const size_t delete_count = cache.first.size() - delete_start;
   return std::span<const ManifestFile>(cache.first.data() + delete_start, delete_count);

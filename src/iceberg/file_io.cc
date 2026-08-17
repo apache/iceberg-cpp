@@ -253,6 +253,8 @@ Status FileIO::ConfigureMetadataCache(
   std::lock_guard lock(metadata_cache_state_->mutex);
   if (metadata_cache_state_->cache == nullptr) {
     metadata_cache_state_->cache = std::move(cache);
+    metadata_cache_state_->snapshot_cache =
+        internal::MakeSnapshotCacheData(metadata_cache_state_->cache);
     return {};
   }
   if (metadata_cache_state_->cache->options() == options) {
@@ -288,7 +290,8 @@ std::shared_ptr<MetadataCache> FileIO::GetMetadataCache() const {
 std::shared_ptr<internal::SnapshotCacheData> FileIO::GetSnapshotCacheData() const {
   std::lock_guard lock(metadata_cache_state_->mutex);
   if (metadata_cache_state_->snapshot_cache == nullptr) {
-    metadata_cache_state_->snapshot_cache = internal::MakeSnapshotCacheData();
+    metadata_cache_state_->snapshot_cache =
+        internal::MakeSnapshotCacheData(metadata_cache_state_->cache);
   }
   return metadata_cache_state_->snapshot_cache;
 }

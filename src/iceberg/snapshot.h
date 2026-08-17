@@ -34,13 +34,17 @@
 #include "iceberg/manifest/manifest_list.h"
 #include "iceberg/result.h"
 #include "iceberg/type_fwd.h"
+#include "iceberg/util/lazy.h"
 #include "iceberg/util/timepoint.h"
 
 namespace iceberg {
 
+class MetadataCache;
+
 namespace internal {
 class SnapshotCacheData;
-ICEBERG_EXPORT std::shared_ptr<SnapshotCacheData> MakeSnapshotCacheData();
+ICEBERG_EXPORT std::shared_ptr<SnapshotCacheData> MakeSnapshotCacheData(
+    std::shared_ptr<MetadataCache> metadata_cache);
 }  // namespace internal
 
 /// \brief The type of snapshot reference
@@ -510,11 +514,17 @@ class ICEBERG_EXPORT SnapshotCache {
   /// \param snapshot The snapshot to initialize the manifests cache for
   /// \param file_io The FileIO instance to use for reading the manifest list
   /// \return A result containing the manifests cache
-  static Result<ManifestsCache> InitManifestsCache(const Snapshot* snapshot,
+  static Result<std::shared_ptr<const ManifestsCache>> InitManifestsCache(
+      const Snapshot* snapshot, std::shared_ptr<FileIO> file_io);
+
+  static Result<ManifestsCache> LoadManifestsCache(const Snapshot* snapshot,
                                                    std::shared_ptr<FileIO> file_io);
 
   /// The underlying snapshot data
   const Snapshot* snapshot_;
+
+  /// Keep the selected shared cache entry alive while spans from this object are used.
+  Lazy<InitManifestsCache> manifests_cache_;
 
   friend class internal::SnapshotCacheData;
 };
