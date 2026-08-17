@@ -76,6 +76,10 @@ class ICEBERG_EXPORT ReaderProperties : public ConfigBase<ReaderProperties> {
 
   /// \brief The batch size to read.
   inline static Entry<int64_t> kBatchSize{"read.batch-size", 4096};
+  /// \brief Read list columns as Arrow large_list (64-bit offsets) instead of list.
+  /// Only the Parquet reader honors this option; other readers ignore it.
+  /// Default: false (use 32-bit offset list).
+  inline static Entry<bool> kArrowUseLargeList{"read.arrow.use-large-list", false};
   /// \brief Skip GenericDatum in Avro reader for better performance.
   /// When true, decode directly from Avro to Arrow without GenericDatum intermediate.
   /// Default: true (skip GenericDatum for better performance).
