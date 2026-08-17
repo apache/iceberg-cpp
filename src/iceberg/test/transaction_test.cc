@@ -258,6 +258,36 @@ TEST_F(TransactionRetryTest, CommitRetryExhaustedEmitsErrorLog) {
       HasRecord(records, LogLevel::kWarn, "Retrying transaction commit (attempt 5)"));
 }
 
+// A commit that succeeds on the first attempt emits a plain success INFO (no
+// "after N attempts"). This is the single-attempt case that was previously silent.
+TEST_F(TransactionRetryTest, CommitSuccessEmitsInfoLog) {
+  auto capturing = std::make_shared<CapturingLogger>();
+  capturing->SetLevel(LogLevel::kTrace);
+  ScopedDefaultLogger guard(capturing);
+
+  ON_CALL(*mock_catalog_, UpdateTable(::testing::_, ::testing::_, ::testing::_))
+      .WillByDefault([this](const TableIdentifier&,
+                            const std::vector<std::unique_ptr<TableRequirement>>&,
+                            const std::vector<std::unique_ptr<TableUpdate>>&)
+                         -> Result<std::shared_ptr<Table>> {
+        return Table::Make(mock_table_->name(), mock_table_->metadata(),
+                           std::string(mock_table_->metadata_file_location()),
+                           mock_table_->io(), mock_catalog_);
+      });
+
+  ICEBERG_UNWRAP_OR_FAIL(auto txn, mock_table_->NewTransaction());
+  ICEBERG_UNWRAP_OR_FAIL(auto update, txn->NewUpdateProperties());
+  update->Set("retry.test", "value");
+  EXPECT_THAT(update->Commit(), IsOk());
+  EXPECT_THAT(txn->Commit(), IsOk());
+
+  auto records = capturing->records();
+  EXPECT_TRUE(HasRecord(records, LogLevel::kInfo, "Transaction commit succeeded"))
+      << "expected a success INFO on a single-attempt commit";
+  // No retry happened, so there must be no retry WARN.
+  EXPECT_FALSE(HasRecord(records, LogLevel::kWarn, "Retrying transaction commit"));
+}
+
 TEST_F(TransactionRetryTest, CommitNonRetryableErrorStopsImmediately) {
   int update_call_count = 0;
   ON_CALL(*mock_catalog_, UpdateTable(::testing::_, ::testing::_, ::testing::_))
