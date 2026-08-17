@@ -19,8 +19,8 @@
 
 #pragma once
 
-/// \file iceberg/inspect/history_table.h
-/// \brief Define the history metadata table.
+/// \file iceberg/inspect/manifests_table.h
+/// \brief Define the manifests metadata table.
 
 #include <memory>
 
@@ -31,21 +31,23 @@
 
 namespace iceberg {
 
-/// \brief History metadata table.
-class ICEBERG_EXPORT HistoryTable : public MetadataTable {
+/// \brief Metadata table containing manifest-list entries for a snapshot.
+class ICEBERG_EXPORT ManifestsTable : public TimeTravelMetadataTable {
  public:
-  static Result<std::unique_ptr<HistoryTable>> Make(std::shared_ptr<Table> table);
+  static Result<std::unique_ptr<ManifestsTable>> Make(std::shared_ptr<Table> table);
 
-  ~HistoryTable() override;
+  ~ManifestsTable() override;
 
-  Kind kind() const noexcept override { return Kind::kHistory; }
+  Kind kind() const noexcept override { return Kind::kManifests; }
 
   const std::shared_ptr<Schema>& schema() const override;
 
-  Result<ArrowArrayStream> Scan() override;
+ protected:
+  Result<ArrowArrayStream> ScanSnapshot(
+      const SnapshotSelection& snapshot_selection) override;
 
  private:
-  explicit HistoryTable(std::shared_ptr<Table> table);
+  explicit ManifestsTable(std::shared_ptr<Table> table);
 };
 
 }  // namespace iceberg

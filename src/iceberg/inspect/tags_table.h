@@ -19,8 +19,8 @@
 
 #pragma once
 
-/// \file iceberg/inspect/history_table.h
-/// \brief Define the history metadata table.
+/// \file iceberg/inspect/tags_table.h
+/// \brief Define the tags metadata table.
 
 #include <memory>
 
@@ -31,21 +31,21 @@
 
 namespace iceberg {
 
-/// \brief History metadata table.
-class ICEBERG_EXPORT HistoryTable : public MetadataTable {
+/// \brief Metadata table containing the table's tag snapshot references.
+class ICEBERG_EXPORT TagsTable : public MetadataTable {
  public:
-  static Result<std::unique_ptr<HistoryTable>> Make(std::shared_ptr<Table> table);
+  static Result<std::unique_ptr<TagsTable>> Make(std::shared_ptr<Table> table);
 
-  ~HistoryTable() override;
+  ~TagsTable() override;
 
-  Kind kind() const noexcept override { return Kind::kHistory; }
+  Kind kind() const noexcept override { return Kind::kTags; }
 
   const std::shared_ptr<Schema>& schema() const override;
 
   Result<ArrowArrayStream> Scan() override;
 
  private:
-  explicit HistoryTable(std::shared_ptr<Table> table);
+  explicit TagsTable(std::shared_ptr<Table> table);
 };
 
 }  // namespace iceberg
