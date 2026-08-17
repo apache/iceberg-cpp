@@ -98,6 +98,8 @@ struct ICEBERG_EXPORT ReaderOptions {
   std::optional<Split> split;
   /// \brief FileIO instance to open the file.
   std::shared_ptr<class FileIO> io;
+  /// \brief Cache this immutable metadata file's content when FileIO caching is enabled.
+  bool cache_content = false;
   /// \brief The projection schema to read from the file. This field is required.
   std::shared_ptr<class Schema> projection;
   /// \brief The filter to apply to the data. Reader implementations may ignore this if

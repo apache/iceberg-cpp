@@ -268,8 +268,7 @@ class ReachableFileCleanup : public FileCleanupStrategy {
     SnapshotCache snapshot_cache(snapshot.get());
     ICEBERG_ASSIGN_OR_RAISE(auto snapshot_manifests, snapshot_cache.Manifests(file_io_));
 
-    return snapshot_manifests | std::views::as_rvalue |
-           std::ranges::to<std::unordered_set<ManifestFile>>();
+    return snapshot_manifests | std::ranges::to<std::unordered_set<ManifestFile>>();
   }
 
   /// \brief Collect manifests for a set of snapshots.
