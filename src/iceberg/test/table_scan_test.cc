@@ -616,22 +616,27 @@ TEST_P(TableScanTest, PlanFilesWithDeleteFiles) {
   std::vector<ManifestEntry> data_entries{
       MakeEntry(ManifestStatus::kAdded, kSnapshotId, /*sequence_number=*/1,
                 MakeDataFile("/path/to/data1.parquet", part_value,
-                             partitioned_spec_->spec_id(), /*record_count=*/100)),
+                             partitioned_spec_->spec_id(), /*record_count=*/100,
+                             /*lower_id=*/0, /*upper_id=*/10)),
       MakeEntry(ManifestStatus::kAdded, kSnapshotId, /*sequence_number=*/1,
                 MakeDataFile("/path/to/data2.parquet", part_value,
-                             partitioned_spec_->spec_id(), /*record_count=*/200))};
+                             partitioned_spec_->spec_id(), /*record_count=*/200,
+                             /*lower_id=*/20, /*upper_id=*/30))};
   auto data_manifest =
       WriteDataManifest(version, kSnapshotId, std::move(data_entries), partitioned_spec_);
 
   // Create delete manifest with position delete files
+  auto equality_delete = MakeEqualityDeleteFile("/path/to/eq_delete.parquet", part_value,
+                                                partitioned_spec_->spec_id(), {1});
+  equality_delete->lower_bounds[1] = Literal::Int(20).Serialize().value();
+  equality_delete->upper_bounds[1] = Literal::Int(30).Serialize().value();
   std::vector<ManifestEntry> delete_entries{
       MakeEntry(
           ManifestStatus::kAdded, kSnapshotId, /*sequence_number=*/2,
           MakePositionDeleteFile("/path/to/pos_delete.parquet", part_value,
                                  partitioned_spec_->spec_id(), "/path/to/data1.parquet")),
       MakeEntry(ManifestStatus::kAdded, kSnapshotId, /*sequence_number=*/2,
-                MakeEqualityDeleteFile("/path/to/eq_delete.parquet", part_value,
-                                       partitioned_spec_->spec_id(), {1}))};
+                std::move(equality_delete))};
   auto delete_manifest = WriteDeleteManifest(
       version, kSnapshotId, std::move(delete_entries), partitioned_spec_);
   std::string manifest_list_path = WriteManifestList(
@@ -674,13 +679,25 @@ TEST_P(TableScanTest, PlanFilesWithDeleteFiles) {
                          MakeScanBuilder<DataTableScan>(metadata_with_manifests));
   ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
   ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
-  ASSERT_EQ(tasks.size(), 2);
-  EXPECT_THAT(GetPaths(tasks), testing::UnorderedElementsAre("/path/to/data1.parquet",
-                                                             "/path/to/data2.parquet"));
-  // Verify that delete files are associated with the tasks
-  for (const auto& task : tasks) {
-    EXPECT_GT(task->delete_files().size(), 0);
-  }
+  auto verify_tasks = [](const auto& planned_tasks) {
+    ASSERT_EQ(planned_tasks.size(), 2);
+    for (const auto& task : planned_tasks) {
+      ASSERT_EQ(task->delete_files().size(), 1);
+      if (task->data_file()->file_path == "/path/to/data1.parquet") {
+        EXPECT_EQ(task->delete_files().front()->file_path, "/path/to/pos_delete.parquet");
+      } else {
+        EXPECT_EQ(task->data_file()->file_path, "/path/to/data2.parquet");
+        EXPECT_EQ(task->delete_files().front()->file_path, "/path/to/eq_delete.parquet");
+      }
+      EXPECT_TRUE(task->data_file()->lower_bounds.empty());
+      EXPECT_TRUE(task->data_file()->upper_bounds.empty());
+    }
+  };
+  verify_tasks(tasks);
+
+  ICEBERG_UNWRAP_OR_FAIL(auto iterator, scan->PlanFilesIterator());
+  ICEBERG_UNWRAP_OR_FAIL(auto streamed_tasks, iterator->ToVector());
+  verify_tasks(streamed_tasks);
 }
 
 TEST_P(TableScanTest, SchemaWithSelectedColumnsAndFilter) {

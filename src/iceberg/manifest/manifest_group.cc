@@ -197,6 +197,10 @@ class ManifestGroup::FilePlanningIterator final
         continue;
       }
 
+      ICEBERG_ASSIGN_OR_RAISE(auto delete_files, delete_index_->ForEntry(value));
+
+      // Equality-delete matching uses data-file statistics. Drop unrequested stats only
+      // after the delete index has finished matching this entry.
       if (drop_stats_) {
         ContentFileUtil::DropAllStats(*value.data_file);
       } else if (!group_->columns_to_keep_stats_.empty()) {
@@ -204,7 +208,6 @@ class ManifestGroup::FilePlanningIterator final
                                              group_->columns_to_keep_stats_);
       }
 
-      ICEBERG_ASSIGN_OR_RAISE(auto delete_files, delete_index_->ForEntry(value));
       UpdateResultMetrics(*value.data_file, delete_files);
 
       ICEBERG_ASSIGN_OR_RAISE(auto residuals, GetResidualEvaluator(current_spec_id_));
@@ -428,12 +431,15 @@ Result<std::vector<std::shared_ptr<FileScanTask>>> ManifestGroup::PlanFiles() {
     tasks.reserve(entries.size());
 
     for (auto& entry : entries) {
+      ICEBERG_ASSIGN_OR_RAISE(auto delete_files, ctx.deletes->ForEntry(entry));
+
+      // Equality-delete matching uses data-file statistics. Drop unrequested stats only
+      // after the delete index has finished matching this entry.
       if (ctx.drop_stats) {
         ContentFileUtil::DropAllStats(*entry.data_file);
       } else if (!ctx.columns_to_keep_stats.empty()) {
         ContentFileUtil::DropUnselectedStats(*entry.data_file, ctx.columns_to_keep_stats);
       }
-      ICEBERG_ASSIGN_OR_RAISE(auto delete_files, ctx.deletes->ForEntry(entry));
       // Count result metrics once per data file task. A delete file shared by
       // multiple data files contributes once to each task, unlike indexed delete files.
       if (scan_metrics_) {

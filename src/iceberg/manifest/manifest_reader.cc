@@ -922,7 +922,7 @@ bool ManifestReaderImpl::HasRowFilter() const {
   return row_filter_->op() != Expression::Operation::kTrue;
 }
 
-Result<Evaluator*> ManifestReaderImpl::GetEvaluator() {
+Result<std::unique_ptr<Evaluator>> ManifestReaderImpl::TakeEvaluator() {
   if (!evaluator_) {
     auto projection_evaluator = Projections::Inclusive(*spec_, *schema_, case_sensitive_);
     ICEBERG_ASSIGN_OR_RAISE(auto projected, projection_evaluator->Project(row_filter_));
@@ -935,16 +935,17 @@ Result<Evaluator*> ManifestReaderImpl::GetEvaluator() {
         evaluator_, Evaluator::Make(*partition_schema, std::move(final_part_filter),
                                     case_sensitive_));
   }
-  return evaluator_.get();
+  return std::move(evaluator_);
 }
 
-Result<InclusiveMetricsEvaluator*> ManifestReaderImpl::GetMetricsEvaluator() {
+Result<std::unique_ptr<InclusiveMetricsEvaluator>>
+ManifestReaderImpl::TakeMetricsEvaluator() {
   if (!metrics_evaluator_) {
     ICEBERG_ASSIGN_OR_RAISE(
         metrics_evaluator_,
         InclusiveMetricsEvaluator::Make(row_filter_, *schema_, case_sensitive_));
   }
-  return metrics_evaluator_.get();
+  return std::move(metrics_evaluator_);
 }
 
 Result<bool> ManifestReaderImpl::InPartitionSet(const DataFile& file) const {
@@ -1047,12 +1048,10 @@ Result<std::unique_ptr<Iterator<ManifestEntry>>> ManifestReaderImpl::MakeEntries
   std::unique_ptr<Evaluator> evaluator;
   std::unique_ptr<InclusiveMetricsEvaluator> metrics_evaluator;
   if (HasPartitionFilter() || HasRowFilter()) {
-    ICEBERG_RETURN_UNEXPECTED(GetEvaluator());
-    evaluator = std::move(evaluator_);
+    ICEBERG_ASSIGN_OR_RAISE(evaluator, TakeEvaluator());
   }
   if (HasRowFilter()) {
-    ICEBERG_RETURN_UNEXPECTED(GetMetricsEvaluator());
-    metrics_evaluator = std::move(metrics_evaluator_);
+    ICEBERG_ASSIGN_OR_RAISE(metrics_evaluator, TakeMetricsEvaluator());
   }
 
   bool drop_stats = drop_stats_ && ShouldDropStats(columns_);
