@@ -66,3 +66,11 @@ TEST(LazyTest, ReusesInitializationError) {
   EXPECT_THAT(second, iceberg::IsError(iceberg::ErrorKind::kInvalid));
   EXPECT_THAT(second, iceberg::HasErrorMessage("init failed"));
 }
+
+TEST(LazyTest, SupportsLambda) {
+  const iceberg::Lazy<[](int value) -> iceberg::Result<int> { return value; }> lazy;
+
+  auto result = lazy.Get(42);
+  ASSERT_THAT(result, iceberg::IsOk());
+  EXPECT_EQ(result->get(), 42);
+}

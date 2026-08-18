@@ -22,9 +22,7 @@
 #include <algorithm>
 #include <cstdint>
 #include <iterator>
-#include <mutex>
 #include <ranges>
-#include <shared_mutex>
 #include <vector>
 
 #include "iceberg/expression/expression.h"
@@ -38,6 +36,7 @@
 #include "iceberg/metrics/scan_report.h"
 #include "iceberg/partition_spec.h"
 #include "iceberg/schema.h"
+#include "iceberg/util/cache_internal.h"
 #include "iceberg/util/checked_cast.h"
 #include "iceberg/util/content_file_util.h"
 #include "iceberg/util/executor_util_internal.h"
@@ -543,12 +542,6 @@ DeleteFileIndex::Builder& DeleteFileIndex::Builder::WithScanMetrics(
 }
 
 Result<std::vector<ManifestEntry>> DeleteFileIndex::Builder::LoadDeleteFiles() {
-  // TODO(zehua): Replace with a thread-safe LRU cache.
-  std::shared_mutex projected_expr_cache_mutex;
-  std::unordered_map<int32_t, std::shared_ptr<Expression>> projected_expr_cache;
-  std::shared_mutex eval_cache_mutex;
-  std::unordered_map<int32_t, std::unique_ptr<ManifestEvaluator>> eval_cache;
-
   auto data_filter = ignore_residuals_ ? True::Instance() : data_filter_;
 
   auto and_filters =
@@ -560,59 +553,47 @@ Result<std::vector<ManifestEntry>> DeleteFileIndex::Builder::LoadDeleteFiles() {
     return right ? std::move(right) : std::move(left);
   };
 
-  auto get_projected_expr = [&](int32_t spec_id,
-                                const std::shared_ptr<PartitionSpec>& spec)
-      -> Result<std::shared_ptr<Expression>> {
-    if (!data_filter_) {
-      return std::shared_ptr<Expression>();
-    }
+  const auto cache_capacity = static_cast<int32_t>(specs_by_id_.size());
 
-    {
-      std::shared_lock lock(projected_expr_cache_mutex);
-      auto iter = projected_expr_cache.find(spec_id);
-      if (iter != projected_expr_cache.end()) {
-        return iter->second;
-      }
-    }
+  auto get_projected_expr = internal::MemoizeLru(
+      [this](int32_t spec_id) -> Result<std::shared_ptr<Expression>> {
+        if (!data_filter_) {
+          return std::shared_ptr<Expression>();
+        }
 
-    std::lock_guard lock(projected_expr_cache_mutex);
-    auto iter = projected_expr_cache.find(spec_id);
-    if (iter != projected_expr_cache.end()) {
-      return iter->second;
-    }
+        auto spec_iter = specs_by_id_.find(spec_id);
+        ICEBERG_CHECK(spec_iter != specs_by_id_.cend(),
+                      "Partition spec ID {} not found when projecting data filter",
+                      spec_id);
 
-    auto projector = Projections::Inclusive(*spec, *schema_, case_sensitive_);
-    ICEBERG_ASSIGN_OR_RAISE(auto projected, projector->Project(data_filter_));
-    auto [inserted_iter, _] = projected_expr_cache.emplace(spec_id, std::move(projected));
-    return inserted_iter->second;
-  };
+        auto projector =
+            Projections::Inclusive(*spec_iter->second, *schema_, case_sensitive_);
+        ICEBERG_ASSIGN_OR_RAISE(auto projected, projector->Project(data_filter_));
+        return projected;
+      },
+      cache_capacity);
 
-  auto get_manifest_evaluator =
-      [&](int32_t spec_id, const std::shared_ptr<PartitionSpec>& spec,
-          const std::shared_ptr<Expression>& filter) -> Result<ManifestEvaluator*> {
-    if (!filter) {
-      return nullptr;
-    }
+  auto get_manifest_evaluator = internal::MemoizeLru(
+      [this, &and_filters, &get_projected_expr](
+          int32_t spec_id) -> Result<std::shared_ptr<ManifestEvaluator>> {
+        auto spec_iter = specs_by_id_.find(spec_id);
+        ICEBERG_CHECK(spec_iter != specs_by_id_.cend(),
+                      "Partition spec ID {} not found when creating manifest evaluator",
+                      spec_id);
 
-    {
-      std::shared_lock lock(eval_cache_mutex);
-      auto iter = eval_cache.find(spec_id);
-      if (iter != eval_cache.end()) {
-        return iter->second.get();
-      }
-    }
+        ICEBERG_ASSIGN_OR_RAISE(auto projected_data_filter, get_projected_expr(spec_id));
+        ICEBERG_ASSIGN_OR_RAISE(auto filter,
+                                and_filters(partition_filter_, projected_data_filter));
+        if (!filter) {
+          return std::shared_ptr<ManifestEvaluator>();
+        }
 
-    std::lock_guard lock(eval_cache_mutex);
-    auto iter = eval_cache.find(spec_id);
-    if (iter != eval_cache.end()) {
-      return iter->second.get();
-    }
-
-    ICEBERG_ASSIGN_OR_RAISE(auto evaluator, ManifestEvaluator::MakePartitionFilter(
-                                                filter, spec, *schema_, case_sensitive_));
-    auto [inserted_iter, _] = eval_cache.emplace(spec_id, std::move(evaluator));
-    return inserted_iter->second.get();
-  };
+        ICEBERG_ASSIGN_OR_RAISE(
+            auto evaluator, ManifestEvaluator::MakePartitionFilter(
+                                filter, spec_iter->second, *schema_, case_sensitive_));
+        return std::shared_ptr<ManifestEvaluator>(std::move(evaluator));
+      },
+      cache_capacity);
 
   return ParallelCollect(
       executor_, delete_manifests_,
@@ -634,13 +615,10 @@ Result<std::vector<ManifestEntry>> DeleteFileIndex::Builder::LoadDeleteFiles() {
 
         const auto& spec = spec_iter->second;
 
-        ICEBERG_ASSIGN_OR_RAISE(auto projected_data_filter,
-                                get_projected_expr(spec_id, spec));
+        ICEBERG_ASSIGN_OR_RAISE(auto projected_data_filter, get_projected_expr(spec_id));
         ICEBERG_ASSIGN_OR_RAISE(auto delete_partition_filter,
                                 and_filters(partition_filter_, projected_data_filter));
-        ICEBERG_ASSIGN_OR_RAISE(
-            auto manifest_evaluator,
-            get_manifest_evaluator(spec_id, spec, delete_partition_filter));
+        ICEBERG_ASSIGN_OR_RAISE(auto manifest_evaluator, get_manifest_evaluator(spec_id));
         if (manifest_evaluator != nullptr) {
           ICEBERG_ASSIGN_OR_RAISE(auto should_match,
                                   manifest_evaluator->Evaluate(manifest));

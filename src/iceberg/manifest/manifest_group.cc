@@ -21,8 +21,6 @@
 
 #include <algorithm>
 #include <memory>
-#include <mutex>
-#include <shared_mutex>
 #include <string>
 #include <unordered_set>
 #include <utility>
@@ -42,6 +40,7 @@
 #include "iceberg/schema.h"
 #include "iceberg/table_scan.h"
 #include "iceberg/type.h"
+#include "iceberg/util/cache_internal.h"
 #include "iceberg/util/checked_cast.h"
 #include "iceberg/util/content_file_util.h"
 #include "iceberg/util/executor_util_internal.h"
@@ -376,42 +375,25 @@ Result<std::unique_ptr<ManifestReader>> ManifestGroup::MakeReader(
 
 Result<std::unordered_map<int32_t, std::vector<ManifestEntry>>>
 ManifestGroup::ReadEntries() {
-  // TODO(zehua): Replace with a thread-safe LRU cache.
-  std::shared_mutex eval_cache_mutex;
-  std::unordered_map<int32_t, std::unique_ptr<ManifestEvaluator>> eval_cache;
+  const auto cache_capacity = static_cast<int32_t>(specs_by_id_.size());
+  auto get_manifest_evaluator = internal::MemoizeLru(
+      [this](int32_t spec_id) -> Result<std::shared_ptr<ManifestEvaluator>> {
+        auto spec_iter = specs_by_id_.find(spec_id);
+        ICEBERG_CHECK(spec_iter != specs_by_id_.cend(),
+                      "Cannot find partition spec for ID {}", spec_id);
 
-  auto get_manifest_evaluator = [&](int32_t spec_id) -> Result<ManifestEvaluator*> {
-    {
-      std::shared_lock lock(eval_cache_mutex);
-      auto iter = eval_cache.find(spec_id);
-      if (iter != eval_cache.end()) {
-        return iter->second.get();
-      }
-    }
-
-    std::lock_guard lock(eval_cache_mutex);
-    auto iter = eval_cache.find(spec_id);
-    if (iter != eval_cache.end()) {
-      return iter->second.get();
-    }
-
-    auto spec_iter = specs_by_id_.find(spec_id);
-    ICEBERG_CHECK(spec_iter != specs_by_id_.cend(),
-                  "Cannot find partition spec for ID {}", spec_id);
-
-    const auto& spec = spec_iter->second;
-    auto projector = Projections::Inclusive(*spec, *schema_, case_sensitive_);
-    ICEBERG_ASSIGN_OR_RAISE(auto partition_filter, projector->Project(data_filter_));
-    ICEBERG_ASSIGN_OR_RAISE(partition_filter,
-                            And::Make(partition_filter, partition_filter_));
-    ICEBERG_ASSIGN_OR_RAISE(
-        auto manifest_evaluator,
-        ManifestEvaluator::MakePartitionFilter(std::move(partition_filter), spec,
-                                               *schema_, case_sensitive_));
-    eval_cache[spec_id] = std::move(manifest_evaluator);
-
-    return eval_cache[spec_id].get();
-  };
+        auto projector =
+            Projections::Inclusive(*spec_iter->second, *schema_, case_sensitive_);
+        ICEBERG_ASSIGN_OR_RAISE(auto partition_filter, projector->Project(data_filter_));
+        ICEBERG_ASSIGN_OR_RAISE(partition_filter,
+                                And::Make(partition_filter, partition_filter_));
+        ICEBERG_ASSIGN_OR_RAISE(
+            auto evaluator, ManifestEvaluator::MakePartitionFilter(
+                                std::move(partition_filter), spec_iter->second, *schema_,
+                                case_sensitive_));
+        return std::shared_ptr<ManifestEvaluator>(std::move(evaluator));
+      },
+      cache_capacity);
 
   const bool has_file_filter =
       file_filter_ && file_filter_->op() != Expression::Operation::kTrue;
