@@ -39,6 +39,7 @@ namespace iceberg {
 /// Provides a mechanism to register and load FileIO implementations by name.
 /// This allows the REST catalog (and others) to resolve FileIO implementations
 /// at runtime based on configuration properties like "io-impl".
+/// Registrations must be completed before registry consumers are created.
 class ICEBERG_EXPORT FileIORegistry {
  public:
   static constexpr std::string_view kArrowLocalFileIO = "arrow-fs-local";
@@ -72,9 +73,9 @@ class ICEBERG_EXPORT FileIORegistry {
   static Result<std::unique_ptr<FileIO>> Load(std::string_view name,
                                               const Properties& properties);
 
-  /// \brief Returns the latest registered factory accepting `scheme`.
+  /// \brief Returns the last registered factory accepting `scheme`.
   ///
-  /// Matching is case-insensitive; later registrations take precedence.
+  /// Matching is case-insensitive; registration order determines precedence.
   static Result<std::string> Resolve(std::string_view scheme);
 };
 

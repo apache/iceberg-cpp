@@ -37,7 +37,7 @@
 
 namespace iceberg {
 
-/// \brief FileIO that resolves each location to a registered implementation.
+/// \brief FileIO that resolves and caches implementations by registry name.
 class ICEBERG_EXPORT ResolvingFileIO final : public FileIO,
                                              public SupportsStorageCredentials {
  public:
@@ -63,7 +63,7 @@ class ICEBERG_EXPORT ResolvingFileIO final : public FileIO,
   SupportsStorageCredentials* AsSupportsStorageCredentials() override { return this; }
 
  private:
-  /// \brief Load (or return the cached) implementation serving `location`.
+  /// \brief Load or reuse the implementation serving `location`.
   Result<std::shared_ptr<FileIO>> FileIOForPath(std::string_view location);
 
   std::unordered_map<std::string, std::string> properties_;

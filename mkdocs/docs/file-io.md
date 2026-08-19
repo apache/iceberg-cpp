@@ -83,7 +83,10 @@ auto file_io = std::make_unique<iceberg::ResolvingFileIO>(
 file_io->NewInputFile("myfs://bucket/path/file.parquet");
 ```
 
-Later registrations take precedence for automatic scheme resolution.
+Registrations are process-wide and must be completed before creating catalogs
+or resolvers. When multiple implementations accept the same scheme, the last
+registration takes precedence. `ResolvingFileIO` lazily creates and reuses one
+FileIO instance per registry name.
 
 ## Storage credentials
 
