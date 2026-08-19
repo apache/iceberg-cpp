@@ -58,9 +58,11 @@ struct S3Properties {
 
 /// \brief URI schemes served by the Arrow S3 FileIO, lower-case.
 ///
-/// Single source of truth: both the registry registration and IsS3Scheme derive
-/// from this list, so a new alias only has to be added here.
-inline constexpr std::array<std::string_view, 3> kS3Schemes = {"s3", "s3a", "s3n"};
+/// Single source of truth: registration, IsS3Scheme and alias canonicalization
+/// all derive from this list, so a new alias only has to be added here.
+///
+/// `oss` is served because the store is S3-compatible; see the FileIO docs.
+inline constexpr std::array<std::string_view, 4> kS3Schemes = {"s3", "s3a", "s3n", "oss"};
 
 /// \brief Return whether a normalized URI scheme is S3-compatible.
 inline constexpr bool IsS3Scheme(std::string_view scheme) {

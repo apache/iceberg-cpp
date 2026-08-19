@@ -33,8 +33,10 @@ class ICEBERG_EXPORT LocationUtil {
   /// \brief Extract the URI scheme from a location.
   ///
   /// This follows Java's ResolvingFileIO: the text before the first colon is
-  /// the scheme; an empty result means that no scheme was found. It does not
-  /// validate the rest of the location.
+  /// the scheme; an empty result means that no scheme was found. Text that is
+  /// not syntactically a scheme (RFC 3986) yields no scheme, and on Windows a
+  /// single letter is a drive rather than a scheme. The rest of the location is
+  /// not validated.
   static std::string_view ParseScheme(std::string_view location);
 
   static std::string_view StripTrailingSlash(std::string_view path) {

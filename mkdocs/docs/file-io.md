@@ -29,7 +29,7 @@ implementations:
 | Registry name | Schemes |
 |---|---|
 | `arrow-fs-local` | paths without a scheme, `file` |
-| `arrow-fs-s3` | `s3`, `s3a`, `s3n` |
+| `arrow-fs-s3` | `s3`, `s3a`, `s3n`, `oss` |
 
 The S3 implementation requires Arrow S3 support.
 
@@ -55,6 +55,48 @@ auto file_io = iceberg::FileIORegistry::Load(
 For a REST catalog, set `io-impl` to the registry name. If it is omitted, the
 REST catalog uses `ResolvingFileIO` and selects a registered implementation for
 each file location's scheme.
+
+## Configure S3
+
+| Key | Example | Description |
+|---|---|---|
+| `s3.access-key-id` | `admin` | Static access key ID; must be set together with the secret key |
+| `s3.secret-access-key` | `password` | Static secret access key |
+| `s3.session-token` | `AQoDYXdzEJr...` | Session token, for temporary credentials. Ignored unless both static keys are set |
+| `client.region` | `us-east-1` | Region to sign requests for |
+| `s3.endpoint` | `https://127.0.0.1:9000` | Endpoint to use instead of the AWS one |
+| `s3.path-style-access` | `true` | Address buckets as a path (`endpoint/bucket`) instead of a virtual host (`bucket.endpoint`). Only takes effect together with `s3.endpoint` |
+| `s3.ssl.enabled` | `true` | Scheme to use for the endpoint, overriding the one it carries |
+| `s3.connect-timeout-ms` | `1000` | Connection timeout |
+| `s3.socket-timeout-ms` | `5000` | Request timeout. Ignored outside Windows and macOS |
+
+Without credentials, the AWS default credential chain is used, which covers
+environment variables, the shared configuration file, and the various role and
+identity providers.
+
+### S3-compatible storage
+
+Stores that speak the S3 API are served by the same implementation. The scheme
+selects it; `s3.endpoint` decides where requests actually go. A location keeps
+its own scheme and is canonicalized internally, so a credential vended for the
+`s3` prefix applies to it.
+
+For Alibaba Cloud OSS, point `s3.endpoint` at the S3-compatible endpoint of the
+bucket's region and set `s3.path-style-access` to `false`: with a custom
+endpoint, buckets are addressed as a path unless told otherwise, and the
+service rejects that with
+`SecondLevelDomainForbidden: Please use virtual hosted style to access`:
+
+```cpp
+auto file_io = iceberg::FileIORegistry::Load(
+    iceberg::FileIORegistry::kArrowS3FileIO,
+    {{std::string(iceberg::arrow::S3Properties::kEndpoint),
+      "https://s3.oss-cn-hangzhou.aliyuncs.com"},
+     {std::string(iceberg::arrow::S3Properties::kClientRegion), "cn-hangzhou"},
+     {std::string(iceberg::arrow::S3Properties::kPathStyleAccess), "false"}});
+
+file_io.value()->NewInputFile("oss://bucket/path/to/file.parquet");
+```
 
 ## Register a custom FileIO
 

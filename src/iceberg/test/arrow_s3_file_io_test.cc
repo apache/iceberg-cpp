@@ -191,8 +191,8 @@ TEST_F(ArrowS3FileIOTest, SkipsNonS3CredentialPrefix) {
 // credential that is silently skipped leaves S3 access on the default
 // credentials, which only surfaces much later as an auth error.
 TEST_F(ArrowS3FileIOTest, AppliesEveryS3CompatibleCredentialPrefix) {
-  for (std::string_view prefix :
-       {"s3", "s3://bucket/table", "s3a://bucket/table", "s3n://bucket/table"}) {
+  for (std::string_view prefix : {"s3", "s3://bucket/table", "s3a://bucket/table",
+                                  "s3n://bucket/table", "oss://bucket/table"}) {
     SCOPED_TRACE(prefix);
     auto result = MakeS3FileIO({});
     ASSERT_THAT(result, IsOk());

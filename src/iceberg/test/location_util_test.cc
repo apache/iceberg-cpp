@@ -70,6 +70,19 @@ TEST(LocationUtilTest, ParseScheme) {
 
   auto empty_scheme = LocationUtil::ParseScheme("://bucket/path");
   EXPECT_TRUE(empty_scheme.empty());
+
+  // Not syntactically a scheme -> a path; the extended-length Windows form.
+  EXPECT_TRUE(LocationUtil::ParseScheme("\\\\?\\C:\\long\\file.parquet").empty());
+  EXPECT_TRUE(LocationUtil::ParseScheme("1:/file.parquet").empty());
+
+#ifdef _WIN32
+  // Drive letters are drives; both slash directions occur.
+  EXPECT_TRUE(LocationUtil::ParseScheme("C:/tmp/file.parquet").empty());
+  EXPECT_TRUE(LocationUtil::ParseScheme("D:\\a\\file.parquet").empty());
+#else
+  // Elsewhere a single letter stays a scheme for registered implementations.
+  EXPECT_EQ(LocationUtil::ParseScheme("C:/tmp/file.parquet"), "C");
+#endif
 }
 
 }  // namespace iceberg

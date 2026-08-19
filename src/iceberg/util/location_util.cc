@@ -19,14 +19,45 @@
 
 #include "iceberg/util/location_util.h"
 
+#include <algorithm>
+#include <cctype>
+
 namespace iceberg {
+
+namespace {
+
+/// Whether `candidate` is a syntactically valid URI scheme (RFC 3986 section
+/// 3.1): a letter followed by letters, digits, `+`, `-` or `.`.
+bool IsValidScheme(std::string_view candidate) {
+  if (candidate.empty() || !std::isalpha(static_cast<unsigned char>(candidate.front()))) {
+    return false;
+  }
+  return std::ranges::all_of(candidate, [](char c) {
+    const auto uc = static_cast<unsigned char>(c);
+    return std::isalnum(uc) || c == '+' || c == '-' || c == '.';
+  });
+}
+
+}  // namespace
 
 std::string_view LocationUtil::ParseScheme(std::string_view location) {
   const auto colon = location.find(':');
   if (colon == std::string_view::npos || colon == 0) {
     return {};
   }
-  return location.substr(0, colon);
+  const auto candidate = location.substr(0, colon);
+  // Cannot be a scheme -> a path whose first segment has a colon, such as the
+  // extended-length Windows form `\\?\C:\...`.
+  if (!IsValidScheme(candidate)) {
+    return {};
+  }
+#ifdef _WIN32
+  // A single letter before the colon is a drive, not a scheme.
+  if (candidate.size() == 1) {
+    return {};
+  }
+#endif
+  return candidate;
 }
 
 }  // namespace iceberg
