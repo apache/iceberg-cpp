@@ -67,4 +67,15 @@ inline constexpr bool IsS3Scheme(std::string_view scheme) {
   return std::ranges::contains(kS3Schemes, scheme);
 }
 
+/// \brief Return whether a storage credential prefix belongs to S3.
+///
+/// Accepts the bare `s3` prefix or a URI prefix such as `s3a://bucket`.
+inline constexpr bool IsS3CredentialPrefix(std::string_view prefix) {
+  if (prefix == S3Properties::kS3Schema) {
+    return true;
+  }
+  const auto delimiter = prefix.find("://");
+  return delimiter != std::string_view::npos && IsS3Scheme(prefix.substr(0, delimiter));
+}
+
 }  // namespace iceberg::arrow

@@ -91,12 +91,6 @@ std::string SplitEndpointScheme(std::string_view endpoint,
   return std::string(endpoint);
 }
 
-// Location prefixes this FileIO can serve.
-bool IsS3FileIOCredentialPrefix(std::string_view prefix) {
-  return prefix == "s3" || prefix.starts_with("s3://") || prefix.starts_with("s3a://") ||
-         prefix.starts_with("s3n://");
-}
-
 }  // namespace
 
 /// \brief Configure S3Options from a properties map.
@@ -240,7 +234,7 @@ Status ArrowS3FileIO::SetStorageCredentials(
     // A server may vend credentials for several storage systems at once;
     // non-S3 prefixes are skipped, not rejected (Java S3FileIO filters
     // credentials by the "s3" prefix).
-    if (!IsS3FileIOCredentialPrefix(credential.prefix)) {
+    if (!IsS3CredentialPrefix(credential.prefix)) {
       continue;
     }
     auto properties = default_properties_;
