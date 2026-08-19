@@ -22,11 +22,14 @@
 /// real registered implementations, which mock delegates cannot exercise.
 
 #include <algorithm>
+#include <cstdlib>
 #include <memory>
 #include <optional>
 #include <string>
 #include <string_view>
 #include <tuple>
+#include <unordered_map>
+#include <utility>
 #include <vector>
 
 #include <gmock/gmock.h>
@@ -71,6 +74,56 @@ bool HasWarning(const CapturingLogger& logger) {
   const auto records = logger.records();
   return std::ranges::any_of(
       records, [](const LogMessage& record) { return record.level == LogLevel::kWarn; });
+}
+
+std::optional<std::string> GetEnvIfSet(const char* key) {
+  const char* value = std::getenv(key);
+  if (value == nullptr || std::string_view(value).empty()) {
+    return std::nullopt;
+  }
+  return std::string(value);
+}
+
+/// Addresses the store an S3 test reaches as `s3://` the way a catalog vending
+/// `oss://` locations would.
+std::string AsOssUri(std::string_view uri) {
+  const auto pos = uri.find("://");
+  const auto authority = pos == std::string_view::npos ? uri : uri.substr(pos + 3);
+  return std::string("oss://").append(authority);
+}
+
+// The whole path for an S3-compatible store addressed as `oss://`: resolution,
+// credential matching, and a real write and read back.
+TEST_F(RestArrowFileIOTest, ReadsBackWhatItWroteThroughAnOssLocation) {
+  const auto base_uri = GetEnvIfSet("ICEBERG_TEST_S3_URI");
+  if (!base_uri.has_value()) {
+    GTEST_SKIP() << "Set ICEBERG_TEST_S3_URI to enable the oss:// round trip";
+  }
+
+  std::unordered_map<std::string, std::string> credential_config;
+  if (const auto access_key = GetEnvIfSet("AWS_ACCESS_KEY_ID")) {
+    credential_config["s3.access-key-id"] = *access_key;
+  }
+  if (const auto secret_key = GetEnvIfSet("AWS_SECRET_ACCESS_KEY")) {
+    credential_config["s3.secret-access-key"] = *secret_key;
+  }
+  ASSERT_FALSE(credential_config.empty())
+      << "Set AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY alongside "
+         "ICEBERG_TEST_S3_URI";
+
+  // Scoped to `s3`, while the data it grants access to is addressed as `oss://`.
+  auto io = MakeTableFileIO({{"warehouse", "logical_warehouse_name"}},
+                            /*table_config=*/{},
+                            {{.prefix = "s3", .config = std::move(credential_config)}});
+  ASSERT_THAT(io, IsOk());
+
+  const auto object_uri = AsOssUri(*base_uri) + "/iceberg_oss_scheme_round_trip.txt";
+  constexpr std::string_view kContent = "resolved and written through an oss:// location";
+
+  ASSERT_THAT(io.value()->WriteFile(object_uri, kContent), IsOk());
+  EXPECT_THAT(io.value()->ReadFile(object_uri, std::nullopt),
+              HasValue(::testing::Eq(std::string(kContent))));
+  EXPECT_THAT(io.value()->DeleteFile(object_uri), IsOk());
 }
 
 TEST_F(RestArrowFileIOTest, AppliesOssCredentialThroughRealArrowS3FileIO) {
