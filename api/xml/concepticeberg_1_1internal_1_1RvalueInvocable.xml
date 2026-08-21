@@ -1,0 +1,28 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="concepticeberg_1_1internal_1_1RvalueInvocable" kind="concept">
+    <compoundname>iceberg::internal::RvalueInvocable</compoundname>
+    <templateparamlist>
+      <param>
+        <type>typename R</type>
+      </param>
+      <param>
+        <type>typename Fn</type>
+      </param>
+      <param>
+        <type>typename...</type>
+        <declname>Args</declname>
+        <defname>Args</defname>
+      </param>
+    </templateparamlist>
+    <initializer>template&lt;typename R, typename Fn, typename... Args&gt;
+concept <ref refid="concepticeberg_1_1internal_1_1RvalueInvocable" kindref="compound">iceberg::internal::RvalueInvocable</ref> =  std::constructible_from&lt;std::remove_cvref_t&lt;Fn&gt;, Fn&gt; &amp;&amp;
+                          std::move_constructible&lt;std::remove_cvref_t&lt;Fn&gt;&gt; &amp;&amp;
+                          std::is_invocable_r_v&lt;R, std::remove_cvref_t&lt;Fn&gt;&amp;&amp;, Args...&gt;    </initializer>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/util/functional.h" line="41" column="1"/>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,195 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1FileIORegistry" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::FileIORegistry</compoundname>
+    <includes refid="file__io__registry_8h" local="no">file_io_registry.h</includes>
+    <innerclass refid="structiceberg_1_1FileIORegistry_1_1Factory" prot="public">iceberg::FileIORegistry::Factory</innerclass>
+    <sectiondef kind="public-type">
+      <memberdef kind="typedef" id="classiceberg_1_1FileIORegistry_1a26c7a0a91db864955b1883fac8bc8193" prot="public" static="no">
+        <type>std::unordered_map&lt; std::string, std::string &gt;</type>
+        <definition>using iceberg::FileIORegistry::Properties =  std::unordered_map&lt;std::string, std::string&gt;</definition>
+        <argsstring></argsstring>
+        <name>Properties</name>
+        <qualifiedname>iceberg::FileIORegistry::Properties</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/file_io_registry.h" line="48" column="3" bodyfile="iceberg/file_io_registry.h" bodystart="48" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1FileIORegistry_1aabbf80821dd83ffea77021d230a07ee1" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr std::string_view</type>
+        <definition>constexpr std::string_view iceberg::FileIORegistry::kArrowLocalFileIO</definition>
+        <argsstring></argsstring>
+        <name>kArrowLocalFileIO</name>
+        <qualifiedname>iceberg::FileIORegistry::kArrowLocalFileIO</qualifiedname>
+        <initializer>= &quot;arrow-fs-local&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/file_io_registry.h" line="45" column="37" bodyfile="iceberg/file_io_registry.h" bodystart="45" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1FileIORegistry_1ab9f2f52962644015b00fbeea83ed1703" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr std::string_view</type>
+        <definition>constexpr std::string_view iceberg::FileIORegistry::kArrowS3FileIO</definition>
+        <argsstring></argsstring>
+        <name>kArrowS3FileIO</name>
+        <qualifiedname>iceberg::FileIORegistry::kArrowS3FileIO</qualifiedname>
+        <initializer>= &quot;arrow-fs-s3&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/file_io_registry.h" line="46" column="37" bodyfile="iceberg/file_io_registry.h" bodystart="46" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classiceberg_1_1FileIORegistry_1a4bf67f99304a412e535fcee9d71b1e67" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>static void iceberg::FileIORegistry::Register</definition>
+        <argsstring>(std::string name, Factory factory)</argsstring>
+        <name>Register</name>
+        <qualifiedname>iceberg::FileIORegistry::Register</qualifiedname>
+        <param>
+          <type>std::string</type>
+          <declname>name</declname>
+        </param>
+        <param>
+          <type><ref refid="structiceberg_1_1FileIORegistry_1_1Factory" kindref="compound">Factory</ref></type>
+          <declname>factory</declname>
+        </param>
+        <briefdescription>
+<para>Register a <ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref> factory under the given name. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>name</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The implementation name (e.g., &quot;local&quot;, &quot;s3&quot;) </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>factory</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The factory function that creates the <ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref> instance. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/file_io_registry.h" line="66" column="15"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1FileIORegistry_1a6e9f6cbd63968094e1ddd8f07be32230" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceiceberg_1a9d5594e371beb516b0120e07e69d3af6" kindref="member">Result</ref>&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref> &gt; &gt;</type>
+        <definition>static Result&lt; std::unique_ptr&lt; FileIO &gt; &gt; iceberg::FileIORegistry::Load</definition>
+        <argsstring>(std::string_view name, const Properties &amp;properties)</argsstring>
+        <name>Load</name>
+        <qualifiedname>iceberg::FileIORegistry::Load</qualifiedname>
+        <param>
+          <type>std::string_view</type>
+          <declname>name</declname>
+        </param>
+        <param>
+          <type>const Properties &amp;</type>
+          <declname>properties</declname>
+        </param>
+        <briefdescription>
+<para>Load a <ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref> implementation by name. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>name</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The implementation name to look up. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>properties</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Configuration properties to pass to the factory. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A unique_ptr to the <ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref> instance, or an error if not found. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/file_io_registry.h" line="73" column="17"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1FileIORegistry_1afd4cd6e91e17fe93650461b112f8be6a" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceiceberg_1a9d5594e371beb516b0120e07e69d3af6" kindref="member">Result</ref>&lt; std::string &gt;</type>
+        <definition>static Result&lt; std::string &gt; iceberg::FileIORegistry::Resolve</definition>
+        <argsstring>(std::string_view scheme)</argsstring>
+        <name>Resolve</name>
+        <qualifiedname>iceberg::FileIORegistry::Resolve</qualifiedname>
+        <param>
+          <type>std::string_view</type>
+          <declname>scheme</declname>
+        </param>
+        <briefdescription>
+<para>Returns the last registered factory accepting <computeroutput>scheme</computeroutput>. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Matching is case-insensitive; registration order determines precedence. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/file_io_registry.h" line="79" column="17"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Registry for <ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref> implementations. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>Provides a mechanism to register and load <ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref> implementations by name. This allows the REST catalog (and others) to resolve <ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref> implementations at runtime based on configuration properties like &quot;io-impl&quot;. Registrations must be completed before registry consumers are created. </para>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::FileIORegistry</label>
+        <link refid="classiceberg_1_1FileIORegistry"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>kArrowLocalFileIO</edgelabel>
+          <edgelabel>kArrowS3FileIO</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::basic_string_view&lt; Char &gt;</label>
+      </node>
+      <node id="2">
+        <label>std::string_view</label>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/file_io_registry.h" line="43" column="1" bodyfile="iceberg/file_io_registry.h" bodystart="43" bodyend="80"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1FileIORegistry_1aabbf80821dd83ffea77021d230a07ee1" prot="public" virt="non-virtual"><scope>iceberg::FileIORegistry</scope><name>kArrowLocalFileIO</name></member>
+      <member refid="classiceberg_1_1FileIORegistry_1ab9f2f52962644015b00fbeea83ed1703" prot="public" virt="non-virtual"><scope>iceberg::FileIORegistry</scope><name>kArrowS3FileIO</name></member>
+      <member refid="classiceberg_1_1FileIORegistry_1a6e9f6cbd63968094e1ddd8f07be32230" prot="public" virt="non-virtual"><scope>iceberg::FileIORegistry</scope><name>Load</name></member>
+      <member refid="classiceberg_1_1FileIORegistry_1a26c7a0a91db864955b1883fac8bc8193" prot="public" virt="non-virtual"><scope>iceberg::FileIORegistry</scope><name>Properties</name></member>
+      <member refid="classiceberg_1_1FileIORegistry_1a4bf67f99304a412e535fcee9d71b1e67" prot="public" virt="non-virtual"><scope>iceberg::FileIORegistry</scope><name>Register</name></member>
+      <member refid="classiceberg_1_1FileIORegistry_1afd4cd6e91e17fe93650461b112f8be6a" prot="public" virt="non-virtual"><scope>iceberg::FileIORegistry</scope><name>Resolve</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

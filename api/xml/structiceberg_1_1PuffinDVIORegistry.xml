@@ -1,0 +1,78 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1PuffinDVIORegistry" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::PuffinDVIORegistry</compoundname>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structiceberg_1_1PuffinDVIORegistry_1aeb6050874a96ae533e304cd4c53908f3" prot="public" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::PuffinDVIORegistry::PuffinDVIORegistry</definition>
+        <argsstring>(PuffinDVIOFactory factory)</argsstring>
+        <name>PuffinDVIORegistry</name>
+        <qualifiedname>iceberg::PuffinDVIORegistry::PuffinDVIORegistry</qualifiedname>
+        <param>
+          <type>PuffinDVIOFactory</type>
+          <declname>factory</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/puffin_dv_io.h" line="58" column="12"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="structiceberg_1_1PuffinDVIORegistry_1accb05b63f78ca4f47527b309aa3e5b75" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>PuffinDVIOFactory &amp;</type>
+        <definition>static PuffinDVIOFactory &amp; iceberg::PuffinDVIORegistry::GetFactory</definition>
+        <argsstring>()</argsstring>
+        <name>GetFactory</name>
+        <qualifiedname>iceberg::PuffinDVIORegistry::GetFactory</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/puffin_dv_io.h" line="60" column="28"/>
+      </memberdef>
+      <memberdef kind="function" id="structiceberg_1_1PuffinDVIORegistry_1aee0651beff77c93b3b3e3127bbdac594" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceiceberg_1a9d5594e371beb516b0120e07e69d3af6" kindref="member">Result</ref>&lt; std::vector&lt; std::shared_ptr&lt; <ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref> &gt; &gt; &gt;</type>
+        <definition>static Result&lt; std::vector&lt; std::shared_ptr&lt; DataFile &gt; &gt; &gt; iceberg::PuffinDVIORegistry::MergeAndWriteDVs</definition>
+        <argsstring>(std::span&lt; const DeletionVectorMergeGroup &gt; groups, std::string_view output_path, const std::shared_ptr&lt; FileIO &gt; &amp;io)</argsstring>
+        <name>MergeAndWriteDVs</name>
+        <qualifiedname>iceberg::PuffinDVIORegistry::MergeAndWriteDVs</qualifiedname>
+        <param>
+          <type>std::span&lt; const <ref refid="structiceberg_1_1DeletionVectorMergeGroup" kindref="compound">DeletionVectorMergeGroup</ref> &gt;</type>
+          <declname>groups</declname>
+        </param>
+        <param>
+          <type>std::string_view</type>
+          <declname>output_path</declname>
+        </param>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref> &gt; &amp;</type>
+          <declname>io</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/puffin_dv_io.h" line="62" column="17"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/puffin_dv_io.h" line="57" column="1" bodyfile="iceberg/puffin_dv_io.h" bodystart="57" bodyend="65"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1PuffinDVIORegistry_1accb05b63f78ca4f47527b309aa3e5b75" prot="public" virt="non-virtual"><scope>iceberg::PuffinDVIORegistry</scope><name>GetFactory</name></member>
+      <member refid="structiceberg_1_1PuffinDVIORegistry_1aee0651beff77c93b3b3e3127bbdac594" prot="public" virt="non-virtual"><scope>iceberg::PuffinDVIORegistry</scope><name>MergeAndWriteDVs</name></member>
+      <member refid="structiceberg_1_1PuffinDVIORegistry_1aeb6050874a96ae533e304cd4c53908f3" prot="public" virt="non-virtual"><scope>iceberg::PuffinDVIORegistry</scope><name>PuffinDVIORegistry</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

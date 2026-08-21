@@ -1,0 +1,126 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1PartitionKeyEqual" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::PartitionKeyEqual</compoundname>
+    <includes refid="partition__value__util_8h" local="no">partition_value_util.h</includes>
+    <sectiondef kind="public-type">
+      <memberdef kind="typedef" id="structiceberg_1_1PartitionKeyEqual_1a73b0bdd90332b26c33c29c5c9a422575" prot="public" static="no">
+        <type>void</type>
+        <definition>using iceberg::PartitionKeyEqual::is_transparent =  void</definition>
+        <argsstring></argsstring>
+        <name>is_transparent</name>
+        <qualifiedname>iceberg::PartitionKeyEqual::is_transparent</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/partition_value_util.h" line="88" column="3" bodyfile="iceberg/util/partition_value_util.h" bodystart="88" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structiceberg_1_1PartitionKeyEqual_1a87517ae102da7594912a30da642e976f" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::PartitionKeyEqual::operator()</definition>
+        <argsstring>(const PartitionKey &amp;lhs, const PartitionKey &amp;rhs) const</argsstring>
+        <name>operator()</name>
+        <qualifiedname>iceberg::PartitionKeyEqual::operator()</qualifiedname>
+        <param>
+          <type>const PartitionKey &amp;</type>
+          <declname>lhs</declname>
+        </param>
+        <param>
+          <type>const PartitionKey &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/partition_value_util.h" line="91" column="8" bodyfile="iceberg/util/partition_value_util.h" bodystart="91" bodyend="93"/>
+      </memberdef>
+      <memberdef kind="function" id="structiceberg_1_1PartitionKeyEqual_1a96b1139e2fb4056ae47d11b13b54e3c4" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::PartitionKeyEqual::operator()</definition>
+        <argsstring>(const PartitionKey &amp;lhs, const PartitionKeyRef &amp;rhs) const</argsstring>
+        <name>operator()</name>
+        <qualifiedname>iceberg::PartitionKeyEqual::operator()</qualifiedname>
+        <param>
+          <type>const PartitionKey &amp;</type>
+          <declname>lhs</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structiceberg_1_1PartitionKeyRef" kindref="compound">PartitionKeyRef</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/partition_value_util.h" line="96" column="8" bodyfile="iceberg/util/partition_value_util.h" bodystart="96" bodyend="98"/>
+      </memberdef>
+      <memberdef kind="function" id="structiceberg_1_1PartitionKeyEqual_1a9388245d88912a766c3c342919fad7a3" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::PartitionKeyEqual::operator()</definition>
+        <argsstring>(const PartitionKeyRef &amp;lhs, const PartitionKey &amp;rhs) const</argsstring>
+        <name>operator()</name>
+        <qualifiedname>iceberg::PartitionKeyEqual::operator()</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1PartitionKeyRef" kindref="compound">PartitionKeyRef</ref> &amp;</type>
+          <declname>lhs</declname>
+        </param>
+        <param>
+          <type>const PartitionKey &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/partition_value_util.h" line="101" column="8" bodyfile="iceberg/util/partition_value_util.h" bodystart="101" bodyend="103"/>
+      </memberdef>
+      <memberdef kind="function" id="structiceberg_1_1PartitionKeyEqual_1ac19ba31f661d2728266208512a740919" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::PartitionKeyEqual::operator()</definition>
+        <argsstring>(const PartitionKeyRef &amp;lhs, const PartitionKeyRef &amp;rhs) const</argsstring>
+        <name>operator()</name>
+        <qualifiedname>iceberg::PartitionKeyEqual::operator()</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1PartitionKeyRef" kindref="compound">PartitionKeyRef</ref> &amp;</type>
+          <declname>lhs</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structiceberg_1_1PartitionKeyRef" kindref="compound">PartitionKeyRef</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/partition_value_util.h" line="106" column="8" bodyfile="iceberg/util/partition_value_util.h" bodystart="106" bodyend="108"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Transparent equality functor for PartitionKey with heterogeneous lookup support. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/util/partition_value_util.h" line="87" column="1" bodyfile="iceberg/util/partition_value_util.h" bodystart="87" bodyend="109"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1PartitionKeyEqual_1a73b0bdd90332b26c33c29c5c9a422575" prot="public" virt="non-virtual"><scope>iceberg::PartitionKeyEqual</scope><name>is_transparent</name></member>
+      <member refid="structiceberg_1_1PartitionKeyEqual_1a87517ae102da7594912a30da642e976f" prot="public" virt="non-virtual"><scope>iceberg::PartitionKeyEqual</scope><name>operator()</name></member>
+      <member refid="structiceberg_1_1PartitionKeyEqual_1a96b1139e2fb4056ae47d11b13b54e3c4" prot="public" virt="non-virtual"><scope>iceberg::PartitionKeyEqual</scope><name>operator()</name></member>
+      <member refid="structiceberg_1_1PartitionKeyEqual_1a9388245d88912a766c3c342919fad7a3" prot="public" virt="non-virtual"><scope>iceberg::PartitionKeyEqual</scope><name>operator()</name></member>
+      <member refid="structiceberg_1_1PartitionKeyEqual_1ac19ba31f661d2728266208512a740919" prot="public" virt="non-virtual"><scope>iceberg::PartitionKeyEqual</scope><name>operator()</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

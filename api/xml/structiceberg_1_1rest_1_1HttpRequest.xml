@@ -1,0 +1,106 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1rest_1_1HttpRequest" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::rest::HttpRequest</compoundname>
+    <includes refid="http__request_8h" local="no">http_request.h</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1rest_1_1HttpRequest_1a0f39bf37906e282fbf5839ce1b49ff0c" prot="public" static="no" mutable="no">
+        <type><ref refid="namespaceiceberg_1_1rest_1a9c2a3903c0963da869a7da9606e5d64d" kindref="member">HttpMethod</ref></type>
+        <definition>HttpMethod iceberg::rest::HttpRequest::method</definition>
+        <argsstring></argsstring>
+        <name>method</name>
+        <qualifiedname>iceberg::rest::HttpRequest::method</qualifiedname>
+        <initializer>= HttpMethod::kGet</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/http_request.h" line="90" column="14" bodyfile="iceberg/catalog/rest/http_request.h" bodystart="90" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1rest_1_1HttpRequest_1a47e72b0cc4850cf8a18a76c00f7ac6bb" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::rest::HttpRequest::url</definition>
+        <argsstring></argsstring>
+        <name>url</name>
+        <qualifiedname>iceberg::rest::HttpRequest::url</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/http_request.h" line="91" column="15" bodyfile="iceberg/catalog/rest/http_request.h" bodystart="91" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1rest_1_1HttpRequest_1a6665344638aefa7589bea5a5f9969ea1" prot="public" static="no" mutable="no">
+        <type><ref refid="namespaceiceberg_1_1rest_1a4c5bec70a136b65fef5fe6945c253cfd" kindref="member">HttpHeaders</ref></type>
+        <definition>HttpHeaders iceberg::rest::HttpRequest::headers</definition>
+        <argsstring></argsstring>
+        <name>headers</name>
+        <qualifiedname>iceberg::rest::HttpRequest::headers</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/http_request.h" line="92" column="15" bodyfile="iceberg/catalog/rest/http_request.h" bodystart="92" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1rest_1_1HttpRequest_1a867b5ca7f63296eafeb52fee3764e1bc" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::rest::HttpRequest::body</definition>
+        <argsstring></argsstring>
+        <name>body</name>
+        <qualifiedname>iceberg::rest::HttpRequest::body</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/http_request.h" line="93" column="15" bodyfile="iceberg/catalog/rest/http_request.h" bodystart="93" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>An outgoing HTTP request. Mirrors Java&apos;s <ref refid="structiceberg_1_1rest_1_1HttpRequest" kindref="compound">HttpRequest</ref> so signing implementations like SigV4 see method, url, headers, and body together. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::rest::HttpRequest</label>
+        <link refid="structiceberg_1_1rest_1_1HttpRequest"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>body</edgelabel>
+          <edgelabel>url</edgelabel>
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>headers</edgelabel>
+        </childnode>
+      </node>
+      <node id="4">
+        <label>std::map&lt; std::string, std::string, CaseInsensitiveHeaderLess &gt;</label>
+        <childnode refid="2" relation="usage">
+          <edgelabel>elements</edgelabel>
+          <edgelabel>keys</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="2">
+        <label>std::string</label>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/rest/http_request.h" line="89" column="1" bodyfile="iceberg/catalog/rest/http_request.h" bodystart="89" bodyend="94"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1rest_1_1HttpRequest_1a867b5ca7f63296eafeb52fee3764e1bc" prot="public" virt="non-virtual"><scope>iceberg::rest::HttpRequest</scope><name>body</name></member>
+      <member refid="structiceberg_1_1rest_1_1HttpRequest_1a6665344638aefa7589bea5a5f9969ea1" prot="public" virt="non-virtual"><scope>iceberg::rest::HttpRequest</scope><name>headers</name></member>
+      <member refid="structiceberg_1_1rest_1_1HttpRequest_1a0f39bf37906e282fbf5839ce1b49ff0c" prot="public" virt="non-virtual"><scope>iceberg::rest::HttpRequest</scope><name>method</name></member>
+      <member refid="structiceberg_1_1rest_1_1HttpRequest_1a47e72b0cc4850cf8a18a76c00f7ac6bb" prot="public" virt="non-virtual"><scope>iceberg::rest::HttpRequest</scope><name>url</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>
