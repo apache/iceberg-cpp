@@ -24,3 +24,11 @@ benchmark_smoke = executable(
 )
 
 benchmark('benchmark_smoke', benchmark_smoke)
+
+metrics_evaluator_benchmark = executable(
+    'metrics_evaluator_benchmark',
+    sources: files('metrics_evaluator_benchmark.cc'),
+    dependencies: [iceberg_dep, benchmark_dep],
+)
+
+benchmark('metrics_evaluator_benchmark', metrics_evaluator_benchmark)
