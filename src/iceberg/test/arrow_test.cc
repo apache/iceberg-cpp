@@ -387,6 +387,25 @@ TEST_P(FromArrowSchemaTest, PrimitiveType) {
   ASSERT_EQ(*field.type(), *param.iceberg_type);
 }
 
+TEST(FromArrowSchemaTest, RejectMalformedFieldIdMetadata) {
+  for (const auto& field_id : {"1x", "2147483648", ""}) {
+    auto metadata =
+        ::arrow::key_value_metadata(std::unordered_map<std::string, std::string>{
+            {std::string(kParquetFieldIdKey), field_id}});
+    auto arrow_schema = ::arrow::schema({::arrow::field(
+        "foo", ::arrow::int32(), /*nullable=*/true, std::move(metadata))});
+    ArrowSchema exported_schema;
+    ASSERT_TRUE(::arrow::ExportSchema(*arrow_schema, &exported_schema).ok());
+
+    auto result = FromArrowSchema(exported_schema, /*schema_id=*/1);
+    ArrowSchemaRelease(&exported_schema);
+
+    EXPECT_THAT(result, IsError(ErrorKind::kInvalidSchema));
+    EXPECT_THAT(result,
+                HasErrorMessage(std::format("Invalid Arrow field ID: '{}'", field_id)));
+  }
+}
+
 INSTANTIATE_TEST_SUITE_P(
     SchemaConversion, FromArrowSchemaTest,
     ::testing::Values(
