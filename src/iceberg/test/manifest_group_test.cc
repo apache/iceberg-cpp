@@ -292,6 +292,51 @@ TEST_P(ManifestGroupTest, CreateAndGetEntries) {
   EXPECT_EQ(tasks[1]->delete_files()[0]->file_path, "/path/to/delete.parquet");
 }
 
+TEST_P(ManifestGroupTest, PlanFilesIteratorPreservesSelectAllWithEqualityDeletes) {
+  auto version = GetParam();
+  if (version < 2) {
+    GTEST_SKIP() << "Delete files only supported in V2+";
+  }
+
+  constexpr int64_t kSnapshotId = 1000L;
+  const auto part_value = PartitionValues({Literal::Int(0)});
+
+  auto data_file = MakeDataFile("/path/to/data.parquet", part_value,
+                                partitioned_spec_->spec_id(), /*record_count=*/100);
+  data_file->lower_bounds[1] = Literal::Int(20).Serialize().value();
+  data_file->upper_bounds[1] = Literal::Int(30).Serialize().value();
+  std::vector<ManifestEntry> data_entries{MakeEntry(
+      ManifestStatus::kAdded, kSnapshotId, /*sequence_number=*/1, std::move(data_file))};
+  auto data_manifest =
+      WriteDataManifest(version, kSnapshotId, std::move(data_entries), partitioned_spec_);
+
+  auto equality_delete = MakeEqualityDeleteFile("/path/to/equality-delete.parquet",
+                                                part_value, partitioned_spec_->spec_id());
+  equality_delete->lower_bounds[1] = Literal::Int(20).Serialize().value();
+  equality_delete->upper_bounds[1] = Literal::Int(30).Serialize().value();
+  std::vector<ManifestEntry> delete_entries{MakeEntry(ManifestStatus::kAdded, kSnapshotId,
+                                                      /*sequence_number=*/2,
+                                                      std::move(equality_delete))};
+  auto delete_manifest = WriteDeleteManifest(
+      version, kSnapshotId, std::move(delete_entries), partitioned_spec_);
+
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto group, ManifestGroup::Make(file_io_, schema_, GetSpecsById(), {data_manifest},
+                                      {delete_manifest}));
+  ICEBERG_UNWRAP_OR_FAIL(auto iterator, group->PlanFilesIterator());
+  ICEBERG_UNWRAP_OR_FAIL(auto task, iterator->Next());
+
+  ASSERT_TRUE(task.has_value());
+  EXPECT_EQ(task.value()->data_file()->file_path, "/path/to/data.parquet");
+  EXPECT_EQ(task.value()->data_file()->record_count, 100);
+  ASSERT_EQ(task.value()->delete_files().size(), 1);
+  EXPECT_EQ(task.value()->delete_files().front()->file_path,
+            "/path/to/equality-delete.parquet");
+
+  ICEBERG_UNWRAP_OR_FAIL(auto end, iterator->Next());
+  EXPECT_FALSE(end.has_value());
+}
+
 TEST_P(ManifestGroupTest, IgnoreDeleted) {
   auto version = GetParam();
 

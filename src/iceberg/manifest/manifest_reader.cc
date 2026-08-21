@@ -25,6 +25,7 @@
 #include <ranges>
 #include <type_traits>
 #include <unordered_set>
+#include <utility>
 
 #include <nanoarrow/nanoarrow.h>
 
@@ -689,7 +690,146 @@ Result<std::shared_ptr<Schema>> ProjectSchema(std::shared_ptr<Schema> schema,
   return schema;
 }
 
+template <typename T>
+class VectorIterator final : public Iterator<T> {
+ public:
+  explicit VectorIterator(std::vector<T> values) : values_(std::move(values)) {}
+
+  Result<std::optional<T>> Next() override {
+    if (next_ == values_.size()) {
+      return std::nullopt;
+    }
+    return std::optional<T>{std::move(values_[next_++])};
+  }
+
+ private:
+  std::vector<T> values_;
+  size_t next_ = 0;
+};
+
+class ManifestEntryIteratorImpl final : public Iterator<ManifestEntry> {
+ public:
+  ManifestEntryIteratorImpl(std::unique_ptr<Reader> reader,
+                            std::shared_ptr<Schema> file_schema, ArrowSchema arrow_schema,
+                            std::shared_ptr<InheritableMetadata> inheritable_metadata,
+                            std::optional<int64_t> first_row_id, bool is_committed,
+                            bool only_live, std::unique_ptr<Evaluator> evaluator,
+                            std::unique_ptr<InclusiveMetricsEvaluator> metrics_evaluator,
+                            std::shared_ptr<PartitionSet> partition_set,
+                            std::shared_ptr<Counter> skip_counter, bool drop_stats)
+      : reader_(std::move(reader)),
+        file_schema_(std::move(file_schema)),
+        arrow_schema_(std::exchange(arrow_schema, ArrowSchema{})),
+        arrow_schema_guard_(&arrow_schema_),
+        inheritable_metadata_(std::move(inheritable_metadata)),
+        first_row_id_(first_row_id),
+        is_committed_(is_committed),
+        only_live_(only_live),
+        evaluator_(std::move(evaluator)),
+        metrics_evaluator_(std::move(metrics_evaluator)),
+        partition_set_(std::move(partition_set)),
+        skip_counter_(std::move(skip_counter)),
+        drop_stats_(drop_stats) {}
+
+  Result<std::optional<ManifestEntry>> Next() override {
+    while (true) {
+      while (next_entry_ < entries_.size()) {
+        auto entry = std::move(entries_[next_entry_++]);
+        ICEBERG_RETURN_UNEXPECTED(inheritable_metadata_->Apply(entry));
+
+        if (only_live_ && !entry.IsAlive()) {
+          continue;
+        }
+
+        ICEBERG_DCHECK(entry.data_file != nullptr, "Data file cannot be null");
+        if (evaluator_) {
+          ICEBERG_ASSIGN_OR_RAISE(bool partition_match,
+                                  evaluator_->Evaluate(entry.data_file->partition));
+          if (!partition_match) {
+            IncrementSkipCounter();
+            continue;
+          }
+        }
+        if (metrics_evaluator_) {
+          ICEBERG_ASSIGN_OR_RAISE(bool metrics_match,
+                                  metrics_evaluator_->Evaluate(*entry.data_file));
+          if (!metrics_match) {
+            IncrementSkipCounter();
+            continue;
+          }
+        }
+        if (partition_set_) {
+          ICEBERG_PRECHECK(entry.data_file->partition_spec_id.has_value(),
+                           "Missing partition spec id from data file {}",
+                           entry.data_file->file_path);
+          if (!partition_set_->contains(entry.data_file->partition_spec_id.value(),
+                                        entry.data_file->partition)) {
+            IncrementSkipCounter();
+            continue;
+          }
+        }
+
+        if (drop_stats_) {
+          ContentFileUtil::DropAllStats(*entry.data_file);
+        }
+        return std::optional<ManifestEntry>{std::move(entry)};
+      }
+
+      entries_.clear();
+      next_entry_ = 0;
+      ICEBERG_ASSIGN_OR_RAISE(auto batch, reader_->Next());
+      if (!batch.has_value()) {
+        return std::nullopt;
+      }
+
+      internal::ArrowArrayGuard array_guard(&batch.value());
+      ICEBERG_ASSIGN_OR_RAISE(
+          entries_, ParseManifestEntry(&arrow_schema_, &batch.value(), *file_schema_,
+                                       first_row_id_, is_committed_));
+    }
+  }
+
+ private:
+  void IncrementSkipCounter() {
+    if (skip_counter_) {
+      skip_counter_->Increment(1);
+    }
+  }
+
+  std::unique_ptr<Reader> reader_;
+  std::shared_ptr<Schema> file_schema_;
+  ArrowSchema arrow_schema_{};
+  internal::ArrowSchemaGuard arrow_schema_guard_;
+  std::shared_ptr<InheritableMetadata> inheritable_metadata_;
+  std::optional<int64_t> first_row_id_;
+  bool is_committed_;
+  bool only_live_;
+  std::unique_ptr<Evaluator> evaluator_;
+  std::unique_ptr<InclusiveMetricsEvaluator> metrics_evaluator_;
+  std::shared_ptr<PartitionSet> partition_set_;
+  std::shared_ptr<Counter> skip_counter_;
+  bool drop_stats_;
+  std::vector<ManifestEntry> entries_;
+  size_t next_entry_ = 0;
+};
+
 }  // namespace
+
+Result<std::unique_ptr<Iterator<ManifestEntry>>> ManifestReader::EntriesIterator() {
+  if (auto* iterable = dynamic_cast<SupportsManifestEntryIteration*>(this)) {
+    return iterable->EntriesIterator();
+  }
+  ICEBERG_ASSIGN_OR_RAISE(auto entries, Entries());
+  return std::make_unique<VectorIterator<ManifestEntry>>(std::move(entries));
+}
+
+Result<std::unique_ptr<Iterator<ManifestEntry>>> ManifestReader::LiveEntriesIterator() {
+  if (auto* iterable = dynamic_cast<SupportsManifestEntryIteration*>(this)) {
+    return iterable->LiveEntriesIterator();
+  }
+  ICEBERG_ASSIGN_OR_RAISE(auto entries, LiveEntries());
+  return std::make_unique<VectorIterator<ManifestEntry>>(std::move(entries));
+}
 
 bool ManifestReader::ShouldDropStats(const std::vector<std::string>& columns) {
   // Make sure we only drop all stats if we had projected all stats.
@@ -716,7 +856,7 @@ bool ManifestReader::ShouldDropStats(const std::vector<std::string>& columns) {
 
 std::vector<std::string> ManifestReader::WithStatsColumns(
     const std::vector<std::string>& columns) {
-  if (std::ranges::contains(columns, Schema::kAllColumns)) {
+  if (columns.empty() || std::ranges::contains(columns, Schema::kAllColumns)) {
     return columns;
   } else {
     std::vector<std::string> updated_columns{columns};
@@ -788,7 +928,7 @@ bool ManifestReaderImpl::HasRowFilter() const {
   return row_filter_->op() != Expression::Operation::kTrue;
 }
 
-Result<Evaluator*> ManifestReaderImpl::GetEvaluator() {
+Result<std::unique_ptr<Evaluator>> ManifestReaderImpl::TakeEvaluator() {
   if (!evaluator_) {
     auto projection_evaluator = Projections::Inclusive(*spec_, *schema_, case_sensitive_);
     ICEBERG_ASSIGN_OR_RAISE(auto projected, projection_evaluator->Project(row_filter_));
@@ -801,16 +941,17 @@ Result<Evaluator*> ManifestReaderImpl::GetEvaluator() {
         evaluator_, Evaluator::Make(*partition_schema, std::move(final_part_filter),
                                     case_sensitive_));
   }
-  return evaluator_.get();
+  return std::move(evaluator_);
 }
 
-Result<InclusiveMetricsEvaluator*> ManifestReaderImpl::GetMetricsEvaluator() {
+Result<std::unique_ptr<InclusiveMetricsEvaluator>>
+ManifestReaderImpl::TakeMetricsEvaluator() {
   if (!metrics_evaluator_) {
     ICEBERG_ASSIGN_OR_RAISE(
         metrics_evaluator_,
         InclusiveMetricsEvaluator::Make(row_filter_, *schema_, case_sensitive_));
   }
-  return metrics_evaluator_.get();
+  return std::move(metrics_evaluator_);
 }
 
 Result<bool> ManifestReaderImpl::InPartitionSet(const DataFile& file) const {
@@ -861,14 +1002,26 @@ Status ManifestReaderImpl::OpenReader(std::shared_ptr<Schema> projection) {
 }
 
 Result<std::vector<ManifestEntry>> ManifestReaderImpl::Entries() {
-  return ReadEntries(/*only_live=*/false);
+  ICEBERG_ASSIGN_OR_RAISE(auto entries, EntriesIterator());
+  return entries->ToVector();
 }
 
 Result<std::vector<ManifestEntry>> ManifestReaderImpl::LiveEntries() {
-  return ReadEntries(/*only_live=*/true);
+  ICEBERG_ASSIGN_OR_RAISE(auto entries, LiveEntriesIterator());
+  return entries->ToVector();
 }
 
-Result<std::vector<ManifestEntry>> ManifestReaderImpl::ReadEntries(bool only_live) {
+Result<std::unique_ptr<Iterator<ManifestEntry>>> ManifestReaderImpl::EntriesIterator() {
+  return MakeEntriesIterator(/*only_live=*/false);
+}
+
+Result<std::unique_ptr<Iterator<ManifestEntry>>>
+ManifestReaderImpl::LiveEntriesIterator() {
+  return MakeEntriesIterator(/*only_live=*/true);
+}
+
+Result<std::unique_ptr<Iterator<ManifestEntry>>> ManifestReaderImpl::MakeEntriesIterator(
+    bool only_live) {
   ICEBERG_ASSIGN_OR_RAISE(auto partition_type, spec_->RawPartitionType(*schema_));
   auto data_file_schema = DataFile::Type(std::move(partition_type))->ToSchema();
 
@@ -894,74 +1047,27 @@ Result<std::vector<ManifestEntry>> ManifestReaderImpl::ReadEntries(bool only_liv
   ICEBERG_RETURN_UNEXPECTED(OpenReader(std::move(projected_data_file_schema)));
   ICEBERG_DCHECK(file_reader_ != nullptr, "File reader should be initialized");
 
-  std::vector<ManifestEntry> manifest_entries;
   ICEBERG_ASSIGN_OR_RAISE(auto arrow_schema, file_reader_->Schema());
   internal::ArrowSchemaGuard schema_guard(&arrow_schema);
 
   // Get evaluators if needed
-  Evaluator* evaluator = nullptr;
-  InclusiveMetricsEvaluator* metrics_evaluator = nullptr;
+  std::unique_ptr<Evaluator> evaluator;
+  std::unique_ptr<InclusiveMetricsEvaluator> metrics_evaluator;
   if (HasPartitionFilter() || HasRowFilter()) {
-    ICEBERG_ASSIGN_OR_RAISE(evaluator, GetEvaluator());
+    ICEBERG_ASSIGN_OR_RAISE(evaluator, TakeEvaluator());
   }
   if (HasRowFilter()) {
-    ICEBERG_ASSIGN_OR_RAISE(metrics_evaluator, GetMetricsEvaluator());
+    ICEBERG_ASSIGN_OR_RAISE(metrics_evaluator, TakeMetricsEvaluator());
   }
 
   bool drop_stats = drop_stats_ && ShouldDropStats(columns_);
-
-  while (true) {
-    ICEBERG_ASSIGN_OR_RAISE(auto result, file_reader_->Next());
-    if (!result.has_value()) {
-      break;  // EOF
-    }
-
-    internal::ArrowArrayGuard array_guard(&result.value());
-    ICEBERG_ASSIGN_OR_RAISE(
-        auto entries, ParseManifestEntry(&arrow_schema, &result.value(), *file_schema_,
-                                         first_row_id_, is_committed_));
-
-    for (auto& entry : entries) {
-      ICEBERG_RETURN_UNEXPECTED(inheritable_metadata_->Apply(entry));
-
-      if (only_live && !entry.IsAlive()) {
-        continue;
-      }
-
-      if (needs_filtering) {
-        ICEBERG_DCHECK(entry.data_file != nullptr, "Data file cannot be null");
-        if (evaluator) {
-          ICEBERG_ASSIGN_OR_RAISE(bool partition_match,
-                                  evaluator->Evaluate(entry.data_file->partition));
-          if (!partition_match) {
-            if (skip_counter_) skip_counter_->Increment(1);
-            continue;
-          }
-        }
-        if (metrics_evaluator) {
-          ICEBERG_ASSIGN_OR_RAISE(bool metrics_match,
-                                  metrics_evaluator->Evaluate(*entry.data_file));
-          if (!metrics_match) {
-            if (skip_counter_) skip_counter_->Increment(1);
-            continue;
-          }
-        }
-        ICEBERG_ASSIGN_OR_RAISE(bool in_partition_set, InPartitionSet(*entry.data_file));
-        if (!in_partition_set) {
-          if (skip_counter_) skip_counter_->Increment(1);
-          continue;
-        }
-      }
-
-      if (drop_stats) {
-        ContentFileUtil::DropAllStats(*entry.data_file);
-      }
-
-      manifest_entries.push_back(std::move(entry));
-    }
-  }
-
-  return manifest_entries;
+  auto iterator = std::unique_ptr<Iterator<ManifestEntry>>(new ManifestEntryIteratorImpl(
+      std::move(file_reader_), file_schema_, std::move(arrow_schema),
+      inheritable_metadata_, first_row_id_, is_committed_, only_live,
+      std::move(evaluator), std::move(metrics_evaluator), partition_set_, skip_counter_,
+      drop_stats));
+  schema_guard.Release();
+  return iterator;
 }
 
 Result<std::vector<ManifestFile>> ManifestListReaderImpl::Files() const {

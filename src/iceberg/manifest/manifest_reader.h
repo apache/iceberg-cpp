@@ -33,6 +33,7 @@
 #include "iceberg/metrics/counter.h"
 #include "iceberg/result.h"
 #include "iceberg/type_fwd.h"
+#include "iceberg/util/iterator.h"
 
 namespace iceberg {
 
@@ -42,12 +43,22 @@ class ICEBERG_EXPORT ManifestReader {
   virtual ~ManifestReader() = default;
 
   /// \brief Read all manifest entries in the manifest file.
-  ///
-  /// TODO(gangwu): provide a lazy-evaluated iterator interface for better performance.
   virtual Result<std::vector<ManifestEntry>> Entries() = 0;
 
   /// \brief Read only live (non-deleted) manifest entries.
   virtual Result<std::vector<ManifestEntry>> LiveEntries() = 0;
+
+  /// \brief Lazily read manifest entries.
+  ///
+  /// Implementations using SupportsManifestEntryIteration stream entries lazily. Other
+  /// implementations are adapted from Entries() for compatibility.
+  Result<std::unique_ptr<Iterator<ManifestEntry>>> EntriesIterator();
+
+  /// \brief Lazily read only live (non-deleted) manifest entries.
+  ///
+  /// Implementations using SupportsManifestEntryIteration stream entries lazily. Other
+  /// implementations are adapted from LiveEntries() for compatibility.
+  Result<std::unique_ptr<Iterator<ManifestEntry>>> LiveEntriesIterator();
 
   /// \brief Select specific columns of data file to read from the manifest entries.
   ///
@@ -132,6 +143,19 @@ class ICEBERG_EXPORT ManifestReader {
   /// \brief Add stats columns to the column list if needed.
   static std::vector<std::string> WithStatsColumns(
       const std::vector<std::string>& columns);
+};
+
+/// \brief Optional mix-in for ManifestReader implementations that support lazy entry
+/// iteration.
+class ICEBERG_EXPORT SupportsManifestEntryIteration {
+ public:
+  virtual ~SupportsManifestEntryIteration() = default;
+
+  /// \brief Lazily read manifest entries.
+  virtual Result<std::unique_ptr<Iterator<ManifestEntry>>> EntriesIterator() = 0;
+
+  /// \brief Lazily read only live (non-deleted) manifest entries.
+  virtual Result<std::unique_ptr<Iterator<ManifestEntry>>> LiveEntriesIterator() = 0;
 };
 
 /// \brief Read manifest files from a manifest list file.

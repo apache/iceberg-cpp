@@ -37,6 +37,7 @@
 #include "iceberg/type_fwd.h"
 #include "iceberg/util/error_collector.h"
 #include "iceberg/util/executor.h"
+#include "iceberg/util/iterator.h"
 
 namespace iceberg {
 
@@ -136,6 +137,15 @@ class ICEBERG_EXPORT ManifestGroup : public ErrorCollector {
   /// \brief Plan scan tasks for all matching data files.
   Result<std::vector<std::shared_ptr<FileScanTask>>> PlanFiles();
 
+  /// \brief Lazily plan scan tasks for matching data files.
+  ///
+  /// The returned iterator owns the planning state and may outlive this ManifestGroup.
+  /// It reads one manifest batch at a time instead of materializing all manifest entries
+  /// and scan tasks. Creating the iterator consumes this group's configuration. Streaming
+  /// planning is pull-based and does not eagerly submit manifests to the executor set by
+  /// PlanWith().
+  Result<std::unique_ptr<Iterator<std::shared_ptr<FileScanTask>>>> PlanFilesIterator();
+
   /// \brief Get all matching manifest entries.
   Result<std::vector<ManifestEntry>> Entries();
 
@@ -151,6 +161,8 @@ class ICEBERG_EXPORT ManifestGroup : public ErrorCollector {
       const CreateTasksFunction& create_tasks);
 
  private:
+  class FilePlanningIterator;
+
   ManifestGroup(std::shared_ptr<FileIO> io, std::shared_ptr<Schema> schema,
                 std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>> specs_by_id,
                 std::vector<ManifestFile> data_manifests,
