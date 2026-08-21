@@ -85,9 +85,16 @@ class ICEBERG_REST_EXPORT RestCatalog final
       std::shared_ptr<auth::AuthSession> contextual_session);
 
   Result<std::shared_ptr<FileIO>> TableFileIO(
-      const SessionContext& context,
+      const SessionContext& context, const TableIdentifier& identifier,
       const std::unordered_map<std::string, std::string>& table_config,
-      const std::vector<StorageCredential>& storage_credentials) const;
+      const std::vector<StorageCredential>& storage_credentials,
+      std::shared_ptr<auth::AuthSession> table_session) const;
+
+  /// \brief Callback that reloads this table's vended credentials, or nullptr
+  /// when the catalog does not serve the LoadCredentials endpoint.
+  StorageCredentialRefresher MakeCredentialRefresher(
+      const TableIdentifier& identifier,
+      std::shared_ptr<auth::AuthSession> table_session) const;
 
   Result<std::vector<Namespace>> ListNamespaces(const Namespace& ns,
                                                 auth::AuthSession& session) const;

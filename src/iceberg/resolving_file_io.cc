@@ -53,8 +53,12 @@ Result<std::shared_ptr<FileIO>> ResolvingFileIO::FileIOForPath(
     ICEBERG_ASSIGN_OR_RAISE(auto io, FileIORegistry::Load(name, properties_));
     // Forward all credentials; each implementation applies the prefixes it
     // understands.
-    if (!storage_credentials_.empty()) {
-      if (auto* credentialed = io->AsSupportsStorageCredentials()) {
+    if (auto* credentialed = io->AsSupportsStorageCredentials()) {
+      // Before the credentials, so the delegate can always replace them.
+      if (refresher_) {
+        credentialed->SetCredentialRefresher(refresher_);
+      }
+      if (!storage_credentials_.empty()) {
         ICEBERG_RETURN_UNEXPECTED(
             credentialed->SetStorageCredentials(storage_credentials_));
       }
@@ -109,8 +113,16 @@ Status ResolvingFileIO::SetStorageCredentials(
   return {};
 }
 
-const std::vector<StorageCredential>& ResolvingFileIO::credentials() const {
+std::vector<StorageCredential> ResolvingFileIO::credentials() const {
+  std::shared_lock lock(mutex_);
   return storage_credentials_;
+}
+
+void ResolvingFileIO::SetCredentialRefresher(StorageCredentialRefresher refresher) {
+  // Drop the cached delegates so they are rebuilt with the refresher.
+  std::unique_lock lock(mutex_);
+  refresher_ = std::move(refresher);
+  io_by_name_.clear();
 }
 
 }  // namespace iceberg

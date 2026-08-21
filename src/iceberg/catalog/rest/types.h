@@ -209,6 +209,23 @@ using CreateTableResponse = LoadTableResult;
 /// \brief Alias of LoadTableResult used as the body of LoadTableResponse
 using LoadTableResponse = LoadTableResult;
 
+/// \brief Response body of the LoadCredentials API.
+///
+/// Used to replace the credentials vended alongside a table before they expire.
+struct ICEBERG_REST_EXPORT LoadCredentialsResponse {
+  std::vector<StorageCredential> storage_credentials;
+
+  /// \brief Validates the LoadCredentialsResponse.
+  Status Validate() const {
+    for (const auto& credential : storage_credentials) {
+      ICEBERG_RETURN_UNEXPECTED(credential.Validate());
+    }
+    return {};
+  }
+
+  bool operator==(const LoadCredentialsResponse& other) const = default;
+};
+
 /// \brief Response body for listing namespaces.
 struct ICEBERG_REST_EXPORT ListNamespacesResponse {
   PageToken next_page_token;
