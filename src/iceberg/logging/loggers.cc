@@ -59,26 +59,24 @@ struct LoggerRegistryState {
 };
 
 LoggerRegistryState& GetRegistry() {
-  static auto* state =
-      new LoggerRegistryState{.map = {
-                                  {std::string(kLoggerTypeNoop),
-                                   [](const std::unordered_map<std::string, std::string>&)
-                                       -> Result<std::unique_ptr<Logger>> {
-                                     return internal::MakeNoopLogger();
-                                   }},
-                                  {std::string(kLoggerTypeCerr),
-                                   [](const std::unordered_map<std::string, std::string>&)
-                                       -> Result<std::unique_ptr<Logger>> {
-                                     return std::make_unique<CerrLogger>();
-                                   }},
+  static auto* state = new LoggerRegistryState{
+      .map = {
+          {std::string(kLoggerTypeNoop),
+           [](const std::unordered_map<std::string, std::string>&)
+               -> Result<std::unique_ptr<Logger>> { return internal::MakeNoopLogger(); }},
+          {std::string(kLoggerTypeCerr),
+           [](const std::unordered_map<std::string, std::string>&)
+               -> Result<std::unique_ptr<Logger>> {
+             return std::make_unique<CerrLogger>();
+           }},
 #ifdef ICEBERG_HAS_SPDLOG
-                                  {std::string(kLoggerTypeSpdlog),
-                                   [](const std::unordered_map<std::string, std::string>&)
-                                       -> Result<std::unique_ptr<Logger>> {
-                                     return std::make_unique<internal::SpdLogger>();
-                                   }},
+          {std::string(kLoggerTypeSpdlog),
+           [](const std::unordered_map<std::string, std::string>&)
+               -> Result<std::unique_ptr<Logger>> {
+             return std::make_unique<internal::SpdLogger>();
+           }},
 #endif
-                              }};
+      }};
   return *state;
 }
 
@@ -128,13 +126,6 @@ Result<std::unique_ptr<Logger>> Loggers::Load(
     return InvalidArgument("Logger factory for '{}' failed with unknown exception",
                            logger_type);
   }
-}
-
-Status Loggers::LoadAndSetDefault(
-    const std::unordered_map<std::string, std::string>& properties) {
-  ICEBERG_ASSIGN_OR_RAISE(auto logger, Load(properties));
-  SetDefaultLogger(std::shared_ptr<Logger>(std::move(logger)));
-  return {};
 }
 
 }  // namespace iceberg

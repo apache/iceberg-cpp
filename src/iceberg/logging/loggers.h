@@ -59,10 +59,6 @@ class ICEBERG_EXPORT Loggers {
 
   /// \brief Register a factory for \p logger_type (overwrites any existing).
   static Status Register(std::string_view logger_type, LoggerFactory factory);
-
-  /// \brief Load a logger from properties and install it as the default.
-  static Status LoadAndSetDefault(
-      const std::unordered_map<std::string, std::string>& properties);
 };
 
 }  // namespace iceberg

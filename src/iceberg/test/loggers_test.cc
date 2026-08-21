@@ -19,7 +19,9 @@
 
 #include "iceberg/logging/loggers.h"
 
+#include <iostream>
 #include <memory>
+#include <sstream>
 #include <string>
 #include <string_view>
 #include <unordered_map>
@@ -29,10 +31,33 @@
 // Build-generated, test-only: gates the spdlog-by-property expectation.
 #include "iceberg/logging/config.h"
 #include "iceberg/logging/log_level.h"
+#include "iceberg/logging/log_macros.h"
 #include "iceberg/logging/logger.h"
 #include "iceberg/test/logging_test_helpers.h"
 
+#ifdef ICEBERG_HAS_SPDLOG
+#  include <spdlog/logger.h>
+#  include <spdlog/sinks/ostream_sink.h>
+
+#  include "iceberg/logging/spdlog_logger_internal.h"
+#endif
+
 namespace iceberg {
+
+namespace {
+
+class CerrCapture {
+ public:
+  CerrCapture() : old_(std::cerr.rdbuf(buffer_.rdbuf())) {}
+  ~CerrCapture() { std::cerr.rdbuf(old_); }
+  std::string str() const { return buffer_.str(); }
+
+ private:
+  std::ostringstream buffer_;
+  std::streambuf* old_;
+};
+
+}  // namespace
 
 TEST(LoggersTest, LoadDefaultReturnsNonNullNonNoop) {
   auto result = Loggers::Load({});
@@ -79,15 +104,6 @@ TEST(LoggersTest, RegisterRejectsEmptyFactory) {
   auto status = Loggers::Register("bad", LoggerFactory{});
   ASSERT_FALSE(status.has_value());
   EXPECT_EQ(status.error().kind, ErrorKind::kInvalidArgument);
-}
-
-TEST(LoggersTest, LoadAndSetDefaultInstallsLogger) {
-  auto previous = GetDefaultLogger();
-  auto status = Loggers::LoadAndSetDefault(
-      {{std::string(kLoggerImpl), std::string(kLoggerTypeNoop)}});
-  ASSERT_TRUE(status.has_value());
-  EXPECT_TRUE(GetDefaultLogger()->IsNoop());
-  SetDefaultLogger(previous);  // restore
 }
 
 TEST(LoggersTest, LoadAppliesLevelProperty) {
@@ -142,14 +158,53 @@ TEST(LoggersTest, LoadSpdlogByPropertyWhenCompiledIn) {
 #endif
 }
 
-// A "pattern" property routed through the registry reaches the sink's Initialize.
-// CerrLogger has a fixed layout and must ignore it without erroring.
-TEST(LoggersTest, LoadPassesPatternPropertyToSink) {
-  auto result = Loggers::Load({{std::string(kLoggerImpl), std::string(kLoggerTypeCerr)},
-                               {std::string(kPatternProperty), std::string("%v")},
-                               {std::string(kLevelProperty), std::string("warn")}});
+TEST(LoggingEndToEndTest, ConfiguredCerrLoggerEmitsFormattedLineThroughMacro) {
+  auto result = Loggers::Load({{std::string(kLoggerImpl), std::string(kLoggerTypeCerr)}});
   ASSERT_TRUE(result.has_value());
-  EXPECT_EQ((*result)->level(), LogLevel::kWarn);  // level still applied
+  ScopedDefaultLogger guard(std::shared_ptr<Logger>(std::move(result.value())));
+
+  std::string out;
+  {
+    CerrCapture capture;
+    ICEBERG_LOG_WARN("u={}", 7);
+    out = capture.str();
+  }
+  ASSERT_FALSE(out.empty());
+  EXPECT_NE(out.find("warn"), std::string::npos);
+  EXPECT_NE(out.find("u=7"), std::string::npos);
+  EXPECT_NE(out.find("loggers_test.cc"), std::string::npos);
+  EXPECT_EQ(out.back(), '\n');
 }
+
+TEST(LoggingEndToEndTest, ConfiguredLevelByPropertyFiltersThroughMacro) {
+  auto result = Loggers::Load({{std::string(kLoggerImpl), std::string(kLoggerTypeCerr)},
+                               {std::string(kLevelProperty), std::string("error")}});
+  ASSERT_TRUE(result.has_value());
+  ScopedDefaultLogger guard(std::shared_ptr<Logger>(std::move(result.value())));
+
+  {
+    CerrCapture capture;
+    ICEBERG_LOG_INFO("dropped {}", 1);
+    EXPECT_TRUE(capture.str().empty());
+  }
+  {
+    CerrCapture capture;
+    ICEBERG_LOG_ERROR("kept {}", 2);
+    EXPECT_NE(capture.str().find("kept 2"), std::string::npos);
+  }
+}
+
+#ifdef ICEBERG_HAS_SPDLOG
+TEST(LoggingEndToEndTest, MacroLogsThroughRealSpdLogger) {
+  std::ostringstream out;
+  auto sink = std::make_shared<spdlog::sinks::ostream_sink_mt>(out);
+  ScopedDefaultLogger guard(std::make_shared<internal::SpdLogger>(
+      spdlog::logger("e2e", std::move(sink)), LogLevel::kTrace));
+
+  ICEBERG_LOG_INFO("v={}", 9);
+  GetDefaultLogger()->Flush();
+  EXPECT_NE(out.str().find("v=9"), std::string::npos);
+}
+#endif  // ICEBERG_HAS_SPDLOG
 
 }  // namespace iceberg
