@@ -19,6 +19,8 @@
 
 #include "iceberg/util/truncate_util.h"
 
+#include <limits>
+
 #include <gtest/gtest.h>
 
 #include "iceberg/expression/literal.h"
@@ -49,6 +51,19 @@ TEST(TruncateUtilTest, TruncateLiteral) {
   EXPECT_EQ(TruncateUtils::TruncateLiteral(
                 Literal::Binary(std::vector<uint8_t>(data.begin(), data.end())), 3),
             Literal::Binary(std::vector<uint8_t>(expected.begin(), expected.end())));
+}
+
+TEST(TruncateUtilTest, TruncateLiteralAvoidsSignedIntegerOverflow) {
+  EXPECT_EQ(TruncateUtils::TruncateLiteral(
+                Literal::Int(std::numeric_limits<int32_t>::max() - 1),
+                std::numeric_limits<int32_t>::max()),
+            Literal::Int(0));
+  EXPECT_EQ(TruncateUtils::TruncateLiteral(
+                Literal::Int(std::numeric_limits<int32_t>::min()), 10),
+            Literal::Int(std::numeric_limits<int32_t>::max() - 1));
+  EXPECT_EQ(TruncateUtils::TruncateLiteral(
+                Literal::Long(std::numeric_limits<int64_t>::min()), 10),
+            Literal::Long(std::numeric_limits<int64_t>::max() - 1));
 }
 
 TEST(TruncateUtilTest, TruncateLiteralRejectsInvalidWidth) {
