@@ -25,6 +25,7 @@
 #include "iceberg/catalog/rest/auth/auth_properties.h"
 #include "iceberg/catalog/rest/auth/auth_session.h"
 #include "iceberg/catalog/rest/auth/oauth2_util.h"
+#include "iceberg/catalog/session_context.h"
 #include "iceberg/util/base64.h"
 #include "iceberg/util/macros.h"
 
@@ -121,6 +122,7 @@ class OAuth2Manager : public AuthManager {
       HttpClient& client,
       const std::unordered_map<std::string, std::string>& properties) override {
     ICEBERG_ASSIGN_OR_RAISE(auto config, AuthProperties::FromProperties(properties));
+    shared_client_ = &client;
 
     // Reuse token from init phase.
     if (init_token_response_.has_value()) {
@@ -134,7 +136,15 @@ class OAuth2Manager : public AuthManager {
 
     // If token is provided, use it directly.
     if (!config.token().empty()) {
-      return AuthSession::MakeDefault(AuthHeaders(config.token()));
+      OAuthTokenResponse token_response{
+          .access_token = config.token(),
+          .token_type = "bearer",
+          .issued_token_type = AuthProperties::kAccessTokenType,
+      };
+      return AuthSession::MakeOAuth2(token_response, config.oauth2_server_uri(),
+                                     config.client_id(), config.client_secret(),
+                                     config.scope(), /*keep_refreshed=*/false,
+                                     config.optional_oauth_params(), client);
     }
 
     // Fetch a new token using client_credentials grant.
@@ -148,15 +158,109 @@ class OAuth2Manager : public AuthManager {
                                      config.optional_oauth_params(), client);
     }
 
-    return AuthSession::MakeDefault({});
+    return MakeSession(AccessTokenResponse(""), config, /*keep_refreshed=*/false);
   }
 
-  // TODO(lishuxu): Override TableSession() for token exchange (RFC 8693).
-  // TODO(lishuxu): Override ContextualSession() for per-context exchange.
+  Result<std::shared_ptr<AuthSession>> ContextualSession(
+      const SessionContext& context, std::shared_ptr<AuthSession> parent) override {
+    return MaybeCreateChildSession(context.credentials, /*allow_credential=*/true,
+                                   std::move(parent));
+  }
+
+  Result<std::shared_ptr<AuthSession>> TableSession(
+      [[maybe_unused]] const TableIdentifier& table,
+      const std::unordered_map<std::string, std::string>& properties,
+      std::shared_ptr<AuthSession> parent) override {
+    return MaybeCreateChildSession(FilterTableSessionProperties(properties),
+                                   /*allow_credential=*/false, std::move(parent));
+  }
 
  private:
+  static OAuthTokenResponse AccessTokenResponse(std::string token) {
+    return {
+        .access_token = std::move(token),
+        .token_type = "bearer",
+        .issued_token_type = AuthProperties::kAccessTokenType,
+    };
+  }
+
+  static Result<AuthProperties> ChildConfig(const OAuth2SessionInfo& parent_info,
+                                            const std::string& credential) {
+    auto properties = parent_info.optional_oauth_params;
+    properties[AuthProperties::kCredential.key()] = credential;
+    properties[AuthProperties::kScope.key()] = parent_info.scope;
+    properties[AuthProperties::kOAuth2ServerUri.key()] = parent_info.oauth2_server_uri;
+    return AuthProperties::FromProperties(properties);
+  }
+
+  Result<std::shared_ptr<AuthSession>> MakeSession(
+      const OAuthTokenResponse& token_response, const AuthProperties& config,
+      bool keep_refreshed) const {
+    ICEBERG_PRECHECK(shared_client_ != nullptr,
+                     "OAuth2 catalog session must be initialized before child sessions");
+    return AuthSession::MakeOAuth2(token_response, config.oauth2_server_uri(),
+                                   config.client_id(), config.client_secret(),
+                                   config.scope(), keep_refreshed,
+                                   config.optional_oauth_params(), *shared_client_);
+  }
+
+  Result<std::shared_ptr<AuthSession>> MaybeCreateChildSession(
+      const std::unordered_map<std::string, std::string>& credentials,
+      bool allow_credential, std::shared_ptr<AuthSession> parent) const {
+    auto token_it = credentials.find(AuthProperties::kToken.key());
+    auto credential_it = credentials.find(AuthProperties::kCredential.key());
+    auto typed_token = FindPreferredTypedToken(credentials);
+    if (token_it == credentials.end() &&
+        (!allow_credential || credential_it == credentials.end()) &&
+        !typed_token.has_value()) {
+      return parent;
+    }
+
+    ICEBERG_PRECHECK(shared_client_ != nullptr,
+                     "OAuth2 catalog session must be initialized before child sessions");
+    auto parent_info = parent->OAuth2Info();
+    ICEBERG_PRECHECK(parent_info.has_value(),
+                     "OAuth2 child session requires OAuth2 parent metadata");
+
+    if (token_it != credentials.end()) {
+      ICEBERG_ASSIGN_OR_RAISE(auto config,
+                              ChildConfig(*parent_info, parent_info->credential));
+      return MakeSession(AccessTokenResponse(token_it->second), config,
+                         /*keep_refreshed=*/false);
+    }
+
+    if (allow_credential && credential_it != credentials.end()) {
+      ICEBERG_ASSIGN_OR_RAISE(auto config,
+                              ChildConfig(*parent_info, credential_it->second));
+      ICEBERG_ASSIGN_OR_RAISE(auto response,
+                              FetchToken(*shared_client_, *parent, config));
+      return MakeSession(response, config, /*keep_refreshed=*/false);
+    }
+
+    std::optional<OAuth2Token> actor;
+    if (!parent_info->token.empty()) {
+      actor = OAuth2Token{
+          .token_type = parent_info->issued_token_type,
+          .token = parent_info->token,
+      };
+    }
+    TokenExchangeRequest request{
+        .oauth2_server_uri = parent_info->oauth2_server_uri,
+        .subject = std::move(*typed_token),
+        .actor = std::move(actor),
+        .scope = parent_info->scope,
+        .optional_oauth_params = parent_info->optional_oauth_params,
+    };
+    ICEBERG_ASSIGN_OR_RAISE(auto response,
+                            ExchangeToken(*shared_client_, *parent, {}, request));
+    ICEBERG_ASSIGN_OR_RAISE(auto config,
+                            ChildConfig(*parent_info, parent_info->credential));
+    return MakeSession(response, config, /*keep_refreshed=*/false);
+  }
+
   /// Cached token from InitSession
   std::optional<OAuthTokenResponse> init_token_response_;
+  HttpClient* shared_client_ = nullptr;
 };
 
 Result<std::unique_ptr<AuthManager>> MakeOAuth2Manager(
