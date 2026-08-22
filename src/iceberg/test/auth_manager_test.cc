@@ -313,14 +313,15 @@ TEST(AuthPropertiesTest, PreservesRelativeOAuth2ServerUriWithoutCatalogUri) {
   EXPECT_EQ(config.oauth2_server_uri(), "oauth/token");
 }
 
-TEST(AuthPropertiesTest, RejectsOAuth2ServerUriWithLeadingSlash) {
-  auto result = AuthProperties::FromProperties({
-      {RestCatalogProperties::kUri.key(), "https://catalog.example.com"},
-      {AuthProperties::kOAuth2ServerUri.key(), "/v1/oauth/tokens"},
-  });
+TEST(AuthPropertiesTest, ResolvesExplicitAbsolutePathOAuth2ServerUri) {
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto config,
+      AuthProperties::FromProperties({
+          {RestCatalogProperties::kUri.key(), "https://catalog.example.com/"},
+          {AuthProperties::kOAuth2ServerUri.key(), "/v1/oauth/tokens"},
+      }));
 
-  EXPECT_THAT(result, IsError(ErrorKind::kInvalidArgument));
-  EXPECT_THAT(result, HasErrorMessage("must not start with '/'"));
+  EXPECT_EQ(config.oauth2_server_uri(), "https://catalog.example.com/v1/oauth/tokens");
 }
 
 // Verifies loading NoopAuthManager with explicit "none" auth type

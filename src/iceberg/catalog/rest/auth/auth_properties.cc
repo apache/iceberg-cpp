@@ -46,18 +46,16 @@ Result<std::string> ResolveOAuth2ServerUri(
   if (endpoint.starts_with("http://") || endpoint.starts_with("https://")) {
     return endpoint;
   }
-  if (endpoint.starts_with('/')) {
-    return InvalidArgument("OAuth2 server URI path must not start with '/': {}",
-                           endpoint);
-  }
-
   auto uri_it = properties.find(RestCatalogProperties::kUri.key());
   if (uri_it == properties.end() || uri_it->second.empty()) {
     return endpoint;
   }
 
-  return std::string(TrimTrailingSlash(uri_it->second)) + "/" +
-         std::string(TrimTrailingSlash(endpoint));
+  auto base_uri = std::string(TrimTrailingSlash(uri_it->second));
+  if (endpoint.starts_with('/')) {
+    return base_uri + endpoint;
+  }
+  return base_uri + "/" + std::string(TrimTrailingSlash(endpoint));
 }
 
 }  // namespace
