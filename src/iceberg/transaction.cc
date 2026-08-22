@@ -57,6 +57,21 @@
 #include "iceberg/util/retry_util.h"
 
 namespace iceberg {
+namespace {
+
+class ScopedTrue {
+ public:
+  explicit ScopedTrue(bool& value) : value_(value) { value_ = true; }
+  ~ScopedTrue() { value_ = false; }
+
+  ScopedTrue(const ScopedTrue&) = delete;
+  ScopedTrue& operator=(const ScopedTrue&) = delete;
+
+ private:
+  bool& value_;
+};
+
+}  // namespace
 
 // ---------------------------------------------------------------------------
 // TransactionContext
@@ -122,9 +137,7 @@ Result<std::shared_ptr<Transaction>> Transaction::Make(std::shared_ptr<Table> ta
 Result<std::shared_ptr<Transaction>> Transaction::Make(
     std::shared_ptr<TransactionContext> ctx) {
   ICEBERG_PRECHECK(ctx != nullptr, "TransactionContext cannot be null");
-  auto txn = std::shared_ptr<Transaction>(new Transaction(ctx));
-  ctx->transaction = std::weak_ptr<Transaction>(txn);
-  return txn;
+  return std::shared_ptr<Transaction>(new Transaction(std::move(ctx)));
 }
 
 const std::shared_ptr<Table>& Transaction::table() const { return ctx_->table; }
@@ -138,6 +151,8 @@ std::string Transaction::MetadataFileLocation(std::string_view filename) const {
 }
 
 Status Transaction::AddUpdate(const std::shared_ptr<PendingUpdate>& update) {
+  ICEBERG_CHECK(!committed_, "Cannot add update to a committed transaction");
+  ICEBERG_CHECK(!finalized_, "Cannot add update to a finalized transaction");
   ICEBERG_CHECK(last_update_committed_,
                 "Cannot add update when previous update is not committed");
 
@@ -147,6 +162,9 @@ Status Transaction::AddUpdate(const std::shared_ptr<PendingUpdate>& update) {
 }
 
 Status Transaction::Apply(PendingUpdate& update) {
+  ICEBERG_CHECK(!committed_, "Cannot apply update to a committed transaction");
+  ICEBERG_CHECK(!finalized_, "Cannot apply update to a finalized transaction");
+
   switch (update.kind()) {
     case PendingUpdate::Kind::kExpireSnapshots:
       ICEBERG_RETURN_UNEXPECTED(
@@ -358,40 +376,37 @@ Status Transaction::ApplyUpdatePartitionStatistics(UpdatePartitionStatistics& up
 
 Result<std::shared_ptr<Table>> Transaction::Commit() {
   ICEBERG_CHECK(!committed_, "Transaction already committed");
+  ICEBERG_CHECK(!finalized_, "Transaction already finalized");
   ICEBERG_CHECK(last_update_committed_,
                 "Cannot commit transaction when previous update is not committed");
 
   const auto& updates = ctx_->metadata_builder->changes();
-  if (updates.empty()) {
-    committed_ = true;
-    return ctx_->table;
+  Result<std::shared_ptr<Table>> commit_result = ctx_->table;
+  if (!updates.empty()) {
+    const auto& props = ctx_->table->properties();
+    int32_t num_retries =
+        CanRetry() ? static_cast<int32_t>(props.Get(TableProperties::kCommitNumRetries))
+                   : 0;
+    int32_t min_wait_ms = props.Get(TableProperties::kCommitMinRetryWaitMs);
+    int32_t max_wait_ms = props.Get(TableProperties::kCommitMaxRetryWaitMs);
+    int32_t total_timeout_ms = props.Get(TableProperties::kCommitTotalRetryTimeMs);
+
+    bool is_first_attempt = true;
+    ScopedTrue committing(committing_);
+    commit_result =
+        MakeCommitRetryRunner(num_retries, min_wait_ms, max_wait_ms, total_timeout_ms)
+            .Run([this, &is_first_attempt]() -> Result<std::shared_ptr<Table>> {
+              auto result = CommitOnce(is_first_attempt);
+              is_first_attempt = false;
+              return result;
+            });
   }
-
-  const auto& props = ctx_->table->properties();
-  int32_t num_retries =
-      CanRetry() ? static_cast<int32_t>(props.Get(TableProperties::kCommitNumRetries))
-                 : 0;
-  int32_t min_wait_ms = props.Get(TableProperties::kCommitMinRetryWaitMs);
-  int32_t max_wait_ms = props.Get(TableProperties::kCommitMaxRetryWaitMs);
-  int32_t total_timeout_ms = props.Get(TableProperties::kCommitTotalRetryTimeMs);
-
-  bool is_first_attempt = true;
-  auto commit_result =
-      MakeCommitRetryRunner(num_retries, min_wait_ms, max_wait_ms, total_timeout_ms)
-          .Run([this, &is_first_attempt]() -> Result<std::shared_ptr<Table>> {
-            auto result = CommitOnce(is_first_attempt);
-            is_first_attempt = false;
-            return result;
-          });
 
   Result<const TableMetadata*> finalize_result =
       commit_result.has_value()
           ? Result<const TableMetadata*>(commit_result.value()->metadata().get())
           : std::unexpected(commit_result.error());
-
-  for (const auto& update : pending_updates_) {
-    std::ignore = update->Finalize(finalize_result);
-  }
+  FinalizeUpdates(finalize_result);
 
   ICEBERG_RETURN_UNEXPECTED(commit_result);
 
@@ -400,6 +415,16 @@ Result<std::shared_ptr<Table>> Transaction::Commit() {
   ctx_->table = std::move(commit_result.value());
 
   return ctx_->table;
+}
+
+void Transaction::FinalizeUpdates(const Result<const TableMetadata*>& commit_result) {
+  if (finalized_) {
+    return;
+  }
+  finalized_ = true;
+  for (const auto& update : pending_updates_) {
+    std::ignore = update->Finalize(commit_result);
+  }
 }
 
 Result<std::shared_ptr<Table>> Transaction::CommitOnce(bool is_first_attempt) {
