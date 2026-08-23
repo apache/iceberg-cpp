@@ -157,6 +157,8 @@ Result<std::vector<std::shared_ptr<FileScanTask>>> FileScanTasksFromJson(
                             GetJsonValue<nlohmann::json>(task_json, kDataFile));
     ICEBERG_ASSIGN_OR_RAISE(
         auto data_file, DataFileFromJson(data_file_json, partition_spec_by_id, schema));
+    ICEBERG_RETURN_UNEXPECTED(
+        CheckFileScanTaskNotSplit(task_json, data_file.file_size_in_bytes));
     // FIXME: REST scan-task DataFile JSON currently carries first-row-id,
     // but not the manifest-entry data sequence number. Until the REST API exposes
     // it, REST-planned tasks cannot inherit _last_updated_sequence_number.

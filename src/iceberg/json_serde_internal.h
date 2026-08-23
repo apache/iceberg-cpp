@@ -462,12 +462,16 @@ ICEBERG_EXPORT Result<nlohmann::json> ToJson(
 
 /// \brief Deserializes a self-contained FileScanTask JSON object.
 ///
-/// REST payloads that use `delete-file-references` must be parsed with
-/// `rest::FileScanTasksFromJson`, which supplies the sibling delete-file table.
+/// Rejects REST `delete-file-references` and byte-range splits (`start`/`offset`
+/// != 0 or `length` != file size). Missing split fields default to the whole file.
 ICEBERG_EXPORT Result<std::shared_ptr<FileScanTask>> FileScanTaskFromJson(
     const nlohmann::json& json,
     const std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>>&
         partition_spec_by_id,
     const Schema& schema);
+
+/// Rejects `start`/`offset` != 0 or `length` != `file_size_in_bytes`.
+ICEBERG_EXPORT Status CheckFileScanTaskNotSplit(const nlohmann::json& task_json,
+                                                int64_t file_size_in_bytes);
 
 }  // namespace iceberg

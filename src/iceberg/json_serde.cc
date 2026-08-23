@@ -271,6 +271,9 @@ constexpr std::string_view kDataFile = "data-file";
 constexpr std::string_view kDeleteFiles = "delete-files";
 constexpr std::string_view kDeleteFileReferences = "delete-file-references";
 constexpr std::string_view kResidualFilter = "residual-filter";
+constexpr std::string_view kStart = "start";
+constexpr std::string_view kOffset = "offset";
+constexpr std::string_view kLength = "length";
 constexpr std::string_view kMapKeys = "keys";
 constexpr std::string_view kMapValues = "values";
 
@@ -2295,6 +2298,29 @@ Result<nlohmann::json> ToJson(
   return json;
 }
 
+Status CheckFileScanTaskNotSplit(const nlohmann::json& task_json,
+                                 int64_t file_size_in_bytes) {
+  ICEBERG_ASSIGN_OR_RAISE(auto start_opt,
+                          GetJsonValueOptional<int64_t>(task_json, kStart));
+  ICEBERG_ASSIGN_OR_RAISE(auto offset_opt,
+                          GetJsonValueOptional<int64_t>(task_json, kOffset));
+  if (start_opt.has_value() && offset_opt.has_value() && *start_opt != *offset_opt) {
+    return JsonParseError("FileScanTask 'start' ({}) and 'offset' ({}) disagree",
+                          *start_opt, *offset_opt);
+  }
+  const int64_t start = start_opt.value_or(offset_opt.value_or(int64_t{0}));
+
+  ICEBERG_ASSIGN_OR_RAISE(auto length, GetJsonValueOrDefault<int64_t>(
+                                           task_json, kLength, file_size_in_bytes));
+  if (start != 0 || length != file_size_in_bytes) {
+    return NotSupported(
+        "Split FileScanTask is not supported: start/offset={}, length={}, "
+        "file-size-in-bytes={}",
+        start, length, file_size_in_bytes);
+  }
+  return {};
+}
+
 Result<std::shared_ptr<FileScanTask>> FileScanTaskFromJson(
     const nlohmann::json& json,
     const std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>>&
@@ -2314,6 +2340,8 @@ Result<std::shared_ptr<FileScanTask>> FileScanTaskFromJson(
                           GetJsonValue<nlohmann::json>(json, kDataFile));
   ICEBERG_ASSIGN_OR_RAISE(auto data_file,
                           DataFileFromJson(data_file_json, partition_spec_by_id, schema));
+  ICEBERG_RETURN_UNEXPECTED(
+      CheckFileScanTaskNotSplit(json, data_file.file_size_in_bytes));
 
   std::vector<std::shared_ptr<DataFile>> delete_files;
   if (json.contains(kDeleteFiles) && !json.at(kDeleteFiles).is_null()) {

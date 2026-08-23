@@ -18,6 +18,8 @@
  */
 
 #include <memory>
+#include <optional>
+#include <string>
 #include <unordered_map>
 
 #include <gmock/gmock.h>
@@ -1134,30 +1136,128 @@ TEST(FileScanTaskJsonTest, RoundTripWithInlinedDeleteFilesAndResidual) {
   EXPECT_EQ(residual_json, json["residual-filter"]);
 }
 
-TEST(FileScanTaskJsonTest, RejectsRestDeleteFileReferences) {
-  auto json = R"({
-    "data-file": {
-      "content": "data",
-      "file-path": "s3://bucket/data/file.parquet",
-      "file-format": "PARQUET",
-      "spec-id": 0,
-      "partition": [],
-      "file-size-in-bytes": 12345,
-      "record-count": 100
-    },
-    "delete-file-references": [0]
-  })"_json;
+nlohmann::json MakeFileScanTaskJson(int64_t file_size = 12345) {
+  return nlohmann::json{
+      {"data-file",
+       {{"content", "data"},
+        {"file-path", "s3://bucket/data/file.parquet"},
+        {"file-format", "PARQUET"},
+        {"spec-id", 0},
+        {"partition", nlohmann::json::array()},
+        {"file-size-in-bytes", file_size},
+        {"record-count", 100}}}};
+}
 
-  auto result = FileScanTaskFromJson(json, UnpartitionedSpecs(), Schema({}, 0));
+Result<std::shared_ptr<FileScanTask>> ParseFileScanTask(const nlohmann::json& json) {
+  return FileScanTaskFromJson(json, UnpartitionedSpecs(), Schema({}, 0));
+}
+
+TEST(FileScanTaskJsonTest, RejectsRestDeleteFileReferences) {
+  auto json = MakeFileScanTaskJson();
+  json["delete-file-references"] = nlohmann::json::array({0});
+
+  auto result = ParseFileScanTask(json);
   EXPECT_THAT(result, IsError(ErrorKind::kJsonParseError));
   EXPECT_THAT(result, HasErrorMessage("delete-file-references"));
 }
 
 TEST(FileScanTaskJsonTest, RejectsNonObject) {
-  auto result =
-      FileScanTaskFromJson(nlohmann::json::array(), UnpartitionedSpecs(), Schema({}, 0));
+  auto result = ParseFileScanTask(nlohmann::json::array());
   EXPECT_THAT(result, IsError(ErrorKind::kJsonParseError));
   EXPECT_THAT(result, HasErrorMessage("non-object"));
+}
+
+TEST(FileScanTaskJsonTest, RejectsMissingDataFile) {
+  auto result = ParseFileScanTask(nlohmann::json::object());
+  EXPECT_THAT(result, IsError(ErrorKind::kJsonParseError));
+  EXPECT_THAT(result, HasErrorMessage("data-file"));
+}
+
+TEST(FileScanTaskJsonTest, RejectsDeleteFilesNotArray) {
+  auto json = MakeFileScanTaskJson();
+  json["delete-files"] = "not-an-array";
+
+  auto result = ParseFileScanTask(json);
+  EXPECT_THAT(result, IsError(ErrorKind::kJsonParseError));
+  EXPECT_THAT(result, HasErrorMessage("non-array"));
+}
+
+TEST(FileScanTaskJsonTest, IgnoresNullOptionalFields) {
+  auto json = MakeFileScanTaskJson();
+  json["delete-files"] = nullptr;
+  json["residual-filter"] = nullptr;
+  json["delete-file-references"] = nullptr;
+  json["start"] = nullptr;
+  json["offset"] = nullptr;
+  json["length"] = nullptr;
+
+  ICEBERG_UNWRAP_OR_FAIL(auto parsed, ParseFileScanTask(json));
+  EXPECT_TRUE(parsed->delete_files().empty());
+  EXPECT_EQ(parsed->residual_filter(), nullptr);
+}
+
+TEST(FileScanTaskJsonTest, AcceptsEmptyDeleteFilesArray) {
+  auto json = MakeFileScanTaskJson();
+  json["delete-files"] = nlohmann::json::array();
+
+  ICEBERG_UNWRAP_OR_FAIL(auto parsed, ParseFileScanTask(json));
+  EXPECT_TRUE(parsed->delete_files().empty());
+}
+
+TEST(FileScanTaskJsonTest, SplitFieldCases) {
+  struct Case {
+    std::string name;
+    nlohmann::json extra;
+    std::optional<ErrorKind> error;
+    const char* message;
+  };
+
+  const Case cases[] = {
+      {"whole-file start and length",
+       {{"start", 0}, {"length", 12345}},
+       std::nullopt,
+       ""},
+      {"offset alias", {{"offset", 0}, {"length", 12345}}, std::nullopt, ""},
+      {"agreeing start and offset", {{"start", 0}, {"offset", 0}}, std::nullopt, ""},
+      {"length equals file size", {{"length", 12345}}, std::nullopt, ""},
+      {"start zero only", {{"start", 0}}, std::nullopt, ""},
+      {"nonzero start", {{"start", 100}}, ErrorKind::kNotSupported, "start/offset=100"},
+      {"nonzero offset", {{"offset", 100}}, ErrorKind::kNotSupported, "start/offset=100"},
+      {"partial length", {{"length", 100}}, ErrorKind::kNotSupported, "length=100"},
+      {"disagreeing start and offset",
+       {{"start", 0}, {"offset", 10}},
+       ErrorKind::kJsonParseError,
+       "disagree"},
+      {"invalid start type", {{"start", "0"}}, ErrorKind::kJsonParseError, "start"},
+      {"invalid length type", {{"length", "12345"}}, ErrorKind::kJsonParseError, "length"},
+  };
+
+  for (const auto& test_case : cases) {
+    SCOPED_TRACE(test_case.name);
+    auto json = MakeFileScanTaskJson();
+    json.update(test_case.extra);
+    auto result = ParseFileScanTask(json);
+    if (!test_case.error.has_value()) {
+      EXPECT_THAT(result, IsOk()) << result.error().message;
+    } else {
+      EXPECT_THAT(result, IsError(*test_case.error));
+      EXPECT_THAT(result, HasErrorMessage(test_case.message));
+    }
+  }
+}
+
+TEST(FileScanTaskJsonTest, ToJsonRejectsMissingDataFile) {
+  FileScanTask task(nullptr);
+  auto result = ToJson(task, UnpartitionedSpecs(), Schema({}, 0));
+  EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
+  EXPECT_THAT(result, HasErrorMessage("data-file"));
+}
+
+TEST(FileScanTaskJsonTest, ToJsonOmitsNullDeleteFiles) {
+  auto data_file = MakeUnpartitionedDataFile("s3://bucket/data/file.parquet");
+  FileScanTask task(std::make_shared<DataFile>(std::move(data_file)), {nullptr});
+  ICEBERG_UNWRAP_OR_FAIL(auto json, ToJson(task, UnpartitionedSpecs(), Schema({}, 0)));
+  EXPECT_FALSE(json.contains("delete-files"));
 }
 
 }  // namespace iceberg

@@ -2284,6 +2284,45 @@ TEST(FileScanTasksFromJsonTest, SingleTaskNoDeleteFiles) {
   EXPECT_EQ(task->residual_filter(), nullptr);
 }
 
+TEST(FileScanTasksFromJsonTest, AcceptsWholeFileStartAndLength) {
+  auto json = R"([{
+    "data-file": {
+      "content": "data",
+      "file-path": "s3://bucket/data/file.parquet",
+      "file-format": "PARQUET",
+      "spec-id": 0,
+      "partition": [],
+      "file-size-in-bytes": 12345,
+      "record-count": 100
+    },
+    "start": 0,
+    "length": 12345
+  }])"_json;
+
+  EXPECT_THAT(FileScanTasksFromJson(json, {}, UnpartitionedSpecs(), Schema({}, 0)),
+              IsOk());
+}
+
+TEST(FileScanTasksFromJsonTest, RejectsSplitTask) {
+  auto json = R"([{
+    "data-file": {
+      "content": "data",
+      "file-path": "s3://bucket/data/file.parquet",
+      "file-format": "PARQUET",
+      "spec-id": 0,
+      "partition": [],
+      "file-size-in-bytes": 12345,
+      "record-count": 100
+    },
+    "start": 100,
+    "length": 200
+  }])"_json;
+
+  auto result = FileScanTasksFromJson(json, {}, UnpartitionedSpecs(), Schema({}, 0));
+  EXPECT_THAT(result, IsError(ErrorKind::kNotSupported));
+  EXPECT_THAT(result, HasErrorMessage("Split FileScanTask is not supported"));
+}
+
 TEST(FileScanTasksFromJsonTest, RowLineageSequence) {
   GTEST_SKIP() << "REST scan-task JSON does not expose data-sequence-number yet: "
                << "https://github.com/apache/iceberg-cpp/issues/834";
