@@ -334,6 +334,7 @@ install_headers(
         'name_mapping.h',
         'partition_field.h',
         'partition_spec.h',
+        'puffin_dv_io.h',
         'resolving_file_io.h',
         'result.h',
         'schema_field.h',

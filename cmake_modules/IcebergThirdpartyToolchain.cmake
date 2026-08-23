@@ -422,7 +422,7 @@ function(resolve_croaring_dependency)
     set(CROARING_URL "$ENV{ICEBERG_CROARING_URL}")
   else()
     set(CROARING_URL
-        "https://github.com/RoaringBitmap/CRoaring/archive/refs/tags/v4.4.3.tar.gz")
+        "https://github.com/RoaringBitmap/CRoaring/archive/refs/tags/v4.3.11.tar.gz")
   endif()
 
   fetchcontent_declare(croaring
@@ -532,7 +532,7 @@ function(resolve_nlohmann_json_dependency)
     set(NLOHMANN_JSON_URL "$ENV{ICEBERG_NLOHMANN_JSON_URL}")
   else()
     set(NLOHMANN_JSON_URL
-        "https://github.com/nlohmann/json/releases/download/v3.11.3/json.tar.xz")
+        "https://github.com/nlohmann/json/releases/download/v3.12.0/json.tar.xz")
   endif()
 
   fetchcontent_declare(nlohmann_json
@@ -828,7 +828,7 @@ function(resolve_gtest_dependency)
 
   fetchcontent_declare(googletest
                        GIT_REPOSITORY https://github.com/google/googletest.git
-                       GIT_TAG b514bdc898e2951020cbdca1304b75f5950d1f59 # release-1.15.2
+                       GIT_TAG 52eb8108c5bdec04579160ae17225d66034bd723 # release-1.17.0
                        FIND_PACKAGE_ARGS
                        NAMES
                        GTest)
