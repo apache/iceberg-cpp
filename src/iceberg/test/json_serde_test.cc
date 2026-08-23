@@ -18,15 +18,20 @@
  */
 
 #include <memory>
+#include <unordered_map>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 #include <nlohmann/json.hpp>
 
+#include "iceberg/expression/expressions.h"
 #include "iceberg/expression/literal.h"
+#include "iceberg/file_format.h"
 #include "iceberg/json_serde_internal.h"
+#include "iceberg/manifest/manifest_entry.h"
 #include "iceberg/name_mapping.h"
 #include "iceberg/partition_spec.h"
+#include "iceberg/row/partition_values.h"
 #include "iceberg/schema.h"
 #include "iceberg/schema_field.h"
 #include "iceberg/snapshot.h"
@@ -34,6 +39,7 @@
 #include "iceberg/sort_order.h"
 #include "iceberg/statistics_file.h"
 #include "iceberg/table_requirement.h"
+#include "iceberg/table_scan.h"
 #include "iceberg/table_update.h"
 #include "iceberg/test/matchers.h"
 #include "iceberg/transform.h"
@@ -1042,6 +1048,116 @@ TEST(TableRequirementJsonTest, TableRequirementUnknownType) {
   auto result = TableRequirementFromJson(json);
   EXPECT_THAT(result, IsError(ErrorKind::kJsonParseError));
   EXPECT_THAT(result, HasErrorMessage("Unknown table requirement type"));
+}
+
+std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>> UnpartitionedSpecs() {
+  return {{PartitionSpec::kInitialSpecId, PartitionSpec::Unpartitioned()}};
+}
+
+DataFile MakeUnpartitionedDataFile(std::string path, int64_t record_count = 100,
+                                   int64_t file_size = 12345) {
+  DataFile data_file;
+  data_file.content = DataFile::Content::kData;
+  data_file.file_path = std::move(path);
+  data_file.file_format = FileFormatType::kParquet;
+  data_file.partition_spec_id = PartitionSpec::kInitialSpecId;
+  data_file.partition = PartitionValues{};
+  data_file.record_count = record_count;
+  data_file.file_size_in_bytes = file_size;
+  return data_file;
+}
+
+TEST(DataFileJsonTest, RoundTripRequiredFields) {
+  auto data_file = MakeUnpartitionedDataFile("s3://bucket/data/file.parquet");
+  Schema schema({}, 0);
+  ICEBERG_UNWRAP_OR_FAIL(auto json, ToJson(data_file, UnpartitionedSpecs(), schema));
+  EXPECT_EQ(json["content"], "data");
+  EXPECT_EQ(json["file-path"], "s3://bucket/data/file.parquet");
+  EXPECT_EQ(json["spec-id"], 0);
+
+  ICEBERG_UNWRAP_OR_FAIL(auto parsed, DataFileFromJson(json, UnpartitionedSpecs(), schema));
+  EXPECT_EQ(parsed.file_path, data_file.file_path);
+  EXPECT_EQ(parsed.record_count, data_file.record_count);
+  EXPECT_EQ(parsed.file_size_in_bytes, data_file.file_size_in_bytes);
+  EXPECT_EQ(parsed.partition_spec_id, data_file.partition_spec_id);
+}
+
+TEST(FileScanTaskJsonTest, RoundTripWithoutDeletes) {
+  auto data_file = MakeUnpartitionedDataFile("s3://bucket/data/file.parquet");
+  FileScanTask task(std::make_shared<DataFile>(std::move(data_file)));
+  Schema schema({}, 0);
+
+  ICEBERG_UNWRAP_OR_FAIL(auto json, ToJson(task, UnpartitionedSpecs(), schema));
+  ASSERT_TRUE(json.contains("data-file"));
+  EXPECT_FALSE(json.contains("delete-files"));
+  EXPECT_FALSE(json.contains("residual-filter"));
+  EXPECT_FALSE(json.contains("delete-file-references"));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto parsed,
+                         FileScanTaskFromJson(json, UnpartitionedSpecs(), schema));
+  ASSERT_NE(parsed->data_file(), nullptr);
+  EXPECT_EQ(parsed->data_file()->file_path, "s3://bucket/data/file.parquet");
+  EXPECT_TRUE(parsed->delete_files().empty());
+  EXPECT_EQ(parsed->residual_filter(), nullptr);
+}
+
+TEST(FileScanTaskJsonTest, RoundTripWithInlinedDeleteFilesAndResidual) {
+  auto data_file = MakeUnpartitionedDataFile("s3://bucket/data/file.parquet");
+  DataFile delete_file;
+  delete_file.content = DataFile::Content::kPositionDeletes;
+  delete_file.file_path = "s3://bucket/deletes/pos.parquet";
+  delete_file.file_format = FileFormatType::kParquet;
+  delete_file.partition_spec_id = PartitionSpec::kInitialSpecId;
+  delete_file.partition = PartitionValues{};
+  delete_file.record_count = 5;
+  delete_file.file_size_in_bytes = 1000;
+
+  FileScanTask task(std::make_shared<DataFile>(std::move(data_file)),
+                    {std::make_shared<DataFile>(std::move(delete_file))},
+                    Expressions::Equal("id", Literal::Int(21)));
+  Schema schema({}, 0);
+
+  ICEBERG_UNWRAP_OR_FAIL(auto json, ToJson(task, UnpartitionedSpecs(), schema));
+  ASSERT_TRUE(json.contains("delete-files"));
+  ASSERT_TRUE(json["delete-files"].is_array());
+  ASSERT_EQ(json["delete-files"].size(), 1U);
+  EXPECT_EQ(json["delete-files"][0]["file-path"], "s3://bucket/deletes/pos.parquet");
+  ASSERT_TRUE(json.contains("residual-filter"));
+  EXPECT_FALSE(json.contains("delete-file-references"));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto parsed,
+                         FileScanTaskFromJson(json, UnpartitionedSpecs(), schema));
+  ASSERT_EQ(parsed->delete_files().size(), 1U);
+  EXPECT_EQ(parsed->delete_files()[0]->file_path, "s3://bucket/deletes/pos.parquet");
+  ASSERT_NE(parsed->residual_filter(), nullptr);
+  ICEBERG_UNWRAP_OR_FAIL(auto residual_json, ToJson(*parsed->residual_filter()));
+  EXPECT_EQ(residual_json, json["residual-filter"]);
+}
+
+TEST(FileScanTaskJsonTest, RejectsRestDeleteFileReferences) {
+  auto json = R"({
+    "data-file": {
+      "content": "data",
+      "file-path": "s3://bucket/data/file.parquet",
+      "file-format": "PARQUET",
+      "spec-id": 0,
+      "partition": [],
+      "file-size-in-bytes": 12345,
+      "record-count": 100
+    },
+    "delete-file-references": [0]
+  })"_json;
+
+  auto result = FileScanTaskFromJson(json, UnpartitionedSpecs(), Schema({}, 0));
+  EXPECT_THAT(result, IsError(ErrorKind::kJsonParseError));
+  EXPECT_THAT(result, HasErrorMessage("delete-file-references"));
+}
+
+TEST(FileScanTaskJsonTest, RejectsNonObject) {
+  auto result =
+      FileScanTaskFromJson(nlohmann::json::array(), UnpartitionedSpecs(), Schema({}, 0));
+  EXPECT_THAT(result, IsError(ErrorKind::kJsonParseError));
+  EXPECT_THAT(result, HasErrorMessage("non-object"));
 }
 
 }  // namespace iceberg
