@@ -443,8 +443,16 @@ function(resolve_croaring_dependency)
     endif()
 
     set(CROARING_VENDORED TRUE)
-    set_target_properties(roaring PROPERTIES OUTPUT_NAME "iceberg_vendored_croaring"
-                                             POSITION_INDEPENDENT_CODE ON)
+    # CRoaring 4.3.11 exposes its header-only helper targets in roaring's install
+    # interface. Iceberg installs roaring in its own export without those helper
+    # targets, so downstream find_package(iceberg) would otherwise reject the
+    # package. Preserve the build dependencies without leaking them to consumers.
+    set_target_properties(roaring
+                          PROPERTIES OUTPUT_NAME "iceberg_vendored_croaring"
+                                     POSITION_INDEPENDENT_CODE ON
+                                     INTERFACE_LINK_LIBRARIES
+                                     "$<BUILD_INTERFACE:roaring-headers>;$<BUILD_INTERFACE:roaring-headers-cpp>"
+    )
     install(TARGETS roaring
             EXPORT iceberg_targets
             RUNTIME DESTINATION "${ICEBERG_INSTALL_BINDIR}"

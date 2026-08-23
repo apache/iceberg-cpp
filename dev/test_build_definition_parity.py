@@ -84,6 +84,11 @@ class BuildDefinitionParityTest(unittest.TestCase):
         }
         self.assertEqual({}, mismatches)
 
+    def test_croaring_build_only_targets_are_not_exported(self) -> None:
+        toolchain = read("cmake_modules/IcebergThirdpartyToolchain.cmake")
+        self.assertIn("$<BUILD_INTERFACE:roaring-headers>", toolchain)
+        self.assertIn("$<BUILD_INTERFACE:roaring-headers-cpp>", toolchain)
+
 
 if __name__ == "__main__":
     unittest.main()
