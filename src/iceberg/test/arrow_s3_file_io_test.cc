@@ -18,12 +18,14 @@
  */
 
 #include <algorithm>
+#include <atomic>
 #include <cstdlib>
 #include <iostream>
 #include <memory>
 #include <optional>
 #include <string>
 #include <string_view>
+#include <thread>
 #include <unordered_map>
 #include <utility>
 #include <vector>
@@ -224,6 +226,69 @@ TEST_F(ArrowS3FileIOTest, WarnsWhenNoCredentialApplies) {
   EXPECT_THAT(credentialed->SetStorageCredentials(credentials), IsOk());
   EXPECT_EQ(credentialed->credentials(), credentials);
   EXPECT_TRUE(HasWarning(*logger));
+}
+
+TEST_F(ArrowS3FileIOTest, DeleteFilesDispatchesAcrossCredentialPrefixes) {
+  auto result = MakeS3FileIO({});
+  ASSERT_THAT(result, IsOk());
+  auto* credentialed = result.value()->AsSupportsStorageCredentials();
+  ASSERT_NE(credentialed, nullptr);
+
+  auto credential = [](std::string_view prefix, std::string_view access_key) {
+    return StorageCredential{
+        .prefix = std::string(prefix),
+        .config = {{std::string(S3Properties::kAccessKeyId), std::string(access_key)},
+                   {std::string(S3Properties::kSecretAccessKey), "secret"}}};
+  };
+  ASSERT_THAT(credentialed->SetStorageCredentials({credential("s3://bucket-a", "key-a"),
+                                                   credential("s3://bucket-b", "key-b")}),
+              IsOk());
+
+  auto status = result.value()->DeleteFiles({"s3://bucket-a/%ZZ.parquet",
+                                             "s3://bucket-a/second.parquet",
+                                             "s3://bucket-b/other.parquet"});
+  EXPECT_THAT(status, HasErrorMessage("Cannot parse URI"));
+}
+
+TEST_F(ArrowS3FileIOTest, OperationsSurviveConcurrentCredentialInstalls) {
+  auto result = MakeS3FileIO({});
+  ASSERT_THAT(result, IsOk());
+  auto* credentialed = result.value()->AsSupportsStorageCredentials();
+  ASSERT_NE(credentialed, nullptr);
+
+  auto credential = [](std::string_view access_key) {
+    return StorageCredential{
+        .prefix = "s3://bucket",
+        .config = {{std::string(S3Properties::kAccessKeyId), std::string(access_key)},
+                   {std::string(S3Properties::kSecretAccessKey), "secret"}}};
+  };
+  ASSERT_THAT(credentialed->SetStorageCredentials({credential("first")}), IsOk());
+
+  std::atomic<bool> stop = false;
+  std::atomic<int> failures = 0;
+  std::vector<std::thread> operations;
+  operations.reserve(4);
+  for (int i = 0; i < 4; ++i) {
+    operations.emplace_back([&] {
+      while (!stop.load()) {
+        if (!result.value()->NewInputFile("s3://bucket/key").has_value()) {
+          ++failures;
+        }
+      }
+    });
+  }
+  // No assertions until the threads are joined: a fatal assertion here would
+  // destroy joinable threads and terminate the binary, masking the failure.
+  Status install_status = {};
+  for (int round = 0; round < 3 && install_status.has_value(); ++round) {
+    install_status = credentialed->SetStorageCredentials({credential("replacement")});
+  }
+  stop = true;
+  for (auto& operation : operations) {
+    operation.join();
+  }
+  ASSERT_THAT(install_status, IsOk());
+  EXPECT_EQ(failures, 0);
 }
 
 TEST_F(ArrowS3FileIOTest, RejectsIncompleteStaticCredentials) {
