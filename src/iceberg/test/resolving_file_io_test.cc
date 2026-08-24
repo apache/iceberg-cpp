@@ -67,10 +67,25 @@ class RecordingCredentialedFileIO : public RecordingFileIO,
 
   std::vector<StorageCredential> credentials() const override { return credentials_; }
 
+  void SetCredentialRefresher(StorageCredentialRefresher refresher) override {
+    refresher_ = std::move(refresher);
+  }
+
   SupportsStorageCredentials* AsSupportsStorageCredentials() override { return this; }
+
+  Status Refresh() {
+    if (!refresher_) {
+      return NotFound("no refresher installed");
+    }
+    ICEBERG_ASSIGN_OR_RAISE(auto refreshed, refresher_());
+    return SetStorageCredentials(refreshed);
+  }
+
+  bool has_refresher() const { return static_cast<bool>(refresher_); }
 
  private:
   std::vector<StorageCredential> credentials_;
+  StorageCredentialRefresher refresher_;
 };
 
 // File-scope recording state: registry factories are process-global, so they
@@ -316,6 +331,43 @@ TEST(ResolvingFileIOTest, LoadsWithoutTheLockAndDropsStaleDelegates) {
   EXPECT_THAT(install.get(), IsOk());
   ASSERT_EQ(calls, 2);
   EXPECT_EQ(last->credentials(), fresh);
+}
+
+TEST(ResolvingFileIOTest, ForwardsCredentialRefresherToResolvedImplementations) {
+  RegisterRecordingFileIOs();
+  ResolvingFileIO io({});
+
+  std::vector<StorageCredential> refreshed = {{.prefix = "s3", .config = {{"k2", "v2"}}}};
+  io.SetCredentialRefresher(
+      [&]() -> Result<std::vector<StorageCredential>> { return refreshed; });
+  EXPECT_THAT(io.SetStorageCredentials({{.prefix = "s3", .config = {{"k1", "v1"}}}}),
+              IsOk());
+
+  (void)io.NewInputFile("s3://bucket/db/table/data/file.parquet");
+  ASSERT_NE(last_s3_io, nullptr);
+  ASSERT_TRUE(last_s3_io->has_refresher());
+  EXPECT_THAT(last_s3_io->Refresh(), IsOk());
+  EXPECT_EQ(last_s3_io->credentials(), refreshed);
+}
+
+TEST(ResolvingFileIOTest, RebuildsResolvedImplementationsForALaterRefresher) {
+  RegisterRecordingFileIOs();
+  ResolvingFileIO io({});
+
+  EXPECT_THAT(io.SetStorageCredentials({{.prefix = "s3", .config = {{"k1", "v1"}}}}),
+              IsOk());
+  (void)io.NewInputFile("s3://bucket/db/table/data/file.parquet");
+  ASSERT_NE(last_s3_io, nullptr);
+  EXPECT_FALSE(last_s3_io->has_refresher());
+  EXPECT_EQ(s3_factory_calls, 1);
+
+  io.SetCredentialRefresher([]() -> Result<std::vector<StorageCredential>> {
+    return std::vector<StorageCredential>{};
+  });
+  (void)io.NewInputFile("s3://bucket/db/table/data/other.parquet");
+  EXPECT_EQ(s3_factory_calls, 2);
+  ASSERT_NE(last_s3_io, nullptr);
+  EXPECT_TRUE(last_s3_io->has_refresher());
 }
 
 }  // namespace iceberg
