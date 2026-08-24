@@ -39,8 +39,8 @@ namespace iceberg {
 
 /// \brief FileIO that resolves and caches implementations by registry name.
 ///
-/// Vended credentials are forwarded to every resolved implementation that
-/// supports them; each applies what it understands.
+/// Vended credentials and any refresher are forwarded to every resolved
+/// implementation that supports them; each applies what it understands.
 class ICEBERG_EXPORT ResolvingFileIO final : public FileIO,
                                              public SupportsStorageCredentials {
  public:
@@ -61,7 +61,17 @@ class ICEBERG_EXPORT ResolvingFileIO final : public FileIO,
   Status SetStorageCredentials(
       const std::vector<StorageCredential>& storage_credentials) override;
 
+  /// \brief Return the credentials installed on this resolver.
+  ///
+  /// Not necessarily the ones in use: a resolved implementation refreshes its
+  /// own without reporting back.
   std::vector<StorageCredential> credentials() const override;
+
+  /// \brief Install a refresher and rebuild cached delegates with it.
+  ///
+  /// A delegate dropped here is rebuilt from the credentials installed on this
+  /// resolver, which may be older than what it had refreshed itself to.
+  void SetCredentialRefresher(StorageCredentialRefresher refresher) override;
 
   SupportsStorageCredentials* AsSupportsStorageCredentials() override { return this; }
 
@@ -73,6 +83,7 @@ class ICEBERG_EXPORT ResolvingFileIO final : public FileIO,
   // Guards lazy resolution and credential state.
   mutable std::shared_mutex mutex_;
   std::vector<StorageCredential> storage_credentials_;
+  StorageCredentialRefresher refresher_;
   std::unordered_map<std::string, std::shared_ptr<FileIO>, StringHash, StringEqual>
       io_by_name_;
 };

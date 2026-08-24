@@ -198,6 +198,11 @@ class ICEBERG_EXPORT SupportsStorageCredentials {
   /// By value because a concurrent install may replace them. An implementation
   /// that delegates may report what was installed on it.
   virtual std::vector<StorageCredential> credentials() const = 0;
+
+  /// \brief Install a callback that re-fetches credentials before they expire.
+  ///
+  /// Ignored by implementations that cannot tell when theirs expire.
+  virtual void SetCredentialRefresher(StorageCredentialRefresher /*refresher*/) {}
 };
 
 }  // namespace iceberg
