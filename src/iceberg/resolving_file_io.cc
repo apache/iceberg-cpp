@@ -109,7 +109,8 @@ Status ResolvingFileIO::SetStorageCredentials(
   return {};
 }
 
-const std::vector<StorageCredential>& ResolvingFileIO::credentials() const {
+std::vector<StorageCredential> ResolvingFileIO::credentials() const {
+  std::shared_lock lock(mutex_);
   return storage_credentials_;
 }
 
