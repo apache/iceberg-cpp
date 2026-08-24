@@ -104,6 +104,15 @@ class ArrowS3FileIOTest : public ::testing::Test {
  protected:
 #if ICEBERG_S3_ENABLED
   static void SetUpTestSuite() {
+    // Off EC2 every S3 client build waits for this to time out. Not overwritten,
+    // so a run that does want those credentials can still ask.
+#  ifdef _WIN32
+    if (std::getenv("AWS_EC2_METADATA_DISABLED") == nullptr) {
+      _putenv_s("AWS_EC2_METADATA_DISABLED", "true");
+    }
+#  else
+    ::setenv("AWS_EC2_METADATA_DISABLED", "true", /*overwrite=*/0);
+#  endif
     auto io = MakeS3FileIO({});
     ASSERT_THAT(io, IsOk());
   }
