@@ -48,7 +48,7 @@ class ICEBERG_REST_EXPORT AuthManager {
   /// \param properties Client configuration supplied by the catalog.
   /// \return Session for initialization or an error if credentials cannot be acquired.
   virtual Result<std::shared_ptr<AuthSession>> InitSession(
-      HttpClient& init_client,
+      std::shared_ptr<HttpClient> init_client,
       const std::unordered_map<std::string, std::string>& properties);
 
   /// \brief Create the long-lived catalog session that acts as the parent session.
@@ -62,7 +62,7 @@ class ICEBERG_REST_EXPORT AuthManager {
   /// \return Session for catalog operations or an error if authentication cannot be set
   /// up.
   virtual Result<std::shared_ptr<AuthSession>> CatalogSession(
-      HttpClient& shared_client,
+      std::shared_ptr<HttpClient> shared_client,
       const std::unordered_map<std::string, std::string>& properties) = 0;
 
   /// \brief Create or reuse a session for a specific context.

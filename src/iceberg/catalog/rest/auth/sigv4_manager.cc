@@ -51,6 +51,7 @@ namespace iceberg::rest::auth {
 
 namespace {
 
+constexpr std::string_view kAuthorizationHeader = "Authorization";
 constexpr std::string_view kAmzContentSha256Header = "x-amz-content-sha256";
 
 class AwsSdkLifecycle {
@@ -379,7 +380,7 @@ SigV4AuthManager::SigV4AuthManager(std::unique_ptr<AuthManager> delegate)
 SigV4AuthManager::~SigV4AuthManager() = default;
 
 Result<std::shared_ptr<AuthSession>> SigV4AuthManager::InitSession(
-    HttpClient& init_client,
+    std::shared_ptr<HttpClient> init_client,
     const std::unordered_map<std::string, std::string>& properties) {
   ICEBERG_RETURN_UNEXPECTED(AwsSdkLifecycle::Instance().EnsureInitialized());
   ICEBERG_ASSIGN_OR_RAISE(auto delegate_session,
@@ -389,7 +390,7 @@ Result<std::shared_ptr<AuthSession>> SigV4AuthManager::InitSession(
 }
 
 Result<std::shared_ptr<AuthSession>> SigV4AuthManager::CatalogSession(
-    HttpClient& shared_client,
+    std::shared_ptr<HttpClient> shared_client,
     const std::unordered_map<std::string, std::string>& properties) {
   ICEBERG_RETURN_UNEXPECTED(AwsSdkLifecycle::Instance().EnsureInitialized());
   catalog_properties_ = properties;

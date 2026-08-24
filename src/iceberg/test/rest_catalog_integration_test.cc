@@ -216,7 +216,7 @@ TEST_F(RestCatalogIntegrationTest, MakeCatalogSuccess) {
 }
 
 TEST_F(RestCatalogIntegrationTest, OAuthContextCredentialEndToEnd) {
-  HttpClient client;
+  auto client = std::make_shared<HttpClient>();
   std::unordered_map<std::string, std::string> properties = {
       {auth::AuthProperties::kAuthType, auth::AuthProperties::kAuthTypeOAuth2},
       {auth::AuthProperties::kToken.key(), "catalog-token"},
@@ -240,8 +240,33 @@ TEST_F(RestCatalogIntegrationTest, OAuthContextCredentialEndToEnd) {
   EXPECT_EQ(info->issued_token_type, auth::AuthProperties::kAccessTokenType);
 }
 
+TEST_F(RestCatalogIntegrationTest, OAuthContextCredentialThroughRestCatalog) {
+  auto config = RestCatalogProperties::default_properties();
+  config.Set(RestCatalogProperties::kUri, CatalogUri())
+      .Set(RestCatalogProperties::kName, std::string(kCatalogName))
+      .Set(RestCatalogProperties::kWarehouse, std::string(kWarehouseName));
+  config.mutable_configs()[std::string(RestCatalogProperties::kIOImpl.key())] =
+      std::string(kStdFileIOImpl);
+  config.mutable_configs()[auth::AuthProperties::kAuthType] =
+      auth::AuthProperties::kAuthTypeOAuth2;
+  config.mutable_configs()[auth::AuthProperties::kToken.key()] = "catalog-token";
+  config.mutable_configs()[auth::AuthProperties::kOAuth2ServerUri.key()] =
+      OAuthTokenUri();
+
+  ICEBERG_UNWRAP_OR_FAIL(auto root, RestCatalog::Make(config));
+  SessionContext context{
+      .session_id = "tenant-context-credential",
+      .credentials = {{auth::AuthProperties::kCredential.key(), "context-client:secret"}},
+  };
+  ICEBERG_UNWRAP_OR_FAIL(auto catalog, root->WithContext(context));
+  ICEBERG_UNWRAP_OR_FAIL(auto namespaces,
+                         catalog->ListNamespaces(Namespace{.levels = {}}));
+
+  EXPECT_TRUE(namespaces.empty());
+}
+
 TEST_F(RestCatalogIntegrationTest, OAuthContextTypedTokenEndToEnd) {
-  HttpClient client;
+  auto client = std::make_shared<HttpClient>();
   std::unordered_map<std::string, std::string> properties = {
       {auth::AuthProperties::kAuthType, auth::AuthProperties::kAuthTypeOAuth2},
       {auth::AuthProperties::kToken.key(), "catalog-token"},
@@ -266,7 +291,7 @@ TEST_F(RestCatalogIntegrationTest, OAuthContextTypedTokenEndToEnd) {
 }
 
 TEST_F(RestCatalogIntegrationTest, OAuthTableTypedTokenEndToEnd) {
-  HttpClient client;
+  auto client = std::make_shared<HttpClient>();
   std::unordered_map<std::string, std::string> properties = {
       {auth::AuthProperties::kAuthType, auth::AuthProperties::kAuthTypeOAuth2},
       {auth::AuthProperties::kToken.key(), "catalog-token"},
@@ -291,7 +316,7 @@ TEST_F(RestCatalogIntegrationTest, OAuthTableTypedTokenEndToEnd) {
 }
 
 TEST_F(RestCatalogIntegrationTest, OAuthTokenExchangeWithoutActorEndToEnd) {
-  HttpClient client;
+  auto client = std::make_shared<HttpClient>();
   std::unordered_map<std::string, std::string> properties = {
       {auth::AuthProperties::kAuthType, auth::AuthProperties::kAuthTypeOAuth2},
       {auth::AuthProperties::kOAuth2ServerUri.key(), OAuthTokenUri()},

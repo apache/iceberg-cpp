@@ -39,11 +39,14 @@ std::pair<std::string, std::string> ParseCredential(const std::string& credentia
 Result<std::string> ResolveOAuth2ServerUri(
     const std::unordered_map<std::string, std::string>& properties) {
   auto endpoint_it = properties.find(AuthProperties::kOAuth2ServerUri.key());
-  std::string endpoint = endpoint_it == properties.end() || endpoint_it->second.empty()
+  std::string endpoint = endpoint_it == properties.end()
                              ? AuthProperties::kOAuth2ServerUri.value()
                              : endpoint_it->second;
 
   if (endpoint.starts_with("http://") || endpoint.starts_with("https://")) {
+    return endpoint;
+  }
+  if (endpoint.empty()) {
     return endpoint;
   }
   auto uri_it = properties.find(RestCatalogProperties::kUri.key());
@@ -55,7 +58,7 @@ Result<std::string> ResolveOAuth2ServerUri(
   if (endpoint.starts_with('/')) {
     return base_uri + endpoint;
   }
-  return base_uri + "/" + std::string(TrimTrailingSlash(endpoint));
+  return base_uri + "/" + endpoint;
 }
 
 }  // namespace

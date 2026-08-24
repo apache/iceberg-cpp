@@ -399,7 +399,7 @@ Result<std::shared_ptr<RestCatalog>> RestCatalog::Make(
                           config.Get(RestCatalogProperties::kNamespaceSeparator)));
 
   // Create init session for fetching server configuration
-  HttpClient init_client(config.ExtractHeaders());
+  auto init_client = std::make_shared<HttpClient>(config.ExtractHeaders());
   ICEBERG_ASSIGN_OR_RAISE(auto init_session,
                           auth_manager->InitSession(init_client, config.configs()));
   ICEBERG_ASSIGN_OR_RAISE(auto server_config,
@@ -432,7 +432,7 @@ Result<std::shared_ptr<RestCatalog>> RestCatalog::Make(
 
   auto client = std::make_shared<HttpClient>(final_config.ExtractHeaders());
   ICEBERG_ASSIGN_OR_RAISE(auto catalog_session,
-                          auth_manager->CatalogSession(*client, final_config.configs()));
+                          auth_manager->CatalogSession(client, final_config.configs()));
 
   // Create FileIO with the final configuration
   ICEBERG_ASSIGN_OR_RAISE(auto file_io, MakeCatalogFileIO(final_config));

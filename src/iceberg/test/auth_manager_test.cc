@@ -22,6 +22,7 @@
 #include <atomic>
 #include <chrono>
 #include <condition_variable>
+#include <memory>
 #include <mutex>
 #include <string>
 #include <thread>
@@ -35,6 +36,7 @@
 #include "iceberg/catalog/rest/auth/auth_managers.h"
 #include "iceberg/catalog/rest/auth/auth_properties.h"
 #include "iceberg/catalog/rest/auth/auth_session.h"
+#include "iceberg/catalog/rest/auth/auth_session_internal.h"
 #include "iceberg/catalog/rest/auth/oauth2_util.h"
 #include "iceberg/catalog/rest/auth/token_refresh_scheduler.h"
 #include "iceberg/catalog/rest/catalog_properties.h"
@@ -68,197 +70,8 @@ std::string MakeJwt(const std::string& payload_json) {
 
 class AuthManagerTest : public ::testing::Test {
  protected:
-  HttpClient client_{{}};
+  std::shared_ptr<HttpClient> client_ = std::make_shared<HttpClient>();
 };
-
-TEST(OAuth2UtilTest, TokenTypeConstantsUseRfcUrns) {
-  EXPECT_EQ(AuthProperties::kAccessTokenType,
-            "urn:ietf:params:oauth:token-type:access_token");
-  EXPECT_EQ(AuthProperties::kRefreshTokenType,
-            "urn:ietf:params:oauth:token-type:refresh_token");
-  EXPECT_EQ(AuthProperties::kIdTokenType, "urn:ietf:params:oauth:token-type:id_token");
-  EXPECT_EQ(AuthProperties::kSaml1TokenType, "urn:ietf:params:oauth:token-type:saml1");
-  EXPECT_EQ(AuthProperties::kSaml2TokenType, "urn:ietf:params:oauth:token-type:saml2");
-  EXPECT_EQ(AuthProperties::kJwtTokenType, "urn:ietf:params:oauth:token-type:jwt");
-}
-
-TEST(OAuth2UtilTest, ValidTokenTypesIncludeRefreshToken) {
-  EXPECT_TRUE(IsValidTokenType(AuthProperties::kAccessTokenType));
-  EXPECT_TRUE(IsValidTokenType(AuthProperties::kRefreshTokenType));
-  EXPECT_TRUE(IsValidTokenType(AuthProperties::kIdTokenType));
-  EXPECT_TRUE(IsValidTokenType(AuthProperties::kSaml1TokenType));
-  EXPECT_TRUE(IsValidTokenType(AuthProperties::kSaml2TokenType));
-  EXPECT_TRUE(IsValidTokenType(AuthProperties::kJwtTokenType));
-  EXPECT_FALSE(IsValidTokenType("urn:ietf:params:oauth:token-type:unknown"));
-}
-
-TEST(OAuth2UtilTest, TokenPreferenceOrder) {
-  auto order = TokenPreferenceOrder();
-  ASSERT_EQ(order.size(), 5);
-  EXPECT_EQ(order[0], AuthProperties::kIdTokenType);
-  EXPECT_EQ(order[1], AuthProperties::kAccessTokenType);
-  EXPECT_EQ(order[2], AuthProperties::kJwtTokenType);
-  EXPECT_EQ(order[3], AuthProperties::kSaml2TokenType);
-  EXPECT_EQ(order[4], AuthProperties::kSaml1TokenType);
-}
-
-TEST(OAuth2UtilTest, FindPreferredTypedTokenUsesPreferenceOrder) {
-  std::unordered_map<std::string, std::string> credentials = {
-      {AuthProperties::kAccessTokenType, "access-token"},
-      {AuthProperties::kJwtTokenType, "jwt-token"},
-      {AuthProperties::kIdTokenType, "id-token"},
-      {AuthProperties::kSaml2TokenType, "saml2-token"},
-      {AuthProperties::kSaml1TokenType, "saml1-token"},
-  };
-
-  auto token = FindPreferredTypedToken(credentials);
-  ASSERT_TRUE(token.has_value());
-  EXPECT_EQ(token->token_type, AuthProperties::kIdTokenType);
-  EXPECT_EQ(token->token, "id-token");
-
-  credentials.erase(AuthProperties::kIdTokenType);
-  token = FindPreferredTypedToken(credentials);
-  ASSERT_TRUE(token.has_value());
-  EXPECT_EQ(token->token_type, AuthProperties::kAccessTokenType);
-  EXPECT_EQ(token->token, "access-token");
-
-  credentials.clear();
-  EXPECT_FALSE(FindPreferredTypedToken(credentials).has_value());
-}
-
-TEST(OAuth2UtilTest, FilterTableSessionPropertiesUsesAllowList) {
-  std::unordered_map<std::string, std::string> properties = {
-      {AuthProperties::kToken.key(), "bearer-token"},
-      {AuthProperties::kCredential.key(), "client:secret"},
-      {AuthProperties::kScope.key(), "catalog"},
-      {AuthProperties::kAccessTokenType, "access-token"},
-      {AuthProperties::kRefreshTokenType, "refresh-token"},
-      {AuthProperties::kIdTokenType, "id-token"},
-      {AuthProperties::kJwtTokenType, "jwt-token"},
-      {AuthProperties::kSaml2TokenType, "saml2-token"},
-      {AuthProperties::kSaml1TokenType, "saml1-token"},
-      {"unrelated", "value"},
-  };
-
-  auto filtered = FilterTableSessionProperties(properties);
-  EXPECT_EQ(filtered.size(), 6);
-  EXPECT_EQ(filtered.at(AuthProperties::kToken.key()), "bearer-token");
-  EXPECT_EQ(filtered.at(AuthProperties::kAccessTokenType), "access-token");
-  EXPECT_EQ(filtered.at(AuthProperties::kIdTokenType), "id-token");
-  EXPECT_EQ(filtered.at(AuthProperties::kJwtTokenType), "jwt-token");
-  EXPECT_EQ(filtered.at(AuthProperties::kSaml2TokenType), "saml2-token");
-  EXPECT_EQ(filtered.at(AuthProperties::kSaml1TokenType), "saml1-token");
-  EXPECT_FALSE(filtered.contains(AuthProperties::kCredential.key()));
-  EXPECT_FALSE(filtered.contains(AuthProperties::kScope.key()));
-  EXPECT_FALSE(filtered.contains(AuthProperties::kRefreshTokenType));
-  EXPECT_FALSE(filtered.contains("unrelated"));
-}
-
-TEST(OAuth2UtilTest, BuildsTokenExchangeFormWithoutActor) {
-  TokenExchangeRequest request{
-      .oauth2_server_uri = "https://auth.example.com/token",
-      .subject =
-          {
-              .token_type = AuthProperties::kIdTokenType,
-              .token = "subject-token",
-          },
-      .scope = "catalog",
-      .optional_oauth_params =
-          {
-              {AuthProperties::kAudience.key(), "catalog-audience"},
-              {AuthProperties::kResource.key(), "catalog-resource"},
-          },
-  };
-
-  ICEBERG_UNWRAP_OR_FAIL(auto form_data, BuildTokenExchangeForm(request));
-  EXPECT_EQ(form_data.size(), 6);
-  EXPECT_EQ(form_data.at("grant_type"),
-            "urn:ietf:params:oauth:grant-type:token-exchange");
-  EXPECT_EQ(form_data.at("scope"), "catalog");
-  EXPECT_EQ(form_data.at("subject_token"), "subject-token");
-  EXPECT_EQ(form_data.at("subject_token_type"), AuthProperties::kIdTokenType);
-  EXPECT_EQ(form_data.at("audience"), "catalog-audience");
-  EXPECT_EQ(form_data.at("resource"), "catalog-resource");
-  EXPECT_FALSE(form_data.contains("actor_token"));
-  EXPECT_FALSE(form_data.contains("actor_token_type"));
-}
-
-TEST(OAuth2UtilTest, BuildsTokenExchangeFormWithActor) {
-  TokenExchangeRequest request{
-      .subject =
-          {
-              .token_type = AuthProperties::kJwtTokenType,
-              .token = "subject-token",
-          },
-      .actor =
-          OAuth2Token{
-              .token_type = AuthProperties::kAccessTokenType,
-              .token = "actor-token",
-          },
-      .scope = "catalog",
-  };
-
-  ICEBERG_UNWRAP_OR_FAIL(auto form_data, BuildTokenExchangeForm(request));
-  EXPECT_EQ(form_data.size(), 6);
-  EXPECT_EQ(form_data.at("actor_token"), "actor-token");
-  EXPECT_EQ(form_data.at("actor_token_type"), AuthProperties::kAccessTokenType);
-}
-
-TEST(OAuth2UtilTest, TokenExchangeOptionalParamsUseLastValue) {
-  TokenExchangeRequest request{
-      .subject =
-          {
-              .token_type = AuthProperties::kAccessTokenType,
-              .token = "subject-token",
-          },
-      .scope = "catalog",
-      .optional_oauth_params = {{"scope", "custom-scope"}},
-  };
-
-  ICEBERG_UNWRAP_OR_FAIL(auto form_data, BuildTokenExchangeForm(request));
-  EXPECT_EQ(form_data.at("scope"), "custom-scope");
-}
-
-TEST(OAuth2UtilTest, RejectsInvalidTokenExchangeSubject) {
-  TokenExchangeRequest request{
-      .subject = {.token_type = "invalid-token-type", .token = "subject-token"},
-  };
-
-  auto invalid_type = BuildTokenExchangeForm(request);
-  EXPECT_THAT(invalid_type, IsError(ErrorKind::kInvalidArgument));
-  EXPECT_THAT(invalid_type, HasErrorMessage("Invalid OAuth2 subject token type"));
-
-  request.subject = {
-      .token_type = AuthProperties::kAccessTokenType,
-      .token = "",
-  };
-  auto empty_token = BuildTokenExchangeForm(request);
-  EXPECT_THAT(empty_token, IsError(ErrorKind::kInvalidArgument));
-  EXPECT_THAT(empty_token, HasErrorMessage("subject token must not be empty"));
-}
-
-TEST(OAuth2UtilTest, RejectsInvalidTokenExchangeActor) {
-  TokenExchangeRequest request{
-      .subject =
-          {
-              .token_type = AuthProperties::kAccessTokenType,
-              .token = "subject-token",
-          },
-      .actor = OAuth2Token{.token_type = "invalid-token-type", .token = "actor-token"},
-  };
-
-  auto invalid_type = BuildTokenExchangeForm(request);
-  EXPECT_THAT(invalid_type, IsError(ErrorKind::kInvalidArgument));
-  EXPECT_THAT(invalid_type, HasErrorMessage("Invalid OAuth2 actor token type"));
-
-  request.actor = OAuth2Token{
-      .token_type = AuthProperties::kAccessTokenType,
-      .token = "",
-  };
-  auto empty_token = BuildTokenExchangeForm(request);
-  EXPECT_THAT(empty_token, IsError(ErrorKind::kInvalidArgument));
-  EXPECT_THAT(empty_token, HasErrorMessage("actor token must not be empty"));
-}
 
 TEST(AuthPropertiesTest, ResolvesDefaultOAuth2ServerUri) {
   ICEBERG_UNWRAP_OR_FAIL(
@@ -272,14 +85,14 @@ TEST(AuthPropertiesTest, ResolvesDefaultOAuth2ServerUri) {
             "https://catalog.example.com/api/v1/oauth/tokens");
 }
 
-TEST(AuthPropertiesTest, ResolvesEmptyOAuth2ServerUriToDefault) {
+TEST(AuthPropertiesTest, PreservesEmptyOAuth2ServerUri) {
   ICEBERG_UNWRAP_OR_FAIL(
       auto config, AuthProperties::FromProperties({
                        {RestCatalogProperties::kUri.key(), "https://catalog.example.com"},
                        {AuthProperties::kOAuth2ServerUri.key(), ""},
                    }));
 
-  EXPECT_EQ(config.oauth2_server_uri(), "https://catalog.example.com/v1/oauth/tokens");
+  EXPECT_TRUE(config.oauth2_server_uri().empty());
 }
 
 TEST(AuthPropertiesTest, ResolvesExplicitRelativeOAuth2ServerUri) {
@@ -290,7 +103,7 @@ TEST(AuthPropertiesTest, ResolvesExplicitRelativeOAuth2ServerUri) {
           {AuthProperties::kOAuth2ServerUri.key(), "oauth/token/"},
       }));
 
-  EXPECT_EQ(config.oauth2_server_uri(), "https://catalog.example.com/api/oauth/token");
+  EXPECT_EQ(config.oauth2_server_uri(), "https://catalog.example.com/api/oauth/token/");
 }
 
 TEST(AuthPropertiesTest, PreservesExplicitAbsoluteOAuth2ServerUri) {
@@ -313,15 +126,25 @@ TEST(AuthPropertiesTest, PreservesRelativeOAuth2ServerUriWithoutCatalogUri) {
   EXPECT_EQ(config.oauth2_server_uri(), "oauth/token");
 }
 
-TEST(AuthPropertiesTest, ResolvesExplicitAbsolutePathOAuth2ServerUri) {
+TEST(AuthPropertiesTest, PreservesAbsolutePathWithoutCatalogUri) {
+  ICEBERG_UNWRAP_OR_FAIL(auto config,
+                         AuthProperties::FromProperties({
+                             {AuthProperties::kOAuth2ServerUri.key(), "/oauth/token"},
+                         }));
+
+  EXPECT_EQ(config.oauth2_server_uri(), "/oauth/token");
+}
+
+TEST(AuthPropertiesTest, ResolvesOAuth2ServerUriWithLeadingSlash) {
   ICEBERG_UNWRAP_OR_FAIL(
       auto config,
       AuthProperties::FromProperties({
-          {RestCatalogProperties::kUri.key(), "https://catalog.example.com/"},
+          {RestCatalogProperties::kUri.key(), "https://catalog.example.com/api/"},
           {AuthProperties::kOAuth2ServerUri.key(), "/v1/oauth/tokens"},
       }));
 
-  EXPECT_EQ(config.oauth2_server_uri(), "https://catalog.example.com/v1/oauth/tokens");
+  EXPECT_EQ(config.oauth2_server_uri(),
+            "https://catalog.example.com/api/v1/oauth/tokens");
 }
 
 // Verifies loading NoopAuthManager with explicit "none" auth type
@@ -371,7 +194,7 @@ TEST_F(AuthManagerTest, HttpHeadersAreCaseInsensitiveSingleValueMap) {
 }
 
 TEST_F(AuthManagerTest, DefaultSessionPreservesRequestAuthorizationHeader) {
-  auto session = AuthSession::MakeDefault(AuthHeaders("parent-token"));
+  auto session = AuthSession::MakeDefault(OAuth2Util::AuthHeaders("parent-token"));
 
   ICEBERG_UNWRAP_OR_FAIL(
       auto authenticated,
@@ -397,8 +220,9 @@ TEST_F(AuthManagerTest, OAuth2SessionPreservesRequestAuthorizationHeader) {
 
   EXPECT_EQ(authenticated.headers.at("Authorization"), "Basic credentials");
 
-  ASSERT_TRUE(session->OAuth2Info().has_value());
-  EXPECT_EQ(session->OAuth2Info()->issued_token_type, AuthProperties::kAccessTokenType);
+  auto info = session->OAuth2Info();
+  ASSERT_TRUE(info.has_value());
+  EXPECT_EQ(info->issued_token_type, AuthProperties::kAccessTokenType);
 }
 
 TEST_F(AuthManagerTest, OAuth2SessionExposesMetadata) {
@@ -428,8 +252,8 @@ TEST_F(AuthManagerTest, OAuth2SessionExposesMetadata) {
 TEST_F(AuthManagerTest, HttpClientRejectsParamsWhenUrlAlreadyHasQuery) {
   auto session = AuthSession::MakeDefault({});
   auto result =
-      client_.Get("http://127.0.0.1/v1/config?existing=true", {{"warehouse", "prod"}},
-                  /*headers=*/{}, *rest::DefaultErrorHandler::Instance(), *session);
+      client_->Get("http://127.0.0.1/v1/config?existing=true", {{"warehouse", "prod"}},
+                   /*headers=*/{}, *rest::DefaultErrorHandler::Instance(), *session);
 
   EXPECT_THAT(result, IsError(ErrorKind::kInvalidArgument));
   EXPECT_THAT(result, HasErrorMessage("must not contain a query string"));
@@ -550,7 +374,8 @@ TEST_F(AuthManagerTest, RegisterCustomAuthManager) {
         class CustomAuthManager : public AuthManager {
          public:
           Result<std::shared_ptr<AuthSession>> CatalogSession(
-              HttpClient&, const std::unordered_map<std::string, std::string>&) override {
+              std::shared_ptr<HttpClient>,
+              const std::unordered_map<std::string, std::string>&) override {
             return AuthSession::MakeDefault({{"X-Custom-Auth", "custom-value"}});
           }
         };
@@ -838,12 +663,12 @@ TEST_F(AuthManagerTest, OAuthTokenResponseNATokenType) {
   EXPECT_EQ(result->token_type, "N_A");
 }
 
-// ---- ExpiresAtMillis tests ----
+// ---- OAuth2Util expiry tests ----
 
 TEST_F(AuthManagerTest, ExpiresAtMillisValidJwt) {
   std::string token = MakeJwt(R"({"sub":"user","exp":1700000000})");
 
-  auto result = ExpiresAtMillis(token);
+  auto result = OAuth2Util::ExpiresAtMillis(token);
 
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(result.value(), 1700000000LL * 1000);
@@ -863,7 +688,7 @@ TEST_F(AuthManagerTest, ExpiresAtMillisInvalidTokensReturnNullopt) {
   };
 
   for (const auto& token : tokens) {
-    EXPECT_FALSE(ExpiresAtMillis(token).has_value()) << token;
+    EXPECT_FALSE(OAuth2Util::ExpiresAtMillis(token).has_value()) << token;
   }
 }
 
@@ -942,10 +767,10 @@ TEST(TokenRefreshSchedulerTest, CancelInvalidHandleIsNoop) {
   scheduler.Shutdown();
 }
 
-// ---- OAuth2AuthSession tests ----
+// ---- OAuth2Session tests ----
 
-TEST(OAuth2AuthSessionTest, InitialTokenIsUsed) {
-  HttpClient client({});
+TEST(OAuth2SessionTest, InitialTokenIsUsed) {
+  auto client = std::make_shared<HttpClient>();
   OAuthTokenResponse token_response;
   token_response.access_token = "initial-token-123";
   token_response.token_type = "bearer";
@@ -964,6 +789,37 @@ TEST(OAuth2AuthSessionTest, InitialTokenIsUsed) {
   EXPECT_EQ(auth_result.value().headers.at("Authorization"), "Bearer initial-token-123");
 
   session->Close();
+}
+
+TEST(OAuth2SessionTest, InitTokenExpirationUsesRequestStartTime) {
+  OAuthTokenResponse token_response{
+      .access_token = "opaque-token",
+      .token_type = "bearer",
+      .expires_in_secs = 60,
+  };
+  auto request_started_at = std::chrono::steady_clock::time_point{};
+
+  auto expiration = internal::TokenExpirationTime(token_response, request_started_at);
+
+  ASSERT_TRUE(expiration.has_value());
+  EXPECT_EQ(*expiration, request_started_at + std::chrono::seconds(60));
+}
+
+TEST(OAuth2SessionTest, JwtExpirationTakesPriorityOverExpiresIn) {
+  OAuthTokenResponse token_response{
+      .access_token = MakeJwt(R"({"exp":120})"),
+      .token_type = "bearer",
+      .expires_in_secs = 60,
+  };
+  auto request_started_at = std::chrono::steady_clock::time_point{};
+  auto now_system = std::chrono::system_clock::time_point(std::chrono::seconds(100));
+  auto now_steady = std::chrono::steady_clock::time_point(std::chrono::seconds(50));
+
+  auto expiration = internal::TokenExpirationTime(token_response, request_started_at,
+                                                  now_system, now_steady);
+
+  ASSERT_TRUE(expiration.has_value());
+  EXPECT_EQ(*expiration, std::chrono::steady_clock::time_point(std::chrono::seconds(70)));
 }
 
 }  // namespace iceberg::rest::auth

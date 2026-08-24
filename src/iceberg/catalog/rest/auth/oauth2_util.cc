@@ -45,21 +45,14 @@ constexpr std::string_view kSubjectToken = "subject_token";
 constexpr std::string_view kSubjectTokenType = "subject_token_type";
 constexpr std::string_view kActorToken = "actor_token";
 constexpr std::string_view kActorTokenType = "actor_token_type";
+constexpr std::string_view kAuthorizationHeader = "Authorization";
+constexpr std::string_view kBearerPrefix = "Bearer ";
 
 Result<OAuthTokenResponse> ParseTokenResponse(const std::string& response_body) {
   ICEBERG_ASSIGN_OR_RAISE(auto json, FromJsonString(response_body));
   ICEBERG_ASSIGN_OR_RAISE(auto token_response, FromJson<OAuthTokenResponse>(json));
   ICEBERG_RETURN_UNEXPECTED(token_response.Validate());
   return token_response;
-}
-
-}  // namespace
-
-std::unordered_map<std::string, std::string> AuthHeaders(const std::string& token) {
-  if (!token.empty()) {
-    return {{std::string(kAuthorizationHeader), std::string(kBearerPrefix) + token}};
-  }
-  return {};
 }
 
 bool IsValidTokenType(std::string_view token_type) {
@@ -71,94 +64,73 @@ bool IsValidTokenType(std::string_view token_type) {
          token_type == AuthProperties::kJwtTokenType;
 }
 
-std::array<std::string_view, 5> TokenPreferenceOrder() {
-  return {
-      std::string_view(AuthProperties::kIdTokenType),
-      std::string_view(AuthProperties::kAccessTokenType),
-      std::string_view(AuthProperties::kJwtTokenType),
-      std::string_view(AuthProperties::kSaml2TokenType),
-      std::string_view(AuthProperties::kSaml1TokenType),
-  };
+}  // namespace
+
+std::unordered_map<std::string, std::string> OAuth2Util::AuthHeaders(
+    const std::string& token) {
+  if (!token.empty()) {
+    return {{std::string(kAuthorizationHeader), std::string(kBearerPrefix) + token}};
+  }
+  return {};
 }
 
-std::optional<OAuth2Token> FindPreferredTypedToken(
-    const std::unordered_map<std::string, std::string>& credentials) {
-  for (std::string_view token_type : TokenPreferenceOrder()) {
-    auto token_it = credentials.find(std::string(token_type));
-    if (token_it != credentials.end()) {
-      return OAuth2Token{
-          .token_type = token_it->first,
-          .token = token_it->second,
-      };
-    }
-  }
-  return std::nullopt;
-}
-
-std::unordered_map<std::string, std::string> FilterTableSessionProperties(
-    const std::unordered_map<std::string, std::string>& properties) {
-  std::unordered_map<std::string, std::string> filtered;
-  auto token_it = properties.find(AuthProperties::kToken.key());
-  if (token_it != properties.end()) {
-    filtered.emplace(token_it->first, token_it->second);
-  }
-  for (std::string_view token_type : TokenPreferenceOrder()) {
-    auto token_it = properties.find(std::string(token_type));
-    if (token_it != properties.end()) {
-      filtered.emplace(token_it->first, token_it->second);
-    }
-  }
-  return filtered;
-}
-
-Result<std::unordered_map<std::string, std::string>> BuildTokenExchangeForm(
-    const TokenExchangeRequest& request) {
-  if (request.subject.token.empty()) {
+Result<std::unordered_map<std::string, std::string>> OAuth2Util::TokenExchangeRequest(
+    const std::string& subject_token, const std::string& subject_token_type,
+    const std::optional<std::string>& actor_token,
+    const std::optional<std::string>& actor_token_type, const std::string& scope,
+    const std::unordered_map<std::string, std::string>& optional_params) {
+  if (subject_token.empty()) {
     return InvalidArgument("OAuth2 subject token must not be empty");
   }
-  if (!IsValidTokenType(request.subject.token_type)) {
-    return InvalidArgument("Invalid OAuth2 subject token type: '{}'",
-                           request.subject.token_type);
+  if (!IsValidTokenType(subject_token_type)) {
+    return InvalidArgument("Invalid OAuth2 subject token type: '{}'", subject_token_type);
   }
-  if (request.actor.has_value()) {
-    if (request.actor->token.empty()) {
+  if (actor_token.has_value()) {
+    if (actor_token->empty()) {
       return InvalidArgument("OAuth2 actor token must not be empty");
     }
-    if (!IsValidTokenType(request.actor->token_type)) {
+    if (!actor_token_type.has_value() || !IsValidTokenType(*actor_token_type)) {
       return InvalidArgument("Invalid OAuth2 actor token type: '{}'",
-                             request.actor->token_type);
+                             actor_token_type.value_or(""));
     }
   }
 
   std::unordered_map<std::string, std::string> form_data{
       {std::string(kGrantType), std::string(kTokenExchange)},
-      {std::string(kScope), request.scope},
-      {std::string(kSubjectToken), request.subject.token},
-      {std::string(kSubjectTokenType), request.subject.token_type},
+      {std::string(kScope), scope},
+      {std::string(kSubjectToken), subject_token},
+      {std::string(kSubjectTokenType), subject_token_type},
   };
-  if (request.actor.has_value()) {
-    form_data.emplace(kActorToken, request.actor->token);
-    form_data.emplace(kActorTokenType, request.actor->token_type);
+  if (actor_token.has_value()) {
+    form_data.emplace(kActorToken, *actor_token);
+    form_data.emplace(kActorTokenType, *actor_token_type);
   }
-  for (const auto& [key, value] : request.optional_oauth_params) {
+  for (const auto& [key, value] : optional_params) {
     form_data.insert_or_assign(key, value);
   }
   return form_data;
 }
 
-Result<OAuthTokenResponse> ExchangeToken(
+Result<OAuthTokenResponse> OAuth2Util::ExchangeToken(
     HttpClient& client, AuthSession& session,
     const std::unordered_map<std::string, std::string>& extra_headers,
-    const TokenExchangeRequest& request) {
-  ICEBERG_ASSIGN_OR_RAISE(auto form_data, BuildTokenExchangeForm(request));
+    const std::string& subject_token, const std::string& subject_token_type,
+    const std::optional<std::string>& actor_token,
+    const std::optional<std::string>& actor_token_type, const std::string& scope,
+    const std::string& oauth2_server_uri,
+    const std::unordered_map<std::string, std::string>& optional_params) {
   ICEBERG_ASSIGN_OR_RAISE(
-      auto response, client.PostForm(request.oauth2_server_uri, form_data, extra_headers,
-                                     *OAuthErrorHandler::Instance(), session));
+      auto form_data, TokenExchangeRequest(subject_token, subject_token_type, actor_token,
+                                           actor_token_type, scope, optional_params));
+  ICEBERG_ASSIGN_OR_RAISE(auto response,
+                          client.PostForm(oauth2_server_uri, form_data, extra_headers,
+                                          *OAuthErrorHandler::Instance(), session));
   return ParseTokenResponse(response.body());
 }
 
-Result<OAuthTokenResponse> FetchToken(HttpClient& client, AuthSession& session,
-                                      const AuthProperties& properties) {
+Result<OAuthTokenResponse> OAuth2Util::FetchToken(HttpClient& client,
+                                                  AuthSession& session,
+                                                  const AuthProperties& properties) {
   std::unordered_map<std::string, std::string> form_data{
       {std::string(kGrantType), std::string(kClientCredentials)},
       {std::string(kClientSecret), properties.client_secret()},
@@ -178,7 +150,7 @@ Result<OAuthTokenResponse> FetchToken(HttpClient& client, AuthSession& session,
   return ParseTokenResponse(response.body());
 }
 
-std::optional<int64_t> ExpiresAtMillis(std::string_view token) {
+std::optional<int64_t> OAuth2Util::ExpiresAtMillis(std::string_view token) {
   if (token.empty()) {
     return std::nullopt;
   }
