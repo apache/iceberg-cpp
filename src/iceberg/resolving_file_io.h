@@ -38,6 +38,9 @@
 namespace iceberg {
 
 /// \brief FileIO that resolves and caches implementations by registry name.
+///
+/// Vended credentials are forwarded to every resolved implementation that
+/// supports them; each applies what it understands.
 class ICEBERG_EXPORT ResolvingFileIO final : public FileIO,
                                              public SupportsStorageCredentials {
  public:
@@ -58,7 +61,7 @@ class ICEBERG_EXPORT ResolvingFileIO final : public FileIO,
   Status SetStorageCredentials(
       const std::vector<StorageCredential>& storage_credentials) override;
 
-  const std::vector<StorageCredential>& credentials() const override;
+  std::vector<StorageCredential> credentials() const override;
 
   SupportsStorageCredentials* AsSupportsStorageCredentials() override { return this; }
 
@@ -67,8 +70,8 @@ class ICEBERG_EXPORT ResolvingFileIO final : public FileIO,
   Result<std::shared_ptr<FileIO>> FileIOForPath(std::string_view location);
 
   std::unordered_map<std::string, std::string> properties_;
-  // Guards lazy resolution and credential refresh.
-  std::shared_mutex mutex_;
+  // Guards lazy resolution and credential state.
+  mutable std::shared_mutex mutex_;
   std::vector<StorageCredential> storage_credentials_;
   std::unordered_map<std::string, std::shared_ptr<FileIO>, StringHash, StringEqual>
       io_by_name_;
