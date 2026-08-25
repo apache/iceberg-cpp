@@ -187,12 +187,12 @@ TEST_F(ArrowS3FileIOTest, SkipsNonS3CredentialPrefix) {
   EXPECT_FALSE(HasWarning(*logger));
 }
 
-// Every prefix form this FileIO claims to serve must actually be applied: a
-// credential that is silently skipped leaves S3 access on the default
-// credentials, which only surfaces much later as an auth error.
-TEST_F(ArrowS3FileIOTest, AppliesEveryS3CompatibleCredentialPrefix) {
-  for (std::string_view prefix : {"s3", "s3://bucket/table", "s3a://bucket/table",
-                                  "s3n://bucket/table", "oss://bucket/table"}) {
+// Every prefix form this FileIO serves must be accepted without the warning;
+// real selection is covered by AppliesOssCredentialInRealRoundTrip.
+TEST_F(ArrowS3FileIOTest, AcceptsEveryS3CompatibleCredentialPrefix) {
+  for (std::string_view prefix :
+       {"s3", "s3://bucket/table", "s3a://bucket/table", "s3n://bucket/table",
+        "oss://bucket/table", "OSS://bucket/table"}) {
     SCOPED_TRACE(prefix);
     auto result = MakeS3FileIO({});
     ASSERT_THAT(result, IsOk());
@@ -217,10 +217,12 @@ TEST_F(ArrowS3FileIOTest, WarnsWhenNoCredentialApplies) {
   ASSERT_NE(credentialed, nullptr);
 
   // Succeeds (S3 falls back to the default credentials) but must not be silent.
+  // Bare `S3` is foreign: only URI-form prefixes match case-insensitively.
   auto logger = std::make_shared<CapturingLogger>();
   ScopedDefaultLogger scoped(logger);
   std::vector<StorageCredential> credentials = {
-      {.prefix = "gs://bucket/table", .config = {{"k", "v"}}}};
+      {.prefix = "gs://bucket/table", .config = {{"k", "v"}}},
+      {.prefix = "S3", .config = {{"k", "v"}}}};
   EXPECT_THAT(credentialed->SetStorageCredentials(credentials), IsOk());
   EXPECT_EQ(credentialed->credentials(), credentials);
   EXPECT_TRUE(HasWarning(*logger));
@@ -292,6 +294,48 @@ TEST_F(ArrowS3FileIOTest, LongestCredentialPrefix) {
               IsOk());
   EXPECT_THAT(CheckReadWrite(*io, object_uri, "hello s3 with vended credentials"),
               IsOk());
+}
+
+// The credential is vended under the oss spelling and the object addressed as
+// `s3://`, so they only meet through canonicalization — and every other path
+// to authentication is broken. (rest_arrow_file_io_test covers the mirrored
+// direction.)
+TEST_F(ArrowS3FileIOTest, AppliesOssCredentialInRealRoundTrip) {
+  if (!HasIntegrationEnv()) {
+    GTEST_SKIP() << "Set ICEBERG_TEST_S3_URI to enable S3 IO test";
+  }
+
+  auto properties = PropertiesFromEnv();
+  if (!properties.contains(std::string(S3Properties::kAccessKeyId)) ||
+      !properties.contains(std::string(S3Properties::kSecretAccessKey))) {
+    GTEST_SKIP() << "Set AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY to enable "
+                    "credential routing test";
+  }
+
+  auto bad_defaults = properties;
+  for (const auto& [key, value] : BadS3Credentials()) {
+    bad_defaults.insert_or_assign(key, value);
+  }
+  auto io_res = MakeS3FileIO(std::move(bad_defaults));
+  ASSERT_THAT(io_res, IsOk());
+  auto io = std::move(io_res).value();
+  auto* credentialed = io->AsSupportsStorageCredentials();
+  ASSERT_NE(credentialed, nullptr);
+
+  constexpr std::string_view object_name = "iceberg_oss_credential_test.txt";
+  const auto object_uri = ObjectUri(object_name);
+  const auto scheme_end = object_uri.find("://");
+  ASSERT_NE(scheme_end, std::string::npos) << "ICEBERG_TEST_S3_URI must carry a scheme";
+  // Both spellings are forced, so they cross whatever scheme the env URI uses.
+  const auto oss_spelling = std::string("oss").append(object_uri.substr(scheme_end));
+  const auto oss_prefix =
+      oss_spelling.substr(0, oss_spelling.size() - object_name.size());
+  const auto s3_uri = std::string("s3").append(object_uri.substr(scheme_end));
+
+  EXPECT_THAT(credentialed->SetStorageCredentials(
+                  {{.prefix = oss_prefix, .config = std::move(properties)}}),
+              IsOk());
+  EXPECT_THAT(CheckReadWrite(*io, s3_uri, "hello oss with vended credentials"), IsOk());
 }
 
 #if ICEBERG_S3_ENABLED

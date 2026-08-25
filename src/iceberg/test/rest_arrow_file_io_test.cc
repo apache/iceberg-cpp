@@ -21,7 +21,6 @@
 /// \brief Covers REST -> ResolvingFileIO -> registry -> Arrow FileIO against the
 /// real registered implementations, which mock delegates cannot exercise.
 
-#include <algorithm>
 #include <cstdlib>
 #include <memory>
 #include <optional>
@@ -38,9 +37,7 @@
 #include "iceberg/arrow/arrow_io_util.h"
 #include "iceberg/arrow/arrow_register.h"
 #include "iceberg/catalog/rest/rest_file_io.h"
-#include "iceberg/logging/logger.h"
 #include "iceberg/storage_credential.h"
-#include "iceberg/test/logging_test_helpers.h"
 #include "iceberg/test/matchers.h"
 #include "iceberg/test/temp_file_test_base.h"
 
@@ -69,12 +66,6 @@ TEST_F(RestArrowFileIOTest, ReadsBackWhatItWroteThroughRealLocalFileIO) {
 }
 
 #if ICEBERG_S3_ENABLED
-
-bool HasWarning(const CapturingLogger& logger) {
-  const auto records = logger.records();
-  return std::ranges::any_of(
-      records, [](const LogMessage& record) { return record.level == LogLevel::kWarn; });
-}
 
 std::optional<std::string> GetEnvIfSet(const char* key) {
   const char* value = std::getenv(key);
@@ -110,8 +101,16 @@ class ScopedScrubbedAwsCredentialEnv {
   }
 
  private:
-  static constexpr const char* kNames[] = {"AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY",
-                                           "AWS_SESSION_TOKEN"};
+  // Beyond the static keys, everything the default chain could fall back to:
+  // profile files, web-identity roles, container credentials.
+  static constexpr const char* kNames[] = {"AWS_ACCESS_KEY_ID",
+                                           "AWS_SECRET_ACCESS_KEY",
+                                           "AWS_SESSION_TOKEN",
+                                           "AWS_PROFILE",
+                                           "AWS_SHARED_CREDENTIALS_FILE",
+                                           "AWS_WEB_IDENTITY_TOKEN_FILE",
+                                           "AWS_ROLE_ARN",
+                                           "AWS_CONTAINER_CREDENTIALS_RELATIVE_URI"};
 
   static void Set(const char* name, const char* value) {
 #  ifdef _WIN32
@@ -149,13 +148,20 @@ TEST_F(RestArrowFileIOTest, ReadsBackWhatItWroteThroughAnOssLocation) {
 
   const auto access_key = GetEnvIfSet("AWS_ACCESS_KEY_ID");
   const auto secret_key = GetEnvIfSet("AWS_SECRET_ACCESS_KEY");
-  ASSERT_TRUE(access_key.has_value() && secret_key.has_value())
-      << "Set AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY alongside "
-         "ICEBERG_TEST_S3_URI";
+  if (!access_key.has_value() || !secret_key.has_value()) {
+    GTEST_SKIP() << "Set AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY alongside "
+                    "ICEBERG_TEST_S3_URI";
+  }
   std::unordered_map<std::string, std::string> credential_config = {
       {"s3.access-key-id", *access_key}, {"s3.secret-access-key", *secret_key}};
   if (const auto session_token = GetEnvIfSet("AWS_SESSION_TOKEN")) {
     credential_config["s3.session-token"] = *session_token;
+  }
+  if (const auto endpoint = GetEnvIfSet("ICEBERG_TEST_S3_ENDPOINT")) {
+    credential_config["s3.endpoint"] = *endpoint;
+  }
+  if (const auto region = GetEnvIfSet("AWS_REGION")) {
+    credential_config["client.region"] = *region;
   }
 
   ScopedScrubbedAwsCredentialEnv scrubbed;
@@ -173,22 +179,6 @@ TEST_F(RestArrowFileIOTest, ReadsBackWhatItWroteThroughAnOssLocation) {
   EXPECT_THAT(io.value()->ReadFile(object_uri, std::nullopt),
               HasValue(::testing::Eq(std::string(kContent))));
   EXPECT_THAT(io.value()->DeleteFile(object_uri), IsOk());
-}
-
-TEST_F(RestArrowFileIOTest, AppliesOssCredentialThroughRealArrowS3FileIO) {
-  auto logger = std::make_shared<CapturingLogger>();
-  ScopedDefaultLogger scoped(logger);
-
-  auto io =
-      MakeTableFileIO({{"warehouse", "logical_warehouse_name"}}, /*table_config=*/{},
-                      {{.prefix = "oss://bucket/table", .config = {{"k", "v"}}}});
-  ASSERT_THAT(io, IsOk());
-
-  // Opening only builds the delegate, so just the pre-network failure modes
-  // are asserted: kNotSupported for a routing break, the warning for a drop.
-  auto input = io.value()->NewInputFile("oss://bucket/table/data/file.parquet");
-  EXPECT_THAT(input, ::testing::Not(IsError(ErrorKind::kNotSupported)));
-  EXPECT_FALSE(HasWarning(*logger));
 }
 
 #endif  // ICEBERG_S3_ENABLED

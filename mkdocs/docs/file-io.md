@@ -64,8 +64,14 @@ each file location's scheme.
 | `s3.secret-access-key` | `password` | Static secret access key |
 | `s3.session-token` | `AQoDYXdzEJr...` | Session token, for temporary credentials. Ignored unless both static keys are set |
 | `client.region` | `us-east-1` | Region to sign requests for |
-| `s3.endpoint` | `https://127.0.0.1:9000` | Endpoint to use instead of the AWS one |
-| `s3.path-style-access` | `true` | Address buckets as a path (`endpoint/bucket`) instead of a virtual host (`bucket.endpoint`). Only takes effect together with `s3.endpoint` |
+| `s3.endpoint` | `https://127.0.0.1:9000` | Endpoint to use instead of the AWS one. When absent, the `AWS_ENDPOINT_URL_S3` / `AWS_ENDPOINT_URL` environment variables are consulted |
+| `s3.path-style-access` | `true` | Address buckets as a path (`endpoint/bucket`) instead of a virtual host (`bucket.endpoint`). Only takes effect together with a custom endpoint |
+
+The following keys are specific to iceberg-cpp; they are not part of the Java
+Iceberg or REST specification property set:
+
+| Key | Example | Description |
+|---|---|---|
 | `s3.ssl.enabled` | `true` | Scheme to use for the endpoint, overriding the one it carries |
 | `s3.connect-timeout-ms` | `1000` | Connection timeout |
 | `s3.socket-timeout-ms` | `5000` | Request timeout. Ignored outside Windows and macOS |

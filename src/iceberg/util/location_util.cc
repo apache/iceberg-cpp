@@ -20,21 +20,27 @@
 #include "iceberg/util/location_util.h"
 
 #include <algorithm>
-#include <cctype>
 
 namespace iceberg {
 
 namespace {
 
+// ASCII by design: RFC 3986 restricts schemes to ASCII, and <cctype> is
+// locale-sensitive.
+constexpr bool IsAsciiAlpha(char c) {
+  return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z');
+}
+
+constexpr bool IsAsciiAlnum(char c) { return IsAsciiAlpha(c) || (c >= '0' && c <= '9'); }
+
 /// Whether `candidate` is a syntactically valid URI scheme (RFC 3986 section
 /// 3.1): a letter followed by letters, digits, `+`, `-` or `.`.
 bool IsValidScheme(std::string_view candidate) {
-  if (candidate.empty() || !std::isalpha(static_cast<unsigned char>(candidate.front()))) {
+  if (candidate.empty() || !IsAsciiAlpha(candidate.front())) {
     return false;
   }
   return std::ranges::all_of(candidate, [](char c) {
-    const auto uc = static_cast<unsigned char>(c);
-    return std::isalnum(uc) || c == '+' || c == '-' || c == '.';
+    return IsAsciiAlnum(c) || c == '+' || c == '-' || c == '.';
   });
 }
 

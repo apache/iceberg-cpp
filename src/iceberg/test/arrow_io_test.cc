@@ -321,7 +321,7 @@ TEST(ArrowRegisterTest, RegistersBuiltInFileIOs) {
   EXPECT_THAT(io.NewInputFile("file:///tmp/file"), IsOk());
 
 #if ICEBERG_S3_ENABLED
-  for (std::string_view scheme : {"s3", "s3a", "s3n"}) {
+  for (std::string_view scheme : {"s3", "s3a", "s3n", "oss"}) {
     EXPECT_THAT(FileIORegistry::Resolve(scheme),
                 HasValue(::testing::Eq(FileIORegistry::kArrowS3FileIO)));
   }

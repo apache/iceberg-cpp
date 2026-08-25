@@ -64,14 +64,31 @@ struct S3Properties {
 /// `oss` is served because the store is S3-compatible; see the FileIO docs.
 inline constexpr std::array<std::string_view, 4> kS3Schemes = {"s3", "s3a", "s3n", "oss"};
 
-/// \brief Return whether a normalized URI scheme is S3-compatible.
+/// \brief ASCII-only case-insensitive comparison: schemes are ASCII (RFC 3986),
+/// and <cctype> is locale-sensitive.
+inline constexpr bool EqualsIgnoreAsciiCase(std::string_view left,
+                                            std::string_view right) {
+  constexpr auto lower = [](char c) {
+    return (c >= 'A' && c <= 'Z') ? static_cast<char>(c - 'A' + 'a') : c;
+  };
+  return std::ranges::equal(left, right,
+                            [&](char a, char b) { return lower(a) == lower(b); });
+}
+
+/// \brief Return whether a URI scheme is S3-compatible; case-insensitive,
+/// because scheme routing is.
 inline constexpr bool IsS3Scheme(std::string_view scheme) {
-  return std::ranges::contains(kS3Schemes, scheme);
+  return std::ranges::any_of(kS3Schemes, [scheme](std::string_view alias) {
+    return EqualsIgnoreAsciiCase(scheme, alias);
+  });
 }
 
 /// \brief Return whether a storage credential prefix belongs to S3.
 ///
-/// Accepts the bare `s3` prefix or a URI prefix such as `s3a://bucket`.
+/// Accepts the bare `s3` prefix (exactly: a case variant would be stored as a
+/// key no canonicalized location can match) or a URI prefix such as
+/// `s3a://bucket`. Bare aliases such as `oss` are deliberately rejected,
+/// matching Java S3FileIO's credential filter.
 inline constexpr bool IsS3CredentialPrefix(std::string_view prefix) {
   if (prefix == S3Properties::kS3Schema) {
     return true;
