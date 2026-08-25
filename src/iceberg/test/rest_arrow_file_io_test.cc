@@ -75,18 +75,19 @@ std::optional<std::string> GetEnvIfSet(const char* key) {
   return std::string(value);
 }
 
-/// Addresses the store an S3 test reaches as `s3://` the way a catalog vending
-/// `oss://` locations would.
-/// Temporarily removes AWS credential variables, so nothing in the process
-/// environment can stand in for the vended credential under test.
+/// Neutralizes every ambient AWS credential source, so nothing in the process
+/// environment can stand in for the vended credential under test. The config
+/// files are overridden rather than unset: unsetting re-enables ~/.aws.
 class ScopedScrubbedAwsCredentialEnv {
  public:
   ScopedScrubbedAwsCredentialEnv() {
-    for (const char* name : kNames) {
-      const char* value = std::getenv(name);
-      saved_.emplace_back(
-          name, value != nullptr ? std::optional<std::string>(value) : std::nullopt);
+    for (const char* name : kUnset) {
+      Save(name);
       Unset(name);
+    }
+    for (const auto& [name, value] : kForced) {
+      Save(name);
+      Set(name, value);
     }
   }
 
@@ -101,16 +102,25 @@ class ScopedScrubbedAwsCredentialEnv {
   }
 
  private:
-  // Beyond the static keys, everything the default chain could fall back to:
-  // profile files, web-identity roles, container credentials.
-  static constexpr const char* kNames[] = {"AWS_ACCESS_KEY_ID",
+  static constexpr const char* kUnset[] = {"AWS_ACCESS_KEY_ID",
                                            "AWS_SECRET_ACCESS_KEY",
                                            "AWS_SESSION_TOKEN",
                                            "AWS_PROFILE",
-                                           "AWS_SHARED_CREDENTIALS_FILE",
+                                           "AWS_DEFAULT_PROFILE",
                                            "AWS_WEB_IDENTITY_TOKEN_FILE",
                                            "AWS_ROLE_ARN",
-                                           "AWS_CONTAINER_CREDENTIALS_RELATIVE_URI"};
+                                           "AWS_CONTAINER_CREDENTIALS_RELATIVE_URI",
+                                           "AWS_CONTAINER_CREDENTIALS_FULL_URI"};
+  static constexpr std::pair<const char*, const char*> kForced[] = {
+      {"AWS_SHARED_CREDENTIALS_FILE", "/nonexistent/scrubbed"},
+      {"AWS_CONFIG_FILE", "/nonexistent/scrubbed"},
+      {"AWS_EC2_METADATA_DISABLED", "true"}};
+
+  void Save(const char* name) {
+    const char* value = std::getenv(name);
+    saved_.emplace_back(
+        name, value != nullptr ? std::optional<std::string>(value) : std::nullopt);
+  }
 
   static void Set(const char* name, const char* value) {
 #  ifdef _WIN32
@@ -172,7 +182,11 @@ TEST_F(RestArrowFileIOTest, ReadsBackWhatItWroteThroughAnOssLocation) {
                             {{.prefix = "s3", .config = std::move(credential_config)}});
   ASSERT_THAT(io, IsOk());
 
-  const auto object_uri = AsOssUri(*base_uri) + "/iceberg_oss_scheme_round_trip.txt";
+  auto object_uri = AsOssUri(*base_uri);
+  if (!object_uri.ends_with('/')) {
+    object_uri += '/';
+  }
+  object_uri += "iceberg_oss_scheme_round_trip.txt";
   constexpr std::string_view kContent = "resolved and written through an oss:// location";
 
   ASSERT_THAT(io.value()->WriteFile(object_uri, kContent), IsOk());
