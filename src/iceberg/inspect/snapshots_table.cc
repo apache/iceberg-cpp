@@ -23,6 +23,7 @@
 #include <cstddef>
 #include <memory>
 #include <optional>
+#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -36,6 +37,7 @@
 #include "iceberg/schema_internal.h"
 #include "iceberg/snapshot.h"
 #include "iceberg/table.h"
+#include "iceberg/table_metadata.h"
 #include "iceberg/type.h"
 #include "iceberg/util/macros.h"
 
@@ -78,17 +80,17 @@ Status AppendSnapshot(ArrowRowBuilder& builder, const Snapshot& snapshot) {
 class SnapshotsTableStream {
  public:
   static Result<std::unique_ptr<SnapshotsTableStream>> Make(
-      std::shared_ptr<Table> table, const iceberg::Schema& schema) {
+      std::shared_ptr<const TableMetadata> metadata, const iceberg::Schema& schema) {
     ArrowSchema arrow_schema{};
     ICEBERG_RETURN_UNEXPECTED(ToArrowSchema(schema, &arrow_schema));
     return std::unique_ptr<SnapshotsTableStream>(
-        new SnapshotsTableStream(std::move(table), std::move(arrow_schema)));
+        new SnapshotsTableStream(std::move(metadata), std::move(arrow_schema)));
   }
 
   ~SnapshotsTableStream() { std::ignore = Close(); }
 
   Status Close() {
-    table_.reset();
+    metadata_.reset();
     if (arrow_schema_.release != nullptr) {
       ArrowSchemaRelease(&arrow_schema_);
     }
@@ -96,7 +98,10 @@ class SnapshotsTableStream {
   }
 
   Result<std::optional<ArrowArray>> Next() {
-    const auto& snapshots = table_->snapshots();
+    if (metadata_ == nullptr) [[unlikely]] {
+      return InvalidArgument("Cannot read from a closed snapshots table stream");
+    }
+    const auto& snapshots = metadata_->snapshots;
     if (next_snapshot_ == snapshots.size()) {
       return std::nullopt;
     }
@@ -129,10 +134,11 @@ class SnapshotsTableStream {
   }
 
  private:
-  SnapshotsTableStream(std::shared_ptr<Table> table, ArrowSchema arrow_schema)
-      : table_(std::move(table)), arrow_schema_(std::move(arrow_schema)) {}
+  SnapshotsTableStream(std::shared_ptr<const TableMetadata> metadata,
+                       ArrowSchema arrow_schema)
+      : metadata_(std::move(metadata)), arrow_schema_(std::move(arrow_schema)) {}
 
-  std::shared_ptr<Table> table_;
+  std::shared_ptr<const TableMetadata> metadata_;
   ArrowSchema arrow_schema_{};
   size_t next_snapshot_ = 0;
 };
@@ -165,8 +171,8 @@ Result<std::unique_ptr<SnapshotsTable>> SnapshotsTable::Make(
 }
 
 Result<ArrowArrayStream> SnapshotsTable::Scan() {
-  ICEBERG_ASSIGN_OR_RAISE(auto stream,
-                          SnapshotsTableStream::Make(source_table(), *schema()));
+  ICEBERG_ASSIGN_OR_RAISE(
+      auto stream, SnapshotsTableStream::Make(source_table()->metadata(), *schema()));
   return MakeArrowArrayStream(std::move(stream));
 }
 

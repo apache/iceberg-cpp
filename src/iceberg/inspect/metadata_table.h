@@ -75,8 +75,8 @@ class ICEBERG_EXPORT MetadataTable {
 
   /// \brief Scan the metadata table without time travel.
   ///
-  /// The caller owns the returned stream and must release it with
-  /// ArrowArrayStreamRelease.
+  /// The caller owns the returned stream and must invoke its `release` callback
+  /// when the stream is no longer needed.
   virtual Result<ArrowArrayStream> Scan() = 0;
 
  protected:
@@ -100,6 +100,9 @@ struct SnapshotSelection {
 };
 
 /// \brief Base interface for metadata tables that support time travel.
+///
+/// Keeping snapshot selection on this capability-specific interface prevents it from
+/// being exposed by metadata tables that do not support time travel.
 class ICEBERG_EXPORT TimeTravelMetadataTable : public MetadataTable {
  public:
   ~TimeTravelMetadataTable() override;

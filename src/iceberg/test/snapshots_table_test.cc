@@ -194,4 +194,36 @@ TEST_F(SnapshotsTableTest, ScanReturnsMultipleBatches) {
   EXPECT_EQ(batches[1]->num_rows(), 1);
 }
 
+TEST_F(SnapshotsTableTest, ScanUsesMetadataCapturedAtCreation) {
+  auto snapshot = MakeTestSnapshots().first;
+  std::vector<std::shared_ptr<Snapshot>> snapshots(1025, snapshot);
+  ICEBERG_UNWRAP_OR_FAIL(auto table, MakeTableWithSnapshots(std::move(snapshots),
+                                                            /*current_snapshot_id=*/1));
+  ICEBERG_UNWRAP_OR_FAIL(auto snapshots_table,
+                         MetadataTable::Make<SnapshotsTable>(table));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto stream, snapshots_table->Scan());
+  auto reader_result = ::arrow::ImportRecordBatchReader(&stream);
+  ASSERT_TRUE(reader_result.ok()) << reader_result.status().ToString();
+  auto reader = std::move(reader_result).ValueUnsafe();
+
+  auto first_batch_result = reader->Next();
+  ASSERT_TRUE(first_batch_result.ok()) << first_batch_result.status().ToString();
+  ASSERT_NE(*first_batch_result, nullptr);
+  EXPECT_EQ((*first_batch_result)->num_rows(), MetadataTable::kBatchSize);
+
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto refreshed_table,
+      MakeTableWithSnapshots({}, /*current_snapshot_id=*/kInvalidSnapshotId,
+                             "s3://bucket/refreshed-meta.json"));
+  EXPECT_CALL(*catalog_, LoadTable(table->name()))
+      .WillOnce(::testing::Return(refreshed_table));
+  ASSERT_THAT(table->Refresh(), IsOk());
+
+  auto second_batch_result = reader->Next();
+  ASSERT_TRUE(second_batch_result.ok()) << second_batch_result.status().ToString();
+  ASSERT_NE(*second_batch_result, nullptr);
+  EXPECT_EQ((*second_batch_result)->num_rows(), 1);
+}
+
 }  // namespace iceberg
