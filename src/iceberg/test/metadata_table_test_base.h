@@ -27,6 +27,7 @@
 #pragma once
 
 #include <memory>
+#include <string>
 #include <unordered_map>
 #include <utility>
 #include <vector>
@@ -143,7 +144,8 @@ class MetadataTableTestBase : public ::testing::Test {
 
   /// \brief Create a Table with the given snapshots.
   Result<std::shared_ptr<Table>> MakeTableWithSnapshots(
-      std::vector<std::shared_ptr<Snapshot>> snapshots, int64_t current_snapshot_id) {
+      std::vector<std::shared_ptr<Snapshot>> snapshots, int64_t current_snapshot_id,
+      std::string metadata_location = "s3://bucket/meta.json") {
     auto schema = std::make_shared<Schema>(
         std::vector<SchemaField>{SchemaField::MakeRequired(1, "id", int64()),
                                  SchemaField::MakeOptional(2, "name", string())},
@@ -157,7 +159,7 @@ class MetadataTableTestBase : public ::testing::Test {
     });
 
     TableIdentifier ident{.ns = Namespace{.levels = {"db"}}, .name = "test_table"};
-    return Table::Make(ident, metadata, "s3://bucket/meta.json", io_, catalog_);
+    return Table::Make(ident, metadata, std::move(metadata_location), io_, catalog_);
   }
 
   std::shared_ptr<MockFileIO> io_;
