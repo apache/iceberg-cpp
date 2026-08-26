@@ -27,10 +27,10 @@
 
 #include <nanoarrow/nanoarrow.h>
 
-#include "iceberg/arrow/nanoarrow_status_internal.h"
 #include "iceberg/arrow_c_data_guard_internal.h"
 #include "iceberg/arrow_c_data_util_internal.h"
 #include "iceberg/file_reader.h"
+#include "iceberg/nanoarrow_status_internal.h"
 #include "iceberg/result.h"
 #include "iceberg/schema.h"
 #include "iceberg/schema_field.h"

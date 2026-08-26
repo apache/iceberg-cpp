@@ -28,7 +28,6 @@
 
 #include <nanoarrow/nanoarrow.h>
 
-#include "iceberg/arrow/nanoarrow_status_internal.h"
 #include "iceberg/arrow_c_data_guard_internal.h"
 #include "iceberg/expression/expression.h"
 #include "iceberg/expression/projections.h"
@@ -38,6 +37,7 @@
 #include "iceberg/manifest/manifest_list.h"
 #include "iceberg/manifest/manifest_reader_internal.h"
 #include "iceberg/metrics/counter.h"
+#include "iceberg/nanoarrow_status_internal.h"
 #include "iceberg/partition_spec.h"
 #include "iceberg/schema.h"
 #include "iceberg/schema_field.h"

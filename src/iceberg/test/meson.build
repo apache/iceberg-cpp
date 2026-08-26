@@ -132,7 +132,7 @@ iceberg_tests = {
     },
     'puffin_test': {
         'sources': files(
-            'deletion_vector_writer_test.cc',
+            'dv_writer_test.cc',
             'puffin_format_test.cc',
             'puffin_json_test.cc',
             'puffin_reader_writer_test.cc',

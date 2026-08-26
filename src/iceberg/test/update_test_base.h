@@ -65,6 +65,7 @@ class UpdateTestBase : public ::testing::Test {
         static_cast<arrow::ArrowFileSystemFileIO&>(*file_io_).fs());
     ASSERT_TRUE(arrow_fs != nullptr);
     ASSERT_TRUE(arrow_fs->CreateDir(table_location_ + "/metadata").ok());
+    ASSERT_TRUE(arrow_fs->CreateDir(table_location_ + "/data").ok());
   }
 
   /// \brief Register a table from a metadata resource file.

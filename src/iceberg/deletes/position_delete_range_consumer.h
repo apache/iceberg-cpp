@@ -26,7 +26,7 @@
 #include <span>
 #include <vector>
 
-#include "iceberg/iceberg_data_export.h"
+#include "iceberg/iceberg_export.h"
 
 namespace iceberg {
 
@@ -40,8 +40,8 @@ class PositionDeleteIndex;
 ///     Cleared and reused per key group; retain across calls to amortize
 ///     allocations. Pass a distinct `scratch` per thread when calling
 ///     concurrently with disjoint `target`.
-void ICEBERG_DATA_EXPORT ForEachPositionDelete(std::span<const int64_t> positions,
-                                               PositionDeleteIndex& target,
-                                               std::vector<uint32_t>& scratch);
+void ICEBERG_EXPORT ForEachPositionDelete(std::span<const int64_t> positions,
+                                          PositionDeleteIndex& target,
+                                          std::vector<uint32_t>& scratch);
 
 }  // namespace iceberg

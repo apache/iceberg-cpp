@@ -35,9 +35,9 @@
 #include <gtest/gtest.h>
 
 #include "iceberg/arrow/arrow_io_internal.h"
-#include "iceberg/data/deletion_vector_writer.h"
 #include "iceberg/data/equality_delete_writer.h"
 #include "iceberg/data/position_delete_writer.h"
+#include "iceberg/deletes/dv_writer.h"
 #include "iceberg/deletes/position_delete_index.h"
 #include "iceberg/file_format.h"
 #include "iceberg/file_io.h"
@@ -256,13 +256,13 @@ class DeleteFilterTest : public ::testing::Test {
   Result<std::shared_ptr<DataFile>> DeletionVectorFile(
       const std::string& path, const std::vector<int64_t>& positions,
       const std::string& data_path = std::string(kDataPath)) {
-    DeletionVectorWriterOptions options{
+    DVWriterOptions options{
         .path = path,
         .io = file_io_,
         .load_previous_deletes = [](std::string_view)
             -> Result<std::optional<PositionDeleteIndex>> { return std::nullopt; },
     };
-    ICEBERG_ASSIGN_OR_RAISE(auto writer, DeletionVectorWriter::Make(std::move(options)));
+    ICEBERG_ASSIGN_OR_RAISE(auto writer, DVWriter::Make(std::move(options)));
     for (int64_t pos : positions) {
       ICEBERG_RETURN_UNEXPECTED(
           writer->Delete(data_path, pos, partition_spec_, PartitionValues{}));
@@ -1202,7 +1202,7 @@ TEST_F(DeleteFilterTest, EmptyBatchPropagatesDeleteLoadErrors) {
 }
 
 TEST_F(DeleteFilterTest, DeletionVectorComputeAliveRows) {
-  // Write a real deletion vector with DeletionVectorWriter, then load it through
+  // Write a real deletion vector with DVWriter, then load it through
   // DeleteFilter (DeleteLoader::LoadDV) and verify deleted positions are filtered.
   ICEBERG_UNWRAP_OR_FAIL(auto dv, DeletionVectorFile("dv-alive.puffin", {1, 3}));
   std::vector<std::shared_ptr<DataFile>> delete_files = {dv};

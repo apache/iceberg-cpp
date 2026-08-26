@@ -52,6 +52,7 @@ markdown_extensions:
 nav:
   - Home: index.md
   - Getting Started: getting-started.md
+  - Library Design: library.md
   - FileIO: file-io.md
   - Contributing: contributing.md
   - Releases:

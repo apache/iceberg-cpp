@@ -29,15 +29,15 @@
 
 #include <nanoarrow/nanoarrow.h>
 
-#include "iceberg/arrow/nanoarrow_status_internal.h"
 #include "iceberg/arrow_c_data_guard_internal.h"
-#include "iceberg/data/dv_util_internal.h"
+#include "iceberg/deletes/dv_util_internal.h"
 #include "iceberg/deletes/position_delete_index.h"
 #include "iceberg/deletes/position_delete_range_consumer.h"
 #include "iceberg/file_io.h"
 #include "iceberg/file_reader.h"
 #include "iceberg/manifest/manifest_entry.h"
 #include "iceberg/metadata_columns.h"
+#include "iceberg/nanoarrow_status_internal.h"
 #include "iceberg/result.h"
 #include "iceberg/row/arrow_array_wrapper.h"
 #include "iceberg/schema.h"

@@ -256,7 +256,7 @@ if(ICEBERG_BUILD_BUNDLE)
                    default_value_test.cc
                    delete_filter_test.cc
                    delete_loader_test.cc
-                   deletion_vector_writer_test.cc
+                   dv_writer_test.cc
                    file_scan_task_reader_test.cc
                    literal_util_test.cc)
 

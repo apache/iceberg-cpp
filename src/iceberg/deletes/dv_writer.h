@@ -19,7 +19,7 @@
 
 #pragma once
 
-/// \file iceberg/data/deletion_vector_writer.h
+/// \file iceberg/deletes/dv_writer.h
 /// Writer that emits deletion vectors as `deletion-vector-v1` blobs in a Puffin file.
 
 #include <cstdint>
@@ -28,18 +28,28 @@
 #include <optional>
 #include <string>
 #include <string_view>
+#include <vector>
 
-#include "iceberg/data/writer.h"
 #include "iceberg/deletes/position_delete_index.h"
-#include "iceberg/iceberg_data_export.h"
+#include "iceberg/iceberg_export.h"
 #include "iceberg/result.h"
 #include "iceberg/row/partition_values.h"
 #include "iceberg/type_fwd.h"
 
 namespace iceberg {
 
-/// \brief Options for creating a DeletionVectorWriter.
-struct ICEBERG_DATA_EXPORT DeletionVectorWriterOptions {
+/// \brief File metadata for deletion vectors produced by DVWriter.
+struct ICEBERG_EXPORT DeleteWriteResult {
+  /// Deletion vector files produced by the writer.
+  std::vector<std::shared_ptr<DataFile>> data_files;
+  /// Data files referenced by the produced deletion vectors.
+  std::vector<std::string> referenced_data_files;
+  /// Previously written file-scoped delete files merged into the new vectors.
+  std::vector<std::shared_ptr<DataFile>> rewritten_delete_files;
+};
+
+/// \brief Options for creating a DVWriter.
+struct ICEBERG_EXPORT DVWriterOptions {
   std::string path;
   std::shared_ptr<FileIO> io;
   /// Loads existing deletes for a data file to merge, if any.
@@ -48,13 +58,12 @@ struct ICEBERG_DATA_EXPORT DeletionVectorWriterOptions {
 };
 
 /// \brief A deletion vector file writer.
-class ICEBERG_DATA_EXPORT DeletionVectorWriter {
+class ICEBERG_EXPORT DVWriter {
  public:
-  ~DeletionVectorWriter();
+  ~DVWriter();
 
-  /// \brief Create a new DeletionVectorWriter.
-  static Result<std::unique_ptr<DeletionVectorWriter>> Make(
-      DeletionVectorWriterOptions options);
+  /// \brief Create a new DVWriter.
+  static Result<std::unique_ptr<DVWriter>> Make(DVWriterOptions options);
 
   /// \brief Mark a row position as deleted for the given data file.
   Status Delete(std::string_view referenced_data_file, int64_t pos,
@@ -71,13 +80,13 @@ class ICEBERG_DATA_EXPORT DeletionVectorWriter {
   Status Close();
 
   /// \brief The result of writing; valid only after Close().
-  Result<WriteResult> Metadata();
+  Result<DeleteWriteResult> Metadata();
 
  private:
   class Impl;
   std::unique_ptr<Impl> impl_;
 
-  explicit DeletionVectorWriter(std::unique_ptr<Impl> impl);
+  explicit DVWriter(std::unique_ptr<Impl> impl);
 };
 
 }  // namespace iceberg

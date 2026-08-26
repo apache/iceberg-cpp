@@ -19,49 +19,51 @@
 
 #pragma once
 
-/// \file iceberg/puffin_dv_io.h
-/// Deletion vector merge hooks.
+/// \file iceberg/deletes/dv_util_internal.h
+/// Internal deletion vector helpers.
 
-#include <functional>
+#include <cstdint>
 #include <memory>
 #include <span>
 #include <string>
 #include <string_view>
 #include <vector>
 
+#include "iceberg/deletes/position_delete_index.h"
 #include "iceberg/iceberg_export.h"
+#include "iceberg/puffin/file_metadata.h"
+#include "iceberg/puffin/puffin_writer.h"
 #include "iceberg/result.h"
 #include "iceberg/row/partition_values.h"
 #include "iceberg/type_fwd.h"
 
 namespace iceberg {
 
-struct ICEBERG_EXPORT DeletionVectorMergeGroup {
+struct DeletionVectorMergeGroup {
   std::string referenced_data_file;
   std::vector<std::shared_ptr<DataFile>> delete_files;
   std::shared_ptr<PartitionSpec> spec;
   PartitionValues partition;
 };
 
-class ICEBERG_EXPORT PuffinDVIO {
+class ICEBERG_EXPORT DVUtil {
  public:
-  virtual ~PuffinDVIO();
-
-  virtual Result<std::vector<std::shared_ptr<DataFile>>> MergeAndWriteDVs(
-      std::span<const DeletionVectorMergeGroup> groups, std::string_view output_path,
-      const std::shared_ptr<FileIO>& io) = 0;
-};
-
-using PuffinDVIOFactory = std::function<Result<std::shared_ptr<PuffinDVIO>>()>;
-
-struct ICEBERG_EXPORT PuffinDVIORegistry {
-  explicit PuffinDVIORegistry(PuffinDVIOFactory factory);
-
-  static PuffinDVIOFactory& GetFactory();
-
   static Result<std::vector<std::shared_ptr<DataFile>>> MergeAndWriteDVs(
       std::span<const DeletionVectorMergeGroup> groups, std::string_view output_path,
       const std::shared_ptr<FileIO>& io);
+
+  static Result<PositionDeleteIndex> ReadDV(const std::shared_ptr<DataFile>& delete_file,
+                                            const std::shared_ptr<FileIO>& io);
+
+  static Result<puffin::BlobMetadata> WriteDVBlob(puffin::PuffinWriter& writer,
+                                                  std::string_view referenced_data_file,
+                                                  PositionDeleteIndex& positions);
+
+  static Result<std::shared_ptr<DataFile>> MakeDVDataFile(
+      std::string_view path, int64_t file_size, std::string_view referenced_data_file,
+      const PartitionValues& partition, int64_t cardinality,
+      const std::shared_ptr<PartitionSpec>& spec,
+      const puffin::BlobMetadata& blob_metadata);
 };
 
 }  // namespace iceberg

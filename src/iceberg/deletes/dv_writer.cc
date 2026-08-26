@@ -17,10 +17,9 @@
  * under the License.
  */
 
-#include "iceberg/data/deletion_vector_writer.h"
+#include "iceberg/deletes/dv_writer.h"
 
 #include <cstdint>
-#include <format>
 #include <map>
 #include <memory>
 #include <optional>
@@ -30,13 +29,12 @@
 #include <utility>
 #include <vector>
 
-#include "iceberg/data/writer.h"
+#include "iceberg/deletes/dv_util_internal.h"
 #include "iceberg/deletes/position_delete_index.h"
 #include "iceberg/deletes/roaring_position_bitmap.h"
 #include "iceberg/file_format.h"
 #include "iceberg/file_io.h"  // IWYU pragma: keep
 #include "iceberg/manifest/manifest_entry.h"
-#include "iceberg/metadata_columns.h"
 #include "iceberg/partition_spec.h"
 #include "iceberg/puffin/file_metadata.h"
 #include "iceberg/puffin/puffin_writer.h"
@@ -49,14 +47,9 @@
 
 namespace iceberg {
 
-namespace {
-constexpr std::string_view kReferencedDataFile = "referenced-data-file";
-constexpr std::string_view kCardinality = "cardinality";
-}  // namespace
-
-class DeletionVectorWriter::Impl {
+class DVWriter::Impl {
  public:
-  explicit Impl(DeletionVectorWriterOptions options) : options_(std::move(options)) {}
+  explicit Impl(DVWriterOptions options) : options_(std::move(options)) {}
 
   // Accumulated positions and metadata for a single referenced data file.
   struct Deletes {
@@ -144,7 +137,7 @@ class DeletionVectorWriter::Impl {
     return {};
   }
 
-  Result<WriteResult> Metadata() {
+  Result<DeleteWriteResult> Metadata() {
     ICEBERG_CHECK(closed_, "Cannot get metadata before closing the writer");
     return result_;
   }
@@ -168,22 +161,8 @@ class DeletionVectorWriter::Impl {
   }
 
   Status Write(puffin::PuffinWriter& writer, std::string_view path, Deletes& deletes) {
-    const int64_t cardinality = deletes.positions.Cardinality();
-    ICEBERG_ASSIGN_OR_RAISE(auto data, deletes.positions.Serialize());
-
-    puffin::Blob blob{
-        .type = std::string(puffin::StandardBlobTypes::kDeletionVectorV1),
-        .input_fields = {MetadataColumns::kFilePositionColumnId},
-        // Snapshot ID and sequence number are inherited; the spec requires -1.
-        .snapshot_id = -1,
-        .sequence_number = -1,
-        .data = std::move(data),
-        .requested_compression = puffin::PuffinCompressionCodec::kNone,
-    };
-    blob.properties.emplace(std::string(kReferencedDataFile), path);
-    blob.properties.emplace(std::string(kCardinality), std::format("{}", cardinality));
-
-    ICEBERG_ASSIGN_OR_RAISE(auto blob_metadata, writer.Write(blob));
+    ICEBERG_ASSIGN_OR_RAISE(auto blob_metadata,
+                            DVUtil::WriteDVBlob(writer, path, deletes.positions));
     blobs_by_path_.insert_or_assign(std::string(path), std::move(blob_metadata));
     return {};
   }
@@ -214,43 +193,41 @@ class DeletionVectorWriter::Impl {
     });
   }
 
-  DeletionVectorWriterOptions options_;
+  DVWriterOptions options_;
   std::map<std::string, Deletes, StringLess> deletes_by_path_;
   std::map<std::string, puffin::BlobMetadata, StringLess> blobs_by_path_;
-  WriteResult result_;
+  DeleteWriteResult result_;
   bool closed_ = false;
 };
 
-DeletionVectorWriter::DeletionVectorWriter(std::unique_ptr<Impl> impl)
-    : impl_(std::move(impl)) {}
+DVWriter::DVWriter(std::unique_ptr<Impl> impl) : impl_(std::move(impl)) {}
 
-DeletionVectorWriter::~DeletionVectorWriter() = default;
+DVWriter::~DVWriter() = default;
 
-Result<std::unique_ptr<DeletionVectorWriter>> DeletionVectorWriter::Make(
-    DeletionVectorWriterOptions options) {
-  ICEBERG_PRECHECK(!options.path.empty(), "DeletionVectorWriter requires an output path");
-  ICEBERG_PRECHECK(options.io != nullptr, "DeletionVectorWriter requires a FileIO");
+Result<std::unique_ptr<DVWriter>> DVWriter::Make(DVWriterOptions options) {
+  ICEBERG_PRECHECK(!options.path.empty(), "DVWriter requires an output path");
+  ICEBERG_PRECHECK(options.io != nullptr, "DVWriter requires a FileIO");
   ICEBERG_PRECHECK(options.load_previous_deletes != nullptr,
-                   "DeletionVectorWriter requires a load_previous_deletes callback");
-  return std::unique_ptr<DeletionVectorWriter>(
-      new DeletionVectorWriter(std::make_unique<Impl>(std::move(options))));
+                   "DVWriter requires a load_previous_deletes callback");
+  return std::unique_ptr<DVWriter>(
+      new DVWriter(std::make_unique<Impl>(std::move(options))));
 }
 
-Status DeletionVectorWriter::Delete(std::string_view referenced_data_file, int64_t pos,
-                                    const std::shared_ptr<PartitionSpec>& spec,
-                                    const PartitionValues& partition) {
+Status DVWriter::Delete(std::string_view referenced_data_file, int64_t pos,
+                        const std::shared_ptr<PartitionSpec>& spec,
+                        const PartitionValues& partition) {
   return impl_->Delete(referenced_data_file, pos, spec, partition);
 }
 
-Status DeletionVectorWriter::Delete(std::string_view referenced_data_file,
-                                    const PositionDeleteIndex& positions,
-                                    const std::shared_ptr<PartitionSpec>& spec,
-                                    const PartitionValues& partition) {
+Status DVWriter::Delete(std::string_view referenced_data_file,
+                        const PositionDeleteIndex& positions,
+                        const std::shared_ptr<PartitionSpec>& spec,
+                        const PartitionValues& partition) {
   return impl_->Delete(referenced_data_file, positions, spec, partition);
 }
 
-Status DeletionVectorWriter::Close() { return impl_->Close(); }
+Status DVWriter::Close() { return impl_->Close(); }
 
-Result<WriteResult> DeletionVectorWriter::Metadata() { return impl_->Metadata(); }
+Result<DeleteWriteResult> DVWriter::Metadata() { return impl_->Metadata(); }
 
 }  // namespace iceberg
