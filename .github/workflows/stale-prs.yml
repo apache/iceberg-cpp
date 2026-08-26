@@ -15,44 +15,35 @@
 # specific language governing permissions and limitations
 # under the License.
 
-# Borrowed the file from Apache Parquet-Java:
-# https://github.com/apache/parquet-java/blob/master/.github/workflows/stale-prs.yml
+# Borrowed the file from Apache Iceberg-Java:
+# https://github.com/apache/iceberg/blob/main/.github/workflows/stale.yml
 
-name: Stale pull requests
-
+name: "Close Stale Issues and PRs"
 on:
   schedule:
     - cron: '0 0 * * *'
-  workflow_dispatch:
 
 permissions:
-  pull-requests: write
+  # All other permissions are set to none
   issues: write
+  pull-requests: write
 
 jobs:
   stale:
+    if: github.repository_owner == 'apache'
     runs-on: ubuntu-slim
     steps:
-      - name: Mark and close stale pull requests
-        uses: actions/stale@4391f3da665fdf50b6810c1a66712fb9ba21aa93 # v11.0.0
+      - uses: actions/stale@4391f3da665fdf50b6810c1a66712fb9ba21aa93 # v11.0.0
         with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
           # Don't touch issues.
           days-before-issue-stale: -1
           days-before-issue-close: -1
-          # PRs stale after 1 month of inactivity and closed 1 week later.
+          # stale PRs
+          stale-pr-label: 'stale'
+          exempt-pr-labels: 'not-stale,security'
+          stale-pr-message: 'This pull request has been marked as stale due to 30 days of inactivity. It will be closed in 1 week if no further activity occurs. If you think that’s incorrect or this pull request requires a review, please simply write any comment. If closed, you can revive the PR at any time and @mention a reviewer or discuss it on the dev@iceberg.apache.org list. Thank you for your contributions.'
+          close-pr-message: 'This pull request has been closed due to lack of activity. This is not a judgement on the merit of the PR in any way. It is just a way of keeping the PR queue manageable. If you think that is incorrect, or the pull request requires review, you can revive the PR at any time.'
           days-before-pr-stale: 30
           days-before-pr-close: 7
-          stale-pr-label: stale
-          stale-pr-message: >
-            This pull request has been automatically marked as stale because it has
-            had no activity for at least 1 month. If you are still working on this
-            change or plan to move it forward, please leave a comment or push a new
-            commit so we know to keep it open. Otherwise, this PR will be closed
-            automatically in about one week. Thank you for your contribution to
-            Apache Iceberg!
-          close-pr-message: >
-            Closing this pull request due to at least 1 month of inactivity. If you
-            would like to continue the work, please feel free to reopen this pull
-            request or open a new one. Thank you for your contribution to
-            Apache Iceberg!
+          ascending: true
+          operations-per-run: 200
