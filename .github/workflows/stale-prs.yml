@@ -15,7 +15,7 @@
 # specific language governing permissions and limitations
 # under the License.
 
-# Borrowed the file from Apache Parquet:
+# Borrowed the file from Apache Parquet-Java:
 # https://github.com/apache/parquet-java/blob/master/.github/workflows/stale-prs.yml
 
 name: Stale pull requests
