@@ -154,6 +154,52 @@ TEST(TableMetadataTest, MakeWithInvalidPartitionSpec) {
   EXPECT_THAT(res, HasErrorMessage("Cannot find source partition field"));
 }
 
+TEST(TableMetadataTest, MakeWithFieldIdsPreservesSchemaIds) {
+  auto id_field = SchemaField::MakeRequired(10, "id", int32());
+  auto value_field = SchemaField::MakeRequired(20, "value", string());
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto schema, Schema::Make(std::vector<SchemaField>{id_field, value_field},
+                                Schema::kInitialSchemaId, std::vector<int32_t>{10}));
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto spec, PartitionSpec::Make(7, std::vector<PartitionField>{PartitionField(
+                                            20, 1007, "value", Transform::Identity())}));
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto order, SortOrder::Make(9, std::vector<SortField>{SortField(
+                                         10, Transform::Identity(),
+                                         SortDirection::kAscending, NullOrder::kLast)}));
+
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto metadata,
+      TableMetadata::MakeWithFieldIds(*schema, *spec, *order, "s3://bucket/test", {}));
+  ASSERT_EQ(metadata->last_column_id, 20);
+  ASSERT_EQ(metadata->schemas.size(), 1);
+  auto fields = metadata->schemas[0]->fields() | std::ranges::to<std::vector>();
+  ASSERT_EQ(fields.size(), 2);
+  EXPECT_EQ(fields[0].field_id(), 10);
+  EXPECT_EQ(fields[1].field_id(), 20);
+  EXPECT_EQ(metadata->schemas[0]->IdentifierFieldIds(), std::vector<int32_t>{10});
+
+  ASSERT_EQ(metadata->partition_specs.size(), 1);
+  auto spec_fields = metadata->partition_specs[0]->fields();
+  ASSERT_EQ(spec_fields.size(), 1);
+  EXPECT_EQ(spec_fields[0].source_id(), 20);
+  EXPECT_EQ(spec_fields[0].field_id(), PartitionSpec::kLegacyPartitionDataIdStart);
+
+  ASSERT_EQ(metadata->sort_orders.size(), 1);
+  EXPECT_EQ(metadata->sort_orders[0]->fields()[0].source_id(), 10);
+}
+
+TEST(TableMetadataTest, MakeWithFieldIdsRejectsInvalidIds) {
+  auto invalid = SchemaField::MakeRequired(0, "id", int32());
+  auto schema = std::make_shared<Schema>(std::vector<SchemaField>{invalid});
+
+  auto result =
+      TableMetadata::MakeWithFieldIds(*schema, *PartitionSpec::Unpartitioned(),
+                                      *SortOrder::Unsorted(), "s3://bucket/test", {});
+  EXPECT_THAT(result, IsError(ErrorKind::kInvalidSchema));
+  EXPECT_THAT(result, HasErrorMessage("Invalid field id"));
+}
+
 TEST(TableMetadataTest, MakeWithInvalidSortOrder) {
   ICEBERG_UNWRAP_OR_FAIL(auto schema, CreateDisorderedSchema());
   ICEBERG_UNWRAP_OR_FAIL(

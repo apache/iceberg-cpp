@@ -24,6 +24,7 @@
 #include <chrono>
 #include <cstdint>
 #include <format>
+#include <functional>
 #include <memory>
 #include <optional>
 #include <ranges>
@@ -120,6 +121,30 @@ Result<std::shared_ptr<SortOrder>> FreshSortOrder(int32_t order_id,
                              field.direction(), field.null_order());
   }
   return SortOrder::Make(order_id, std::move(sort_fields));
+}
+
+Status ValidatePreservedFieldIds(const Schema& schema) {
+  std::unordered_set<int32_t> field_ids;
+  std::function<Status(const Type&)> validate_type = [&](const Type& type) -> Status {
+    if (!type.is_nested()) {
+      return {};
+    }
+
+    const auto& nested = internal::checked_cast<const NestedType&>(type);
+    for (const auto& field : nested.fields()) {
+      if (field.field_id() <= Schema::kInitialColumnId) {
+        return InvalidSchema("Invalid field id {} for '{}'", field.field_id(),
+                             field.name());
+      }
+      if (!field_ids.insert(field.field_id()).second) {
+        return InvalidSchema("Duplicate field id found: {}", field.field_id());
+      }
+      ICEBERG_RETURN_UNEXPECTED(validate_type(*field.type()));
+    }
+    return {};
+  };
+
+  return validate_type(schema);
 }
 
 std::vector<std::unique_ptr<TableUpdate>> ChangesForCreate(
@@ -231,6 +256,46 @@ Result<std::unique_ptr<TableMetadata>> TableMetadata::Make(
       ->AssignUUID()
       .SetLocation(location)
       .SetCurrentSchema(std::move(fresh_schema), last_column_id)
+      .SetDefaultPartitionSpec(std::move(fresh_spec))
+      .SetDefaultSortOrder(std::move(fresh_order))
+      .SetProperties(properties)
+      .Build();
+}
+
+Result<std::unique_ptr<TableMetadata>> TableMetadata::MakeWithFieldIds(
+    const iceberg::Schema& schema, const iceberg::PartitionSpec& spec,
+    const iceberg::SortOrder& sort_order, const std::string& location,
+    const std::unordered_map<std::string, std::string>& properties, int format_version) {
+  for (const auto& [key, _] : properties) {
+    if (TableProperties::reserved_properties().contains(key)) {
+      return InvalidArgument(
+          "Table properties should not contain reserved properties, but got {}", key);
+    }
+  }
+
+  ICEBERG_RETURN_UNEXPECTED(ValidatePreservedFieldIds(schema));
+  ICEBERG_ASSIGN_OR_RAISE(
+      auto preserved_schema,
+      Schema::Make(
+          std::vector<SchemaField>(schema.fields().begin(), schema.fields().end()),
+          Schema::kInitialSchemaId, schema.IdentifierFieldIds()));
+  ICEBERG_ASSIGN_OR_RAISE(auto last_column_id, preserved_schema->HighestFieldId());
+
+  ICEBERG_ASSIGN_OR_RAISE(
+      auto fresh_spec,
+      FreshPartitionSpec(PartitionSpec::kInitialSpecId, spec, schema, *preserved_schema));
+  ICEBERG_ASSIGN_OR_RAISE(
+      auto fresh_order, FreshSortOrder(SortOrder::kInitialSortOrderId, sort_order, schema,
+                                       *preserved_schema));
+
+  ICEBERG_RETURN_UNEXPECTED(
+      MetricsConfig::VerifyReferencedColumns(properties, *preserved_schema));
+  ICEBERG_RETURN_UNEXPECTED(PropertyUtil::ValidateCommitProperties(properties));
+
+  return TableMetadataBuilder::BuildFromEmpty(format_version)
+      ->AssignUUID()
+      .SetLocation(location)
+      .SetCurrentSchema(std::move(preserved_schema), last_column_id)
       .SetDefaultPartitionSpec(std::move(fresh_spec))
       .SetDefaultSortOrder(std::move(fresh_order))
       .SetProperties(properties)

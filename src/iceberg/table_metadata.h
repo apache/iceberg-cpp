@@ -138,6 +138,17 @@ struct ICEBERG_EXPORT TableMetadata {
       const std::unordered_map<std::string, std::string>& properties,
       int format_version = kDefaultTableFormatVersion);
 
+  /// \brief Create metadata for a new table while preserving schema field IDs.
+  ///
+  /// The supplied schema field IDs must be positive and unique across the complete
+  /// schema, including nested fields. Partition field IDs are assigned by the new
+  /// table rules and are not preserved.
+  static Result<std::unique_ptr<TableMetadata>> MakeWithFieldIds(
+      const iceberg::Schema& schema, const iceberg::PartitionSpec& spec,
+      const iceberg::SortOrder& sort_order, const std::string& location,
+      const std::unordered_map<std::string, std::string>& properties,
+      int format_version = kDefaultTableFormatVersion);
+
   /// \brief Get the current schema, return NotFoundError if not found
   /// \note The returned schema is guaranteed to be not null
   Result<std::shared_ptr<iceberg::Schema>> Schema() const;
