@@ -18,7 +18,7 @@
 # Borrowed the file from Apache Iceberg-Java:
 # https://github.com/apache/iceberg/blob/main/.github/workflows/stale.yml
 
-name: "Close Stale Issues and PRs"
+name: "Close Stale PRs"
 on:
   schedule:
     - cron: '0 0 * * *'
