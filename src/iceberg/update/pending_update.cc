@@ -50,7 +50,8 @@ PendingUpdate::~PendingUpdate() = default;
 
 Status PendingUpdate::Commit() {
   if (!ctx_->transaction) {
-    // Table-created path: no transaction exists yet, create a temporary one.
+    // Standalone update path: no transaction is attached to the context, so create a
+    // temporary one for this Commit() call.
     ICEBERG_ASSIGN_OR_RAISE(auto txn, Transaction::Make(ctx_));
     auto self = weak_from_this().lock();
     ICEBERG_PRECHECK(self != nullptr, "PendingUpdate must be owned by std::shared_ptr");
