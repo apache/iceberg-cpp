@@ -21,6 +21,8 @@
 
 #include <algorithm>
 #include <numeric>
+#include <variant>
+#include <vector>
 
 #include <arrow/c/bridge.h>
 #include <arrow/memory_pool.h>
@@ -122,40 +124,138 @@ std::shared_ptr<::arrow::Field> UseLargeListField(
   return field->WithType(UseLargeListType(field->type()));
 }
 
-// Rewrite all fields in a field vector to use large_list instead of list.
-::arrow::FieldVector UseLargeListFields(const ::arrow::FieldVector& fields) {
-  ::arrow::FieldVector rewritten;
-  rewritten.reserve(fields.size());
-  for (const auto& field : fields) {
-    rewritten.push_back(UseLargeListField(field));
+// Rebuild a type so its nested lists match the list type (list vs large_list) of the
+// arrays the reader produces, correlating struct fields to the reader by field id via the
+// projection rather than by name, so a renamed column is still matched to the array it is
+// read from. `projections` are the child projections of the field whose type this is.
+std::shared_ptr<::arrow::DataType> AlignTypeToReader(
+    const std::shared_ptr<::arrow::DataType>& output_type,
+    const std::shared_ptr<::arrow::DataType>& reader_type,
+    const std::vector<FieldProjection>& projections, bool use_large_list_default);
+
+// Rewrite the fields of a struct level (including the top level) so their list types
+// match the reader's. `projections[i].from` gives the reader field for output field `i`,
+// matching how ProjectStructArray reads the arrays. A field not projected from the source
+// (null, default, constant or metadata) is filled with an array of the output type, so it
+// takes the configured preference instead.
+::arrow::FieldVector AlignFieldsToReader(const ::arrow::FieldVector& output_fields,
+                                         const ::arrow::FieldVector& reader_fields,
+                                         const std::vector<FieldProjection>& projections,
+                                         bool use_large_list_default) {
+  ::arrow::FieldVector aligned;
+  aligned.reserve(output_fields.size());
+
+  for (size_t i = 0; i < output_fields.size(); ++i) {
+    const auto& output_field = output_fields[i];
+    // Defensive: the projection carries one entry per output field. If it does not line
+    // up, leave the field untouched rather than risk an out-of-bounds access.
+    if (i >= projections.size()) {
+      aligned.push_back(output_field);
+      continue;
+    }
+
+    const auto& projection = projections[i];
+    if (projection.kind == FieldProjection::Kind::kProjected) {
+      auto reader_index = std::get<size_t>(projection.from);
+      if (reader_index >= reader_fields.size()) {
+        aligned.push_back(output_field);
+        continue;
+      }
+      aligned.push_back(output_field->WithType(
+          AlignTypeToReader(output_field->type(), reader_fields[reader_index]->type(),
+                            projection.children, use_large_list_default)));
+    } else {
+      aligned.push_back(use_large_list_default ? UseLargeListField(output_field)
+                                               : output_field);
+    }
   }
-  return rewritten;
+
+  return aligned;
 }
 
-// Returns true if the type contains a large_list, at any level of nesting.
-bool ContainsLargeList(const ::arrow::DataType& type) {
-  if (type.id() == ::arrow::Type::LARGE_LIST) {
-    return true;
+std::shared_ptr<::arrow::DataType> AlignTypeToReader(
+    const std::shared_ptr<::arrow::DataType>& output_type,
+    const std::shared_ptr<::arrow::DataType>& reader_type,
+    const std::vector<FieldProjection>& projections, bool use_large_list_default) {
+  switch (output_type->id()) {
+    case ::arrow::Type::STRUCT: {
+      if (reader_type->id() != ::arrow::Type::STRUCT) {
+        return output_type;
+      }
+      const auto& output_struct =
+          internal::checked_cast<const ::arrow::StructType&>(*output_type);
+      const auto& reader_struct =
+          internal::checked_cast<const ::arrow::StructType&>(*reader_type);
+      return ::arrow::struct_(AlignFieldsToReader(output_struct.fields(),
+                                                  reader_struct.fields(), projections,
+                                                  use_large_list_default));
+    }
+    case ::arrow::Type::LIST: {
+      // A list carries exactly one child projection, its element, matched positionally.
+      if (projections.size() != 1) {
+        return output_type;
+      }
+      const auto& output_list =
+          internal::checked_cast<const ::arrow::ListType&>(*output_type);
+      const auto& element = projections.front().children;
+      if (reader_type->id() == ::arrow::Type::LARGE_LIST) {
+        const auto& reader_list =
+            internal::checked_cast<const ::arrow::LargeListType&>(*reader_type);
+        return ::arrow::large_list(output_list.value_field()->WithType(AlignTypeToReader(
+            output_list.value_field()->type(), reader_list.value_field()->type(), element,
+            use_large_list_default)));
+      }
+      if (reader_type->id() == ::arrow::Type::LIST) {
+        const auto& reader_list =
+            internal::checked_cast<const ::arrow::ListType&>(*reader_type);
+        return ::arrow::list(output_list.value_field()->WithType(AlignTypeToReader(
+            output_list.value_field()->type(), reader_list.value_field()->type(), element,
+            use_large_list_default)));
+      }
+      return output_type;
+    }
+    case ::arrow::Type::MAP: {
+      // A map carries two child projections, its key and its value, matched positionally.
+      if (reader_type->id() != ::arrow::Type::MAP || projections.size() != 2) {
+        return output_type;
+      }
+      const auto& output_map =
+          internal::checked_cast<const ::arrow::MapType&>(*output_type);
+      const auto& reader_map =
+          internal::checked_cast<const ::arrow::MapType&>(*reader_type);
+      return std::make_shared<::arrow::MapType>(
+          output_map.key_field()->WithType(AlignTypeToReader(
+              output_map.key_field()->type(), reader_map.key_field()->type(),
+              projections[0].children, use_large_list_default)),
+          output_map.item_field()->WithType(AlignTypeToReader(
+              output_map.item_field()->type(), reader_map.item_field()->type(),
+              projections[1].children, use_large_list_default)),
+          output_map.keys_sorted());
+    }
+    default:
+      return output_type;
   }
-  return std::ranges::any_of(
-      type.fields(), [](const auto& field) { return ContainsLargeList(*field->type()); });
 }
 
-// Returns true if the reader produces large_list arrays.
-//
-// Arrow honors the requested large_list type only when it derives the Arrow schema from
-// the Parquet schema. A file that carries serialized ARROW:schema metadata keeps its
-// original list type instead, so whether large lists are produced can only be told from
-// the schema of the reader.
-bool ProducesLargeList(const ::arrow::RecordBatchReader& reader) {
-  const auto& schema = reader.schema();
-  if (schema == nullptr) {
-    // an empty reader produces no arrays to be described
-    return false;
+// Align the output schema to the arrays the reader actually produces. Arrow honors the
+// requested large_list type only when it derives the schema from the Parquet schema; a
+// file that carries serialized ARROW:schema metadata keeps its stored list types, so the
+// reader may produce list, large_list, or a mix of the two. The output schema, built from
+// the Iceberg projection and always using plain list, is rewritten per field to match the
+// reader so that ProjectRecordBatch casts each array to the type it actually is. Fields
+// are correlated to the reader through the projection (by field id), never by name.
+std::shared_ptr<::arrow::Schema> AlignOutputSchemaToReaderSchema(
+    const std::shared_ptr<::arrow::Schema>& output_schema,
+    const std::shared_ptr<::arrow::Schema>& reader_schema,
+    const SchemaProjection& projection, bool use_large_list_default) {
+  if (reader_schema == nullptr || output_schema == nullptr) {
+    return output_schema;
   }
-  return std::ranges::any_of(schema->fields(), [](const auto& field) {
-    return ContainsLargeList(*field->type());
-  });
+
+  return ::arrow::schema(
+      AlignFieldsToReader(output_schema->fields(), reader_schema->fields(),
+                          projection.fields, use_large_list_default),
+      output_schema->metadata());
 }
 
 }  // namespace
@@ -330,15 +430,17 @@ class ParquetReader::Impl {
     ICEBERG_ARROW_ASSIGN_OR_RETURN(context_->output_arrow_schema_,
                                    ::arrow::ImportSchema(&arrow_schema));
 
-    if (use_large_list_ && ProducesLargeList(*context_->record_batch_reader_)) {
-      // Align the output schema with the large_list arrays produced by the Parquet
-      // reader. Note that Arrow ignores the requested list type when the file carries
-      // serialized ARROW:schema metadata, in which case the reader keeps producing plain
-      // list arrays and the output schema must keep describing them as such.
-      context_->output_arrow_schema_ =
-          ::arrow::schema(UseLargeListFields(context_->output_arrow_schema_->fields()),
-                          context_->output_arrow_schema_->metadata());
-    }
+    // Align the output schema with the arrays the reader actually produces. The reader's
+    // schema determines the actual list types (list vs large_list) for each field, which
+    // may differ from the desired output due to:
+    //   1. The reader's requested list type (set via set_list_type)
+    //   2. ARROW:schema metadata in the file that overrides the Parquet schema type
+    //   3. Mixed list and large_list types in files with stored schemas
+    // For each projected field, we use the reader's actual type. For missing fields
+    // (columns not in the file), we apply the configured use_large_list preference.
+    context_->output_arrow_schema_ = AlignOutputSchemaToReaderSchema(
+        context_->output_arrow_schema_, context_->record_batch_reader_->schema(),
+        projection_, use_large_list_);
 
     return {};
   }
