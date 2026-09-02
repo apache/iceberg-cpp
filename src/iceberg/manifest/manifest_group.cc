@@ -141,10 +141,8 @@ class ManifestGroup::FilePlanningIterator final
     group->delete_index_builder_.WithScanMetrics(group->scan_metrics_);
     ICEBERG_ASSIGN_OR_RAISE(auto delete_index, group->delete_index_builder_.Build());
 
-    const bool drop_stats = ManifestReader::ShouldDropStats(group->columns_);
-    if (delete_index->has_equality_deletes()) {
-      group->columns_ = ManifestReader::WithStatsColumns(group->columns_);
-    }
+    const bool drop_stats =
+        group->PrepareStatsProjection(delete_index->has_equality_deletes());
 
     std::unique_ptr<Evaluator> data_file_evaluator;
     if (group->file_filter_ &&
@@ -425,6 +423,10 @@ class ManifestGroup::FilePlanningIterator final
   int32_t current_spec_id_ = 0;
   bool drop_stats_;
 
+  // Limit the number of manifest readers and iterators retained by executor-backed
+  // planning. The executor still controls actual task concurrency, while this fixed
+  // cap prevents resource use from scaling with the total manifest count. Entries
+  // within each manifest remain streamed, so this does not cap manifest size.
   static constexpr size_t kManifestReadBatchSize = 32;
 };
 
@@ -582,10 +584,7 @@ Result<std::vector<std::shared_ptr<ScanTask>>> ManifestGroup::Plan(
   delete_index_builder_.WithScanMetrics(scan_metrics_);
   ICEBERG_ASSIGN_OR_RAISE(auto delete_index, delete_index_builder_.Build());
 
-  bool drop_stats = ManifestReader::ShouldDropStats(columns_);
-  if (delete_index->has_equality_deletes()) {
-    columns_ = ManifestReader::WithStatsColumns(columns_);
-  }
+  const bool drop_stats = PrepareStatsProjection(delete_index->has_equality_deletes());
 
   std::unordered_map<int32_t, std::unique_ptr<TaskContext>> task_context_cache;
   auto get_task_context = [&](int32_t spec_id) -> Result<TaskContext*> {
@@ -677,6 +676,18 @@ Result<std::unique_ptr<ManifestReader>> ManifestGroup::MakeReader(
   }
 
   return reader;
+}
+
+bool ManifestGroup::PrepareStatsProjection(bool has_equality_deletes) {
+  // The caller's projection records whether stats were requested. Equality-delete
+  // matching may add stats temporarily, but they should still be dropped from the
+  // result when the original projection did not request them. Keeping this decision
+  // here ensures eager and iterator planning use identical semantics.
+  const bool drop_stats = ManifestReader::ShouldDropStats(columns_);
+  if (has_equality_deletes) {
+    columns_ = ManifestReader::WithStatsColumns(columns_);
+  }
+  return drop_stats;
 }
 
 Result<std::unordered_map<int32_t, std::vector<ManifestEntry>>>

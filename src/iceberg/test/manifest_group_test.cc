@@ -329,6 +329,8 @@ TEST_P(ManifestGroupTest, PlanFilesIteratorPreservesSelectAllWithEqualityDeletes
   ASSERT_TRUE(task.has_value());
   EXPECT_EQ(task.value()->data_file()->file_path, "/path/to/data.parquet");
   EXPECT_EQ(task.value()->data_file()->record_count, 100);
+  EXPECT_TRUE(task.value()->data_file()->lower_bounds.contains(1));
+  EXPECT_TRUE(task.value()->data_file()->upper_bounds.contains(1));
   ASSERT_EQ(task.value()->delete_files().size(), 1);
   EXPECT_EQ(task.value()->delete_files().front()->file_path,
             "/path/to/equality-delete.parquet");

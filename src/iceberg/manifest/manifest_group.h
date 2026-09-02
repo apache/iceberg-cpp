@@ -173,6 +173,8 @@ class ICEBERG_EXPORT ManifestGroup : public ErrorCollector {
 
   Result<std::unique_ptr<ManifestReader>> MakeReader(const ManifestFile& manifest);
 
+  bool PrepareStatsProjection(bool has_equality_deletes);
+
   std::shared_ptr<FileIO> io_;
   std::shared_ptr<Schema> schema_;
   std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>> specs_by_id_;
