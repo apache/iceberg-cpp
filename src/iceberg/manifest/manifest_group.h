@@ -141,9 +141,10 @@ class ICEBERG_EXPORT ManifestGroup : public ErrorCollector {
   ///
   /// The returned iterator owns the planning state and may outlive this ManifestGroup.
   /// It reads one bounded manifest batch at a time instead of materializing all manifest
-  /// entries and scan tasks. When PlanWith() configures an executor, manifests in each
-  /// batch are read in parallel. Creating the iterator consumes this group's
-  /// configuration, so this method may only be called on an rvalue.
+  /// entries and scan tasks. When PlanWith() configures an executor, entry iterators for
+  /// manifests in each batch are opened in parallel, while entries are consumed one
+  /// manifest at a time. Creating the iterator consumes this group's configuration, so
+  /// this method may only be called on an rvalue.
   Result<std::unique_ptr<Iterator<std::shared_ptr<FileScanTask>>>> PlanFilesIterator() &&;
 
   /// \brief Get all matching manifest entries.

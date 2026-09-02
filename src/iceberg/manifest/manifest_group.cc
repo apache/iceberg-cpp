@@ -221,6 +221,7 @@ class ManifestGroup::FilePlanningIterator final
         drop_stats_(drop_stats) {}
 
   using TaggedEntry = std::pair<int32_t, ManifestEntry>;
+  using TaggedIterator = std::pair<int32_t, std::unique_ptr<Iterator<ManifestEntry>>>;
 
   Result<std::optional<TaggedEntry>> NextEntry() {
     if (!group_->executor_.has_value()) {
@@ -242,13 +243,23 @@ class ManifestGroup::FilePlanningIterator final
       }
     }
 
-    while (next_batch_entry_ == batch_entries_.size()) {
-      ICEBERG_ASSIGN_OR_RAISE(bool loaded, LoadNextManifestBatch());
-      if (!loaded) {
-        return std::nullopt;
+    while (true) {
+      if (next_batch_iterator_ == batch_iterators_.size()) {
+        ICEBERG_ASSIGN_OR_RAISE(bool loaded, LoadNextManifestBatch());
+        if (!loaded) {
+          return std::nullopt;
+        }
       }
+
+      auto& [spec_id, iterator] = batch_iterators_[next_batch_iterator_];
+      ICEBERG_ASSIGN_OR_RAISE(auto entry, iterator->Next());
+      if (!entry.has_value()) {
+        iterator.reset();
+        ++next_batch_iterator_;
+        continue;
+      }
+      return std::optional<TaggedEntry>{std::in_place, spec_id, std::move(entry).value()};
     }
-    return std::optional<TaggedEntry>{std::move(batch_entries_[next_batch_entry_++])};
   }
 
   Result<ManifestEvaluator*> GetManifestEvaluator(int32_t spec_id) {
@@ -350,26 +361,25 @@ class ManifestGroup::FilePlanningIterator final
       return false;
     }
 
+    // Open the readers concurrently, but keep their iterators instead of collecting
+    // entries here. This preserves bounded memory for large manifests while retaining
+    // parallel manifest initialization when an executor is configured.
     ICEBERG_ASSIGN_OR_RAISE(
-        batch_entries_,
+        batch_iterators_,
         ParallelCollect(
             group_->executor_, manifests,
-            [this](const ManifestFile* manifest) -> Result<std::vector<TaggedEntry>> {
+            [this](const ManifestFile* manifest) -> Result<std::vector<TaggedIterator>> {
               ICEBERG_ASSIGN_OR_RAISE(auto reader, group_->MakeReader(*manifest));
               ICEBERG_ASSIGN_OR_RAISE(auto iterator, group_->ignore_deleted_
                                                          ? reader->LiveEntriesIterator()
                                                          : reader->EntriesIterator());
-              ICEBERG_ASSIGN_OR_RAISE(auto entries, iterator->ToVector());
 
-              std::vector<TaggedEntry> tagged_entries;
-              tagged_entries.reserve(entries.size());
-              for (auto& entry : entries) {
-                tagged_entries.emplace_back(manifest->partition_spec_id,
-                                            std::move(entry));
-              }
-              return tagged_entries;
+              std::vector<TaggedIterator> tagged_iterators;
+              tagged_iterators.emplace_back(manifest->partition_spec_id,
+                                            std::move(iterator));
+              return tagged_iterators;
             }));
-    next_batch_entry_ = 0;
+    next_batch_iterator_ = 0;
     return true;
   }
 
@@ -409,9 +419,9 @@ class ManifestGroup::FilePlanningIterator final
   std::unordered_map<int32_t, std::unique_ptr<ManifestEvaluator>> manifest_evaluators_;
   std::unordered_map<int32_t, std::shared_ptr<ResidualEvaluator>> residual_evaluators_;
   std::unique_ptr<Iterator<ManifestEntry>> entry_iterator_;
-  std::vector<TaggedEntry> batch_entries_;
+  std::vector<TaggedIterator> batch_iterators_;
   size_t next_manifest_ = 0;
-  size_t next_batch_entry_ = 0;
+  size_t next_batch_iterator_ = 0;
   int32_t current_spec_id_ = 0;
   bool drop_stats_;
 
