@@ -699,7 +699,7 @@ class VectorIterator final : public Iterator<T> {
     if (next_ == values_.size()) {
       return std::nullopt;
     }
-    return std::optional<T>{std::move(values_[next_++])};
+    return std::optional<T>{std::move_if_noexcept(values_[next_++])};
   }
 
  private:
