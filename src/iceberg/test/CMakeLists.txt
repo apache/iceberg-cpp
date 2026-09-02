@@ -362,7 +362,7 @@ if(ICEBERG_BUILD_HIVE)
     add_test(NAME ${test_name} COMMAND ${test_name})
   endfunction()
 
-  add_hive_iceberg_test(hive_catalog_test SOURCES hms_client_test.cc)
+  add_hive_iceberg_test(hive_catalog_test SOURCES hive_schema_test.cc hms_client_test.cc)
 endif()
 
 if(ICEBERG_CXX20_COMPAT)
