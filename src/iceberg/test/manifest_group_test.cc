@@ -323,7 +323,7 @@ TEST_P(ManifestGroupTest, PlanFilesIteratorPreservesSelectAllWithEqualityDeletes
   ICEBERG_UNWRAP_OR_FAIL(
       auto group, ManifestGroup::Make(file_io_, schema_, GetSpecsById(), {data_manifest},
                                       {delete_manifest}));
-  ICEBERG_UNWRAP_OR_FAIL(auto iterator, group->PlanFilesIterator());
+  ICEBERG_UNWRAP_OR_FAIL(auto iterator, std::move(*group).PlanFilesIterator());
   ICEBERG_UNWRAP_OR_FAIL(auto task, iterator->Next());
 
   ASSERT_TRUE(task.has_value());
@@ -677,6 +677,41 @@ TEST_P(ManifestGroupTest, MultipleDataManifests) {
   // Plan files - should return files from both manifests
   ICEBERG_UNWRAP_OR_FAIL(auto tasks, group->PlanFiles());
   ASSERT_EQ(tasks.size(), 2);
+  EXPECT_THAT(GetPaths(tasks), testing::UnorderedElementsAre("/path/to/data1.parquet",
+                                                             "/path/to/data2.parquet"));
+  EXPECT_EQ(executor.submit_count(), 2);
+}
+
+TEST_P(ManifestGroupTest, PlanFilesIteratorUsesExecutor) {
+  auto version = GetParam();
+
+  const auto partition_a = PartitionValues({Literal::Int(0)});
+  const auto partition_b = PartitionValues({Literal::Int(1)});
+  auto data_manifest_1 =
+      WriteDataManifest(version, /*snapshot_id=*/1000L,
+                        {MakeEntry(ManifestStatus::kAdded, /*snapshot_id=*/1000L,
+                                   /*sequence_number=*/1,
+                                   MakeDataFile("/path/to/data1.parquet", partition_a,
+                                                partitioned_spec_->spec_id()))},
+                        partitioned_spec_);
+  auto data_manifest_2 =
+      WriteDataManifest(version, /*snapshot_id=*/1001L,
+                        {MakeEntry(ManifestStatus::kAdded, /*snapshot_id=*/1001L,
+                                   /*sequence_number=*/2,
+                                   MakeDataFile("/path/to/data2.parquet", partition_b,
+                                                partitioned_spec_->spec_id()))},
+                        partitioned_spec_);
+
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto group,
+      ManifestGroup::Make(file_io_, schema_, GetSpecsById(),
+                          {std::move(data_manifest_1), std::move(data_manifest_2)}));
+  test::ThreadExecutor executor;
+  group->PlanWith(std::ref(executor));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto iterator, std::move(*group).PlanFilesIterator());
+  ICEBERG_UNWRAP_OR_FAIL(auto tasks, iterator->ToVector());
+
   EXPECT_THAT(GetPaths(tasks), testing::UnorderedElementsAre("/path/to/data1.parquet",
                                                              "/path/to/data2.parquet"));
   EXPECT_EQ(executor.submit_count(), 2);

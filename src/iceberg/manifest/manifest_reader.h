@@ -152,9 +152,15 @@ class ICEBERG_EXPORT SupportsManifestEntryIteration {
   virtual ~SupportsManifestEntryIteration() = default;
 
   /// \brief Lazily read manifest entries.
+  ///
+  /// The returned iterator must own all resources required for iteration and must not
+  /// depend on this reader remaining alive.
   virtual Result<std::unique_ptr<Iterator<ManifestEntry>>> EntriesIterator() = 0;
 
   /// \brief Lazily read only live (non-deleted) manifest entries.
+  ///
+  /// The returned iterator must own all resources required for iteration and must not
+  /// depend on this reader remaining alive.
   virtual Result<std::unique_ptr<Iterator<ManifestEntry>>> LiveEntriesIterator() = 0;
 };
 

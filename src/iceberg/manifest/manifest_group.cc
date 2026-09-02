@@ -162,20 +162,12 @@ class ManifestGroup::FilePlanningIterator final
 
   Result<std::optional<std::shared_ptr<FileScanTask>>> NextImpl() override {
     while (true) {
-      if (!entry_iterator_) {
-        ICEBERG_ASSIGN_OR_RAISE(bool opened, OpenNextManifest());
-        if (!opened) {
-          return std::nullopt;
-        }
-      }
-
-      ICEBERG_ASSIGN_OR_RAISE(auto entry, entry_iterator_->Next());
+      ICEBERG_ASSIGN_OR_RAISE(auto entry, NextEntry());
       if (!entry.has_value()) {
-        entry_iterator_.reset();
-        continue;
+        return std::nullopt;
       }
 
-      auto value = std::move(entry).value();
+      auto [spec_id, value] = std::move(entry).value();
       if (group_->ignore_existing_ && value.status == ManifestStatus::kExisting) {
         IncrementSkippedDataFiles();
         continue;
@@ -210,7 +202,7 @@ class ManifestGroup::FilePlanningIterator final
 
       UpdateResultMetrics(*value.data_file, delete_files);
 
-      ICEBERG_ASSIGN_OR_RAISE(auto residuals, GetResidualEvaluator(current_spec_id_));
+      ICEBERG_ASSIGN_OR_RAISE(auto residuals, GetResidualEvaluator(spec_id));
       ICEBERG_ASSIGN_OR_RAISE(auto residual,
                               residuals->ResidualFor(value.data_file->partition));
 
@@ -227,6 +219,37 @@ class ManifestGroup::FilePlanningIterator final
         delete_index_(std::move(delete_index)),
         data_file_evaluator_(std::move(data_file_evaluator)),
         drop_stats_(drop_stats) {}
+
+  using TaggedEntry = std::pair<int32_t, ManifestEntry>;
+
+  Result<std::optional<TaggedEntry>> NextEntry() {
+    if (!group_->executor_.has_value()) {
+      while (true) {
+        if (!entry_iterator_) {
+          ICEBERG_ASSIGN_OR_RAISE(bool opened, OpenNextManifest());
+          if (!opened) {
+            return std::nullopt;
+          }
+        }
+
+        ICEBERG_ASSIGN_OR_RAISE(auto entry, entry_iterator_->Next());
+        if (!entry.has_value()) {
+          entry_iterator_.reset();
+          continue;
+        }
+        return std::optional<TaggedEntry>{std::in_place, current_spec_id_,
+                                          std::move(entry).value()};
+      }
+    }
+
+    while (next_batch_entry_ == batch_entries_.size()) {
+      ICEBERG_ASSIGN_OR_RAISE(bool loaded, LoadNextManifestBatch());
+      if (!loaded) {
+        return std::nullopt;
+      }
+    }
+    return std::optional<TaggedEntry>{std::move(batch_entries_[next_batch_entry_++])};
+  }
 
   Result<ManifestEvaluator*> GetManifestEvaluator(int32_t spec_id) {
     auto cached = manifest_evaluators_.find(spec_id);
@@ -274,40 +297,80 @@ class ManifestGroup::FilePlanningIterator final
     return result;
   }
 
+  Result<bool> ShouldReadManifest(const ManifestFile& manifest) {
+    ICEBERG_ASSIGN_OR_RAISE(auto evaluator,
+                            GetManifestEvaluator(manifest.partition_spec_id));
+    ICEBERG_ASSIGN_OR_RAISE(bool should_match, evaluator->Evaluate(manifest));
+    if (!should_match ||
+        (group_->ignore_deleted_ && !manifest.has_added_files() &&
+         !manifest.has_existing_files()) ||
+        (group_->ignore_existing_ && !manifest.has_added_files() &&
+         !manifest.has_deleted_files())) {
+      IncrementSkippedDataManifests();
+      return false;
+    }
+
+    if (group_->scan_metrics_) {
+      group_->scan_metrics_->scanned_data_manifests->Increment(1);
+    }
+    return true;
+  }
+
   Result<bool> OpenNextManifest() {
     while (next_manifest_ < group_->data_manifests_.size()) {
       const auto& manifest = group_->data_manifests_[next_manifest_++];
-      const int32_t spec_id = manifest.partition_spec_id;
-
-      ICEBERG_ASSIGN_OR_RAISE(auto evaluator, GetManifestEvaluator(spec_id));
-      ICEBERG_ASSIGN_OR_RAISE(bool should_match, evaluator->Evaluate(manifest));
-      if (!should_match) {
-        IncrementSkippedDataManifests();
+      ICEBERG_ASSIGN_OR_RAISE(bool should_read, ShouldReadManifest(manifest));
+      if (!should_read) {
         continue;
-      }
-      if (group_->ignore_deleted_ && !manifest.has_added_files() &&
-          !manifest.has_existing_files()) {
-        IncrementSkippedDataManifests();
-        continue;
-      }
-      if (group_->ignore_existing_ && !manifest.has_added_files() &&
-          !manifest.has_deleted_files()) {
-        IncrementSkippedDataManifests();
-        continue;
-      }
-
-      if (group_->scan_metrics_) {
-        group_->scan_metrics_->scanned_data_manifests->Increment(1);
       }
 
       ICEBERG_ASSIGN_OR_RAISE(auto reader, group_->MakeReader(manifest));
       ICEBERG_ASSIGN_OR_RAISE(entry_iterator_, group_->ignore_deleted_
                                                    ? reader->LiveEntriesIterator()
                                                    : reader->EntriesIterator());
-      current_spec_id_ = spec_id;
+      current_spec_id_ = manifest.partition_spec_id;
       return true;
     }
     return false;
+  }
+
+  Result<bool> LoadNextManifestBatch() {
+    std::vector<const ManifestFile*> manifests;
+    manifests.reserve(kManifestReadBatchSize);
+    while (next_manifest_ < group_->data_manifests_.size() &&
+           manifests.size() < kManifestReadBatchSize) {
+      const auto& manifest = group_->data_manifests_[next_manifest_++];
+      ICEBERG_ASSIGN_OR_RAISE(bool should_read, ShouldReadManifest(manifest));
+      if (should_read) {
+        manifests.push_back(&manifest);
+      }
+    }
+
+    if (manifests.empty()) {
+      return false;
+    }
+
+    ICEBERG_ASSIGN_OR_RAISE(
+        batch_entries_,
+        ParallelCollect(
+            group_->executor_, manifests,
+            [this](const ManifestFile* manifest) -> Result<std::vector<TaggedEntry>> {
+              ICEBERG_ASSIGN_OR_RAISE(auto reader, group_->MakeReader(*manifest));
+              ICEBERG_ASSIGN_OR_RAISE(auto iterator, group_->ignore_deleted_
+                                                         ? reader->LiveEntriesIterator()
+                                                         : reader->EntriesIterator());
+              ICEBERG_ASSIGN_OR_RAISE(auto entries, iterator->ToVector());
+
+              std::vector<TaggedEntry> tagged_entries;
+              tagged_entries.reserve(entries.size());
+              for (auto& entry : entries) {
+                tagged_entries.emplace_back(manifest->partition_spec_id,
+                                            std::move(entry));
+              }
+              return tagged_entries;
+            }));
+    next_batch_entry_ = 0;
+    return true;
   }
 
   void IncrementSkippedDataManifests() {
@@ -346,9 +409,13 @@ class ManifestGroup::FilePlanningIterator final
   std::unordered_map<int32_t, std::unique_ptr<ManifestEvaluator>> manifest_evaluators_;
   std::unordered_map<int32_t, std::shared_ptr<ResidualEvaluator>> residual_evaluators_;
   std::unique_ptr<Iterator<ManifestEntry>> entry_iterator_;
+  std::vector<TaggedEntry> batch_entries_;
   size_t next_manifest_ = 0;
+  size_t next_batch_entry_ = 0;
   int32_t current_spec_id_ = 0;
   bool drop_stats_;
+
+  static constexpr size_t kManifestReadBatchSize = 32;
 };
 
 ManifestGroup& ManifestGroup::FilterData(std::shared_ptr<Expression> filter) {
@@ -475,7 +542,7 @@ Result<std::vector<std::shared_ptr<FileScanTask>>> ManifestGroup::PlanFiles() {
 }
 
 Result<std::unique_ptr<Iterator<std::shared_ptr<FileScanTask>>>>
-ManifestGroup::PlanFilesIterator() {
+ManifestGroup::PlanFilesIterator() && {
   auto group = std::make_unique<ManifestGroup>(std::move(*this));
   return FilePlanningIterator::Make(std::move(group));
 }

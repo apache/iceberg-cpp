@@ -127,7 +127,10 @@ class ReportingFileTaskIterator final : public Iterator<std::shared_ptr<FileScan
     auto result = iterator_->Next();
     planning_duration_ += std::chrono::duration_cast<std::chrono::nanoseconds>(
         std::chrono::steady_clock::now() - start);
-    if (result.has_value() && !result.value().has_value()) {
+    if (!result.has_value()) {
+      // Match PlanFiles(): failed planning does not emit a successful scan report.
+      finalized_ = true;
+    } else if (!result.value().has_value()) {
       Finalize();
     }
     return result;
@@ -763,7 +766,7 @@ DataTableScan::PlanFilesIterator() const {
     manifest_group->IgnoreResiduals();
   }
 
-  ICEBERG_ASSIGN_OR_RAISE(auto iterator, manifest_group->PlanFilesIterator());
+  ICEBERG_ASSIGN_OR_RAISE(auto iterator, std::move(*manifest_group).PlanFilesIterator());
   if (!planning_start.has_value()) {
     return iterator;
   }
@@ -777,10 +780,9 @@ DataTableScan::PlanFilesIterator() const {
     return iterator;
   }
 
-  return std::unique_ptr<Iterator<std::shared_ptr<FileScanTask>>>(
-      new ReportingFileTaskIterator(std::move(iterator), std::move(scan_metrics),
-                                    planning_duration, context_.metrics_reporter,
-                                    std::move(report).value()));
+  return std::make_unique<ReportingFileTaskIterator>(
+      std::move(iterator), std::move(scan_metrics), planning_duration,
+      context_.metrics_reporter, std::move(report).value());
 }
 
 // Friend function template for IncrementalScan that implements the shared PlanFiles
