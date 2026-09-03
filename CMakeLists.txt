@@ -30,7 +30,7 @@ project(Iceberg
 
 include(IcebergBuildUtils)
 iceberg_configure_version_header("${CMAKE_CURRENT_SOURCE_DIR}/src/iceberg/version.h.in"
-                                 "${CMAKE_BINARY_DIR}/src/iceberg/version.h")
+                                 "${PROJECT_BINARY_DIR}/src/iceberg/version.h")
 
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
