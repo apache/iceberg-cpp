@@ -80,7 +80,6 @@ endfunction()
 #
 # ICEBERG_ARROW_URL          - Apache Arrow tarball URL
 # ICEBERG_AVRO_URL           - Apache Avro tarball URL
-# ICEBERG_AVRO_GIT_URL       - Apache Avro git repository URL
 # ICEBERG_NANOARROW_URL      - Nanoarrow tarball URL
 # ICEBERG_CROARING_URL       - CRoaring tarball URL
 # ICEBERG_UTF8PROC_URL       - utf8proc tarball URL
@@ -104,6 +103,21 @@ else()
       "https://www.apache.org/dyn/closer.lua?action=download&filename=/arrow/arrow-${ICEBERG_ARROW_BUILD_VERSION}/apache-arrow-${ICEBERG_ARROW_BUILD_VERSION}.tar.gz"
       "https://downloads.apache.org/arrow/arrow-${ICEBERG_ARROW_BUILD_VERSION}/apache-arrow-${ICEBERG_ARROW_BUILD_VERSION}.tar.gz"
       "https://archive.apache.org/dist/arrow/arrow-${ICEBERG_ARROW_BUILD_VERSION}/apache-arrow-${ICEBERG_ARROW_BUILD_VERSION}.tar.gz"
+  )
+endif()
+
+set(ICEBERG_AVRO_BUILD_VERSION "1.12.2")
+set(ICEBERG_AVRO_BUILD_SHA512_CHECKSUM
+    "a31ad410d75c0e7f58fc9d9b7e7989dae12f328524806f6d64fdae22ddb9112fe2adc5fb74ee83df2135b87bd6618e8765a823220b2a0a162d1684192b9926da"
+)
+
+if(DEFINED ENV{ICEBERG_AVRO_URL})
+  set(AVRO_SOURCE_URL "$ENV{ICEBERG_AVRO_URL}")
+else()
+  set(AVRO_SOURCE_URL
+      "https://www.apache.org/dyn/closer.lua?action=download&filename=/avro/avro-${ICEBERG_AVRO_BUILD_VERSION}/avro-src-${ICEBERG_AVRO_BUILD_VERSION}.tar.gz"
+      "https://downloads.apache.org/avro/avro-${ICEBERG_AVRO_BUILD_VERSION}/avro-src-${ICEBERG_AVRO_BUILD_VERSION}.tar.gz"
+      "https://archive.apache.org/dist/avro/avro-${ICEBERG_AVRO_BUILD_VERSION}/avro-src-${ICEBERG_AVRO_BUILD_VERSION}.tar.gz"
   )
 endif()
 
@@ -294,34 +308,16 @@ function(resolve_avro_dependency)
       OFF
       CACHE BOOL "" FORCE)
 
-  if(DEFINED ENV{ICEBERG_AVRO_URL})
-    # Support custom tarball URL
-    fetchcontent_declare(avro-cpp
-                         ${FC_DECLARE_COMMON_OPTIONS}
-                         URL $ENV{ICEBERG_AVRO_URL}
-                             SOURCE_SUBDIR
-                             lang/c++
-                             FIND_PACKAGE_ARGS
-                             NAMES
-                             avro-cpp
-                             CONFIG)
-  else()
-    if(DEFINED ENV{ICEBERG_AVRO_GIT_URL})
-      set(AVRO_GIT_REPOSITORY "$ENV{ICEBERG_AVRO_GIT_URL}")
-    else()
-      set(AVRO_GIT_REPOSITORY "https://github.com/apache/avro.git")
-    endif()
-    fetchcontent_declare(avro-cpp
-                         ${FC_DECLARE_COMMON_OPTIONS}
-                         GIT_REPOSITORY ${AVRO_GIT_REPOSITORY}
-                         GIT_TAG 997d50d312613e921598aaed30b082f9bcf9c6ea
-                         SOURCE_SUBDIR
-                         lang/c++
-                         FIND_PACKAGE_ARGS
-                         NAMES
-                         avro-cpp
-                         CONFIG)
-  endif()
+  fetchcontent_declare(avro-cpp
+                       ${FC_DECLARE_COMMON_OPTIONS}
+                       URL ${AVRO_SOURCE_URL}
+                       URL_HASH "SHA512=${ICEBERG_AVRO_BUILD_SHA512_CHECKSUM}"
+                       SOURCE_SUBDIR
+                       lang/c++
+                       FIND_PACKAGE_ARGS
+                       NAMES
+                       avro-cpp
+                       CONFIG)
 
   fetchcontent_makeavailable(avro-cpp)
 

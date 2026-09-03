@@ -150,7 +150,6 @@ If you experience network issues when downloading dependencies, you can customiz
 
 - `ICEBERG_ARROW_URL`: Apache Arrow tarball URL
 - `ICEBERG_AVRO_URL`: Apache Avro tarball URL
-- `ICEBERG_AVRO_GIT_URL`: Apache Avro git repository URL
 - `ICEBERG_NANOARROW_URL`: Nanoarrow tarball URL
 - `ICEBERG_CROARING_URL`: CRoaring tarball URL
 - `ICEBERG_UTF8PROC_URL`: utf8proc tarball URL
