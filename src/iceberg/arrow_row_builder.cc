@@ -75,6 +75,8 @@ ArrowRowBuilder::~ArrowRowBuilder() {
 
 int64_t ArrowRowBuilder::num_columns() const { return array_.n_children; }
 
+int64_t ArrowRowBuilder::num_rows() const { return array_.length; }
+
 ArrowArray* ArrowRowBuilder::column(int64_t index) {
   if (index < 0 || index >= array_.n_children) {
     return nullptr;
