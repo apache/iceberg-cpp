@@ -229,6 +229,8 @@ struct SessionContext;
 
 /// \brief Task execution.
 class Executor;
+template <typename T>
+class Iterator;
 
 /// \brief Metrics reporting.
 class MetricsReporter;
