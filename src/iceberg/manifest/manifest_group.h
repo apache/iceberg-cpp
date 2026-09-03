@@ -145,7 +145,7 @@ class ICEBERG_EXPORT ManifestGroup : public ErrorCollector {
   /// manifests in each batch are opened in parallel, while entries are consumed one
   /// manifest at a time. Creating the iterator consumes this group's configuration, so
   /// this method may only be called on an rvalue.
-  Result<std::unique_ptr<Iterator<std::shared_ptr<FileScanTask>>>> PlanFilesIterator() &&;
+  Result<FileScanTaskIterator> PlanFilesIterator() &&;
 
   /// \brief Get all matching manifest entries.
   Result<std::vector<ManifestEntry>> Entries();

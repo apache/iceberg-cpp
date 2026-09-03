@@ -468,8 +468,7 @@ class ICEBERG_EXPORT DataTableScan : public TableScan {
   ///
   /// Unlike PlanFiles(), this method does not materialize all manifest entries and scan
   /// tasks. The iterator owns its planning resources and can outlive this scan.
-  Result<std::unique_ptr<Iterator<std::shared_ptr<FileScanTask>>>> PlanFilesIterator()
-      const;
+  Result<FileScanTaskIterator> PlanFilesIterator() const;
 
  private:
   Status ReportScan(const Snapshot& snapshot, const ScanMetrics& scan_metrics) const;

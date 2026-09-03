@@ -134,7 +134,7 @@ ManifestGroup& ManifestGroup::operator=(ManifestGroup&&) noexcept = default;
 class ManifestGroup::FilePlanningIterator final
     : public Iterator<std::shared_ptr<FileScanTask>> {
  public:
-  static Result<std::unique_ptr<Iterator<std::shared_ptr<FileScanTask>>>> Make(
+  static Result<FileScanTaskIterator> Make(
       std::unique_ptr<ManifestGroup> group) {
     ICEBERG_RETURN_UNEXPECTED(group->CheckErrors());
 
@@ -153,7 +153,7 @@ class ManifestGroup::FilePlanningIterator final
                           group->case_sensitive_));
     }
 
-    return std::unique_ptr<Iterator<std::shared_ptr<FileScanTask>>>(
+    return FileScanTaskIterator(
         new FilePlanningIterator(std::move(group), std::move(delete_index),
                                  std::move(data_file_evaluator), drop_stats));
   }
@@ -310,11 +310,14 @@ class ManifestGroup::FilePlanningIterator final
     ICEBERG_ASSIGN_OR_RAISE(auto evaluator,
                             GetManifestEvaluator(manifest.partition_spec_id));
     ICEBERG_ASSIGN_OR_RAISE(bool should_match, evaluator->Evaluate(manifest));
-    if (!should_match ||
-        (group_->ignore_deleted_ && !manifest.has_added_files() &&
-         !manifest.has_existing_files()) ||
-        (group_->ignore_existing_ && !manifest.has_added_files() &&
-         !manifest.has_deleted_files())) {
+    const bool has_non_deleted_files =
+        manifest.has_added_files() || manifest.has_existing_files();
+    const bool has_non_existing_files =
+        manifest.has_added_files() || manifest.has_deleted_files();
+    const bool has_only_ignored_files =
+        (group_->ignore_deleted_ && !has_non_deleted_files) ||
+        (group_->ignore_existing_ && !has_non_existing_files);
+    if (!should_match || has_only_ignored_files) {
       IncrementSkippedDataManifests();
       return false;
     }
@@ -553,8 +556,7 @@ Result<std::vector<std::shared_ptr<FileScanTask>>> ManifestGroup::PlanFiles() {
   return file_tasks;
 }
 
-Result<std::unique_ptr<Iterator<std::shared_ptr<FileScanTask>>>>
-ManifestGroup::PlanFilesIterator() && {
+Result<FileScanTaskIterator> ManifestGroup::PlanFilesIterator() && {
   auto group = std::make_unique<ManifestGroup>(std::move(*this));
   return FilePlanningIterator::Make(std::move(group));
 }

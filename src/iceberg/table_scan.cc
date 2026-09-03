@@ -110,7 +110,7 @@ Result<ScanReport> MakeScanReport(const DataTableScan& scan, const Snapshot& sna
 class ReportingFileTaskIterator final : public Iterator<std::shared_ptr<FileScanTask>> {
  public:
   ReportingFileTaskIterator(
-      std::unique_ptr<Iterator<std::shared_ptr<FileScanTask>>> iterator,
+      FileScanTaskIterator iterator,
       std::shared_ptr<ScanMetrics> scan_metrics,
       std::chrono::nanoseconds planning_duration,
       std::shared_ptr<MetricsReporter> reporter, ScanReport report)
@@ -147,7 +147,7 @@ class ReportingFileTaskIterator final : public Iterator<std::shared_ptr<FileScan
     std::ignore = reporter_->Report(report_);
   }
 
-  std::unique_ptr<Iterator<std::shared_ptr<FileScanTask>>> iterator_;
+  FileScanTaskIterator iterator_;
   std::shared_ptr<ScanMetrics> scan_metrics_;
   std::chrono::nanoseconds planning_duration_;
   std::shared_ptr<MetricsReporter> reporter_;
@@ -721,8 +721,7 @@ Result<std::vector<std::shared_ptr<FileScanTask>>> DataTableScan::PlanFiles() co
   return tasks;
 }
 
-Result<std::unique_ptr<Iterator<std::shared_ptr<FileScanTask>>>>
-DataTableScan::PlanFilesIterator() const {
+Result<FileScanTaskIterator> DataTableScan::PlanFilesIterator() const {
   ICEBERG_ASSIGN_OR_RAISE(auto snapshot, this->snapshot());
   if (!snapshot) {
     return std::make_unique<EmptyIterator<std::shared_ptr<FileScanTask>>>();
