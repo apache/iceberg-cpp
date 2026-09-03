@@ -242,8 +242,7 @@ Result<int32_t> GetFieldId(const ArrowSchema& schema) {
   std::string_view field_id(field_id_value.data, field_id_value.size_bytes);
   auto field_id_result = StringUtils::ParseNumber<int32_t>(field_id);
   if (!field_id_result.has_value()) {
-    return InvalidSchema(
-        "Invalid Arrow field ID: '{}'", field_id);
+    return InvalidSchema("Invalid Arrow field ID: '{}'", field_id);
   }
 
   return field_id_result.value();
