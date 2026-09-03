@@ -29,7 +29,6 @@
 #include <vector>
 
 #include "iceberg/result.h"
-#include "iceberg/util/macros.h"
 
 namespace iceberg {
 
@@ -58,9 +57,8 @@ class Iterator {
       static_assert(std::is_copy_constructible_v<T>,
                     "Iterator::ToVector requires T to be move- or copy-constructible");
 
-      // A vector cannot grow portably when T has an explicitly deleted move
-      // constructor. Stage copy-only values in a deque, then use vector's
-      // forward-range constructor to allocate the final storage once.
+      // Stage copy-only values in a deque to avoid copying previously collected
+      // values during growth, then allocate the final vector storage once.
       std::deque<T> values;
       while (true) {
         auto result = Next();

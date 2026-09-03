@@ -49,6 +49,7 @@ class CopyOnly {
 static_assert(std::is_copy_constructible_v<CopyOnly>);
 static_assert(!std::is_move_constructible_v<CopyOnly>);
 
+// Exercises ToVector() with values that can be copied but not moved.
 class CopyOnlyIterator final : public Iterator<CopyOnly> {
  public:
   Result<std::optional<CopyOnly>> Next() override {
@@ -62,24 +63,33 @@ class CopyOnlyIterator final : public Iterator<CopyOnly> {
   int next_ = 0;
 };
 
+// Exercises ToVector() with values that can be moved but not copied.
 class MoveOnlyIterator final : public Iterator<std::unique_ptr<int>> {
  public:
   Result<std::optional<std::unique_ptr<int>>> Next() override {
     if (next_ == 3) {
-      return Result<std::optional<std::unique_ptr<int>>>(std::in_place,
-                                                         std::nullopt);
+      return Result<std::optional<std::unique_ptr<int>>>(std::in_place, std::nullopt);
     }
-    return Result<std::optional<std::unique_ptr<int>>>(
-        std::in_place, std::in_place, std::make_unique<int>(next_++));
+    return Result<std::optional<std::unique_ptr<int>>>(std::in_place, std::in_place,
+                                                       std::make_unique<int>(next_++));
   }
 
  private:
   int next_ = 0;
 };
 
+// Exercises ToVector() error propagation after some values have been consumed.
 class FailingIterator final : public Iterator<int> {
  public:
-  Result<std::optional<int>> Next() override { return Invalid("iteration failed"); }
+  Result<std::optional<int>> Next() override {
+    if (next_ < 2) {
+      return Result<std::optional<int>>(std::in_place, std::in_place, next_++);
+    }
+    return Invalid("iteration failed");
+  }
+
+ private:
+  int next_ = 0;
 };
 
 TEST(IteratorTest, ToVectorSupportsCopyOnlyValues) {
@@ -104,8 +114,12 @@ TEST(IteratorTest, ToVectorSupportsMoveOnlyValues) {
   EXPECT_EQ(*values[2], 2);
 }
 
-TEST(IteratorTest, ToVectorPropagatesErrors) {
+TEST(IteratorTest, ToVectorPropagatesErrorsAfterPartialConsumption) {
   FailingIterator iterator;
+
+  ICEBERG_UNWRAP_OR_FAIL(auto first, iterator.Next());
+  ASSERT_TRUE(first.has_value());
+  EXPECT_EQ(first.value(), 0);
 
   auto result = iterator.ToVector();
 
