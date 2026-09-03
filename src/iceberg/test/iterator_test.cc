@@ -51,22 +51,25 @@ static_assert(!std::is_move_constructible_v<CopyOnly>);
 
 // Exercises ToVector() with values that can be copied but not moved.
 class CopyOnlyIterator final : public Iterator<CopyOnly> {
- public:
-  Result<std::optional<CopyOnly>> Next() override {
+ private:
+  Result<std::optional<CopyOnly>> NextImpl() override {
     if (next_ == 3) {
       return Result<std::optional<CopyOnly>>(std::in_place, std::nullopt);
     }
     return Result<std::optional<CopyOnly>>(std::in_place, std::in_place, next_++);
   }
 
- private:
   int next_ = 0;
 };
 
 // Exercises ToVector() with values that can be moved but not copied.
 class MoveOnlyIterator final : public Iterator<std::unique_ptr<int>> {
  public:
-  Result<std::optional<std::unique_ptr<int>>> Next() override {
+  int calls() const { return calls_; }
+
+ private:
+  Result<std::optional<std::unique_ptr<int>>> NextImpl() override {
+    ++calls_;
     if (next_ == 3) {
       return Result<std::optional<std::unique_ptr<int>>>(std::in_place, std::nullopt);
     }
@@ -74,23 +77,32 @@ class MoveOnlyIterator final : public Iterator<std::unique_ptr<int>> {
                                                        std::make_unique<int>(next_++));
   }
 
- private:
   int next_ = 0;
+  int calls_ = 0;
 };
 
 // Exercises ToVector() error propagation after some values have been consumed.
 class FailingIterator final : public Iterator<int> {
  public:
-  Result<std::optional<int>> Next() override {
+  int calls() const { return calls_; }
+
+ private:
+  Result<std::optional<int>> NextImpl() override {
+    ++calls_;
     if (next_ < 2) {
       return Result<std::optional<int>>(std::in_place, std::in_place, next_++);
     }
     return Invalid("iteration failed");
   }
 
- private:
   int next_ = 0;
+  int calls_ = 0;
 };
+
+static_assert(std::is_move_constructible_v<CopyOnlyIterator>);
+static_assert(std::is_move_assignable_v<CopyOnlyIterator>);
+static_assert(std::is_move_constructible_v<MoveOnlyIterator>);
+static_assert(std::is_move_assignable_v<MoveOnlyIterator>);
 
 TEST(IteratorTest, ToVectorSupportsCopyOnlyValues) {
   CopyOnlyIterator iterator;
@@ -114,6 +126,20 @@ TEST(IteratorTest, ToVectorSupportsMoveOnlyValues) {
   EXPECT_EQ(*values[2], 2);
 }
 
+TEST(IteratorTest, NextRemainsAtEndAfterExhaustion) {
+  MoveOnlyIterator iterator;
+  ICEBERG_UNWRAP_OR_FAIL(auto values, iterator.ToVector());
+  ASSERT_EQ(values.size(), 3);
+  EXPECT_EQ(iterator.calls(), 4);
+
+  for (int i = 0; i < 2; ++i) {
+    auto result = iterator.Next();
+    ASSERT_TRUE(result.has_value());
+    EXPECT_FALSE(result->has_value());
+  }
+  EXPECT_EQ(iterator.calls(), 4);
+}
+
 TEST(IteratorTest, ToVectorPropagatesErrorsAfterPartialConsumption) {
   FailingIterator iterator;
 
@@ -125,6 +151,21 @@ TEST(IteratorTest, ToVectorPropagatesErrorsAfterPartialConsumption) {
 
   EXPECT_THAT(result, IsError(ErrorKind::kInvalid));
   EXPECT_THAT(result, HasErrorMessage("iteration failed"));
+}
+
+TEST(IteratorTest, NextRepeatsErrorWithoutAdvancing) {
+  FailingIterator iterator;
+  auto first_error = iterator.ToVector();
+  EXPECT_THAT(first_error, IsError(ErrorKind::kInvalid));
+  EXPECT_THAT(first_error, HasErrorMessage("iteration failed"));
+  EXPECT_EQ(iterator.calls(), 3);
+
+  for (int i = 0; i < 2; ++i) {
+    auto result = iterator.Next();
+    EXPECT_THAT(result, IsError(ErrorKind::kInvalid));
+    EXPECT_THAT(result, HasErrorMessage("iteration failed"));
+  }
+  EXPECT_EQ(iterator.calls(), 3);
 }
 
 }  // namespace

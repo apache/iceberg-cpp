@@ -37,6 +37,8 @@ namespace iceberg {
 /// Iterator implementations own any resources needed to produce values. Destroying an
 /// iterator releases those resources, including when iteration stops before reaching the
 /// end. Iterators are not thread-safe unless an implementation explicitly says otherwise.
+/// Once Next() returns an error or std::nullopt, the iterator is terminal. Subsequent
+/// calls return the same terminal result without invoking the implementation again.
 ///
 /// \tparam T Value returned by the iterator.
 template <typename T>
@@ -47,9 +49,29 @@ class Iterator {
   Iterator() = default;
   Iterator(const Iterator&) = delete;
   Iterator& operator=(const Iterator&) = delete;
+  Iterator(Iterator&&) noexcept = default;
+  Iterator& operator=(Iterator&&) noexcept = default;
 
   /// \brief Return the next value, or std::nullopt when the iterator is exhausted.
-  virtual Result<std::optional<T>> Next() = 0;
+  ///
+  /// After this method returns an error or std::nullopt, subsequent calls return the same
+  /// terminal result without invoking NextImpl().
+  virtual Result<std::optional<T>> Next() final {
+    if (error_.has_value()) {
+      return std::unexpected(*error_);
+    }
+    if (finished_) {
+      return std::nullopt;
+    }
+
+    auto result = NextImpl();
+    if (!result.has_value()) {
+      error_ = result.error();
+    } else if (!result.value().has_value()) {
+      finished_ = true;
+    }
+    return result;
+  }
 
   /// \brief Consume the remaining values into a vector.
   Result<std::vector<T>> ToVector() {
@@ -86,6 +108,17 @@ class Iterator {
       }
     }
   }
+
+ protected:
+  /// \brief Produce the next value for Next().
+  ///
+  /// Implementations must return std::nullopt when exhausted. Next() makes the
+  /// terminal state sticky, so implementations are not called after exhaustion or error.
+  virtual Result<std::optional<T>> NextImpl() = 0;
+
+ private:
+  bool finished_ = false;
+  std::optional<Error> error_;
 };
 
 }  // namespace iceberg
