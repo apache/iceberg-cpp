@@ -43,7 +43,7 @@ namespace iceberg {
 /// This implementation supports lazy reader creation and filtering based on
 /// partition expressions, row expressions, and partition sets. Following the
 /// Java implementation pattern.
-class ManifestReaderImpl : public ManifestReader {
+class ManifestReaderImpl : public ManifestReader, public SupportsManifestEntryIteration {
  public:
   /// \brief Construct a ManifestReaderImpl for lazy initialization.
   ///
@@ -66,6 +66,10 @@ class ManifestReaderImpl : public ManifestReader {
 
   Result<std::vector<ManifestEntry>> LiveEntries() override;
 
+  Result<std::unique_ptr<Iterator<ManifestEntry>>> EntriesIterator() override;
+
+  Result<std::unique_ptr<Iterator<ManifestEntry>>> LiveEntriesIterator() override;
+
   ManifestReader& Select(const std::vector<std::string>& columns) override;
 
   ManifestReader& FilterPartitions(std::shared_ptr<Expression> expr) override;
@@ -81,8 +85,8 @@ class ManifestReaderImpl : public ManifestReader {
   ManifestReader& SkipCounter(std::shared_ptr<Counter> counter) override;
 
  private:
-  /// \brief Read entries with optional live-only filtering.
-  Result<std::vector<ManifestEntry>> ReadEntries(bool only_live);
+  /// \brief Create an entry iterator with optional live-only filtering.
+  Result<std::unique_ptr<Iterator<ManifestEntry>>> MakeEntriesIterator(bool only_live);
 
   /// \brief Lazily open the underlying Avro reader with appropriate schema projection.
   Status OpenReader(std::shared_ptr<Schema> projection);
@@ -93,11 +97,11 @@ class ManifestReaderImpl : public ManifestReader {
   /// \brief Check if there's a non-trivial row filter.
   bool HasRowFilter() const;
 
-  /// \brief Get or create the partition evaluator.
-  Result<Evaluator*> GetEvaluator();
+  /// \brief Get or create and transfer ownership of the partition evaluator.
+  Result<std::unique_ptr<Evaluator>> TakeEvaluator();
 
-  /// \brief Get or create the metrics evaluator.
-  Result<InclusiveMetricsEvaluator*> GetMetricsEvaluator();
+  /// \brief Get or create and transfer ownership of the metrics evaluator.
+  Result<std::unique_ptr<InclusiveMetricsEvaluator>> TakeMetricsEvaluator();
 
   /// \brief Check if a partition is in the partition set.
   Result<bool> InPartitionSet(const DataFile& file) const;
@@ -108,7 +112,7 @@ class ManifestReaderImpl : public ManifestReader {
   const std::shared_ptr<FileIO> file_io_;
   const std::shared_ptr<Schema> schema_;
   const std::shared_ptr<PartitionSpec> spec_;
-  const std::unique_ptr<InheritableMetadata> inheritable_metadata_;
+  const std::shared_ptr<InheritableMetadata> inheritable_metadata_;
   std::optional<int64_t> first_row_id_;
   bool is_committed_;
 

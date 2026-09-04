@@ -48,6 +48,7 @@ namespace {
 class CapturingReporter final : public MetricsReporter {
  public:
   Status Report(const MetricsReport& report) override {
+    ++report_count_;
     if (std::holds_alternative<ScanReport>(report)) {
       last_ = std::get<ScanReport>(report);
     }
@@ -55,9 +56,11 @@ class CapturingReporter final : public MetricsReporter {
   }
 
   const std::optional<ScanReport>& last() const { return last_; }
+  int report_count() const { return report_count_; }
 
  private:
   std::optional<ScanReport> last_;
+  int report_count_ = 0;
 };
 
 }  // namespace
@@ -239,6 +242,72 @@ TEST_P(ScanPlanningMetricsTest, ReportsToTableAndScanReporters) {
   EXPECT_EQ(m.result_data_files->value, 1);
   ASSERT_TRUE(scan_reporter->last().has_value());
   EXPECT_EQ(scan_reporter->last()->table_name, "test.table");
+}
+
+TEST_P(ScanPlanningMetricsTest, IteratorReportsWhenDestroyedEarly) {
+  auto version = GetParam();
+  constexpr int64_t kSnapshotId = 2010L;
+  const auto part = PartitionValues({Literal::Int(0)});
+
+  auto data_manifest = WriteDataManifest(
+      version, kSnapshotId,
+      {MakeEntry(
+           ManifestStatus::kAdded, kSnapshotId, /*sequence_number=*/1,
+           MakeDataFile("/data/file_a.parquet", part, partitioned_spec_->spec_id())),
+       MakeEntry(
+           ManifestStatus::kAdded, kSnapshotId, /*sequence_number=*/1,
+           MakeDataFile("/data/file_b.parquet", part, partitioned_spec_->spec_id()))},
+      partitioned_spec_);
+  auto manifest_list =
+      WriteManifestList(version, kSnapshotId, /*sequence_number=*/1, {data_manifest});
+  auto metadata =
+      BuildMetadata(version, kSnapshotId, /*sequence_number=*/1, manifest_list);
+
+  ICEBERG_UNWRAP_OR_FAIL(auto builder, MakeScanBuilder<DataTableScan>(metadata));
+  builder->ReportWith(reporter_);
+  ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
+  ICEBERG_UNWRAP_OR_FAIL(auto iterator, scan->PlanFilesIterator());
+  scan.reset();
+
+  ICEBERG_UNWRAP_OR_FAIL(auto first, iterator->Next());
+  ASSERT_TRUE(first.has_value());
+  EXPECT_EQ(reporter_->report_count(), 0);
+
+  iterator.reset();
+  ASSERT_EQ(reporter_->report_count(), 1);
+  ASSERT_TRUE(reporter_->last().has_value());
+  const auto& metrics = reporter_->last()->scan_metrics;
+  ASSERT_TRUE(metrics.result_data_files.has_value());
+  EXPECT_EQ(metrics.result_data_files->value, 1);
+}
+
+TEST_P(ScanPlanningMetricsTest, IteratorDoesNotReportFailedPlanning) {
+  auto version = GetParam();
+  constexpr int64_t kSnapshotId = 2011L;
+  const auto part = PartitionValues({Literal::Int(0)});
+
+  auto missing_manifest = WriteDataManifest(
+      version, kSnapshotId,
+      {MakeEntry(ManifestStatus::kAdded, kSnapshotId, /*sequence_number=*/1,
+                 MakeDataFile("/data/file.parquet", part, partitioned_spec_->spec_id()))},
+      partitioned_spec_);
+  missing_manifest.manifest_path = "missing-data-manifest.avro";
+  auto manifest_list =
+      WriteManifestList(version, kSnapshotId, /*sequence_number=*/1, {missing_manifest});
+  auto metadata =
+      BuildMetadata(version, kSnapshotId, /*sequence_number=*/1, manifest_list);
+
+  ICEBERG_UNWRAP_OR_FAIL(auto builder, MakeScanBuilder<DataTableScan>(metadata));
+  builder->ReportWith(reporter_);
+  ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
+  ICEBERG_UNWRAP_OR_FAIL(auto iterator, scan->PlanFilesIterator());
+
+  auto next = iterator->Next();
+  EXPECT_FALSE(next.has_value());
+  EXPECT_EQ(reporter_->report_count(), 0);
+
+  iterator.reset();
+  EXPECT_EQ(reporter_->report_count(), 0);
 }
 
 TEST_P(ScanPlanningMetricsTest, ScanReportFilterUsesBoundCaseInsensitiveResolution) {

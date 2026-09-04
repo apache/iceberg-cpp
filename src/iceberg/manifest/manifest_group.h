@@ -37,6 +37,7 @@
 #include "iceberg/type_fwd.h"
 #include "iceberg/util/error_collector.h"
 #include "iceberg/util/executor.h"
+#include "iceberg/util/iterator.h"
 
 namespace iceberg {
 
@@ -136,6 +137,16 @@ class ICEBERG_EXPORT ManifestGroup : public ErrorCollector {
   /// \brief Plan scan tasks for all matching data files.
   Result<std::vector<std::shared_ptr<FileScanTask>>> PlanFiles();
 
+  /// \brief Lazily plan scan tasks for matching data files.
+  ///
+  /// The returned iterator owns the planning state and may outlive this ManifestGroup.
+  /// It reads one bounded manifest batch at a time instead of materializing all manifest
+  /// entries and scan tasks. When PlanWith() configures an executor, entry iterators for
+  /// manifests in each batch are opened in parallel, while entries are consumed one
+  /// manifest at a time. Creating the iterator consumes this group's configuration, so
+  /// this method may only be called on an rvalue.
+  Result<FileScanTaskIterator> PlanFilesIterator() &&;
+
   /// \brief Get all matching manifest entries.
   Result<std::vector<ManifestEntry>> Entries();
 
@@ -151,6 +162,8 @@ class ICEBERG_EXPORT ManifestGroup : public ErrorCollector {
       const CreateTasksFunction& create_tasks);
 
  private:
+  class FilePlanningIterator;
+
   ManifestGroup(std::shared_ptr<FileIO> io, std::shared_ptr<Schema> schema,
                 std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>> specs_by_id,
                 std::vector<ManifestFile> data_manifests,
@@ -159,6 +172,8 @@ class ICEBERG_EXPORT ManifestGroup : public ErrorCollector {
   Result<std::unordered_map<int32_t, std::vector<ManifestEntry>>> ReadEntries();
 
   Result<std::unique_ptr<ManifestReader>> MakeReader(const ManifestFile& manifest);
+
+  bool PrepareStatsProjection(bool has_equality_deletes);
 
   std::shared_ptr<FileIO> io_;
   std::shared_ptr<Schema> schema_;

@@ -79,7 +79,7 @@ int main(int argc, char** argv) {
   }
 
   auto scan = std::move(scan_result.value());
-  auto plan_result = scan->PlanFiles();
+  auto plan_result = scan->PlanFilesIterator();
   if (!plan_result.has_value()) {
     std::cerr << "Failed to plan files: " << plan_result.error().message << std::endl;
     return 1;
@@ -87,8 +87,18 @@ int main(int argc, char** argv) {
 
   std::cout << "Scan tasks: " << std::endl;
   auto scan_tasks = std::move(plan_result.value());
-  for (const auto& scan_task : scan_tasks) {
-    std::cout << " - " << scan_task->data_file()->file_path << std::endl;
+  while (true) {
+    auto task_result = scan_tasks->Next();
+    if (!task_result.has_value()) {
+      std::cerr << "Failed to plan next file: " << task_result.error().message
+                << std::endl;
+      return 1;
+    }
+    if (!task_result.value().has_value()) {
+      break;
+    }
+    std::cout << " - " << task_result.value().value()->data_file()->file_path
+              << std::endl;
   }
 
   return 0;
