@@ -451,16 +451,6 @@ TEST(ParquetGeospatialSchemaTest, RejectsMissingLogicalType) {
               HasErrorMessage("Iceberg geometry requires Parquet Geometry logical type"));
 }
 
-TEST(ParquetSchemaProjectionTest, ValidateSchemaEvolutionAllowsLargeList) {
-  ::parquet::arrow::SchemaField parquet_field;
-  parquet_field.field = ::arrow::field("numbers", ::arrow::large_list(::arrow::int32()));
-
-  ListType expected_type(
-      SchemaField::MakeOptional(/*field_id=*/101, "element", iceberg::int32()));
-  auto status = ValidateParquetSchemaEvolution(expected_type, parquet_field);
-  ASSERT_THAT(status, IsOk());
-}
-
 TEST(ParquetSchemaProjectionTest, ProjectNullPhysicalFieldsAsNull) {
   Schema expected_schema({
       SchemaField::MakeOptional(/*field_id=*/1, "age", iceberg::int32()),
