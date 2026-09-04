@@ -114,7 +114,8 @@ constexpr std::string_view kParquetFieldIdKey = "PARQUET:field_id";
 
 // Helper to create SchemaManifest from Parquet schema
 ::parquet::arrow::SchemaManifest MakeSchemaManifest(
-    const ::parquet::schema::NodePtr& parquet_schema) {
+    const ::parquet::schema::NodePtr& parquet_schema,
+    ::arrow::Type::type list_type = ::arrow::Type::LIST) {
   static std::vector<std::shared_ptr<::parquet::SchemaDescriptor>> descriptors;
   auto parquet_schema_descriptor = std::make_shared<::parquet::SchemaDescriptor>();
   parquet_schema_descriptor->Init(parquet_schema);
@@ -122,6 +123,7 @@ constexpr std::string_view kParquetFieldIdKey = "PARQUET:field_id";
 
   auto properties = ::parquet::default_arrow_reader_properties();
   properties.set_arrow_extensions_enabled(true);
+  properties.set_list_type(list_type);
 
   ::parquet::arrow::SchemaManifest manifest;
   auto status = ::parquet::arrow::SchemaManifest::Make(parquet_schema_descriptor.get(),
@@ -731,6 +733,38 @@ TEST(ParquetSchemaProjectionTest, ProjectListType) {
   ASSERT_PROJECTED_FIELD(projection.fields[1].children[0], 0);
 
   ASSERT_EQ(SelectedColumnIndices(projection), std::vector<int32_t>({0, 1}));
+}
+
+TEST(ParquetSchemaProjectionTest, ProjectLargeListType) {
+  Schema expected_schema({
+      SchemaField::MakeOptional(
+          /*field_id=*/2, "numbers",
+          std::make_shared<ListType>(SchemaField::MakeOptional(
+              /*field_id=*/101, "element", iceberg::int32()))),
+  });
+
+  auto parquet_schema = MakeGroupNode(
+      "iceberg_schema",
+      {
+          MakeListNode("numbers", MakeInt32Node("element", /*field_id=*/101),
+                       /*field_id=*/2),
+      });
+
+  auto schema_manifest = MakeSchemaManifest(parquet_schema, ::arrow::Type::LARGE_LIST);
+  ASSERT_EQ(schema_manifest.schema_fields[0].field->type()->id(),
+            ::arrow::Type::LARGE_LIST);
+
+  auto projection_result = Project(expected_schema, schema_manifest);
+  ASSERT_THAT(projection_result, IsOk());
+
+  const auto& projection = *projection_result;
+  ASSERT_EQ(projection.fields.size(), 1);
+  ASSERT_PROJECTED_FIELD(projection.fields[0], 0);
+
+  ASSERT_EQ(projection.fields[0].children.size(), 1);
+  ASSERT_PROJECTED_FIELD(projection.fields[0].children[0], 0);
+
+  ASSERT_EQ(SelectedColumnIndices(projection), std::vector<int32_t>({0}));
 }
 
 TEST(ParquetSchemaProjectionTest, ProjectMapType) {
