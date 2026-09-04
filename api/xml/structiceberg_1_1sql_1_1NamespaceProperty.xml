@@ -1,0 +1,66 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1sql_1_1NamespaceProperty" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::sql::NamespaceProperty</compoundname>
+    <includes refid="catalog__store_8h" local="no">catalog_store.h</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1sql_1_1NamespaceProperty_1a4863c14bf493372de7d3a4281ee96ad3" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::sql::NamespaceProperty::key</definition>
+        <argsstring></argsstring>
+        <name>key</name>
+        <qualifiedname>iceberg::sql::NamespaceProperty::key</qualifiedname>
+        <briefdescription>
+<para>Property key. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/catalog_store.h" line="46" column="15" bodyfile="iceberg/catalog/sql/catalog_store.h" bodystart="46" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1sql_1_1NamespaceProperty_1a2d37c4e3b9d9e67b263bb0533385c791" prot="public" static="no" mutable="no">
+        <type>std::optional&lt; std::string &gt;</type>
+        <definition>std::optional&lt;std::string&gt; iceberg::sql::NamespaceProperty::value</definition>
+        <argsstring></argsstring>
+        <name>value</name>
+        <qualifiedname>iceberg::sql::NamespaceProperty::value</qualifiedname>
+        <briefdescription>
+<para>Property value, or <computeroutput>std::nullopt</computeroutput> for SQL NULL. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/catalog_store.h" line="48" column="17" bodyfile="iceberg/catalog/sql/catalog_store.h" bodystart="48" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>A namespace property row. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::sql::NamespaceProperty</label>
+        <link refid="structiceberg_1_1sql_1_1NamespaceProperty"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>key</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="2">
+        <label>std::string</label>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/sql/catalog_store.h" line="44" column="1" bodyfile="iceberg/catalog/sql/catalog_store.h" bodystart="44" bodyend="49"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1sql_1_1NamespaceProperty_1a4863c14bf493372de7d3a4281ee96ad3" prot="public" virt="non-virtual"><scope>iceberg::sql::NamespaceProperty</scope><name>key</name></member>
+      <member refid="structiceberg_1_1sql_1_1NamespaceProperty_1a2d37c4e3b9d9e67b263bb0533385c791" prot="public" virt="non-virtual"><scope>iceberg::sql::NamespaceProperty</scope><name>value</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

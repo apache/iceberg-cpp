@@ -1,0 +1,62 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1Loggers" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::Loggers</compoundname>
+    <includes refid="loggers_8h" local="no">loggers.h</includes>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classiceberg_1_1Loggers_1af1c99e12e428d980dcf180b2219d01b7" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceiceberg_1a9d5594e371beb516b0120e07e69d3af6" kindref="member">Result</ref>&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1Logger" kindref="compound">Logger</ref> &gt; &gt;</type>
+        <definition>static Result&lt; std::unique_ptr&lt; Logger &gt; &gt; iceberg::Loggers::Load</definition>
+        <argsstring>(const std::unordered_map&lt; std::string, std::string &gt; &amp;properties)</argsstring>
+        <name>Load</name>
+        <qualifiedname>iceberg::Loggers::Load</qualifiedname>
+        <param>
+          <type>const std::unordered_map&lt; std::string, std::string &gt; &amp;</type>
+          <declname>properties</declname>
+        </param>
+        <briefdescription>
+<para>Construct and initialize a logger from properties. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/logging/loggers.h" line="57" column="17"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Loggers_1a2513d1a0470c07baba6a4912bf5ccda6" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Status</type>
+        <definition>static Status iceberg::Loggers::Register</definition>
+        <argsstring>(std::string_view logger_type, LoggerFactory factory)</argsstring>
+        <name>Register</name>
+        <qualifiedname>iceberg::Loggers::Register</qualifiedname>
+        <param>
+          <type>std::string_view</type>
+          <declname>logger_type</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceiceberg_1a1ba73ddd6c389ef0c97026147fd71c41" kindref="member">LoggerFactory</ref></type>
+          <declname>factory</declname>
+        </param>
+        <briefdescription>
+<para>Register a factory for <computeroutput>logger_type</computeroutput> (overwrites any existing). </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/logging/loggers.h" line="61" column="17"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Registry of logger factories, mirroring <ref refid="classiceberg_1_1MetricsReporters" kindref="compound">MetricsReporters</ref>. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>Built-in factories: &quot;noop&quot;, &quot;cerr&quot;, and (only when built with ICEBERG_SPDLOG) &quot;spdlog&quot;. When the &quot;logger-impl&quot; property is absent, the default is &quot;spdlog&quot; if compiled in, otherwise &quot;cerr&quot; <ndash/> an intentional divergence from the metrics registry&apos;s noop default (we want logs by default). </para>
+    </detaileddescription>
+    <location file="iceberg/logging/loggers.h" line="54" column="1" bodyfile="iceberg/logging/loggers.h" bodystart="54" bodyend="62"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1Loggers_1af1c99e12e428d980dcf180b2219d01b7" prot="public" virt="non-virtual"><scope>iceberg::Loggers</scope><name>Load</name></member>
+      <member refid="classiceberg_1_1Loggers_1a2513d1a0470c07baba6a4912bf5ccda6" prot="public" virt="non-virtual"><scope>iceberg::Loggers</scope><name>Register</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

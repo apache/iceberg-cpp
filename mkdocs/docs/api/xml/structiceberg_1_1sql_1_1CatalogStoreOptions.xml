@@ -1,0 +1,110 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1sql_1_1CatalogStoreOptions" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::sql::CatalogStoreOptions</compoundname>
+    <includes refid="catalog__store_8h" local="no">catalog_store.h</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1sql_1_1CatalogStoreOptions_1ab66d5b70a3b23d82a0d8dae1689cfe9e" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::sql::CatalogStoreOptions::catalog_name</definition>
+        <argsstring></argsstring>
+        <name>catalog_name</name>
+        <qualifiedname>iceberg::sql::CatalogStoreOptions::catalog_name</qualifiedname>
+        <briefdescription>
+<para>Logical catalog name used to scope rows. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/catalog_store.h" line="54" column="15" bodyfile="iceberg/catalog/sql/catalog_store.h" bodystart="54" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1sql_1_1CatalogStoreOptions_1a1b359f23e89662800bc7669800cd202c" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::sql::CatalogStoreOptions::uri</definition>
+        <argsstring></argsstring>
+        <name>uri</name>
+        <qualifiedname>iceberg::sql::CatalogStoreOptions::uri</qualifiedname>
+        <briefdescription>
+<para>Connector-specific connection string. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/catalog_store.h" line="56" column="15" bodyfile="iceberg/catalog/sql/catalog_store.h" bodystart="56" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1sql_1_1CatalogStoreOptions_1aba95408bbd47d76c72f5878d97330c0b" prot="public" static="no" mutable="no">
+        <type>int32_t</type>
+        <definition>int32_t iceberg::sql::CatalogStoreOptions::max_connections</definition>
+        <argsstring></argsstring>
+        <name>max_connections</name>
+        <qualifiedname>iceberg::sql::CatalogStoreOptions::max_connections</qualifiedname>
+        <initializer>= 1</initializer>
+        <briefdescription>
+<para>Maximum number of database connections to use. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/catalog_store.h" line="58" column="11" bodyfile="iceberg/catalog/sql/catalog_store.h" bodystart="58" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1sql_1_1CatalogStoreOptions_1ab678411ded511db3f4d3fc34ad146e8b" prot="public" static="no" mutable="no">
+        <type>std::unordered_map&lt; std::string, std::string &gt;</type>
+        <definition>std::unordered_map&lt;std::string, std::string&gt; iceberg::sql::CatalogStoreOptions::properties</definition>
+        <argsstring></argsstring>
+        <name>properties</name>
+        <qualifiedname>iceberg::sql::CatalogStoreOptions::properties</qualifiedname>
+        <briefdescription>
+<para>Additional connector-specific properties. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/catalog_store.h" line="60" column="22" bodyfile="iceberg/catalog/sql/catalog_store.h" bodystart="60" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Connection parameters used to construct a built-in <computeroutput><ref refid="classiceberg_1_1sql_1_1CatalogStore" kindref="compound">CatalogStore</ref></computeroutput>. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::sql::CatalogStoreOptions</label>
+        <link refid="structiceberg_1_1sql_1_1CatalogStoreOptions"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>catalog_name</edgelabel>
+          <edgelabel>uri</edgelabel>
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>properties</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="2">
+        <label>std::string</label>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>std::unordered_map&lt; std::string, std::string &gt;</label>
+        <childnode refid="2" relation="usage">
+          <edgelabel>elements</edgelabel>
+          <edgelabel>keys</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/sql/catalog_store.h" line="52" column="1" bodyfile="iceberg/catalog/sql/catalog_store.h" bodystart="52" bodyend="61"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1sql_1_1CatalogStoreOptions_1ab66d5b70a3b23d82a0d8dae1689cfe9e" prot="public" virt="non-virtual"><scope>iceberg::sql::CatalogStoreOptions</scope><name>catalog_name</name></member>
+      <member refid="structiceberg_1_1sql_1_1CatalogStoreOptions_1aba95408bbd47d76c72f5878d97330c0b" prot="public" virt="non-virtual"><scope>iceberg::sql::CatalogStoreOptions</scope><name>max_connections</name></member>
+      <member refid="structiceberg_1_1sql_1_1CatalogStoreOptions_1ab678411ded511db3f4d3fc34ad146e8b" prot="public" virt="non-virtual"><scope>iceberg::sql::CatalogStoreOptions</scope><name>properties</name></member>
+      <member refid="structiceberg_1_1sql_1_1CatalogStoreOptions_1a1b359f23e89662800bc7669800cd202c" prot="public" virt="non-virtual"><scope>iceberg::sql::CatalogStoreOptions</scope><name>uri</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

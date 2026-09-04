@@ -1,0 +1,336 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1rest_1_1auth_1_1OAuth2Util" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::rest::auth::OAuth2Util</compoundname>
+    <includes refid="oauth2__util_8h" local="no">oauth2_util.h</includes>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1auth_1_1OAuth2Util_1a3920f36afc36bda009c380e137e16989" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::rest::auth::OAuth2Util::OAuth2Util</definition>
+        <argsstring>()=delete</argsstring>
+        <name>OAuth2Util</name>
+        <qualifiedname>iceberg::rest::auth::OAuth2Util::OAuth2Util</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/auth/oauth2_util.h" line="41" column="3"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1auth_1_1OAuth2Util_1a3156150cef66b13424dd5f759d015e22" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceiceberg_1a9d5594e371beb516b0120e07e69d3af6" kindref="member">Result</ref>&lt; <ref refid="structiceberg_1_1rest_1_1OAuthTokenResponse" kindref="compound">OAuthTokenResponse</ref> &gt;</type>
+        <definition>static Result&lt; OAuthTokenResponse &gt; iceberg::rest::auth::OAuth2Util::FetchToken</definition>
+        <argsstring>(HttpClient &amp;client, AuthSession &amp;session, const AuthProperties &amp;properties)</argsstring>
+        <name>FetchToken</name>
+        <qualifiedname>iceberg::rest::auth::OAuth2Util::FetchToken</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1rest_1_1HttpClient" kindref="compound">HttpClient</ref> &amp;</type>
+          <declname>client</declname>
+        </param>
+        <param>
+          <type><ref refid="classiceberg_1_1rest_1_1auth_1_1AuthSession" kindref="compound">AuthSession</ref> &amp;</type>
+          <declname>session</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classiceberg_1_1rest_1_1auth_1_1AuthProperties" kindref="compound">AuthProperties</ref> &amp;</type>
+          <declname>properties</declname>
+        </param>
+        <briefdescription>
+<para>Fetch an OAuth2 token using the client_credentials grant type. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>client</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>HTTP client to use for the request. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>session</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Auth session for the request headers. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>properties</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Auth configuration containing credential, scope, token endpoint, and optional OAuth params. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The token response or an error. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/auth/oauth2_util.h" line="50" column="17"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1auth_1_1OAuth2Util_1a326231b0de5927cf8a1070db96186539" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::unordered_map&lt; std::string, std::string &gt;</type>
+        <definition>static std::unordered_map&lt; std::string, std::string &gt; iceberg::rest::auth::OAuth2Util::AuthHeaders</definition>
+        <argsstring>(const std::string &amp;token)</argsstring>
+        <name>AuthHeaders</name>
+        <qualifiedname>iceberg::rest::auth::OAuth2Util::AuthHeaders</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>token</declname>
+        </param>
+        <briefdescription>
+<para>Build auth headers from a token string. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>token</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Bearer token string (may be empty). </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Headers map with Authorization header if token is non-empty. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/auth/oauth2_util.h" line="57" column="29"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1auth_1_1OAuth2Util_1a83d73ea2446bb080850b13b6c75c128b" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceiceberg_1a9d5594e371beb516b0120e07e69d3af6" kindref="member">Result</ref>&lt; <ref refid="structiceberg_1_1rest_1_1OAuthTokenResponse" kindref="compound">OAuthTokenResponse</ref> &gt;</type>
+        <definition>static Result&lt; OAuthTokenResponse &gt; iceberg::rest::auth::OAuth2Util::ExchangeToken</definition>
+        <argsstring>(HttpClient &amp;client, AuthSession &amp;session, const std::unordered_map&lt; std::string, std::string &gt; &amp;extra_headers, const std::string &amp;subject_token, const std::string &amp;subject_token_type, const std::optional&lt; std::string &gt; &amp;actor_token, const std::optional&lt; std::string &gt; &amp;actor_token_type, const std::string &amp;scope, const std::string &amp;oauth2_server_uri, const std::unordered_map&lt; std::string, std::string &gt; &amp;optional_params)</argsstring>
+        <name>ExchangeToken</name>
+        <qualifiedname>iceberg::rest::auth::OAuth2Util::ExchangeToken</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1rest_1_1HttpClient" kindref="compound">HttpClient</ref> &amp;</type>
+          <declname>client</declname>
+        </param>
+        <param>
+          <type><ref refid="classiceberg_1_1rest_1_1auth_1_1AuthSession" kindref="compound">AuthSession</ref> &amp;</type>
+          <declname>session</declname>
+        </param>
+        <param>
+          <type>const std::unordered_map&lt; std::string, std::string &gt; &amp;</type>
+          <declname>extra_headers</declname>
+        </param>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>subject_token</declname>
+        </param>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>subject_token_type</declname>
+        </param>
+        <param>
+          <type>const std::optional&lt; std::string &gt; &amp;</type>
+          <declname>actor_token</declname>
+        </param>
+        <param>
+          <type>const std::optional&lt; std::string &gt; &amp;</type>
+          <declname>actor_token_type</declname>
+        </param>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>scope</declname>
+        </param>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>oauth2_server_uri</declname>
+        </param>
+        <param>
+          <type>const std::unordered_map&lt; std::string, std::string &gt; &amp;</type>
+          <declname>optional_params</declname>
+        </param>
+        <briefdescription>
+<para>Exchange an OAuth2 token using the RFC 8693 grant type. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>client</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>HTTP client to use for the request. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>session</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Auth session for the request headers. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>extra_headers</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Request headers applied before session authentication. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>subject_token</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Subject token to exchange. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>subject_token_type</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Subject token type. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>actor_token</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Optional actor token. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>actor_token_type</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Optional actor token type. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>scope</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>OAuth2 scope. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>oauth2_server_uri</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Token exchange endpoint. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>optional_params</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Optional OAuth parameters. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The token response or an error. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/auth/oauth2_util.h" line="73" column="17"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1auth_1_1OAuth2Util_1a2c12848aec997c23ebd68d1b2c0c42fa" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::optional&lt; int64_t &gt;</type>
+        <definition>static std::optional&lt; int64_t &gt; iceberg::rest::auth::OAuth2Util::ExpiresAtMillis</definition>
+        <argsstring>(std::string_view token)</argsstring>
+        <name>ExpiresAtMillis</name>
+        <qualifiedname>iceberg::rest::auth::OAuth2Util::ExpiresAtMillis</qualifiedname>
+        <param>
+          <type>std::string_view</type>
+          <declname>token</declname>
+        </param>
+        <briefdescription>
+<para>Extract expiration time from a JWT token. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Decodes the JWT payload (base64url) and reads the &quot;exp&quot; claim. Returns std::nullopt if the token is not a valid JWT or has no &quot;exp&quot; claim.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>token</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>A token string containing three dot-separated JWT segments. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Expiration time as milliseconds since epoch, or std::nullopt. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/auth/oauth2_util.h" line="89" column="24"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-static-func">
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1auth_1_1OAuth2Util_1a2a47a7554ddac7d5856ff7287559767a" prot="private" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceiceberg_1a9d5594e371beb516b0120e07e69d3af6" kindref="member">Result</ref>&lt; std::unordered_map&lt; std::string, std::string &gt; &gt;</type>
+        <definition>static Result&lt; std::unordered_map&lt; std::string, std::string &gt; &gt; iceberg::rest::auth::OAuth2Util::TokenExchangeRequest</definition>
+        <argsstring>(const std::string &amp;subject_token, const std::string &amp;subject_token_type, const std::optional&lt; std::string &gt; &amp;actor_token, const std::optional&lt; std::string &gt; &amp;actor_token_type, const std::string &amp;scope, const std::unordered_map&lt; std::string, std::string &gt; &amp;optional_params)</argsstring>
+        <name>TokenExchangeRequest</name>
+        <qualifiedname>iceberg::rest::auth::OAuth2Util::TokenExchangeRequest</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>subject_token</declname>
+        </param>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>subject_token_type</declname>
+        </param>
+        <param>
+          <type>const std::optional&lt; std::string &gt; &amp;</type>
+          <declname>actor_token</declname>
+        </param>
+        <param>
+          <type>const std::optional&lt; std::string &gt; &amp;</type>
+          <declname>actor_token_type</declname>
+        </param>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>scope</declname>
+        </param>
+        <param>
+          <type>const std::unordered_map&lt; std::string, std::string &gt; &amp;</type>
+          <declname>optional_params</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/auth/oauth2_util.h" line="92" column="17"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>OAuth2 token and authentication utilities. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/rest/auth/oauth2_util.h" line="39" column="1" bodyfile="iceberg/catalog/rest/auth/oauth2_util.h" bodystart="39" bodyend="97"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1rest_1_1auth_1_1OAuth2Util_1a326231b0de5927cf8a1070db96186539" prot="public" virt="non-virtual"><scope>iceberg::rest::auth::OAuth2Util</scope><name>AuthHeaders</name></member>
+      <member refid="classiceberg_1_1rest_1_1auth_1_1OAuth2Util_1a83d73ea2446bb080850b13b6c75c128b" prot="public" virt="non-virtual"><scope>iceberg::rest::auth::OAuth2Util</scope><name>ExchangeToken</name></member>
+      <member refid="classiceberg_1_1rest_1_1auth_1_1OAuth2Util_1a2c12848aec997c23ebd68d1b2c0c42fa" prot="public" virt="non-virtual"><scope>iceberg::rest::auth::OAuth2Util</scope><name>ExpiresAtMillis</name></member>
+      <member refid="classiceberg_1_1rest_1_1auth_1_1OAuth2Util_1a3156150cef66b13424dd5f759d015e22" prot="public" virt="non-virtual"><scope>iceberg::rest::auth::OAuth2Util</scope><name>FetchToken</name></member>
+      <member refid="classiceberg_1_1rest_1_1auth_1_1OAuth2Util_1a3920f36afc36bda009c380e137e16989" prot="public" virt="non-virtual"><scope>iceberg::rest::auth::OAuth2Util</scope><name>OAuth2Util</name></member>
+      <member refid="classiceberg_1_1rest_1_1auth_1_1OAuth2Util_1a2a47a7554ddac7d5856ff7287559767a" prot="private" virt="non-virtual"><scope>iceberg::rest::auth::OAuth2Util</scope><name>TokenExchangeRequest</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

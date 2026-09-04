@@ -1,0 +1,14 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="dir_b7cf026d9e3f55cae42b23722c36a1cb" kind="dir">
+    <compoundname>iceberg/arrow</compoundname>
+    <innerdir refid="dir_b30515858f540bdd12c1f82074ea4abe">iceberg/arrow/s3</innerdir>
+    <innerfile refid="arrow__io__util_8h">arrow_io_util.h</innerfile>
+    <innerfile refid="arrow__register_8h">arrow_register.h</innerfile>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/arrow/"/>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,331 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1puffin_1_1PuffinReader" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::puffin::PuffinReader</compoundname>
+    <includes refid="puffin__reader_8h" local="no">puffin_reader.h</includes>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1puffin_1_1PuffinReader_1a9d5d1bec4922e8a55405191346402f4b" prot="private" static="no" mutable="no">
+        <type>std::unique_ptr&lt; <ref refid="classiceberg_1_1SeekableInputStream" kindref="compound">SeekableInputStream</ref> &gt;</type>
+        <definition>std::unique_ptr&lt;SeekableInputStream&gt; iceberg::puffin::PuffinReader::stream_</definition>
+        <argsstring></argsstring>
+        <name>stream_</name>
+        <qualifiedname>iceberg::puffin::PuffinReader::stream_</qualifiedname>
+        <briefdescription>
+<para>Opened input stream. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/puffin/puffin_reader.h" line="81" column="19" bodyfile="iceberg/puffin/puffin_reader.h" bodystart="81" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1puffin_1_1PuffinReader_1a1fca0d77e8ab89eb663fb34ed27c6158" prot="private" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t iceberg::puffin::PuffinReader::file_size_</definition>
+        <argsstring></argsstring>
+        <name>file_size_</name>
+        <qualifiedname>iceberg::puffin::PuffinReader::file_size_</qualifiedname>
+        <briefdescription>
+<para>Total file size. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/puffin/puffin_reader.h" line="83" column="11" bodyfile="iceberg/puffin/puffin_reader.h" bodystart="83" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1puffin_1_1PuffinReader_1a1e0c215982b5840070a16707640ab224" prot="private" static="no" mutable="no">
+        <type>std::optional&lt; int64_t &gt;</type>
+        <definition>std::optional&lt;int64_t&gt; iceberg::puffin::PuffinReader::known_footer_size_</definition>
+        <argsstring></argsstring>
+        <name>known_footer_size_</name>
+        <qualifiedname>iceberg::puffin::PuffinReader::known_footer_size_</qualifiedname>
+        <briefdescription>
+<para>Known footer size hint (avoids one seek if provided). </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/puffin/puffin_reader.h" line="85" column="17" bodyfile="iceberg/puffin/puffin_reader.h" bodystart="85" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1puffin_1_1PuffinReader_1a58e4b7f7b6b83e4501dd27d22e59bd74" prot="private" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool iceberg::puffin::PuffinReader::closed_</definition>
+        <argsstring></argsstring>
+        <name>closed_</name>
+        <qualifiedname>iceberg::puffin::PuffinReader::closed_</qualifiedname>
+        <initializer>= false</initializer>
+        <briefdescription>
+<para>Whether the reader has been closed. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/puffin/puffin_reader.h" line="87" column="8" bodyfile="iceberg/puffin/puffin_reader.h" bodystart="87" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classiceberg_1_1puffin_1_1PuffinReader_1a6f0cfb1ff8bd4ffbf8612889867b28ab" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceiceberg_1a9d5594e371beb516b0120e07e69d3af6" kindref="member">Result</ref>&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1puffin_1_1PuffinReader" kindref="compound">PuffinReader</ref> &gt; &gt;</type>
+        <definition>static Result&lt; std::unique_ptr&lt; PuffinReader &gt; &gt; iceberg::puffin::PuffinReader::Make</definition>
+        <argsstring>(std::unique_ptr&lt; InputFile &gt; input_file, std::optional&lt; int64_t &gt; footer_size=std::nullopt, std::optional&lt; int64_t &gt; file_size=std::nullopt)</argsstring>
+        <name>Make</name>
+        <qualifiedname>iceberg::puffin::PuffinReader::Make</qualifiedname>
+        <param>
+          <type>std::unique_ptr&lt; <ref refid="classiceberg_1_1InputFile" kindref="compound">InputFile</ref> &gt;</type>
+          <declname>input_file</declname>
+        </param>
+        <param>
+          <type>std::optional&lt; int64_t &gt;</type>
+          <declname>footer_size</declname>
+          <defval>std::nullopt</defval>
+        </param>
+        <param>
+          <type>std::optional&lt; int64_t &gt;</type>
+          <declname>file_size</declname>
+          <defval>std::nullopt</defval>
+        </param>
+        <briefdescription>
+<para>Create a <ref refid="classiceberg_1_1puffin_1_1PuffinReader" kindref="compound">PuffinReader</ref> for the given input file. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>input_file</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The input file to read from. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>footer_size</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Optional known footer size hint to avoid an extra seek. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>file_size</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Optional known file size hint to avoid fetching size. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/puffin/puffin_reader.h" line="48" column="17"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1puffin_1_1PuffinReader_1a42d0436cad7f31d9573d9519f878bec3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::puffin::PuffinReader::~PuffinReader</definition>
+        <argsstring>()</argsstring>
+        <name>~PuffinReader</name>
+        <qualifiedname>iceberg::puffin::PuffinReader::~PuffinReader</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/puffin/puffin_reader.h" line="53" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1puffin_1_1PuffinReader_1a5354edf88915d4133def58b0f614b7e1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceiceberg_1a9d5594e371beb516b0120e07e69d3af6" kindref="member">Result</ref>&lt; <ref refid="structiceberg_1_1puffin_1_1FileMetadata" kindref="compound">FileMetadata</ref> &gt;</type>
+        <definition>Result&lt; FileMetadata &gt; iceberg::puffin::PuffinReader::ReadFileMetadata</definition>
+        <argsstring>()</argsstring>
+        <name>ReadFileMetadata</name>
+        <qualifiedname>iceberg::puffin::PuffinReader::ReadFileMetadata</qualifiedname>
+        <briefdescription>
+<para>Read and return the file metadata from the footer. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/puffin/puffin_reader.h" line="56" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1puffin_1_1PuffinReader_1a49cc2e691d2ecd7325277e289b2e8535" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceiceberg_1a9d5594e371beb516b0120e07e69d3af6" kindref="member">Result</ref>&lt; std::pair&lt; <ref refid="structiceberg_1_1puffin_1_1BlobMetadata" kindref="compound">BlobMetadata</ref>, std::vector&lt; std::byte &gt; &gt; &gt;</type>
+        <definition>Result&lt; std::pair&lt; BlobMetadata, std::vector&lt; std::byte &gt; &gt; &gt; iceberg::puffin::PuffinReader::ReadBlob</definition>
+        <argsstring>(const BlobMetadata &amp;blob_metadata)</argsstring>
+        <name>ReadBlob</name>
+        <qualifiedname>iceberg::puffin::PuffinReader::ReadBlob</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1puffin_1_1BlobMetadata" kindref="compound">BlobMetadata</ref> &amp;</type>
+          <declname>blob_metadata</declname>
+        </param>
+        <briefdescription>
+<para>Read a specific blob&apos;s data by its metadata. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>blob_metadata</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The metadata describing the blob to read. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A pair of (<ref refid="structiceberg_1_1puffin_1_1BlobMetadata" kindref="compound">BlobMetadata</ref>, decompressed data), or an error. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/puffin/puffin_reader.h" line="61" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1puffin_1_1PuffinReader_1a30abba404e17cb36132006b1b87a47e9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceiceberg_1a9d5594e371beb516b0120e07e69d3af6" kindref="member">Result</ref>&lt; std::vector&lt; std::pair&lt; <ref refid="structiceberg_1_1puffin_1_1BlobMetadata" kindref="compound">BlobMetadata</ref>, std::vector&lt; std::byte &gt; &gt; &gt; &gt;</type>
+        <definition>Result&lt; std::vector&lt; std::pair&lt; BlobMetadata, std::vector&lt; std::byte &gt; &gt; &gt; &gt; iceberg::puffin::PuffinReader::ReadAll</definition>
+        <argsstring>(const std::vector&lt; BlobMetadata &gt; &amp;blobs)</argsstring>
+        <name>ReadAll</name>
+        <qualifiedname>iceberg::puffin::PuffinReader::ReadAll</qualifiedname>
+        <param>
+          <type>const std::vector&lt; <ref refid="structiceberg_1_1puffin_1_1BlobMetadata" kindref="compound">BlobMetadata</ref> &gt; &amp;</type>
+          <declname>blobs</declname>
+        </param>
+        <briefdescription>
+<para>Read all blobs described in the file metadata. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>A vector of (<ref refid="structiceberg_1_1puffin_1_1BlobMetadata" kindref="compound">BlobMetadata</ref>, decompressed data) pairs, or an error. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/puffin/puffin_reader.h" line="66" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1puffin_1_1PuffinReader_1a622d9e85adccdaa3d5b35ab82696677c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::puffin::PuffinReader::Close</definition>
+        <argsstring>()</argsstring>
+        <name>Close</name>
+        <qualifiedname>iceberg::puffin::PuffinReader::Close</qualifiedname>
+        <briefdescription>
+<para>Close the underlying input stream. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/puffin/puffin_reader.h" line="70" column="10"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classiceberg_1_1puffin_1_1PuffinReader_1a31a0dfa4d0d8806ca3fdd214db36f40e" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::puffin::PuffinReader::PuffinReader</definition>
+        <argsstring>(std::unique_ptr&lt; SeekableInputStream &gt; stream, int64_t file_size, std::optional&lt; int64_t &gt; known_footer_size)</argsstring>
+        <name>PuffinReader</name>
+        <qualifiedname>iceberg::puffin::PuffinReader::PuffinReader</qualifiedname>
+        <param>
+          <type>std::unique_ptr&lt; <ref refid="classiceberg_1_1SeekableInputStream" kindref="compound">SeekableInputStream</ref> &gt;</type>
+          <declname>stream</declname>
+        </param>
+        <param>
+          <type>int64_t</type>
+          <declname>file_size</declname>
+        </param>
+        <param>
+          <type>std::optional&lt; int64_t &gt;</type>
+          <declname>known_footer_size</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/puffin/puffin_reader.h" line="73" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1puffin_1_1PuffinReader_1a9abc2cd864c2e5fb49ff67fd5bcfcaf6" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceiceberg_1a9d5594e371beb516b0120e07e69d3af6" kindref="member">Result</ref>&lt; std::vector&lt; std::byte &gt; &gt;</type>
+        <definition>Result&lt; std::vector&lt; std::byte &gt; &gt; iceberg::puffin::PuffinReader::ReadBytes</definition>
+        <argsstring>(int64_t offset, int64_t length)</argsstring>
+        <name>ReadBytes</name>
+        <qualifiedname>iceberg::puffin::PuffinReader::ReadBytes</qualifiedname>
+        <param>
+          <type>int64_t</type>
+          <declname>offset</declname>
+        </param>
+        <param>
+          <type>int64_t</type>
+          <declname>length</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/puffin/puffin_reader.h" line="76" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1puffin_1_1PuffinReader_1a150f1ac753f7a1db5518aff8aa20d94b" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceiceberg_1a9d5594e371beb516b0120e07e69d3af6" kindref="member">Result</ref>&lt; int64_t &gt;</type>
+        <definition>Result&lt; int64_t &gt; iceberg::puffin::PuffinReader::FooterSize</definition>
+        <argsstring>()</argsstring>
+        <name>FooterSize</name>
+        <qualifiedname>iceberg::puffin::PuffinReader::FooterSize</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/puffin/puffin_reader.h" line="77" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1puffin_1_1PuffinReader_1ad36712ab2f400d175cde406f0997f0a7" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceiceberg_1a9d5594e371beb516b0120e07e69d3af6" kindref="member">Result</ref>&lt; std::vector&lt; std::byte &gt; &gt;</type>
+        <definition>Result&lt; std::vector&lt; std::byte &gt; &gt; iceberg::puffin::PuffinReader::ReadFooter</definition>
+        <argsstring>(int64_t footer_size)</argsstring>
+        <name>ReadFooter</name>
+        <qualifiedname>iceberg::puffin::PuffinReader::ReadFooter</qualifiedname>
+        <param>
+          <type>int64_t</type>
+          <declname>footer_size</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/puffin/puffin_reader.h" line="78" column="10"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para><ref refid="classiceberg_1_1Reader" kindref="compound">Reader</ref> for Puffin files. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>Reads from an <ref refid="classiceberg_1_1InputFile" kindref="compound">InputFile</ref> with seek support for efficient blob access. </para>
+    </detaileddescription>
+    <location file="iceberg/puffin/puffin_reader.h" line="42" column="1" bodyfile="iceberg/puffin/puffin_reader.h" bodystart="42" bodyend="88"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1puffin_1_1PuffinReader_1a622d9e85adccdaa3d5b35ab82696677c" prot="public" virt="non-virtual"><scope>iceberg::puffin::PuffinReader</scope><name>Close</name></member>
+      <member refid="classiceberg_1_1puffin_1_1PuffinReader_1a58e4b7f7b6b83e4501dd27d22e59bd74" prot="private" virt="non-virtual"><scope>iceberg::puffin::PuffinReader</scope><name>closed_</name></member>
+      <member refid="classiceberg_1_1puffin_1_1PuffinReader_1a1fca0d77e8ab89eb663fb34ed27c6158" prot="private" virt="non-virtual"><scope>iceberg::puffin::PuffinReader</scope><name>file_size_</name></member>
+      <member refid="classiceberg_1_1puffin_1_1PuffinReader_1a150f1ac753f7a1db5518aff8aa20d94b" prot="private" virt="non-virtual"><scope>iceberg::puffin::PuffinReader</scope><name>FooterSize</name></member>
+      <member refid="classiceberg_1_1puffin_1_1PuffinReader_1a1e0c215982b5840070a16707640ab224" prot="private" virt="non-virtual"><scope>iceberg::puffin::PuffinReader</scope><name>known_footer_size_</name></member>
+      <member refid="classiceberg_1_1puffin_1_1PuffinReader_1a6f0cfb1ff8bd4ffbf8612889867b28ab" prot="public" virt="non-virtual"><scope>iceberg::puffin::PuffinReader</scope><name>Make</name></member>
+      <member refid="classiceberg_1_1puffin_1_1PuffinReader_1a31a0dfa4d0d8806ca3fdd214db36f40e" prot="private" virt="non-virtual"><scope>iceberg::puffin::PuffinReader</scope><name>PuffinReader</name></member>
+      <member refid="classiceberg_1_1puffin_1_1PuffinReader_1a30abba404e17cb36132006b1b87a47e9" prot="public" virt="non-virtual"><scope>iceberg::puffin::PuffinReader</scope><name>ReadAll</name></member>
+      <member refid="classiceberg_1_1puffin_1_1PuffinReader_1a49cc2e691d2ecd7325277e289b2e8535" prot="public" virt="non-virtual"><scope>iceberg::puffin::PuffinReader</scope><name>ReadBlob</name></member>
+      <member refid="classiceberg_1_1puffin_1_1PuffinReader_1a9abc2cd864c2e5fb49ff67fd5bcfcaf6" prot="private" virt="non-virtual"><scope>iceberg::puffin::PuffinReader</scope><name>ReadBytes</name></member>
+      <member refid="classiceberg_1_1puffin_1_1PuffinReader_1a5354edf88915d4133def58b0f614b7e1" prot="public" virt="non-virtual"><scope>iceberg::puffin::PuffinReader</scope><name>ReadFileMetadata</name></member>
+      <member refid="classiceberg_1_1puffin_1_1PuffinReader_1ad36712ab2f400d175cde406f0997f0a7" prot="private" virt="non-virtual"><scope>iceberg::puffin::PuffinReader</scope><name>ReadFooter</name></member>
+      <member refid="classiceberg_1_1puffin_1_1PuffinReader_1a9d5d1bec4922e8a55405191346402f4b" prot="private" virt="non-virtual"><scope>iceberg::puffin::PuffinReader</scope><name>stream_</name></member>
+      <member refid="classiceberg_1_1puffin_1_1PuffinReader_1a42d0436cad7f31d9573d9519f878bec3" prot="public" virt="non-virtual"><scope>iceberg::puffin::PuffinReader</scope><name>~PuffinReader</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>
