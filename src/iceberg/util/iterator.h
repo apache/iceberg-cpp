@@ -56,7 +56,7 @@ class Iterator {
   ///
   /// After this method returns an error or std::nullopt, subsequent calls return the same
   /// terminal result without invoking NextImpl().
-  virtual Result<std::optional<T>> Next() final {
+  Result<std::optional<T>> Next() {
     if (error_.has_value()) {
       return std::unexpected(*error_);
     }
@@ -75,6 +75,21 @@ class Iterator {
 
   /// \brief Consume the remaining values into a vector.
   Result<std::vector<T>> ToVector() {
+    auto collect = [this](auto& values, auto append,
+                          auto finish) -> Result<std::vector<T>> {
+      while (true) {
+        auto result = Next();
+        if (!result.has_value()) {
+          return std::unexpected(std::move(result.error()));
+        }
+        auto& value = result.value();
+        if (!value.has_value()) {
+          return finish(values);
+        }
+        append(values, value.value());
+      }
+    };
+
     if constexpr (!std::is_move_constructible_v<T>) {
       static_assert(std::is_copy_constructible_v<T>,
                     "Iterator::ToVector requires T to be move- or copy-constructible");
@@ -82,30 +97,19 @@ class Iterator {
       // Stage copy-only values in a deque to avoid copying previously collected
       // values during growth, then allocate the final vector storage once.
       std::deque<T> values;
-      while (true) {
-        auto result = Next();
-        if (!result.has_value()) {
-          return std::unexpected(std::move(result.error()));
-        }
-        auto& value = result.value();
-        if (!value.has_value()) {
-          return std::vector<T>(values.cbegin(), values.cend());
-        }
-        values.push_back(value.value());
-      }
+      return collect(
+          values, [](auto& destination, const T& value) { destination.push_back(value); },
+          [](const auto& source) {
+            return std::vector<T>(source.cbegin(), source.cend());
+          });
     } else {
       std::vector<T> values;
-      while (true) {
-        auto result = Next();
-        if (!result.has_value()) {
-          return std::unexpected(std::move(result.error()));
-        }
-        auto& value = result.value();
-        if (!value.has_value()) {
-          return values;
-        }
-        values.push_back(std::move_if_noexcept(value.value()));
-      }
+      return collect(
+          values,
+          [](auto& destination, T& value) {
+            destination.push_back(std::move_if_noexcept(value));
+          },
+          [](auto& source) { return std::move(source); });
     }
   }
 
