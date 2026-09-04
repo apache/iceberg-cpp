@@ -22,6 +22,7 @@
 /// \file iceberg/util/iterator.h
 /// \brief Pull-based iterator interface for fallible, lazily produced values.
 
+#include <deque>
 #include <optional>
 #include <type_traits>
 #include <utility>
@@ -74,20 +75,42 @@ class Iterator {
 
   /// \brief Consume the remaining values into a vector.
   Result<std::vector<T>> ToVector() {
-    static_assert(std::is_move_constructible_v<T> || std::is_copy_constructible_v<T>,
-                  "Iterator::ToVector requires T to be move- or copy-constructible");
+    auto collect = [this](auto& values, auto append,
+                          auto finish) -> Result<std::vector<T>> {
+      while (true) {
+        auto result = Next();
+        if (!result.has_value()) {
+          return std::unexpected(std::move(result.error()));
+        }
+        auto& value = result.value();
+        if (!value.has_value()) {
+          return finish(values);
+        }
+        append(values, value.value());
+      }
+    };
 
-    std::vector<T> values;
-    while (true) {
-      auto result = Next();
-      if (!result.has_value()) {
-        return std::unexpected(std::move(result.error()));
-      }
-      auto& value = result.value();
-      if (!value.has_value()) {
-        return values;
-      }
-      values.push_back(std::move_if_noexcept(value.value()));
+    if constexpr (!std::is_move_constructible_v<T>) {
+      static_assert(std::is_copy_constructible_v<T>,
+                    "Iterator::ToVector requires T to be move- or copy-constructible");
+
+      // Growing a vector requires move-insertable elements in some standard library
+      // implementations. Stage strictly copy-only values in a deque, then copy them
+      // into an exactly sized vector.
+      std::deque<T> values;
+      return collect(
+          values, [](auto& destination, const T& value) { destination.push_back(value); },
+          [](const auto& source) {
+            return std::vector<T>(source.cbegin(), source.cend());
+          });
+    } else {
+      std::vector<T> values;
+      return collect(
+          values,
+          [](auto& destination, T& value) {
+            destination.push_back(std::move_if_noexcept(value));
+          },
+          [](auto& source) { return std::move(source); });
     }
   }
 
