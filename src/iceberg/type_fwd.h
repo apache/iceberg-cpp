@@ -258,6 +258,7 @@ class OverwriteFiles;
 class PendingUpdate;
 class ReplacePartitions;
 class RewriteFiles;
+class RewriteManifests;
 class RowDelta;
 class SetSnapshot;
 class SnapshotManager;
