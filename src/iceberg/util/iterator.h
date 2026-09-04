@@ -94,9 +94,9 @@ class Iterator {
       static_assert(std::is_copy_constructible_v<T>,
                     "Iterator::ToVector requires T to be move- or copy-constructible");
 
-      // Growing a vector requires move-insertable elements in some standard library
-      // implementations. Stage strictly copy-only values in a deque, then copy them
-      // into an exactly sized vector.
+      // For strictly copy-only T, collecting directly into a vector can repeatedly copy
+      // previously collected elements during vector growth. Stage values in a deque,
+      // then copy once into an exactly sized vector.
       std::deque<T> values;
       return collect(
           values, [](auto& destination, const T& value) { destination.push_back(value); },
