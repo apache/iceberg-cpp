@@ -38,7 +38,6 @@
 #include "iceberg/exception.h"
 #include "iceberg/file_io.h"
 #include "iceberg/json_serde_internal.h"
-#include "iceberg/logging/log_macros.h"
 #include "iceberg/metrics_config.h"
 #include "iceberg/partition_field.h"
 #include "iceberg/partition_spec.h"
@@ -1107,8 +1106,6 @@ Status TableMetadataBuilder::Impl::AddSnapshot(std::shared_ptr<Snapshot> snapsho
     metadata_.next_row_id += add_rows.value();
   }
 
-  ICEBERG_LOG_DEBUG("Added snapshot {} (sequence number {}) to table metadata",
-                    snapshot->snapshot_id, snapshot->sequence_number);
   return {};
 }
 
