@@ -35,6 +35,8 @@
 #include "iceberg/result.h"
 #include "iceberg/type_fwd.h"
 
+struct ArrowArrayView;
+
 namespace iceberg {
 
 /// \brief Cached state for ProjectBatch over one input/output schema pair.
@@ -264,5 +266,11 @@ class ICEBERG_EXPORT WriteProjection {
   explicit WriteProjection(std::unique_ptr<Impl> impl);
   std::unique_ptr<Impl> impl_;
 };
+
+/// \brief Append one value from an Arrow array into a compatible nanoarrow builder.
+ICEBERG_EXPORT Status AppendArrayValue(const ArrowSchema& input_schema,
+                                       const ArrowArray& input_array,
+                                       const ArrowArrayView& input_view,
+                                       int64_t row_index, ArrowArray* output_array);
 
 }  // namespace iceberg
