@@ -28,6 +28,8 @@
 #include "iceberg/nanoarrow_status_internal.h"
 #include "iceberg/schema.h"
 #include "iceberg/schema_internal.h"
+#include "iceberg/type.h"
+#include "iceberg/util/decimal.h"
 
 namespace iceberg {
 
@@ -134,6 +136,14 @@ Status AppendBytes(ArrowArray* array, std::span<const uint8_t> value) {
   data.as_char = reinterpret_cast<const char*>(value.data());
   ArrowBufferView view(data, static_cast<int64_t>(value.size()));
   ICEBERG_NANOARROW_RETURN_UNEXPECTED(ArrowArrayAppendBytes(array, view));
+  return {};
+}
+
+Status AppendDecimal(ArrowArray* array, const Decimal& value, const DecimalType& type) {
+  ArrowDecimal decimal;
+  ArrowDecimalInit(&decimal, 128, type.precision(), type.scale());
+  ArrowDecimalSetBytes(&decimal, value.native_endian_bytes());
+  ICEBERG_NANOARROW_RETURN_UNEXPECTED(ArrowArrayAppendDecimal(array, &decimal));
   return {};
 }
 

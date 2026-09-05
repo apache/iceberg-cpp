@@ -131,6 +131,10 @@ ICEBERG_EXPORT Status AppendString(ArrowArray* array, std::string_view value);
 /// \brief Append a binary value to a nanoarrow array builder.
 ICEBERG_EXPORT Status AppendBytes(ArrowArray* array, std::span<const uint8_t> value);
 
+/// \brief Append an unscaled decimal value to a Decimal128 array.
+ICEBERG_EXPORT Status AppendDecimal(ArrowArray* array, const Decimal& value,
+                                    const DecimalType& type);
+
 /// \brief Append a list of int32 values to a nanoarrow list array builder.
 ICEBERG_EXPORT Status AppendIntList(ArrowArray* array,
                                     const std::vector<int32_t>& values);
