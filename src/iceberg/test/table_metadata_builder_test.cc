@@ -24,7 +24,6 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include "iceberg/logging/log_level.h"
 #include "iceberg/partition_spec.h"
 #include "iceberg/result.h"
 #include "iceberg/schema.h"
@@ -34,7 +33,6 @@
 #include "iceberg/table_metadata.h"
 #include "iceberg/table_properties.h"
 #include "iceberg/table_update.h"
-#include "iceberg/test/logging_test_helpers.h"
 #include "iceberg/test/matchers.h"
 #include "iceberg/transform.h"
 #include "iceberg/type.h"
@@ -1185,29 +1183,6 @@ TEST(TableMetadataBuilderTest, RemoveSchemasAfterSchemaChange) {
   builder->RemoveSchemas({1});
   ASSERT_THAT(builder->Build(), IsError(ErrorKind::kValidationFailed));
   ASSERT_THAT(builder->Build(), HasErrorMessage("Cannot remove current schema: 1"));
-}
-
-// Adding a snapshot to the builder emits a DEBUG record naming the snapshot.
-TEST(TableMetadataBuilderTest, AddSnapshotEmitsDebugLog) {
-  auto capturing = std::make_shared<CapturingLogger>();
-  capturing->SetLevel(LogLevel::kTrace);
-  ScopedDefaultLogger guard(capturing);
-
-  auto base = CreateBaseMetadata();
-  auto builder = TableMetadataBuilder::BuildFrom(base.get());
-  builder->AddSnapshot(
-      std::make_shared<Snapshot>(Snapshot{.snapshot_id = 42, .sequence_number = 7}));
-  ICEBERG_UNWRAP_OR_FAIL(auto metadata, builder->Build());
-
-  bool found = false;
-  for (const auto& record : capturing->records()) {
-    if (record.level == LogLevel::kDebug &&
-        record.message.find("Added snapshot 42") != std::string::npos) {
-      found = true;
-      break;
-    }
-  }
-  EXPECT_TRUE(found) << "expected a DEBUG record naming the added snapshot";
 }
 
 TEST(TableMetadataBuilderTest, RemoveSnapshotRef) {

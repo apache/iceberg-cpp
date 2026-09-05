@@ -19,6 +19,7 @@
 #include "iceberg/transaction.h"
 
 #include <format>
+#include <iterator>
 #include <memory>
 #include <string>
 
@@ -377,9 +378,6 @@ Result<std::shared_ptr<Table>> Transaction::Commit() {
   int32_t max_wait_ms = props.Get(TableProperties::kCommitMaxRetryWaitMs);
   int32_t total_timeout_ms = props.Get(TableProperties::kCommitTotalRetryTimeMs);
 
-  // Snapshot id before the commit, to detect whether this commit advanced it (a
-  // data commit) versus a metadata-only commit that adds no snapshot.
-  const int64_t base_current_snapshot_id = ctx_->table->metadata()->current_snapshot_id;
   bool is_first_attempt = true;
   int32_t attempt = 0;
   std::string last_error;
@@ -403,17 +401,35 @@ Result<std::shared_ptr<Table>> Transaction::Commit() {
           });
 
   if (commit_result.has_value()) {
-    // Name the resulting snapshot only when this commit produced one (current
-    // snapshot advanced); metadata-only commits report a plain success.
+    // The builder contains only changes made by the successful attempt. Inspecting
+    // AddSnapshot changes avoids attributing a concurrent writer's snapshot to this
+    // transaction and also detects snapshots committed with StageOnly or ToBranch.
     std::string detail;
-    if (auto snapshot = commit_result.value()->metadata()->Snapshot();
-        snapshot.has_value() &&
-        snapshot.value()->snapshot_id != base_current_snapshot_id) {
-      const auto& summary = snapshot.value()->summary;
-      auto op = summary.find(SnapshotSummaryFields::kOperation);
-      detail =
-          std::format(": committed snapshot {} (op={})", snapshot.value()->snapshot_id,
-                      op != summary.end() ? op->second : "unknown");
+    const auto& changes = ctx_->metadata_builder->changes();
+    size_t added_snapshot_count = 0;
+    for (const auto& change : changes) {
+      added_snapshot_count += change->kind() == TableUpdate::Kind::kAddSnapshot;
+    }
+    if (added_snapshot_count > 0) {
+      detail.reserve(32 + added_snapshot_count * 48);
+      std::format_to(std::back_inserter(detail), ": committed snapshot{} ",
+                     added_snapshot_count == 1 ? "" : "s");
+
+      size_t appended_snapshot_count = 0;
+      for (const auto& change : changes) {
+        if (change->kind() != TableUpdate::Kind::kAddSnapshot) {
+          continue;
+        }
+        const auto& snapshot =
+            internal::checked_cast<const table::AddSnapshot&>(*change).snapshot();
+        if (appended_snapshot_count++ > 0) {
+          detail += ", ";
+        }
+        const auto& summary = snapshot->summary;
+        auto op = summary.find(SnapshotSummaryFields::kOperation);
+        std::format_to(std::back_inserter(detail), "{} (op={})", snapshot->snapshot_id,
+                       op != summary.end() ? op->second : "unknown");
+      }
     }
     if (attempt > 1) {
       ICEBERG_LOG_INFO("Transaction commit succeeded after {} attempts{}", attempt,
@@ -421,9 +437,6 @@ Result<std::shared_ptr<Table>> Transaction::Commit() {
     } else {
       ICEBERG_LOG_INFO("Transaction commit succeeded{}", detail);
     }
-  } else {
-    ICEBERG_LOG_ERROR("Transaction commit failed after {} attempt(s): {}", attempt,
-                      commit_result.error().message);
   }
 
   Result<const TableMetadata*> finalize_result =
