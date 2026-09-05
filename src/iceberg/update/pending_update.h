@@ -38,7 +38,8 @@ namespace iceberg {
 ///
 /// \note Implementations are expected to use builder pattern and errors
 /// should be handled by the ErrorCollector base class.
-class ICEBERG_EXPORT PendingUpdate : public ErrorCollector {
+class ICEBERG_EXPORT PendingUpdate : public ErrorCollector,
+                                     public std::enable_shared_from_this<PendingUpdate> {
  public:
   enum class Kind : uint8_t {
     kExpireSnapshots,
@@ -66,6 +67,7 @@ class ICEBERG_EXPORT PendingUpdate : public ErrorCollector {
   ///         - ValidationFailed: if it cannot be applied to the current table metadata.
   ///         - CommitFailed: if it cannot be committed due to conflicts.
   ///         - CommitStateUnknown: unknown status, no cleanup should be done.
+  /// \note The update must be owned by a `std::shared_ptr` before calling Commit().
   virtual Status Commit();
 
   /// \brief Finalize the pending update.

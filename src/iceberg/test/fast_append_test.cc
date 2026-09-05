@@ -315,6 +315,26 @@ TEST_F(FastAppendTest, FinalizeIgnoresCleanupDeleteFailure) {
               IsOk());
 }
 
+TEST_F(FastAppendTest, TransactionApplyFailureCleansUpStagedFiles) {
+  ICEBERG_UNWRAP_OR_FAIL(auto txn, table_->NewTransaction());
+  ICEBERG_UNWRAP_OR_FAIL(auto fast_append, txn->NewFastAppend());
+  std::vector<std::string> deleted_paths;
+  fast_append->DeleteWith([&](const std::string& path) {
+    deleted_paths.push_back(path);
+    return file_io_->DeleteFile(path);
+  });
+  fast_append->AppendFile(file_a_);
+
+  EXPECT_THAT(static_cast<SnapshotUpdate&>(*fast_append).Apply(), IsOk());
+  fast_append->AppendFile(nullptr);
+
+  EXPECT_THAT(fast_append->Commit(), IsError(ErrorKind::kValidationFailed));
+  EXPECT_THAT(deleted_paths, ::testing::SizeIs(2U));
+  EXPECT_THAT(txn->Commit(),
+              ::testing::AllOf(IsError(ErrorKind::kValidationFailed),
+                               HasErrorMessage("Transaction already finalized")));
+}
+
 TEST_F(FastAppendTest, RetryCopiesAppendManifestAgain) {
   table_->metadata()->format_version = 1;
   const auto path = table_location_ + "/metadata/input.avro";

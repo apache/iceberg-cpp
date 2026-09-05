@@ -38,11 +38,11 @@
 
 namespace iceberg {
 
-Result<std::unique_ptr<RowDelta>> RowDelta::Make(
+Result<std::shared_ptr<RowDelta>> RowDelta::Make(
     std::string table_name, std::shared_ptr<TransactionContext> ctx) {
   ICEBERG_PRECHECK(!table_name.empty(), "Table name cannot be empty");
   ICEBERG_PRECHECK(ctx != nullptr, "Cannot create RowDelta without a context");
-  return std::unique_ptr<RowDelta>(new RowDelta(std::move(table_name), std::move(ctx)));
+  return std::shared_ptr<RowDelta>(new RowDelta(std::move(table_name), std::move(ctx)));
 }
 
 RowDelta::RowDelta(std::string table_name, std::shared_ptr<TransactionContext> ctx)

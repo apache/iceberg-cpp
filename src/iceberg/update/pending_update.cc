@@ -25,6 +25,23 @@
 #include "iceberg/util/macros.h"
 
 namespace iceberg {
+namespace {
+
+class ScopedTransactionBinding {
+ public:
+  ScopedTransactionBinding(TransactionContext& ctx,
+                           const std::shared_ptr<Transaction>& txn)
+      : ctx_(ctx) {
+    ctx_.transaction = txn;
+  }
+
+  ~ScopedTransactionBinding() { ctx_.transaction.reset(); }
+
+ private:
+  TransactionContext& ctx_;
+};
+
+}  // namespace
 
 PendingUpdate::PendingUpdate(std::shared_ptr<TransactionContext> ctx)
     : ctx_(std::move(ctx)) {}
@@ -33,28 +50,42 @@ PendingUpdate::~PendingUpdate() = default;
 
 Status PendingUpdate::Commit() {
   if (!ctx_->transaction) {
-    // Table-created path: no transaction exists yet, create a temporary one.
+    // Standalone update path: no transaction is attached to the context, so create a
+    // temporary one for this Commit() call.
     ICEBERG_ASSIGN_OR_RAISE(auto txn, Transaction::Make(ctx_));
+    auto self = weak_from_this().lock();
+    ICEBERG_PRECHECK(self != nullptr, "PendingUpdate must be owned by std::shared_ptr");
+    ICEBERG_RETURN_UNEXPECTED(txn->AddUpdate(self));
+    // Keep Transaction::Make(ctx_) detached, but expose this live transaction while
+    // Commit() runs so an internal retry can reapply through update->Commit().
+    ScopedTransactionBinding binding(*ctx_, txn);
+
     auto apply_status = txn->Apply(*this);
     if (!apply_status.has_value()) {
-      std::ignore = Finalize(std::unexpected(apply_status.error()));
+      txn->FinalizeUpdates(std::unexpected(apply_status.error()));
       return apply_status;
     }
 
     auto commit_result = txn->Commit();
-    if (!commit_result.has_value()) {
-      std::ignore = Finalize(std::unexpected(commit_result.error()));
-      return std::unexpected(commit_result.error());
-    }
-
-    std::ignore = Finalize(commit_result.value()->metadata().get());
+    ICEBERG_RETURN_UNEXPECTED(commit_result);
     return {};
   }
+
   auto txn = ctx_->transaction->lock();
   if (!txn) {
     return CommitFailed("Transaction has been destroyed");
   }
-  return txn->Apply(*this);
+
+  auto apply_status = txn->Apply(*this);
+  if (!apply_status.has_value() && !txn->committing_) {
+    // Finalize eagerly so a failed update cleans up its staged files even if the
+    // caller never commits the transaction. When the transaction is mid-commit,
+    // leave finalization to Transaction::Commit(): the failure may be retryable
+    // (e.g. RetryableValidationFailed from a stale sequence number), and
+    // finalizing here would destroy staged state before the retry runs.
+    txn->FinalizeUpdates(std::unexpected(apply_status.error()));
+  }
+  return apply_status;
 }
 
 Status PendingUpdate::Finalize(
