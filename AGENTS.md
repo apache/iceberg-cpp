@@ -28,3 +28,17 @@ When assessing potential vulnerabilities or calibrating automated security
 findings, use [`SECURITY-THREAT-MODEL.md`](SECURITY-THREAT-MODEL.md) as the
 authoritative detailed description of this repository's security boundaries,
 trust assumptions, and non-boundaries.
+
+## Build System Consistency
+
+Keep CMake and Meson build definitions in sync. When adding, removing, or
+renaming source files, headers, tests, or build targets, or changing dependencies
+or build options, update the corresponding CMake (`CMakeLists.txt` and CMake
+modules) and Meson (`meson.build` and `meson.options`) definitions in the same
+change.
+
+## PR & Commit Conventions
+
+- Use Conventional Commits for commit messages.
+- Commit messages describe the what and why, not implementation details.
+- Run `pre-commit` for every PR and fix any reported issues.
