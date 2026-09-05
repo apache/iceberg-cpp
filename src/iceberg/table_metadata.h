@@ -489,7 +489,7 @@ class ICEBERG_EXPORT TableMetadataBuilder : public ErrorCollector {
   explicit TableMetadataBuilder(const TableMetadata* base);
 
   /// Internal state members
-  struct Impl;
+  class Impl;
   std::unique_ptr<Impl> impl_;
 };
 
