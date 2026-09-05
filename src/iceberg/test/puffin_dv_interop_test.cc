@@ -17,17 +17,16 @@
  * under the License.
  */
 
-#include <cstddef>
 #include <cstdint>
 #include <filesystem>
 #include <memory>
-#include <span>
 #include <string>
 #include <unordered_set>
 #include <vector>
 
 #include <gtest/gtest.h>
 
+#include "iceberg/deletes/dv_util_internal.h"
 #include "iceberg/deletes/position_delete_index.h"
 #include "iceberg/file_format.h"
 #include "iceberg/manifest/manifest_entry.h"
@@ -100,15 +99,7 @@ void AssertPositions(const ExpectedBlob& expected,
                      const std::shared_ptr<FileIO>& io) {
   ASSERT_TRUE(delete_file->content_offset.has_value());
   ASSERT_TRUE(delete_file->content_size_in_bytes.has_value());
-  ICEBERG_UNWRAP_OR_FAIL(auto input_file, io->NewInputFile(delete_file->file_path));
-  ICEBERG_UNWRAP_OR_FAIL(auto stream, input_file->Open());
-  std::vector<std::byte> data(static_cast<size_t>(*delete_file->content_size_in_bytes));
-  ASSERT_THAT(stream->ReadFully(*delete_file->content_offset, data), IsOk());
-
-  std::span<const uint8_t> blob(reinterpret_cast<const uint8_t*>(data.data()),
-                                data.size());
-  ICEBERG_UNWRAP_OR_FAIL(auto positions,
-                         PositionDeleteIndex::Deserialize(blob, delete_file));
+  ICEBERG_UNWRAP_OR_FAIL(auto positions, DVUtil::ReadDV(delete_file, io));
   EXPECT_EQ(positions.Cardinality(), expected.cardinality);
   int64_t expected_cardinality = static_cast<int64_t>(expected.positions.size());
   for (const auto& range : expected.ranges) {

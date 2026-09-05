@@ -158,6 +158,7 @@ add_iceberg_test(util_test
 add_iceberg_test(puffin_test
                  USE_DATA
                  SOURCES
+                 dv_util_test.cc
                  puffin_dv_interop_test.cc
                  puffin_format_test.cc
                  puffin_json_test.cc
