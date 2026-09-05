@@ -43,6 +43,16 @@ env:
   ICEBERG_HOME: /tmp/iceberg
 
 jobs:
+  build-definition-parity:
+    name: Build definition parity
+    runs-on: ubuntu-slim
+    steps:
+      - name: Checkout iceberg-cpp
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Check build definition parity
+        run: python3 dev/test_build_definition_parity.py
   ubuntu:
     if: ${{ github.event_name != 'pull_request' || github.event.pull_request.draft == false }}
     name: AMD64 Ubuntu 26.04 (${{ matrix.cmake_build_type }})

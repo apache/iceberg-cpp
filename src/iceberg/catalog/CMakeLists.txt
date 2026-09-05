@@ -28,3 +28,5 @@ endif()
 if(ICEBERG_BUILD_SQL_CATALOG)
   add_subdirectory(sql)
 endif()
+
+iceberg_install_all_headers(iceberg/catalog)
