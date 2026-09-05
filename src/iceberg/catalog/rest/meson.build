@@ -34,16 +34,15 @@ iceberg_rest_sources = files(
     'rest_util.cc',
     'types.cc',
 )
-# cpr does not export symbols, so on Windows it must
-# be used as a static lib
-cpr_needs_static = (
-    get_option('default_library') == 'static' or
-    host_machine.system() == 'windows'
+# CMake vendors cpr statically, including when Iceberg builds shared libraries.
+cpr_dep = dependency(
+    'cpr',
+    static: true,
+    default_options: ['default_library=static'],
 )
-cpr_dep = dependency('cpr', static: cpr_needs_static)
 
 iceberg_rest_sources += files('auth/sigv4_manager.cc')
-iceberg_rest_build_deps = [iceberg_dep, cpr_dep]
+iceberg_rest_build_deps = [cpr_dep]
 iceberg_rest_compile_defs = []
 
 sigv4_opt = get_option('sigv4')
@@ -62,26 +61,14 @@ else
     iceberg_rest_compile_defs += '-DICEBERG_SIGV4_ENABLED=0'
 endif
 
-iceberg_rest_lib = library(
-    'iceberg_rest',
-    sources: iceberg_rest_sources,
-    dependencies: iceberg_rest_build_deps,
-    gnu_symbol_visibility: 'hidden',
-    cpp_shared_args: ['-DICEBERG_REST_EXPORTING'] + iceberg_rest_compile_defs,
-    cpp_static_args: ['-DICEBERG_REST_STATIC'] + iceberg_rest_compile_defs,
-)
-
-iceberg_rest_compile_args = iceberg_rest_compile_defs
-if get_option('default_library') == 'static'
-    iceberg_rest_compile_args += ['-DICEBERG_REST_STATIC']
-endif
-iceberg_rest_dep = declare_dependency(
-    link_with: [iceberg_rest_lib],
-    dependencies: iceberg_rest_build_deps,
-    compile_args: iceberg_rest_compile_args,
-)
-meson.override_dependency('iceberg-rest', iceberg_rest_dep)
-pkg.generate(iceberg_rest_lib)
+iceberg_libraries += {
+    'iceberg_rest': {
+        'sources': iceberg_rest_sources,
+        'dependencies': iceberg_rest_build_deps,
+        'parent': 'iceberg',
+        'compile_args': iceberg_rest_compile_defs,
+    },
+}
 
 install_headers(
     [

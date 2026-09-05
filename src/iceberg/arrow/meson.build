@@ -15,20 +15,6 @@
 # specific language governing permissions and limitations
 # under the License.
 
-benchmark_dep = dependency(
-    'benchmark',
-    required: true,
-    static: true,
-    default_options: ['default_library=static'],
-)
+install_headers(['arrow_io_util.h', 'arrow_register.h'], subdir: 'iceberg/arrow')
 
-benchmark_smoke = executable(
-    'benchmark_smoke',
-    sources: files('benchmark_smoke.cc'),
-    dependencies: [
-        get_variable('iceberg_static_dep', iceberg_dep),
-        benchmark_dep,
-    ],
-)
-
-benchmark('benchmark_smoke', benchmark_smoke)
+subdir('s3')

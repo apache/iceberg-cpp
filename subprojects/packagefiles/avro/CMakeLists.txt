@@ -15,20 +15,6 @@
 # specific language governing permissions and limitations
 # under the License.
 
-benchmark_dep = dependency(
-    'benchmark',
-    required: true,
-    static: true,
-    default_options: ['default_library=static'],
-)
-
-benchmark_smoke = executable(
-    'benchmark_smoke',
-    sources: files('benchmark_smoke.cc'),
-    dependencies: [
-        get_variable('iceberg_static_dep', iceberg_dep),
-        benchmark_dep,
-    ],
-)
-
-benchmark('benchmark_smoke', benchmark_smoke)
+cmake_minimum_required(VERSION 3.25)
+project(IcebergAvro LANGUAGES C CXX)
+add_subdirectory(lang/c++ upstream)

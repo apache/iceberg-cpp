@@ -15,20 +15,12 @@
 # specific language governing permissions and limitations
 # under the License.
 
-benchmark_dep = dependency(
-    'benchmark',
-    required: true,
-    static: true,
-    default_options: ['default_library=static'],
-)
+[wrap-file]
+directory = sqlpp23-0.69
+source_url = https://github.com/rbock/sqlpp23/archive/refs/tags/0.69.tar.gz
+source_filename = sqlpp23-0.69.tar.gz
+source_hash = ff4a31f4f110623781e3fd5c49846f76bb758f0c877cb15395c50cfad7a71253
+method = cmake
 
-benchmark_smoke = executable(
-    'benchmark_smoke',
-    sources: files('benchmark_smoke.cc'),
-    dependencies: [
-        get_variable('iceberg_static_dep', iceberg_dep),
-        benchmark_dep,
-    ],
-)
-
-benchmark('benchmark_smoke', benchmark_smoke)
+[provide]
+sqlpp23 = sqlpp23_dep

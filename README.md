@@ -32,7 +32,7 @@ C++ implementation of [Apache Iceberg™](https://iceberg.apache.org/).
 **Required:**
 
 - C++23 compliant compiler (GCC 14+, Clang 18+, MSVC 2022+)
-- CMake 3.25+ or Meson 1.5+
+- CMake 3.25+ or Meson 1.8.3+
 - [Ninja](https://ninja-build.org/) (recommended build backend)
 
 **Optional:**
@@ -113,6 +113,24 @@ meson compile -C builddir
 meson test -C builddir --timeout-multiplier 0
 ```
 
+Meson builds `iceberg_bundle` by default, including Arrow filesystem, Avro,
+and Parquet support. Use `-Dbundle=disabled` to omit it.
+
+System dependencies are preferred. Arrow, Avro, CRoaring, and sqlpp23 source
+fallbacks use upstream CMake; use `--force-fallback-for=arrow,avro` to force
+Arrow and Avro source builds. S3 requires `-Ds3=enabled` and either a system
+Arrow with S3 support or an installed AWS SDK for the Arrow source build.
+
+Static libraries are the default. Installed libraries are available through
+pkg-config, for example `dependency('iceberg_bundle')`. With
+`--default-library=both`, use `dependency('iceberg_bundle_static', static: true)`
+or `dependency('iceberg_bundle_shared', static: false)` to select a variant;
+the same suffixes and `static` argument apply to other modules.
+
+Enable Hive with `-Dhive=enabled`. It reuses Thrift from the Arrow source fallback
+by default; use `-Dbundle_thrift=false` for system Thrift. SQL connectors require
+their native client development packages.
+
 Meson provides built-in equivalents for several CMake options:
 
 - `--default-library=<shared|static|both>` instead of `ICEBERG_BUILD_STATIC` / `ICEBERG_BUILD_SHARED`
@@ -123,7 +141,15 @@ Meson-specific options (configured via `-D<option>=<value>`):
 
 | Option | Default | Description |
 |--------|---------|-------------|
+| `bundle` | `enabled` | Build Arrow, Avro, and Parquet integrations |
 | `rest` | `enabled` | Build REST catalog client |
+| `hive` | `disabled` | Build Hive (HMS) catalog client |
+| `bundle_thrift` | `true` | Reuse Arrow's Thrift dependency for Hive |
+| `sql_catalog` | `disabled` | Build SQL catalog client |
+| `sql_sqlite` | `disabled` | Build the SQLite connector |
+| `sql_postgresql` | `disabled` | Build the PostgreSQL connector |
+| `sql_mysql` | `disabled` | Build the MySQL connector |
+| `s3` | `disabled` | Build S3 FileIO support |
 | `rest_integration_test` | `disabled` | Build integration test for REST catalog |
 | `spdlog` | `enabled` | Use spdlog as the default logging backend |
 | `tests` | `enabled` | Build tests |
