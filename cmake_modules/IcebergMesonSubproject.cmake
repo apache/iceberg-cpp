@@ -15,20 +15,20 @@
 # specific language governing permissions and limitations
 # under the License.
 
-benchmark_dep = dependency(
-    'benchmark',
-    required: true,
-    static: true,
-    default_options: ['default_library=static'],
-)
-
-benchmark_smoke = executable(
-    'benchmark_smoke',
-    sources: files('benchmark_smoke.cc'),
-    dependencies: [
-        get_variable('iceberg_static_dep', iceberg_dep),
-        benchmark_dep,
-    ],
-)
-
-benchmark('benchmark_smoke', benchmark_smoke)
+if(NOT CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
+  return()
+endif()
+# Expose the instantiated location when Meson promotes nested subprojects.
+file(WRITE "${CMAKE_BINARY_DIR}/iceberg-meson-source-dir.txt" "${CMAKE_SOURCE_DIR}")
+add_custom_target(iceberg_meson_paths
+                  COMMAND "${CMAKE_COMMAND}" -E true
+                  BYPRODUCTS "${CMAKE_BINARY_DIR}/iceberg-meson-source-dir.txt")
+# Meson does not infer interface include paths from FILE_SET HEADERS.
+if(PROJECT_NAME STREQUAL "sqlpp23")
+  cmake_language(DEFER
+                 CALL
+                 target_include_directories
+                 sqlpp23
+                 INTERFACE
+                 "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>")
+endif()

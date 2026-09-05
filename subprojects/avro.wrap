@@ -15,20 +15,14 @@
 # specific language governing permissions and limitations
 # under the License.
 
-benchmark_dep = dependency(
-    'benchmark',
-    required: true,
-    static: true,
-    default_options: ['default_library=static'],
-)
+# Keep this revision aligned with resolve_avro_dependency() in CMake.
+[wrap-file]
+directory = avro-997d50d312613e921598aaed30b082f9bcf9c6ea
+source_url = https://github.com/apache/avro/archive/997d50d312613e921598aaed30b082f9bcf9c6ea.tar.gz
+source_filename = avro-997d50d312613e921598aaed30b082f9bcf9c6ea.tar.gz
+source_hash = 8cf9ba3f54a9745ad7418d04e9f2104af3a4398140f93fa888f4fc70093411c8
+patch_directory = avro
+method = cmake
 
-benchmark_smoke = executable(
-    'benchmark_smoke',
-    sources: files('benchmark_smoke.cc'),
-    dependencies: [
-        get_variable('iceberg_static_dep', iceberg_dep),
-        benchmark_dep,
-    ],
-)
-
-benchmark('benchmark_smoke', benchmark_smoke)
+[provide]
+avro-cpp = avrocpp_s_dep

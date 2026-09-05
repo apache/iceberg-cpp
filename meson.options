@@ -31,12 +31,61 @@
 # --includedir / --datadir arguments, respectively
 
 option(
+    'bundle',
+    type: 'feature',
+    description: 'Build Arrow, Avro, and Parquet integrations',
+    value: 'enabled',
+)
+
+option(
     'rest',
     type: 'feature',
     description: 'Build rest catalog client',
     value: 'enabled',
 )
 
+option(
+    'hive',
+    type: 'feature',
+    value: 'disabled',
+    description: 'Build the Hive catalog',
+)
+option(
+    'sql_catalog',
+    type: 'feature',
+    value: 'disabled',
+    description: 'Build the SQL catalog',
+)
+option(
+    'sql_sqlite',
+    type: 'feature',
+    value: 'disabled',
+    description: 'Build the SQL SQLite connector',
+)
+option(
+    'sql_postgresql',
+    type: 'feature',
+    value: 'disabled',
+    description: 'Build the SQL PostgreSQL connector',
+)
+option(
+    'sql_mysql',
+    type: 'feature',
+    value: 'disabled',
+    description: 'Build the SQL MySQL connector',
+)
+option(
+    's3',
+    type: 'feature',
+    value: 'disabled',
+    description: 'Build S3 FileIO support',
+)
+option(
+    'bundle_thrift',
+    type: 'boolean',
+    value: true,
+    description: 'Use Arrow\'s Thrift dependency for Hive',
+)
 option(
     'rest_integration_test',
     type: 'feature',

@@ -337,11 +337,18 @@ function(resolve_avro_dependency)
     set(AVRO_VENDORED TRUE)
     set_target_properties(avrocpp_s PROPERTIES OUTPUT_NAME "iceberg_vendored_avrocpp")
     set_target_properties(avrocpp_s PROPERTIES POSITION_INDEPENDENT_CODE ON)
+    if(APPLE AND ICEBERG_BUILD_SHARED)
+      # Avro's std::any values cross the shared bundle boundary. Keep their
+      # type information visible in Avro, the bundle, and installed consumers.
+      target_compile_definitions(avrocpp_s PUBLIC AVRO_DYN_LINK)
+    endif()
     install(TARGETS avrocpp_s
             EXPORT iceberg_targets
             RUNTIME DESTINATION "${ICEBERG_INSTALL_BINDIR}"
             ARCHIVE DESTINATION "${ICEBERG_INSTALL_LIBDIR}"
             LIBRARY DESTINATION "${ICEBERG_INSTALL_LIBDIR}")
+    install(DIRECTORY "${avro-cpp_SOURCE_DIR}/lang/c++/include/avro"
+            DESTINATION "${ICEBERG_INSTALL_INCLUDEDIR}")
 
     # TODO: add vendored ZLIB and Snappy support
     find_package(Snappy CONFIG)
@@ -467,6 +474,17 @@ endfunction()
 # utf8proc
 
 function(resolve_utf8proc_dependency)
+  # A system Arrow package may already provide this target through its own
+  # Findutf8proc module. Reuse it, and let find_dependency(Arrow) recreate it
+  # for installed consumers instead of defining the imported target twice.
+  if(ICEBERG_BUILD_BUNDLE
+     AND NOT ARROW_VENDORED
+     AND TARGET utf8proc::utf8proc)
+    set(UTF8PROC_VENDORED
+        FALSE
+        PARENT_SCOPE)
+    return()
+  endif()
   prepare_fetchcontent()
 
   # The vendored build needs no install rules; without this, CMake < 3.28 (where
@@ -867,7 +885,6 @@ endfunction()
 resolve_zlib_dependency()
 resolve_nanoarrow_dependency()
 resolve_croaring_dependency()
-resolve_utf8proc_dependency()
 resolve_nlohmann_json_dependency()
 if(ICEBERG_SPDLOG)
   resolve_spdlog_dependency()
@@ -885,6 +902,8 @@ if(ICEBERG_BUILD_BUNDLE)
   resolve_avro_dependency()
   resolve_zstd_dependency()
 endif()
+
+resolve_utf8proc_dependency()
 
 if(ICEBERG_BUILD_REST)
   resolve_cpr_dependency()

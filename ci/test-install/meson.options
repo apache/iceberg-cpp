@@ -15,20 +15,10 @@
 # specific language governing permissions and limitations
 # under the License.
 
-benchmark_dep = dependency(
-    'benchmark',
-    required: true,
-    static: true,
-    default_options: ['default_library=static'],
-)
-
-benchmark_smoke = executable(
-    'benchmark_smoke',
-    sources: files('benchmark_smoke.cc'),
-    dependencies: [
-        get_variable('iceberg_static_dep', iceberg_dep),
-        benchmark_dep,
-    ],
-)
-
-benchmark('benchmark_smoke', benchmark_smoke)
+option('bundle', type: 'feature', value: 'enabled')
+option('rest', type: 'feature', value: 'auto')
+option('hive', type: 'feature', value: 'auto')
+option('sql_catalog', type: 'feature', value: 'auto')
+option('sql_sqlite', type: 'boolean', value: false)
+option('sql_postgresql', type: 'boolean', value: false)
+option('sql_mysql', type: 'boolean', value: false)

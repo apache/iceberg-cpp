@@ -208,7 +208,7 @@ jobs:
     if: ${{ github.event_name != 'pull_request' || github.event.pull_request.draft == false }}
     name: Meson - ${{ matrix.title }}
     runs-on: ${{ matrix.runs-on }}
-    timeout-minutes: 30
+    timeout-minutes: 60
     strategy:
       max-parallel: 15
       fail-fast: false
@@ -221,9 +221,22 @@ jobs:
             meson-setup-args: -Drest_integration_test=enabled
           - title: AMD64 Windows 2025
             runs-on: windows-2025
-            meson-setup-args: --vsenv
+            meson-setup-args: --vsenv --buildtype=release --cmake-prefix-path=C:/vcpkg/installed/x64-windows-static-md
           - title: AArch64 macOS 26
             runs-on: macos-26
+          - title: AMD64 Ubuntu 26.04, all catalogs and library variants
+            runs-on: ubuntu-26.04
+            CC: gcc-14
+            CXX: g++-14
+            sql-clients: true
+            benchmarks: true
+            meson-setup-args: --default-library=both --buildtype=release -Db_ndebug=true --force-fallback-for=arrow,avro -Dhive=enabled -Dsql_catalog=enabled -Dsql_sqlite=enabled -Dsql_postgresql=enabled -Dsql_mysql=enabled -Dbenchmarks=enabled
+          - title: AMD64 Ubuntu 26.04, bundle disabled
+            runs-on: ubuntu-26.04
+            CC: gcc-14
+            CXX: g++-14
+            bundle: disabled
+            meson-setup-args: -Dbundle=disabled
     steps:
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
@@ -244,13 +257,30 @@ jobs:
         run: |
           echo "CC=sccache ${{ matrix.CC }}" >> $GITHUB_ENV
           echo "CXX=sccache ${{ matrix.CXX }}" >> $GITHUB_ENV
+      - name: Install SQL client development packages
+        if: ${{ matrix.sql-clients }}
+        run: |
+          # Match the PostgreSQL packages preinstalled from PGDG on the runner.
+          sudo /usr/share/postgresql-common/pgdg/apt.postgresql.org.sh -y
+          sudo apt-get install -y libsqlite3-dev libpq-dev "postgresql-server-dev-$(pg_config --version | awk '{print $2}' | cut -d. -f1)" default-libmysqlclient-dev libcurl4-openssl-dev libgpg-error-dev libunistring-dev libsasl2-dev libdb-dev
+          echo "LIBRARY_PATH=$(pg_config --pkglibdir)" >> "$GITHUB_ENV"
+          # Complete the system packages' static link interfaces.
+          sudo sed -i '/^Requires.private:/s/$/ libsasl2/' "$(pkg-config --variable=pcfiledir libcurl)/libcurl.pc"
+          sudo sed -i '/^Libs.private:/s/$/ -ldb -lsqlite3 -lpq -lmysqlclient/' "$(pkg-config --variable=pcfiledir libsasl2)/libsasl2.pc"
+          sudo sed -i 's/-lpgcommon /-lpgcommon_shlib /' "$(pkg-config --variable=pcfiledir libpq)/libpq.pc"
+      - name: Install OpenSSL static dependencies
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y libjitterentropy3-dev
+      - name: Install Zlib for CMake subprojects
+        if: runner.os == 'Windows'
+        run: vcpkg install zlib:x64-windows-static-md
       - name: Set up sccache
         uses: ./.github/actions/setup-sccache
         with:
           key-prefix: sccache-meson-${{ matrix.runs-on }}
       - name: Build Iceberg
         run: |
-          meson setup builddir ${{ matrix.meson-setup-args || '' }}
+          meson setup builddir ${{ matrix.meson-setup-args || '' }} --prefix="${{ github.workspace }}/install" --libdir=lib
           meson compile -C builddir
       - name: Save sccache
         if: always()
@@ -261,3 +291,8 @@ jobs:
       - name: Test Iceberg
         run: |
           meson test -C builddir --timeout-multiplier 0 --print-errorlogs
+      - name: Test installed Meson libraries
+        run: python ci/scripts/test_meson_install.py builddir --bundle=${{ matrix.bundle || 'enabled' }}
+      - name: Test Meson benchmarks
+        if: ${{ matrix.benchmarks }}
+        run: meson test -C builddir --benchmark --print-errorlogs
