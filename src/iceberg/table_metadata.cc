@@ -800,7 +800,7 @@ Status TableMetadataBuilder::Impl::SetDefaultSortOrder(int32_t order_id) {
 Result<int32_t> TableMetadataBuilder::Impl::AddSortOrder(const SortOrder& order) {
   int32_t new_order_id = ReuseOrCreateNewSortOrderId(order);
 
-  if (sort_orders_by_id_.find(new_order_id) != sort_orders_by_id_.end()) {
+  if (sort_orders_by_id_.contains(new_order_id)) {
     // update last_added_order_id if the order was added in this set of changes (since it
     // is now the last)
     bool is_new_order =
