@@ -39,8 +39,6 @@ template <class... Ts>
 struct Overloaded : Ts... {
   using Ts::operator()...;
 };
-template <class... Ts>
-Overloaded(Ts...) -> Overloaded<Ts...>;
 
 /// \brief A StructLike that owns its field values in a vector of Scalars.
 class ArenaStructLike : public StructLike {
