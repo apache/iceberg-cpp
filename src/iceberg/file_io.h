@@ -183,7 +183,10 @@ class ICEBERG_EXPORT FileIO {
   /// \brief Return storage-credential support when implemented by this FileIO.
   virtual SupportsStorageCredentials* AsSupportsStorageCredentials() { return nullptr; }
 
-  /// \brief Return this FileIO's configuration properties (empty by default).
+  /// \brief Return the configuration used to create this FileIO.
+  ///
+  /// The returned map may contain credentials. Callers must not log or expose it.
+  /// Implementations that do not expose their configuration return an empty map.
   virtual const std::unordered_map<std::string, std::string>& properties() const {
     static const std::unordered_map<std::string, std::string> kEmpty;
     return kEmpty;
