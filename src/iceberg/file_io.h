@@ -158,13 +158,13 @@ class ICEBERG_EXPORT FileIO {
   ///
   /// \param file_location The location of the file to write.
   /// \param content The content to write to the file.
-  /// \return void if the write succeeded, an error code if the write failed.
+  /// \return Status indicating success, or an error if the write failed.
   virtual Status WriteFile(const std::string& file_location, std::string_view content);
 
   /// \brief Delete a file at the given location.
   ///
   /// \param file_location The location of the file to delete.
-  /// \return void if the delete succeeded, an error code if the delete failed.
+  /// \return Status indicating success, or an error if the delete failed.
   virtual Status DeleteFile(const std::string& /*file_location*/) {
     return NotImplemented("DeleteFile not implemented");
   }
@@ -176,7 +176,7 @@ class ICEBERG_EXPORT FileIO {
   /// and returns the first error encountered.
   ///
   /// \param file_locations The locations of the files to delete.
-  /// \return void if all deletes succeed, or an error code if any delete fails.
+  /// \return Status indicating success, or an error if any delete fails.
   virtual Status DeleteFiles(const std::vector<std::string>& file_locations);
 
   /// \brief Return storage-credential support when implemented by this FileIO.
