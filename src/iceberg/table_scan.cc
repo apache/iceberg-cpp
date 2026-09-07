@@ -109,11 +109,10 @@ Result<ScanReport> MakeScanReport(const DataTableScan& scan, const Snapshot& sna
 
 class ReportingFileTaskIterator final : public Iterator<std::shared_ptr<FileScanTask>> {
  public:
-  ReportingFileTaskIterator(
-      FileScanTaskIterator iterator,
-      std::shared_ptr<ScanMetrics> scan_metrics,
-      std::chrono::nanoseconds planning_duration,
-      std::shared_ptr<MetricsReporter> reporter, ScanReport report)
+  ReportingFileTaskIterator(FileScanTaskIterator iterator,
+                            std::shared_ptr<ScanMetrics> scan_metrics,
+                            std::chrono::nanoseconds planning_duration,
+                            std::shared_ptr<MetricsReporter> reporter, ScanReport report)
       : iterator_(std::move(iterator)),
         scan_metrics_(std::move(scan_metrics)),
         planning_duration_(std::move(planning_duration)),

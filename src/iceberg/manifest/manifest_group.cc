@@ -134,8 +134,7 @@ ManifestGroup& ManifestGroup::operator=(ManifestGroup&&) noexcept = default;
 class ManifestGroup::FilePlanningIterator final
     : public Iterator<std::shared_ptr<FileScanTask>> {
  public:
-  static Result<FileScanTaskIterator> Make(
-      std::unique_ptr<ManifestGroup> group) {
+  static Result<FileScanTaskIterator> Make(std::unique_ptr<ManifestGroup> group) {
     ICEBERG_RETURN_UNEXPECTED(group->CheckErrors());
 
     group->delete_index_builder_.WithScanMetrics(group->scan_metrics_);
