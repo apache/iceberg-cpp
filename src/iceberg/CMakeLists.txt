@@ -119,6 +119,7 @@ set(ICEBERG_SOURCES
     transform.cc
     transform_function.cc
     type.cc
+    update/cherry_pick_operation.cc
     update/delete_files.cc
     update/expire_snapshots.cc
     update/fast_append.cc

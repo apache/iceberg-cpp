@@ -250,6 +250,7 @@ class Transaction;
 class TransactionContext;
 
 /// \brief Update family.
+class CherryPickOperation;
 class DeleteFiles;
 class ExpireSnapshots;
 class FastAppend;
