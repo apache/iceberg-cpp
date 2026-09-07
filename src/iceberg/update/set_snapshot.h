@@ -50,6 +50,14 @@ class ICEBERG_EXPORT SetSnapshot : public PendingUpdate {
   /// \brief Rollback table's state to a specific Snapshot identified by id.
   SetSnapshot& RollbackTo(int64_t snapshot_id);
 
+  /// \brief Require the target snapshot to still be a fast-forward when applied.
+  ///
+  /// Without this, a commit retried against refreshed metadata would move the
+  /// current snapshot even if a concurrent commit has since advanced it,
+  /// discarding that commit. Used by SnapshotManager::Cherrypick(), which
+  /// expresses a cherry-pick fast-forward as a set of the current snapshot.
+  SetSnapshot& RequireFastForward();
+
   Kind kind() const final { return Kind::kSetSnapshot; }
   bool IsRetryable() const override { return true; }
 
@@ -67,6 +75,7 @@ class ICEBERG_EXPORT SetSnapshot : public PendingUpdate {
 
   std::optional<int64_t> target_snapshot_id_;
   bool is_rollback_{false};
+  bool require_fast_forward_{false};
 };
 
 }  // namespace iceberg
