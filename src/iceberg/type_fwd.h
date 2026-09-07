@@ -24,8 +24,6 @@
 /// you can include this instead of the "full" headers to help reduce compile
 /// times.
 
-#include <memory>
-
 namespace iceberg {
 
 /// \brief A data type.
@@ -234,7 +232,6 @@ struct SessionContext;
 class Executor;
 template <typename T>
 class Iterator;
-using FileScanTaskIterator = std::unique_ptr<Iterator<std::shared_ptr<FileScanTask>>>;
 
 /// \brief Metrics reporting.
 class MetricsReporter;

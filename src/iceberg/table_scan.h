@@ -30,13 +30,13 @@
 #include <unordered_set>
 #include <vector>
 
+#include "iceberg/file_scan_task_iterator.h"
 #include "iceberg/iceberg_export.h"
 #include "iceberg/result.h"
 #include "iceberg/table_metadata.h"
 #include "iceberg/type_fwd.h"
 #include "iceberg/util/error_collector.h"
 #include "iceberg/util/executor.h"
-#include "iceberg/util/iterator.h"
 
 namespace iceberg {
 

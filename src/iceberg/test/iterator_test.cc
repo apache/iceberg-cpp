@@ -17,8 +17,6 @@
  * under the License.
  */
 
-#include "iceberg/util/iterator.h"
-
 #include <memory>
 #include <optional>
 #include <type_traits>
@@ -26,6 +24,7 @@
 
 #include <gtest/gtest.h>
 
+#include "iceberg/file_scan_task_iterator.h"
 #include "iceberg/test/matchers.h"
 
 namespace iceberg {
@@ -103,6 +102,11 @@ static_assert(std::is_move_constructible_v<CopyOnlyIterator>);
 static_assert(std::is_move_assignable_v<CopyOnlyIterator>);
 static_assert(std::is_move_constructible_v<MoveOnlyIterator>);
 static_assert(std::is_move_assignable_v<MoveOnlyIterator>);
+
+TEST(IteratorTest, FileScanTaskIteratorSupportsIncompleteFileScanTask) {
+  FileScanTaskIterator iterator;
+  EXPECT_EQ(iterator, nullptr);
+}
 
 TEST(IteratorTest, ToVectorSupportsCopyOnlyValues) {
   CopyOnlyIterator iterator;

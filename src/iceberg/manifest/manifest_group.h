@@ -30,6 +30,7 @@
 #include <vector>
 
 #include "iceberg/delete_file_index.h"
+#include "iceberg/file_scan_task_iterator.h"
 #include "iceberg/iceberg_export.h"
 #include "iceberg/manifest/manifest_entry.h"
 #include "iceberg/manifest/manifest_list.h"
@@ -37,7 +38,6 @@
 #include "iceberg/type_fwd.h"
 #include "iceberg/util/error_collector.h"
 #include "iceberg/util/executor.h"
-#include "iceberg/util/iterator.h"
 
 namespace iceberg {
 
