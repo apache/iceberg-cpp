@@ -96,7 +96,9 @@ jobs:
     env:
       SCCACHE_DIR: ${{ github.workspace }}/.sccache
       SCCACHE_CACHE_SIZE: "2G"
-      ICEBERG_EXTRA_CMAKE_ARGS: "-DICEBERG_BUILD_HIVE=ON"
+      # Prebuilt Arrow exports no Thrift target, so resolve the Thrift runtime
+      # from conda instead of Arrow's bundled build.
+      ICEBERG_EXTRA_CMAKE_ARGS: "-DICEBERG_BUILD_HIVE=ON -DICEBERG_BUNDLE_THRIFT=OFF"
     steps:
       - name: Checkout iceberg-cpp
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -105,6 +107,12 @@ jobs:
       - name: Install dependencies
         shell: bash
         run: sudo apt-get update && sudo apt-get install -y libcurl4-openssl-dev
+      - name: Set up conda Arrow
+        uses: ./.github/actions/setup-conda-arrow
+        with:
+          # Thrift's public C++ headers include Boost, and libboost-devel (not
+          # libboost-headers) is the package carrying BoostConfig.cmake.
+          extra-packages: libboost-devel
       - name: Restore sccache cache
         uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
