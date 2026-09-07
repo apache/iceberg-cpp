@@ -38,6 +38,7 @@
 #include "iceberg/update/merge_append.h"
 #include "iceberg/update/overwrite_files.h"
 #include "iceberg/update/pending_update.h"
+#include "iceberg/update/replace_partitions.h"
 #include "iceberg/update/rewrite_files.h"
 #include "iceberg/update/row_delta.h"
 #include "iceberg/update/set_snapshot.h"
@@ -532,6 +533,13 @@ Result<std::shared_ptr<RewriteFiles>> Transaction::NewRewriteFiles() {
                           RewriteFiles::Make(ctx_->table->name().name, ctx_));
   ICEBERG_RETURN_UNEXPECTED(AddUpdate(rewrite_files));
   return rewrite_files;
+}
+
+Result<std::shared_ptr<ReplacePartitions>> Transaction::NewReplacePartitions() {
+  ICEBERG_ASSIGN_OR_RAISE(std::shared_ptr<ReplacePartitions> replace_partitions,
+                          ReplacePartitions::Make(ctx_->table->name().name, ctx_));
+  ICEBERG_RETURN_UNEXPECTED(AddUpdate(replace_partitions));
+  return replace_partitions;
 }
 
 Result<std::shared_ptr<UpdateStatistics>> Transaction::NewUpdateStatistics() {

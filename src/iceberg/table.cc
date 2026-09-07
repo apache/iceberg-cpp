@@ -36,6 +36,7 @@
 #include "iceberg/update/fast_append.h"
 #include "iceberg/update/merge_append.h"
 #include "iceberg/update/overwrite_files.h"
+#include "iceberg/update/replace_partitions.h"
 #include "iceberg/update/rewrite_files.h"
 #include "iceberg/update/row_delta.h"
 #include "iceberg/update/set_snapshot.h"
@@ -259,6 +260,12 @@ Result<std::shared_ptr<RewriteFiles>> Table::NewRewriteFiles() {
   return RewriteFiles::Make(name().name, std::move(ctx));
 }
 
+Result<std::shared_ptr<ReplacePartitions>> Table::NewReplacePartitions() {
+  ICEBERG_ASSIGN_OR_RAISE(
+      auto ctx, TransactionContext::Make(shared_from_this(), TransactionKind::kUpdate));
+  return ReplacePartitions::Make(name().name, std::move(ctx));
+}
+
 Result<std::shared_ptr<UpdateStatistics>> Table::NewUpdateStatistics() {
   ICEBERG_ASSIGN_OR_RAISE(
       auto ctx, TransactionContext::Make(shared_from_this(), TransactionKind::kUpdate));
@@ -377,6 +384,10 @@ Result<std::shared_ptr<OverwriteFiles>> StaticTable::NewOverwrite() {
 
 Result<std::shared_ptr<RewriteFiles>> StaticTable::NewRewriteFiles() {
   return NotSupported("Cannot create a rewrite files for a static table");
+}
+
+Result<std::shared_ptr<ReplacePartitions>> StaticTable::NewReplacePartitions() {
+  return NotSupported("Cannot replace partitions for a static table");
 }
 
 Result<std::shared_ptr<SnapshotManager>> StaticTable::NewSnapshotManager() {

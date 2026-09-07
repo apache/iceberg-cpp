@@ -128,6 +128,10 @@ class ICEBERG_EXPORT Transaction : public std::enable_shared_from_this<Transacti
   /// changes.
   Result<std::shared_ptr<RewriteFiles>> NewRewriteFiles();
 
+  /// \brief Create a new ReplacePartitions to dynamically overwrite partitions and commit
+  /// the changes.
+  Result<std::shared_ptr<ReplacePartitions>> NewReplacePartitions();
+
   /// \brief Create a new SnapshotManager to manage snapshots.
   Result<std::shared_ptr<SnapshotManager>> NewSnapshotManager();
 

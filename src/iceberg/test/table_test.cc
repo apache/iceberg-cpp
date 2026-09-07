@@ -168,6 +168,7 @@ TEST(StaticTableTest, NewMutatingOperationsAreNotSupported) {
   EXPECT_THAT(table->NewRowDelta(), IsError(ErrorKind::kNotSupported));
   EXPECT_THAT(table->NewOverwrite(), IsError(ErrorKind::kNotSupported));
   EXPECT_THAT(table->NewRewriteFiles(), IsError(ErrorKind::kNotSupported));
+  EXPECT_THAT(table->NewReplacePartitions(), IsError(ErrorKind::kNotSupported));
   EXPECT_THAT(table->NewSnapshotManager(), IsError(ErrorKind::kNotSupported));
 }
 

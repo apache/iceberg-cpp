@@ -216,10 +216,8 @@ class ReplacePartitionsTest : public UpdateTestBase {
     return paths;
   }
 
-  Result<std::unique_ptr<ReplacePartitions>> NewReplace() {
-    ICEBERG_ASSIGN_OR_RAISE(auto ctx,
-                            TransactionContext::Make(table_, TransactionKind::kUpdate));
-    return ReplacePartitions::Make(TableName(), std::move(ctx));
+  Result<std::shared_ptr<ReplacePartitions>> NewReplace() {
+    return table_->NewReplacePartitions();
   }
 
   int64_t CommitFastAppend(const std::shared_ptr<DataFile>& file) {
@@ -250,6 +248,31 @@ class ReplacePartitionsTest : public UpdateTestBase {
 TEST_F(ReplacePartitionsTest, OperationIsOverwrite) {
   ICEBERG_UNWRAP_OR_FAIL(auto op, NewReplace());
   EXPECT_EQ(op->operation(), DataOperation::kOverwrite);
+}
+
+// A replace created from a transaction commits with the rest of the transaction.
+TEST_F(ReplacePartitionsTest, TxnNewReplacePartitions) {
+  CommitFastAppend(file_a_);
+  CommitFastAppend(file_b_);
+
+  ICEBERG_UNWRAP_OR_FAIL(auto txn, Transaction::Make(table_, TransactionKind::kUpdate));
+  ICEBERG_UNWRAP_OR_FAIL(auto op, txn->NewReplacePartitions());
+  ASSERT_NE(op, nullptr);
+
+  auto replacement = MakeDataFile("/data/file_a_new.parquet", /*partition_x=*/1L);
+  op->AddFile(replacement);
+  EXPECT_THAT(op->Commit(), IsOk());
+  EXPECT_THAT(txn->Commit(), IsOk());
+
+  EXPECT_THAT(table_->Refresh(), IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(auto snapshot, table_->current_snapshot());
+  EXPECT_EQ(snapshot->summary.at(SnapshotSummaryFields::kOperation),
+            DataOperation::kOverwrite);
+  EXPECT_EQ(snapshot->summary.at(SnapshotSummaryFields::kReplacePartitions), "true");
+
+  ICEBERG_UNWRAP_OR_FAIL(auto paths, LiveDataFilePaths());
+  EXPECT_THAT(
+      paths, ::testing::UnorderedElementsAre(replacement->file_path, file_b_->file_path));
 }
 
 // Replacing a partition drops its existing file and records the summary flag.
@@ -287,6 +310,27 @@ TEST_F(ReplacePartitionsTest, ReplaceLeavesOtherPartitions) {
   EXPECT_THAT(live,
               ::testing::UnorderedElementsAre(
                   file_b_->file_path, table_location_ + "/data/file_a_new.parquet"));
+}
+
+// Several files may be staged for one partition; the partition is dropped once
+// and all staged files become its new contents.
+TEST_F(ReplacePartitionsTest, ReplacePartitionWithMultipleFiles) {
+  CommitFastAppend(file_a_);
+
+  ICEBERG_UNWRAP_OR_FAIL(auto op, NewReplace());
+  auto first = MakeDataFile("/data/file_a_new_1.parquet", /*partition_x=*/1L);
+  auto second = MakeDataFile("/data/file_a_new_2.parquet", /*partition_x=*/1L);
+  op->AddFile(first);
+  op->AddFile(second);
+  EXPECT_THAT(op->Commit(), IsOk());
+
+  EXPECT_THAT(table_->Refresh(), IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(auto snapshot, table_->current_snapshot());
+  EXPECT_EQ(snapshot->summary.at(SnapshotSummaryFields::kAddedDataFiles), "2");
+  EXPECT_EQ(snapshot->summary.at(SnapshotSummaryFields::kDeletedDataFiles), "1");
+
+  ICEBERG_UNWRAP_OR_FAIL(auto live, LiveDataFilePaths());
+  EXPECT_THAT(live, ::testing::UnorderedElementsAre(first->file_path, second->file_path));
 }
 
 // An unpartitioned spec triggers a table-wide replace of every existing file.
