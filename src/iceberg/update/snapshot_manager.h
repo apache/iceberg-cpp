@@ -46,7 +46,9 @@ namespace iceberg {
 /// instead of the one that was current when the audited changes were created. This class
 /// adds support for cherry-picking the changes from an orphan snapshot by applying them
 /// to the current snapshot. The output of the operation is a new snapshot with the
-/// changes from cherry-picked snapshot.
+/// changes from cherry-picked snapshot, except when the picked snapshot is a child of
+/// the current one, in which case the current state fast-forwards to it and no snapshot
+/// is created.
 class ICEBERG_EXPORT SnapshotManager : public ErrorCollector {
  public:
   /// \brief Create a SnapshotManager that owns its own transaction.
@@ -62,6 +64,9 @@ class ICEBERG_EXPORT SnapshotManager : public ErrorCollector {
 
   /// \brief Apply supported changes in given snapshot and create a new snapshot which
   /// will be set as the current snapshot on commit.
+  ///
+  /// If the given snapshot is a child of the current snapshot, the current state
+  /// fast-forwards to it on commit and no new snapshot is created.
   ///
   /// \param snapshot_id a Snapshot ID whose changes to apply
   /// \return Reference to this for method chaining

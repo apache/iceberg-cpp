@@ -17,6 +17,7 @@
 
 install_headers(
     [
+        'cherry_pick_operation.h',
         'delete_files.h',
         'expire_snapshots.h',
         'fast_append.h',

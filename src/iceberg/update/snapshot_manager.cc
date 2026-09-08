@@ -23,10 +23,12 @@
 #include "iceberg/table.h"
 #include "iceberg/table_metadata.h"
 #include "iceberg/transaction.h"
+#include "iceberg/update/cherry_pick_operation.h"
 #include "iceberg/update/fast_append.h"
 #include "iceberg/update/set_snapshot.h"
 #include "iceberg/update/update_snapshot_reference.h"
 #include "iceberg/util/macros.h"
+#include "iceberg/util/snapshot_util_internal.h"
 
 namespace iceberg {
 
@@ -55,8 +57,30 @@ SnapshotManager::~SnapshotManager() = default;
 
 SnapshotManager& SnapshotManager::Cherrypick(int64_t snapshot_id) {
   ICEBERG_BUILDER_RETURN_IF_ERROR(CommitIfRefUpdatesExist());
-  // TODO(anyone): Implement cherrypick operation
-  ICEBERG_BUILDER_CHECK(false, "Cherrypick operation not yet implemented");
+  const TableMetadata& metadata = transaction_->current();
+  ICEBERG_BUILDER_ASSIGN_OR_RETURN_WITH_ERROR(
+      auto snapshot, metadata.SnapshotById(snapshot_id),
+      "Cannot cherry-pick unknown snapshot ID: {}", snapshot_id);
+
+  // A fast-forward produces no new snapshot, so move the current snapshot
+  // instead of creating a cherry-pick operation.
+  if (SnapshotUtil::CanFastForward(metadata, *snapshot)) {
+    ICEBERG_BUILDER_RETURN_IF_ERROR(
+        CherryPickOperation::ValidateFastForward(metadata, *snapshot));
+    ICEBERG_BUILDER_ASSIGN_OR_RETURN(auto set_snapshot, transaction_->NewSetSnapshot());
+    // The commit may be retried against refreshed metadata, where a concurrent
+    // commit can have moved the current snapshot. Without this the retry would
+    // apply as a plain branch move and discard that commit.
+    set_snapshot->RequireFastForward();
+    set_snapshot->SetCurrentSnapshot(snapshot_id);
+    ICEBERG_BUILDER_RETURN_IF_ERROR(set_snapshot->Commit());
+    return *this;
+  }
+
+  ICEBERG_BUILDER_ASSIGN_OR_RETURN(auto cherry_pick,
+                                   transaction_->NewCherryPickOperation());
+  cherry_pick->Cherrypick(snapshot_id);
+  ICEBERG_BUILDER_RETURN_IF_ERROR(cherry_pick->Commit());
   return *this;
 }
 

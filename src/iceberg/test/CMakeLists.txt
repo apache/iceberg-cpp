@@ -227,6 +227,7 @@ if(ICEBERG_BUILD_BUNDLE)
   add_iceberg_test(table_update_test
                    USE_BUNDLE
                    SOURCES
+                   cherry_pick_operation_test.cc
                    delete_files_test.cc
                    expire_snapshots_test.cc
                    fast_append_test.cc

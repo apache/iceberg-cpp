@@ -78,6 +78,17 @@ class ICEBERG_EXPORT SnapshotUtil {
   static Result<bool> IsAncestorOf(const TableMetadata& metadata,
                                    int64_t ancestor_snapshot_id);
 
+  /// \brief Returns whether the given snapshot can be fast-forwarded onto the metadata's
+  /// current state, that is, its parent is the current snapshot or both are absent.
+  ///
+  /// A fast-forward moves the current state to an existing snapshot rather than creating
+  /// a new one.
+  ///
+  /// \param metadata The table metadata to fast-forward
+  /// \param snapshot The snapshot to fast-forward to
+  /// \return true if snapshot can be fast-forwarded onto the current state
+  static bool CanFastForward(const TableMetadata& metadata, const Snapshot& snapshot);
+
   /// \brief Returns whether ancestor_snapshot_id is an ancestor of snapshot_id.
   ///
   /// \param table The table to check

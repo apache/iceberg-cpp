@@ -70,6 +70,15 @@ Result<bool> SnapshotUtil::IsAncestorOf(const TableMetadata& metadata,
   return IsAncestorOf(metadata, current->snapshot_id, ancestor_snapshot_id);
 }
 
+bool SnapshotUtil::CanFastForward(const TableMetadata& metadata,
+                                  const Snapshot& snapshot) {
+  if (metadata.current_snapshot_id == kInvalidSnapshotId) {
+    return !snapshot.parent_snapshot_id.has_value();
+  }
+  return snapshot.parent_snapshot_id.has_value() &&
+         snapshot.parent_snapshot_id.value() == metadata.current_snapshot_id;
+}
+
 Result<bool> SnapshotUtil::IsAncestorOf(const Table& table, int64_t snapshot_id,
                                         int64_t ancestor_snapshot_id) {
   return IsAncestorOf(*table.metadata(), snapshot_id, ancestor_snapshot_id);
