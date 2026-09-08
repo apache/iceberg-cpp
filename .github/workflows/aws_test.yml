@@ -109,17 +109,6 @@ jobs:
       - name: Build and test Iceberg
         shell: bash
         run: ci/scripts/build_iceberg.sh "$(pwd)" OFF ON ${{ matrix.s3 }} ${{ matrix.sigv4 }} ${{ matrix.bundle_awssdk }}
-      - name: Diagnose REST Arrow test failure
-        if: ${{ failure() && startsWith(matrix.runs-on, 'ubuntu') && matrix.bundle_awssdk == 'OFF' }}
-        shell: bash
-        run: |
-          test -x build/src/iceberg/test/rest_arrow_file_io_test || exit 0
-          sudo apt-get install -y gdb
-          cd build
-          timeout 120s gdb --batch \
-            -ex 'set pagination off' -ex run -ex 'thread apply all bt' \
-            -ex 'info sharedlibrary' \
-            --args src/iceberg/test/rest_arrow_file_io_test
       - name: Save sccache
         if: always()
         uses: ./.github/actions/save-sccache
