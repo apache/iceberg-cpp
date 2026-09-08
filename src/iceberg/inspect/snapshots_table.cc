@@ -66,9 +66,10 @@ Status AppendSnapshot(ArrowRowBuilder& builder, const Snapshot& snapshot) {
 
   ICEBERG_RETURN_UNEXPECTED(AppendString(builder.column(4), snapshot.manifest_list));
 
+  const bool has_summary = !snapshot.summary.empty();
   auto summary = snapshot.summary;
   summary.erase(SnapshotSummaryFields::kOperation);
-  if (summary.empty()) {
+  if (!has_summary) {
     ICEBERG_RETURN_UNEXPECTED(AppendNull(builder.column(5)));
   } else {
     ICEBERG_RETURN_UNEXPECTED(AppendStringMap(builder.column(5), summary));
@@ -87,7 +88,7 @@ class SnapshotsTableStream {
         new SnapshotsTableStream(std::move(metadata), std::move(arrow_schema)));
   }
 
-  ~SnapshotsTableStream() { std::ignore = Close(); }
+  ~SnapshotsTableStream() = default;
 
   Status Close() {
     metadata_.reset();

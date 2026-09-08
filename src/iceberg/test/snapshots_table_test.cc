@@ -88,8 +88,8 @@ TEST_F(SnapshotsTableTest, Scan) {
 
   // Column 0: committed_at (timestamptz) — microseconds since epoch.
   auto committed_at = std::static_pointer_cast<::arrow::TimestampArray>(batch->column(0));
-  EXPECT_EQ(committed_at->Value(0), 1234567890000 * 1000);
-  EXPECT_EQ(committed_at->Value(1), 9876543210000 * 1000);
+  EXPECT_EQ(committed_at->Value(0), 1234567890000LL * 1000);
+  EXPECT_EQ(committed_at->Value(1), 9876543210000LL * 1000);
 
   // Column 1: snapshot_id (long) — returned in storage order.
   auto snapshot_ids = std::static_pointer_cast<::arrow::Int64Array>(batch->column(1));
@@ -159,7 +159,7 @@ TEST_F(SnapshotsTableTest, ScanSkipsNullSnapshots) {
   EXPECT_EQ(batches.front()->num_rows(), 2);
 }
 
-TEST_F(SnapshotsTableTest, ScanTreatsEmptySummaryAsNull) {
+TEST_F(SnapshotsTableTest, ScanEmptySummary) {
   auto [missing_summary, operation_only_summary] = MakeTestSnapshots();
   missing_summary->summary.clear();
   operation_only_summary->summary = {
@@ -176,7 +176,8 @@ TEST_F(SnapshotsTableTest, ScanTreatsEmptySummaryAsNull) {
   auto summaries =
       std::static_pointer_cast<::arrow::MapArray>(batches.front()->column(5));
   EXPECT_TRUE(summaries->IsNull(0));
-  EXPECT_TRUE(summaries->IsNull(1));
+  EXPECT_FALSE(summaries->IsNull(1));
+  EXPECT_EQ(summaries->value_length(1), 0);
 }
 
 TEST_F(SnapshotsTableTest, ScanReturnsMultipleBatches) {

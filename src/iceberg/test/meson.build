@@ -47,6 +47,7 @@ iceberg_tests = {
     },
     'table_test': {
         'sources': files(
+            'history_table_test.cc',
             'location_provider_test.cc',
             'metadata_table_test.cc',
             'metrics_config_test.cc',
@@ -54,6 +55,7 @@ iceberg_tests = {
             'metrics_test.cc',
             'snapshot_test.cc',
             'snapshot_util_test.cc',
+            'snapshots_table_test.cc',
             'table_metadata_builder_test.cc',
             'table_requirement_test.cc',
             'table_requirements_test.cc',

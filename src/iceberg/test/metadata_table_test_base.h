@@ -85,9 +85,11 @@ class MetadataTableTestBase : public ::testing::Test {
       ArrowArrayStream&& stream) {
     auto reader_result = ::arrow::ImportRecordBatchReader(&stream);
     if (!reader_result.ok()) {
+      if (stream.release != nullptr) {
+        stream.release(&stream);
+      }
       return InvalidArrowData(reader_result.status().ToString());
     }
-
     auto batches_result = reader_result.ValueUnsafe()->ToRecordBatches();
     if (!batches_result.ok()) {
       return InvalidArrowData(batches_result.status().ToString());
