@@ -66,7 +66,6 @@ jobs:
             s3: "ON"
             sigv4: "ON"
             bundle_awssdk: "OFF"
-            aws-sdk-features: core,config,s3,identity-management,sts,transfer
           - title: macOS 26 ARM64, S3, bundled AWS SDK
             runs-on: macos-26
             s3: "ON"
@@ -88,27 +87,6 @@ jobs:
         if: ${{ startsWith(matrix.runs-on, 'ubuntu') }}
         shell: bash
         run: sudo apt-get update && sudo apt-get install -y libcurl4-openssl-dev libjitterentropy3-dev
-      - name: Cache vcpkg packages
-        if: ${{ startsWith(matrix.runs-on, 'ubuntu') && matrix.bundle_awssdk == 'OFF' }}
-        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-        id: vcpkg-cache
-        with:
-          path: /usr/local/share/vcpkg/installed
-          key: vcpkg-x64-linux-aws-sdk-cpp-s3-${{ matrix.s3 }}-sigv4-${{ matrix.sigv4 }}-${{ hashFiles('.github/workflows/aws_test.yml') }}
-      - name: Install AWS SDK via vcpkg
-        if: ${{ startsWith(matrix.runs-on, 'ubuntu') && matrix.bundle_awssdk == 'OFF' && steps.vcpkg-cache.outputs.cache-hit != 'true' }}
-        shell: bash
-        # Retry to ride out transient GitHub/mirror download failures (504s).
-        run: |
-          for attempt in 1 2 3; do
-            if vcpkg install "aws-sdk-cpp[${{ matrix.aws-sdk-features }}]:x64-linux"; then
-              exit 0
-            fi
-            echo "::warning::vcpkg install failed (attempt ${attempt}/3), retrying in 30s"
-            sleep 30
-          done
-          echo "::error::vcpkg install failed after 3 attempts"
-          exit 1
       - name: Set Ubuntu Compilers
         if: ${{ startsWith(matrix.runs-on, 'ubuntu') }}
         run: |
@@ -118,17 +96,18 @@ jobs:
         if: ${{ matrix.s3 == 'ON' }}
         shell: bash
         run: bash ci/scripts/start_minio.sh
-      - name: Set up conda Arrow
+      - name: Set up conda Arrow and AWS SDK
         if: ${{ matrix.bundle_awssdk == 'OFF' }}
         uses: ./.github/actions/setup-conda-arrow
+        with:
+          # Use the same AWS SDK as Arrow to avoid incompatible symbols at runtime.
+          extra-packages: aws-sdk-cpp
       - name: Set up sccache
         uses: ./.github/actions/setup-sccache
         with:
           key-prefix: sccache-aws-${{ matrix.runs-on }}-bundle${{ matrix.bundle_awssdk }}-s3${{ matrix.s3 }}-sigv4${{ matrix.sigv4 }}
       - name: Build and test Iceberg
         shell: bash
-        env:
-          CMAKE_TOOLCHAIN_FILE: ${{ startsWith(matrix.runs-on, 'ubuntu') && matrix.bundle_awssdk == 'OFF' && '/usr/local/share/vcpkg/scripts/buildsystems/vcpkg.cmake' || '' }}
         run: ci/scripts/build_iceberg.sh "$(pwd)" OFF ON ${{ matrix.s3 }} ${{ matrix.sigv4 }} ${{ matrix.bundle_awssdk }}
       - name: Diagnose REST Arrow test failure
         if: ${{ failure() && startsWith(matrix.runs-on, 'ubuntu') && matrix.bundle_awssdk == 'OFF' }}
