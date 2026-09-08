@@ -23,15 +23,14 @@
 #include <cstddef>
 #include <memory>
 #include <optional>
-#include <tuple>
 #include <utility>
 #include <vector>
 
 #include <nanoarrow/nanoarrow.h>
 
-#include "iceberg/arrow/nanoarrow_status_internal.h"
 #include "iceberg/arrow_c_data_util_internal.h"
 #include "iceberg/arrow_row_builder_internal.h"
+#include "iceberg/nanoarrow_status_internal.h"
 #include "iceberg/schema.h"
 #include "iceberg/schema_field.h"
 #include "iceberg/schema_internal.h"
@@ -66,12 +65,16 @@ Status AppendSnapshot(ArrowRowBuilder& builder, const Snapshot& snapshot) {
 
   ICEBERG_RETURN_UNEXPECTED(AppendString(builder.column(4), snapshot.manifest_list));
 
-  auto summary = snapshot.summary;
-  summary.erase(SnapshotSummaryFields::kOperation);
-  if (summary.empty()) {
-    ICEBERG_RETURN_UNEXPECTED(AppendNull(builder.column(5)));
+  if (!snapshot.summary.empty()) {
+    if (snapshot.summary.contains(SnapshotSummaryFields::kOperation)) {
+      auto summary = snapshot.summary;
+      summary.erase(SnapshotSummaryFields::kOperation);
+      ICEBERG_RETURN_UNEXPECTED(AppendStringMap(builder.column(5), summary));
+    } else {
+      ICEBERG_RETURN_UNEXPECTED(AppendStringMap(builder.column(5), snapshot.summary));
+    }
   } else {
-    ICEBERG_RETURN_UNEXPECTED(AppendStringMap(builder.column(5), summary));
+    ICEBERG_RETURN_UNEXPECTED(AppendNull(builder.column(5)));
   }
 
   return builder.FinishRow();
@@ -87,7 +90,7 @@ class SnapshotsTableStream {
         new SnapshotsTableStream(std::move(metadata), std::move(arrow_schema)));
   }
 
-  ~SnapshotsTableStream() { std::ignore = Close(); }
+  ~SnapshotsTableStream() = default;
 
   Status Close() {
     metadata_.reset();
