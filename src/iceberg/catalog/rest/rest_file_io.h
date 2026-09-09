@@ -41,9 +41,13 @@ ICEBERG_REST_EXPORT Result<std::unique_ptr<FileIO>> MakeCatalogFileIO(
     const RestCatalogProperties& config);
 
 /// \brief Build the configured table FileIO and apply storage credentials if present.
+///
+/// \param refresher Optional callback used to replace the vended credentials
+/// before they expire; ignored when the FileIO cannot tell when they do.
 ICEBERG_REST_EXPORT Result<std::unique_ptr<FileIO>> MakeTableFileIO(
     const std::unordered_map<std::string, std::string>& catalog_config,
     const std::unordered_map<std::string, std::string>& table_config,
-    const std::vector<StorageCredential>& storage_credentials);
+    const std::vector<StorageCredential>& storage_credentials,
+    StorageCredentialRefresher refresher = nullptr);
 
 }  // namespace iceberg::rest
