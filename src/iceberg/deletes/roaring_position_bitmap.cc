@@ -271,6 +271,7 @@ Result<RoaringPositionBitmap> RoaringPositionBitmap::Deserialize(std::string_vie
     --remaining_count;
   }
 
+  ICEBERG_PRECHECK(remaining == 0, "Trailing data after bitmaps: {} bytes", remaining);
   return RoaringPositionBitmap(std::move(impl));
 }
 

@@ -158,9 +158,13 @@ add_iceberg_test(util_test
 add_iceberg_test(puffin_test
                  USE_DATA
                  SOURCES
+                 dv_util_test.cc
+                 puffin_dv_interop_test.cc
                  puffin_format_test.cc
                  puffin_json_test.cc
                  puffin_reader_writer_test.cc)
+
+add_iceberg_test(compaction_planner_test SOURCES compaction_planner_test.cc)
 
 if(ICEBERG_BUILD_BUNDLE)
   add_iceberg_test(avro_test
@@ -253,12 +257,14 @@ if(ICEBERG_BUILD_BUNDLE)
                    SOURCES
                    arrow_c_data_util_test.cc
                    arrow_row_builder_test.cc
+                   compaction_executor_test.cc
                    data_writer_test.cc
                    default_value_test.cc
                    delete_filter_test.cc
                    delete_loader_test.cc
                    dv_writer_test.cc
                    file_scan_task_reader_test.cc
+                   position_delete_update_test.cc
                    literal_util_test.cc)
 
 endif()
