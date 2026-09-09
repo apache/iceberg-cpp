@@ -61,7 +61,7 @@ class MockCredentialedFileIO : public MockFileIO, public SupportsStorageCredenti
     return {};
   }
 
-  const std::vector<StorageCredential>& credentials() const override {
+  std::vector<StorageCredential> credentials() const override {
     return captured_storage_credentials;
   }
 
