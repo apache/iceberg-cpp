@@ -34,6 +34,7 @@
 
 #include "iceberg/avro/avro_register.h"
 #include "iceberg/constants.h"
+#include "iceberg/logging/log_level.h"
 #include "iceberg/manifest/manifest_entry.h"
 #include "iceberg/manifest/manifest_reader.h"
 #include "iceberg/manifest/manifest_writer.h"
@@ -46,6 +47,7 @@
 #include "iceberg/table_metadata.h"
 #include "iceberg/table_properties.h"
 #include "iceberg/test/executor.h"
+#include "iceberg/test/logging_test_helpers.h"
 #include "iceberg/test/matchers.h"
 #include "iceberg/test/mock_catalog.h"
 #include "iceberg/test/update_test_base.h"
@@ -176,6 +178,31 @@ TEST_F(FastAppendTest, AppendDataFile) {
   EXPECT_EQ(snapshot->summary.at(SnapshotSummaryFields::kManifestsCreated), "1");
   EXPECT_EQ(snapshot->summary.at(SnapshotSummaryFields::kManifestsKept), "0");
   EXPECT_EQ(snapshot->summary.at(SnapshotSummaryFields::kManifestsReplaced), "0");
+}
+
+TEST_F(FastAppendTest, StageOnlyCommitLogNamesAddedSnapshot) {
+  auto capturing = std::make_shared<CapturingLogger>();
+  capturing->SetLevel(LogLevel::kTrace);
+  ScopedDefaultLogger guard(capturing);
+
+  ICEBERG_UNWRAP_OR_FAIL(auto fast_append, table_->NewFastAppend());
+  fast_append->StageOnly();
+  fast_append->AppendFile(file_a_);
+  ASSERT_THAT(fast_append->Commit(), IsOk());
+  ASSERT_THAT(table_->Refresh(), IsOk());
+
+  ASSERT_FALSE(table_->metadata()->snapshots.empty());
+  const auto snapshot_id = table_->metadata()->snapshots.back()->snapshot_id;
+  bool found = false;
+  for (const auto& record : capturing->records()) {
+    if (record.level == LogLevel::kInfo &&
+        record.message.find(std::format("committed snapshot {}", snapshot_id)) !=
+            std::string::npos) {
+      found = true;
+      break;
+    }
+  }
+  EXPECT_TRUE(found) << "expected the staged snapshot in the commit success log";
 }
 
 TEST_F(FastAppendTest, AppendMultipleDataFiles) {
