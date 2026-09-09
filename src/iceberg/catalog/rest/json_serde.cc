@@ -152,6 +152,25 @@ Result<StorageCredential> StorageCredentialFromJson(const nlohmann::json& json) 
   return credential;
 }
 
+/// \brief Reads the optional `storage-credentials` array shared by the
+/// LoadTable and LoadCredentials responses.
+Result<std::vector<StorageCredential>> StorageCredentialsFromJson(
+    const nlohmann::json& json) {
+  std::vector<StorageCredential> credentials;
+  auto it = json.find(kStorageCredentials);
+  if (it == json.end() || it->is_null()) {
+    return credentials;
+  }
+  if (!it->is_array()) {
+    return JsonParseError("Cannot parse storage credentials from non-array");
+  }
+  for (const auto& entry : *it) {
+    ICEBERG_ASSIGN_OR_RAISE(auto credential, StorageCredentialFromJson(entry));
+    credentials.push_back(std::move(credential));
+  }
+  return credentials;
+}
+
 template <typename Value>
 Result<std::map<int32_t, Value>> KeyValueMapFromJson(const nlohmann::json& json,
                                                      std::string_view key) {
@@ -738,17 +757,22 @@ Result<LoadTableResult> LoadTableResultFromJson(const nlohmann::json& json) {
   ICEBERG_ASSIGN_OR_RAISE(result.metadata, TableMetadataFromJson(metadata_json));
   ICEBERG_ASSIGN_OR_RAISE(result.config,
                           GetJsonValueOrDefault<decltype(result.config)>(json, kConfig));
-  if (auto it = json.find(kStorageCredentials); it != json.end() && !it->is_null()) {
-    if (!it->is_array()) {
-      return JsonParseError("Cannot parse storage credentials from non-array");
-    }
-    for (const auto& entry : *it) {
-      ICEBERG_ASSIGN_OR_RAISE(auto cred, StorageCredentialFromJson(entry));
-      result.storage_credentials.push_back(std::move(cred));
-    }
-  }
+  ICEBERG_ASSIGN_OR_RAISE(result.storage_credentials, StorageCredentialsFromJson(json));
   ICEBERG_RETURN_UNEXPECTED(result.Validate());
   return result;
+}
+
+Result<LoadCredentialsResponse> LoadCredentialsResponseFromJson(
+    const nlohmann::json& json) {
+  // Required here, unlike in LoadTable: reading a malformed response as "no
+  // credentials" would look like a refresh that succeeded and dropped them.
+  if (auto it = json.find(kStorageCredentials); it == json.end() || it->is_null()) {
+    return JsonParseError("Missing '{}'", kStorageCredentials);
+  }
+  LoadCredentialsResponse response;
+  ICEBERG_ASSIGN_OR_RAISE(response.storage_credentials, StorageCredentialsFromJson(json));
+  ICEBERG_RETURN_UNEXPECTED(response.Validate());
+  return response;
 }
 
 nlohmann::json ToJson(const ListNamespacesResponse& response) {

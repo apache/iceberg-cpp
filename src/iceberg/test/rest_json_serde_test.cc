@@ -1229,6 +1229,32 @@ INSTANTIATE_TEST_SUITE_P(
       return info.param.test_name;
     });
 
+TEST(LoadCredentialsResponseTest, ParsesVendedCredentials) {
+  auto json = nlohmann::json::parse(
+      R"({"storage-credentials":[{"prefix":"s3","config":{"s3.access-key-id":"AKIAtest"}}]})");
+  auto response = LoadCredentialsResponseFromJson(json);
+  ASSERT_THAT(response, IsOk());
+  EXPECT_EQ(response->storage_credentials,
+            (std::vector<StorageCredential>{
+                {.prefix = "s3", .config = {{"s3.access-key-id", "AKIAtest"}}}}));
+}
+
+TEST(LoadCredentialsResponseTest, RejectsResponseWithoutCredentials) {
+  for (std::string_view body : {"{}", R"({"storage-credentials": null})"}) {
+    auto response = LoadCredentialsResponseFromJson(nlohmann::json::parse(body));
+    EXPECT_THAT(response, IsError(ErrorKind::kJsonParseError));
+    EXPECT_THAT(response, HasErrorMessage("Missing 'storage-credentials'"));
+  }
+}
+
+TEST(LoadCredentialsResponseTest, RejectsNonArrayCredentials) {
+  auto response = LoadCredentialsResponseFromJson(
+      nlohmann::json::parse(R"({"storage-credentials":"oops"})"));
+  EXPECT_THAT(response, IsError(ErrorKind::kJsonParseError));
+  EXPECT_THAT(response,
+              HasErrorMessage("Cannot parse storage credentials from non-array"));
+}
+
 DECLARE_ROUNDTRIP_TEST(CommitTableRequest)
 
 INSTANTIATE_TEST_SUITE_P(
