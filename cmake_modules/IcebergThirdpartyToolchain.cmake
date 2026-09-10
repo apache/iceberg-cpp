@@ -89,13 +89,13 @@ endfunction()
 # ICEBERG_CPR_URL            - cpr tarball URL
 #
 # Example usage:
-#   export ICEBERG_ARROW_URL="https://your-mirror.com/apache-arrow-24.0.0.tar.gz"
+#   export ICEBERG_ARROW_URL="https://your-mirror.com/apache-arrow-25.0.0.tar.gz"
 #   cmake -S . -B build
 #
 
-set(ICEBERG_ARROW_BUILD_VERSION "24.0.0")
+set(ICEBERG_ARROW_BUILD_VERSION "25.0.0")
 set(ICEBERG_ARROW_BUILD_SHA256_CHECKSUM
-    "9a8094d24fa33b90c672ab77fdda253f29300c8b0dd3f0b8e55a29dbd98b82c9")
+    "12afc2dc8137bdd4a68876cec939f664c9d55cfc7b75f55b45163ebb4e344d81")
 
 if(DEFINED ENV{ICEBERG_ARROW_URL})
   set(ARROW_SOURCE_URL "$ENV{ICEBERG_ARROW_URL}")
@@ -107,9 +107,9 @@ else()
   )
 endif()
 
-set(ICEBERG_NANOARROW_BUILD_VERSION "0.8.0")
+set(ICEBERG_NANOARROW_BUILD_VERSION "0.9.0")
 set(ICEBERG_NANOARROW_BUILD_SHA256_CHECKSUM
-    "6e61e2819c9138e9092ba32b568ed6f4594928b306171937251eaaafa7dc2b8c")
+    "801200a0e95e869d5c4bdeb5b535dba58551482bb782b7dc8bd599c8b6e8cacf")
 
 if(DEFINED ENV{ICEBERG_NANOARROW_URL})
   set(NANOARROW_SOURCE_URL "$ENV{ICEBERG_NANOARROW_URL}")
@@ -190,6 +190,18 @@ function(resolve_arrow_dependency)
   set(ZLIB_SOURCE "SYSTEM")
   set(ARROW_VERBOSE_THIRDPARTY_BUILD OFF)
   set(CMAKE_CXX_STANDARD 20)
+
+  # Arrow's bundled Thrift download (Parquet requires Thrift, so this fires even
+  # for non-Hive builds) only lists the live Apache mirrors closer.lua / dlcdn,
+  # which drop older releases. Thrift 0.22.0 (Arrow 24.0.0's pinned version) has
+  # already been removed from them and now 404s, breaking every bundled build.
+  # Point Arrow at archive.apache.org, which retains all releases, mirroring the
+  # archive fallback already used for ARROW_SOURCE_URL / NANOARROW_SOURCE_URL.
+  # Keep the version in sync with Arrow's ARROW_THRIFT_BUILD_VERSION on upgrades.
+  if(NOT DEFINED ENV{ARROW_THRIFT_URL})
+    set(ENV{ARROW_THRIFT_URL}
+        "https://archive.apache.org/dist/thrift/0.22.0/thrift-0.22.0.tar.gz")
+  endif()
 
   fetchcontent_declare(VendoredArrow
                        ${FC_DECLARE_COMMON_OPTIONS}
@@ -801,12 +813,65 @@ function(resolve_zstd_dependency)
   endif()
 endfunction()
 
+# ----------------------------------------------------------------------
+# GoogleTest (tests only)
+#
+# GTest is only consumed by the unit tests; it is neither installed nor exported
+# as a system dependency, so it does not touch ICEBERG_SYSTEM_DEPENDENCIES.
+
+function(resolve_gtest_dependency)
+  prepare_fetchcontent()
+
+  set(INSTALL_GTEST
+      OFF
+      CACHE BOOL "" FORCE)
+
+  fetchcontent_declare(googletest
+                       GIT_REPOSITORY https://github.com/google/googletest.git
+                       GIT_TAG b514bdc898e2951020cbdca1304b75f5950d1f59 # release-1.15.2
+                       FIND_PACKAGE_ARGS
+                       NAMES
+                       GTest)
+  fetchcontent_makeavailable(googletest)
+endfunction()
+
+# ----------------------------------------------------------------------
+# Google Benchmark (benchmarks only)
+#
+# Like GTest, benchmark is only consumed by the benchmark targets and is neither
+# installed nor exported as a system dependency.
+
+function(resolve_benchmark_dependency)
+  prepare_fetchcontent()
+
+  set(BENCHMARK_ENABLE_GTEST_TESTS
+      OFF
+      CACHE BOOL "" FORCE)
+  set(BENCHMARK_ENABLE_INSTALL
+      OFF
+      CACHE BOOL "" FORCE)
+  set(BENCHMARK_ENABLE_TESTING
+      OFF
+      CACHE BOOL "" FORCE)
+
+  fetchcontent_declare(google_benchmark
+                       GIT_REPOSITORY https://github.com/google/benchmark.git
+                       GIT_TAG a4cf155615c63e019ae549e31703bf367df5b471 # v1.8.4
+                       FIND_PACKAGE_ARGS
+                       NAMES
+                       benchmark
+                       CONFIG)
+  fetchcontent_makeavailable(google_benchmark)
+endfunction()
+
 resolve_zlib_dependency()
 resolve_nanoarrow_dependency()
 resolve_croaring_dependency()
 resolve_utf8proc_dependency()
 resolve_nlohmann_json_dependency()
-resolve_spdlog_dependency()
+if(ICEBERG_SPDLOG)
+  resolve_spdlog_dependency()
+endif()
 
 if(ICEBERG_S3 OR ICEBERG_SIGV4)
   if(ICEBERG_SIGV4 AND NOT ICEBERG_BUILD_REST)
@@ -863,4 +928,18 @@ endfunction()
 
 if(ICEBERG_BUILD_HIVE)
   resolve_thrift_dependency()
+endif()
+
+# ----------------------------------------------------------------------
+# Test and benchmark dependencies
+#
+# These are build-only tools, pulled in after the library dependencies and only
+# when the corresponding build option is enabled.
+
+if(ICEBERG_BUILD_TESTS)
+  resolve_gtest_dependency()
+endif()
+
+if(ICEBERG_BUILD_BENCHMARKS)
+  resolve_benchmark_dependency()
 endif()

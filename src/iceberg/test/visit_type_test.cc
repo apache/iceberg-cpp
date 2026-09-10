@@ -193,14 +193,14 @@ const static std::array<TypeTestCase, 21> kPrimitiveTypes = {{
         .type = iceberg::geometry(),
         .type_id = iceberg::TypeId::kGeometry,
         .primitive = true,
-        .repr = "geometry",
+        .repr = "geometry(OGC:CRS84)",
     },
     {
         .name = "geography",
         .type = iceberg::geography(),
         .type_id = iceberg::TypeId::kGeography,
         .primitive = true,
-        .repr = "geography",
+        .repr = "geography(OGC:CRS84, spherical)",
     },
 }};
 

@@ -17,10 +17,16 @@
  * under the License.
  */
 
+#include <memory>
 #include <ranges>
+#include <vector>
 
+#include <arrow/array/builder_nested.h>
+#include <arrow/array/builder_primitive.h>
 #include <arrow/c/bridge.h>
 #include <arrow/json/from_string.h>
+#include <arrow/memory_pool.h>
+#include <arrow/type.h>
 #include <arrow/util/decimal.h>
 #include <avro/Compiler.hh>
 #include <avro/Generic.hh>
@@ -31,6 +37,7 @@
 
 #include "iceberg/avro/avro_data_util_internal.h"
 #include "iceberg/avro/avro_schema_util_internal.h"
+#include "iceberg/expression/literal.h"
 #include "iceberg/schema.h"
 #include "iceberg/schema_internal.h"
 #include "iceberg/schema_util.h"
@@ -660,6 +667,218 @@ TEST(AppendDatumToBuilderTest, StructWithMissingOptionalField) {
   ])";
   ASSERT_NO_FATAL_FAILURE(VerifyAppendDatumToBuilder(iceberg_schema, avro_schema.root(),
                                                      avro_data, expected_json));
+}
+
+TEST(AppendDatumToBuilderTest, StructWithMissingDefaultFields) {
+  Schema iceberg_schema({
+      SchemaField::MakeRequired(1, "id", iceberg::int32()),
+      // Missing required field with an initial-default: filled with the default.
+      SchemaField(2, "score", iceberg::int64(), /*optional=*/false, /*doc=*/{},
+                  std::make_shared<const Literal>(Literal::Long(100))),
+      // Missing optional field with an initial-default: also filled, not null.
+      SchemaField(3, "grade", iceberg::string(), /*optional=*/true, /*doc=*/{},
+                  std::make_shared<const Literal>(Literal::String("A"))),
+  });
+
+  // Create Avro schema that only has the id field (missing score and grade).
+  std::string avro_schema_json = R"({
+    "type": "record",
+    "name": "person",
+    "fields": [
+      {"name": "id", "type": "int", "field-id": 1}
+    ]
+  })";
+  auto avro_schema = ::avro::compileJsonSchemaFromString(avro_schema_json);
+
+  std::vector<::avro::GenericDatum> avro_data;
+  for (int i = 0; i < 2; ++i) {
+    ::avro::GenericDatum avro_datum(avro_schema.root());
+    auto& record = avro_datum.value<::avro::GenericRecord>();
+    record.fieldAt(0).value<int32_t>() = i + 1;
+    avro_data.push_back(avro_datum);
+  }
+
+  const std::string expected_json = R"([
+    {"id": 1, "score": 100, "grade": "A"},
+    {"id": 2, "score": 100, "grade": "A"}
+  ])";
+  ASSERT_NO_FATAL_FAILURE(VerifyAppendDatumToBuilder(iceberg_schema, avro_schema.root(),
+                                                     avro_data, expected_json));
+}
+
+TEST(AppendDatumToBuilderTest, NestedListOfListStructWithMissingDefaultField) {
+  // A default on a struct nested two collection levels deep must still be filled, which
+  // requires recursing through both list builders rather than only an immediate struct.
+  auto inner_struct = std::make_shared<StructType>(std::vector<SchemaField>{
+      SchemaField::MakeRequired(5, "x", iceberg::int32()),
+      SchemaField(6, "y", iceberg::int64(), /*optional=*/false, /*doc=*/{},
+                  std::make_shared<const Literal>(Literal::Long(7))),
+  });
+  auto inner_list =
+      std::make_shared<ListType>(SchemaField::MakeRequired(4, "element", inner_struct));
+  auto outer_list =
+      std::make_shared<ListType>(SchemaField::MakeRequired(3, "element", inner_list));
+  Schema iceberg_schema({
+      SchemaField::MakeRequired(1, "id", iceberg::int32()),
+      SchemaField::MakeRequired(2, "matrix", outer_list),
+  });
+
+  // The Avro schema's innermost record only has `x`, so `y` comes from its default.
+  std::string avro_schema_json = R"({
+    "type": "record",
+    "name": "outer",
+    "fields": [
+      {"name": "id", "type": "int", "field-id": 1},
+      {"name": "matrix", "field-id": 2, "type": {
+        "type": "array", "element-id": 3, "items": {
+          "type": "array", "element-id": 4, "items": {
+            "type": "record", "name": "point",
+            "fields": [{"name": "x", "type": "int", "field-id": 5}]
+          }
+        }
+      }}
+    ]
+  })";
+  auto avro_schema = ::avro::compileJsonSchemaFromString(avro_schema_json);
+
+  std::vector<::avro::GenericDatum> avro_data;
+  ::avro::GenericDatum avro_datum(avro_schema.root());
+  auto& record = avro_datum.value<::avro::GenericRecord>();
+  record.fieldAt(0).value<int32_t>() = 1;
+  auto& outer_array = record.fieldAt(1).value<::avro::GenericArray>();
+  ::avro::GenericDatum inner_datum(avro_schema.root()->leafAt(1)->leafAt(0));
+  auto& inner_array = inner_datum.value<::avro::GenericArray>();
+  for (int32_t x : {10, 20}) {
+    ::avro::GenericDatum point_datum(avro_schema.root()->leafAt(1)->leafAt(0)->leafAt(0));
+    point_datum.value<::avro::GenericRecord>().fieldAt(0).value<int32_t>() = x;
+    inner_array.value().push_back(point_datum);
+  }
+  outer_array.value().push_back(inner_datum);
+  avro_data.push_back(avro_datum);
+
+  const std::string expected_json = R"([
+    {"id": 1, "matrix": [[{"x": 10, "y": 7}, {"x": 20, "y": 7}]]}
+  ])";
+  ASSERT_NO_FATAL_FAILURE(VerifyAppendDatumToBuilder(iceberg_schema, avro_schema.root(),
+                                                     avro_data, expected_json));
+}
+
+TEST(AppendDefaultToBuilderTest, AppendsValue) {
+  ::arrow::Int64Builder builder;
+  ASSERT_THAT(AppendDefaultToBuilder(Literal::Long(42), &builder), IsOk());
+  ASSERT_THAT(AppendDefaultToBuilder(Literal::Long(42), &builder), IsOk());
+
+  std::shared_ptr<::arrow::Array> array;
+  ASSERT_TRUE(builder.Finish(&array).ok());
+  ASSERT_EQ(array->length(), 2);
+  const auto& long_array = static_cast<const ::arrow::Int64Array&>(*array);
+  ASSERT_EQ(long_array.Value(0), 42);
+  ASSERT_EQ(long_array.Value(1), 42);
+}
+
+TEST(AppendDefaultToBuilderTest, CastsToBuilderType) {
+  // The literal's natural type (int32) differs from the builder type (int64); the value
+  // is cast to the builder type.
+  ::arrow::Int64Builder builder;
+  ASSERT_THAT(AppendDefaultToBuilder(Literal::Int(7), &builder), IsOk());
+
+  std::shared_ptr<::arrow::Array> array;
+  ASSERT_TRUE(builder.Finish(&array).ok());
+  ASSERT_EQ(array->length(), 1);
+  ASSERT_EQ(static_cast<const ::arrow::Int64Array&>(*array).Value(0), 7);
+}
+
+TEST(AppendDefaultToBuilderTest, ReusesPreparedScalar) {
+  auto pool = ::arrow::default_memory_pool();
+  auto child = std::make_shared<::arrow::Int64Builder>(pool);
+  ::arrow::StructBuilder struct_builder(
+      ::arrow::struct_({::arrow::field("d", ::arrow::int64())}), pool, {child});
+
+  FieldProjection projection;
+  projection.kind = FieldProjection::Kind::kDefault;
+  projection.from = Literal::Long(42);
+
+  SchemaProjection schema_projection;
+  schema_projection.fields.push_back(projection);
+  ASSERT_THAT(PrepareDefaultScalars(schema_projection, &struct_builder), IsOk());
+  ASSERT_NE(dynamic_cast<const AvroExtraAttributes*>(
+                schema_projection.fields[0].attributes.get()),
+            nullptr);
+
+  auto* field_builder = struct_builder.field_builder(0);
+  ASSERT_THAT(AppendDefaultToBuilder(schema_projection.fields[0], field_builder), IsOk());
+  ASSERT_THAT(AppendDefaultToBuilder(schema_projection.fields[0], field_builder), IsOk());
+
+  std::shared_ptr<::arrow::Array> array;
+  ASSERT_TRUE(field_builder->Finish(&array).ok());
+  ASSERT_EQ(array->length(), 2);
+  const auto& long_array = static_cast<const ::arrow::Int64Array&>(*array);
+  ASSERT_EQ(long_array.Value(0), 42);
+  ASSERT_EQ(long_array.Value(1), 42);
+}
+
+TEST(AppendDefaultToBuilderTest, PreparesScalarWhenContainerAlreadyExists) {
+  // The Avro attributes container may already exist (e.g. attached by another Avro
+  // attribute) with default_scalar unset. Preparation must still fill default_scalar
+  // rather than skip on the container's mere presence, otherwise the append path falls
+  // back to rebuilding the scalar per row.
+  auto pool = ::arrow::default_memory_pool();
+  auto child = std::make_shared<::arrow::Int64Builder>(pool);
+  ::arrow::StructBuilder struct_builder(
+      ::arrow::struct_({::arrow::field("d", ::arrow::int64())}), pool, {child});
+
+  FieldProjection projection;
+  projection.kind = FieldProjection::Kind::kDefault;
+  projection.from = Literal::Long(42);
+  // Pre-attach an empty container, simulating another attribute having created it.
+  projection.attributes = std::make_shared<AvroExtraAttributes>();
+
+  SchemaProjection schema_projection;
+  schema_projection.fields.push_back(projection);
+  ASSERT_THAT(PrepareDefaultScalars(schema_projection, &struct_builder), IsOk());
+
+  const auto* attrs = dynamic_cast<const AvroExtraAttributes*>(
+      schema_projection.fields[0].attributes.get());
+  ASSERT_NE(attrs, nullptr);
+  ASSERT_NE(attrs->default_scalar, nullptr);
+}
+
+TEST(AppendDefaultToBuilderTest, PreparesScalarUnderNestedCollections) {
+  // A default under `list<list<struct<...>>>` must be prepared too, so decoding reuses
+  // the cached scalar instead of rebuilding it for every element.
+  auto pool = ::arrow::default_memory_pool();
+  auto leaf = std::make_shared<::arrow::Int64Builder>(pool);
+  auto point_builder = std::make_shared<::arrow::StructBuilder>(
+      ::arrow::struct_({::arrow::field("y", ::arrow::int64())}), pool,
+      std::vector<std::shared_ptr<::arrow::ArrayBuilder>>{leaf});
+  auto inner_list = std::make_shared<::arrow::ListBuilder>(pool, point_builder);
+  auto outer_list = std::make_shared<::arrow::ListBuilder>(pool, inner_list);
+  ::arrow::StructBuilder root_builder(
+      ::arrow::struct_({::arrow::field("matrix", outer_list->type())}), pool,
+      std::vector<std::shared_ptr<::arrow::ArrayBuilder>>{outer_list});
+
+  FieldProjection leaf_default;
+  leaf_default.kind = FieldProjection::Kind::kDefault;
+  leaf_default.from = Literal::Long(7);
+
+  FieldProjection point_projection;
+  point_projection.kind = FieldProjection::Kind::kProjected;
+  point_projection.children.push_back(leaf_default);
+
+  FieldProjection inner_element;
+  inner_element.kind = FieldProjection::Kind::kProjected;
+  inner_element.children.push_back(point_projection);
+
+  FieldProjection outer_element;
+  outer_element.kind = FieldProjection::Kind::kProjected;
+  outer_element.children.push_back(inner_element);
+
+  SchemaProjection schema_projection;
+  schema_projection.fields.push_back(outer_element);
+  ASSERT_THAT(PrepareDefaultScalars(schema_projection, &root_builder), IsOk());
+
+  const auto& prepared = schema_projection.fields[0].children[0].children[0].children[0];
+  ASSERT_NE(dynamic_cast<const AvroExtraAttributes*>(prepared.attributes.get()), nullptr);
 }
 
 TEST(AppendDatumToBuilderTest, NestedStructWithMissingOptionalFields) {

@@ -22,6 +22,7 @@
 #include <optional>
 
 #include <parquet/arrow/schema.h>
+#include <parquet/type_fwd.h>
 
 #include "iceberg/schema.h"
 #include "iceberg/schema_util.h"
@@ -62,8 +63,8 @@ std::vector<int32_t> SelectedColumnIndices(const SchemaProjection& projection);
 /// \return True if the Parquet schema has field IDs, false otherwise.
 bool HasFieldIds(const ::parquet::schema::NodePtr& root_node);
 
-/// \brief Validate whether a projected Iceberg type is compatible with a Parquet field.
-Status ValidateParquetSchemaEvolution(const Type& expected_type,
-                                      const ::parquet::arrow::SchemaField& parquet_field);
+/// \brief Convert an Iceberg schema to a Parquet schema.
+Result<std::shared_ptr<::parquet::SchemaDescriptor>> ToParquetSchema(
+    const Schema& iceberg_schema);
 
 }  // namespace iceberg::parquet

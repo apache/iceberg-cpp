@@ -19,6 +19,7 @@
 
 #include "iceberg/update/merging_snapshot_update.h"
 
+#include <initializer_list>
 #include <limits>
 #include <memory>
 #include <optional>
@@ -26,6 +27,7 @@
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
+#include <variant>
 #include <vector>
 
 #include <gmock/gmock.h>
@@ -33,12 +35,15 @@
 
 #include "iceberg/avro/avro_register.h"
 #include "iceberg/constants.h"
+#include "iceberg/deletes/dv_util_internal.h"
+#include "iceberg/deletes/dv_writer.h"
 #include "iceberg/expression/expressions.h"
 #include "iceberg/manifest/manifest_entry.h"
 #include "iceberg/manifest/manifest_reader.h"
 #include "iceberg/manifest/manifest_writer.h"
+#include "iceberg/metrics/commit_report.h"
+#include "iceberg/metrics/metrics_reporter.h"
 #include "iceberg/partition_spec.h"
-#include "iceberg/puffin_dv_io.h"
 #include "iceberg/row/partition_values.h"
 #include "iceberg/schema.h"
 #include "iceberg/snapshot.h"
@@ -52,60 +57,26 @@
 #include "iceberg/transaction.h"
 #include "iceberg/update/fast_append.h"
 #include "iceberg/update/merge_append.h"
+#include "iceberg/update/row_delta.h"
 #include "iceberg/update/snapshot_manager.h"
 #include "iceberg/update/update_properties.h"
 #include "iceberg/util/macros.h"
 
 namespace iceberg {
 
-class RecordingPuffinDVIO final : public PuffinDVIO {
+namespace {
+
+class MergingSnapshotCapturingReporter final : public MetricsReporter {
  public:
-  struct Call {
-    std::string output_path;
-    std::vector<DeletionVectorMergeGroup> groups;
-  };
-
-  Result<std::vector<std::shared_ptr<DataFile>>> MergeAndWriteDVs(
-      std::span<const DeletionVectorMergeGroup> groups, std::string_view output_path,
-      const std::shared_ptr<FileIO>& /*io*/) override {
-    calls.push_back(Call{.output_path = std::string(output_path),
-                         .groups = {groups.begin(), groups.end()}});
-
-    std::vector<std::shared_ptr<DataFile>> result;
-    result.reserve(groups.size());
-    for (const auto& group : groups) {
-      auto file = std::make_shared<DataFile>(*group.delete_files.front());
-      file->file_path = std::string(output_path);
-      file->file_format = FileFormatType::kPuffin;
-      file->referenced_data_file = group.referenced_data_file;
-      file->record_count = 0;
-      for (const auto& delete_file : group.delete_files) {
-        file->record_count += delete_file->record_count;
-      }
-      file->content_offset = static_cast<int64_t>(result.size()) * 100;
-      file->content_size_in_bytes = 100;
-      result.push_back(std::move(file));
-    }
-    return result;
+  Status Report(const MetricsReport& report) override {
+    reports.push_back(report);
+    return {};
   }
 
-  std::vector<Call> calls;
+  std::vector<MetricsReport> reports;
 };
 
-class ScopedPuffinDVIORegistry {
- public:
-  explicit ScopedPuffinDVIORegistry(PuffinDVIOFactory factory)
-      : previous_factory_(std::move(PuffinDVIORegistry::GetFactory())) {
-    PuffinDVIORegistry::GetFactory() = std::move(factory);
-  }
-
-  ~ScopedPuffinDVIORegistry() {
-    PuffinDVIORegistry::GetFactory() = std::move(previous_factory_);
-  }
-
- private:
-  PuffinDVIOFactory previous_factory_;
-};
+}  // namespace
 
 /// \brief Concrete subclass of MergingSnapshotUpdate for testing.
 class TestMergeAppend : public MergingSnapshotUpdate {
@@ -121,6 +92,10 @@ class TestMergeAppend : public MergingSnapshotUpdate {
   std::string operation() override { return "append"; }
 
   // Expose protected API for test access
+  using MergingSnapshotUpdate::Apply;
+  using MergingSnapshotUpdate::CleanUncommitted;
+  using MergingSnapshotUpdate::Summary;
+
   Status AddFile(std::shared_ptr<DataFile> file) { return AddDataFile(std::move(file)); }
   Status AddDelete(std::shared_ptr<DataFile> file) {
     return AddDeleteFile(std::move(file));
@@ -267,12 +242,15 @@ class TestOverwriteUpdate : public MergingSnapshotUpdate {
   std::string operation() override { return DataOperation::kOverwrite; }
   int64_t GeneratedSnapshotId() { return SnapshotId(); }
 
+  using MergingSnapshotUpdate::Apply;
+
   Status AddDelete(std::shared_ptr<DataFile> file) {
     return AddDeleteFile(std::move(file));
   }
   Status AddDelete(std::shared_ptr<DataFile> file, int64_t data_sequence_number) {
     return AddDeleteFile(std::move(file), data_sequence_number);
   }
+  Status AddFile(std::shared_ptr<DataFile> file) { return AddDataFile(std::move(file)); }
   Status RemoveDataFile(std::shared_ptr<DataFile> file) {
     return DeleteDataFile(std::move(file));
   }
@@ -294,6 +272,7 @@ class MergingSnapshotUpdateTest : public MinimalUpdateTestBase {
 
     file_a_ = MakeDataFile("/data/file_a.parquet", /*partition_x=*/1L);
     file_b_ = MakeDataFile("/data/file_b.parquet", /*partition_x=*/2L);
+    file_c_ = MakeDataFile("/data/file_c.parquet", /*partition_x=*/3L);
   }
 
   std::shared_ptr<DataFile> MakeDataFile(const std::string& path, int64_t partition_x) {
@@ -326,6 +305,26 @@ class MergingSnapshotUpdateTest : public MinimalUpdateTestBase {
     f->content_offset = 0;
     f->content_size_in_bytes = 100;
     return f;
+  }
+
+  Result<std::shared_ptr<DataFile>> WriteDeletionVector(
+      const std::string& path, const std::shared_ptr<DataFile>& data_file,
+      std::initializer_list<int64_t> positions) {
+    ICEBERG_ASSIGN_OR_RAISE(
+        auto writer,
+        DVWriter::Make(DVWriterOptions{
+            .path = path,
+            .io = file_io_,
+            .load_previous_deletes = [](std::string_view)
+                -> Result<std::optional<PositionDeleteIndex>> { return std::nullopt; }}));
+    for (const auto position : positions) {
+      ICEBERG_RETURN_UNEXPECTED(
+          writer->Delete(data_file->file_path, position, spec_, data_file->partition));
+    }
+    ICEBERG_RETURN_UNEXPECTED(writer->Close());
+    ICEBERG_ASSIGN_OR_RAISE(auto result, writer->Metadata());
+    ICEBERG_PRECHECK(result.data_files.size() == 1, "Expected one deletion vector");
+    return result.data_files.front();
   }
 
   std::shared_ptr<DataFile> MakeEqualityDeleteFile(const std::string& path,
@@ -369,6 +368,28 @@ class MergingSnapshotUpdateTest : public MinimalUpdateTestBase {
     fa->AppendFile(file_a_);
     EXPECT_THAT(fa->Commit(), IsOk());
     EXPECT_THAT(table_->Refresh(), IsOk());
+  }
+
+  void CommitV2FilesBeforeUpgrade() {
+    ASSERT_EQ(table_->metadata()->format_version, 2);
+
+    ICEBERG_UNWRAP_OR_FAIL(auto append, table_->NewFastAppend());
+    append->AppendFile(file_a_).AppendFile(file_b_);
+    ASSERT_THAT(append->Commit(), IsOk());
+    ASSERT_THAT(table_->Refresh(), IsOk());
+
+    auto equality_delete =
+        MakeEqualityDeleteFile("/delete/upgrade_eq_delete.parquet", 1L);
+    ICEBERG_UNWRAP_OR_FAIL(auto delta, table_->NewRowDelta());
+    delta->AddDeletes(equality_delete);
+    ASSERT_THAT(delta->Commit(), IsOk());
+    ASSERT_THAT(table_->Refresh(), IsOk());
+
+    ICEBERG_UNWRAP_OR_FAIL(auto overwrite, NewOverwriteUpdate());
+    ASSERT_THAT(overwrite->RemoveDataFile(file_b_), IsOk());
+    ASSERT_THAT(overwrite->AddFile(file_c_), IsOk());
+    ASSERT_THAT(overwrite->Commit(), IsOk());
+    ASSERT_THAT(table_->Refresh(), IsOk());
   }
 
   // Read all entries from a list of ManifestFiles.
@@ -487,6 +508,7 @@ class MergingSnapshotUpdateTest : public MinimalUpdateTestBase {
   std::shared_ptr<Schema> schema_;
   std::shared_ptr<DataFile> file_a_;
   std::shared_ptr<DataFile> file_b_;
+  std::shared_ptr<DataFile> file_c_;
 };
 
 // -------------------------------------------------------------------------
@@ -536,6 +558,29 @@ TEST_F(MergingSnapshotUpdateTest, CommitNewDataFile) {
   ICEBERG_UNWRAP_OR_FAIL(auto snapshot, table_->current_snapshot());
   EXPECT_EQ(snapshot->summary.at(SnapshotSummaryFields::kAddedDataFiles), "1");
   EXPECT_EQ(snapshot->summary.at(SnapshotSummaryFields::kAddedRecords), "100");
+}
+
+TEST_F(MergingSnapshotUpdateTest, CommitReportsCreatedSnapshot) {
+  auto reporter = std::make_shared<MergingSnapshotCapturingReporter>();
+  ICEBERG_UNWRAP_OR_FAIL(auto op, NewMergeAppend());
+  op->ReportWith(reporter);
+  EXPECT_THAT(op->AddFile(file_a_), IsOk());
+  EXPECT_THAT(op->Commit(), IsOk());
+
+  ASSERT_EQ(reporter->reports.size(), 1U);
+  ASSERT_TRUE(std::holds_alternative<CommitReport>(reporter->reports.front()));
+  const auto& report = std::get<CommitReport>(reporter->reports.front());
+
+  EXPECT_THAT(table_->Refresh(), IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(auto snapshot, table_->current_snapshot());
+  EXPECT_EQ(report.table_name, table_->full_name());
+  EXPECT_EQ(report.operation, DataOperation::kAppend);
+  EXPECT_EQ(report.snapshot_id, snapshot->snapshot_id);
+  EXPECT_EQ(report.sequence_number, snapshot->sequence_number);
+  ASSERT_TRUE(report.commit_metrics.added_data_files.has_value());
+  EXPECT_EQ(report.commit_metrics.added_data_files->value, 1);
+  ASSERT_TRUE(report.commit_metrics.added_records.has_value());
+  EXPECT_EQ(report.commit_metrics.added_records->value, 100);
 }
 
 TEST_F(MergingSnapshotUpdateTest, CommitV3NewDataFileAssignsRowLineage) {
@@ -656,6 +701,79 @@ TEST_F(MergingSnapshotUpdateTest, V3RetryRowIds) {
   EXPECT_EQ(first_row_ids.at(file_b_->file_path), std::make_optional<int64_t>(0));
   EXPECT_EQ(first_row_ids.at(file_a_->file_path),
             std::make_optional(file_b_->record_count));
+}
+
+TEST_F(MergingSnapshotUpdateTest, V3UpgradeLeavesExistingRowsUnassigned) {
+  CommitV2FilesBeforeUpgrade();
+
+  const auto v2_snapshot_id = table_->metadata()->current_snapshot_id;
+  UpgradeTableToV3();
+
+  EXPECT_EQ(table_->metadata()->next_row_id, 0);
+  for (const auto& snapshot : table_->metadata()->snapshots) {
+    EXPECT_EQ(snapshot->first_row_id, std::nullopt);
+    EXPECT_EQ(snapshot->added_rows, std::nullopt);
+  }
+  ICEBERG_UNWRAP_OR_FAIL(auto current, table_->current_snapshot());
+  EXPECT_EQ(current->snapshot_id, v2_snapshot_id);
+  EXPECT_EQ(current->first_row_id, std::nullopt);
+  EXPECT_EQ(current->added_rows, std::nullopt);
+
+  SnapshotCache snapshot_cache(current.get());
+  ICEBERG_UNWRAP_OR_FAIL(auto data_manifest_range,
+                         snapshot_cache.DataManifests(file_io_));
+  std::vector<ManifestFile> data_manifests(data_manifest_range.begin(),
+                                           data_manifest_range.end());
+  ASSERT_FALSE(data_manifests.empty());
+  for (const auto& manifest : data_manifests) {
+    EXPECT_EQ(manifest.first_row_id, std::nullopt);
+  }
+
+  ICEBERG_UNWRAP_OR_FAIL(auto first_row_ids,
+                         DataFileFirstRowIds(current, *table_->metadata()));
+  EXPECT_EQ(first_row_ids.at(file_a_->file_path), std::nullopt);
+  EXPECT_EQ(first_row_ids.at(file_b_->file_path), std::nullopt);
+  EXPECT_EQ(first_row_ids.at(file_c_->file_path), std::nullopt);
+
+  ICEBERG_UNWRAP_OR_FAIL(auto delete_manifest_range,
+                         snapshot_cache.DeleteManifests(file_io_));
+  ASSERT_FALSE(delete_manifest_range.empty());
+  for (const auto& manifest : delete_manifest_range) {
+    EXPECT_EQ(manifest.first_row_id, std::nullopt);
+  }
+}
+
+TEST_F(MergingSnapshotUpdateTest, V3FirstCommitAssignsExistingRowsAfterUpgrade) {
+  CommitV2FilesBeforeUpgrade();
+
+  UpgradeTableToV3();
+
+  ICEBERG_UNWRAP_OR_FAIL(auto append, table_->NewFastAppend());
+  ASSERT_THAT(append->Commit(), IsOk());
+  ASSERT_THAT(table_->Refresh(), IsOk());
+
+  const auto expected_rows = file_a_->record_count + file_c_->record_count;
+  ICEBERG_UNWRAP_OR_FAIL(auto assigned, table_->current_snapshot());
+  EXPECT_EQ(assigned->first_row_id, 0);
+  EXPECT_EQ(assigned->added_rows, expected_rows);
+  EXPECT_EQ(table_->metadata()->next_row_id, expected_rows);
+
+  ICEBERG_UNWRAP_OR_FAIL(auto first_row_ids,
+                         DataFileFirstRowIds(assigned, *table_->metadata()));
+  ASSERT_TRUE(first_row_ids.at(file_a_->file_path).has_value());
+  ASSERT_TRUE(first_row_ids.at(file_c_->file_path).has_value());
+  EXPECT_EQ(first_row_ids.at(file_b_->file_path), std::nullopt);
+  EXPECT_NE(first_row_ids.at(file_a_->file_path), first_row_ids.at(file_c_->file_path));
+  EXPECT_THAT((std::vector<int64_t>{*first_row_ids.at(file_a_->file_path),
+                                    *first_row_ids.at(file_c_->file_path)}),
+              ::testing::UnorderedElementsAre(0, file_a_->record_count));
+
+  SnapshotCache snapshot_cache(assigned.get());
+  ICEBERG_UNWRAP_OR_FAIL(auto delete_manifests, snapshot_cache.DeleteManifests(file_io_));
+  ASSERT_FALSE(delete_manifests.empty());
+  for (const auto& manifest : delete_manifests) {
+    EXPECT_EQ(manifest.first_row_id, std::nullopt);
+  }
 }
 
 TEST_F(MergingSnapshotUpdateTest, CommitMultipleDataFiles) {
@@ -1045,14 +1163,17 @@ TEST_F(MergingSnapshotUpdateTest, ValidateNewDeleteFileV3AllowsDeletionVector) {
 TEST_F(MergingSnapshotUpdateTest, ApplyMergesDuplicateDeletionVectors) {
   SetTableFormatVersion(3);
 
-  auto dv_io = std::make_shared<RecordingPuffinDVIO>();
-  ScopedPuffinDVIORegistry registry(
-      [dv_io]() -> Result<std::shared_ptr<PuffinDVIO>> { return dv_io; });
   ICEBERG_UNWRAP_OR_FAIL(auto op, NewMergeAppend());
 
-  auto dv_a1 = MakeDeletionVector("/delete/dv_a1.puffin", file_a_, 1);
-  auto dv_a2 = MakeDeletionVector("/delete/dv_a2.puffin", file_a_, 2);
-  auto dv_b = MakeDeletionVector("/delete/dv_b.puffin", file_b_, 3);
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto dv_a1,
+      WriteDeletionVector(table_location_ + "/data/dv_a1.puffin", file_a_, {1}));
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto dv_a2,
+      WriteDeletionVector(table_location_ + "/data/dv_a2.puffin", file_a_, {2, 3}));
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto dv_b,
+      WriteDeletionVector(table_location_ + "/data/dv_b.puffin", file_b_, {4, 5, 6}));
 
   EXPECT_THAT(op->AddDelete(dv_a1, 7), IsOk());
   EXPECT_THAT(op->AddDelete(dv_a2, 7), IsOk());
@@ -1068,12 +1189,6 @@ TEST_F(MergingSnapshotUpdateTest, ApplyMergesDuplicateDeletionVectors) {
                          ReadAllEntries(std::vector<ManifestFile>{*delete_manifest_it},
                                         *table_->metadata()));
 
-  ASSERT_EQ(dv_io->calls.size(), 1U);
-  EXPECT_THAT(dv_io->calls[0].output_path, ::testing::HasSubstr("/data/merged-dvs-"));
-  ASSERT_EQ(dv_io->calls[0].groups.size(), 1U);
-  EXPECT_EQ(dv_io->calls[0].groups[0].referenced_data_file, file_a_->file_path);
-  EXPECT_THAT(dv_io->calls[0].groups[0].delete_files, ::testing::SizeIs(2));
-
   ASSERT_EQ(entries.size(), 2U);
   auto merged_it = std::ranges::find_if(entries, [&](const ManifestEntry& entry) {
     return entry.data_file->referenced_data_file == file_a_->file_path;
@@ -1081,6 +1196,12 @@ TEST_F(MergingSnapshotUpdateTest, ApplyMergesDuplicateDeletionVectors) {
   ASSERT_NE(merged_it, entries.end());
   EXPECT_THAT(merged_it->data_file->file_path, ::testing::HasSubstr("/data/merged-dvs-"));
   EXPECT_EQ(merged_it->data_file->record_count, 3);
+  ICEBERG_UNWRAP_OR_FAIL(auto merged_positions,
+                         DVUtil::ReadDV(merged_it->data_file, file_io_));
+  EXPECT_TRUE(merged_positions.IsDeleted(1));
+  EXPECT_TRUE(merged_positions.IsDeleted(2));
+  EXPECT_TRUE(merged_positions.IsDeleted(3));
+  EXPECT_FALSE(merged_positions.IsDeleted(0));
   ASSERT_TRUE(merged_it->sequence_number.has_value());
   EXPECT_EQ(*merged_it->sequence_number, 7);
 
@@ -1096,22 +1217,20 @@ TEST_F(MergingSnapshotUpdateTest, ApplyMergesDuplicateDeletionVectors) {
 TEST_F(MergingSnapshotUpdateTest, ApplyMergesDuplicateDeletionVectorsWithNullPartition) {
   SetTableFormatVersion(3);
 
-  auto dv_io = std::make_shared<RecordingPuffinDVIO>();
-  ScopedPuffinDVIORegistry registry(
-      [dv_io]() -> Result<std::shared_ptr<PuffinDVIO>> { return dv_io; });
   ICEBERG_UNWRAP_OR_FAIL(auto op, NewMergeAppend());
 
   file_a_->partition = PartitionValues({Literal::Null(int64())});
-  auto dv_a1 = MakeDeletionVector("/delete/dv_a1.puffin", file_a_, 1);
-  auto dv_a2 = MakeDeletionVector("/delete/dv_a2.puffin", file_a_, 2);
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto dv_a1,
+      WriteDeletionVector(table_location_ + "/data/dv_a1.puffin", file_a_, {1}));
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto dv_a2,
+      WriteDeletionVector(table_location_ + "/data/dv_a2.puffin", file_a_, {2, 3}));
 
   EXPECT_THAT(op->AddDelete(dv_a1, 7), IsOk());
   EXPECT_THAT(op->AddDelete(dv_a2, 7), IsOk());
 
   EXPECT_THAT(op->Apply(*table_->metadata(), nullptr), IsOk());
-  ASSERT_EQ(dv_io->calls.size(), 1U);
-  ASSERT_EQ(dv_io->calls[0].groups.size(), 1U);
-  EXPECT_EQ(dv_io->calls[0].groups[0].referenced_data_file, file_a_->file_path);
 }
 
 TEST_F(MergingSnapshotUpdateTest, ValidateNewDeleteFileRejectsUnsupportedVersion) {

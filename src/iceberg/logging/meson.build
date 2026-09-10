@@ -15,7 +15,22 @@
 # specific language governing permissions and limitations
 # under the License.
 
+# Generate the internal, non-installed logging backend config.
+logging_config_data = configuration_data()
+if spdlog_enabled
+    logging_config_data.set('ICEBERG_HAS_SPDLOG', 1)
+endif
+configure_file(output: 'config.h', configuration: logging_config_data)
+
+# Install only public logging headers.
 install_headers(
-    ['cerr_logger.h', 'log_level.h', 'logger.h'],
+    [
+        'cerr_logger.h',
+        'log_level.h',
+        'log_macros.h',
+        'logger.h',
+        'loggers.h',
+        'short_log_macros.h',
+    ],
     subdir: 'iceberg/logging',
 )

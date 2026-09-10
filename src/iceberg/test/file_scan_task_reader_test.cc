@@ -39,14 +39,15 @@
 #include "iceberg/arrow_c_data.h"
 #include "iceberg/arrow_c_data_guard_internal.h"
 #include "iceberg/arrow_c_data_util_internal.h"
-#include "iceberg/data/deletion_vector_writer.h"
 #include "iceberg/data/equality_delete_writer.h"
 #include "iceberg/data/position_delete_writer.h"
+#include "iceberg/deletes/dv_writer.h"
 #include "iceberg/deletes/position_delete_index.h"
 #include "iceberg/file_format.h"
 #include "iceberg/file_io.h"
 #include "iceberg/file_reader.h"
 #include "iceberg/manifest/manifest_entry.h"
+#include "iceberg/metadata_columns.h"
 #include "iceberg/parquet/parquet_register.h"
 #include "iceberg/partition_spec.h"
 #include "iceberg/row/partition_values.h"
@@ -109,6 +110,14 @@ class FileScanTaskReaderTest : public TempFileTestBase {
     projected_schema_ = std::make_shared<Schema>(
         std::vector<SchemaField>{SchemaField::MakeRequired(1, "id", int32()),
                                  SchemaField::MakeOptional(2, "name", string())},
+        table_schema_->schema_id());
+  }
+
+  std::shared_ptr<Schema> RowLineageProjection() const {
+    return std::make_shared<Schema>(
+        std::vector<SchemaField>{SchemaField::MakeRequired(1, "id", int32()),
+                                 MetadataColumns::kRowId,
+                                 MetadataColumns::kLastUpdatedSequenceNumber},
         table_schema_->schema_id());
   }
 
@@ -305,13 +314,13 @@ class FileScanTaskReaderTest : public TempFileTestBase {
   Result<std::shared_ptr<DataFile>> MakeDeletionVectorFile(
       const std::string& path, const std::vector<int64_t>& positions,
       const std::string& data_path) {
-    DeletionVectorWriterOptions options{
+    DVWriterOptions options{
         .path = path,
         .io = file_io_,
         .load_previous_deletes = [](std::string_view)
             -> Result<std::optional<PositionDeleteIndex>> { return std::nullopt; },
     };
-    ICEBERG_ASSIGN_OR_RAISE(auto writer, DeletionVectorWriter::Make(std::move(options)));
+    ICEBERG_ASSIGN_OR_RAISE(auto writer, DVWriter::Make(std::move(options)));
     for (int64_t pos : positions) {
       ICEBERG_RETURN_UNEXPECTED(
           writer->Delete(data_path, pos, partition_spec_, PartitionValues{}));
@@ -400,6 +409,31 @@ TEST_F(FileScanTaskReaderTest, OpenWithoutDeletesReadsProjectedSchema) {
       VerifyStream(&stream, R"([[1, "Foo"], [2, "Bar"], [3, "Baz"]])"));
 }
 
+TEST_F(FileScanTaskReaderTest, ReadLastUpdatedFromDataSeq) {
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto data_file,
+      MakeDataFile(table_schema_,
+                   R"([[1, "Foo", "blue"], [2, "Bar", "red"], [3, "Baz", "green"]])"));
+  data_file->first_row_id = 100L;
+  data_file->data_sequence_number = 5L;
+  FileScanTask task(data_file);
+
+  FileScanTaskReader::Options options{
+      .io = file_io_,
+      .table_schema = table_schema_,
+      .schemas = {table_schema_},
+      .projected_schema = RowLineageProjection(),
+  };
+  ICEBERG_UNWRAP_OR_FAIL(auto reader, FileScanTaskReader::Make(std::move(options)));
+  auto stream_result = reader->Open(task);
+  ASSERT_THAT(stream_result, IsOk());
+  auto stream = std::move(stream_result.value());
+
+  ASSERT_NO_FATAL_FAILURE(VerifyStream(&stream, R"([[1, 100, 5],
+                                                   [2, 101, 5],
+                                                   [3, 102, 5]])"));
+}
+
 TEST_F(FileScanTaskReaderTest, OpenWithPositionDeletesFiltersRowsAndPrunesPos) {
   ICEBERG_UNWRAP_OR_FAIL(
       auto data_file,
@@ -471,6 +505,80 @@ TEST_F(FileScanTaskReaderTest, OpenWithEqualityDeletesAddsAndPrunesDeleteOnlyCol
   auto stream = std::move(stream_result.value());
 
   ASSERT_NO_FATAL_FAILURE(VerifyStream(&stream, R"([[1, "Foo"], [3, "Baz"]])"));
+}
+
+TEST_F(FileScanTaskReaderTest, PositionDeletesPreserveRowLineage) {
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto data_file,
+      MakeDataFile(table_schema_,
+                   R"([[1, "Foo", "blue"], [2, "Bar", "red"], [3, "Baz", "green"]])"));
+  data_file->first_row_id = 100;
+  data_file->data_sequence_number = 5;
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto pos_delete, MakePositionDeleteFile(CreateNewTempFilePathWithSuffix(".parquet"),
+                                              {1}, data_file->file_path));
+  FileScanTask task(data_file, {pos_delete});
+
+  FileScanTaskReader::Options options{
+      .io = file_io_,
+      .table_schema = table_schema_,
+      .schemas = {table_schema_},
+      .projected_schema = RowLineageProjection(),
+  };
+  ICEBERG_UNWRAP_OR_FAIL(auto reader, FileScanTaskReader::Make(std::move(options)));
+  ICEBERG_UNWRAP_OR_FAIL(auto stream, reader->Open(task));
+
+  ASSERT_NO_FATAL_FAILURE(VerifyStream(&stream, R"([[1, 100, 5], [3, 102, 5]])"));
+}
+
+TEST_F(FileScanTaskReaderTest, DeletionVectorDeletesPreserveRowLineage) {
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto data_file,
+      MakeDataFile(table_schema_,
+                   R"([[1, "Foo", "blue"], [2, "Bar", "red"], [3, "Baz", "green"]])"));
+  data_file->first_row_id = 100;
+  data_file->data_sequence_number = 5;
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto deletion_vector,
+      MakeDeletionVectorFile(CreateNewTempFilePathWithSuffix(".puffin"), {1},
+                             data_file->file_path));
+  FileScanTask task(data_file, {deletion_vector});
+
+  FileScanTaskReader::Options options{
+      .io = file_io_,
+      .table_schema = table_schema_,
+      .schemas = {table_schema_},
+      .projected_schema = RowLineageProjection(),
+  };
+  ICEBERG_UNWRAP_OR_FAIL(auto reader, FileScanTaskReader::Make(std::move(options)));
+  ICEBERG_UNWRAP_OR_FAIL(auto stream, reader->Open(task));
+
+  ASSERT_NO_FATAL_FAILURE(VerifyStream(&stream, R"([[1, 100, 5], [3, 102, 5]])"));
+}
+
+TEST_F(FileScanTaskReaderTest, EqualityDeletesPreserveRowLineage) {
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto data_file,
+      MakeDataFile(table_schema_,
+                   R"([[1, "Foo", "blue"], [2, "Bar", "red"], [3, "Baz", "green"]])"));
+  data_file->first_row_id = 100;
+  data_file->data_sequence_number = 5;
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto equality_delete,
+      MakeEqualityDeleteFile(CreateNewTempFilePathWithSuffix(".parquet"), table_schema_,
+                             R"([[0, "unused", "red"]])", {3}));
+  FileScanTask task(data_file, {equality_delete});
+
+  FileScanTaskReader::Options options{
+      .io = file_io_,
+      .table_schema = table_schema_,
+      .schemas = {table_schema_},
+      .projected_schema = RowLineageProjection(),
+  };
+  ICEBERG_UNWRAP_OR_FAIL(auto reader, FileScanTaskReader::Make(std::move(options)));
+  ICEBERG_UNWRAP_OR_FAIL(auto stream, reader->Open(task));
+
+  ASSERT_NO_FATAL_FAILURE(VerifyStream(&stream, R"([[1, 100, 5], [3, 102, 5]])"));
 }
 
 TEST_F(FileScanTaskReaderTest, OpenWithEqualityDeletesKeepsInputBatchWhenAllRowsAlive) {

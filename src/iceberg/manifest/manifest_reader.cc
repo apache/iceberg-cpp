@@ -28,7 +28,6 @@
 
 #include <nanoarrow/nanoarrow.h>
 
-#include "iceberg/arrow/nanoarrow_status_internal.h"
 #include "iceberg/arrow_c_data_guard_internal.h"
 #include "iceberg/expression/expression.h"
 #include "iceberg/expression/projections.h"
@@ -37,6 +36,8 @@
 #include "iceberg/manifest/manifest_entry.h"
 #include "iceberg/manifest/manifest_list.h"
 #include "iceberg/manifest/manifest_reader_internal.h"
+#include "iceberg/metrics/counter.h"
+#include "iceberg/nanoarrow_status_internal.h"
 #include "iceberg/partition_spec.h"
 #include "iceberg/schema.h"
 #include "iceberg/schema_field.h"
@@ -772,6 +773,11 @@ ManifestReader& ManifestReaderImpl::TryDropStats() {
   return *this;
 }
 
+ManifestReader& ManifestReaderImpl::SkipCounter(std::shared_ptr<Counter> counter) {
+  skip_counter_ = std::move(counter);
+  return *this;
+}
+
 bool ManifestReaderImpl::HasPartitionFilter() const {
   ICEBERG_DCHECK(part_filter_, "Partition filter is not set");
   return part_filter_->op() != Expression::Operation::kTrue;
@@ -928,6 +934,7 @@ Result<std::vector<ManifestEntry>> ManifestReaderImpl::ReadEntries(bool only_liv
           ICEBERG_ASSIGN_OR_RAISE(bool partition_match,
                                   evaluator->Evaluate(entry.data_file->partition));
           if (!partition_match) {
+            if (skip_counter_) skip_counter_->Increment(1);
             continue;
           }
         }
@@ -935,11 +942,13 @@ Result<std::vector<ManifestEntry>> ManifestReaderImpl::ReadEntries(bool only_liv
           ICEBERG_ASSIGN_OR_RAISE(bool metrics_match,
                                   metrics_evaluator->Evaluate(*entry.data_file));
           if (!metrics_match) {
+            if (skip_counter_) skip_counter_->Increment(1);
             continue;
           }
         }
         ICEBERG_ASSIGN_OR_RAISE(bool in_partition_set, InPartitionSet(*entry.data_file));
         if (!in_partition_set) {
+          if (skip_counter_) skip_counter_->Increment(1);
           continue;
         }
       }

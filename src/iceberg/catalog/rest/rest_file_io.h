@@ -22,9 +22,7 @@
 /// \file iceberg/catalog/rest/rest_file_io.h
 /// \brief Provide helpers to create FileIO instances for REST catalog responses.
 
-#include <cstdint>
 #include <memory>
-#include <string_view>
 #include <unordered_map>
 #include <vector>
 
@@ -37,16 +35,8 @@
 
 namespace iceberg::rest {
 
-enum class BuiltinFileIOKind : uint8_t {
-  kArrowLocal,
-  kArrowS3,
-};
-
-ICEBERG_REST_EXPORT Result<BuiltinFileIOKind> DetectBuiltinFileIO(
-    std::string_view location);
-
-ICEBERG_REST_EXPORT std::string_view BuiltinFileIOName(BuiltinFileIOKind kind);
-
+/// \brief Build the catalog FileIO: the configured `io-impl`, or the
+/// scheme-resolving FileIO by default.
 ICEBERG_REST_EXPORT Result<std::unique_ptr<FileIO>> MakeCatalogFileIO(
     const RestCatalogProperties& config);
 

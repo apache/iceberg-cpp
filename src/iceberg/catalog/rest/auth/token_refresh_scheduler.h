@@ -37,7 +37,7 @@ namespace iceberg::rest::auth {
 /// \brief A process-global scheduler for delayed token refresh tasks.
 ///
 /// Uses a single background thread that sleeps until the next task is due.
-/// All OAuth2AuthSession instances share this scheduler. Tasks are lightweight
+/// All OAuth2Session instances share this scheduler. Tasks are lightweight
 /// (a single HTTP POST to refresh a token), so one thread is sufficient.
 ///
 /// Thread safety: All public methods are thread-safe.

@@ -30,7 +30,7 @@ project(Iceberg
 
 include(IcebergBuildUtils)
 iceberg_configure_version_header("${CMAKE_CURRENT_SOURCE_DIR}/src/iceberg/version.h.in"
-                                 "${CMAKE_BINARY_DIR}/src/iceberg/version.h")
+                                 "${PROJECT_BINARY_DIR}/src/iceberg/version.h")
 
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -54,6 +54,7 @@ option(ICEBERG_S3 "Build with S3 support" OFF)
 option(ICEBERG_SIGV4 "Build with SigV4 support" OFF)
 option(ICEBERG_BUNDLE_AWSSDK "Bundle AWS SDK for S3/SigV4 support" ON)
 option(ICEBERG_BUNDLE_THRIFT "Bundle Thrift (from Arrow) for Hive catalog" ON)
+option(ICEBERG_SPDLOG "Use spdlog as the default logging backend" ON)
 option(ICEBERG_ENABLE_ASAN "Enable Address Sanitizer" OFF)
 option(ICEBERG_ENABLE_UBSAN "Enable Undefined Behavior Sanitizer" OFF)
 

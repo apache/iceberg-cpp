@@ -183,6 +183,10 @@ bool IsFloatingType(const PrimitiveType& type) {
   return type.type_id() == TypeId::kFloat || type.type_id() == TypeId::kDouble;
 }
 
+bool IsGeospatialType(const PrimitiveType& type) {
+  return type.type_id() == TypeId::kGeometry || type.type_id() == TypeId::kGeography;
+}
+
 bool NeedsBoundTruncation(const PrimitiveType& type) {
   return type.type_id() == TypeId::kString || type.type_id() == TypeId::kBinary;
 }
@@ -388,7 +392,7 @@ Result<std::optional<FieldMetrics>> MetricsFromFooter(
     return std::nullopt;
   }
 
-  if (truncate_length <= 0) {
+  if (truncate_length <= 0 || IsGeospatialType(*iceberg_type)) {
     return CollectCounts(field_id, metadata, column_idx.value());
   }
 

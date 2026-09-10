@@ -177,4 +177,21 @@ TEST_F(ParquetMetricsTest, UnrepresentableTruncatedUpperBoundIsOmitted) {
                                      std::nullopt, metrics);
 }
 
+TEST_F(ParquetMetricsTest, GeospatialMetricsExcludeBounds) {
+  auto schema = std::make_shared<Schema>(std::vector<SchemaField>{
+      SchemaField::MakeOptional(1, "geom", geometry()),
+  });
+  ::arrow::BinaryBuilder builder;
+  const std::vector<uint8_t> wkb = {0xff, 0x00, 0x42};
+  ASSERT_TRUE(builder.Append(wkb.data(), wkb.size()).ok());
+  ASSERT_TRUE(builder.AppendNull().ok());
+  auto records =
+      ::arrow::StructArray::Make({builder.Finish().ValueOrDie()},
+                                 {::arrow::field("geom", ::arrow::binary(), true)})
+          .ValueOrDie();
+
+  ICEBERG_UNWRAP_OR_FAIL(auto metrics, GetMetrics(schema, records));
+  AssertBounds<std::vector<uint8_t>>(1, geometry(), std::nullopt, std::nullopt, metrics);
+}
+
 }  // namespace iceberg::test

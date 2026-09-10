@@ -17,6 +17,7 @@
 
 install_headers(
     [
+        'dv_writer.h',
         'position_delete_index.h',
         'position_delete_range_consumer.h',
         'roaring_position_bitmap.h',

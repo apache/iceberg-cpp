@@ -47,6 +47,7 @@ iceberg_tests = {
     },
     'table_test': {
         'sources': files(
+            'catalog_util_test.cc',
             'history_table_test.cc',
             'location_provider_test.cc',
             'metadata_table_test.cc',
@@ -69,6 +70,10 @@ iceberg_tests = {
             'cerr_logger_test.cc',
             'log_level_test.cc',
             'logger_test.cc',
+            'loggers_test.cc',
+            'macros_active_level_test.cc',
+            'macros_test.cc',
+            'spdlog_logger_test.cc',
         ),
     },
     'expression_test': {
@@ -98,18 +103,22 @@ iceberg_tests = {
         'sources': files(
             'base64_test.cc',
             'bucket_util_test.cc',
+            'cache_test.cc',
             'config_test.cc',
+            'content_file_util_test.cc',
             'data_file_set_test.cc',
             'decimal_test.cc',
             'endian_test.cc',
             'executor_util_test.cc',
             'file_io_test.cc',
             'formatter_test.cc',
+            'iterator_test.cc',
             'lazy_test.cc',
             'location_util_test.cc',
             'math_util_internal_test.cc',
             'position_delete_index_test.cc',
             'position_delete_range_consumer_test.cc',
+            'resolving_file_io_test.cc',
             'retry_util_test.cc',
             'roaring_position_bitmap_test.cc',
             'string_util_test.cc',
@@ -126,7 +135,7 @@ iceberg_tests = {
     },
     'puffin_test': {
         'sources': files(
-            'deletion_vector_writer_test.cc',
+            'dv_writer_test.cc',
             'puffin_format_test.cc',
             'puffin_json_test.cc',
             'puffin_reader_writer_test.cc',
@@ -144,6 +153,7 @@ if get_option('rest').enabled()
                 'error_handlers_test.cc',
                 'rest_file_io_test.cc',
                 'rest_json_serde_test.cc',
+                'rest_metrics_reporter_test.cc',
                 'rest_util_test.cc',
             ),
             'dependencies': [iceberg_rest_dep],

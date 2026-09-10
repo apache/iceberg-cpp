@@ -21,9 +21,10 @@
 
 #include <mutex>
 #include <string>
-#include <unordered_map>
+#include <string_view>
 
 #include "iceberg/arrow/arrow_io_util.h"
+#include "iceberg/arrow/s3/s3_properties.h"
 #include "iceberg/file_io_registry.h"
 
 namespace iceberg {
@@ -37,16 +38,19 @@ namespace {
 void RegisterLocalFileIO() {
   FileIORegistry::Register(
       std::string(FileIORegistry::kArrowLocalFileIO),
-      [](const std::unordered_map<std::string, std::string>& /*properties*/)
-          -> Result<std::unique_ptr<FileIO>> { return MakeLocalFileIO(); });
+      {.create = [](const FileIORegistry::Properties& /*properties*/)
+           -> Result<std::unique_ptr<FileIO>> { return MakeLocalFileIO(); },
+       .accepts =
+           [](std::string_view scheme) { return scheme.empty() || scheme == "file"; }});
 }
 
 void RegisterS3FileIO() {
 #if ICEBERG_S3_ENABLED
   FileIORegistry::Register(
       std::string(FileIORegistry::kArrowS3FileIO),
-      [](const std::unordered_map<std::string, std::string>& properties)
-          -> Result<std::unique_ptr<FileIO>> { return MakeS3FileIO(properties); });
+      {.create = [](const FileIORegistry::Properties& properties)
+           -> Result<std::unique_ptr<FileIO>> { return MakeS3FileIO(properties); },
+       .accepts = [](std::string_view scheme) { return IsS3Scheme(scheme); }});
 #endif
 }
 

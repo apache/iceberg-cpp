@@ -34,10 +34,8 @@ namespace iceberg {
 
 template <auto InitFunc>
 class Lazy {
-  template <typename R, typename... Args>
-  static R ExtractReturnType(R (*)(Args...));  // only declaration, never defined
-
-  using T = ResultValueT<decltype(ExtractReturnType(InitFunc))>;
+  using InitResult = typename decltype(std::function{InitFunc})::result_type;
+  using T = ResultValueT<InitResult>;
 
  public:
   template <typename... Args>

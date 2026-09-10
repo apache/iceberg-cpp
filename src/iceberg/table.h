@@ -46,16 +46,23 @@ class ICEBERG_EXPORT Table : public std::enable_shared_from_this<Table> {
   /// \param[in] metadata_location The location of the table metadata file.
   /// \param[in] io The FileIO to read and write table data and metadata files.
   /// \param[in] catalog The catalog that this table belongs to.
-  static Result<std::shared_ptr<Table>> Make(TableIdentifier identifier,
-                                             std::shared_ptr<TableMetadata> metadata,
-                                             std::string metadata_location,
-                                             std::shared_ptr<FileIO> io,
-                                             std::shared_ptr<Catalog> catalog);
+  /// \param[in] full_name The fully-qualified name of this table. Defaults to the
+  ///            string representation of identifier when empty.
+  /// \param[in] reporter Optional metrics reporter for this table. Defaults to nullptr
+  ///            (noop).
+  static Result<std::shared_ptr<Table>> Make(
+      TableIdentifier identifier, std::shared_ptr<TableMetadata> metadata,
+      std::string metadata_location, std::shared_ptr<FileIO> io,
+      std::shared_ptr<Catalog> catalog, std::string full_name = "",
+      std::shared_ptr<MetricsReporter> reporter = nullptr);
 
   virtual ~Table();
 
   /// \brief Returns the identifier of this table
   const TableIdentifier& name() const { return identifier_; }
+
+  /// \brief Returns the fully-qualified name of this table.
+  const std::string& full_name() const { return full_name_; }
 
   /// \brief Returns the UUID of the table
   const std::string& uuid() const;
@@ -119,6 +126,9 @@ class ICEBERG_EXPORT Table : public std::enable_shared_from_this<Table> {
 
   /// \brief Returns the catalog that this table belongs to
   const std::shared_ptr<Catalog>& catalog() const;
+
+  /// \brief Returns the metrics reporter for this table.
+  const std::shared_ptr<MetricsReporter>& reporter() const;
 
   /// \brief Returns a LocationProvider for this table
   Result<std::unique_ptr<LocationProvider>> location_provider() const;
@@ -195,19 +205,26 @@ class ICEBERG_EXPORT Table : public std::enable_shared_from_this<Table> {
   /// changes.
   virtual Result<std::shared_ptr<RewriteFiles>> NewRewriteFiles();
 
+  /// \brief Create a new ReplacePartitions to dynamically overwrite partitions and commit
+  /// the changes.
+  virtual Result<std::shared_ptr<ReplacePartitions>> NewReplacePartitions();
+
   /// \brief Create a new SnapshotManager to manage snapshots and snapshot references.
   virtual Result<std::shared_ptr<SnapshotManager>> NewSnapshotManager();
 
  protected:
   Table(TableIdentifier identifier, std::shared_ptr<TableMetadata> metadata,
         std::string metadata_location, std::shared_ptr<FileIO> io,
-        std::shared_ptr<Catalog> catalog);
+        std::shared_ptr<Catalog> catalog, std::string full_name,
+        std::shared_ptr<MetricsReporter> reporter = nullptr);
 
   const TableIdentifier identifier_;
+  const std::string full_name_;
   std::shared_ptr<TableMetadata> metadata_;
   std::string metadata_location_;
   std::shared_ptr<FileIO> io_;
   std::shared_ptr<Catalog> catalog_;
+  std::shared_ptr<MetricsReporter> reporter_;
   std::unique_ptr<class TableMetadataCache> metadata_cache_;
 };
 
@@ -217,7 +234,8 @@ class ICEBERG_EXPORT StagedTable final : public Table {
   static Result<std::shared_ptr<StagedTable>> Make(
       TableIdentifier identifier, std::shared_ptr<TableMetadata> metadata,
       std::string metadata_location, std::shared_ptr<FileIO> io,
-      std::shared_ptr<Catalog> catalog);
+      std::shared_ptr<Catalog> catalog, std::string full_name = "",
+      std::shared_ptr<MetricsReporter> reporter = nullptr);
 
   ~StagedTable() override;
 
@@ -235,7 +253,8 @@ class ICEBERG_EXPORT StaticTable : public Table {
  public:
   static Result<std::shared_ptr<StaticTable>> Make(
       TableIdentifier identifier, std::shared_ptr<TableMetadata> metadata,
-      std::string metadata_location, std::shared_ptr<FileIO> io);
+      std::string metadata_location, std::shared_ptr<FileIO> io,
+      std::string full_name = "");
 
   ~StaticTable() override;
 
@@ -271,6 +290,8 @@ class ICEBERG_EXPORT StaticTable : public Table {
   Result<std::shared_ptr<OverwriteFiles>> NewOverwrite() override;
 
   Result<std::shared_ptr<RewriteFiles>> NewRewriteFiles() override;
+
+  Result<std::shared_ptr<ReplacePartitions>> NewReplacePartitions() override;
 
   Result<std::shared_ptr<SnapshotManager>> NewSnapshotManager() override;
 

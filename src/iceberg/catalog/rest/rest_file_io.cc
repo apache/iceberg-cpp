@@ -21,22 +21,17 @@
 
 #include <string>
 #include <unordered_map>
-#include <utility>
 #include <vector>
 
 #include "iceberg/catalog/rest/types.h"
 #include "iceberg/file_io.h"
 #include "iceberg/file_io_registry.h"
+#include "iceberg/resolving_file_io.h"
 #include "iceberg/util/macros.h"
 
 namespace iceberg::rest {
 
 namespace {
-
-bool IsBuiltinImpl(std::string_view io_impl) {
-  return io_impl == FileIORegistry::kArrowLocalFileIO ||
-         io_impl == FileIORegistry::kArrowS3FileIO;
-}
 
 std::unordered_map<std::string, std::string> MergeFileIOProperties(
     const std::unordered_map<std::string, std::string>& catalog_config,
@@ -50,60 +45,12 @@ std::unordered_map<std::string, std::string> MergeFileIOProperties(
 
 }  // namespace
 
-Result<BuiltinFileIOKind> DetectBuiltinFileIO(std::string_view location) {
-  const auto pos = location.find("://");
-  if (pos == std::string_view::npos) {
-    return BuiltinFileIOKind::kArrowLocal;
-  }
-
-  const auto scheme = location.substr(0, pos);
-  if (scheme == "file") {
-    return BuiltinFileIOKind::kArrowLocal;
-  }
-  if (scheme == "s3" || scheme == "s3a" || scheme == "s3n") {
-    return BuiltinFileIOKind::kArrowS3;
-  }
-
-  return NotSupported("URI scheme '{}' is not supported for automatic FileIO resolution",
-                      scheme);
-}
-
-std::string_view BuiltinFileIOName(BuiltinFileIOKind kind) {
-  switch (kind) {
-    case BuiltinFileIOKind::kArrowLocal:
-      return FileIORegistry::kArrowLocalFileIO;
-    case BuiltinFileIOKind::kArrowS3:
-      return FileIORegistry::kArrowS3FileIO;
-  }
-  std::unreachable();
-}
-
 Result<std::unique_ptr<FileIO>> MakeCatalogFileIO(const RestCatalogProperties& config) {
-  std::string io_impl = config.Get(RestCatalogProperties::kIOImpl);
-  std::string warehouse = config.Get(RestCatalogProperties::kWarehouse);
-
+  const std::string io_impl = config.Get(RestCatalogProperties::kIOImpl);
   if (io_impl.empty()) {
-    if (warehouse.empty()) {
-      return InvalidArgument(R"("{}" or "{}" property is required to create FileIO)",
-                             RestCatalogProperties::kIOImpl.key(),
-                             RestCatalogProperties::kWarehouse.key());
-    }
-    ICEBERG_ASSIGN_OR_RAISE(const auto detected_kind, DetectBuiltinFileIO(warehouse));
-    io_impl = std::string(BuiltinFileIOName(detected_kind));
+    return std::make_unique<ResolvingFileIO>(config.configs());
   }
 
-  if (!warehouse.empty() && IsBuiltinImpl(io_impl)) {
-    ICEBERG_ASSIGN_OR_RAISE(const auto detected_kind, DetectBuiltinFileIO(warehouse));
-    const auto detected_name = BuiltinFileIOName(detected_kind);
-    if (io_impl != detected_name) {
-      return InvalidArgument(
-          R"("io-impl" value '{}' is incompatible with warehouse '{}')", io_impl,
-          warehouse);
-    }
-  }
-
-  // TODO(gangwu): Support Java-style customized FileIO creation flows instead of
-  // resolving a single catalog-scoped FileIO instance only from properties.
   return FileIORegistry::Load(io_impl, config.configs());
 }
 
@@ -112,19 +59,8 @@ Result<std::unique_ptr<FileIO>> MakeTableFileIO(
     const std::unordered_map<std::string, std::string>& table_config,
     const std::vector<StorageCredential>& storage_credentials) {
   const auto default_properties = MergeFileIOProperties(catalog_config, table_config);
-  const auto properties = RestCatalogProperties::FromMap(default_properties);
-  auto io_impl = properties.Get(RestCatalogProperties::kIOImpl);
-  if (io_impl.empty()) {
-    const auto warehouse = properties.Get(RestCatalogProperties::kWarehouse);
-    if (warehouse.empty()) {
-      return InvalidArgument(R"("{}" or "{}" property is required to create FileIO)",
-                             RestCatalogProperties::kIOImpl.key(),
-                             RestCatalogProperties::kWarehouse.key());
-    }
-    ICEBERG_ASSIGN_OR_RAISE(const auto detected_kind, DetectBuiltinFileIO(warehouse));
-    io_impl = std::string(BuiltinFileIOName(detected_kind));
-  }
-  ICEBERG_ASSIGN_OR_RAISE(auto io, FileIORegistry::Load(io_impl, default_properties));
+  ICEBERG_ASSIGN_OR_RAISE(
+      auto io, MakeCatalogFileIO(RestCatalogProperties::FromMap(default_properties)));
 
   if (storage_credentials.empty()) {
     return io;

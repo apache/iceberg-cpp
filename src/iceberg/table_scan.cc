@@ -19,17 +19,23 @@
 
 #include "iceberg/table_scan.h"
 
+#include <algorithm>
 #include <cstdint>
 #include <utility>
 
 #include "iceberg/expression/binder.h"
 #include "iceberg/expression/expression.h"
 #include "iceberg/expression/residual_evaluator.h"
+#include "iceberg/expression/sanitize_expression.h"
 #include "iceberg/manifest/manifest_entry.h"
 #include "iceberg/manifest/manifest_group.h"
+#include "iceberg/metrics/metrics_context.h"
+#include "iceberg/metrics/metrics_reporters.h"
+#include "iceberg/metrics/scan_report.h"
 #include "iceberg/result.h"
 #include "iceberg/schema.h"
 #include "iceberg/snapshot.h"
+#include "iceberg/table.h"
 #include "iceberg/table_metadata.h"
 #include "iceberg/util/content_file_util.h"
 #include "iceberg/util/macros.h"
@@ -182,6 +188,18 @@ int64_t FileScanTask::estimated_row_count() const { return data_file_->record_co
 
 // ChangelogScanTask implementation
 
+ChangelogScanTask::ChangelogScanTask(int32_t change_ordinal, int64_t commit_snapshot_id,
+                                     std::shared_ptr<DataFile> data_file,
+                                     std::vector<std::shared_ptr<DataFile>> delete_files,
+                                     std::shared_ptr<Expression> residual_filter)
+    : change_ordinal_(change_ordinal),
+      commit_snapshot_id_(commit_snapshot_id),
+      data_file_(std::move(data_file)),
+      delete_files_(std::move(delete_files)),
+      residual_filter_(std::move(residual_filter)) {
+  ICEBERG_DCHECK(data_file_ != nullptr, "Data file cannot be null for ChangelogScanTask");
+}
+
 int64_t ChangelogScanTask::size_bytes() const {
   int64_t total_size = data_file_->file_size_in_bytes;
   for (const auto& delete_file : delete_files_) {
@@ -203,17 +221,23 @@ int64_t ChangelogScanTask::estimated_row_count() const {
 // Generic template implementation for Make
 template <typename ScanType>
 Result<std::unique_ptr<TableScanBuilder<ScanType>>> TableScanBuilder<ScanType>::Make(
-    std::shared_ptr<TableMetadata> metadata, std::shared_ptr<FileIO> io) {
-  ICEBERG_PRECHECK(metadata != nullptr, "Table metadata cannot be null");
-  ICEBERG_PRECHECK(io != nullptr, "FileIO cannot be null");
-  return std::unique_ptr<TableScanBuilder<ScanType>>(
-      new TableScanBuilder<ScanType>(std::move(metadata), std::move(io)));
+    const Table& table) {
+  ICEBERG_PRECHECK(table.metadata() != nullptr, "Table metadata cannot be null");
+  ICEBERG_PRECHECK(table.io() != nullptr, "FileIO cannot be null");
+  auto builder =
+      std::unique_ptr<TableScanBuilder<ScanType>>(new TableScanBuilder<ScanType>(
+          table.metadata(), table.io(), table.full_name(), table.reporter()));
+  return builder;
 }
 
 template <typename ScanType>
 TableScanBuilder<ScanType>::TableScanBuilder(
-    std::shared_ptr<TableMetadata> table_metadata, std::shared_ptr<FileIO> file_io)
-    : metadata_(std::move(table_metadata)), io_(std::move(file_io)) {}
+    std::shared_ptr<TableMetadata> table_metadata, std::shared_ptr<FileIO> file_io,
+    std::string table_name, std::shared_ptr<MetricsReporter> metrics_reporter)
+    : metadata_(std::move(table_metadata)), io_(std::move(file_io)) {
+  context_.table_name = std::move(table_name);
+  context_.metrics_reporter = std::move(metrics_reporter);
+}
 
 template <typename ScanType>
 TableScanBuilder<ScanType>& TableScanBuilder<ScanType>::Option(std::string key,
@@ -425,6 +449,14 @@ TableScanBuilder<ScanType>::ResolveSnapshotSchema() {
 }
 
 template <typename ScanType>
+TableScanBuilder<ScanType>& TableScanBuilder<ScanType>::ReportWith(
+    std::shared_ptr<MetricsReporter> reporter) {
+  context_.metrics_reporter =
+      MetricsReporters::Combine(context_.metrics_reporter, std::move(reporter));
+  return *this;
+}
+
+template <typename ScanType>
 Result<std::unique_ptr<ScanType>> TableScanBuilder<ScanType>::Build() {
   ICEBERG_RETURN_UNEXPECTED(CheckErrors());
   ICEBERG_RETURN_UNEXPECTED(ResolveColumnStatsSelection());
@@ -534,10 +566,60 @@ Result<std::unique_ptr<DataTableScan>> DataTableScan::Make(
       std::move(metadata), std::move(schema), std::move(io), std::move(context)));
 }
 
+Status DataTableScan::ReportScan(const Snapshot& snapshot,
+                                 const ScanMetrics& scan_metrics) const {
+  if (!context_.metrics_reporter) {
+    return {};
+  }
+
+  ICEBERG_ASSIGN_OR_RAISE(auto projected_schema, ResolveProjectedSchema());
+  const auto& schema_ptr = projected_schema.get();
+
+  ICEBERG_ASSIGN_OR_RAISE(
+      auto projected_id_set,
+      GetProjectedIdsVisitor::GetProjectedIds(*schema_ptr, /*include_struct_ids=*/true));
+  std::vector<int32_t> projected_field_ids(projected_id_set.begin(),
+                                           projected_id_set.end());
+  std::ranges::sort(projected_field_ids);
+
+  std::vector<std::string> projected_field_names;
+  projected_field_names.reserve(projected_field_ids.size());
+  for (int32_t field_id : projected_field_ids) {
+    ICEBERG_ASSIGN_OR_RAISE(auto field_name, schema_ptr->FindColumnNameById(field_id));
+    ICEBERG_CHECK(field_name.has_value(), "Projected field {} not found in schema",
+                  field_id);
+    projected_field_names.emplace_back(*field_name);
+  }
+
+  ICEBERG_ASSIGN_OR_RAISE(
+      auto sanitized_filter,
+      SanitizeExpression::Sanitize(*schema_ptr, filter(), context_.case_sensitive));
+
+  ScanReport report{
+      .table_name = context_.table_name,
+      .snapshot_id = snapshot.snapshot_id,
+      .filter = std::move(sanitized_filter),
+      .schema_id = schema_ptr->schema_id(),
+      .projected_field_ids = std::move(projected_field_ids),
+      .projected_field_names = std::move(projected_field_names),
+      .scan_metrics = scan_metrics.ToResult(),
+      .metadata = context_.options,
+  };
+  return context_.metrics_reporter->Report(report);
+}
+
 Result<std::vector<std::shared_ptr<FileScanTask>>> DataTableScan::PlanFiles() const {
   ICEBERG_ASSIGN_OR_RAISE(auto snapshot, this->snapshot());
   if (!snapshot) {
     return std::vector<std::shared_ptr<FileScanTask>>{};
+  }
+
+  std::shared_ptr<ScanMetrics> scan_metrics;
+  std::optional<Timer::Timed> planning_duration;
+  if (context_.metrics_reporter) {
+    auto metrics_context = MetricsContext::Default();
+    scan_metrics = ScanMetrics::Make(*metrics_context);
+    planning_duration.emplace(scan_metrics->total_planning_duration->Start());
   }
 
   TableMetadataCache metadata_cache(metadata_.get());
@@ -546,6 +628,13 @@ Result<std::vector<std::shared_ptr<FileScanTask>>> DataTableScan::PlanFiles() co
   SnapshotCache snapshot_cache(snapshot.get());
   ICEBERG_ASSIGN_OR_RAISE(auto data_manifests, snapshot_cache.DataManifests(io_));
   ICEBERG_ASSIGN_OR_RAISE(auto delete_manifests, snapshot_cache.DeleteManifests(io_));
+
+  if (scan_metrics) {
+    scan_metrics->total_data_manifests->Increment(
+        static_cast<int64_t>(data_manifests.size()));
+    scan_metrics->total_delete_manifests->Increment(
+        static_cast<int64_t>(delete_manifests.size()));
+  }
 
   ICEBERG_ASSIGN_OR_RAISE(
       auto manifest_group,
@@ -557,11 +646,19 @@ Result<std::vector<std::shared_ptr<FileScanTask>>> DataTableScan::PlanFiles() co
       .FilterData(filter())
       .IgnoreDeleted()
       .ColumnsToKeepStats(context_.columns_to_keep_stats)
-      .PlanWith(context_.plan_executor);
+      .PlanWith(context_.plan_executor)
+      .WithScanMetrics(scan_metrics);
   if (context_.ignore_residuals) {
     manifest_group->IgnoreResiduals();
   }
-  return manifest_group->PlanFiles();
+  ICEBERG_ASSIGN_OR_RAISE(auto tasks, manifest_group->PlanFiles());
+
+  if (planning_duration) {
+    planning_duration->Stop();
+    std::ignore = ReportScan(*snapshot, *scan_metrics);
+  }
+
+  return tasks;
 }
 
 // Friend function template for IncrementalScan that implements the shared PlanFiles
@@ -790,7 +887,6 @@ IncrementalChangelogScan::PlanFiles(std::optional<int64_t> from_snapshot_id_excl
 
       ICEBERG_ASSIGN_OR_RAISE(auto residual,
                               ctx.residuals->ResidualFor(entry.data_file->partition));
-
       switch (entry.status) {
         case ManifestStatus::kAdded:
           tasks.push_back(std::make_shared<AddedRowsScanTask>(

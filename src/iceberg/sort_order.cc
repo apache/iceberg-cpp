@@ -96,10 +96,7 @@ Status SortOrder::Validate(const Schema& schema) const {
 
     const auto& source_type = schema_field.value().get().type();
 
-    if (!field.transform()->CanTransform(*source_type)) {
-      return InvalidArgument("Invalid source type {} for transform {}",
-                             source_type->ToString(), field.transform()->ToString());
-    }
+    ICEBERG_RETURN_UNEXPECTED(field.transform()->Validate(source_type));
   }
   return {};
 }

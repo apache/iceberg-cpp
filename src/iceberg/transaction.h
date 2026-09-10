@@ -48,7 +48,10 @@ class ICEBERG_EXPORT Transaction : public std::enable_shared_from_this<Transacti
   static Result<std::shared_ptr<Transaction>> Make(std::shared_ptr<Table> table,
                                                    TransactionKind kind);
 
-  /// \brief Create a transaction from an existing context (used by PendingUpdate::Commit)
+  /// \brief Create a detached transaction from an existing context.
+  ///
+  /// Used by PendingUpdate::Commit for table-created updates. The transaction is not
+  /// stored in TransactionContext because it exists only for that commit call.
   static Result<std::shared_ptr<Transaction>> Make(
       std::shared_ptr<TransactionContext> ctx);
 
@@ -125,6 +128,10 @@ class ICEBERG_EXPORT Transaction : public std::enable_shared_from_this<Transacti
   /// changes.
   Result<std::shared_ptr<RewriteFiles>> NewRewriteFiles();
 
+  /// \brief Create a new ReplacePartitions to dynamically overwrite partitions and commit
+  /// the changes.
+  Result<std::shared_ptr<ReplacePartitions>> NewReplacePartitions();
+
   /// \brief Create a new SnapshotManager to manage snapshots.
   Result<std::shared_ptr<SnapshotManager>> NewSnapshotManager();
 
@@ -170,6 +177,7 @@ class ICEBERG_EXPORT Transaction : public std::enable_shared_from_this<Transacti
   std::shared_ptr<TransactionContext> ctx_;
   // Keep track of all created pending updates.
   std::vector<std::shared_ptr<PendingUpdate>> pending_updates_;
+
   // To make the state simple, we require updates are added and committed in order.
   bool last_update_committed_ = true;
   // Tracks if transaction has been committed to prevent double-commit

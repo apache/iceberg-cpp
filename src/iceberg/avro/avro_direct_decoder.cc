@@ -29,6 +29,7 @@
 #include <avro/Types.hh>
 
 #include "iceberg/arrow/arrow_status_internal.h"
+#include "iceberg/avro/avro_data_util_internal.h"
 #include "iceberg/avro/avro_direct_decoder_internal.h"
 #include "iceberg/avro/avro_schema_util_internal.h"
 #include "iceberg/metadata_columns.h"
@@ -209,6 +210,8 @@ Status DecodeStructToBuilder(const ::avro::NodePtr& avro_node, ::avro::Decoder& 
     auto* field_builder = struct_builder->field_builder(static_cast<int>(proj_idx));
     if (field_projection.kind == FieldProjection::Kind::kNull) {
       ICEBERG_ARROW_RETURN_NOT_OK(field_builder->AppendNull());
+    } else if (field_projection.kind == FieldProjection::Kind::kDefault) {
+      ICEBERG_RETURN_UNEXPECTED(AppendDefaultToBuilder(field_projection, field_builder));
     } else if (field_projection.kind == FieldProjection::Kind::kMetadata) {
       int32_t field_id = expected_field.field_id();
       if (field_id == MetadataColumns::kFilePathColumnId) {
@@ -218,6 +221,9 @@ Status DecodeStructToBuilder(const ::avro::NodePtr& avro_node, ::avro::Decoder& 
       } else if (field_id == MetadataColumns::kFilePositionColumnId) {
         auto int_builder = internal::checked_cast<::arrow::Int64Builder*>(field_builder);
         ICEBERG_ARROW_RETURN_NOT_OK(int_builder->Append(metadata_context.next_file_pos));
+      } else if (MetadataColumns::IsRowLineageColumn(field_id)) {
+        ICEBERG_RETURN_UNEXPECTED(arrow::AppendInheritedRowLineageValue(
+            field_id, metadata_context, field_builder));
       } else {
         return NotSupported("Unsupported metadata column field id: {}", field_id);
       }
@@ -459,7 +465,9 @@ Status DecodePrimitiveValueToBuilder(const ::avro::NodePtr& avro_node,
       return {};
     }
 
-    case TypeId::kBinary: {
+    case TypeId::kBinary:
+    case TypeId::kGeometry:
+    case TypeId::kGeography: {
       if (avro_node->type() != ::avro::AVRO_BYTES) {
         return InvalidArgument("Expected Avro bytes for binary field, got: {}",
                                ToString(avro_node));
@@ -594,6 +602,9 @@ Status DecodeFieldToBuilder(const ::avro::NodePtr& avro_node, ::avro::Decoder& d
     return {};
   }
 
+  const bool is_row_lineage =
+      MetadataColumns::IsRowLineageColumn(projected_field.field_id());
+
   if (avro_node->type() == ::avro::AVRO_UNION) {
     const size_t branch_index = decoder.decodeUnionIndex();
 
@@ -606,6 +617,10 @@ Status DecodeFieldToBuilder(const ::avro::NodePtr& avro_node, ::avro::Decoder& d
 
     const auto& branch_node = avro_node->leafAt(branch_index);
     if (branch_node->type() == ::avro::AVRO_NULL) {
+      if (is_row_lineage) {
+        return arrow::AppendInheritedRowLineageValue(projected_field.field_id(),
+                                                     metadata_context, array_builder);
+      }
       ICEBERG_ARROW_RETURN_NOT_OK(array_builder->AppendNull());
       return {};
     } else {

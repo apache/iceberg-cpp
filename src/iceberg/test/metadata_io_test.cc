@@ -150,6 +150,21 @@ TEST_F(MetadataIOTest, WriteMetadataWithBase) {
     EXPECT_THAT(new_metadata_location, testing::HasSubstr("/metadata/00000-"));
   }
 
+  {
+    // Reject malformed and out-of-range version segments.
+    for (const auto& base_metadata_location : {
+             "/metadata/00010x-xxx.metadata.json",
+             "/metadata/2147483648-xxx.metadata.json",
+             "/metadata/-xxx.metadata.json",
+         }) {
+      TableMetadata new_metadata = PrepareMetadata();
+      ICEBERG_UNWRAP_OR_FAIL(
+          auto new_metadata_location,
+          TableMetadataUtil::Write(*io_, &base, base_metadata_location, new_metadata));
+      EXPECT_THAT(new_metadata_location, testing::HasSubstr("/metadata/00000-"));
+    }
+  }
+
   // Reset base metadata_file_location
   // base.metadata_file_location = temp_filepath_;
 

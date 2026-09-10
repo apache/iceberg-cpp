@@ -29,9 +29,9 @@
 #include <gtest/gtest.h>
 
 #include "iceberg/arrow/arrow_io_internal.h"
-#include "iceberg/data/deletion_vector_writer.h"
 #include "iceberg/data/equality_delete_writer.h"
 #include "iceberg/data/position_delete_writer.h"
+#include "iceberg/deletes/dv_writer.h"
 #include "iceberg/deletes/position_delete_index.h"
 #include "iceberg/file_format.h"
 #include "iceberg/file_io.h"
@@ -122,8 +122,7 @@ class DeleteLoaderTest : public ::testing::Test {
                                                 const std::string& referenced_data_file,
                                                 const std::vector<int64_t>& positions) {
     auto writer =
-        DeletionVectorWriter::Make(DeletionVectorWriterOptions{
-                                       .path = path,
+        DVWriter::Make(DVWriterOptions{.path = path,
                                        .io = file_io_,
                                        .load_previous_deletes = [](std::string_view)
                                            -> Result<std::optional<PositionDeleteIndex>> {
@@ -363,7 +362,7 @@ TEST_F(DeleteLoaderTest, DVWriterReportsFileScopedPositionDeleteAsRewritten) {
   auto* loader = loader_.get();
   ICEBERG_UNWRAP_OR_FAIL(
       auto writer,
-      DeletionVectorWriter::Make(DeletionVectorWriterOptions{
+      DVWriter::Make(DVWriterOptions{
           .path = "dv-replace.puffin",
           .io = file_io_,
           .load_previous_deletes =

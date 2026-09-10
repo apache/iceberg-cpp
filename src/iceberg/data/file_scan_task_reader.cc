@@ -43,7 +43,9 @@ ReaderOptions MakeReaderOptions(const DataFile& data_file, std::shared_ptr<FileI
                                 std::shared_ptr<Schema> projection,
                                 std::shared_ptr<Expression> filter,
                                 std::shared_ptr<NameMapping> name_mapping,
-                                ReaderProperties properties) {
+                                ReaderProperties properties,
+                                std::optional<int64_t> first_row_id,
+                                std::optional<int64_t> data_sequence_number) {
   return ReaderOptions{
       .path = data_file.file_path,
       .length = static_cast<size_t>(data_file.file_size_in_bytes),
@@ -51,6 +53,8 @@ ReaderOptions MakeReaderOptions(const DataFile& data_file, std::shared_ptr<FileI
       .projection = std::move(projection),
       .filter = std::move(filter),
       .name_mapping = std::move(name_mapping),
+      .first_row_id = first_row_id,
+      .data_sequence_number = data_sequence_number,
       .properties = std::move(properties),
   };
 }
@@ -161,9 +165,9 @@ class FileScanTaskReader::Impl {
                      data_file->file_size_in_bytes);
 
     if (task.delete_files().empty()) {
-      auto options =
-          MakeReaderOptions(*data_file, io_, projected_schema_, task.residual_filter(),
-                            name_mapping_, properties_);
+      auto options = MakeReaderOptions(
+          *data_file, io_, projected_schema_, task.residual_filter(), name_mapping_,
+          properties_, data_file->first_row_id, data_file->data_sequence_number);
       ICEBERG_ASSIGN_OR_RAISE(
           auto reader, ReaderFactoryRegistry::Open(data_file->file_format, options));
       return MakeArrowArrayStream(std::move(reader));
@@ -187,8 +191,9 @@ class FileScanTaskReader::Impl {
                             ProjectionContext::Make(*required_schema, *projected_schema_,
                                                     project_batch_function));
 
-    auto options = MakeReaderOptions(*data_file, io_, required_schema,
-                                     task.residual_filter(), name_mapping_, properties_);
+    auto options = MakeReaderOptions(
+        *data_file, io_, required_schema, task.residual_filter(), name_mapping_,
+        properties_, data_file->first_row_id, data_file->data_sequence_number);
     ICEBERG_ASSIGN_OR_RAISE(auto reader,
                             ReaderFactoryRegistry::Open(data_file->file_format, options));
 

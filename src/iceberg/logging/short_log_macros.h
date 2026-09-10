@@ -19,22 +19,20 @@
 
 #pragma once
 
-/// \file iceberg/data/dv_util_internal.h
-/// Internal deletion vector helpers.
+/// \file iceberg/logging/short_log_macros.h
+/// \brief Opt-in bare LOG_* aliases for the ICEBERG_LOG_* macros.
+///
+/// Separate opt-in header (not pulled in by logger.h or log_macros.h) so the
+/// short, unprefixed names never leak into consumers by default -- they would
+/// collide with glog/abseil/windows.h. Include this header explicitly to use
+/// them. No bare LOG(level) is provided.
 
-#include <memory>
+#include "iceberg/logging/log_macros.h"
 
-#include "iceberg/deletes/position_delete_index.h"
-#include "iceberg/iceberg_data_export.h"
-#include "iceberg/result.h"
-#include "iceberg/type_fwd.h"
-
-namespace iceberg {
-
-class ICEBERG_DATA_EXPORT DVUtil {
- public:
-  static Result<PositionDeleteIndex> ReadDV(const std::shared_ptr<DataFile>& delete_file,
-                                            const std::shared_ptr<FileIO>& io);
-};
-
-}  // namespace iceberg
+#define LOG_TRACE(...) ICEBERG_LOG_TRACE(__VA_ARGS__)
+#define LOG_DEBUG(...) ICEBERG_LOG_DEBUG(__VA_ARGS__)
+#define LOG_INFO(...) ICEBERG_LOG_INFO(__VA_ARGS__)
+#define LOG_WARN(...) ICEBERG_LOG_WARN(__VA_ARGS__)
+#define LOG_ERROR(...) ICEBERG_LOG_ERROR(__VA_ARGS__)
+#define LOG_CRITICAL(...) ICEBERG_LOG_CRITICAL(__VA_ARGS__)
+#define LOG_FATAL(...) ICEBERG_LOG_FATAL(__VA_ARGS__)

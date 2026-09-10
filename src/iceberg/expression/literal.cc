@@ -19,12 +19,18 @@
 
 #include "iceberg/expression/literal.h"
 
+#include <array>
+#include <charconv>
 #include <cmath>
 #include <concepts>
 #include <cstdint>
+#include <format>
 #include <string>
+#include <string_view>
+#include <system_error>
 #include <vector>
 
+#include "iceberg/result.h"
 #include "iceberg/type.h"
 #include "iceberg/util/checked_cast.h"
 #include "iceberg/util/conversions.h"
@@ -85,6 +91,14 @@ class LiteralCaster {
   /// Cast from Fixed type to target type.
   static Result<Literal> CastFromFixed(const Literal& literal,
                                        const std::shared_ptr<PrimitiveType>& target_type);
+
+  /// Cast an integer value (from Int or Long) to a decimal target type.
+  static Result<Literal> CastIntegerToDecimal(
+      int64_t value, const std::shared_ptr<PrimitiveType>& target_type);
+
+  /// Cast a floating-point value (from Float or Double) to a decimal target type.
+  static Result<Literal> CastRealToDecimal(
+      double value, const std::shared_ptr<PrimitiveType>& target_type);
 };
 
 Literal LiteralCaster::BelowMinLiteral(std::shared_ptr<PrimitiveType> type) {
@@ -93,6 +107,166 @@ Literal LiteralCaster::BelowMinLiteral(std::shared_ptr<PrimitiveType> type) {
 
 Literal LiteralCaster::AboveMaxLiteral(std::shared_ptr<PrimitiveType> type) {
   return Literal(Literal::AboveMax{}, std::move(type));
+}
+
+namespace {
+
+Status ValidateDecimalScale(int32_t scale) {
+  if (scale < -Decimal::kMaxScale || scale > Decimal::kMaxScale) {
+    return InvalidArgument("decimal scale must be in range [-{}, {}], was {}",
+                           Decimal::kMaxScale, Decimal::kMaxScale, scale);
+  }
+  return {};
+}
+
+// Rescale `unscaled` (interpreted at `from_scale`) to `to_scale` using HALF_UP rounding
+// (round half away from zero), matching Java's BigDecimal.setScale(scale, HALF_UP).
+// Unlike Decimal::Rescale, which only truncates and rejects any dropped remainder, this
+// rounds, and it supports the full negative..positive scale range Iceberg decimals allow.
+Result<Decimal> RescaleHalfUp(const Decimal& unscaled, int32_t from_scale,
+                              int32_t to_scale, bool negative) {
+  const int32_t delta = to_scale - from_scale;
+  if (delta == 0) {
+    return unscaled;
+  }
+  if (delta > 0) {
+    // Growing the scale multiplies the coefficient by 10^delta. Report an overflow as an
+    // invalid argument (consistent with the other rejections here) rather than leaking
+    // Rescale's "data loss" error to callers.
+    if (delta > Decimal::kMaxScale) {
+      return InvalidArgument("scale change {} exceeds the maximum {}", delta,
+                             Decimal::kMaxScale);
+    }
+    auto rescaled = unscaled.Rescale(from_scale, to_scale);
+    if (!rescaled.has_value()) {
+      return InvalidArgument("value does not fit the target decimal scale");
+    }
+    return rescaled.value();
+  }
+  // Shrinking the scale drops `drop` digits with HALF_UP rounding. A drop larger than the
+  // digits any decimal can hold rounds everything away, so the result is zero (e.g.
+  // 1e-100 to decimal(9, 2)); this also keeps the divisor within the powers-of-ten table.
+  const int32_t drop = -delta;
+  if (drop > Decimal::kMaxScale) {
+    return Decimal(0);
+  }
+  ICEBERG_ASSIGN_OR_RAISE(auto divisor, Decimal(1).Rescale(0, drop));
+  ICEBERG_ASSIGN_OR_RAISE(auto divmod, unscaled.Divide(divisor));
+  Decimal quotient = divmod.first;
+  Decimal remainder = Decimal::Abs(divmod.second);
+  // Compare against divisor/2 rather than remainder*2: for drop near kMaxScale,
+  // remainder*2 can overflow int128 and flip the HALF_UP decision. Powers of ten
+  // with drop >= 1 are always even, so the two comparisons are equivalent.
+  if (remainder >= divisor / Decimal(2)) {
+    quotient += negative ? Decimal(-1) : Decimal(1);
+  }
+  return quotient;
+}
+
+// Parse a `std::to_chars` double rendering (`[-]digits[.digits][e[+-]exp]`) into an
+// integer coefficient and the scale at which it is interpreted (value == coefficient *
+// 10^-scale). The coefficient is just the significant digits, so it never overflows
+// int128; the exponent is folded into the returned scale rather than expanded, leaving
+// RescaleHalfUp to combine it with the target scale.
+Result<Decimal> ParseRealCoefficient(std::string_view str, int32_t* scale) {
+  bool negative = !str.empty() && str.front() == '-';
+  if (negative) {
+    str.remove_prefix(1);
+  }
+
+  int32_t exponent = 0;
+  if (auto e = str.find_first_of("eE"); e != std::string_view::npos) {
+    auto exp_str = str.substr(e + 1);
+    // std::to_chars writes a leading '+' for positive exponents, which from_chars
+    // rejects.
+    if (!exp_str.empty() && exp_str.front() == '+') {
+      exp_str.remove_prefix(1);
+    }
+    if (std::from_chars(exp_str.data(), exp_str.data() + exp_str.size(), exponent).ec !=
+        std::errc{}) {
+      return InvalidArgument("Invalid real value '{}'", str);
+    }
+    str = str.substr(0, e);
+  }
+
+  int32_t frac_digits = 0;
+  std::string digits;
+  digits.reserve(str.size());
+  if (auto dot = str.find('.'); dot != std::string_view::npos) {
+    frac_digits = static_cast<int32_t>(str.size() - dot - 1);
+    digits.append(str.substr(0, dot));
+    digits.append(str.substr(dot + 1));
+  } else {
+    digits.append(str);
+  }
+  if (digits.empty() || digits.find_first_not_of("0123456789") != std::string::npos) {
+    return InvalidArgument("Invalid real value '{}'", str);
+  }
+
+  // Coefficient has scale `frac_digits`; a positive base-10 exponent lowers that scale.
+  *scale = frac_digits - exponent;
+  ICEBERG_ASSIGN_OR_RAISE(auto coefficient, Decimal::FromString(digits));
+  if (negative) {
+    coefficient.Negate();
+  }
+  return coefficient;
+}
+
+}  // namespace
+
+Result<Literal> LiteralCaster::CastIntegerToDecimal(
+    int64_t value, const std::shared_ptr<PrimitiveType>& target_type) {
+  const auto& decimal_type = internal::checked_cast<const DecimalType&>(*target_type);
+  ICEBERG_RETURN_UNEXPECTED(ValidateDecimalScale(decimal_type.scale()));
+  // An integer has scale 0; rescale it to the target scale, rounding HALF_UP when the
+  // target scale is negative (matching Java's numeric-to-decimal default handling).
+  ICEBERG_ASSIGN_OR_RAISE(auto unscaled, RescaleHalfUp(Decimal(value), /*from_scale=*/0,
+                                                       decimal_type.scale(), value < 0));
+  if (!unscaled.FitsInPrecision(decimal_type.precision())) {
+    return InvalidArgument("Cannot cast {} as a {} value", value,
+                           target_type->ToString());
+  }
+  return Literal::Decimal(unscaled.value(), decimal_type.precision(),
+                          decimal_type.scale());
+}
+
+Result<Literal> LiteralCaster::CastRealToDecimal(
+    double value, const std::shared_ptr<PrimitiveType>& target_type) {
+  const auto& decimal_type = internal::checked_cast<const DecimalType&>(*target_type);
+  ICEBERG_RETURN_UNEXPECTED(ValidateDecimalScale(decimal_type.scale()));
+  if (!std::isfinite(value)) {
+    return InvalidArgument("Cannot cast {} as a {} value", value,
+                           target_type->ToString());
+  }
+
+  // Convert via the shortest round-tripping decimal string (std::to_chars without a
+  // format specifier), then round to the target scale. Float callers widen to double
+  // first, so both float and double sources share this path.
+  std::array<char, 64> buf{};
+  auto [ptr, ec] = std::to_chars(buf.data(), buf.data() + buf.size(), value);
+  if (ec != std::errc{}) {
+    return InvalidArgument("Cannot cast {} as a {} value", value,
+                           target_type->ToString());
+  }
+
+  // Parse the coefficient and its scale directly instead of via Decimal::FromString,
+  // which normalizes a negative scale by multiplying the coefficient by 10^-scale and can
+  // overflow int128 for large magnitudes (e.g. 4e38). The coefficient itself always fits,
+  // and RescaleHalfUp handles the exponent against the target scale (and rejects
+  // overflow).
+  int32_t coeff_scale = 0;
+  ICEBERG_ASSIGN_OR_RAISE(
+      auto coefficient,
+      ParseRealCoefficient(std::string_view(buf.data(), ptr), &coeff_scale));
+
+  ICEBERG_ASSIGN_OR_RAISE(auto unscaled, RescaleHalfUp(coefficient, coeff_scale,
+                                                       decimal_type.scale(), value < 0));
+  if (!unscaled.FitsInPrecision(decimal_type.precision())) {
+    return InvalidArgument("Cannot cast {} as a {} value", value,
+                           target_type->ToString());
+  }
+  return Literal::Decimal(unscaled.value(), decimal_type.precision(),
+                          decimal_type.scale());
 }
 
 Result<Literal> LiteralCaster::CastFromInt(
@@ -109,6 +283,8 @@ Result<Literal> LiteralCaster::CastFromInt(
       return Literal::Double(static_cast<double>(int_val));
     case TypeId::kDate:
       return Literal::Date(int_val);
+    case TypeId::kDecimal:
+      return CastIntegerToDecimal(static_cast<int64_t>(int_val), target_type);
     default:
       return NotSupported("Cast from Int to {} is not implemented",
                           target_type->ToString());
@@ -153,6 +329,8 @@ Result<Literal> LiteralCaster::CastFromLong(
       return Literal::TimestampNs(long_val);
     case TypeId::kTimestampTzNs:
       return Literal::TimestampTzNs(long_val);
+    case TypeId::kDecimal:
+      return CastIntegerToDecimal(long_val, target_type);
     default:
       return NotSupported("Cast from Long to {} is not supported",
                           target_type->ToString());
@@ -166,6 +344,8 @@ Result<Literal> LiteralCaster::CastFromFloat(
   switch (target_type->type_id()) {
     case TypeId::kDouble:
       return Literal::Double(static_cast<double>(float_val));
+    case TypeId::kDecimal:
+      return CastRealToDecimal(static_cast<double>(float_val), target_type);
     default:
       return NotSupported("Cast from Float to {} is not supported",
                           target_type->ToString());
@@ -186,6 +366,8 @@ Result<Literal> LiteralCaster::CastFromDouble(
       }
       return Literal::Float(static_cast<float>(double_val));
     }
+    case TypeId::kDecimal:
+      return CastRealToDecimal(double_val, target_type);
     default:
       return NotSupported("Cast from Double to {} is not supported",
                           target_type->ToString());
@@ -430,21 +612,13 @@ Result<Literal> Literal::CastTo(const std::shared_ptr<PrimitiveType>& target_typ
   return LiteralCaster::CastTo(*this, target_type);
 }
 
-// Template function for floating point comparison following Iceberg rules:
-// -NaN < NaN, but all NaN values (qNaN, sNaN) are treated as equivalent within their sign
+// Template function for floating point comparison following the Iceberg total
+// ordering: -NaN < -Infinity < ... < +Infinity < +NaN. std::strong_order
+// implements the IEEE 754 totalOrder predicate on IEC 559 types, which matches
+// this requirement (and orders -0 below +0).
 template <std::floating_point T>
 std::strong_ordering CompareFloat(T lhs, T rhs) {
-  // If both are NaN, check their signs
-  bool all_nan = std::isnan(lhs) && std::isnan(rhs);
-  if (!all_nan) {
-    // If not both NaN, use strong ordering
-    return std::strong_order(lhs, rhs);
-  }
-  // Same sign NaN values are equivalent (no qNaN vs sNaN distinction),
-  // and -NAN < NAN.
-  bool lhs_is_negative = std::signbit(lhs);
-  bool rhs_is_negative = std::signbit(rhs);
-  return lhs_is_negative <=> rhs_is_negative;
+  return std::strong_order(lhs, rhs);
 }
 
 namespace {

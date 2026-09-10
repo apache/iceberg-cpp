@@ -379,28 +379,17 @@ Result<std::unique_ptr<GeometryType>> GeometryType::Make(std::string crs) {
   return std::unique_ptr<GeometryType>(new GeometryType(std::move(crs)));
 }
 
-GeometryType::GeometryType(std::string crs) {
-  if (StringUtils::ToLower(crs) != StringUtils::ToLower(kDefaultCrs)) {
-    crs_ = std::move(crs);
-  }
-}
+GeometryType::GeometryType(std::string crs) : crs_(std::move(crs)) {}
 
-std::string_view GeometryType::crs() const {
-  return crs_.empty() ? kDefaultCrs : std::string_view(crs_);
-}
+std::string_view GeometryType::crs() const { return crs_; }
 TypeId GeometryType::type_id() const { return kTypeId; }
-std::string GeometryType::ToString() const {
-  if (crs_.empty()) {
-    return "geometry";
-  }
-  return std::format("geometry({})", crs_);
-}
+std::string GeometryType::ToString() const { return std::format("geometry({})", crs_); }
 bool GeometryType::Equals(const Type& other) const {
   if (other.type_id() != kTypeId) {
     return false;
   }
   const auto& geometry = static_cast<const GeometryType&>(other);
-  return crs_ == geometry.crs_;
+  return StringUtils::EqualsIgnoreCase(crs_, geometry.crs_);
 }
 
 Result<std::unique_ptr<GeographyType>> GeographyType::Make() {
@@ -422,41 +411,24 @@ Result<std::unique_ptr<GeographyType>> GeographyType::Make(std::string crs,
   return std::unique_ptr<GeographyType>(new GeographyType(std::move(crs), algorithm));
 }
 
-GeographyType::GeographyType(std::string crs) {
-  if (StringUtils::ToLower(crs) != StringUtils::ToLower(kDefaultCrs)) {
-    crs_ = std::move(crs);
-  }
-}
+GeographyType::GeographyType(std::string crs) : crs_(std::move(crs)) {}
 
 GeographyType::GeographyType(std::string crs, EdgeAlgorithm algorithm)
-    : algorithm_(algorithm) {
-  if (StringUtils::ToLower(crs) != StringUtils::ToLower(kDefaultCrs)) {
-    crs_ = std::move(crs);
-  }
-}
+    : crs_(std::move(crs)), algorithm_(algorithm) {}
 
-std::string_view GeographyType::crs() const {
-  return crs_.empty() ? kDefaultCrs : std::string_view(crs_);
-}
-EdgeAlgorithm GeographyType::algorithm() const {
-  return algorithm_.value_or(kDefaultAlgorithm);
-}
+std::string_view GeographyType::crs() const { return crs_; }
+EdgeAlgorithm GeographyType::algorithm() const { return algorithm_; }
 TypeId GeographyType::type_id() const { return kTypeId; }
 std::string GeographyType::ToString() const {
-  if (algorithm_.has_value()) {
-    return std::format("geography({}, {})", crs(), iceberg::ToString(*algorithm_));
-  }
-  if (!crs_.empty()) {
-    return std::format("geography({})", crs_);
-  }
-  return "geography";
+  return std::format("geography({}, {})", crs_, iceberg::ToString(algorithm_));
 }
 bool GeographyType::Equals(const Type& other) const {
   if (other.type_id() != kTypeId) {
     return false;
   }
   const auto& geography = static_cast<const GeographyType&>(other);
-  return crs_ == geography.crs_ && algorithm_ == geography.algorithm_;
+  return StringUtils::EqualsIgnoreCase(crs_, geography.crs_) &&
+         algorithm_ == geography.algorithm_;
 }
 
 FixedType::FixedType(int32_t length) : length_(length) {

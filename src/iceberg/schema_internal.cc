@@ -19,16 +19,16 @@
 
 #include "iceberg/schema_internal.h"
 
-#include <cerrno>
-#include <charconv>
 #include <cstring>
 #include <optional>
 #include <string>
 
+#include "iceberg/arrow_c_data_guard_internal.h"
 #include "iceberg/constants.h"
 #include "iceberg/schema.h"
 #include "iceberg/type.h"
 #include "iceberg/util/macros.h"
+#include "iceberg/util/string_util.h"
 
 namespace iceberg {
 
@@ -42,8 +42,6 @@ constexpr int32_t kUnknownFieldId = -1;
 Status CheckArrowCompatible(const Type& type) {
   switch (type.type_id()) {
     case TypeId::kVariant:
-    case TypeId::kGeometry:
-    case TypeId::kGeography:
       return NotSupported("Iceberg type {} is not supported by Arrow conversion",
                           type.ToString());
     case TypeId::kStruct:
@@ -71,6 +69,7 @@ ArrowErrorCode ToArrowSchema(const Type& type, bool optional, std::string_view n
                              std::optional<int32_t> field_id, ArrowSchema* schema) {
   ArrowBuffer metadata_buffer;
   NANOARROW_RETURN_NOT_OK(ArrowMetadataBuilderInit(&metadata_buffer, nullptr));
+  internal::ArrowArrayBufferGuard metadata_buffer_guard(&metadata_buffer);
   if (field_id.has_value()) {
     NANOARROW_RETURN_NOT_OK(ArrowMetadataBuilderAppend(
         &metadata_buffer, ArrowCharView(std::string(kParquetFieldIdKey).c_str()),
@@ -163,6 +162,8 @@ ArrowErrorCode ToArrowSchema(const Type& type, bool optional, std::string_view n
       NANOARROW_RETURN_NOT_OK(ArrowSchemaSetType(schema, NANOARROW_TYPE_STRING));
       break;
     case TypeId::kBinary:
+    case TypeId::kGeometry:
+    case TypeId::kGeography:
       NANOARROW_RETURN_NOT_OK(ArrowSchemaSetType(schema, NANOARROW_TYPE_BINARY));
       break;
     case TypeId::kFixed: {
@@ -181,8 +182,6 @@ ArrowErrorCode ToArrowSchema(const Type& type, bool optional, std::string_view n
       NANOARROW_RETURN_NOT_OK(ArrowSchemaSetType(schema, NANOARROW_TYPE_NA));
       break;
     case TypeId::kVariant:
-    case TypeId::kGeometry:
-    case TypeId::kGeography:
       ArrowBufferReset(&metadata_buffer);
       return EINVAL;
   }
@@ -193,7 +192,6 @@ ArrowErrorCode ToArrowSchema(const Type& type, bool optional, std::string_view n
 
   NANOARROW_RETURN_NOT_OK(ArrowSchemaSetMetadata(
       schema, reinterpret_cast<const char*>(metadata_buffer.data)));
-  ArrowBufferReset(&metadata_buffer);
 
   if (optional) {
     schema->flags |= ARROW_FLAG_NULLABLE;
@@ -214,6 +212,7 @@ Status ToArrowSchema(const Schema& schema, ArrowSchema* out) {
   ICEBERG_RETURN_UNEXPECTED(CheckArrowCompatible(schema));
 
   ArrowSchemaInit(out);
+  internal::ArrowSchemaGuard schema_guard(out);
 
   if (ArrowErrorCode errorCode = ToArrowSchema(schema, /*optional=*/false, /*name=*/"",
                                                /*field_id=*/std::nullopt, out);
@@ -222,12 +221,13 @@ Status ToArrowSchema(const Schema& schema, ArrowSchema* out) {
         "Failed to convert Iceberg schema to Arrow schema, error code: {}", errorCode);
   }
 
+  schema_guard.Release();
   return {};
 }
 
 namespace {
 
-int32_t GetFieldId(const ArrowSchema& schema) {
+Result<int32_t> GetFieldId(const ArrowSchema& schema) {
   if (schema.metadata == nullptr) {
     return kUnknownFieldId;
   }
@@ -240,11 +240,13 @@ int32_t GetFieldId(const ArrowSchema& schema) {
     return kUnknownFieldId;
   }
 
-  int32_t field_id = kUnknownFieldId;
-  std::from_chars(field_id_value.data, field_id_value.data + field_id_value.size_bytes,
-                  field_id);
+  std::string_view field_id(field_id_value.data, field_id_value.size_bytes);
+  auto field_id_result = StringUtils::ParseNumber<int32_t>(field_id);
+  if (!field_id_result.has_value()) {
+    return InvalidSchema("Invalid Arrow field ID: '{}'", field_id);
+  }
 
-  return field_id;
+  return field_id_result.value();
 }
 
 Result<std::shared_ptr<Type>> FromArrowSchema(const ArrowSchema& schema) {
@@ -252,7 +254,7 @@ Result<std::shared_ptr<Type>> FromArrowSchema(const ArrowSchema& schema) {
       [](const ArrowSchema& schema) -> Result<std::unique_ptr<SchemaField>> {
     ICEBERG_ASSIGN_OR_RAISE(auto field_type, FromArrowSchema(schema));
 
-    auto field_id = GetFieldId(schema);
+    ICEBERG_ASSIGN_OR_RAISE(auto field_id, GetFieldId(schema));
     bool is_optional = (schema.flags & ARROW_FLAG_NULLABLE) != 0;
     if (field_type->type_id() == TypeId::kUnknown && !is_optional) {
       return InvalidSchema("Arrow null field '{}' must be nullable", schema.name);

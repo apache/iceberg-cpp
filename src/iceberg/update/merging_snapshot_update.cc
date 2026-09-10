@@ -32,6 +32,7 @@
 
 #include "iceberg/constants.h"
 #include "iceberg/delete_file_index.h"
+#include "iceberg/deletes/dv_util_internal.h"
 #include "iceberg/expression/expressions.h"
 #include "iceberg/expression/manifest_evaluator.h"
 #include "iceberg/expression/projections.h"
@@ -44,7 +45,6 @@
 #include "iceberg/manifest/manifest_util_internal.h"
 #include "iceberg/manifest/manifest_writer.h"
 #include "iceberg/partition_spec.h"
-#include "iceberg/puffin_dv_io.h"
 #include "iceberg/schema.h"
 #include "iceberg/snapshot.h"
 #include "iceberg/table.h"
@@ -463,6 +463,10 @@ Status MergingSnapshotUpdate::AddDataFile(std::shared_ptr<DataFile> file) {
   if (!file) {
     return InvalidArgument("Cannot add a null data file");
   }
+  if (file->content != DataFile::Content::kData) {
+    return InvalidArgument("Invalid data file to add: {} has delete-file content",
+                           file->file_path);
+  }
   if (!file->partition_spec_id.has_value()) {
     return InvalidArgument("Data file must have a partition spec ID");
   }
@@ -820,8 +824,7 @@ MergingSnapshotUpdate::MergeDVs() {
   auto output_path = location_provider->NewDataLocation(
       std::format("merged-dvs-{}-{}.puffin", SnapshotId(), ++dv_merge_attempt_));
 
-  auto merged_files =
-      PuffinDVIORegistry::MergeAndWriteDVs(groups, output_path, ctx_->table->io());
+  auto merged_files = DVUtil::MergeAndWriteDVs(groups, output_path, ctx_->table->io());
   if (!merged_files) {
     std::ignore = DeleteFile(output_path);
     return std::unexpected<Error>(std::move(merged_files.error()));

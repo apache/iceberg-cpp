@@ -19,15 +19,18 @@
 
 #include "iceberg/type.h"
 
+#include <cstdint>
 #include <format>
 #include <memory>
 #include <string>
 #include <thread>
+#include <vector>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
 #include "iceberg/exception.h"
+#include "iceberg/geospatial.h"
 #include "iceberg/test/matchers.h"
 #include "iceberg/util/formatter.h"  // IWYU pragma: keep
 #include "iceberg/util/type_util.h"
@@ -241,14 +244,14 @@ const static std::array<TypeTestCase, 21> kPrimitiveTypes = {{
         .type = iceberg::geometry(),
         .type_id = iceberg::TypeId::kGeometry,
         .primitive = true,
-        .repr = "geometry",
+        .repr = "geometry(OGC:CRS84)",
     },
     {
         .name = "geography",
         .type = iceberg::geography(),
         .type_id = iceberg::TypeId::kGeography,
         .primitive = true,
-        .repr = "geography",
+        .repr = "geography(OGC:CRS84, spherical)",
     },
 }};
 
@@ -336,31 +339,173 @@ TEST(TypeTest, Equality) {
   }
 }
 
-TEST(TypeTest, GeographyExplicitDefaultAlgorithm) {
-  ASSERT_NE(*iceberg::geography("srid:4326"),
-            *iceberg::geography("srid:4326", iceberg::EdgeAlgorithm::kSpherical));
-  ASSERT_NE(*iceberg::geography(),
+TEST(TypeTest, GeospatialTypes) {
+  ASSERT_EQ(*iceberg::geometry(), *iceberg::geometry("ogc:crs84"));
+  ASSERT_EQ(*iceberg::geometry("EPSG:4326"), *iceberg::geometry("epsg:4326"));
+  ASSERT_EQ("geometry(epsg:4326)", iceberg::geometry("epsg:4326")->ToString());
+
+  ASSERT_EQ(*iceberg::geography(),
             *iceberg::geography("OGC:CRS84", iceberg::EdgeAlgorithm::kSpherical));
-  ASSERT_EQ(
-      "geography(srid:4326, spherical)",
-      iceberg::geography("srid:4326", iceberg::EdgeAlgorithm::kSpherical)->ToString());
-  ASSERT_EQ(
-      "geography(OGC:CRS84, spherical)",
-      iceberg::geography("OGC:CRS84", iceberg::EdgeAlgorithm::kSpherical)->ToString());
+  ASSERT_EQ(*iceberg::geography("srid:4326"),
+            *iceberg::geography("SRID:4326", iceberg::EdgeAlgorithm::kSpherical));
+  ASSERT_EQ("geography(srid:4326, spherical)",
+            iceberg::geography("srid:4326")->ToString());
   ASSERT_NE(*iceberg::geography("srid:4326"),
             *iceberg::geography("srid:4326", iceberg::EdgeAlgorithm::kKarney));
+
+  auto geometry_result = iceberg::GeometryType::Make("");
+  ASSERT_THAT(geometry_result, IsError(iceberg::ErrorKind::kInvalidArgument));
+  ASSERT_THAT(geometry_result,
+              iceberg::HasErrorMessage("GeometryType: CRS cannot be empty"));
+
+  auto geography_result = iceberg::GeographyType::Make("");
+  ASSERT_THAT(geography_result, IsError(iceberg::ErrorKind::kInvalidArgument));
+  ASSERT_THAT(geography_result,
+              iceberg::HasErrorMessage("GeographyType: CRS cannot be empty"));
 }
 
-TEST(TypeTest, GeometryMakeRejectsEmptyCrs) {
-  auto result = iceberg::GeometryType::Make("");
-  ASSERT_THAT(result, IsError(iceberg::ErrorKind::kInvalidArgument));
-  ASSERT_THAT(result, iceberg::HasErrorMessage("GeometryType: CRS cannot be empty"));
+TEST(GeospatialBoundTest, Encoding) {
+  const auto xy = iceberg::GeospatialBound::XY(1.0, -2.0);
+  const std::vector<uint8_t> xy_bytes = {
+      0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xf0, 0x3f,
+      0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xc0,
+  };
+  ASSERT_EQ(xy.Serialize(), xy_bytes);
+  ICEBERG_UNWRAP_OR_FAIL(auto deserialized_xy,
+                         iceberg::GeospatialBound::Deserialize(xy_bytes));
+  ASSERT_EQ(deserialized_xy, xy);
+
+  for (const auto& expected : {iceberg::GeospatialBound::XYZ(1.0, 2.0, 3.0),
+                               iceberg::GeospatialBound::XYM(1.0, 2.0, 4.0),
+                               iceberg::GeospatialBound::XYZM(1.0, 2.0, 3.0, 4.0)}) {
+    ICEBERG_UNWRAP_OR_FAIL(auto actual,
+                           iceberg::GeospatialBound::Deserialize(expected.Serialize()));
+    ASSERT_EQ(actual, expected);
+  }
+
+  ASSERT_THAT(iceberg::GeospatialBound::Deserialize(std::vector<uint8_t>(15)),
+              IsError(iceberg::ErrorKind::kInvalidArgument));
 }
 
-TEST(TypeTest, GeographyMakeRejectsEmptyCrs) {
-  auto result = iceberg::GeographyType::Make("");
-  ASSERT_THAT(result, IsError(iceberg::ErrorKind::kInvalidArgument));
-  ASSERT_THAT(result, iceberg::HasErrorMessage("GeographyType: CRS cannot be empty"));
+TEST(BoundingBoxTest, Encoding) {
+  iceberg::BoundingBox expected(iceberg::GeospatialBound::XY(0.0, 1.0),
+                                iceberg::GeospatialBound::XYZ(2.0, 3.0, 4.0));
+  ICEBERG_UNWRAP_OR_FAIL(auto from_separate,
+                         iceberg::BoundingBox::Deserialize(expected.lower().Serialize(),
+                                                           expected.upper().Serialize()));
+  ASSERT_EQ(from_separate, expected);
+
+  auto combined = expected.Serialize();
+  ASSERT_EQ(combined.size(), 48);
+  ASSERT_EQ(std::vector<uint8_t>(combined.begin(), combined.begin() + 4),
+            (std::vector<uint8_t>{0x10, 0x00, 0x00, 0x00}));
+  ASSERT_EQ(std::vector<uint8_t>(combined.begin() + 20, combined.begin() + 24),
+            (std::vector<uint8_t>{0x18, 0x00, 0x00, 0x00}));
+  ICEBERG_UNWRAP_OR_FAIL(auto from_combined, iceberg::BoundingBox::Deserialize(combined));
+  ASSERT_EQ(from_combined, expected);
+
+  ASSERT_THAT(
+      iceberg::BoundingBox::Deserialize(std::vector<uint8_t>{0x10, 0x00, 0x00, 0x00}),
+      IsError(iceberg::ErrorKind::kInvalidArgument));
+  combined.pop_back();
+  ASSERT_THAT(iceberg::BoundingBox::Deserialize(combined),
+              IsError(iceberg::ErrorKind::kInvalidArgument));
+}
+
+iceberg::BoundingBox MakeXYBoundingBox(double xmin, double ymin, double xmax,
+                                       double ymax) {
+  return {iceberg::GeospatialBound::XY(xmin, ymin),
+          iceberg::GeospatialBound::XY(xmax, ymax)};
+}
+
+void AssertIntersects(const iceberg::Type& type, const iceberg::BoundingBox& first,
+                      const iceberg::BoundingBox& second, bool expected) {
+  ASSERT_EQ(iceberg::GeospatialBoundsIntersect(type, first, second), expected);
+}
+
+TEST(GeospatialBoundsIntersectTest, TwoDimensions) {
+  const auto geometry = iceberg::geometry();
+  const auto first = MakeXYBoundingBox(0.0, 0.0, 10.0, 10.0);
+  AssertIntersects(*geometry, first, MakeXYBoundingBox(10.0, 2.0, 12.0, 4.0), true);
+  AssertIntersects(*geometry, first, MakeXYBoundingBox(11.0, 2.0, 12.0, 4.0), false);
+
+  const auto geography = iceberg::geography();
+  const auto wrapped = MakeXYBoundingBox(170.0, -10.0, -170.0, 10.0);
+  const std::array wrapped_cases = {
+      std::pair{MakeXYBoundingBox(175.0, -5.0, 178.0, 5.0), true},
+      std::pair{MakeXYBoundingBox(-10.0, -5.0, 10.0, 5.0), false},
+      std::pair{MakeXYBoundingBox(160.0, -5.0, -175.0, 5.0), true},
+  };
+  for (const auto& [candidate, expected] : wrapped_cases) {
+    AssertIntersects(*geography, wrapped, candidate, expected);
+  }
+
+  const auto full_wrap = MakeXYBoundingBox(180.0, -5.0, -180.0, 5.0);
+  AssertIntersects(*geography, full_wrap, MakeXYBoundingBox(-180.0, -5.0, -180.0, 5.0),
+                   true);
+  AssertIntersects(*geography, full_wrap, MakeXYBoundingBox(180.0, -5.0, 180.0, 5.0),
+                   true);
+}
+
+TEST(GeospatialBoundsIntersectTest, OptionalDimensions) {
+  iceberg::BoundingBox xyz1(iceberg::GeospatialBound::XYZ(0.0, 0.0, 0.0),
+                            iceberg::GeospatialBound::XYZ(10.0, 10.0, 1.0));
+  iceberg::BoundingBox xyz2(iceberg::GeospatialBound::XYZ(0.0, 0.0, 2.0),
+                            iceberg::GeospatialBound::XYZ(10.0, 10.0, 3.0));
+  iceberg::BoundingBox xy(iceberg::GeospatialBound::XY(0.0, 0.0),
+                          iceberg::GeospatialBound::XY(10.0, 10.0));
+  const auto geometry = iceberg::geometry();
+  AssertIntersects(*geometry, xyz1, xyz2, false);
+  AssertIntersects(*geometry, xyz1, xy, true);
+
+  iceberg::BoundingBox xym1(iceberg::GeospatialBound::XYM(0.0, 0.0, 0.0),
+                            iceberg::GeospatialBound::XYM(10.0, 10.0, 1.0));
+  iceberg::BoundingBox xym2(iceberg::GeospatialBound::XYM(0.0, 0.0, 2.0),
+                            iceberg::GeospatialBound::XYM(10.0, 10.0, 3.0));
+  AssertIntersects(*geometry, xym1, xym2, false);
+
+  iceberg::BoundingBox xyzm1(iceberg::GeospatialBound::XYZM(0.0, 0.0, 0.0, 0.0),
+                             iceberg::GeospatialBound::XYZM(10.0, 10.0, 2.0, 2.0));
+  iceberg::BoundingBox xyzm2(iceberg::GeospatialBound::XYZM(1.0, 1.0, 1.0, 1.0),
+                             iceberg::GeospatialBound::XYZM(11.0, 11.0, 3.0, 3.0));
+  iceberg::BoundingBox xyzm_disjoint_m(
+      iceberg::GeospatialBound::XYZM(1.0, 1.0, 1.0, 3.0),
+      iceberg::GeospatialBound::XYZM(11.0, 11.0, 3.0, 4.0));
+  AssertIntersects(*geometry, xyzm1, xyzm2, true);
+  AssertIntersects(*geometry, xyzm1, xyzm_disjoint_m, false);
+}
+
+TEST(GeospatialBoundsIntersectTest, RejectsInvalidArguments) {
+  iceberg::BoundingBox valid(iceberg::GeospatialBound::XYZM(0.0, 0.0, 0.0, 0.0),
+                             iceberg::GeospatialBound::XYZM(10.0, 10.0, 1.0, 1.0));
+  auto invalid_x = MakeXYBoundingBox(2.0, 0.0, 1.0, 1.0);
+  ASSERT_THAT(iceberg::GeospatialBoundsIntersect(*iceberg::geometry(), invalid_x, valid),
+              IsError(iceberg::ErrorKind::kInvalidArgument));
+
+  const std::array invalid_geography_bounds = {
+      MakeXYBoundingBox(-181.0, -10.0, 0.0, 10.0),
+      MakeXYBoundingBox(0.0, -91.0, 10.0, 10.0),
+  };
+  for (const auto& invalid : invalid_geography_bounds) {
+    ASSERT_THAT(iceberg::GeospatialBoundsIntersect(*iceberg::geography(), invalid, valid),
+                IsError(iceberg::ErrorKind::kInvalidArgument));
+  }
+
+  iceberg::BoundingBox invalid_z(iceberg::GeospatialBound::XYZ(0.0, 0.0, 2.0),
+                                 iceberg::GeospatialBound::XYZ(10.0, 10.0, 1.0));
+  iceberg::BoundingBox invalid_m(iceberg::GeospatialBound::XYM(0.0, 0.0, 2.0),
+                                 iceberg::GeospatialBound::XYM(10.0, 10.0, 1.0));
+  const std::array<std::shared_ptr<iceberg::Type>, 2> geospatial_types = {
+      iceberg::geometry(), iceberg::geography()};
+  for (const auto& type : geospatial_types) {
+    for (const auto& invalid : {invalid_z, invalid_m}) {
+      ASSERT_THAT(iceberg::GeospatialBoundsIntersect(*type, invalid, valid),
+                  IsError(iceberg::ErrorKind::kInvalidArgument));
+    }
+  }
+
+  ASSERT_THAT(iceberg::GeospatialBoundsIntersect(*iceberg::string(), valid, valid),
+              IsError(iceberg::ErrorKind::kNotSupported));
 }
 
 TEST(TypeTest, Decimal) {

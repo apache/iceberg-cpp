@@ -60,6 +60,20 @@ TEST(PartitionSpecTest, Basics) {
   }
 }
 
+TEST(PartitionSpecTest, IsUnpartitioned) {
+  ICEBERG_UNWRAP_OR_FAIL(auto empty_spec, PartitionSpec::Make(100, {}));
+  EXPECT_TRUE(empty_spec->IsUnpartitioned());
+
+  PartitionField void_field(5, 1000, "void", Transform::Void());
+  ICEBERG_UNWRAP_OR_FAIL(auto all_void_spec, PartitionSpec::Make(101, {void_field}));
+  EXPECT_TRUE(all_void_spec->IsUnpartitioned());
+
+  PartitionField identity_field(7, 1001, "identity", Transform::Identity());
+  ICEBERG_UNWRAP_OR_FAIL(auto partitioned_spec,
+                         PartitionSpec::Make(102, {void_field, identity_field}));
+  EXPECT_FALSE(partitioned_spec->IsUnpartitioned());
+}
+
 TEST(PartitionSpecTest, Equality) {
   SchemaField field1(5, "ts", timestamp(), true);
   SchemaField field2(7, "bar", string(), true);
@@ -217,6 +231,22 @@ TEST(PartitionSpecTest, InvalidTransformForType) {
   PartitionField pt_field_void(6, 1006, "s_void", Transform::Void());
   auto result_void = PartitionSpec::Make(schema_string, 1, {pt_field_void}, false);
   EXPECT_THAT(result_void, IsOk());
+}
+
+TEST(PartitionSpecTest, InvalidParameterizedTransform) {
+  auto field_id = SchemaField::MakeRequired(1, "id", int32());
+  auto field_name = SchemaField::MakeRequired(2, "name", string());
+  Schema schema({field_id, field_name}, Schema::kInitialSchemaId);
+
+  PartitionField bucket_field(1, 1000, "id_bucket", Transform::Bucket(0));
+  auto bucket_result = PartitionSpec::Make(schema, 1, {bucket_field}, false);
+  EXPECT_THAT(bucket_result, IsError(ErrorKind::kInvalidArgument));
+  EXPECT_THAT(bucket_result, HasErrorMessage("Number of buckets must be positive"));
+
+  PartitionField truncate_field(2, 1000, "name_trunc", Transform::Truncate(0));
+  auto truncate_result = PartitionSpec::Make(schema, 1, {truncate_field}, false);
+  EXPECT_THAT(truncate_result, IsError(ErrorKind::kInvalidArgument));
+  EXPECT_THAT(truncate_result, HasErrorMessage("Width must be positive"));
 }
 
 TEST(PartitionSpecTest, SourceIdNotFound) {

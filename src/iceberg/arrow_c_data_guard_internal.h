@@ -46,6 +46,12 @@ class ICEBERG_EXPORT ArrowSchemaGuard {
   explicit ArrowSchemaGuard(ArrowSchema* schema) : schema_(schema) {}
   ~ArrowSchemaGuard();
 
+  /// \brief Release the guard without calling ArrowSchemaRelease.
+  ///
+  /// Call this when ownership of the underlying ArrowSchema has been
+  /// transferred elsewhere and the guard should not release it.
+  void Release() { schema_ = nullptr; }
+
  private:
   ArrowSchema* schema_;
 };

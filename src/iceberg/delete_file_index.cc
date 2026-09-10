@@ -22,9 +22,7 @@
 #include <algorithm>
 #include <cstdint>
 #include <iterator>
-#include <mutex>
 #include <ranges>
-#include <shared_mutex>
 #include <vector>
 
 #include "iceberg/expression/expression.h"
@@ -35,8 +33,10 @@
 #include "iceberg/manifest/manifest_list.h"
 #include "iceberg/manifest/manifest_reader.h"
 #include "iceberg/metadata_columns.h"
+#include "iceberg/metrics/scan_report.h"
 #include "iceberg/partition_spec.h"
 #include "iceberg/schema.h"
+#include "iceberg/util/cache_internal.h"
 #include "iceberg/util/checked_cast.h"
 #include "iceberg/util/content_file_util.h"
 #include "iceberg/util/executor_util_internal.h"
@@ -145,8 +145,8 @@ Result<bool> CanContainEqDeletesForFile(const DataFile& data_file,
       continue;  // Missing bounds, assume may match
     }
 
-    auto delete_lower = delete_file.LowerBound(field_id);
-    auto delete_upper = delete_file.UpperBound(field_id);
+    ICEBERG_ASSIGN_OR_RAISE(auto delete_lower, delete_file.LowerBound(field_id));
+    ICEBERG_ASSIGN_OR_RAISE(auto delete_upper, delete_file.UpperBound(field_id));
     if (!delete_lower.has_value() || !delete_upper.has_value()) {
       continue;  // Missing bounds, assume may match
     }
@@ -158,8 +158,8 @@ Result<bool> CanContainEqDeletesForFile(const DataFile& data_file,
     ICEBERG_ASSIGN_OR_RAISE(auto data_upper,
                             Literal::Deserialize(data_upper_it->second, primitive_type));
 
-    if (!RangesOverlap(data_lower, data_upper, delete_lower->value().get(),
-                       delete_upper->value().get())) {
+    if (!RangesOverlap(data_lower, data_upper, delete_lower->get(),
+                       delete_upper->get())) {
       return false;  // Ranges don't overlap - cannot match
     }
   }
@@ -535,14 +535,13 @@ DeleteFileIndex::Builder& DeleteFileIndex::Builder::PlanWith(OptionalExecutor ex
   executor_ = executor;
   return *this;
 }
+DeleteFileIndex::Builder& DeleteFileIndex::Builder::WithScanMetrics(
+    std::shared_ptr<ScanMetrics> scan_metrics) {
+  scan_metrics_ = std::move(scan_metrics);
+  return *this;
+}
 
 Result<std::vector<ManifestEntry>> DeleteFileIndex::Builder::LoadDeleteFiles() {
-  // TODO(zehua): Replace with a thread-safe LRU cache.
-  std::shared_mutex projected_expr_cache_mutex;
-  std::unordered_map<int32_t, std::shared_ptr<Expression>> projected_expr_cache;
-  std::shared_mutex eval_cache_mutex;
-  std::unordered_map<int32_t, std::unique_ptr<ManifestEvaluator>> eval_cache;
-
   auto data_filter = ignore_residuals_ ? True::Instance() : data_filter_;
 
   auto and_filters =
@@ -554,59 +553,47 @@ Result<std::vector<ManifestEntry>> DeleteFileIndex::Builder::LoadDeleteFiles() {
     return right ? std::move(right) : std::move(left);
   };
 
-  auto get_projected_expr = [&](int32_t spec_id,
-                                const std::shared_ptr<PartitionSpec>& spec)
-      -> Result<std::shared_ptr<Expression>> {
-    if (!data_filter_) {
-      return std::shared_ptr<Expression>();
-    }
+  const auto cache_capacity = static_cast<int32_t>(specs_by_id_.size());
 
-    {
-      std::shared_lock lock(projected_expr_cache_mutex);
-      auto iter = projected_expr_cache.find(spec_id);
-      if (iter != projected_expr_cache.end()) {
-        return iter->second;
-      }
-    }
+  auto get_projected_expr = internal::MemoizeLru(
+      [this](int32_t spec_id) -> Result<std::shared_ptr<Expression>> {
+        if (!data_filter_) {
+          return std::shared_ptr<Expression>();
+        }
 
-    std::lock_guard lock(projected_expr_cache_mutex);
-    auto iter = projected_expr_cache.find(spec_id);
-    if (iter != projected_expr_cache.end()) {
-      return iter->second;
-    }
+        auto spec_iter = specs_by_id_.find(spec_id);
+        ICEBERG_CHECK(spec_iter != specs_by_id_.cend(),
+                      "Partition spec ID {} not found when projecting data filter",
+                      spec_id);
 
-    auto projector = Projections::Inclusive(*spec, *schema_, case_sensitive_);
-    ICEBERG_ASSIGN_OR_RAISE(auto projected, projector->Project(data_filter_));
-    auto [inserted_iter, _] = projected_expr_cache.emplace(spec_id, std::move(projected));
-    return inserted_iter->second;
-  };
+        auto projector =
+            Projections::Inclusive(*spec_iter->second, *schema_, case_sensitive_);
+        ICEBERG_ASSIGN_OR_RAISE(auto projected, projector->Project(data_filter_));
+        return projected;
+      },
+      cache_capacity);
 
-  auto get_manifest_evaluator =
-      [&](int32_t spec_id, const std::shared_ptr<PartitionSpec>& spec,
-          const std::shared_ptr<Expression>& filter) -> Result<ManifestEvaluator*> {
-    if (!filter) {
-      return nullptr;
-    }
+  auto get_manifest_evaluator = internal::MemoizeLru(
+      [this, &and_filters, &get_projected_expr](
+          int32_t spec_id) -> Result<std::shared_ptr<ManifestEvaluator>> {
+        auto spec_iter = specs_by_id_.find(spec_id);
+        ICEBERG_CHECK(spec_iter != specs_by_id_.cend(),
+                      "Partition spec ID {} not found when creating manifest evaluator",
+                      spec_id);
 
-    {
-      std::shared_lock lock(eval_cache_mutex);
-      auto iter = eval_cache.find(spec_id);
-      if (iter != eval_cache.end()) {
-        return iter->second.get();
-      }
-    }
+        ICEBERG_ASSIGN_OR_RAISE(auto projected_data_filter, get_projected_expr(spec_id));
+        ICEBERG_ASSIGN_OR_RAISE(auto filter,
+                                and_filters(partition_filter_, projected_data_filter));
+        if (!filter) {
+          return std::shared_ptr<ManifestEvaluator>();
+        }
 
-    std::lock_guard lock(eval_cache_mutex);
-    auto iter = eval_cache.find(spec_id);
-    if (iter != eval_cache.end()) {
-      return iter->second.get();
-    }
-
-    ICEBERG_ASSIGN_OR_RAISE(auto evaluator, ManifestEvaluator::MakePartitionFilter(
-                                                filter, spec, *schema_, case_sensitive_));
-    auto [inserted_iter, _] = eval_cache.emplace(spec_id, std::move(evaluator));
-    return inserted_iter->second.get();
-  };
+        ICEBERG_ASSIGN_OR_RAISE(
+            auto evaluator, ManifestEvaluator::MakePartitionFilter(
+                                filter, spec_iter->second, *schema_, case_sensitive_));
+        return std::shared_ptr<ManifestEvaluator>(std::move(evaluator));
+      },
+      cache_capacity);
 
   return ParallelCollect(
       executor_, delete_manifests_,
@@ -616,6 +603,7 @@ Result<std::vector<ManifestEntry>> DeleteFileIndex::Builder::LoadDeleteFiles() {
           return manifest_result;
         }
         if (!manifest.has_added_files() && !manifest.has_existing_files()) {
+          if (scan_metrics_) scan_metrics_->skipped_delete_manifests->Increment(1);
           return manifest_result;
         }
 
@@ -627,24 +615,27 @@ Result<std::vector<ManifestEntry>> DeleteFileIndex::Builder::LoadDeleteFiles() {
 
         const auto& spec = spec_iter->second;
 
-        ICEBERG_ASSIGN_OR_RAISE(auto projected_data_filter,
-                                get_projected_expr(spec_id, spec));
+        ICEBERG_ASSIGN_OR_RAISE(auto projected_data_filter, get_projected_expr(spec_id));
         ICEBERG_ASSIGN_OR_RAISE(auto delete_partition_filter,
                                 and_filters(partition_filter_, projected_data_filter));
-        ICEBERG_ASSIGN_OR_RAISE(
-            auto manifest_evaluator,
-            get_manifest_evaluator(spec_id, spec, delete_partition_filter));
+        ICEBERG_ASSIGN_OR_RAISE(auto manifest_evaluator, get_manifest_evaluator(spec_id));
         if (manifest_evaluator != nullptr) {
           ICEBERG_ASSIGN_OR_RAISE(auto should_match,
                                   manifest_evaluator->Evaluate(manifest));
           if (!should_match) {
+            if (scan_metrics_) scan_metrics_->skipped_delete_manifests->Increment(1);
             return manifest_result;
           }
         }
+        if (scan_metrics_) scan_metrics_->scanned_delete_manifests->Increment(1);
 
         // Read manifest entries
         ICEBERG_ASSIGN_OR_RAISE(auto reader,
                                 ManifestReader::Make(manifest, io_, schema_, spec));
+
+        if (scan_metrics_) {
+          reader->SkipCounter(scan_metrics_->skipped_delete_files);
+        }
 
         if (delete_partition_filter) {
           reader->FilterPartitions(std::move(delete_partition_filter));
@@ -820,12 +811,30 @@ Result<std::unique_ptr<DeleteFileIndex>> DeleteFileIndex::Builder::Build() {
     }
   }
 
-  return std::unique_ptr<DeleteFileIndex>(new DeleteFileIndex(
+  auto index = std::unique_ptr<DeleteFileIndex>(new DeleteFileIndex(
       global_deletes->empty() ? nullptr : std::move(global_deletes),
       eq_deletes_by_partition->empty() ? nullptr : std::move(eq_deletes_by_partition),
       pos_deletes_by_partition->empty() ? nullptr : std::move(pos_deletes_by_partition),
       pos_deletes_by_path->empty() ? nullptr : std::move(pos_deletes_by_path),
       dv_by_path->empty() ? nullptr : std::move(dv_by_path)));
+
+  if (scan_metrics_) {
+    for (const auto& delete_file : index->ReferencedDeleteFiles()) {
+      scan_metrics_->indexed_delete_files->Increment(1);
+
+      if (delete_file->content == DataFile::Content::kPositionDeletes) {
+        if (ContentFileUtil::IsDV(*delete_file)) {
+          scan_metrics_->dvs->Increment(1);
+        } else {
+          scan_metrics_->positional_delete_files->Increment(1);
+        }
+      } else if (delete_file->content == DataFile::Content::kEqualityDeletes) {
+        scan_metrics_->equality_delete_files->Increment(1);
+      }
+    }
+  }
+
+  return index;
 }
 
 }  // namespace iceberg

@@ -66,6 +66,12 @@ int32_t PartitionSpec::spec_id() const { return spec_id_; }
 
 std::span<const PartitionField> PartitionSpec::fields() const { return fields_; }
 
+bool PartitionSpec::IsUnpartitioned() const {
+  return std::ranges::all_of(fields_, [](const PartitionField& field) {
+    return field.transform()->transform_type() == TransformType::kVoid;
+  });
+}
+
 Result<std::unique_ptr<StructType>> PartitionSpec::PartitionType(
     const Schema& schema) const {
   if (fields_.empty()) {
@@ -192,10 +198,7 @@ Status PartitionSpec::Validate(const Schema& schema, bool allow_missing_fields) 
                                partition_field);
       }
       const auto& source_type = source_field.value().get().type();
-      if (!field_transform->CanTransform(*source_type)) {
-        return InvalidArgument("Invalid source type {} for transform {}",
-                               source_type->ToString(), field_transform->ToString());
-      }
+      ICEBERG_RETURN_UNEXPECTED(field_transform->Validate(source_type));
 
       // The only valid parent types for a PartitionField are StructTypes. This must be
       // checked recursively.

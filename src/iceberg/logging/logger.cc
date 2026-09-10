@@ -27,6 +27,7 @@
 #include <utility>
 
 #include "iceberg/logging/cerr_logger.h"
+#include "iceberg/logging/spdlog_logger_internal.h"
 
 namespace iceberg {
 
@@ -42,11 +43,14 @@ class NoopLogger final : public Logger {
   bool IsNoop() const override { return true; }
 };
 
-/// \brief Construct the process default logger for this build configuration.
-///
-/// Uses the always-available std::cerr sink. The spdlog backend (preferred when
-/// compiled in) is wired into this factory in a later block.
-std::shared_ptr<Logger> MakeDefaultLogger() { return std::make_shared<CerrLogger>(); }
+/// \brief Construct the configured process default logger.
+std::shared_ptr<Logger> MakeDefaultLogger() {
+#ifdef ICEBERG_HAS_SPDLOG
+  return std::make_shared<internal::SpdLogger>();
+#else
+  return std::make_shared<CerrLogger>();
+#endif
+}
 
 /// \brief The process-global default-logger slot.
 struct DefaultSlot {
@@ -79,7 +83,7 @@ struct ThreadCache {
 std::shared_ptr<Logger> Logger::Noop() {
   // Intentionally leaked: reachable via the function-local static (LSan-clean)
   // and never destroyed, so logging during static teardown stays safe.
-  static auto* instance = new std::shared_ptr<Logger>(std::make_shared<NoopLogger>());
+  static auto* instance = new std::shared_ptr<Logger>(internal::MakeNoopLogger());
   return *instance;
 }
 
@@ -106,7 +110,38 @@ void SetDefaultLevel(LogLevel level) {
   slot.logger->SetLevel(level);
 }
 
+namespace {
+
+/// \brief Immortal (leaked, hence teardown-safe) home for the fatal handler and
+/// its mutex. Leaked like Slot() so GetFatalHandler() is valid even during static
+/// teardown / from the fatal path at any time.
+struct FatalHandlerSlot {
+  std::mutex mtx;
+  FatalHandler handler;
+};
+
+FatalHandlerSlot& FatalSlot() {
+  static auto* slot = new FatalHandlerSlot();
+  return *slot;
+}
+
+}  // namespace
+
+void SetFatalHandler(FatalHandler handler) {
+  FatalHandlerSlot& slot = FatalSlot();
+  std::lock_guard<std::mutex> lock(slot.mtx);
+  slot.handler = std::move(handler);
+}
+
+FatalHandler GetFatalHandler() {
+  FatalHandlerSlot& slot = FatalSlot();
+  std::lock_guard<std::mutex> lock(slot.mtx);
+  return slot.handler;  // copy under lock; safe to invoke without holding the lock
+}
+
 namespace internal {
+
+std::unique_ptr<Logger> MakeNoopLogger() { return std::make_unique<NoopLogger>(); }
 
 namespace {
 

@@ -83,6 +83,13 @@ std::string ContentFileUtil::DVDesc(const DataFile& file) {
                      file.referenced_data_file.value_or(""));
 }
 
+int64_t ContentFileUtil::ContentSizeInBytes(const DataFile& file) {
+  // content_size_in_bytes is only meaningful for deletion vectors; other content files
+  // (data files, positional/equality delete files) must use file_size_in_bytes.
+  return IsDV(file) ? file.content_size_in_bytes.value_or(file.file_size_in_bytes)
+                    : file.file_size_in_bytes;
+}
+
 void ContentFileUtil::DropAllStats(DataFile& data_file) {
   data_file.column_sizes.clear();
   data_file.value_counts.clear();

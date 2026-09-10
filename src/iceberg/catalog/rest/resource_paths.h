@@ -49,7 +49,7 @@ class ICEBERG_REST_EXPORT ResourcePaths {
   /// \brief Get the /v1/config endpoint path.
   Result<std::string> Config() const;
 
-  /// \brief Get the /v1/{prefix}/oauth/tokens endpoint path.
+  /// \brief Get the /v1/oauth/tokens endpoint path.
   Result<std::string> OAuth2Tokens() const;
 
   /// \brief Get the /v1/{prefix}/namespaces endpoint path.

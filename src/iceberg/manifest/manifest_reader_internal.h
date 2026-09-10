@@ -33,6 +33,7 @@
 #include "iceberg/file_reader.h"
 #include "iceberg/inheritable_metadata.h"
 #include "iceberg/manifest/manifest_reader.h"
+#include "iceberg/type_fwd.h"
 #include "iceberg/util/partition_value_util.h"
 
 namespace iceberg {
@@ -77,6 +78,8 @@ class ManifestReaderImpl : public ManifestReader {
 
   ManifestReader& TryDropStats() override;
 
+  ManifestReader& SkipCounter(std::shared_ptr<Counter> counter) override;
+
  private:
   /// \brief Read entries with optional live-only filtering.
   Result<std::vector<ManifestEntry>> ReadEntries(bool only_live);
@@ -114,6 +117,7 @@ class ManifestReaderImpl : public ManifestReader {
   std::shared_ptr<Expression> part_filter_{True::Instance()};
   std::shared_ptr<Expression> row_filter_{True::Instance()};
   std::shared_ptr<PartitionSet> partition_set_;
+  std::shared_ptr<Counter> skip_counter_;
   bool case_sensitive_{true};
   bool drop_stats_{false};
 

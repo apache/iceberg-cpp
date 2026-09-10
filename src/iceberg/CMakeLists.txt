@@ -17,15 +17,21 @@
 
 set(ICEBERG_INCLUDES "$<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/src>"
                      "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/src>")
+
 set(ICEBERG_SOURCES
     arrow_c_data_guard_internal.cc
     arrow_c_data_util.cc
     arrow_row_builder.cc
+    catalog/catalog_util.cc
     catalog/memory/in_memory_catalog.cc
     catalog/session_catalog.cc
     catalog/session_context.cc
-    puffin_dv_io.cc
     delete_file_index.cc
+    deletes/dv_util.cc
+    deletes/dv_writer.cc
+    deletes/position_delete_index.cc
+    deletes/position_delete_range_consumer.cc
+    deletes/roaring_position_bitmap.cc
     expression/aggregate.cc
     expression/binder.cc
     expression/evaluator.cc
@@ -39,12 +45,14 @@ set(ICEBERG_SOURCES
     expression/projections.cc
     expression/residual_evaluator.cc
     expression/rewrite_not.cc
+    expression/sanitize_expression.cc
     expression/strict_metrics_evaluator.cc
     expression/term.cc
     file_io.cc
     file_io_registry.cc
     file_reader.cc
     file_writer.cc
+    geospatial.cc
     inspect/history_table.cc
     inspect/metadata_table.cc
     inspect/snapshots_table.cc
@@ -53,6 +61,8 @@ set(ICEBERG_SOURCES
     location_provider.cc
     logging/cerr_logger.cc
     logging/logger.cc
+    logging/loggers.cc
+    logging/spdlog_logger.cc
     manifest/manifest_adapter.cc
     manifest/manifest_entry.cc
     manifest/manifest_filter_manager.cc
@@ -79,6 +89,12 @@ set(ICEBERG_SOURCES
     partition_field.cc
     partition_spec.cc
     partition_summary.cc
+    puffin/file_metadata.cc
+    puffin/json_serde.cc
+    puffin/puffin_format.cc
+    puffin/puffin_reader.cc
+    puffin/puffin_writer.cc
+    resolving_file_io.cc
     row/arrow_array_wrapper.cc
     row/manifest_wrapper.cc
     row/partition_values.cc
@@ -107,6 +123,7 @@ set(ICEBERG_SOURCES
     update/expire_snapshots.cc
     update/fast_append.cc
     update/merge_append.cc
+    update/replace_partitions.cc
     update/merging_snapshot_update.cc
     update/overwrite_files.cc
     update/pending_update.cc
@@ -129,6 +146,7 @@ set(ICEBERG_SOURCES
     util/conversions.cc
     util/decimal.cc
     util/gzip_internal.cc
+    util/location_util.cc
     util/murmurhash3_internal.cc
     util/property_util.cc
     util/retry_util.cc
@@ -154,28 +172,41 @@ list(APPEND
      ICEBERG_STATIC_BUILD_INTERFACE_LIBS
      "$<IF:$<BOOL:${NANOARROW_VENDORED}>,nanoarrow::nanoarrow_static,$<IF:$<TARGET_EXISTS:nanoarrow::nanoarrow_static>,nanoarrow::nanoarrow_static,nanoarrow::nanoarrow_shared>>"
      nlohmann_json::nlohmann_json
-     spdlog::spdlog
      utf8proc::utf8proc
-     ZLIB::ZLIB)
+     ZLIB::ZLIB
+     roaring::roaring)
 list(APPEND
      ICEBERG_SHARED_BUILD_INTERFACE_LIBS
      "$<IF:$<BOOL:${NANOARROW_VENDORED}>,nanoarrow::nanoarrow_static,$<IF:$<TARGET_EXISTS:nanoarrow::nanoarrow_shared>,nanoarrow::nanoarrow_shared,nanoarrow::nanoarrow_static>>"
      nlohmann_json::nlohmann_json
-     spdlog::spdlog
      utf8proc::utf8proc
-     ZLIB::ZLIB)
+     ZLIB::ZLIB
+     roaring::roaring)
 list(APPEND
      ICEBERG_STATIC_INSTALL_INTERFACE_LIBS
      "$<IF:$<BOOL:${NANOARROW_VENDORED}>,iceberg::nanoarrow_static,$<IF:$<TARGET_EXISTS:nanoarrow::nanoarrow_static>,nanoarrow::nanoarrow_static,nanoarrow::nanoarrow_shared>>"
      "$<IF:$<BOOL:${NLOHMANN_JSON_VENDORED}>,iceberg::nlohmann_json,$<IF:$<TARGET_EXISTS:nlohmann_json::nlohmann_json>,nlohmann_json::nlohmann_json,nlohmann_json::nlohmann_json>>"
-     "$<IF:$<BOOL:${SPDLOG_VENDORED}>,iceberg::spdlog,spdlog::spdlog>"
-     "$<IF:$<BOOL:${UTF8PROC_VENDORED}>,iceberg::utf8proc,utf8proc::utf8proc>")
+     "$<IF:$<BOOL:${UTF8PROC_VENDORED}>,iceberg::utf8proc,utf8proc::utf8proc>"
+     "$<IF:$<BOOL:${CROARING_VENDORED}>,iceberg::roaring,roaring::roaring>")
 list(APPEND
      ICEBERG_SHARED_INSTALL_INTERFACE_LIBS
      "$<IF:$<BOOL:${NANOARROW_VENDORED}>,iceberg::nanoarrow_static,$<IF:$<TARGET_EXISTS:nanoarrow::nanoarrow_shared>,nanoarrow::nanoarrow_shared,nanoarrow::nanoarrow_static>>"
      "$<IF:$<BOOL:${NLOHMANN_JSON_VENDORED}>,iceberg::nlohmann_json,$<IF:$<TARGET_EXISTS:nlohmann_json::nlohmann_json>,nlohmann_json::nlohmann_json,nlohmann_json::nlohmann_json>>"
-     "$<IF:$<BOOL:${SPDLOG_VENDORED}>,iceberg::spdlog,spdlog::spdlog>"
-     "$<IF:$<BOOL:${UTF8PROC_VENDORED}>,iceberg::utf8proc,utf8proc::utf8proc>")
+     "$<IF:$<BOOL:${UTF8PROC_VENDORED}>,iceberg::utf8proc,utf8proc::utf8proc>"
+     "$<IF:$<BOOL:${CROARING_VENDORED}>,iceberg::roaring,roaring::roaring>")
+
+if(ICEBERG_SPDLOG)
+  set(ICEBERG_HAS_SPDLOG ON)
+  list(APPEND ICEBERG_STATIC_BUILD_INTERFACE_LIBS spdlog::spdlog)
+  list(APPEND ICEBERG_SHARED_BUILD_INTERFACE_LIBS spdlog::spdlog)
+  list(APPEND ICEBERG_STATIC_INSTALL_INTERFACE_LIBS
+       "$<IF:$<BOOL:${SPDLOG_VENDORED}>,iceberg::spdlog,spdlog::spdlog>")
+  list(APPEND ICEBERG_SHARED_INSTALL_INTERFACE_LIBS
+       "$<IF:$<BOOL:${SPDLOG_VENDORED}>,iceberg::spdlog,spdlog::spdlog>")
+endif()
+
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/logging/config.h.in"
+               "${CMAKE_CURRENT_BINARY_DIR}/logging/config.h")
 
 add_iceberg_lib(iceberg
                 SOURCES
@@ -193,25 +224,26 @@ add_iceberg_lib(iceberg
                 OUTPUTS
                 ICEBERG_LIBRARIES)
 
+# The logging macros in the installed public header log_macros.h use __VA_OPT__,
+# which MSVC's traditional preprocessor rejects. Require the conforming
+# preprocessor PUBLICly so downstream consumers that include log_macros.h get it
+# on MSVC (and any library TU that includes it does too).
+if(MSVC_TOOLCHAIN)
+  foreach(_iceberg_lib iceberg_shared iceberg_static)
+    if(TARGET ${_iceberg_lib})
+      target_compile_options(${_iceberg_lib} PUBLIC /Zc:preprocessor)
+    endif()
+  endforeach()
+endif()
+
 set(ICEBERG_DATA_SOURCES
     data/data_writer.cc
     data/delete_filter.cc
     data/delete_loader.cc
-    data/puffin_dv_register.cc
-    data/deletion_vector_writer.cc
-    data/dv_util.cc
     data/equality_delete_writer.cc
     data/file_scan_task_reader.cc
     data/position_delete_writer.cc
-    data/writer.cc
-    deletes/position_delete_index.cc
-    deletes/position_delete_range_consumer.cc
-    deletes/roaring_position_bitmap.cc
-    puffin/file_metadata.cc
-    puffin/json_serde.cc
-    puffin/puffin_format.cc
-    puffin/puffin_reader.cc
-    puffin/puffin_writer.cc)
+    data/writer.cc)
 
 set(ICEBERG_DATA_STATIC_BUILD_INTERFACE_LIBS)
 set(ICEBERG_DATA_SHARED_BUILD_INTERFACE_LIBS)
@@ -219,19 +251,17 @@ set(ICEBERG_DATA_STATIC_INSTALL_INTERFACE_LIBS)
 set(ICEBERG_DATA_SHARED_INSTALL_INTERFACE_LIBS)
 
 list(APPEND ICEBERG_DATA_STATIC_BUILD_INTERFACE_LIBS
-     "$<IF:$<TARGET_EXISTS:iceberg_static>,iceberg_static,iceberg_shared>"
-     roaring::roaring)
+     "$<IF:$<TARGET_EXISTS:iceberg_static>,iceberg_static,iceberg_shared>")
 list(APPEND ICEBERG_DATA_SHARED_BUILD_INTERFACE_LIBS
-     "$<IF:$<TARGET_EXISTS:iceberg_shared>,iceberg_shared,iceberg_static>"
-     roaring::roaring)
+     "$<IF:$<TARGET_EXISTS:iceberg_shared>,iceberg_shared,iceberg_static>")
 list(APPEND
      ICEBERG_DATA_STATIC_INSTALL_INTERFACE_LIBS
      "$<IF:$<TARGET_EXISTS:iceberg::iceberg_static>,iceberg::iceberg_static,iceberg::iceberg_shared>"
-     "$<IF:$<BOOL:${CROARING_VENDORED}>,iceberg::roaring,roaring::roaring>")
+)
 list(APPEND
      ICEBERG_DATA_SHARED_INSTALL_INTERFACE_LIBS
      "$<IF:$<TARGET_EXISTS:iceberg::iceberg_shared>,iceberg::iceberg_shared,iceberg::iceberg_static>"
-     "$<IF:$<BOOL:${CROARING_VENDORED}>,iceberg::roaring,roaring::roaring>")
+)
 
 add_iceberg_lib(iceberg_data
                 SOURCES

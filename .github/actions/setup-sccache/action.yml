@@ -1,0 +1,59 @@
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+
+name: Set up sccache
+description: Configure sccache, restore its cache, and start the sccache action.
+
+inputs:
+  key-prefix:
+    description: Cache key prefix without the run id or Windows compiler suffix.
+    required: true
+  cache-size:
+    description: Maximum sccache cache size.
+    required: false
+    default: 2G
+
+runs:
+  using: composite
+  steps:
+    - name: Configure sccache environment
+      shell: bash
+      env:
+        CACHE_SIZE: ${{ inputs.cache-size }}
+      run: |
+        echo "SCCACHE_DIR=${{ github.workspace }}/.sccache" >> "$GITHUB_ENV"
+        echo "SCCACHE_CACHE_SIZE=${CACHE_SIZE}" >> "$GITHUB_ENV"
+        echo "SCCACHE_KEY_SUFFIX=" >> "$GITHUB_ENV"
+
+    # Windows caches include the MSVC toolset version because GitHub runner image
+    # rollouts can change the compiler while keeping the same image label.
+    - name: Resolve MSVC toolset version for sccache key
+      if: ${{ runner.os == 'Windows' }}
+      id: msvc-key
+      shell: pwsh
+      run: '& "${{ github.action_path }}/../sccache/resolve-msvc-key-suffix.ps1"'
+
+    - name: Restore sccache cache
+      uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      with:
+        path: ${{ github.workspace }}/.sccache
+        key: ${{ inputs.key-prefix }}${{ steps.msvc-key.outputs.suffix }}-${{ github.run_id }}
+        restore-keys: |
+          ${{ inputs.key-prefix }}${{ steps.msvc-key.outputs.suffix }}-
+
+    - name: Setup sccache
+      uses: mozilla-actions/sccache-action@9e7fa8a12102821edf02ca5dbea1acd0f89a2696 # v0.0.10

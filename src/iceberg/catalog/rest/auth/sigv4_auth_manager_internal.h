@@ -118,11 +118,11 @@ class ICEBERG_REST_EXPORT SigV4AuthManager : public AuthManager {
   ~SigV4AuthManager() override;
 
   Result<std::shared_ptr<AuthSession>> InitSession(
-      HttpClient& init_client,
+      std::shared_ptr<HttpClient> init_client,
       const std::unordered_map<std::string, std::string>& properties) override;
 
   Result<std::shared_ptr<AuthSession>> CatalogSession(
-      HttpClient& shared_client,
+      std::shared_ptr<HttpClient> shared_client,
       const std::unordered_map<std::string, std::string>& properties) override;
 
   Result<std::shared_ptr<AuthSession>> ContextualSession(

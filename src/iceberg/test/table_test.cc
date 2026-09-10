@@ -110,6 +110,7 @@ TYPED_TEST(TypedTableTest, BasicMetadata) {
 
   EXPECT_EQ(table->name().name, "test_table");
   EXPECT_EQ(table->name().ns.levels, (std::vector<std::string>{"db"}));
+  EXPECT_EQ(table->full_name(), "db.test_table");
   EXPECT_EQ(table->metadata()->format_version, 2);
   EXPECT_EQ(table->metadata()->schemas.size(), 1);
 }
@@ -154,9 +155,11 @@ TEST(StaticTableTest, NewMutatingOperationsAreNotSupported) {
   auto metadata = std::make_shared<TableMetadata>(
       TableMetadata{.format_version = 2, .schemas = {schema}, .current_schema_id = 1});
   TableIdentifier ident{.ns = Namespace{.levels = {"db"}}, .name = "test_table"};
-  ICEBERG_UNWRAP_OR_FAIL(auto table, StaticTable::Make(ident, std::move(metadata),
-                                                       "s3://bucket/meta.json", io));
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto table, StaticTable::Make(ident, std::move(metadata), "s3://bucket/meta.json",
+                                    io, "catalog.db.test_table"));
 
+  EXPECT_EQ(table->full_name(), "catalog.db.test_table");
   EXPECT_THAT(table->NewUpdateStatistics(), IsError(ErrorKind::kNotSupported));
   EXPECT_THAT(table->NewUpdatePartitionStatistics(), IsError(ErrorKind::kNotSupported));
   EXPECT_THAT(table->NewFastAppend(), IsError(ErrorKind::kNotSupported));
@@ -165,6 +168,7 @@ TEST(StaticTableTest, NewMutatingOperationsAreNotSupported) {
   EXPECT_THAT(table->NewRowDelta(), IsError(ErrorKind::kNotSupported));
   EXPECT_THAT(table->NewOverwrite(), IsError(ErrorKind::kNotSupported));
   EXPECT_THAT(table->NewRewriteFiles(), IsError(ErrorKind::kNotSupported));
+  EXPECT_THAT(table->NewReplacePartitions(), IsError(ErrorKind::kNotSupported));
   EXPECT_THAT(table->NewSnapshotManager(), IsError(ErrorKind::kNotSupported));
 }
 

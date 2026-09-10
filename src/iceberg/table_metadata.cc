@@ -517,11 +517,18 @@ int32_t TableMetadataUtil::ParseVersionFromLocation(std::string_view metadata_lo
   size_t version_start = metadata_location.find_last_of('/') + 1;
   size_t version_end = metadata_location.find('-', version_start);
 
-  int32_t version = -1;
-  if (version_end != std::string::npos) {
-    std::from_chars(metadata_location.data() + version_start,
-                    metadata_location.data() + version_end, version);
+  if (version_end == std::string::npos) {
+    return -1;
   }
+
+  int32_t version = -1;
+  const auto* version_begin = metadata_location.data() + version_start;
+  const auto* version_limit = metadata_location.data() + version_end;
+  const auto [ptr, ec] = std::from_chars(version_begin, version_limit, version);
+  if (ec != std::errc{} || ptr != version_limit) {
+    return -1;
+  }
+
   return version;
 }
 

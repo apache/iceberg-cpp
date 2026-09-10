@@ -32,6 +32,7 @@
 #include "iceberg/catalog/session_context.h"
 #include "iceberg/result.h"
 #include "iceberg/storage_credential.h"
+#include "iceberg/type_fwd.h"
 
 /// \file iceberg/catalog/rest/rest_catalog.h
 /// RestCatalog implementation for Iceberg REST API.
@@ -51,7 +52,11 @@ class ICEBERG_REST_EXPORT RestCatalog final
   RestCatalog& operator=(RestCatalog&&) = delete;
 
   /// \brief Create a RestCatalog instance.
-  static Result<std::shared_ptr<RestCatalog>> Make(const RestCatalogProperties& config);
+  /// \param metrics_executor Optional non-owning executor for asynchronous REST metrics.
+  /// It must outlive the catalog and all tables created by it. When null, REST metrics
+  /// are reported synchronously.
+  static Result<std::shared_ptr<RestCatalog>> Make(const RestCatalogProperties& config,
+                                                   Executor* metrics_executor = nullptr);
 
   std::string_view name() const override;
 
@@ -64,11 +69,12 @@ class ICEBERG_REST_EXPORT RestCatalog final
   class TableScopedCatalog;
 
   RestCatalog(RestCatalogProperties config, std::shared_ptr<FileIO> file_io,
-              std::unique_ptr<HttpClient> client, std::unique_ptr<ResourcePaths> paths,
+              std::shared_ptr<HttpClient> client, std::unique_ptr<ResourcePaths> paths,
               std::unordered_set<Endpoint> endpoints,
               std::unique_ptr<auth::AuthManager> auth_manager,
               std::shared_ptr<auth::AuthSession> catalog_session,
-              SnapshotMode snapshot_mode, SessionContext default_context);
+              SnapshotMode snapshot_mode, SessionContext default_context,
+              std::shared_ptr<MetricsReporter> reporter, Executor* metrics_executor);
 
   Result<std::shared_ptr<auth::AuthSession>> ContextualAuthSession(
       const SessionContext& context);
@@ -149,6 +155,17 @@ class ICEBERG_REST_EXPORT RestCatalog final
   Result<LoadTableResult> LoadTableInternal(const TableIdentifier& identifier,
                                             auth::AuthSession& session) const;
 
+  /// \brief Build the per-table metrics reporter.
+  ///
+  /// When rest-metrics-reporting-enabled is true and the server advertises the
+  /// ReportMetrics endpoint, returns a CompositeMetricsReporter combining configured
+  /// reporter with a RestMetricsReporter targeting this table, authenticated with the
+  /// table-scoped session so metrics POSTs use the same credentials as table
+  /// operations. Otherwise returns the configured reporter.
+  Result<std::shared_ptr<MetricsReporter>> MakeTableReporter(
+      const TableIdentifier& identifier,
+      const std::shared_ptr<auth::AuthSession>& table_session) const;
+
   Result<LoadTableResult> CreateTableInternal(
       const TableIdentifier& identifier, const std::shared_ptr<Schema>& schema,
       const std::shared_ptr<PartitionSpec>& spec, const std::shared_ptr<SortOrder>& order,
@@ -175,7 +192,7 @@ class ICEBERG_REST_EXPORT RestCatalog final
 
   RestCatalogProperties config_;
   std::shared_ptr<FileIO> file_io_;
-  std::unique_ptr<HttpClient> client_;
+  std::shared_ptr<HttpClient> client_;
   std::unique_ptr<ResourcePaths> paths_;
   std::string name_;
   std::unordered_set<Endpoint> supported_endpoints_;
@@ -184,6 +201,8 @@ class ICEBERG_REST_EXPORT RestCatalog final
   SnapshotMode snapshot_mode_;
   SessionContext default_context_;
   std::weak_ptr<Catalog> default_catalog_;
+  std::shared_ptr<MetricsReporter> reporter_;
+  Executor* metrics_executor_ = nullptr;
 };
 
 }  // namespace iceberg::rest

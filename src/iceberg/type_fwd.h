@@ -227,6 +227,16 @@ class LocationProvider;
 class SessionCatalog;
 struct SessionContext;
 
+/// \brief Task execution.
+class Executor;
+template <typename T>
+class Iterator;
+
+/// \brief Metrics reporting.
+class MetricsReporter;
+class ScanMetrics;
+class CommitMetrics;
+
 /// \brief Table.
 class Table;
 class TableProperties;
@@ -246,6 +256,7 @@ class FastAppend;
 class MergeAppend;
 class OverwriteFiles;
 class PendingUpdate;
+class ReplacePartitions;
 class RewriteFiles;
 class RowDelta;
 class SetSnapshot;

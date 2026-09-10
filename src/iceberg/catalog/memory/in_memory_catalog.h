@@ -22,6 +22,7 @@
 /// \file iceberg/catalog/memory/in_memory_catalog.h
 /// \brief Provide an in-memory catalog implementation.
 
+#include <memory>
 #include <shared_mutex>
 
 #include "iceberg/catalog.h"
@@ -42,12 +43,13 @@ class ICEBERG_EXPORT InMemoryCatalog
     : public Catalog,
       public std::enable_shared_from_this<InMemoryCatalog> {
  public:
-  InMemoryCatalog(std::string const& name, std::shared_ptr<FileIO> const& file_io,
-                  std::string const& warehouse_location,
-                  std::unordered_map<std::string, std::string> const& properties);
+  InMemoryCatalog(std::string name, std::shared_ptr<FileIO> file_io,
+                  std::string warehouse_location,
+                  std::unordered_map<std::string, std::string> properties,
+                  std::shared_ptr<MetricsReporter> reporter = nullptr);
   ~InMemoryCatalog() override;
 
-  static std::shared_ptr<InMemoryCatalog> Make(
+  static Result<std::shared_ptr<InMemoryCatalog>> Make(
       std::string const& name, std::shared_ptr<FileIO> const& file_io,
       std::string const& warehouse_location,
       std::unordered_map<std::string, std::string> const& properties);
@@ -109,6 +111,7 @@ class ICEBERG_EXPORT InMemoryCatalog
   std::string warehouse_location_;
   std::unique_ptr<class InMemoryNamespace> root_namespace_;
   mutable std::shared_mutex mutex_;
+  std::shared_ptr<MetricsReporter> reporter_;
 };
 
 }  // namespace iceberg

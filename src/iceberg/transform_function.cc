@@ -27,6 +27,7 @@
 #include "iceberg/util/bucket_util.h"
 #include "iceberg/util/macros.h"
 #include "iceberg/util/temporal_util.h"
+#include "iceberg/util/transform_util.h"
 #include "iceberg/util/truncate_util.h"
 
 namespace iceberg {
@@ -68,6 +69,12 @@ Result<Literal> BucketTransform::Transform(const Literal& literal) {
 
 std::shared_ptr<Type> BucketTransform::ResultType() const { return int32(); }
 
+bool BucketTransform::Equals(const TransformFunction& other) const {
+  const auto* other_bucket = dynamic_cast<const BucketTransform*>(&other);
+  return other_bucket != nullptr && TransformFunction::Equals(other) &&
+         num_buckets_ == other_bucket->num_buckets_;
+}
+
 Result<std::unique_ptr<TransformFunction>> BucketTransform::Make(
     std::shared_ptr<Type> const& source_type, int32_t num_buckets) {
   if (!source_type) {
@@ -92,9 +99,7 @@ Result<std::unique_ptr<TransformFunction>> BucketTransform::Make(
       return NotSupported("{} is not a valid input type for bucket transform",
                           source_type->ToString());
   }
-  if (num_buckets <= 0) {
-    return InvalidArgument("Number of buckets must be positive, got {}", num_buckets);
-  }
+  ICEBERG_RETURN_UNEXPECTED(internal::ValidateBucketTransformParameter(num_buckets));
   return std::make_unique<BucketTransform>(source_type, num_buckets);
 }
 
@@ -109,6 +114,12 @@ Result<Literal> TruncateTransform::Transform(const Literal& literal) {
 }
 
 std::shared_ptr<Type> TruncateTransform::ResultType() const { return source_type(); }
+
+bool TruncateTransform::Equals(const TransformFunction& other) const {
+  const auto* other_truncate = dynamic_cast<const TruncateTransform*>(&other);
+  return other_truncate != nullptr && TransformFunction::Equals(other) &&
+         width_ == other_truncate->width_;
+}
 
 Result<std::unique_ptr<TransformFunction>> TruncateTransform::Make(
     std::shared_ptr<Type> const& source_type, int32_t width) {
@@ -126,9 +137,7 @@ Result<std::unique_ptr<TransformFunction>> TruncateTransform::Make(
       return NotSupported("{} is not a valid input type for truncate transform",
                           source_type->ToString());
   }
-  if (width <= 0) {
-    return InvalidArgument("Width must be positive, got {}", width);
-  }
+  ICEBERG_RETURN_UNEXPECTED(internal::ValidateTruncateTransformParameter(width));
   return std::make_unique<TruncateTransform>(source_type, width);
 }
 

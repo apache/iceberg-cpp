@@ -96,6 +96,7 @@ cmake --install build
 | `ICEBERG_BUILD_BUNDLE` | `ON` | Build the battery-included library |
 | `ICEBERG_BUILD_REST` | `ON` | Build REST catalog client |
 | `ICEBERG_BUILD_REST_INTEGRATION_TESTS` | `OFF` | Build REST catalog integration tests |
+| `ICEBERG_SPDLOG` | `ON` | Use spdlog as the default logging backend |
 | `ICEBERG_BUILD_HIVE` | `OFF` | Build Hive (HMS) catalog client |
 | `ICEBERG_BUILD_SQL_CATALOG` | `OFF` | Build SQL catalog client |
 | `ICEBERG_SQL_SQLITE` | `OFF` | Build the SQLite connector for the SQL catalog |
@@ -124,6 +125,7 @@ Meson-specific options (configured via `-D<option>=<value>`):
 |--------|---------|-------------|
 | `rest` | `enabled` | Build REST catalog client |
 | `rest_integration_test` | `disabled` | Build integration test for REST catalog |
+| `spdlog` | `enabled` | Use spdlog as the default logging backend |
 | `tests` | `enabled` | Build tests |
 
 ### Build Examples

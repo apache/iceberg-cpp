@@ -66,6 +66,10 @@ bool MetadataColumns::IsMetadataColumn(int32_t id) {
   return GetMetadataFieldIdSet().find(id) != GetMetadataFieldIdSet().end();
 }
 
+bool MetadataColumns::IsRowLineageColumn(int32_t id) {
+  return id == kRowIdColumnId || id == kLastUpdatedSequenceNumberColumnId;
+}
+
 Result<const SchemaField*> MetadataColumns::MetadataColumn(std::string_view name) {
   const auto& metadata_column_map = GetMetadataColumnMap();
   const auto it = metadata_column_map.find(name);

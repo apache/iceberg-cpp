@@ -51,8 +51,9 @@ class InMemoryCatalogTest : public ::testing::Test {
   void SetUp() override {
     file_io_ = arrow::ArrowFileSystemFileIO::MakeLocalFileIO();
     std::unordered_map<std::string, std::string> properties = {{"prop1", "val1"}};
-    catalog_ = std::make_shared<InMemoryCatalog>("test_catalog", file_io_,
-                                                 "/tmp/warehouse/", properties);
+    ICEBERG_UNWRAP_OR_FAIL(
+        catalog_,
+        InMemoryCatalog::Make("test_catalog", file_io_, "/tmp/warehouse/", properties));
   }
 
   void TearDown() override {
@@ -91,6 +92,14 @@ class InMemoryCatalogTest : public ::testing::Test {
   std::vector<std::string> created_temp_paths_;
 };
 
+TEST_F(InMemoryCatalogTest, InvalidMetricsReporterImplReturnsError) {
+  std::unordered_map<std::string, std::string> properties = {
+      {"metrics-reporter-impl", "this-reporter-type-does-not-exist"}};
+  EXPECT_THAT(
+      InMemoryCatalog::Make("test_catalog", file_io_, "/tmp/warehouse/", properties),
+      IsError(ErrorKind::kInvalidArgument));
+}
+
 TEST_F(InMemoryCatalogTest, CatalogName) {
   EXPECT_EQ(catalog_->name(), "test_catalog");
   auto tablesRs = catalog_->ListTables(Namespace{{}});
@@ -123,6 +132,7 @@ TEST_F(InMemoryCatalogTest, CreateTable) {
   auto table = catalog_->CreateTable(table_ident, schema, spec, sort_order,
                                      metadata_location, {{"property1", "value1"}});
   EXPECT_THAT(table, IsOk());
+  EXPECT_EQ(table.value()->full_name(), "test_catalog.t1");
 
   // Create table already exists
   auto table2 = catalog_->CreateTable(table_ident, schema, spec, sort_order,
@@ -144,6 +154,7 @@ TEST_F(InMemoryCatalogTest, RegisterTable) {
   auto table = catalog_->RegisterTable(tableIdent, metadata_location);
   EXPECT_THAT(table, IsOk());
   ASSERT_EQ(table.value()->name().name, "t1");
+  EXPECT_EQ(table.value()->full_name(), "test_catalog.t1");
   ASSERT_EQ(table.value()->location(), "s3://bucket/test/location");
 }
 
@@ -268,6 +279,7 @@ TEST_F(InMemoryCatalogTest, StageCreateTable) {
       auto staged_table,
       catalog_->StageCreateTable(table_ident, schema, spec, sort_order,
                                  GenerateTestTableLocation(table_ident.name), {}));
+  EXPECT_EQ(staged_table->table()->full_name(), "test_catalog.t1");
 
   // Perform the update
   ICEBERG_UNWRAP_OR_FAIL(auto update_properties, staged_table->NewUpdateProperties());
@@ -276,6 +288,7 @@ TEST_F(InMemoryCatalogTest, StageCreateTable) {
   EXPECT_THAT(res1, IsOk());
   auto created_table = res1.value();
   EXPECT_EQ("t1", created_table->name().name);
+  EXPECT_EQ(created_table->full_name(), "test_catalog.t1");
   EXPECT_EQ("value1", created_table->metadata()->properties.Get(
                           TableProperties::Entry<std::string>("property1", "")));
 

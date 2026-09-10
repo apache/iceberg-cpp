@@ -19,18 +19,7 @@
 
 #pragma once
 
-/// \file iceberg/data/puffin_dv_register.h
-/// Puffin deletion vector I/O registration.
+// Internal, build-generated configuration; not installed.
+// ICEBERG_HAS_SPDLOG is defined when the spdlog backend is available.
 
-#include <memory>
-
-#include "iceberg/iceberg_data_export.h"
-#include "iceberg/puffin_dv_io.h"
-
-namespace iceberg {
-
-ICEBERG_DATA_EXPORT std::shared_ptr<PuffinDVIO> MakePuffinDVIO();
-
-ICEBERG_DATA_EXPORT void RegisterPuffinDVIO();
-
-}  // namespace iceberg
+#cmakedefine ICEBERG_HAS_SPDLOG

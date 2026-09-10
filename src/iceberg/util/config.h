@@ -54,7 +54,7 @@ U DefaultFromString(const std::string& val) {
   if constexpr (std::is_same_v<U, std::string>) {
     return val;
   } else if constexpr (std::is_same_v<U, bool>) {
-    return val == "true";
+    return StringUtils::EqualsIgnoreCase(val, "true");
   } else if constexpr ((std::is_signed_v<U> && std::is_integral_v<U>) ||
                        std::is_floating_point_v<U>) {
     ICEBERG_ASSIGN_OR_THROW(auto res, StringUtils::ParseNumber<U>(val));

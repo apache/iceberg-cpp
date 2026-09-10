@@ -17,7 +17,7 @@
  * under the License.
  */
 
-#include "iceberg/data/deletion_vector_writer.h"
+#include "iceberg/deletes/dv_writer.h"
 
 #include <cstdint>
 #include <functional>
@@ -80,11 +80,11 @@ Result<std::optional<PositionDeleteIndex>> NoPreviousDeletes(std::string_view) {
   return std::nullopt;
 }
 
-DeletionVectorWriterOptions MakeDVWriterOptions(
+DVWriterOptions MakeDVWriterOptions(
     std::shared_ptr<MockFileIO> io, std::string path,
     std::function<Result<std::optional<PositionDeleteIndex>>(std::string_view)>
         load_previous_deletes = NoPreviousDeletes) {
-  return DeletionVectorWriterOptions{
+  return DVWriterOptions{
       .path = std::move(path),
       .io = std::move(io),
       .load_previous_deletes = std::move(load_previous_deletes),
@@ -93,14 +93,14 @@ DeletionVectorWriterOptions MakeDVWriterOptions(
 
 }  // namespace
 
-TEST(DeletionVectorWriterTest, WriteThenLoadEndToEnd) {
+TEST(DVWriterTest, WriteThenLoadEndToEnd) {
   auto io = std::make_shared<MockFileIO>();
   auto spec = UnpartitionedSpec();
 
   std::vector<std::shared_ptr<DataFile>> delete_files;
   {
-    ICEBERG_UNWRAP_OR_FAIL(auto writer, DeletionVectorWriter::Make(MakeDVWriterOptions(
-                                            io, "memory://deletes.puffin")));
+    ICEBERG_UNWRAP_OR_FAIL(
+        auto writer, DVWriter::Make(MakeDVWriterOptions(io, "memory://deletes.puffin")));
 
     ASSERT_THAT(writer->Delete("data-a.parquet", 0, spec, PartitionValues{}), IsOk());
     ASSERT_THAT(writer->Delete("data-a.parquet", 5, spec, PartitionValues{}), IsOk());
@@ -192,7 +192,7 @@ TEST(DeletionVectorWriterTest, WriteThenLoadEndToEnd) {
 }
 
 // The PositionDeleteIndex overload bulk-adds positions for a data file.
-TEST(DeletionVectorWriterTest, DeleteFromIndex) {
+TEST(DVWriterTest, DeleteFromIndex) {
   auto io = std::make_shared<MockFileIO>();
   auto spec = UnpartitionedSpec();
 
@@ -200,8 +200,8 @@ TEST(DeletionVectorWriterTest, DeleteFromIndex) {
   positions.Delete(0);
   positions.Delete(3, 6);  // [3, 6) -> 3, 4, 5
 
-  ICEBERG_UNWRAP_OR_FAIL(auto writer, DeletionVectorWriter::Make(MakeDVWriterOptions(
-                                          io, "memory://from-index.puffin")));
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto writer, DVWriter::Make(MakeDVWriterOptions(io, "memory://from-index.puffin")));
   ASSERT_THAT(writer->Delete("data.parquet", positions, spec, PartitionValues{}), IsOk());
   ASSERT_THAT(writer->Close(), IsOk());
 
@@ -220,7 +220,7 @@ TEST(DeletionVectorWriterTest, DeleteFromIndex) {
 
 // Previously written deletes are merged into the new vector, and the file-scoped
 // delete files they came from are reported as rewritten.
-TEST(DeletionVectorWriterTest, LoadPreviousDeletesMergesAndReportsRewritten) {
+TEST(DVWriterTest, LoadPreviousDeletesMergesAndReportsRewritten) {
   auto io = std::make_shared<MockFileIO>();
   auto spec = UnpartitionedSpec();
 
@@ -242,7 +242,7 @@ TEST(DeletionVectorWriterTest, LoadPreviousDeletesMergesAndReportsRewritten) {
 
   ICEBERG_UNWRAP_OR_FAIL(
       auto writer,
-      DeletionVectorWriter::Make(MakeDVWriterOptions(
+      DVWriter::Make(MakeDVWriterOptions(
           io, "memory://merged.puffin",
           [&](std::string_view path) -> Result<std::optional<PositionDeleteIndex>> {
             if (path != "data.parquet") {
@@ -273,13 +273,13 @@ TEST(DeletionVectorWriterTest, LoadPreviousDeletesMergesAndReportsRewritten) {
   EXPECT_TRUE(loaded.value().IsDeleted(200));
 }
 
-TEST(DeletionVectorWriterTest, PreviousDeletesWithoutSourceFilesAreNotRewritten) {
+TEST(DVWriterTest, PreviousDeletesWithoutSourceFilesAreNotRewritten) {
   auto io = std::make_shared<MockFileIO>();
   auto spec = UnpartitionedSpec();
 
   ICEBERG_UNWRAP_OR_FAIL(
       auto writer,
-      DeletionVectorWriter::Make(MakeDVWriterOptions(
+      DVWriter::Make(MakeDVWriterOptions(
           io, "memory://merged-partition.puffin",
           [&](std::string_view path) -> Result<std::optional<PositionDeleteIndex>> {
             PositionDeleteIndex index;
@@ -305,24 +305,23 @@ TEST(DeletionVectorWriterTest, PreviousDeletesWithoutSourceFilesAreNotRewritten)
   EXPECT_TRUE(loaded.value().IsDeleted(50));
 }
 
-TEST(DeletionVectorWriterTest, EmptyWriterProducesNoDataFiles) {
+TEST(DVWriterTest, EmptyWriterProducesNoDataFiles) {
   auto io = std::make_shared<MockFileIO>();
-  ICEBERG_UNWRAP_OR_FAIL(auto writer,
-                         DeletionVectorWriter::Make(DeletionVectorWriterOptions{
-                             .path = "memory://empty.puffin",
-                             .io = io,
-                             .load_previous_deletes = NoPreviousDeletes}));
+  ICEBERG_UNWRAP_OR_FAIL(auto writer, DVWriter::Make(DVWriterOptions{
+                                          .path = "memory://empty.puffin",
+                                          .io = io,
+                                          .load_previous_deletes = NoPreviousDeletes}));
   ASSERT_THAT(writer->Close(), IsOk());
   ICEBERG_UNWRAP_OR_FAIL(auto result, writer->Metadata());
   EXPECT_TRUE(result.data_files.empty());
   EXPECT_THAT(io->NewInputFile("memory://empty.puffin"), IsError(ErrorKind::kNotFound));
 }
 
-TEST(DeletionVectorWriterTest, DeleteRejectsEmptyReferencedFile) {
+TEST(DVWriterTest, DeleteRejectsEmptyReferencedFile) {
   auto io = std::make_shared<MockFileIO>();
   auto spec = UnpartitionedSpec();
-  ICEBERG_UNWRAP_OR_FAIL(auto writer, DeletionVectorWriter::Make(MakeDVWriterOptions(
-                                          io, "memory://invalid.puffin")));
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto writer, DVWriter::Make(MakeDVWriterOptions(io, "memory://invalid.puffin")));
   EXPECT_THAT(writer->Delete("", 0, spec, PartitionValues{}),
               IsError(ErrorKind::kInvalidArgument));
   EXPECT_THAT(writer->Delete("data.parquet", 0, nullptr, PartitionValues{}),
@@ -333,11 +332,11 @@ TEST(DeletionVectorWriterTest, DeleteRejectsEmptyReferencedFile) {
               IsError(ErrorKind::kInvalidArgument));
 }
 
-TEST(DeletionVectorWriterTest, DeleteRejectsOutOfRangePosition) {
+TEST(DVWriterTest, DeleteRejectsOutOfRangePosition) {
   auto io = std::make_shared<MockFileIO>();
   auto spec = UnpartitionedSpec();
-  ICEBERG_UNWRAP_OR_FAIL(auto writer, DeletionVectorWriter::Make(MakeDVWriterOptions(
-                                          io, "memory://invalid.puffin")));
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto writer, DVWriter::Make(MakeDVWriterOptions(io, "memory://invalid.puffin")));
   // Negative and out-of-range positions are rejected rather than silently
   // dropped by the underlying bitmap.
   EXPECT_THAT(writer->Delete("data.parquet", -1, spec, PartitionValues{}),
@@ -348,12 +347,12 @@ TEST(DeletionVectorWriterTest, DeleteRejectsOutOfRangePosition) {
 }
 
 // Close propagates a load_previous_deletes failure and returns no metadata.
-TEST(DeletionVectorWriterTest, ClosePropagatesLoadPreviousDeletesError) {
+TEST(DVWriterTest, ClosePropagatesLoadPreviousDeletesError) {
   auto io = std::make_shared<MockFileIO>();
   auto spec = UnpartitionedSpec();
   ICEBERG_UNWRAP_OR_FAIL(
       auto writer,
-      DeletionVectorWriter::Make(MakeDVWriterOptions(
+      DVWriter::Make(MakeDVWriterOptions(
           io, "memory://err.puffin",
           [](std::string_view) -> Result<std::optional<PositionDeleteIndex>> {
             return IOError("boom");
@@ -367,27 +366,26 @@ TEST(DeletionVectorWriterTest, ClosePropagatesLoadPreviousDeletesError) {
   EXPECT_THAT(io->NewInputFile("memory://err.puffin"), IsError(ErrorKind::kNotFound));
 }
 
-TEST(DeletionVectorWriterTest, MakeRejectsMissingOutputPath) {
-  EXPECT_THAT(DeletionVectorWriter::Make(DeletionVectorWriterOptions{
-                  .io = std::make_shared<MockFileIO>(),
-                  .load_previous_deletes = NoPreviousDeletes}),
+TEST(DVWriterTest, MakeRejectsMissingOutputPath) {
+  EXPECT_THAT(DVWriter::Make(DVWriterOptions{.io = std::make_shared<MockFileIO>(),
+                                             .load_previous_deletes = NoPreviousDeletes}),
               IsError(ErrorKind::kInvalidArgument));
 }
 
-TEST(DeletionVectorWriterTest, MakeRejectsMissingLoadPreviousDeletes) {
+TEST(DVWriterTest, MakeRejectsMissingLoadPreviousDeletes) {
   auto io = std::make_shared<MockFileIO>();
-  EXPECT_THAT(DeletionVectorWriter::Make(DeletionVectorWriterOptions{
+  EXPECT_THAT(DVWriter::Make(DVWriterOptions{
                   .path = "x.puffin",
                   .io = io,
               }),
               IsError(ErrorKind::kInvalidArgument));
 }
 
-TEST(DeletionVectorWriterTest, DeleteAfterCloseFails) {
+TEST(DVWriterTest, DeleteAfterCloseFails) {
   auto io = std::make_shared<MockFileIO>();
   auto spec = UnpartitionedSpec();
-  ICEBERG_UNWRAP_OR_FAIL(auto writer, DeletionVectorWriter::Make(MakeDVWriterOptions(
-                                          io, "memory://closed.puffin")));
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto writer, DVWriter::Make(MakeDVWriterOptions(io, "memory://closed.puffin")));
   ASSERT_THAT(writer->Close(), IsOk());
   EXPECT_THAT(writer->Delete("data-a.parquet", 0, spec, PartitionValues{}),
               IsError(ErrorKind::kValidationFailed));

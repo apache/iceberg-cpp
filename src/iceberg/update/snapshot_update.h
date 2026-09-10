@@ -59,6 +59,16 @@ class ICEBERG_EXPORT SnapshotUpdate : public PendingUpdate {
 
   Kind kind() const override { return Kind::kUpdateSnapshot; }
   bool IsRetryable() const override { return true; }
+  Status Commit() override;
+
+  /// \brief Set the metrics reporter for this snapshot update.
+  ///
+  /// \param reporter The metrics reporter to use.
+  /// \return Reference to this for method chaining.
+  auto& ReportWith(this auto& self, std::shared_ptr<MetricsReporter> reporter) {
+    static_cast<SnapshotUpdate&>(self).reporter_ = std::move(reporter);
+    return self;
+  }
 
   /// \brief Set a callback to delete files instead of the table's default.
   ///
@@ -267,6 +277,9 @@ class ICEBERG_EXPORT SnapshotUpdate : public PendingUpdate {
   /// \brief Clean up all uncommitted files
   Status CleanAll();
 
+  /// \brief Report metrics for the most recently staged snapshot.
+  void ReportCommit() const;
+
  protected:
   SnapshotSummaryBuilder summary_;
 
@@ -285,6 +298,8 @@ class ICEBERG_EXPORT SnapshotUpdate : public PendingUpdate {
   std::function<Status(const std::string&)> delete_func_;
   std::string target_branch_{SnapshotRef::kMainBranch};
   std::shared_ptr<Snapshot> staged_snapshot_;
+  std::unique_ptr<CommitMetrics> commit_metrics_;
+  std::shared_ptr<MetricsReporter> reporter_;
 };
 
 }  // namespace iceberg

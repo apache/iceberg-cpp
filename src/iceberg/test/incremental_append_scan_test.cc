@@ -20,6 +20,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 #include <gmock/gmock.h>
@@ -50,7 +51,7 @@ TEST_P(IncrementalAppendScanTest, FromSnapshotInclusive) {
   // Test: from_snapshot_inclusive(snapshot_a) should return 3 files (A, B, C)
   {
     ICEBERG_UNWRAP_OR_FAIL(auto builder,
-                           IncrementalAppendScanBuilder::Make(metadata, file_io_));
+                           MakeScanBuilder<IncrementalAppendScan>(metadata));
     builder->FromSnapshot(1000L, /*inclusive=*/true);
     ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
     ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
@@ -64,7 +65,7 @@ TEST_P(IncrementalAppendScanTest, FromSnapshotInclusive) {
   // files
   {
     ICEBERG_UNWRAP_OR_FAIL(auto builder,
-                           IncrementalAppendScanBuilder::Make(metadata, file_io_));
+                           MakeScanBuilder<IncrementalAppendScan>(metadata));
     builder->FromSnapshot(1000L, /*inclusive=*/true).ToSnapshot(3000L);
     ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
     ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
@@ -74,8 +75,7 @@ TEST_P(IncrementalAppendScanTest, FromSnapshotInclusive) {
 
 TEST_P(IncrementalAppendScanTest, FromSnapshotInclusiveWithNonExistingRef) {
   auto metadata = MakeTableMetadata({}, -1L);
-  ICEBERG_UNWRAP_OR_FAIL(auto builder,
-                         IncrementalAppendScanBuilder::Make(metadata, file_io_));
+  ICEBERG_UNWRAP_OR_FAIL(auto builder, MakeScanBuilder<IncrementalAppendScan>(metadata));
   builder->FromSnapshot("non_existing_ref", /*inclusive=*/true);
   EXPECT_THAT(builder->Build(),
               ::testing::AllOf(IsError(ErrorKind::kValidationFailed),
@@ -104,7 +104,7 @@ TEST_P(IncrementalAppendScanTest, FromSnapshotInclusiveWithTag) {
   // Test: from_snapshot_inclusive(t1) should return 5 files
   {
     ICEBERG_UNWRAP_OR_FAIL(auto builder,
-                           IncrementalAppendScanBuilder::Make(metadata, file_io_));
+                           MakeScanBuilder<IncrementalAppendScan>(metadata));
     builder->FromSnapshot("t1", /*inclusive=*/true);
     ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
     ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
@@ -114,7 +114,7 @@ TEST_P(IncrementalAppendScanTest, FromSnapshotInclusiveWithTag) {
   // Test: from_snapshot_inclusive(t1).to_snapshot(t2) should return 3 files
   {
     ICEBERG_UNWRAP_OR_FAIL(auto builder,
-                           IncrementalAppendScanBuilder::Make(metadata, file_io_));
+                           MakeScanBuilder<IncrementalAppendScan>(metadata));
     builder->FromSnapshot("t1", /*inclusive=*/true).ToSnapshot("t2");
     ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
     ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
@@ -138,7 +138,7 @@ TEST_P(IncrementalAppendScanTest, FromSnapshotInclusiveWithBranchShouldFail) {
   // Test: from_snapshot_inclusive(branch_name) should fail
   {
     ICEBERG_UNWRAP_OR_FAIL(auto builder,
-                           IncrementalAppendScanBuilder::Make(metadata, file_io_));
+                           MakeScanBuilder<IncrementalAppendScan>(metadata));
     builder->FromSnapshot("b1", /*inclusive=*/true);
     EXPECT_THAT(builder->Build(),
                 ::testing::AllOf(IsError(ErrorKind::kValidationFailed),
@@ -148,7 +148,7 @@ TEST_P(IncrementalAppendScanTest, FromSnapshotInclusiveWithBranchShouldFail) {
   // Test: to_snapshot(branch_name) should fail
   {
     ICEBERG_UNWRAP_OR_FAIL(auto builder,
-                           IncrementalAppendScanBuilder::Make(metadata, file_io_));
+                           MakeScanBuilder<IncrementalAppendScan>(metadata));
     builder->FromSnapshot(1000L, /*inclusive=*/true).ToSnapshot("b1");
     EXPECT_THAT(builder->Build(),
                 ::testing::AllOf(IsError(ErrorKind::kValidationFailed),
@@ -189,7 +189,7 @@ TEST_P(IncrementalAppendScanTest, UseBranch) {
   // Test: from_snapshot_inclusive(t1) on main should return 5 files
   {
     ICEBERG_UNWRAP_OR_FAIL(auto builder,
-                           IncrementalAppendScanBuilder::Make(metadata, file_io_));
+                           MakeScanBuilder<IncrementalAppendScan>(metadata));
     builder->FromSnapshot("t1", /*inclusive=*/true);
     ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
     ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
@@ -199,7 +199,7 @@ TEST_P(IncrementalAppendScanTest, UseBranch) {
   // Test: from_snapshot_inclusive(t1).use_branch(b1) should return 3 files
   {
     ICEBERG_UNWRAP_OR_FAIL(auto builder,
-                           IncrementalAppendScanBuilder::Make(metadata, file_io_));
+                           MakeScanBuilder<IncrementalAppendScan>(metadata));
     builder->FromSnapshot("t1", /*inclusive=*/true).UseBranch("b1");
     ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
     ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
@@ -209,7 +209,7 @@ TEST_P(IncrementalAppendScanTest, UseBranch) {
   // Test: to_snapshot(snapshot_branch_b).use_branch(b1) should return 2 files
   {
     ICEBERG_UNWRAP_OR_FAIL(auto builder,
-                           IncrementalAppendScanBuilder::Make(metadata, file_io_));
+                           MakeScanBuilder<IncrementalAppendScan>(metadata));
     builder->ToSnapshot(4000L).UseBranch("b1");
     ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
     ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
@@ -219,7 +219,7 @@ TEST_P(IncrementalAppendScanTest, UseBranch) {
   // Test: to_snapshot(snapshot_branch_c).use_branch(b1) should return 3 files
   {
     ICEBERG_UNWRAP_OR_FAIL(auto builder,
-                           IncrementalAppendScanBuilder::Make(metadata, file_io_));
+                           MakeScanBuilder<IncrementalAppendScan>(metadata));
     builder->ToSnapshot(5000L).UseBranch("b1");
     ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
     ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
@@ -229,7 +229,7 @@ TEST_P(IncrementalAppendScanTest, UseBranch) {
   // Test: from_snapshot_exclusive(t1).to_snapshot(snapshot_branch_b).use_branch(b1)
   {
     ICEBERG_UNWRAP_OR_FAIL(auto builder,
-                           IncrementalAppendScanBuilder::Make(metadata, file_io_));
+                           MakeScanBuilder<IncrementalAppendScan>(metadata));
     builder->FromSnapshot("t1", /*inclusive=*/false).ToSnapshot(4000L).UseBranch("b1");
     ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
     ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
@@ -251,8 +251,7 @@ TEST_P(IncrementalAppendScanTest, UseBranchWithTagShouldFail) {
                   SnapshotRef{.snapshot_id = 1000L, .retention = SnapshotRef::Tag{}})}});
 
   // Test: use_branch(tag_name) should fail
-  ICEBERG_UNWRAP_OR_FAIL(auto builder,
-                         IncrementalAppendScanBuilder::Make(metadata, file_io_));
+  ICEBERG_UNWRAP_OR_FAIL(auto builder, MakeScanBuilder<IncrementalAppendScan>(metadata));
   builder->FromSnapshot(1000L, /*inclusive=*/true).UseBranch("t1");
   EXPECT_THAT(builder->Build(),
               ::testing::AllOf(IsError(ErrorKind::kValidationFailed),
@@ -279,7 +278,7 @@ TEST_P(IncrementalAppendScanTest, UseBranchWithInvalidSnapshotShouldFail) {
   // Test: to_snapshot(snapshot_main_b).use_branch(b1) should fail
   {
     ICEBERG_UNWRAP_OR_FAIL(auto builder,
-                           IncrementalAppendScanBuilder::Make(metadata, file_io_));
+                           MakeScanBuilder<IncrementalAppendScan>(metadata));
     builder->ToSnapshot(2000L).UseBranch("b1");
     ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
     EXPECT_THAT(
@@ -293,7 +292,7 @@ TEST_P(IncrementalAppendScanTest, UseBranchWithInvalidSnapshotShouldFail) {
   // Test: from_snapshot_inclusive(snapshot_main_b).use_branch(b1) should fail
   {
     ICEBERG_UNWRAP_OR_FAIL(auto builder,
-                           IncrementalAppendScanBuilder::Make(metadata, file_io_));
+                           MakeScanBuilder<IncrementalAppendScan>(metadata));
     builder->FromSnapshot(2000L, /*inclusive=*/true).UseBranch("b1");
     ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
     EXPECT_THAT(
@@ -306,8 +305,7 @@ TEST_P(IncrementalAppendScanTest, UseBranchWithInvalidSnapshotShouldFail) {
 
 TEST_P(IncrementalAppendScanTest, UseBranchWithNonExistingRef) {
   auto metadata = MakeTableMetadata({}, -1L);
-  ICEBERG_UNWRAP_OR_FAIL(auto builder,
-                         IncrementalAppendScanBuilder::Make(metadata, file_io_));
+  ICEBERG_UNWRAP_OR_FAIL(auto builder, MakeScanBuilder<IncrementalAppendScan>(metadata));
   builder->UseBranch("non_existing_ref");
   EXPECT_THAT(builder->Build(),
               ::testing::AllOf(IsError(ErrorKind::kValidationFailed),
@@ -332,7 +330,7 @@ TEST_P(IncrementalAppendScanTest, FromSnapshotExclusive) {
   // Test: from_snapshot_exclusive(snapshot_a) should return 2 files (B, C)
   {
     ICEBERG_UNWRAP_OR_FAIL(auto builder,
-                           IncrementalAppendScanBuilder::Make(metadata, file_io_));
+                           MakeScanBuilder<IncrementalAppendScan>(metadata));
     builder->FromSnapshot(1000L, /*inclusive=*/false);
     ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
     ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
@@ -346,7 +344,7 @@ TEST_P(IncrementalAppendScanTest, FromSnapshotExclusive) {
   // file (B)
   {
     ICEBERG_UNWRAP_OR_FAIL(auto builder,
-                           IncrementalAppendScanBuilder::Make(metadata, file_io_));
+                           MakeScanBuilder<IncrementalAppendScan>(metadata));
     builder->FromSnapshot(1000L, /*inclusive=*/false).ToSnapshot(2000L);
     ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
     ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
@@ -357,8 +355,7 @@ TEST_P(IncrementalAppendScanTest, FromSnapshotExclusive) {
 
 TEST_P(IncrementalAppendScanTest, FromSnapshotExclusiveWithNonExistingRef) {
   auto metadata = MakeTableMetadata({}, -1L);
-  ICEBERG_UNWRAP_OR_FAIL(auto builder,
-                         IncrementalAppendScanBuilder::Make(metadata, file_io_));
+  ICEBERG_UNWRAP_OR_FAIL(auto builder, MakeScanBuilder<IncrementalAppendScan>(metadata));
   builder->FromSnapshot("nonExistingRef", /*inclusive=*/false);
   EXPECT_THAT(builder->Build(),
               ::testing::AllOf(IsError(ErrorKind::kValidationFailed),
@@ -387,7 +384,7 @@ TEST_P(IncrementalAppendScanTest, FromSnapshotExclusiveWithTag) {
   // Test: from_snapshot_exclusive(t1) should return 4 files
   {
     ICEBERG_UNWRAP_OR_FAIL(auto builder,
-                           IncrementalAppendScanBuilder::Make(metadata, file_io_));
+                           MakeScanBuilder<IncrementalAppendScan>(metadata));
     builder->FromSnapshot("t1", /*inclusive=*/false);
     ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
     ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
@@ -397,7 +394,7 @@ TEST_P(IncrementalAppendScanTest, FromSnapshotExclusiveWithTag) {
   // Test: from_snapshot_exclusive(t1).to_snapshot(t2) should return 2 files
   {
     ICEBERG_UNWRAP_OR_FAIL(auto builder,
-                           IncrementalAppendScanBuilder::Make(metadata, file_io_));
+                           MakeScanBuilder<IncrementalAppendScan>(metadata));
     builder->FromSnapshot("t1", /*inclusive=*/false).ToSnapshot("t2");
     ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
     ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
@@ -418,8 +415,7 @@ TEST_P(IncrementalAppendScanTest, FromSnapshotExclusiveWithBranchShouldFail) {
        {"b1", std::make_shared<SnapshotRef>(SnapshotRef{
                   .snapshot_id = 1000L, .retention = SnapshotRef::Branch{}})}});
 
-  ICEBERG_UNWRAP_OR_FAIL(auto builder,
-                         IncrementalAppendScanBuilder::Make(metadata, file_io_));
+  ICEBERG_UNWRAP_OR_FAIL(auto builder, MakeScanBuilder<IncrementalAppendScan>(metadata));
   builder->FromSnapshot("b1", /*inclusive=*/false);
   EXPECT_THAT(builder->Build(), ::testing::AllOf(IsError(ErrorKind::kValidationFailed),
                                                  HasErrorMessage("Ref b1 is not a tag")));
@@ -443,7 +439,7 @@ TEST_P(IncrementalAppendScanTest, ToSnapshot) {
   // Test: to_snapshot(snapshot_b) should return 2 files (A, B)
   {
     ICEBERG_UNWRAP_OR_FAIL(auto builder,
-                           IncrementalAppendScanBuilder::Make(metadata, file_io_));
+                           MakeScanBuilder<IncrementalAppendScan>(metadata));
     builder->ToSnapshot(2000L);
     ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
     ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
@@ -480,7 +476,7 @@ TEST_P(IncrementalAppendScanTest, ToSnapshotWithTag) {
   // Test: to_snapshot(t1) should return 2 files
   {
     ICEBERG_UNWRAP_OR_FAIL(auto builder,
-                           IncrementalAppendScanBuilder::Make(metadata, file_io_));
+                           MakeScanBuilder<IncrementalAppendScan>(metadata));
     builder->ToSnapshot("t1");
     ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
     ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
@@ -490,7 +486,7 @@ TEST_P(IncrementalAppendScanTest, ToSnapshotWithTag) {
   // Test: to_snapshot(t2) should return 3 files (on branch b1)
   {
     ICEBERG_UNWRAP_OR_FAIL(auto builder,
-                           IncrementalAppendScanBuilder::Make(metadata, file_io_));
+                           MakeScanBuilder<IncrementalAppendScan>(metadata));
     builder->ToSnapshot("t2");
     ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
     ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
@@ -500,8 +496,7 @@ TEST_P(IncrementalAppendScanTest, ToSnapshotWithTag) {
 
 TEST_P(IncrementalAppendScanTest, ToSnapshotWithNonExistingRef) {
   auto metadata = MakeTableMetadata({}, -1L);
-  ICEBERG_UNWRAP_OR_FAIL(auto builder,
-                         IncrementalAppendScanBuilder::Make(metadata, file_io_));
+  ICEBERG_UNWRAP_OR_FAIL(auto builder, MakeScanBuilder<IncrementalAppendScan>(metadata));
   builder->ToSnapshot("non_existing_ref");
   EXPECT_THAT(builder->Build(),
               ::testing::AllOf(IsError(ErrorKind::kValidationFailed),
@@ -523,8 +518,7 @@ TEST_P(IncrementalAppendScanTest, ToSnapshotWithBranchShouldFail) {
        {"b1", std::make_shared<SnapshotRef>(SnapshotRef{
                   .snapshot_id = 2000L, .retention = SnapshotRef::Branch{}})}});
 
-  ICEBERG_UNWRAP_OR_FAIL(auto builder,
-                         IncrementalAppendScanBuilder::Make(metadata, file_io_));
+  ICEBERG_UNWRAP_OR_FAIL(auto builder, MakeScanBuilder<IncrementalAppendScan>(metadata));
   builder->ToSnapshot("b1");
   EXPECT_THAT(builder->Build(), ::testing::AllOf(IsError(ErrorKind::kValidationFailed),
                                                  HasErrorMessage("Ref b1 is not a tag")));
@@ -556,7 +550,7 @@ TEST_P(IncrementalAppendScanTest, MultipleRootSnapshots) {
   // Test: to_snapshot(snapshot_d) should discover snapshots C and D only
   {
     ICEBERG_UNWRAP_OR_FAIL(auto builder,
-                           IncrementalAppendScanBuilder::Make(metadata, file_io_));
+                           MakeScanBuilder<IncrementalAppendScan>(metadata));
     builder->ToSnapshot(4000L);
     ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
     ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
@@ -570,7 +564,7 @@ TEST_P(IncrementalAppendScanTest, MultipleRootSnapshots) {
   // because B is not a parent ancestor of D
   {
     ICEBERG_UNWRAP_OR_FAIL(auto builder,
-                           IncrementalAppendScanBuilder::Make(metadata, file_io_));
+                           MakeScanBuilder<IncrementalAppendScan>(metadata));
     builder->FromSnapshot(2000L, /*inclusive=*/false).ToSnapshot(4000L);
     ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
     EXPECT_THAT(
@@ -584,7 +578,7 @@ TEST_P(IncrementalAppendScanTest, MultipleRootSnapshots) {
   // because B is not an ancestor of D
   {
     ICEBERG_UNWRAP_OR_FAIL(auto builder,
-                           IncrementalAppendScanBuilder::Make(metadata, file_io_));
+                           MakeScanBuilder<IncrementalAppendScan>(metadata));
     builder->FromSnapshot(2000L, /*inclusive=*/true).ToSnapshot(4000L);
     ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
     EXPECT_THAT(
@@ -593,6 +587,57 @@ TEST_P(IncrementalAppendScanTest, MultipleRootSnapshots) {
                          HasErrorMessage("Starting snapshot (inclusive) 2000 is not an "
                                          "ancestor of end snapshot 4000")));
   }
+}
+
+TEST_P(IncrementalAppendScanTest, PlanRowLineage) {
+  if (GetParam() < 3) {
+    GTEST_SKIP() << "Row lineage is only assigned in v3 manifests";
+  }
+
+  auto snapshot_a =
+      MakeAppendSnapshot(3, 1000L, std::nullopt, 5L, {"/path/to/file_a.parquet"});
+  snapshot_a->first_row_id = 0;
+  snapshot_a->added_rows = 1;
+
+  auto file_b = MakeDataFile("/path/to/file_b.parquet");
+  auto entry_b = MakeEntry(ManifestStatus::kAdded, 2000L, 7L, file_b);
+  auto manifest_b = WriteDataManifest(3, 2000L, {std::move(entry_b)});
+  manifest_b.first_row_id = 1;
+  auto manifest_list_b = WriteManifestList(3, 2000L, 1000L, 7L, {manifest_b});
+  auto snapshot_b = std::make_shared<Snapshot>(Snapshot{
+      .snapshot_id = 2000L,
+      .parent_snapshot_id = 1000L,
+      .sequence_number = 7L,
+      .timestamp_ms = TimePointMsFromUnixMs(1609459200000L + 2000),
+      .manifest_list = manifest_list_b,
+      .summary = {{"operation", "append"}},
+      .schema_id = schema_->schema_id(),
+      .first_row_id = 1L,
+      .added_rows = 1L,
+  });
+  auto metadata = MakeTableMetadata(
+      {snapshot_a, snapshot_b}, 2000L,
+      {{"main", std::make_shared<SnapshotRef>(SnapshotRef{
+                    .snapshot_id = 2000L, .retention = SnapshotRef::Branch{}})}});
+  metadata->next_row_id = 2;
+
+  ICEBERG_UNWRAP_OR_FAIL(auto builder, MakeScanBuilder<IncrementalAppendScan>(metadata));
+  builder->FromSnapshot(1000L, /*inclusive=*/true).ToSnapshot(2000L);
+  ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
+  ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
+  ASSERT_EQ(tasks.size(), 2);
+
+  std::unordered_map<std::string, std::shared_ptr<FileScanTask>> tasks_by_path;
+  for (const auto& task : tasks) {
+    tasks_by_path.emplace(task->data_file()->file_path, task);
+  }
+  ASSERT_EQ(tasks_by_path.size(), 2);
+  EXPECT_EQ(tasks_by_path.at("/path/to/file_a.parquet")->data_file()->first_row_id, 0);
+  EXPECT_EQ(
+      tasks_by_path.at("/path/to/file_a.parquet")->data_file()->data_sequence_number, 5);
+  EXPECT_EQ(tasks_by_path.at("/path/to/file_b.parquet")->data_file()->first_row_id, 1);
+  EXPECT_EQ(
+      tasks_by_path.at("/path/to/file_b.parquet")->data_file()->data_sequence_number, 7);
 }
 
 INSTANTIATE_TEST_SUITE_P(IncrementalAppendScanVersions, IncrementalAppendScanTest,

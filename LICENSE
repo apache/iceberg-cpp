@@ -215,6 +215,7 @@ License: Public Domain
 This product includes code from Apache Arrow.
 
 * Core utilities:
+  * LRU cache and memoization utilities in src/iceberg/util/cache_internal.h.
   * checked_cast utility in src/iceberg/util/checked_cast.h.
   * FnOnce utility in src/iceberg/util/functional.h.
   * visit_type utility in src/iceberg/util/visit_type.h.

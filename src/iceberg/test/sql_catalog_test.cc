@@ -226,6 +226,7 @@ TEST_F(SqlCatalogTest, TableLifecycle) {
       catalog_->CreateTable(ident, MakeSchema(), PartitionSpec::Unpartitioned(),
                             SortOrder::Unsorted(), location, {});
   ASSERT_THAT(created, IsOk());
+  EXPECT_EQ(created.value()->full_name(), "test_catalog.db.t1");
   EXPECT_THAT(catalog_->TableExists(ident), HasValue(::testing::Eq(true)));
 
   // Duplicate create fails.
@@ -241,6 +242,7 @@ TEST_F(SqlCatalogTest, TableLifecycle) {
 
   auto loaded = catalog_->LoadTable(ident);
   ASSERT_THAT(loaded, IsOk());
+  EXPECT_EQ(loaded.value()->full_name(), "test_catalog.db.t1");
 
   // Rename.
   TableIdentifier renamed{.ns = ns, .name = "t2"};

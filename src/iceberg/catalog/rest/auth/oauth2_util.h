@@ -35,34 +35,65 @@
 
 namespace iceberg::rest::auth {
 
-inline constexpr std::string_view kAuthorizationHeader = "Authorization";
-inline constexpr std::string_view kBearerPrefix = "Bearer ";
+/// \brief OAuth2 token and authentication utilities.
+class ICEBERG_REST_EXPORT OAuth2Util {
+ public:
+  OAuth2Util() = delete;
 
-/// \brief Fetch an OAuth2 token using the client_credentials grant type.
-///
-/// \param client HTTP client to use for the request.
-/// \param session Auth session for the request headers.
-/// \param properties Auth configuration containing credential, scope,
-///        token endpoint, and optional OAuth params.
-/// \return The token response or an error.
-ICEBERG_REST_EXPORT Result<OAuthTokenResponse> FetchToken(
-    HttpClient& client, AuthSession& session, const AuthProperties& properties);
+  /// \brief Fetch an OAuth2 token using the client_credentials grant type.
+  ///
+  /// \param client HTTP client to use for the request.
+  /// \param session Auth session for the request headers.
+  /// \param properties Auth configuration containing credential, scope,
+  ///        token endpoint, and optional OAuth params.
+  /// \return The token response or an error.
+  static Result<OAuthTokenResponse> FetchToken(HttpClient& client, AuthSession& session,
+                                               const AuthProperties& properties);
 
-/// \brief Build auth headers from a token string.
-///
-/// \param token Bearer token string (may be empty).
-/// \return Headers map with Authorization header if token is non-empty.
-ICEBERG_REST_EXPORT std::unordered_map<std::string, std::string> AuthHeaders(
-    const std::string& token);
+  /// \brief Build auth headers from a token string.
+  ///
+  /// \param token Bearer token string (may be empty).
+  /// \return Headers map with Authorization header if token is non-empty.
+  static std::unordered_map<std::string, std::string> AuthHeaders(
+      const std::string& token);
 
-/// \brief Extract expiration time from a JWT token.
-///
-/// Decodes the JWT payload (base64url) and reads the "exp" claim.
-/// Returns std::nullopt if the token is not a valid JWT or has no "exp" claim.
-///
-/// \param token A token string. If it is a JWT (three dot-separated base64url
-///        segments), the "exp" claim is extracted from the payload.
-/// \return Expiration time as milliseconds since epoch, or std::nullopt.
-ICEBERG_REST_EXPORT std::optional<int64_t> ExpiresAtMillis(std::string_view token);
+  /// \brief Exchange an OAuth2 token using the RFC 8693 grant type.
+  ///
+  /// \param client HTTP client to use for the request.
+  /// \param session Auth session for the request headers.
+  /// \param extra_headers Request headers applied before session authentication.
+  /// \param subject_token Subject token to exchange.
+  /// \param subject_token_type Subject token type.
+  /// \param actor_token Optional actor token.
+  /// \param actor_token_type Optional actor token type.
+  /// \param scope OAuth2 scope.
+  /// \param oauth2_server_uri Token exchange endpoint.
+  /// \param optional_params Optional OAuth parameters.
+  /// \return The token response or an error.
+  static Result<OAuthTokenResponse> ExchangeToken(
+      HttpClient& client, AuthSession& session,
+      const std::unordered_map<std::string, std::string>& extra_headers,
+      const std::string& subject_token, const std::string& subject_token_type,
+      const std::optional<std::string>& actor_token,
+      const std::optional<std::string>& actor_token_type, const std::string& scope,
+      const std::string& oauth2_server_uri,
+      const std::unordered_map<std::string, std::string>& optional_params);
+
+  /// \brief Extract expiration time from a JWT token.
+  ///
+  /// Decodes the JWT payload (base64url) and reads the "exp" claim.
+  /// Returns std::nullopt if the token is not a valid JWT or has no "exp" claim.
+  ///
+  /// \param token A token string containing three dot-separated JWT segments.
+  /// \return Expiration time as milliseconds since epoch, or std::nullopt.
+  static std::optional<int64_t> ExpiresAtMillis(std::string_view token);
+
+ private:
+  static Result<std::unordered_map<std::string, std::string>> TokenExchangeRequest(
+      const std::string& subject_token, const std::string& subject_token_type,
+      const std::optional<std::string>& actor_token,
+      const std::optional<std::string>& actor_token_type, const std::string& scope,
+      const std::unordered_map<std::string, std::string>& optional_params);
+};
 
 }  // namespace iceberg::rest::auth

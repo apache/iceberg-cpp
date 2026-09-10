@@ -22,11 +22,11 @@
 
 #include <nanoarrow/nanoarrow.h>
 
-#include "iceberg/arrow/nanoarrow_status_internal.h"
 #include "iceberg/arrow_row_builder_internal.h"
 #include "iceberg/manifest/manifest_adapter_internal.h"
 #include "iceberg/manifest/manifest_entry.h"
 #include "iceberg/manifest/manifest_list.h"
+#include "iceberg/nanoarrow_status_internal.h"
 #include "iceberg/result.h"
 #include "iceberg/schema.h"
 #include "iceberg/util/checked_cast.h"

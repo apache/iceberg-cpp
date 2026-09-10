@@ -20,6 +20,8 @@
 #include <functional>
 #include <memory>
 #include <mutex>
+#include <string>
+#include <string_view>
 #include <thread>
 #include <unordered_map>
 #include <utility>
@@ -115,6 +117,10 @@ INSTANTIATE_TEST_SUITE_P(
                            .arrow_type = ::arrow::utf8()},
         ToArrowSchemaParam{.iceberg_type = iceberg::binary(),
                            .arrow_type = ::arrow::binary()},
+        ToArrowSchemaParam{.iceberg_type = iceberg::geometry(),
+                           .arrow_type = ::arrow::binary()},
+        ToArrowSchemaParam{.iceberg_type = iceberg::geography(),
+                           .arrow_type = ::arrow::binary()},
         ToArrowSchemaParam{.iceberg_type = iceberg::uuid(),
                            .arrow_type = ::arrow::extension::uuid()},
         ToArrowSchemaParam{.iceberg_type = iceberg::fixed(20),
@@ -123,17 +129,27 @@ INSTANTIATE_TEST_SUITE_P(
                            .arrow_type = ::arrow::null()}));
 
 TEST(ToArrowSchemaTest, UnsupportedV3Types) {
-  const std::vector<std::shared_ptr<Type>> unsupported_types = {
-      iceberg::variant(), iceberg::geometry(), iceberg::geography()};
+  const std::vector<std::shared_ptr<Type>> unsupported_types = {iceberg::variant()};
 
   for (const auto& unsupported_type : unsupported_types) {
     Schema schema(
         {SchemaField::MakeOptional(/*field_id=*/1, "unsupported", unsupported_type)},
         /*schema_id=*/0);
-    ArrowSchema arrow_schema;
+    ArrowSchema arrow_schema{};
     ASSERT_THAT(ToArrowSchema(schema, &arrow_schema),
                 HasErrorMessage("is not supported by Arrow conversion"));
+    EXPECT_EQ(arrow_schema.release, nullptr);
   }
+}
+
+TEST(ToArrowSchemaTest, ReleasesSchemaOnConversionFailure) {
+  // fixed(0) passes CheckArrowCompatible but nanoarrow rejects its non-positive width.
+  Schema schema({SchemaField::MakeOptional(/*field_id=*/1, "invalid_fixed", fixed(0))},
+                /*schema_id=*/0);
+  ArrowSchema arrow_schema{};
+
+  EXPECT_THAT(ToArrowSchema(schema, &arrow_schema), IsError(ErrorKind::kInvalidSchema));
+  EXPECT_EQ(arrow_schema.release, nullptr);
 }
 
 namespace {
@@ -369,6 +385,25 @@ TEST_P(FromArrowSchemaTest, PrimitiveType) {
   ASSERT_EQ(field.field_id(), kFieldId);
   ASSERT_EQ(field.optional(), param.optional);
   ASSERT_EQ(*field.type(), *param.iceberg_type);
+}
+
+TEST(FromArrowSchemaTest, RejectMalformedFieldIdMetadata) {
+  for (const auto& field_id : {"1x", "2147483648", ""}) {
+    auto metadata =
+        ::arrow::key_value_metadata(std::unordered_map<std::string, std::string>{
+            {std::string(kParquetFieldIdKey), field_id}});
+    auto arrow_schema = ::arrow::schema({::arrow::field(
+        "foo", ::arrow::int32(), /*nullable=*/true, std::move(metadata))});
+    ArrowSchema exported_schema;
+    ASSERT_TRUE(::arrow::ExportSchema(*arrow_schema, &exported_schema).ok());
+
+    auto result = FromArrowSchema(exported_schema, /*schema_id=*/1);
+    ArrowSchemaRelease(&exported_schema);
+
+    EXPECT_THAT(result, IsError(ErrorKind::kInvalidSchema));
+    EXPECT_THAT(result,
+                HasErrorMessage(std::format("Invalid Arrow field ID: '{}'", field_id)));
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(

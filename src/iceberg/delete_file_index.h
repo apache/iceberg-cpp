@@ -363,6 +363,9 @@ class ICEBERG_EXPORT DeleteFileIndex::Builder : public ErrorCollector {
   /// \return Reference to this for method chaining.
   Builder& PlanWith(OptionalExecutor executor);
 
+  /// \brief Attach scan metrics for counting scanned/skipped delete manifests.
+  Builder& WithScanMetrics(std::shared_ptr<ScanMetrics> scan_metrics);
+
   /// \brief Build the DeleteFileIndex.
   Result<std::unique_ptr<DeleteFileIndex>> Build();
 
@@ -398,6 +401,7 @@ class ICEBERG_EXPORT DeleteFileIndex::Builder : public ErrorCollector {
   OptionalExecutor executor_;
   bool case_sensitive_ = true;
   bool ignore_residuals_ = false;
+  std::shared_ptr<ScanMetrics> scan_metrics_;
 };
 
 }  // namespace iceberg

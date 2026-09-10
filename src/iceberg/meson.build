@@ -63,6 +63,11 @@ configure_file(
     install_dir: get_option('includedir') / 'iceberg',
 )
 
+# Resolve spdlog before generating logging/config.h. The feature value controls
+# whether a missing dependency is allowed.
+spdlog_dep = dependency('spdlog', required: get_option('spdlog'))
+spdlog_enabled = spdlog_dep.found()
+
 subdir('logging')
 
 iceberg_include_dir = include_directories('..')
@@ -70,10 +75,16 @@ iceberg_sources = files(
     'arrow_c_data_guard_internal.cc',
     'arrow_c_data_util.cc',
     'arrow_row_builder.cc',
+    'catalog/catalog_util.cc',
     'catalog/memory/in_memory_catalog.cc',
     'catalog/session_catalog.cc',
     'catalog/session_context.cc',
     'delete_file_index.cc',
+    'deletes/dv_util.cc',
+    'deletes/dv_writer.cc',
+    'deletes/position_delete_index.cc',
+    'deletes/position_delete_range_consumer.cc',
+    'deletes/roaring_position_bitmap.cc',
     'expression/aggregate.cc',
     'expression/binder.cc',
     'expression/evaluator.cc',
@@ -87,12 +98,14 @@ iceberg_sources = files(
     'expression/projections.cc',
     'expression/residual_evaluator.cc',
     'expression/rewrite_not.cc',
+    'expression/sanitize_expression.cc',
     'expression/strict_metrics_evaluator.cc',
     'expression/term.cc',
     'file_io.cc',
     'file_io_registry.cc',
     'file_reader.cc',
     'file_writer.cc',
+    'geospatial.cc',
     'inheritable_metadata.cc',
     'inspect/history_table.cc',
     'inspect/metadata_table.cc',
@@ -101,6 +114,8 @@ iceberg_sources = files(
     'location_provider.cc',
     'logging/cerr_logger.cc',
     'logging/logger.cc',
+    'logging/loggers.cc',
+    'logging/spdlog_logger.cc',
     'manifest/manifest_adapter.cc',
     'manifest/manifest_entry.cc',
     'manifest/manifest_filter_manager.cc',
@@ -127,7 +142,12 @@ iceberg_sources = files(
     'partition_field.cc',
     'partition_spec.cc',
     'partition_summary.cc',
-    'puffin_dv_io.cc',
+    'puffin/file_metadata.cc',
+    'puffin/json_serde.cc',
+    'puffin/puffin_format.cc',
+    'puffin/puffin_reader.cc',
+    'puffin/puffin_writer.cc',
+    'resolving_file_io.cc',
     'row/arrow_array_wrapper.cc',
     'row/manifest_wrapper.cc',
     'row/partition_values.cc',
@@ -159,6 +179,7 @@ iceberg_sources = files(
     'update/merging_snapshot_update.cc',
     'update/overwrite_files.cc',
     'update/pending_update.cc',
+    'update/replace_partitions.cc',
     'update/rewrite_files.cc',
     'update/row_delta.cc',
     'update/set_snapshot.cc',
@@ -178,6 +199,7 @@ iceberg_sources = files(
     'util/conversions.cc',
     'util/decimal.cc',
     'util/gzip_internal.cc',
+    'util/location_util.cc',
     'util/murmurhash3_internal.cc',
     'util/property_util.cc',
     'util/retry_util.cc',
@@ -199,21 +221,10 @@ iceberg_data_sources = files(
     'data/data_writer.cc',
     'data/delete_filter.cc',
     'data/delete_loader.cc',
-    'data/deletion_vector_writer.cc',
-    'data/dv_util.cc',
     'data/equality_delete_writer.cc',
     'data/file_scan_task_reader.cc',
     'data/position_delete_writer.cc',
-    'data/puffin_dv_register.cc',
     'data/writer.cc',
-    'deletes/position_delete_index.cc',
-    'deletes/position_delete_range_consumer.cc',
-    'deletes/roaring_position_bitmap.cc',
-    'puffin/file_metadata.cc',
-    'puffin/json_serde.cc',
-    'puffin/puffin_format.cc',
-    'puffin/puffin_reader.cc',
-    'puffin/puffin_writer.cc',
 )
 
 # CRoaring does not export symbols, so on Windows it must
@@ -225,7 +236,6 @@ croaring_needs_static = (
 croaring_dep = dependency('croaring', static: croaring_needs_static)
 nanoarrow_dep = dependency('nanoarrow')
 nlohmann_json_dep = dependency('nlohmann_json')
-spdlog_dep = dependency('spdlog')
 # utf8proc's header declares its functions __declspec(dllimport) on Windows unless
 # UTF8PROC_STATIC is defined, and the wrap does not propagate that define to consumers.
 # Define it whenever utf8proc is linked statically, so the header's declarations match
@@ -243,10 +253,14 @@ zlib_dep = dependency('zlib')
 iceberg_deps = [
     nanoarrow_dep,
     nlohmann_json_dep,
-    spdlog_dep,
     utf8proc_dep,
     zlib_dep,
+    croaring_dep,
 ]
+
+if spdlog_enabled
+    iceberg_deps += spdlog_dep
+endif
 
 iceberg_lib = library(
     'iceberg',
@@ -272,7 +286,7 @@ iceberg_dep = declare_dependency(
 )
 meson.override_dependency('iceberg', iceberg_dep)
 
-iceberg_data_deps = [iceberg_dep, croaring_dep]
+iceberg_data_deps = [iceberg_dep]
 iceberg_data_lib = library(
     'iceberg_data',
     sources: iceberg_data_sources,
@@ -313,6 +327,7 @@ install_headers(
         'file_io_registry.h',
         'file_reader.h',
         'file_writer.h',
+        'geospatial.h',
         'iceberg_data_export.h',
         'iceberg_export.h',
         'inheritable_metadata.h',
@@ -323,6 +338,7 @@ install_headers(
         'name_mapping.h',
         'partition_field.h',
         'partition_spec.h',
+        'resolving_file_io.h',
         'result.h',
         'schema_field.h',
         'schema.h',

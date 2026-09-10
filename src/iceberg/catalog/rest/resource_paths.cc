@@ -51,7 +51,7 @@ Result<std::string> ResourcePaths::Config() const {
 }
 
 Result<std::string> ResourcePaths::OAuth2Tokens() const {
-  return std::format("{}/v1/{}oauth/tokens", base_uri_, prefix_);
+  return std::format("{}/v1/oauth/tokens", base_uri_);
 }
 
 Result<std::string> ResourcePaths::Namespaces() const {

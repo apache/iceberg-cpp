@@ -42,6 +42,7 @@
 #include "iceberg/avro/avro_register.h"
 #include "iceberg/avro/avro_stream_internal.h"
 #include "iceberg/avro/avro_writer.h"
+#include "iceberg/expression/literal.h"
 #include "iceberg/file_reader.h"
 #include "iceberg/metadata_columns.h"
 #include "iceberg/schema.h"
@@ -49,6 +50,7 @@
 #include "iceberg/test/matchers.h"
 #include "iceberg/test/std_io.h"
 #include "iceberg/test/temp_file_test_base.h"
+#include "iceberg/test/test_resource.h"
 #include "iceberg/type.h"
 #include "iceberg/util/checked_cast.h"
 #include "iceberg/util/uuid.h"
@@ -162,6 +164,59 @@ class AvroReaderTest : public TempFileTestBase {
     ASSERT_THAT(writer->Close(), IsOk());
   }
 
+  void CreateRowLineageAvroFile() {
+    auto schema = RowLineageSchema();
+
+    ArrowSchema arrow_c_schema;
+    ASSERT_THAT(ToArrowSchema(*schema, &arrow_c_schema), IsOk());
+    auto arrow_schema = ::arrow::ImportType(&arrow_c_schema).ValueOrDie();
+
+    auto array =
+        ::arrow::json::ArrayFromJSONString(::arrow::struct_(arrow_schema->fields()),
+                                           R"([[1, null, null],
+                                              [2, 777, 8],
+                                              [3, null, null]])")
+            .ValueOrDie();
+
+    struct ArrowArray arrow_array;
+    auto export_result = ::arrow::ExportArray(*array, &arrow_array);
+    ASSERT_TRUE(export_result.ok());
+
+    auto writer_result =
+        WriterFactoryRegistry::Open(FileFormatType::kAvro, {
+                                                               .path = temp_avro_file_,
+                                                               .schema = schema,
+                                                               .io = file_io_,
+                                                           });
+    ASSERT_TRUE(writer_result.has_value());
+    auto writer = std::move(writer_result.value());
+    ASSERT_THAT(writer->Write(&arrow_array), IsOk());
+    ASSERT_THAT(writer->Close(), IsOk());
+  }
+
+  std::shared_ptr<Schema> RowLineageSchema() {
+    return std::make_shared<Schema>(std::vector<SchemaField>{
+        SchemaField::MakeRequired(1, "id", int32()),
+        MetadataColumns::kRowId,
+        MetadataColumns::kLastUpdatedSequenceNumber,
+    });
+  }
+
+  Result<std::unique_ptr<Reader>> OpenRowLineageReader(
+      const std::shared_ptr<Schema>& schema,
+      std::optional<int64_t> first_row_id = std::nullopt,
+      std::optional<int64_t> data_sequence_number = std::nullopt) {
+    ReaderProperties properties;
+    properties.Set(ReaderProperties::kAvroSkipDatum, skip_datum_);
+    return ReaderFactoryRegistry::Open(FileFormatType::kAvro,
+                                       {.path = temp_avro_file_,
+                                        .io = file_io_,
+                                        .projection = schema,
+                                        .first_row_id = first_row_id,
+                                        .data_sequence_number = data_sequence_number,
+                                        .properties = std::move(properties)});
+  }
+
   void VerifyNextBatch(Reader& reader, std::string_view expected_json) {
     // Boilerplate to get Arrow schema
     auto schema_result = reader.Schema();
@@ -262,6 +317,34 @@ TEST_F(AvroReaderTest, ReadTwoFields) {
 
   ASSERT_NO_FATAL_FAILURE(
       VerifyNextBatch(*reader, R"([[1, "Alice"], [2, "Bob"], [3, "Charlie"]])"));
+  ASSERT_NO_FATAL_FAILURE(VerifyExhausted(*reader));
+}
+
+TEST_F(AvroReaderTest, ReadMissingFieldsWithDefaults) {
+  // The file contains only fields 1 and 2; the projected schema adds fields 3 and 4
+  // with initial-defaults, which are filled for all rows written before the columns
+  // existed.
+  CreateSimpleAvroFile();
+
+  auto schema = std::make_shared<Schema>(std::vector<SchemaField>{
+      SchemaField::MakeRequired(1, "id", std::make_shared<IntType>()),
+      SchemaField::MakeOptional(2, "name", std::make_shared<StringType>()),
+      SchemaField(3, "score", std::make_shared<LongType>(), /*optional=*/false,
+                  /*doc=*/{}, std::make_shared<const Literal>(Literal::Long(100))),
+      SchemaField(4, "status", std::make_shared<StringType>(), /*optional=*/true,
+                  /*doc=*/{}, std::make_shared<const Literal>(Literal::String("active"))),
+  });
+
+  auto reader_result = ReaderFactoryRegistry::Open(
+      FileFormatType::kAvro,
+      {.path = temp_avro_file_, .io = file_io_, .projection = schema});
+  ASSERT_THAT(reader_result, IsOk());
+  auto reader = std::move(reader_result.value());
+
+  ASSERT_NO_FATAL_FAILURE(VerifyNextBatch(*reader,
+                                          R"([[1, "Alice", 100, "active"],
+                                              [2, "Bob", 100, "active"],
+                                              [3, "Charlie", 100, "active"]])"));
   ASSERT_NO_FATAL_FAILURE(VerifyExhausted(*reader));
 }
 
@@ -694,6 +777,45 @@ TEST_P(AvroReaderParameterizedTest, ReadMetadataOnlyProjection) {
   VerifyNextBatch(*reader, expected_string);
 }
 
+TEST_P(AvroReaderParameterizedTest, ReadRowLineage) {
+  temp_avro_file_ = "avro_row_lineage.avro";
+  CreateSimpleAvroFile();
+
+  ICEBERG_UNWRAP_OR_FAIL(auto reader, OpenRowLineageReader(RowLineageSchema(), 100L, 7L));
+
+  VerifyNextBatch(*reader, R"([[1, 100, 7], [2, 101, 7], [3, 102, 7]])");
+}
+
+TEST_P(AvroReaderParameterizedTest, ReadPartialLineage) {
+  temp_avro_file_ = "avro_partial_lineage.avro";
+  CreateSimpleAvroFile();
+
+  auto schema = RowLineageSchema();
+  ICEBERG_UNWRAP_OR_FAIL(auto reader, OpenRowLineageReader(schema));
+
+  VerifyNextBatch(*reader, R"([[1, null, null], [2, null, null], [3, null, null]])");
+
+  ICEBERG_UNWRAP_OR_FAIL(auto reader_with_row_id, OpenRowLineageReader(schema, 100L));
+
+  VerifyNextBatch(*reader_with_row_id,
+                  R"([[1, 100, null], [2, 101, null], [3, 102, null]])");
+
+  ICEBERG_UNWRAP_OR_FAIL(auto reader_with_sequence,
+                         OpenRowLineageReader(schema, std::nullopt, 7L));
+
+  VerifyNextBatch(*reader_with_sequence, R"([[1, null, 7], [2, null, 7], [3, null, 7]])");
+}
+
+TEST_P(AvroReaderParameterizedTest, ReadPhysicalLineage) {
+  temp_avro_file_ = "avro_physical_lineage.avro";
+  CreateRowLineageAvroFile();
+
+  auto schema = RowLineageSchema();
+  ICEBERG_UNWRAP_OR_FAIL(auto reader, OpenRowLineageReader(schema, 100L));
+
+  VerifyNextBatch(*reader, R"([[1, 100, null], [2, 777, 8], [3, 102, null]])");
+}
+
 TEST_P(AvroReaderParameterizedTest, SplitWithRowPositionNotSupported) {
   CreateSimpleAvroFile();
 
@@ -712,6 +834,29 @@ TEST_P(AvroReaderParameterizedTest, SplitWithRowPositionNotSupported) {
   ASSERT_THAT(reader_result, IsError(ErrorKind::kNotSupported));
   EXPECT_THAT(reader_result,
               HasErrorMessage("'_pos' metadata column with split is not supported"));
+}
+
+TEST_P(AvroReaderParameterizedTest, SplitWithRowIdNotSupported) {
+  CreateSimpleAvroFile();
+
+  auto schema = std::make_shared<Schema>(std::vector<SchemaField>{
+      SchemaField::MakeRequired(1, "id", int32()),
+      MetadataColumns::kRowId,
+  });
+
+  ReaderProperties properties;
+  properties.Set(ReaderProperties::kAvroSkipDatum, skip_datum_);
+  auto reader_result = ReaderFactoryRegistry::Open(
+      FileFormatType::kAvro, {.path = temp_avro_file_,
+                              .split = Split{.offset = 100, .length = 200},
+                              .io = file_io_,
+                              .projection = schema,
+                              .first_row_id = 100L,
+                              .properties = std::move(properties)});
+
+  ASSERT_THAT(reader_result, IsError(ErrorKind::kNotSupported));
+  EXPECT_THAT(reader_result,
+              HasErrorMessage("'_row_id' metadata column with split is not supported"));
 }
 
 INSTANTIATE_TEST_SUITE_P(DirectDecoderModes, AvroReaderParameterizedTest,
@@ -933,6 +1078,37 @@ TEST_P(AvroWriterTest, WriteUuidType) {
                                           << read_array->ToString() << "\nexpected:\n"
                                           << array->ToString();
   ASSERT_NO_FATAL_FAILURE(VerifyExhausted(*reader));
+}
+
+TEST_P(AvroWriterTest, WriteGeospatialTypesAsOpaqueBytes) {
+  auto schema = std::make_shared<iceberg::Schema>(std::vector<SchemaField>{
+      SchemaField::MakeOptional(1, "geom", iceberg::geometry()),
+      SchemaField::MakeRequired(
+          2, "nested",
+          iceberg::struct_({SchemaField::MakeOptional(
+              3, "geog", iceberg::geography("EPSG:4326", EdgeAlgorithm::kVincenty))})),
+  });
+
+  ::arrow::BinaryBuilder geometry_builder;
+  const std::array<uint8_t, 3> geometry_bytes = {0xff, 0x00, 0x42};
+  ASSERT_TRUE(geometry_builder.Append(geometry_bytes.data(), geometry_bytes.size()).ok());
+  ASSERT_TRUE(geometry_builder.AppendNull().ok());
+
+  ::arrow::BinaryBuilder geography_builder;
+  const std::array<uint8_t, 4> geography_bytes = {0x01, 0x02, 0x03, 0x04};
+  ASSERT_TRUE(geography_builder.AppendNull().ok());
+  ASSERT_TRUE(
+      geography_builder.Append(geography_bytes.data(), geography_bytes.size()).ok());
+  auto nested = ::arrow::StructArray::Make({geography_builder.Finish().ValueOrDie()},
+                                           {::arrow::field("geog", ::arrow::binary())})
+                    .ValueOrDie();
+
+  auto array = ::arrow::StructArray::Make(
+                   {geometry_builder.Finish().ValueOrDie(), nested},
+                   {::arrow::field("geom", ::arrow::binary()),
+                    ::arrow::field("nested", nested->type(), /*nullable=*/false)})
+                   .ValueOrDie();
+  ASSERT_NO_FATAL_FAILURE(WriteArrowArrayAndVerify(schema, array));
 }
 
 TEST_P(AvroWriterTest, WriteUuidListType) {

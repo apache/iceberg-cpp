@@ -113,6 +113,9 @@ struct ICEBERG_EXPORT MetadataColumns {
   /// \brief Check if a column ID is a metadata column.
   static bool IsMetadataColumn(int32_t id);
 
+  /// \brief Check if a column ID is a row lineage column.
+  static bool IsRowLineageColumn(int32_t id);
+
   /// \brief Get a metadata column by name.
   ///
   /// \param name The name of the metadata column.

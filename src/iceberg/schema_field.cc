@@ -19,14 +19,17 @@
 
 #include "iceberg/schema_field.h"
 
+#include <cmath>
 #include <format>
 #include <string_view>
 #include <utility>
 #include <variant>
 
 #include "iceberg/expression/literal.h"
+#include "iceberg/result.h"
 #include "iceberg/type.h"
 #include "iceberg/util/checked_cast.h"
+#include "iceberg/util/decimal.h"
 #include "iceberg/util/formatter.h"  // IWYU pragma: keep
 #include "iceberg/util/macros.h"
 
@@ -167,6 +170,35 @@ Status ValidateDefault(const SchemaField& field, const Literal& value,
   if (*value.type() != *field.type()) {
     return InvalidSchema("{} of field {} has type {} but expected {}", kind, field.name(),
                          *value.type(), *field.type());
+  }
+  // A non-finite float/double default cannot be represented in JSON: the serializer emits
+  // it as `null`, which reads back as an absent default. Reject it so the default is not
+  // silently lost when the metadata round-trips. The literal type already matches the
+  // field type here, so this only inspects the value for actual floating fields and other
+  // types pay nothing.
+  if (field.type()->type_id() == TypeId::kFloat &&
+      !std::isfinite(std::get<float>(value.value()))) {
+    return InvalidSchema("Invalid {} value for {}: value must be finite", kind,
+                         field.name());
+  }
+  if (field.type()->type_id() == TypeId::kDouble &&
+      !std::isfinite(std::get<double>(value.value()))) {
+    return InvalidSchema("Invalid {} value for {}: value must be finite", kind,
+                         field.name());
+  }
+  // A decimal literal carries a precision in its type but stores only an unscaled value,
+  // so a value that does not fit the field precision would pass the type check above yet
+  // be rejected when the metadata is parsed back. Reject it here to keep the default
+  // consistent with what the reader accepts.
+  if (field.type()->type_id() == TypeId::kDecimal) {
+    if (const auto* dec = std::get_if<Decimal>(&value.value())) {
+      const auto& decimal_type =
+          internal::checked_cast<const DecimalType&>(*field.type());
+      if (!dec->FitsInPrecision(decimal_type.precision())) {
+        return InvalidSchema("{} of field {} does not fit precision {}", kind,
+                             field.name(), decimal_type.precision());
+      }
+    }
   }
   return {};
 }

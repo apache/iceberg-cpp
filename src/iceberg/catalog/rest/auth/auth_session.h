@@ -20,6 +20,7 @@
 #pragma once
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <unordered_map>
 
@@ -32,6 +33,16 @@
 /// \brief Authentication session interface for REST catalog.
 
 namespace iceberg::rest::auth {
+
+/// \brief OAuth2 metadata used to derive child authentication sessions.
+struct ICEBERG_REST_EXPORT OAuth2SessionInfo {
+  std::string token;
+  std::string issued_token_type;
+  std::string credential;
+  std::string scope;
+  std::string oauth2_server_uri;
+  std::unordered_map<std::string, std::string> optional_oauth_params;
+};
 
 /// \brief An authentication session that can authenticate outgoing HTTP requests.
 class ICEBERG_REST_EXPORT AuthSession {
@@ -54,6 +65,9 @@ class ICEBERG_REST_EXPORT AuthSession {
   ///         - RestError: HTTP errors from authentication service
   virtual Result<HttpRequest> Authenticate(HttpRequest request) = 0;
 
+  /// \brief Return OAuth2 metadata when this is an OAuth2 session.
+  virtual std::optional<OAuth2SessionInfo> OAuth2Info() const { return std::nullopt; }
+
   /// \brief Close the session and release any resources.
   ///
   /// This method is called when the session is no longer needed. For stateful
@@ -63,7 +77,7 @@ class ICEBERG_REST_EXPORT AuthSession {
   /// \return Status indicating success or failure of closing the session.
   virtual Status Close() { return {}; }
 
-  /// \brief Create a default session with static headers.
+  /// \brief Create a session with static headers.
   ///
   /// This factory method creates a session that adds a fixed set of headers to each
   /// request. It is suitable for authentication methods that use static credentials,
@@ -88,15 +102,15 @@ class ICEBERG_REST_EXPORT AuthSession {
   /// \param scope OAuth2 scope for refresh requests.
   /// \param keep_refreshed Whether to schedule automatic token refresh.
   /// \param optional_oauth_params Optional OAuth params (audience, resource) for refresh.
-  /// \param client HTTP client for making refresh requests. The caller owns the
-  ///        client and must keep it alive until the session is closed.
+  /// \param client HTTP client for making refresh requests. The session retains
+  ///        ownership of the client.
   /// \return A new session that manages token lifecycle automatically.
   static Result<std::shared_ptr<AuthSession>> MakeOAuth2(
       const OAuthTokenResponse& initial_token, const std::string& token_endpoint,
       const std::string& client_id, const std::string& client_secret,
       const std::string& scope, bool keep_refreshed,
       const std::unordered_map<std::string, std::string>& optional_oauth_params,
-      HttpClient& client);
+      std::shared_ptr<HttpClient> client);
 };
 
 }  // namespace iceberg::rest::auth

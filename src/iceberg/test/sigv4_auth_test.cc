@@ -21,6 +21,7 @@
 
 #  include <algorithm>
 #  include <cctype>
+#  include <memory>
 #  include <string>
 #  include <string_view>
 #  include <unordered_map>
@@ -201,7 +202,7 @@ class SigV4AuthTest : public ::testing::Test {
     return session->Authenticate(std::move(request));
   }
 
-  HttpClient client_{{}};
+  std::shared_ptr<HttpClient> client_ = std::make_shared<HttpClient>();
 };
 
 TEST_F(SigV4AuthTest, LifecycleInitializeIsIdempotent) {

@@ -28,7 +28,7 @@
 #include <vector>
 
 #include "iceberg/deletes/roaring_position_bitmap.h"
-#include "iceberg/iceberg_data_export.h"
+#include "iceberg/iceberg_export.h"
 #include "iceberg/result.h"
 #include "iceberg/type_fwd.h"
 
@@ -39,7 +39,7 @@ namespace iceberg {
 /// This class provides a domain-specific API for position deletes
 /// in Iceberg MOR (merge-on-read) tables. Positions are 0-based
 /// row indices within a data file.
-class ICEBERG_DATA_EXPORT PositionDeleteIndex {
+class ICEBERG_EXPORT PositionDeleteIndex {
  public:
   PositionDeleteIndex() = default;
   explicit PositionDeleteIndex(std::shared_ptr<DataFile> delete_file);
@@ -102,9 +102,9 @@ class ICEBERG_DATA_EXPORT PositionDeleteIndex {
   // mutation surface.
   void BulkAddForKey(int32_t key, std::span<const uint32_t> positions);
 
-  friend void ICEBERG_DATA_EXPORT
-  ForEachPositionDelete(std::span<const int64_t> positions, PositionDeleteIndex& target,
-                        std::vector<uint32_t>& scratch);
+  friend void ICEBERG_EXPORT ForEachPositionDelete(std::span<const int64_t> positions,
+                                                   PositionDeleteIndex& target,
+                                                   std::vector<uint32_t>& scratch);
 
   RoaringPositionBitmap bitmap_;
   std::vector<std::shared_ptr<DataFile>> delete_files_;

@@ -33,7 +33,6 @@
 #include <arrow/record_batch.h>
 #include <arrow/util/compression.h>
 #include <arrow/util/key_value_metadata.h>
-#include <parquet/arrow/schema.h>
 #include <parquet/arrow/writer.h>
 #include <parquet/file_writer.h>
 #include <parquet/properties.h>
@@ -41,6 +40,7 @@
 #include "iceberg/arrow/arrow_io_internal.h"
 #include "iceberg/arrow/arrow_status_internal.h"
 #include "iceberg/parquet/parquet_metrics_internal.h"
+#include "iceberg/parquet/parquet_schema_util_internal.h"
 #include "iceberg/schema_internal.h"
 #include "iceberg/type.h"
 #include "iceberg/util/macros.h"
@@ -260,9 +260,7 @@ class ParquetWriter::Impl {
     ICEBERG_RETURN_UNEXPECTED(ToArrowSchema(*schema_, &c_schema));
     ICEBERG_ARROW_ASSIGN_OR_RETURN(arrow_schema_, ::arrow::ImportSchema(&c_schema));
 
-    ICEBERG_ARROW_RETURN_NOT_OK(
-        ::parquet::arrow::ToParquetSchema(arrow_schema_.get(), *writer_properties,
-                                          *arrow_writer_properties, &parquet_schema_));
+    ICEBERG_ASSIGN_OR_RAISE(parquet_schema_, ToParquetSchema(*schema_));
     auto schema_node = std::static_pointer_cast<::parquet::schema::GroupNode>(
         parquet_schema_->schema_root());
 

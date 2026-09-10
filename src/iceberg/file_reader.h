@@ -22,6 +22,7 @@
 /// \file iceberg/file_reader.h
 /// Reader interface for file formats like Parquet, Avro and ORC.
 
+#include <cstdint>
 #include <functional>
 #include <memory>
 #include <optional>
@@ -75,6 +76,10 @@ class ICEBERG_EXPORT ReaderProperties : public ConfigBase<ReaderProperties> {
 
   /// \brief The batch size to read.
   inline static Entry<int64_t> kBatchSize{"read.batch-size", 4096};
+  /// \brief Read list columns as Arrow large_list (64-bit offsets) instead of list.
+  /// Only the Parquet reader honors this option; other readers ignore it.
+  /// Default: false (use 32-bit offset list).
+  inline static Entry<bool> kArrowUseLargeList{"read.arrow.use-large-list", false};
   /// \brief Skip GenericDatum in Avro reader for better performance.
   /// When true, decode directly from Avro to Arrow without GenericDatum intermediate.
   /// Default: true (skip GenericDatum for better performance).
@@ -105,6 +110,10 @@ struct ICEBERG_EXPORT ReaderOptions {
   /// \brief Name mapping for schema evolution compatibility. Used when reading files
   /// that may have different field names than the current schema.
   std::shared_ptr<class NameMapping> name_mapping;
+  /// \brief First row ID inherited by the data file, if assigned.
+  std::optional<int64_t> first_row_id;
+  /// \brief Data sequence number inherited by the manifest entry, if assigned.
+  std::optional<int64_t> data_sequence_number;
   /// \brief Format-specific or implementation-specific properties.
   ReaderProperties properties;
 };

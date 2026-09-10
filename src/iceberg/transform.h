@@ -159,6 +159,11 @@ class ICEBERG_EXPORT Transform : public util::Formattable {
   /// \return true if this transform can be applied to the type, false otherwise
   bool CanTransform(const Type& source_type) const;
 
+  /// \brief Validates whether this transform can bind to the given source type.
+  /// \param source_type The source type to validate against.
+  /// \return Error status if the transform cannot bind to the source type.
+  Status Validate(const std::shared_ptr<Type>& source_type) const;
+
   /// \brief Whether the transform preserves the order of values (is monotonic).
   bool PreservesOrder() const;
 
@@ -275,10 +280,11 @@ class ICEBERG_EXPORT TransformFunction {
     return lhs.Equals(rhs);
   }
 
- private:
-  /// \brief Compare two partition specs for equality.
+ protected:
+  /// \brief Compare the common properties of two transform functions for equality.
   [[nodiscard]] virtual bool Equals(const TransformFunction& other) const;
 
+ private:
   TransformType transform_type_;
   std::shared_ptr<Type> source_type_;
 };

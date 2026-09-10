@@ -28,6 +28,7 @@
 
 #include "iceberg/catalog/rest/types.h"
 #include "iceberg/file_io_registry.h"
+#include "iceberg/resolving_file_io.h"
 #include "iceberg/test/matchers.h"
 
 namespace iceberg::rest {
@@ -69,81 +70,39 @@ class MockCredentialedFileIO : public MockFileIO, public SupportsStorageCredenti
 
 }  // namespace
 
-TEST(RestFileIOTest, DetectBuiltinKindFromScheme) {
-  EXPECT_THAT(DetectBuiltinFileIO("s3://bucket/path"),
-              HasValue(::testing::Eq(BuiltinFileIOKind::kArrowS3)));
-  EXPECT_THAT(DetectBuiltinFileIO("s3a://bucket/path"),
-              HasValue(::testing::Eq(BuiltinFileIOKind::kArrowS3)));
-  EXPECT_THAT(DetectBuiltinFileIO("s3n://bucket/path"),
-              HasValue(::testing::Eq(BuiltinFileIOKind::kArrowS3)));
-  EXPECT_THAT(DetectBuiltinFileIO("/tmp/warehouse"),
-              HasValue(::testing::Eq(BuiltinFileIOKind::kArrowLocal)));
-  EXPECT_THAT(DetectBuiltinFileIO("file:///tmp/warehouse"),
-              HasValue(::testing::Eq(BuiltinFileIOKind::kArrowLocal)));
+TEST(RestFileIOTest, MakeCatalogFileIODefaultsToResolvingFileIO) {
+  // Without an explicit io-impl the scheme-resolving FileIO is used; no
+  // warehouse is required and its value never selects the implementation.
+  for (const auto& config :
+       {RestCatalogProperties::default_properties(),
+        RestCatalogProperties::FromMap({{"warehouse", "logical_warehouse_name"}}),
+        RestCatalogProperties::FromMap({{"warehouse", "s3://bucket/warehouse"}})}) {
+    auto result = MakeCatalogFileIO(config);
+    ASSERT_THAT(result, IsOk());
+    EXPECT_NE(dynamic_cast<ResolvingFileIO*>(result.value().get()), nullptr);
+  }
 }
 
-TEST(RestFileIOTest, DetectBuiltinKindRejectsUnsupportedScheme) {
-  auto result = DetectBuiltinFileIO("gs://bucket/warehouse");
-  EXPECT_THAT(result, IsError(ErrorKind::kNotSupported));
-  EXPECT_THAT(result, HasErrorMessage("not supported for automatic FileIO resolution"));
-}
-
-TEST(RestFileIOTest, MakeCatalogFileIOMissingImplAndWarehouse) {
-  auto result = MakeCatalogFileIO(RestCatalogProperties::default_properties());
-  EXPECT_THAT(result, IsError(ErrorKind::kInvalidArgument));
-}
-
-TEST(RestFileIOTest, MakeCatalogFileIORejectsIncompatibleWarehouse) {
+TEST(RestFileIOTest, DefaultResolverDelegatesThroughRegistry) {
   FileIORegistry::Register(
-      std::string(FileIORegistry::kArrowS3FileIO),
-      [](const std::unordered_map<std::string, std::string>& /*properties*/)
-          -> Result<std::unique_ptr<FileIO>> { return std::make_unique<MockFileIO>(); });
+      "test.rest.resolving-file-io",
+      {.create = [](const FileIORegistry::Properties&)
+           -> Result<std::unique_ptr<FileIO>> { return std::make_unique<MockFileIO>(); },
+       .accepts = [](std::string_view scheme) { return scheme == "rest-test"; }});
 
-  auto config = RestCatalogProperties::FromMap(
-      {{"io-impl", std::string(FileIORegistry::kArrowS3FileIO)},
-       {"warehouse", "/tmp/warehouse"}});
-  auto result = MakeCatalogFileIO(config);
-  EXPECT_THAT(result, IsError(ErrorKind::kInvalidArgument));
-  EXPECT_THAT(result, HasErrorMessage("incompatible"));
-}
-
-TEST(RestFileIOTest, MakeCatalogFileIOAutoDetectsFromWarehouse) {
-  FileIORegistry::Register(
-      std::string(FileIORegistry::kArrowLocalFileIO),
-      [](const std::unordered_map<std::string, std::string>& /*properties*/)
-          -> Result<std::unique_ptr<FileIO>> { return std::make_unique<MockFileIO>(); });
-
-  auto config = RestCatalogProperties::FromMap({{"warehouse", "/tmp/warehouse"}});
-  auto result = MakeCatalogFileIO(config);
+  auto result = MakeTableFileIO({}, {}, {});
   ASSERT_THAT(result, IsOk());
-}
-
-TEST(RestFileIOTest, MakeCatalogFileIORejectsUnsupportedWarehouseScheme) {
-  auto config = RestCatalogProperties::FromMap({{"warehouse", "gs://bucket/warehouse"}});
-  auto result = MakeCatalogFileIO(config);
-  EXPECT_THAT(result, IsError(ErrorKind::kNotSupported));
-  EXPECT_THAT(result, HasErrorMessage("not supported for automatic FileIO resolution"));
-}
-
-TEST(RestFileIOTest, MakeCatalogFileIOAllowsCompatibleWarehouse) {
-  FileIORegistry::Register(
-      std::string(FileIORegistry::kArrowS3FileIO),
-      [](const std::unordered_map<std::string, std::string>& /*properties*/)
-          -> Result<std::unique_ptr<FileIO>> { return std::make_unique<MockFileIO>(); });
-
-  auto config = RestCatalogProperties::FromMap(
-      {{"io-impl", std::string(FileIORegistry::kArrowS3FileIO)},
-       {"warehouse", "s3://my-bucket/warehouse"}});
-  auto result = MakeCatalogFileIO(config);
-  ASSERT_THAT(result, IsOk());
+  EXPECT_THAT(result.value()->DeleteFile("rest-test://file"), IsOk());
 }
 
 TEST(RestFileIOTest, MakeCatalogFileIOPassesThroughCustomImpl) {
   const std::string custom_impl = "com.mycompany.CustomFileIO";
   FileIORegistry::Register(
       custom_impl,
-      [](const std::unordered_map<std::string, std::string>& /*properties*/)
-          -> Result<std::unique_ptr<FileIO>> { return std::make_unique<MockFileIO>(); });
+      {.create = [](const std::unordered_map<std::string, std::string>& /*properties*/)
+           -> Result<std::unique_ptr<FileIO>> {
+        return std::make_unique<MockFileIO>();
+      }});
 
   auto config = RestCatalogProperties::FromMap(
       {{"io-impl", custom_impl}, {"warehouse", "/tmp/warehouse"}});
@@ -158,29 +117,17 @@ TEST(RestFileIOTest, MakeCatalogFileIOUnregisteredCustomImplReturnsNotFound) {
   EXPECT_THAT(result, IsError(ErrorKind::kNotFound));
 }
 
-TEST(RestFileIOTest, MakeCatalogFileIOSkipsCheckWhenWarehouseAbsent) {
-  FileIORegistry::Register(
-      std::string(FileIORegistry::kArrowLocalFileIO),
-      [](const std::unordered_map<std::string, std::string>& /*properties*/)
-          -> Result<std::unique_ptr<FileIO>> { return std::make_unique<MockFileIO>(); });
-
-  auto config = RestCatalogProperties::FromMap(
-      {{"io-impl", std::string(FileIORegistry::kArrowLocalFileIO)}});
-  auto result = MakeCatalogFileIO(config);
-  ASSERT_THAT(result, IsOk());
-}
-
 TEST(RestFileIOTest, TableFileIOMergesConfigAndCredentials) {
   const std::string custom_impl = "com.mycompany.CredentialedFileIO";
   captured_file_io_properties.clear();
   captured_storage_credentials.clear();
   FileIORegistry::Register(
       custom_impl,
-      [](const std::unordered_map<std::string, std::string>& properties)
-          -> Result<std::unique_ptr<FileIO>> {
+      {.create = [](const std::unordered_map<std::string, std::string>& properties)
+           -> Result<std::unique_ptr<FileIO>> {
         captured_file_io_properties = properties;
         return std::make_unique<MockCredentialedFileIO>();
-      });
+      }});
 
   auto result = MakeTableFileIO(
       {{"warehouse", "s3://catalog/warehouse"},
@@ -212,11 +159,11 @@ TEST(RestFileIOTest, TableImplOverridesWarehouseScheme) {
   captured_file_io_properties.clear();
   FileIORegistry::Register(
       std::string(FileIORegistry::kArrowS3FileIO),
-      [](const std::unordered_map<std::string, std::string>& properties)
-          -> Result<std::unique_ptr<FileIO>> {
+      {.create = [](const std::unordered_map<std::string, std::string>& properties)
+           -> Result<std::unique_ptr<FileIO>> {
         captured_file_io_properties = properties;
         return std::make_unique<MockFileIO>();
-      });
+      }});
 
   auto result =
       MakeTableFileIO({{"warehouse", "/tmp/catalog-warehouse"}},
@@ -234,8 +181,10 @@ TEST(RestFileIOTest, TableFileIORejectsCredentials) {
   const std::string custom_impl = "com.mycompany.PlainFileIO";
   FileIORegistry::Register(
       custom_impl,
-      [](const std::unordered_map<std::string, std::string>& /*properties*/)
-          -> Result<std::unique_ptr<FileIO>> { return std::make_unique<MockFileIO>(); });
+      {.create = [](const std::unordered_map<std::string, std::string>& /*properties*/)
+           -> Result<std::unique_ptr<FileIO>> {
+        return std::make_unique<MockFileIO>();
+      }});
 
   auto result = MakeTableFileIO(
       {{"warehouse", "s3://catalog/warehouse"}}, {{"io-impl", custom_impl}},
