@@ -147,7 +147,7 @@ class ICEBERG_EXPORT ManifestGroup : public ErrorCollector {
   /// stream because delete files must be indexed before data-file planning can begin.
   /// Creating the stream consumes this group's configuration, so this method may only
   /// be called on an rvalue.
-  Result<FileScanTaskStream> PlanFilesStream() &&;
+  Result<FileScanTaskStreamPtr> PlanFilesStream() &&;
 
   /// \brief Get all matching manifest entries.
   Result<std::vector<ManifestEntry>> Entries();

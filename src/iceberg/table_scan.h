@@ -469,7 +469,7 @@ class ICEBERG_EXPORT DataTableScan : public TableScan {
   /// Unlike PlanFiles(), this method does not materialize all manifest entries and scan
   /// tasks. The returned fallible, single-pass stream owns its planning resources and
   /// can outlive this scan.
-  Result<FileScanTaskStream> PlanFilesStream() const;
+  Result<FileScanTaskStreamPtr> PlanFilesStream() const;
 
  private:
   Status ReportScan(const Snapshot& snapshot, const ScanMetrics& scan_metrics) const;

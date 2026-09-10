@@ -37,8 +37,11 @@
 
 namespace iceberg {
 
-/// \brief Owning stream of manifest entries.
-using ManifestEntryStream = std::unique_ptr<Stream<ManifestEntry>>;
+/// \brief Stream of manifest entries.
+using ManifestEntryStream = Stream<ManifestEntry>;
+
+/// \brief Owning pointer to a manifest entry stream.
+using ManifestEntryStreamPtr = std::unique_ptr<ManifestEntryStream>;
 
 /// \brief Read manifest entries from a manifest file.
 class ICEBERG_EXPORT ManifestReader {
@@ -56,14 +59,14 @@ class ICEBERG_EXPORT ManifestReader {
   /// Implementations using SupportsManifestEntryStreaming produce entries lazily. Other
   /// implementations are adapted from Entries() for compatibility. The returned stream
   /// is fallible and single-pass.
-  Result<ManifestEntryStream> EntriesStream();
+  Result<ManifestEntryStreamPtr> EntriesStream();
 
   /// \brief Lazily read only live (non-deleted) manifest entries.
   ///
   /// Implementations using SupportsManifestEntryStreaming produce entries lazily. Other
   /// implementations are adapted from LiveEntries() for compatibility. The returned
   /// stream is fallible and single-pass.
-  Result<ManifestEntryStream> LiveEntriesStream();
+  Result<ManifestEntryStreamPtr> LiveEntriesStream();
 
   /// \brief Select specific columns of data file to read from the manifest entries.
   ///
@@ -161,13 +164,13 @@ class ICEBERG_EXPORT SupportsManifestEntryStreaming {
   ///
   /// The returned stream must own all resources required for consumption and must not
   /// depend on this reader remaining alive.
-  virtual Result<ManifestEntryStream> EntriesStream() = 0;
+  virtual Result<ManifestEntryStreamPtr> EntriesStream() = 0;
 
   /// \brief Lazily read only live (non-deleted) manifest entries.
   ///
   /// The returned stream must own all resources required for consumption and must not
   /// depend on this reader remaining alive.
-  virtual Result<ManifestEntryStream> LiveEntriesStream() = 0;
+  virtual Result<ManifestEntryStreamPtr> LiveEntriesStream() = 0;
 };
 
 /// \brief Read manifest files from a manifest list file.

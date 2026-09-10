@@ -108,9 +108,9 @@ Result<ScanReport> MakeScanReport(const DataTableScan& scan, const Snapshot& sna
   };
 }
 
-class ReportingFileTaskStream final : public Stream<std::shared_ptr<FileScanTask>> {
+class ReportingFileTaskStream final : public FileScanTaskStream {
  public:
-  ReportingFileTaskStream(FileScanTaskStream stream,
+  ReportingFileTaskStream(FileScanTaskStreamPtr stream,
                           std::shared_ptr<ScanMetrics> scan_metrics,
                           std::chrono::nanoseconds planning_duration,
                           std::shared_ptr<MetricsReporter> reporter, ScanReport report)
@@ -147,7 +147,7 @@ class ReportingFileTaskStream final : public Stream<std::shared_ptr<FileScanTask
     std::ignore = reporter_->Report(report_);
   }
 
-  FileScanTaskStream stream_;
+  FileScanTaskStreamPtr stream_;
   std::shared_ptr<ScanMetrics> scan_metrics_;
   std::chrono::nanoseconds planning_duration_;
   std::shared_ptr<MetricsReporter> reporter_;
@@ -721,7 +721,7 @@ Result<std::vector<std::shared_ptr<FileScanTask>>> DataTableScan::PlanFiles() co
   return tasks;
 }
 
-Result<FileScanTaskStream> DataTableScan::PlanFilesStream() const {
+Result<FileScanTaskStreamPtr> DataTableScan::PlanFilesStream() const {
   ICEBERG_ASSIGN_OR_RAISE(auto snapshot, this->snapshot());
   if (!snapshot) {
     return std::make_unique<EmptyStream<std::shared_ptr<FileScanTask>>>();

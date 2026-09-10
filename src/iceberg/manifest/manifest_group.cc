@@ -131,10 +131,9 @@ ManifestGroup::~ManifestGroup() = default;
 ManifestGroup::ManifestGroup(ManifestGroup&&) noexcept = default;
 ManifestGroup& ManifestGroup::operator=(ManifestGroup&&) noexcept = default;
 
-class ManifestGroup::FilePlanningStream final
-    : public Stream<std::shared_ptr<FileScanTask>> {
+class ManifestGroup::FilePlanningStream final : public FileScanTaskStream {
  public:
-  static Result<FileScanTaskStream> Make(std::unique_ptr<ManifestGroup> group) {
+  static Result<FileScanTaskStreamPtr> Make(std::unique_ptr<ManifestGroup> group) {
     ICEBERG_RETURN_UNEXPECTED(group->CheckErrors());
 
     group->delete_index_builder_.WithScanMetrics(group->scan_metrics_);
@@ -153,7 +152,7 @@ class ManifestGroup::FilePlanningStream final
     }
     const bool drop_stats = stats_projection.drop_stats;
 
-    return FileScanTaskStream(new FilePlanningStream(
+    return FileScanTaskStreamPtr(new FilePlanningStream(
         std::move(group), std::move(delete_index), std::move(data_file_evaluator),
         std::move(stats_projection.columns), drop_stats));
   }
@@ -221,7 +220,7 @@ class ManifestGroup::FilePlanningStream final
         drop_stats_(drop_stats) {}
 
   using TaggedEntry = std::pair<int32_t, ManifestEntry>;
-  using TaggedStream = std::pair<int32_t, ManifestEntryStream>;
+  using TaggedStream = std::pair<int32_t, ManifestEntryStreamPtr>;
 
   Result<std::optional<TaggedEntry>> NextEntry() {
     if (!group_->executor_.has_value()) {
@@ -422,7 +421,7 @@ class ManifestGroup::FilePlanningStream final
   std::vector<std::string> columns_;
   std::unordered_map<int32_t, std::unique_ptr<ManifestEvaluator>> manifest_evaluators_;
   std::unordered_map<int32_t, std::shared_ptr<ResidualEvaluator>> residual_evaluators_;
-  ManifestEntryStream entry_stream_;
+  ManifestEntryStreamPtr entry_stream_;
   std::vector<TaggedStream> batch_streams_;
   size_t next_manifest_ = 0;
   size_t next_batch_stream_ = 0;
@@ -559,7 +558,7 @@ Result<std::vector<std::shared_ptr<FileScanTask>>> ManifestGroup::PlanFiles() {
   return file_tasks;
 }
 
-Result<FileScanTaskStream> ManifestGroup::PlanFilesStream() && {
+Result<FileScanTaskStreamPtr> ManifestGroup::PlanFilesStream() && {
   auto group = std::make_unique<ManifestGroup>(std::move(*this));
   return FilePlanningStream::Make(std::move(group));
 }

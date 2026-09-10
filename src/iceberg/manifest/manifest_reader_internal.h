@@ -67,10 +67,10 @@ class ManifestReaderImpl : public ManifestReader, public SupportsManifestEntrySt
   Result<std::vector<ManifestEntry>> LiveEntries() override;
 
   /// \brief Lazily read manifest entries.
-  Result<ManifestEntryStream> EntriesStream() override;
+  Result<ManifestEntryStreamPtr> EntriesStream() override;
 
   /// \brief Lazily read only live (non-deleted) manifest entries.
-  Result<ManifestEntryStream> LiveEntriesStream() override;
+  Result<ManifestEntryStreamPtr> LiveEntriesStream() override;
 
   ManifestReader& Select(const std::vector<std::string>& columns) override;
 
@@ -88,7 +88,7 @@ class ManifestReaderImpl : public ManifestReader, public SupportsManifestEntrySt
 
  private:
   /// \brief Create an entry stream with optional live-only filtering.
-  Result<ManifestEntryStream> MakeEntriesStream(bool only_live);
+  Result<ManifestEntryStreamPtr> MakeEntriesStream(bool only_live);
 
   /// \brief Lazily open the underlying Avro reader with appropriate schema projection.
   Status OpenReader(std::shared_ptr<Schema> projection);

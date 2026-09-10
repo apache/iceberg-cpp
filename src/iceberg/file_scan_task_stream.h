@@ -20,7 +20,7 @@
 #pragma once
 
 /// \file iceberg/file_scan_task_stream.h
-/// \brief Define the owning stream type for file scan tasks.
+/// \brief Define the stream type for file scan tasks.
 
 #include <memory>
 
@@ -30,7 +30,10 @@ namespace iceberg {
 
 class FileScanTask;
 
-/// \brief Owning stream of file scan tasks.
-using FileScanTaskStream = std::unique_ptr<Stream<std::shared_ptr<FileScanTask>>>;
+/// \brief Stream of file scan tasks.
+using FileScanTaskStream = Stream<std::shared_ptr<FileScanTask>>;
+
+/// \brief Owning pointer to a file scan task stream.
+using FileScanTaskStreamPtr = std::unique_ptr<FileScanTaskStream>;
 
 }  // namespace iceberg

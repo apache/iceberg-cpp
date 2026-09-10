@@ -104,7 +104,11 @@ static_assert(std::is_move_constructible_v<MoveOnlyStream>);
 static_assert(std::is_move_assignable_v<MoveOnlyStream>);
 
 TEST(StreamTest, FileScanTaskStreamSupportsIncompleteFileScanTask) {
-  FileScanTaskStream stream;
+  static_assert(
+      std::is_same_v<FileScanTaskStream, Stream<std::shared_ptr<FileScanTask>>>);
+  static_assert(
+      std::is_same_v<FileScanTaskStreamPtr, std::unique_ptr<FileScanTaskStream>>);
+  FileScanTaskStreamPtr stream;
   EXPECT_EQ(stream, nullptr);
 }
 
