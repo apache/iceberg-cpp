@@ -17,6 +17,7 @@
  * under the License.
  */
 
+#include <algorithm>
 #include <cstddef>
 #include <cstdint>
 #include <format>
@@ -36,12 +37,62 @@
 #include "iceberg/metadata_columns.h"
 #include "iceberg/partition_spec.h"
 #include "iceberg/puffin/file_metadata.h"
+#include "iceberg/puffin/puffin_reader.h"
 #include "iceberg/result.h"
 #include "iceberg/util/content_file_util.h"
 #include "iceberg/util/macros.h"
+#include "iceberg/util/string_util.h"
 #include "iceberg/version.h"
 
 namespace iceberg {
+
+namespace {
+
+constexpr std::string_view kReferencedDataFileProperty = "referenced-data-file";
+constexpr std::string_view kCardinalityProperty = "cardinality";
+
+Status ValidateDVBlobMetadata(const puffin::BlobMetadata& blob,
+                              const DataFile& delete_file) {
+  ICEBERG_PRECHECK(blob.type == puffin::StandardBlobTypes::kDeletionVectorV1,
+                   "Invalid deletion vector blob type '{}', expected '{}'", blob.type,
+                   puffin::StandardBlobTypes::kDeletionVectorV1);
+  ICEBERG_PRECHECK(blob.snapshot_id == -1,
+                   "Deletion vector requires snapshot-id -1, got {}", blob.snapshot_id);
+  ICEBERG_PRECHECK(blob.sequence_number == -1,
+                   "Deletion vector requires sequence-number -1, got {}",
+                   blob.sequence_number);
+  ICEBERG_PRECHECK(blob.compression_codec.empty(),
+                   "Deletion vector must not be compressed, got '{}'",
+                   blob.compression_codec);
+
+  auto referenced_data_file =
+      blob.properties.find(std::string(kReferencedDataFileProperty));
+  ICEBERG_PRECHECK(referenced_data_file != blob.properties.end() &&
+                       !referenced_data_file->second.empty(),
+                   "Deletion vector blob requires non-empty '{}' property",
+                   kReferencedDataFileProperty);
+  ICEBERG_PRECHECK(
+      referenced_data_file->second == *delete_file.referenced_data_file,
+      "Manifest referenced_data_file '{}' does not match Puffin '{}' property '{}'",
+      *delete_file.referenced_data_file, kReferencedDataFileProperty,
+      referenced_data_file->second);
+
+  auto cardinality = blob.properties.find(std::string(kCardinalityProperty));
+  ICEBERG_PRECHECK(cardinality != blob.properties.end(),
+                   "Deletion vector blob requires '{}' property", kCardinalityProperty);
+  ICEBERG_ASSIGN_OR_RAISE(auto parsed_cardinality,
+                          StringUtils::ParseNumber<int64_t>(cardinality->second));
+  ICEBERG_PRECHECK(parsed_cardinality >= 0,
+                   "Deletion vector cardinality must be non-negative, got {}",
+                   parsed_cardinality);
+  ICEBERG_PRECHECK(
+      parsed_cardinality == delete_file.record_count,
+      "Manifest record_count {} does not match Puffin cardinality property {}",
+      delete_file.record_count, parsed_cardinality);
+  return {};
+}
+
+}  // namespace
 
 Result<std::vector<std::shared_ptr<DataFile>>> DVUtil::MergeAndWriteDVs(
     std::span<const DeletionVectorMergeGroup> groups, std::string_view output_path,
@@ -84,6 +135,10 @@ Result<PositionDeleteIndex> DVUtil::ReadDV(const std::shared_ptr<DataFile>& dele
           delete_file->content_size_in_bytes.has_value(),
       "Deletion vector requires content_offset and content_size_in_bytes: {}",
       delete_file->file_path);
+  ICEBERG_PRECHECK(delete_file->referenced_data_file.has_value() &&
+                       !delete_file->referenced_data_file->empty(),
+                   "Deletion vector requires referenced_data_file: {}",
+                   delete_file->file_path);
 
   const int64_t offset = delete_file->content_offset.value();
   const int64_t length = delete_file->content_size_in_bytes.value();
@@ -94,14 +149,21 @@ Result<PositionDeleteIndex> DVUtil::ReadDV(const std::shared_ptr<DataFile>& dele
                    "Cannot read deletion vector larger than 2GB: {}", length);
 
   ICEBERG_ASSIGN_OR_RAISE(auto input_file, io->NewInputFile(delete_file->file_path));
-  ICEBERG_ASSIGN_OR_RAISE(auto stream, input_file->Open());
+  ICEBERG_ASSIGN_OR_RAISE(auto reader, puffin::PuffinReader::Make(std::move(input_file)));
+  ICEBERG_ASSIGN_OR_RAISE(auto metadata, reader->ReadFileMetadata());
+  auto blob_metadata = std::ranges::find_if(
+      metadata.blobs, [offset](const auto& blob) { return blob.offset == offset; });
+  ICEBERG_PRECHECK(blob_metadata != metadata.blobs.end(),
+                   "No Puffin blob starts at manifest content_offset {}", offset);
+  ICEBERG_PRECHECK(
+      blob_metadata->length == length,
+      "Puffin blob at offset {} has length {}, manifest content_size_in_bytes is {}",
+      offset, blob_metadata->length, length);
+  ICEBERG_RETURN_UNEXPECTED(ValidateDVBlobMetadata(*blob_metadata, *delete_file));
 
-  std::vector<std::byte> bytes(static_cast<size_t>(length));
-  ICEBERG_RETURN_UNEXPECTED(stream->ReadFully(offset, bytes));
-  ICEBERG_RETURN_UNEXPECTED(stream->Close());
-
-  std::span<const uint8_t> blob(reinterpret_cast<const uint8_t*>(bytes.data()),
-                                bytes.size());
+  ICEBERG_ASSIGN_OR_RAISE(auto blob_data, reader->ReadBlob(*blob_metadata));
+  std::span<const uint8_t> blob(reinterpret_cast<const uint8_t*>(blob_data.second.data()),
+                                blob_data.second.size());
   return PositionDeleteIndex::Deserialize(blob, delete_file);
 }
 
@@ -118,8 +180,9 @@ Result<puffin::BlobMetadata> DVUtil::WriteDVBlob(puffin::PuffinWriter& writer,
       .data = std::move(data),
       .requested_compression = puffin::PuffinCompressionCodec::kNone,
   };
-  blob.properties.emplace("referenced-data-file", std::string(referenced_data_file));
-  blob.properties.emplace("cardinality", std::format("{}", positions.Cardinality()));
+  blob.properties.emplace(kReferencedDataFileProperty, std::string(referenced_data_file));
+  blob.properties.emplace(kCardinalityProperty,
+                          std::format("{}", positions.Cardinality()));
   return writer.Write(blob);
 }
 
