@@ -20,6 +20,7 @@
 #include "iceberg/deletes/position_delete_index.h"
 
 #include <cstdint>
+#include <limits>
 #include <memory>
 #include <vector>
 
@@ -183,6 +184,26 @@ TEST(PositionDeleteIndexTest, TestLargePositions) {
   ASSERT_TRUE(index.IsDeleted(large_pos));
   ASSERT_FALSE(index.IsDeleted(large_pos - 1));
   ASSERT_FALSE(index.IsDeleted(large_pos + 1));
+}
+
+TEST(PositionDeleteIndexTest, TestSparseDistantPositionsRoundTrip) {
+  PositionDeleteIndex index;
+  const std::vector<int64_t> positions = {
+      1,
+      (int64_t{1} << 32) + 2,
+      std::numeric_limits<int64_t>::max(),
+  };
+  for (auto pos : positions) {
+    index.Delete(pos);
+  }
+
+  ICEBERG_UNWRAP_OR_FAIL(auto blob, index.Serialize());
+  EXPECT_LT(blob.size(), 1024);
+  ICEBERG_UNWRAP_OR_FAIL(auto restored, PositionDeleteIndex::Deserialize(
+                                            blob, DeleteFileFor(blob, positions.size())));
+  for (auto pos : positions) {
+    EXPECT_TRUE(restored.IsDeleted(pos));
+  }
 }
 
 TEST(PositionDeleteIndexTest, TestOverlappingRanges) {
