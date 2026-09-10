@@ -20,7 +20,7 @@ services:
     image: apache/iceberg-rest-fixture:latest
     environment:
       - CATALOG_CATALOG__IMPL=org.apache.iceberg.jdbc.JdbcCatalog
-      - CATALOG_URI=jdbc:sqlite:file:/tmp/iceberg_rest_mode=memory
+      - CATALOG_URI=jdbc:sqlite:/tmp/iceberg_catalog.db?journal_mode=WAL
       - CATALOG_WAREHOUSE=file:///tmp/iceberg_warehouse
     ports:
       - "8181:8181"
