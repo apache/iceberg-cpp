@@ -358,7 +358,8 @@ struct storage_base {
   storage_base& operator=(storage_base const&) = default;
   storage_base& operator=(storage_base&&) = default;
 
-  constexpr storage_base() noexcept(noexcept(T{})) : m_val(T{}), m_has_val(true) {}
+  constexpr storage_base() noexcept(std::is_nothrow_default_constructible_v<T>)
+      : m_val(), m_has_val(true) {}
   constexpr storage_base(no_init_t) noexcept : m_no_init(), m_has_val(false) {}
 
   template <class... Args,
@@ -424,7 +425,8 @@ struct storage_base<T, E, false> {
   storage_base& operator=(storage_base const&) = default;
   storage_base& operator=(storage_base&&) = default;
 
-  constexpr storage_base() noexcept(noexcept(T{})) : m_val(T{}), m_has_val(true) {}
+  constexpr storage_base() noexcept(std::is_nothrow_default_constructible_v<T>)
+      : m_val(), m_has_val(true) {}
   constexpr storage_base(no_init_t) noexcept : m_no_init(), m_has_val(false) {}
 
   template <class... Args,
@@ -1048,7 +1050,8 @@ class ICEBERG_EXPORT [[nodiscard]] expected
   constexpr expected(const expected<U, G>& rhs)  //
       noexcept(std::is_nothrow_constructible_v<T, const U&> &&
                std::is_nothrow_constructible_v<E, const G&>)
-      : ctor_base(expected_detail::default_constructor_tag{}) {
+      : impl_base(expected_detail::no_init),
+        ctor_base(expected_detail::default_constructor_tag{}) {
     if (rhs.has_value()) {
       this->construct(*rhs);
     } else {
@@ -1065,7 +1068,8 @@ class ICEBERG_EXPORT [[nodiscard]] expected
   constexpr explicit expected(const expected<U, G>& rhs)  //
       noexcept(std::is_nothrow_constructible_v<T, const U&> &&
                std::is_nothrow_constructible_v<E, const G&>)
-      : ctor_base(expected_detail::default_constructor_tag{}) {
+      : impl_base(expected_detail::no_init),
+        ctor_base(expected_detail::default_constructor_tag{}) {
     if (rhs.has_value()) {
       this->construct(*rhs);
     } else {
@@ -1081,7 +1085,8 @@ class ICEBERG_EXPORT [[nodiscard]] expected
   constexpr expected(expected<U, G>&& rhs)  //
       noexcept(std::is_nothrow_constructible_v<T, U> &&
                std::is_nothrow_constructible_v<E, G>)
-      : ctor_base(expected_detail::default_constructor_tag{}) {
+      : impl_base(expected_detail::no_init),
+        ctor_base(expected_detail::default_constructor_tag{}) {
     if (rhs.has_value()) {
       this->construct(std::move(*rhs));
     } else {
@@ -1098,7 +1103,8 @@ class ICEBERG_EXPORT [[nodiscard]] expected
   constexpr explicit expected(expected<U, G>&& rhs)  //
       noexcept(std::is_nothrow_constructible_v<T, U> &&
                std::is_nothrow_constructible_v<E, G>)
-      : ctor_base(expected_detail::default_constructor_tag{}) {
+      : impl_base(expected_detail::no_init),
+        ctor_base(expected_detail::default_constructor_tag{}) {
     if (rhs.has_value()) {
       this->construct(std::move(*rhs));
     } else {
@@ -1832,7 +1838,8 @@ expected<void, E> : private expected_detail::move_assign_base<void, E>,
       expected_detail::enable_from_other_void_expected_t<E, U, G, const G&>* = nullptr>
   constexpr expected(const expected<U, G>& rhs) noexcept(
       std::is_nothrow_constructible_v<E, const G&>)
-      : ctor_base(expected_detail::default_constructor_tag{}) {
+      : impl_base(expected_detail::no_init),
+        ctor_base(expected_detail::default_constructor_tag{}) {
     if (rhs.has_value()) {
       this->construct();
     } else {
@@ -1847,7 +1854,8 @@ expected<void, E> : private expected_detail::move_assign_base<void, E>,
       expected_detail::enable_from_other_void_expected_t<E, U, G, const G&>* = nullptr>
   constexpr explicit expected(const expected<U, G>& rhs) noexcept(
       std::is_nothrow_constructible_v<E, const G&>)
-      : ctor_base(expected_detail::default_constructor_tag{}) {
+      : impl_base(expected_detail::no_init),
+        ctor_base(expected_detail::default_constructor_tag{}) {
     if (rhs.has_value()) {
       this->construct();
     } else {
@@ -1860,7 +1868,8 @@ expected<void, E> : private expected_detail::move_assign_base<void, E>,
             std::enable_if_t<std::is_convertible_v<G, E>>* = nullptr,  //
             expected_detail::enable_from_other_void_expected_t<E, U, G, G>* = nullptr>
   constexpr expected(expected<U, G>&& rhs) noexcept(std::is_nothrow_constructible_v<E, G>)
-      : ctor_base(expected_detail::default_constructor_tag{}) {
+      : impl_base(expected_detail::no_init),
+        ctor_base(expected_detail::default_constructor_tag{}) {
     if (rhs.has_value()) {
       this->construct();
     } else {
@@ -1874,7 +1883,8 @@ expected<void, E> : private expected_detail::move_assign_base<void, E>,
             expected_detail::enable_from_other_void_expected_t<E, U, G, G>* = nullptr>
   constexpr explicit expected(expected<U, G>&& rhs) noexcept(
       std::is_nothrow_constructible_v<E, G>)
-      : ctor_base(expected_detail::default_constructor_tag{}) {
+      : impl_base(expected_detail::no_init),
+        ctor_base(expected_detail::default_constructor_tag{}) {
     if (rhs.has_value()) {
       this->construct();
     } else {
