@@ -30,6 +30,7 @@ namespace iceberg {
 
 class FileScanTask;
 
+/// \brief Owning stream of file scan tasks.
 using FileScanTaskStream = std::unique_ptr<Stream<std::shared_ptr<FileScanTask>>>;
 
 }  // namespace iceberg

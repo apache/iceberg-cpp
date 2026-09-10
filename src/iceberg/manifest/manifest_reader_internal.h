@@ -66,8 +66,10 @@ class ManifestReaderImpl : public ManifestReader, public SupportsManifestEntrySt
 
   Result<std::vector<ManifestEntry>> LiveEntries() override;
 
+  /// \brief Lazily read manifest entries.
   Result<ManifestEntryStream> EntriesStream() override;
 
+  /// \brief Lazily read only live (non-deleted) manifest entries.
   Result<ManifestEntryStream> LiveEntriesStream() override;
 
   ManifestReader& Select(const std::vector<std::string>& columns) override;

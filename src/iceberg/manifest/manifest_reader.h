@@ -154,6 +154,7 @@ class ICEBERG_EXPORT ManifestReader {
 /// streaming.
 class ICEBERG_EXPORT SupportsManifestEntryStreaming {
  public:
+  /// \brief Destroy this streaming extension.
   virtual ~SupportsManifestEntryStreaming() = default;
 
   /// \brief Lazily read manifest entries.

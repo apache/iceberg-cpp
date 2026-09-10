@@ -44,12 +44,22 @@ namespace iceberg {
 template <typename T>
 class Stream {
  public:
+  /// \brief Destroy this stream and release its producer resources.
   virtual ~Stream() = default;
 
+  /// \brief Construct a stream in its initial state.
   Stream() = default;
+
+  /// \brief Streams cannot be copied.
   Stream(const Stream&) = delete;
+
+  /// \brief Streams cannot be copy-assigned.
   Stream& operator=(const Stream&) = delete;
+
+  /// \brief Move a stream and its terminal state.
   Stream(Stream&&) noexcept = default;
+
+  /// \brief Move-assign a stream and its terminal state.
   Stream& operator=(Stream&&) noexcept = default;
 
   /// \brief Return the next value, or std::nullopt when the stream is exhausted.
