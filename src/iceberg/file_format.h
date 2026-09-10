@@ -37,6 +37,7 @@ enum class ICEBERG_EXPORT FileFormatType {
   kAvro,
   kOrc,
   kPuffin,
+  kNimble,
 };
 
 /// \brief Convert a FileFormatType to a string
@@ -50,6 +51,8 @@ ICEBERG_EXPORT inline std::string_view ToString(FileFormatType format_type) {
       return "orc";
     case FileFormatType::kPuffin:
       return "puffin";
+    case FileFormatType::kNimble:
+      return "nimble";
   }
   std::unreachable();
 }
@@ -62,6 +65,7 @@ ICEBERG_EXPORT inline Result<FileFormatType> FileFormatTypeFromString(
   if (lower == "avro") return FileFormatType::kAvro;
   if (lower == "orc") return FileFormatType::kOrc;
   if (lower == "puffin") return FileFormatType::kPuffin;
+  if (lower == "nimble") return FileFormatType::kNimble;
   return InvalidArgument("Invalid file format type: {}", str);
 }
 
