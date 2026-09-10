@@ -23,6 +23,7 @@
 /// Index of deleted row positions for a data file.
 
 #include <cstdint>
+#include <functional>
 #include <memory>
 #include <span>
 #include <vector>
@@ -65,6 +66,9 @@ class ICEBERG_EXPORT PositionDeleteIndex {
 
   /// \brief Get the number of deleted positions.
   int64_t Cardinality() const;
+
+  /// \brief Iterate over deleted positions in ascending order.
+  void ForEach(const std::function<void(int64_t)>& fn) const;
 
   /// \brief Merge another index into this one.
   /// \param other The index to merge (union operation)

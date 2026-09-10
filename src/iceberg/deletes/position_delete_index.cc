@@ -136,6 +136,10 @@ int64_t PositionDeleteIndex::Cardinality() const {
   return static_cast<int64_t>(bitmap_.Cardinality());
 }
 
+void PositionDeleteIndex::ForEach(const std::function<void(int64_t)>& fn) const {
+  bitmap_.ForEach(fn);
+}
+
 void PositionDeleteIndex::Merge(const PositionDeleteIndex& other) {
   bitmap_.Or(other.bitmap_);
   delete_files_.insert(delete_files_.end(), other.delete_files_.begin(),

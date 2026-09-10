@@ -16,6 +16,11 @@
 # under the License.
 
 install_headers(
-    ['history_table.h', 'metadata_table.h', 'snapshots_table.h'],
+    [
+        'history_table.h',
+        'metadata_table.h',
+        'position_deletes_table.h',
+        'snapshots_table.h',
+    ],
     subdir: 'iceberg/inspect',
 )

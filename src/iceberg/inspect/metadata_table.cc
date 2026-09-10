@@ -23,6 +23,7 @@
 #include <utility>
 
 #include "iceberg/inspect/history_table.h"
+#include "iceberg/inspect/position_deletes_table.h"
 #include "iceberg/inspect/snapshots_table.h"
 
 namespace iceberg {
@@ -35,6 +36,10 @@ MetadataTable::MetadataTable(std::shared_ptr<Table> source_table,
 
 MetadataTable::~MetadataTable() = default;
 
+Result<ArrowArray> MetadataTable::Scan(const Schema& /*projected_schema*/) {
+  return NotSupported("Scan is not supported for this metadata table type");
+}
+
 Result<std::unique_ptr<MetadataTable>> MetadataTable::Make(std::shared_ptr<Table> table,
                                                            Kind kind) {
   if (table == nullptr) [[unlikely]] {
@@ -46,6 +51,8 @@ Result<std::unique_ptr<MetadataTable>> MetadataTable::Make(std::shared_ptr<Table
       return SnapshotsTable::Make(table);
     case Kind::kHistory:
       return HistoryTable::Make(table);
+    case Kind::kPositionDeletes:
+      return PositionDeletesTable::Make(table);
   }
 
   return NotSupported("Unsupported metadata table type");
