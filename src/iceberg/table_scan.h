@@ -30,13 +30,13 @@
 #include <unordered_set>
 #include <vector>
 
-#include "iceberg/file_scan_task_stream.h"
 #include "iceberg/iceberg_export.h"
 #include "iceberg/result.h"
 #include "iceberg/table_metadata.h"
 #include "iceberg/type_fwd.h"
 #include "iceberg/util/error_collector.h"
 #include "iceberg/util/executor.h"
+#include "iceberg/util/stream.h"
 
 namespace iceberg {
 
@@ -96,6 +96,12 @@ class ICEBERG_EXPORT FileScanTask : public ScanTask {
   std::vector<std::shared_ptr<DataFile>> delete_files_;
   std::shared_ptr<Expression> residual_filter_;
 };
+
+/// \brief Stream of file scan tasks.
+using FileScanTaskStream = Stream<std::shared_ptr<FileScanTask>>;
+
+/// \brief Owning pointer to a file scan task stream.
+using FileScanTaskStreamPtr = std::unique_ptr<FileScanTaskStream>;
 
 enum class ChangelogOperation : uint8_t {
   kInsert,

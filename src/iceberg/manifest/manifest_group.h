@@ -30,11 +30,11 @@
 #include <vector>
 
 #include "iceberg/delete_file_index.h"
-#include "iceberg/file_scan_task_stream.h"
 #include "iceberg/iceberg_export.h"
 #include "iceberg/manifest/manifest_entry.h"
 #include "iceberg/manifest/manifest_list.h"
 #include "iceberg/result.h"
+#include "iceberg/table_scan.h"
 #include "iceberg/type_fwd.h"
 #include "iceberg/util/error_collector.h"
 #include "iceberg/util/executor.h"

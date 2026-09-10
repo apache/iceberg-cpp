@@ -17,6 +17,8 @@
  * under the License.
  */
 
+#include "iceberg/util/stream.h"
+
 #include <memory>
 #include <optional>
 #include <type_traits>
@@ -24,7 +26,6 @@
 
 #include <gtest/gtest.h>
 
-#include "iceberg/file_scan_task_stream.h"
 #include "iceberg/test/matchers.h"
 
 namespace iceberg {
@@ -103,12 +104,9 @@ static_assert(std::is_move_assignable_v<CopyOnlyStream>);
 static_assert(std::is_move_constructible_v<MoveOnlyStream>);
 static_assert(std::is_move_assignable_v<MoveOnlyStream>);
 
-TEST(StreamTest, FileScanTaskStreamSupportsIncompleteFileScanTask) {
-  static_assert(
-      std::is_same_v<FileScanTaskStream, Stream<std::shared_ptr<FileScanTask>>>);
-  static_assert(
-      std::is_same_v<FileScanTaskStreamPtr, std::unique_ptr<FileScanTaskStream>>);
-  FileScanTaskStreamPtr stream;
+TEST(StreamTest, SupportsIncompleteSharedPointerValue) {
+  class IncompleteType;
+  std::unique_ptr<Stream<std::shared_ptr<IncompleteType>>> stream;
   EXPECT_EQ(stream, nullptr);
 }
 

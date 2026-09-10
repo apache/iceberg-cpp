@@ -326,7 +326,6 @@ install_headers(
         'file_io.h',
         'file_io_registry.h',
         'file_reader.h',
-        'file_scan_task_stream.h',
         'file_writer.h',
         'geospatial.h',
         'iceberg_data_export.h',
