@@ -21,13 +21,42 @@
 
 #include <bit>
 #include <concepts>
+#include <cstddef>
 #include <cstdint>
 #include <cstring>
+#include <type_traits>
 
 /// \file iceberg/util/endian.h
 /// \brief Endianness conversion utilities
 
 namespace iceberg {
+
+namespace internal {
+
+// std::byteswap is C++23 and this header is public. GCC and Clang provide the same
+// swap as builtins, which are usable in constant expressions and compile to a
+// single instruction at any optimization level; other compilers reverse the bytes
+// by hand.
+template <std::unsigned_integral T>
+constexpr T ByteSwapUnsigned(T value) {
+#if defined(__GNUC__) || defined(__clang__)
+  if constexpr (sizeof(T) == sizeof(uint16_t)) {
+    return static_cast<T>(__builtin_bswap16(value));
+  } else if constexpr (sizeof(T) == sizeof(uint32_t)) {
+    return static_cast<T>(__builtin_bswap32(value));
+  } else if constexpr (sizeof(T) == sizeof(uint64_t)) {
+    return static_cast<T>(__builtin_bswap64(value));
+  }
+#endif
+  T swapped{0};
+  for (size_t byte = 0; byte < sizeof(T); ++byte) {
+    swapped = static_cast<T>(swapped << 8) | static_cast<T>(value & 0xFF);
+    value = static_cast<T>(value >> 8);
+  }
+  return swapped;
+}
+
+}  // namespace internal
 
 /// \brief Concept for values that can be converted to/from another endian format.
 template <typename T>
@@ -40,14 +69,15 @@ constexpr T ByteSwap(T value) {
   if constexpr (sizeof(T) <= 1) {
     return value;
   } else if constexpr (std::is_integral_v<T>) {
-    return std::byteswap(value);
+    return static_cast<T>(
+        internal::ByteSwapUnsigned(static_cast<std::make_unsigned_t<T>>(value)));
   } else if constexpr (std::is_floating_point_v<T>) {
     if constexpr (sizeof(T) == sizeof(uint16_t)) {
-      return std::bit_cast<T>(std::byteswap(std::bit_cast<uint16_t>(value)));
+      return std::bit_cast<T>(internal::ByteSwapUnsigned(std::bit_cast<uint16_t>(value)));
     } else if constexpr (sizeof(T) == sizeof(uint32_t)) {
-      return std::bit_cast<T>(std::byteswap(std::bit_cast<uint32_t>(value)));
+      return std::bit_cast<T>(internal::ByteSwapUnsigned(std::bit_cast<uint32_t>(value)));
     } else if constexpr (sizeof(T) == sizeof(uint64_t)) {
-      return std::bit_cast<T>(std::byteswap(std::bit_cast<uint64_t>(value)));
+      return std::bit_cast<T>(internal::ByteSwapUnsigned(std::bit_cast<uint64_t>(value)));
     } else {
       static_assert(sizeof(T) == 0,
                     "Unsupported floating-point size for endian conversion.");
