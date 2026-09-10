@@ -19,6 +19,9 @@
 
 #include "iceberg/expected.h"
 
+#include <functional>
+#include <type_traits>
+
 #include <gtest/gtest.h>
 
 TEST(ExpectedTest, DefaultCons) {
@@ -55,6 +58,50 @@ TEST(ExpectedTest, ExplicitConversion) {
 
 TEST(ExpectedTest, ImplicitConversionFrom) {
   EXPECT_FALSE((std::is_convertible_v<iceberg::expected<std::string, int>, int>));
+}
+
+TEST(ExpectedTest, ConversionToValueWithoutDefaultConstructor) {
+  int value = 42;
+  iceberg::expected<std::reference_wrapper<int>, int> ref = std::ref(value);
+
+  iceberg::expected<std::reference_wrapper<const int>, int> from_value = ref;
+  ASSERT_TRUE(from_value.has_value());
+  EXPECT_EQ(from_value->get(), 42);
+
+  iceberg::expected<std::reference_wrapper<const int>, int> from_error =
+      iceberg::expected<std::reference_wrapper<int>, int>{iceberg::unexpect, 7};
+  ASSERT_FALSE(from_error.has_value());
+  EXPECT_EQ(from_error.error(), 7);
+
+  EXPECT_FALSE((std::is_default_constructible_v<
+                iceberg::expected<std::reference_wrapper<int>, int>>));
+}
+
+namespace {
+
+// Counts live objects, to catch a value constructed without being destroyed.
+struct LiveCount {
+  static inline int live = 0;
+  LiveCount() { ++live; }
+  explicit LiveCount(int) { ++live; }
+  LiveCount(const LiveCount&) { ++live; }
+  LiveCount(LiveCount&&) noexcept { ++live; }
+  LiveCount& operator=(const LiveCount&) = default;
+  LiveCount& operator=(LiveCount&&) noexcept = default;
+  ~LiveCount() { --live; }
+};
+
+}  // namespace
+
+TEST(ExpectedTest, ConversionConstructsValueOnce) {
+  {
+    iceberg::expected<int, int> value = 1;
+    iceberg::expected<LiveCount, int> from_value(value);
+    iceberg::expected<int, int> error = iceberg::unexpected(2);
+    iceberg::expected<LiveCount, int> from_error(error);
+    EXPECT_EQ(LiveCount::live, 1);
+  }
+  EXPECT_EQ(LiveCount::live, 0);
 }
 
 TEST(ExpectedTest, ExplictVoidE) {
@@ -634,3 +681,4 @@ TEST(ExpectedTest, VoidTErrorOrNoxcept) {
     EXPECT_FALSE(noexcept(e.error_or(FromType{})));
   }
 }
+
