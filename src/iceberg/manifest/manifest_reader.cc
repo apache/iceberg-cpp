@@ -815,7 +815,7 @@ class ManifestEntryStreamImpl final : public Stream<ManifestEntry> {
 
 }  // namespace
 
-Result<std::unique_ptr<Stream<ManifestEntry>>> ManifestReader::EntriesStream() {
+Result<ManifestEntryStream> ManifestReader::EntriesStream() {
   if (auto* streaming_reader = dynamic_cast<SupportsManifestEntryStreaming*>(this)) {
     return streaming_reader->EntriesStream();
   }
@@ -823,7 +823,7 @@ Result<std::unique_ptr<Stream<ManifestEntry>>> ManifestReader::EntriesStream() {
   return std::make_unique<VectorStream<ManifestEntry>>(std::move(entries));
 }
 
-Result<std::unique_ptr<Stream<ManifestEntry>>> ManifestReader::LiveEntriesStream() {
+Result<ManifestEntryStream> ManifestReader::LiveEntriesStream() {
   if (auto* streaming_reader = dynamic_cast<SupportsManifestEntryStreaming*>(this)) {
     return streaming_reader->LiveEntriesStream();
   }
@@ -1011,16 +1011,15 @@ Result<std::vector<ManifestEntry>> ManifestReaderImpl::LiveEntries() {
   return entries->ToVector();
 }
 
-Result<std::unique_ptr<Stream<ManifestEntry>>> ManifestReaderImpl::EntriesStream() {
+Result<ManifestEntryStream> ManifestReaderImpl::EntriesStream() {
   return MakeEntriesStream(/*only_live=*/false);
 }
 
-Result<std::unique_ptr<Stream<ManifestEntry>>> ManifestReaderImpl::LiveEntriesStream() {
+Result<ManifestEntryStream> ManifestReaderImpl::LiveEntriesStream() {
   return MakeEntriesStream(/*only_live=*/true);
 }
 
-Result<std::unique_ptr<Stream<ManifestEntry>>> ManifestReaderImpl::MakeEntriesStream(
-    bool only_live) {
+Result<ManifestEntryStream> ManifestReaderImpl::MakeEntriesStream(bool only_live) {
   ICEBERG_ASSIGN_OR_RAISE(auto partition_type, spec_->RawPartitionType(*schema_));
   auto data_file_schema = DataFile::Type(std::move(partition_type))->ToSchema();
 
@@ -1060,7 +1059,7 @@ Result<std::unique_ptr<Stream<ManifestEntry>>> ManifestReaderImpl::MakeEntriesSt
   }
 
   bool drop_stats = drop_stats_ && ShouldDropStats(columns_);
-  auto stream = std::unique_ptr<Stream<ManifestEntry>>(new ManifestEntryStreamImpl(
+  auto stream = ManifestEntryStream(new ManifestEntryStreamImpl(
       std::move(file_reader_), file_schema_, std::move(arrow_schema),
       inheritable_metadata_, first_row_id_, is_committed_, only_live,
       std::move(evaluator), std::move(metrics_evaluator), partition_set_, skip_counter_,

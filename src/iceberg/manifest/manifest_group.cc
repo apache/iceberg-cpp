@@ -221,7 +221,7 @@ class ManifestGroup::FilePlanningStream final
         drop_stats_(drop_stats) {}
 
   using TaggedEntry = std::pair<int32_t, ManifestEntry>;
-  using TaggedStream = std::pair<int32_t, std::unique_ptr<Stream<ManifestEntry>>>;
+  using TaggedStream = std::pair<int32_t, ManifestEntryStream>;
 
   Result<std::optional<TaggedEntry>> NextEntry() {
     if (!group_->executor_.has_value()) {
@@ -422,7 +422,7 @@ class ManifestGroup::FilePlanningStream final
   std::vector<std::string> columns_;
   std::unordered_map<int32_t, std::unique_ptr<ManifestEvaluator>> manifest_evaluators_;
   std::unordered_map<int32_t, std::shared_ptr<ResidualEvaluator>> residual_evaluators_;
-  std::unique_ptr<Stream<ManifestEntry>> entry_stream_;
+  ManifestEntryStream entry_stream_;
   std::vector<TaggedStream> batch_streams_;
   size_t next_manifest_ = 0;
   size_t next_batch_stream_ = 0;
