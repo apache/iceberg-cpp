@@ -50,15 +50,17 @@ class ICEBERG_EXPORT ManifestReader {
 
   /// \brief Lazily read manifest entries.
   ///
-  /// Implementations using SupportsManifestEntryIteration stream entries lazily. Other
-  /// implementations are adapted from Entries() for compatibility.
-  Result<std::unique_ptr<Iterator<ManifestEntry>>> EntriesIterator();
+  /// Implementations using SupportsManifestEntryStreaming produce entries lazily. Other
+  /// implementations are adapted from Entries() for compatibility. The returned stream
+  /// is fallible and single-pass.
+  Result<std::unique_ptr<Iterator<ManifestEntry>>> EntriesStream();
 
   /// \brief Lazily read only live (non-deleted) manifest entries.
   ///
-  /// Implementations using SupportsManifestEntryIteration stream entries lazily. Other
-  /// implementations are adapted from LiveEntries() for compatibility.
-  Result<std::unique_ptr<Iterator<ManifestEntry>>> LiveEntriesIterator();
+  /// Implementations using SupportsManifestEntryStreaming produce entries lazily. Other
+  /// implementations are adapted from LiveEntries() for compatibility. The returned
+  /// stream is fallible and single-pass.
+  Result<std::unique_ptr<Iterator<ManifestEntry>>> LiveEntriesStream();
 
   /// \brief Select specific columns of data file to read from the manifest entries.
   ///
@@ -145,23 +147,23 @@ class ICEBERG_EXPORT ManifestReader {
       const std::vector<std::string>& columns);
 };
 
-/// \brief Optional mix-in for ManifestReader implementations that support lazy entry
-/// iteration.
-class ICEBERG_EXPORT SupportsManifestEntryIteration {
+/// \brief Optional mix-in for ManifestReader implementations that support entry
+/// streaming.
+class ICEBERG_EXPORT SupportsManifestEntryStreaming {
  public:
-  virtual ~SupportsManifestEntryIteration() = default;
+  virtual ~SupportsManifestEntryStreaming() = default;
 
   /// \brief Lazily read manifest entries.
   ///
-  /// The returned iterator must own all resources required for iteration and must not
+  /// The returned stream must own all resources required for iteration and must not
   /// depend on this reader remaining alive.
-  virtual Result<std::unique_ptr<Iterator<ManifestEntry>>> EntriesIterator() = 0;
+  virtual Result<std::unique_ptr<Iterator<ManifestEntry>>> EntriesStream() = 0;
 
   /// \brief Lazily read only live (non-deleted) manifest entries.
   ///
-  /// The returned iterator must own all resources required for iteration and must not
+  /// The returned stream must own all resources required for iteration and must not
   /// depend on this reader remaining alive.
-  virtual Result<std::unique_ptr<Iterator<ManifestEntry>>> LiveEntriesIterator() = 0;
+  virtual Result<std::unique_ptr<Iterator<ManifestEntry>>> LiveEntriesStream() = 0;
 };
 
 /// \brief Read manifest files from a manifest list file.

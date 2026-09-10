@@ -134,13 +134,13 @@ ManifestGroup& ManifestGroup::operator=(ManifestGroup&&) noexcept = default;
 class ManifestGroup::FilePlanningIterator final
     : public Iterator<std::shared_ptr<FileScanTask>> {
  public:
-  static Result<FileScanTaskIterator> Make(std::unique_ptr<ManifestGroup> group) {
+  static Result<FileScanTaskStream> Make(std::unique_ptr<ManifestGroup> group) {
     ICEBERG_RETURN_UNEXPECTED(group->CheckErrors());
 
     group->delete_index_builder_.WithScanMetrics(group->scan_metrics_);
     ICEBERG_ASSIGN_OR_RAISE(auto delete_index, group->delete_index_builder_.Build());
 
-    const bool drop_stats =
+    auto stats_projection =
         group->PrepareStatsProjection(delete_index->has_equality_deletes());
 
     std::unique_ptr<Evaluator> data_file_evaluator;
@@ -151,10 +151,11 @@ class ManifestGroup::FilePlanningIterator final
           Evaluator::Make(*DataFileFilterSchema(), group->file_filter_,
                           group->case_sensitive_));
     }
+    const bool drop_stats = stats_projection.drop_stats;
 
-    return FileScanTaskIterator(
-        new FilePlanningIterator(std::move(group), std::move(delete_index),
-                                 std::move(data_file_evaluator), drop_stats));
+    return FileScanTaskStream(new FilePlanningIterator(
+        std::move(group), std::move(delete_index), std::move(data_file_evaluator),
+        std::move(stats_projection.columns), drop_stats));
   }
 
   Result<std::optional<std::shared_ptr<FileScanTask>>> NextImpl() override {
@@ -211,10 +212,12 @@ class ManifestGroup::FilePlanningIterator final
  private:
   FilePlanningIterator(std::unique_ptr<ManifestGroup> group,
                        std::unique_ptr<DeleteFileIndex> delete_index,
-                       std::unique_ptr<Evaluator> data_file_evaluator, bool drop_stats)
+                       std::unique_ptr<Evaluator> data_file_evaluator,
+                       std::vector<std::string> columns, bool drop_stats)
       : group_(std::move(group)),
         delete_index_(std::move(delete_index)),
         data_file_evaluator_(std::move(data_file_evaluator)),
+        columns_(std::move(columns)),
         drop_stats_(drop_stats) {}
 
   using TaggedEntry = std::pair<int32_t, ManifestEntry>;
@@ -335,10 +338,10 @@ class ManifestGroup::FilePlanningIterator final
         continue;
       }
 
-      ICEBERG_ASSIGN_OR_RAISE(auto reader, group_->MakeReader(manifest));
+      ICEBERG_ASSIGN_OR_RAISE(auto reader, group_->MakeReader(manifest, columns_));
       ICEBERG_ASSIGN_OR_RAISE(entry_iterator_, group_->ignore_deleted_
-                                                   ? reader->LiveEntriesIterator()
-                                                   : reader->EntriesIterator());
+                                                   ? reader->LiveEntriesStream()
+                                                   : reader->EntriesStream());
       current_spec_id_ = manifest.partition_spec_id;
       return true;
     }
@@ -369,10 +372,11 @@ class ManifestGroup::FilePlanningIterator final
         ParallelCollect(
             group_->executor_, manifests,
             [this](const ManifestFile* manifest) -> Result<std::vector<TaggedIterator>> {
-              ICEBERG_ASSIGN_OR_RAISE(auto reader, group_->MakeReader(*manifest));
+              ICEBERG_ASSIGN_OR_RAISE(auto reader,
+                                      group_->MakeReader(*manifest, columns_));
               ICEBERG_ASSIGN_OR_RAISE(auto iterator, group_->ignore_deleted_
-                                                         ? reader->LiveEntriesIterator()
-                                                         : reader->EntriesIterator());
+                                                         ? reader->LiveEntriesStream()
+                                                         : reader->EntriesStream());
 
               std::vector<TaggedIterator> tagged_iterators;
               tagged_iterators.emplace_back(manifest->partition_spec_id,
@@ -416,6 +420,7 @@ class ManifestGroup::FilePlanningIterator final
   std::unique_ptr<ManifestGroup> group_;
   std::unique_ptr<DeleteFileIndex> delete_index_;
   std::unique_ptr<Evaluator> data_file_evaluator_;
+  std::vector<std::string> columns_;
   std::unordered_map<int32_t, std::unique_ptr<ManifestEvaluator>> manifest_evaluators_;
   std::unordered_map<int32_t, std::shared_ptr<ResidualEvaluator>> residual_evaluators_;
   std::unique_ptr<Iterator<ManifestEntry>> entry_iterator_;
@@ -555,7 +560,7 @@ Result<std::vector<std::shared_ptr<FileScanTask>>> ManifestGroup::PlanFiles() {
   return file_tasks;
 }
 
-Result<FileScanTaskIterator> ManifestGroup::PlanFilesIterator() && {
+Result<FileScanTaskStream> ManifestGroup::PlanFilesStream() && {
   auto group = std::make_unique<ManifestGroup>(std::move(*this));
   return FilePlanningIterator::Make(std::move(group));
 }
@@ -585,7 +590,7 @@ Result<std::vector<std::shared_ptr<ScanTask>>> ManifestGroup::Plan(
   delete_index_builder_.WithScanMetrics(scan_metrics_);
   ICEBERG_ASSIGN_OR_RAISE(auto delete_index, delete_index_builder_.Build());
 
-  const bool drop_stats = PrepareStatsProjection(delete_index->has_equality_deletes());
+  auto stats_projection = PrepareStatsProjection(delete_index->has_equality_deletes());
 
   std::unordered_map<int32_t, std::unique_ptr<TaskContext>> task_context_cache;
   auto get_task_context = [&](int32_t spec_id) -> Result<TaskContext*> {
@@ -603,13 +608,13 @@ Result<std::vector<std::shared_ptr<ScanTask>>> ManifestGroup::Plan(
         TaskContext{.spec = spec,
                     .deletes = delete_index.get(),
                     .residuals = residuals,
-                    .drop_stats = drop_stats,
+                    .drop_stats = stats_projection.drop_stats,
                     .columns_to_keep_stats = columns_to_keep_stats_});
 
     return task_context_cache[spec_id].get();
   };
 
-  ICEBERG_ASSIGN_OR_RAISE(auto entry_groups, ReadEntries());
+  ICEBERG_ASSIGN_OR_RAISE(auto entry_groups, ReadEntries(stats_projection.columns));
 
   std::vector<std::shared_ptr<ScanTask>> all_tasks;
   for (auto& [spec_id, entries] : entry_groups) {
@@ -623,7 +628,7 @@ Result<std::vector<std::shared_ptr<ScanTask>>> ManifestGroup::Plan(
 }
 
 Result<std::vector<ManifestEntry>> ManifestGroup::Entries() {
-  ICEBERG_ASSIGN_OR_RAISE(auto entry_groups, ReadEntries());
+  ICEBERG_ASSIGN_OR_RAISE(auto entry_groups, ReadEntries(columns_));
 
   std::vector<ManifestEntry> all_entries;
   for (auto& [_, entries] : entry_groups) {
@@ -635,13 +640,14 @@ Result<std::vector<ManifestEntry>> ManifestGroup::Entries() {
 }
 
 Result<std::unique_ptr<ManifestReader>> ManifestGroup::MakeReader(
-    const ManifestFile& manifest) {
+    const ManifestFile& manifest, const std::vector<std::string>& columns) {
   ICEBERG_ASSIGN_OR_RAISE(auto reader,
                           ManifestReader::Make(manifest, io_, schema_, specs_by_id_));
 
-  auto columns = columns_;
+  auto reader_columns = columns;
   if (file_filter_ && file_filter_->op() != Expression::Operation::kTrue &&
-      !columns.empty() && !std::ranges::contains(columns, Schema::kAllColumns)) {
+      !reader_columns.empty() &&
+      !std::ranges::contains(reader_columns, Schema::kAllColumns)) {
     auto data_file_schema = DataFileFilterSchema();
     ICEBERG_ASSIGN_OR_RAISE(
         auto bound_file_filter,
@@ -649,7 +655,8 @@ Result<std::unique_ptr<ManifestReader>> ManifestGroup::MakeReader(
     ICEBERG_ASSIGN_OR_RAISE(auto referenced_field_ids,
                             ReferenceVisitor::GetReferencedFieldIds(bound_file_filter));
 
-    std::unordered_set<std::string> selected_columns(columns.cbegin(), columns.cend());
+    std::unordered_set<std::string> selected_columns(reader_columns.cbegin(),
+                                                     reader_columns.cend());
     for (const auto field_id : referenced_field_ids) {
       if (field_id == DataFile::kSpecIdFieldId) {
         continue;
@@ -661,8 +668,8 @@ Result<std::unique_ptr<ManifestReader>> ManifestGroup::MakeReader(
         if (selected_columns.contains(column_name_str)) {
           continue;
         }
-        columns.push_back(std::move(column_name_str));
-        selected_columns.insert(columns.back());
+        reader_columns.push_back(std::move(column_name_str));
+        selected_columns.insert(reader_columns.back());
       }
     }
   }
@@ -670,7 +677,7 @@ Result<std::unique_ptr<ManifestReader>> ManifestGroup::MakeReader(
   reader->FilterRows(data_filter_)
       .FilterPartitions(partition_filter_)
       .CaseSensitive(case_sensitive_)
-      .Select(std::move(columns));
+      .Select(std::move(reader_columns));
 
   if (scan_metrics_) {
     reader->SkipCounter(scan_metrics_->skipped_data_files);
@@ -679,20 +686,22 @@ Result<std::unique_ptr<ManifestReader>> ManifestGroup::MakeReader(
   return reader;
 }
 
-bool ManifestGroup::PrepareStatsProjection(bool has_equality_deletes) {
+ManifestGroup::StatsProjection ManifestGroup::PrepareStatsProjection(
+    bool has_equality_deletes) const {
   // The caller's projection records whether stats were requested. Equality-delete
   // matching may add stats temporarily, but they should still be dropped from the
   // result when the original projection did not request them. Keeping this decision
   // here ensures eager and iterator planning use identical semantics.
-  const bool drop_stats = ManifestReader::ShouldDropStats(columns_);
+  StatsProjection result{.columns = columns_,
+                         .drop_stats = ManifestReader::ShouldDropStats(columns_)};
   if (has_equality_deletes) {
-    columns_ = ManifestReader::WithStatsColumns(columns_);
+    result.columns = ManifestReader::WithStatsColumns(result.columns);
   }
-  return drop_stats;
+  return result;
 }
 
 Result<std::unordered_map<int32_t, std::vector<ManifestEntry>>>
-ManifestGroup::ReadEntries() {
+ManifestGroup::ReadEntries(const std::vector<std::string>& columns) {
   const auto cache_capacity = static_cast<int32_t>(specs_by_id_.size());
   auto get_manifest_evaluator = internal::MemoizeLru(
       [this](int32_t spec_id) -> Result<std::shared_ptr<ManifestEvaluator>> {
@@ -759,7 +768,7 @@ ManifestGroup::ReadEntries() {
         }
 
         // Read manifest entries
-        ICEBERG_ASSIGN_OR_RAISE(auto reader, MakeReader(manifest));
+        ICEBERG_ASSIGN_OR_RAISE(auto reader, MakeReader(manifest, columns));
         ICEBERG_ASSIGN_OR_RAISE(
             auto entries, ignore_deleted_ ? reader->LiveEntries() : reader->Entries());
 

@@ -79,7 +79,7 @@ int main(int argc, char** argv) {
   }
 
   auto scan = std::move(scan_result.value());
-  auto plan_result = scan->PlanFilesIterator();
+  auto plan_result = scan->PlanFilesStream();
   if (!plan_result.has_value()) {
     std::cerr << "Failed to plan files: " << plan_result.error().message << std::endl;
     return 1;

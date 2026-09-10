@@ -30,7 +30,7 @@
 #include <vector>
 
 #include "iceberg/delete_file_index.h"
-#include "iceberg/file_scan_task_iterator.h"
+#include "iceberg/file_scan_task_stream.h"
 #include "iceberg/iceberg_export.h"
 #include "iceberg/manifest/manifest_entry.h"
 #include "iceberg/manifest/manifest_list.h"
@@ -139,13 +139,15 @@ class ICEBERG_EXPORT ManifestGroup : public ErrorCollector {
 
   /// \brief Lazily plan scan tasks for matching data files.
   ///
-  /// The returned iterator owns the planning state and may outlive this ManifestGroup.
+  /// The returned stream owns the planning state and may outlive this ManifestGroup.
   /// It reads one bounded manifest batch at a time instead of materializing all manifest
-  /// entries and scan tasks. When PlanWith() configures an executor, entry iterators for
+  /// entries and scan tasks. When PlanWith() configures an executor, entry streams for
   /// manifests in each batch are opened in parallel, while entries are consumed one
-  /// manifest at a time. Creating the iterator consumes this group's configuration, so
-  /// this method may only be called on an rvalue.
-  Result<FileScanTaskIterator> PlanFilesIterator() &&;
+  /// manifest at a time. Delete manifests are still read eagerly when creating the
+  /// stream because delete files must be indexed before data-file planning can begin.
+  /// Creating the stream consumes this group's configuration, so this method may only
+  /// be called on an rvalue.
+  Result<FileScanTaskStream> PlanFilesStream() &&;
 
   /// \brief Get all matching manifest entries.
   Result<std::vector<ManifestEntry>> Entries();
@@ -164,16 +166,23 @@ class ICEBERG_EXPORT ManifestGroup : public ErrorCollector {
  private:
   class FilePlanningIterator;
 
+  struct StatsProjection {
+    std::vector<std::string> columns;
+    bool drop_stats;
+  };
+
   ManifestGroup(std::shared_ptr<FileIO> io, std::shared_ptr<Schema> schema,
                 std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>> specs_by_id,
                 std::vector<ManifestFile> data_manifests,
                 DeleteFileIndex::Builder&& delete_index_builder);
 
-  Result<std::unordered_map<int32_t, std::vector<ManifestEntry>>> ReadEntries();
+  Result<std::unordered_map<int32_t, std::vector<ManifestEntry>>> ReadEntries(
+      const std::vector<std::string>& columns);
 
-  Result<std::unique_ptr<ManifestReader>> MakeReader(const ManifestFile& manifest);
+  Result<std::unique_ptr<ManifestReader>> MakeReader(
+      const ManifestFile& manifest, const std::vector<std::string>& columns);
 
-  bool PrepareStatsProjection(bool has_equality_deletes);
+  StatsProjection PrepareStatsProjection(bool has_equality_deletes) const;
 
   std::shared_ptr<FileIO> io_;
   std::shared_ptr<Schema> schema_;

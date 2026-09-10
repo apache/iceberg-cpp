@@ -815,17 +815,17 @@ class ManifestEntryIteratorImpl final : public Iterator<ManifestEntry> {
 
 }  // namespace
 
-Result<std::unique_ptr<Iterator<ManifestEntry>>> ManifestReader::EntriesIterator() {
-  if (auto* iterable = dynamic_cast<SupportsManifestEntryIteration*>(this)) {
-    return iterable->EntriesIterator();
+Result<std::unique_ptr<Iterator<ManifestEntry>>> ManifestReader::EntriesStream() {
+  if (auto* iterable = dynamic_cast<SupportsManifestEntryStreaming*>(this)) {
+    return iterable->EntriesStream();
   }
   ICEBERG_ASSIGN_OR_RAISE(auto entries, Entries());
   return std::make_unique<VectorIterator<ManifestEntry>>(std::move(entries));
 }
 
-Result<std::unique_ptr<Iterator<ManifestEntry>>> ManifestReader::LiveEntriesIterator() {
-  if (auto* iterable = dynamic_cast<SupportsManifestEntryIteration*>(this)) {
-    return iterable->LiveEntriesIterator();
+Result<std::unique_ptr<Iterator<ManifestEntry>>> ManifestReader::LiveEntriesStream() {
+  if (auto* iterable = dynamic_cast<SupportsManifestEntryStreaming*>(this)) {
+    return iterable->LiveEntriesStream();
   }
   ICEBERG_ASSIGN_OR_RAISE(auto entries, LiveEntries());
   return std::make_unique<VectorIterator<ManifestEntry>>(std::move(entries));
@@ -1002,25 +1002,24 @@ Status ManifestReaderImpl::OpenReader(std::shared_ptr<Schema> projection) {
 }
 
 Result<std::vector<ManifestEntry>> ManifestReaderImpl::Entries() {
-  ICEBERG_ASSIGN_OR_RAISE(auto entries, EntriesIterator());
+  ICEBERG_ASSIGN_OR_RAISE(auto entries, EntriesStream());
   return entries->ToVector();
 }
 
 Result<std::vector<ManifestEntry>> ManifestReaderImpl::LiveEntries() {
-  ICEBERG_ASSIGN_OR_RAISE(auto entries, LiveEntriesIterator());
+  ICEBERG_ASSIGN_OR_RAISE(auto entries, LiveEntriesStream());
   return entries->ToVector();
 }
 
-Result<std::unique_ptr<Iterator<ManifestEntry>>> ManifestReaderImpl::EntriesIterator() {
-  return MakeEntriesIterator(/*only_live=*/false);
+Result<std::unique_ptr<Iterator<ManifestEntry>>> ManifestReaderImpl::EntriesStream() {
+  return MakeEntriesStream(/*only_live=*/false);
 }
 
-Result<std::unique_ptr<Iterator<ManifestEntry>>>
-ManifestReaderImpl::LiveEntriesIterator() {
-  return MakeEntriesIterator(/*only_live=*/true);
+Result<std::unique_ptr<Iterator<ManifestEntry>>> ManifestReaderImpl::LiveEntriesStream() {
+  return MakeEntriesStream(/*only_live=*/true);
 }
 
-Result<std::unique_ptr<Iterator<ManifestEntry>>> ManifestReaderImpl::MakeEntriesIterator(
+Result<std::unique_ptr<Iterator<ManifestEntry>>> ManifestReaderImpl::MakeEntriesStream(
     bool only_live) {
   ICEBERG_ASSIGN_OR_RAISE(auto partition_type, spec_->RawPartitionType(*schema_));
   auto data_file_schema = DataFile::Type(std::move(partition_type))->ToSchema();

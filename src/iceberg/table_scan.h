@@ -30,7 +30,7 @@
 #include <unordered_set>
 #include <vector>
 
-#include "iceberg/file_scan_task_iterator.h"
+#include "iceberg/file_scan_task_stream.h"
 #include "iceberg/iceberg_export.h"
 #include "iceberg/result.h"
 #include "iceberg/table_metadata.h"
@@ -467,8 +467,9 @@ class ICEBERG_EXPORT DataTableScan : public TableScan {
   /// \brief Lazily plans scan tasks by resolving manifests and data files on demand.
   ///
   /// Unlike PlanFiles(), this method does not materialize all manifest entries and scan
-  /// tasks. The iterator owns its planning resources and can outlive this scan.
-  Result<FileScanTaskIterator> PlanFilesIterator() const;
+  /// tasks. The returned fallible, single-pass stream owns its planning resources and
+  /// can outlive this scan.
+  Result<FileScanTaskStream> PlanFilesStream() const;
 
  private:
   Status ReportScan(const Snapshot& snapshot, const ScanMetrics& scan_metrics) const;

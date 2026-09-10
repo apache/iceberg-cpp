@@ -43,7 +43,7 @@ namespace iceberg {
 /// This implementation supports lazy reader creation and filtering based on
 /// partition expressions, row expressions, and partition sets. Following the
 /// Java implementation pattern.
-class ManifestReaderImpl : public ManifestReader, public SupportsManifestEntryIteration {
+class ManifestReaderImpl : public ManifestReader, public SupportsManifestEntryStreaming {
  public:
   /// \brief Construct a ManifestReaderImpl for lazy initialization.
   ///
@@ -66,9 +66,9 @@ class ManifestReaderImpl : public ManifestReader, public SupportsManifestEntryIt
 
   Result<std::vector<ManifestEntry>> LiveEntries() override;
 
-  Result<std::unique_ptr<Iterator<ManifestEntry>>> EntriesIterator() override;
+  Result<std::unique_ptr<Iterator<ManifestEntry>>> EntriesStream() override;
 
-  Result<std::unique_ptr<Iterator<ManifestEntry>>> LiveEntriesIterator() override;
+  Result<std::unique_ptr<Iterator<ManifestEntry>>> LiveEntriesStream() override;
 
   ManifestReader& Select(const std::vector<std::string>& columns) override;
 
@@ -86,7 +86,7 @@ class ManifestReaderImpl : public ManifestReader, public SupportsManifestEntryIt
 
  private:
   /// \brief Create an entry iterator with optional live-only filtering.
-  Result<std::unique_ptr<Iterator<ManifestEntry>>> MakeEntriesIterator(bool only_live);
+  Result<std::unique_ptr<Iterator<ManifestEntry>>> MakeEntriesStream(bool only_live);
 
   /// \brief Lazily open the underlying Avro reader with appropriate schema projection.
   Status OpenReader(std::shared_ptr<Schema> projection);

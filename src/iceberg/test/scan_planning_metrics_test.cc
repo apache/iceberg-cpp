@@ -266,7 +266,7 @@ TEST_P(ScanPlanningMetricsTest, IteratorReportsWhenDestroyedEarly) {
   ICEBERG_UNWRAP_OR_FAIL(auto builder, MakeScanBuilder<DataTableScan>(metadata));
   builder->ReportWith(reporter_);
   ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
-  ICEBERG_UNWRAP_OR_FAIL(auto iterator, scan->PlanFilesIterator());
+  ICEBERG_UNWRAP_OR_FAIL(auto iterator, scan->PlanFilesStream());
   scan.reset();
 
   ICEBERG_UNWRAP_OR_FAIL(auto first, iterator->Next());
@@ -300,7 +300,7 @@ TEST_P(ScanPlanningMetricsTest, IteratorDoesNotReportFailedPlanning) {
   ICEBERG_UNWRAP_OR_FAIL(auto builder, MakeScanBuilder<DataTableScan>(metadata));
   builder->ReportWith(reporter_);
   ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
-  ICEBERG_UNWRAP_OR_FAIL(auto iterator, scan->PlanFilesIterator());
+  ICEBERG_UNWRAP_OR_FAIL(auto iterator, scan->PlanFilesStream());
 
   auto next = iterator->Next();
   EXPECT_FALSE(next.has_value());

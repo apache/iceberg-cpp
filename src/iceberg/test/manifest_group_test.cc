@@ -292,7 +292,7 @@ TEST_P(ManifestGroupTest, CreateAndGetEntries) {
   EXPECT_EQ(tasks[1]->delete_files()[0]->file_path, "/path/to/delete.parquet");
 }
 
-TEST_P(ManifestGroupTest, PlanFilesIteratorPreservesSelectAllWithEqualityDeletes) {
+TEST_P(ManifestGroupTest, PlanFilesStreamPreservesSelectAllWithEqualityDeletes) {
   auto version = GetParam();
   if (version < 2) {
     GTEST_SKIP() << "Delete files only supported in V2+";
@@ -323,7 +323,7 @@ TEST_P(ManifestGroupTest, PlanFilesIteratorPreservesSelectAllWithEqualityDeletes
   ICEBERG_UNWRAP_OR_FAIL(
       auto group, ManifestGroup::Make(file_io_, schema_, GetSpecsById(), {data_manifest},
                                       {delete_manifest}));
-  ICEBERG_UNWRAP_OR_FAIL(auto iterator, std::move(*group).PlanFilesIterator());
+  ICEBERG_UNWRAP_OR_FAIL(auto iterator, std::move(*group).PlanFilesStream());
   ICEBERG_UNWRAP_OR_FAIL(auto task, iterator->Next());
 
   ASSERT_TRUE(task.has_value());
@@ -337,6 +337,48 @@ TEST_P(ManifestGroupTest, PlanFilesIteratorPreservesSelectAllWithEqualityDeletes
 
   ICEBERG_UNWRAP_OR_FAIL(auto end, iterator->Next());
   EXPECT_FALSE(end.has_value());
+}
+
+TEST_P(ManifestGroupTest, PlanFilesKeepsStatsProjectionLocal) {
+  auto version = GetParam();
+  if (version < 2) {
+    GTEST_SKIP() << "Equality deletes only supported in V2+";
+  }
+
+  constexpr int64_t kSnapshotId = 1000L;
+  const auto part_value = PartitionValues({Literal::Int(0)});
+
+  auto data_file = MakeDataFile("/path/to/data.parquet", part_value,
+                                partitioned_spec_->spec_id(), /*record_count=*/100);
+  data_file->lower_bounds[1] = Literal::Int(20).Serialize().value();
+  data_file->upper_bounds[1] = Literal::Int(30).Serialize().value();
+  auto data_manifest =
+      WriteDataManifest(version, kSnapshotId,
+                        {MakeEntry(ManifestStatus::kAdded, kSnapshotId,
+                                   /*sequence_number=*/1, std::move(data_file))},
+                        partitioned_spec_);
+
+  auto equality_delete = MakeEqualityDeleteFile("/path/to/equality-delete.parquet",
+                                                part_value, partitioned_spec_->spec_id());
+  equality_delete->lower_bounds[1] = Literal::Int(20).Serialize().value();
+  equality_delete->upper_bounds[1] = Literal::Int(30).Serialize().value();
+  auto delete_manifest =
+      WriteDeleteManifest(version, kSnapshotId,
+                          {MakeEntry(ManifestStatus::kAdded, kSnapshotId,
+                                     /*sequence_number=*/2, std::move(equality_delete))},
+                          partitioned_spec_);
+
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto group, ManifestGroup::Make(file_io_, schema_, GetSpecsById(), {data_manifest},
+                                      {delete_manifest}));
+  group->Select({"file_path"});
+
+  for (int attempt = 0; attempt < 2; ++attempt) {
+    ICEBERG_UNWRAP_OR_FAIL(auto tasks, group->PlanFiles());
+    ASSERT_EQ(tasks.size(), 1);
+    EXPECT_TRUE(tasks.front()->data_file()->lower_bounds.empty());
+    EXPECT_TRUE(tasks.front()->data_file()->upper_bounds.empty());
+  }
 }
 
 TEST_P(ManifestGroupTest, IgnoreDeleted) {
@@ -684,7 +726,7 @@ TEST_P(ManifestGroupTest, MultipleDataManifests) {
   EXPECT_EQ(executor.submit_count(), 2);
 }
 
-TEST_P(ManifestGroupTest, PlanFilesIteratorUsesExecutor) {
+TEST_P(ManifestGroupTest, PlanFilesStreamUsesExecutor) {
   auto version = GetParam();
 
   const auto partition_a = PartitionValues({Literal::Int(0)});
@@ -711,7 +753,7 @@ TEST_P(ManifestGroupTest, PlanFilesIteratorUsesExecutor) {
   test::ThreadExecutor executor;
   group->PlanWith(std::ref(executor));
 
-  ICEBERG_UNWRAP_OR_FAIL(auto iterator, std::move(*group).PlanFilesIterator());
+  ICEBERG_UNWRAP_OR_FAIL(auto iterator, std::move(*group).PlanFilesStream());
   ICEBERG_UNWRAP_OR_FAIL(auto tasks, iterator->ToVector());
 
   EXPECT_THAT(GetPaths(tasks), testing::UnorderedElementsAre("/path/to/data1.parquet",

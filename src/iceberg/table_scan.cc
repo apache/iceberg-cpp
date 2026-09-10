@@ -22,6 +22,7 @@
 #include <algorithm>
 #include <chrono>
 #include <cstdint>
+#include <iterator>
 #include <utility>
 
 #include "iceberg/expression/binder.h"
@@ -109,7 +110,7 @@ Result<ScanReport> MakeScanReport(const DataTableScan& scan, const Snapshot& sna
 
 class ReportingFileTaskIterator final : public Iterator<std::shared_ptr<FileScanTask>> {
  public:
-  ReportingFileTaskIterator(FileScanTaskIterator iterator,
+  ReportingFileTaskIterator(FileScanTaskStream iterator,
                             std::shared_ptr<ScanMetrics> scan_metrics,
                             std::chrono::nanoseconds planning_duration,
                             std::shared_ptr<MetricsReporter> reporter, ScanReport report)
@@ -146,7 +147,7 @@ class ReportingFileTaskIterator final : public Iterator<std::shared_ptr<FileScan
     std::ignore = reporter_->Report(report_);
   }
 
-  FileScanTaskIterator iterator_;
+  FileScanTaskStream iterator_;
   std::shared_ptr<ScanMetrics> scan_metrics_;
   std::chrono::nanoseconds planning_duration_;
   std::shared_ptr<MetricsReporter> reporter_;
@@ -720,7 +721,7 @@ Result<std::vector<std::shared_ptr<FileScanTask>>> DataTableScan::PlanFiles() co
   return tasks;
 }
 
-Result<FileScanTaskIterator> DataTableScan::PlanFilesIterator() const {
+Result<FileScanTaskStream> DataTableScan::PlanFilesStream() const {
   ICEBERG_ASSIGN_OR_RAISE(auto snapshot, this->snapshot());
   if (!snapshot) {
     return std::make_unique<EmptyIterator<std::shared_ptr<FileScanTask>>>();
@@ -748,11 +749,17 @@ Result<FileScanTaskIterator> DataTableScan::PlanFilesIterator() const {
         static_cast<int64_t>(delete_manifests.size()));
   }
 
+  std::vector<ManifestFile> owned_data_manifests(
+      std::make_move_iterator(data_manifests.begin()),
+      std::make_move_iterator(data_manifests.end()));
+  std::vector<ManifestFile> owned_delete_manifests(
+      std::make_move_iterator(delete_manifests.begin()),
+      std::make_move_iterator(delete_manifests.end()));
+
   ICEBERG_ASSIGN_OR_RAISE(
       auto manifest_group,
-      ManifestGroup::Make(io_, schema_, specs_by_id,
-                          {data_manifests.begin(), data_manifests.end()},
-                          {delete_manifests.begin(), delete_manifests.end()}));
+      ManifestGroup::Make(io_, schema_, specs_by_id, std::move(owned_data_manifests),
+                          std::move(owned_delete_manifests)));
   manifest_group->CaseSensitive(context_.case_sensitive)
       .Select(ScanColumns())
       .FilterData(filter())
@@ -764,7 +771,7 @@ Result<FileScanTaskIterator> DataTableScan::PlanFilesIterator() const {
     manifest_group->IgnoreResiduals();
   }
 
-  ICEBERG_ASSIGN_OR_RAISE(auto iterator, std::move(*manifest_group).PlanFilesIterator());
+  ICEBERG_ASSIGN_OR_RAISE(auto iterator, std::move(*manifest_group).PlanFilesStream());
   if (!planning_start.has_value()) {
     return iterator;
   }

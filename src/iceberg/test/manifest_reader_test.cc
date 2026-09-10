@@ -85,16 +85,16 @@ class LegacyManifestReader : public ManifestReader {
   int live_entries_calls = 0;
 };
 
-TEST(ManifestReaderCompatibilityTest, IteratorHelpersAdaptLegacyReaders) {
+TEST(ManifestReaderCompatibilityTest, StreamHelpersAdaptLegacyReaders) {
   LegacyManifestReader reader;
   ManifestReader& base_reader = reader;
 
-  ICEBERG_UNWRAP_OR_FAIL(auto entries, base_reader.EntriesIterator());
+  ICEBERG_UNWRAP_OR_FAIL(auto entries, base_reader.EntriesStream());
   ICEBERG_UNWRAP_OR_FAIL(auto entry, entries->Next());
   EXPECT_FALSE(entry.has_value());
   EXPECT_EQ(reader.entries_calls, 1);
 
-  ICEBERG_UNWRAP_OR_FAIL(auto live_entries, base_reader.LiveEntriesIterator());
+  ICEBERG_UNWRAP_OR_FAIL(auto live_entries, base_reader.LiveEntriesStream());
   ICEBERG_UNWRAP_OR_FAIL(auto live_entry, live_entries->Next());
   EXPECT_FALSE(live_entry.has_value());
   EXPECT_EQ(reader.live_entries_calls, 1);
@@ -250,7 +250,7 @@ TEST_P(TestManifestReader, TestManifestReaderWithEmptyInheritableMetadata) {
   EXPECT_EQ(read_entry.snapshot_id, 1000L);
 }
 
-TEST_P(TestManifestReader, EntriesIteratorOwnsReaderResources) {
+TEST_P(TestManifestReader, EntriesStreamOwnsReaderResources) {
   auto version = GetParam();
   auto file_a =
       MakeDataFile("/path/to/data-a.parquet", PartitionValues({Literal::Int(0)}));
@@ -266,7 +266,7 @@ TEST_P(TestManifestReader, EntriesIteratorOwnsReaderResources) {
 
   ICEBERG_UNWRAP_OR_FAIL(auto reader,
                          ManifestReader::Make(manifest, file_io_, schema_, spec_));
-  ICEBERG_UNWRAP_OR_FAIL(auto iterator, reader->EntriesIterator());
+  ICEBERG_UNWRAP_OR_FAIL(auto iterator, reader->EntriesStream());
   reader.reset();
 
   ICEBERG_UNWRAP_OR_FAIL(auto first, iterator->Next());
