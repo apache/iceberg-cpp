@@ -158,9 +158,12 @@ add_iceberg_test(util_test
 add_iceberg_test(puffin_test
                  USE_DATA
                  SOURCES
+                 puffin_dv_interop_test.cc
                  puffin_format_test.cc
                  puffin_json_test.cc
                  puffin_reader_writer_test.cc)
+
+add_iceberg_test(compaction_planner_test SOURCES compaction_planner_test.cc)
 
 if(ICEBERG_BUILD_BUNDLE)
   add_iceberg_test(avro_test
