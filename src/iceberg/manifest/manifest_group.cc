@@ -131,8 +131,8 @@ ManifestGroup::~ManifestGroup() = default;
 ManifestGroup::ManifestGroup(ManifestGroup&&) noexcept = default;
 ManifestGroup& ManifestGroup::operator=(ManifestGroup&&) noexcept = default;
 
-class ManifestGroup::FilePlanningIterator final
-    : public Iterator<std::shared_ptr<FileScanTask>> {
+class ManifestGroup::FilePlanningStream final
+    : public Stream<std::shared_ptr<FileScanTask>> {
  public:
   static Result<FileScanTaskStream> Make(std::unique_ptr<ManifestGroup> group) {
     ICEBERG_RETURN_UNEXPECTED(group->CheckErrors());
@@ -153,7 +153,7 @@ class ManifestGroup::FilePlanningIterator final
     }
     const bool drop_stats = stats_projection.drop_stats;
 
-    return FileScanTaskStream(new FilePlanningIterator(
+    return FileScanTaskStream(new FilePlanningStream(
         std::move(group), std::move(delete_index), std::move(data_file_evaluator),
         std::move(stats_projection.columns), drop_stats));
   }
@@ -210,10 +210,10 @@ class ManifestGroup::FilePlanningIterator final
   }
 
  private:
-  FilePlanningIterator(std::unique_ptr<ManifestGroup> group,
-                       std::unique_ptr<DeleteFileIndex> delete_index,
-                       std::unique_ptr<Evaluator> data_file_evaluator,
-                       std::vector<std::string> columns, bool drop_stats)
+  FilePlanningStream(std::unique_ptr<ManifestGroup> group,
+                     std::unique_ptr<DeleteFileIndex> delete_index,
+                     std::unique_ptr<Evaluator> data_file_evaluator,
+                     std::vector<std::string> columns, bool drop_stats)
       : group_(std::move(group)),
         delete_index_(std::move(delete_index)),
         data_file_evaluator_(std::move(data_file_evaluator)),
@@ -221,21 +221,21 @@ class ManifestGroup::FilePlanningIterator final
         drop_stats_(drop_stats) {}
 
   using TaggedEntry = std::pair<int32_t, ManifestEntry>;
-  using TaggedIterator = std::pair<int32_t, std::unique_ptr<Iterator<ManifestEntry>>>;
+  using TaggedStream = std::pair<int32_t, std::unique_ptr<Stream<ManifestEntry>>>;
 
   Result<std::optional<TaggedEntry>> NextEntry() {
     if (!group_->executor_.has_value()) {
       while (true) {
-        if (!entry_iterator_) {
+        if (!entry_stream_) {
           ICEBERG_ASSIGN_OR_RAISE(bool opened, OpenNextManifest());
           if (!opened) {
             return std::nullopt;
           }
         }
 
-        ICEBERG_ASSIGN_OR_RAISE(auto entry, entry_iterator_->Next());
+        ICEBERG_ASSIGN_OR_RAISE(auto entry, entry_stream_->Next());
         if (!entry.has_value()) {
-          entry_iterator_.reset();
+          entry_stream_.reset();
           continue;
         }
         return std::optional<TaggedEntry>{std::in_place, current_spec_id_,
@@ -244,18 +244,18 @@ class ManifestGroup::FilePlanningIterator final
     }
 
     while (true) {
-      if (next_batch_iterator_ == batch_iterators_.size()) {
+      if (next_batch_stream_ == batch_streams_.size()) {
         ICEBERG_ASSIGN_OR_RAISE(bool loaded, LoadNextManifestBatch());
         if (!loaded) {
           return std::nullopt;
         }
       }
 
-      auto& [spec_id, iterator] = batch_iterators_[next_batch_iterator_];
-      ICEBERG_ASSIGN_OR_RAISE(auto entry, iterator->Next());
+      auto& [spec_id, stream] = batch_streams_[next_batch_stream_];
+      ICEBERG_ASSIGN_OR_RAISE(auto entry, stream->Next());
       if (!entry.has_value()) {
-        iterator.reset();
-        ++next_batch_iterator_;
+        stream.reset();
+        ++next_batch_stream_;
         continue;
       }
       return std::optional<TaggedEntry>{std::in_place, spec_id, std::move(entry).value()};
@@ -339,9 +339,9 @@ class ManifestGroup::FilePlanningIterator final
       }
 
       ICEBERG_ASSIGN_OR_RAISE(auto reader, group_->MakeReader(manifest, columns_));
-      ICEBERG_ASSIGN_OR_RAISE(entry_iterator_, group_->ignore_deleted_
-                                                   ? reader->LiveEntriesStream()
-                                                   : reader->EntriesStream());
+      ICEBERG_ASSIGN_OR_RAISE(entry_stream_, group_->ignore_deleted_
+                                                 ? reader->LiveEntriesStream()
+                                                 : reader->EntriesStream());
       current_spec_id_ = manifest.partition_spec_id;
       return true;
     }
@@ -364,26 +364,25 @@ class ManifestGroup::FilePlanningIterator final
       return false;
     }
 
-    // Open the readers concurrently, but keep their iterators instead of collecting
+    // Open the readers concurrently, but keep their streams instead of collecting
     // entries here. This preserves bounded memory for large manifests while retaining
     // parallel manifest initialization when an executor is configured.
     ICEBERG_ASSIGN_OR_RAISE(
-        batch_iterators_,
+        batch_streams_,
         ParallelCollect(
             group_->executor_, manifests,
-            [this](const ManifestFile* manifest) -> Result<std::vector<TaggedIterator>> {
+            [this](const ManifestFile* manifest) -> Result<std::vector<TaggedStream>> {
               ICEBERG_ASSIGN_OR_RAISE(auto reader,
                                       group_->MakeReader(*manifest, columns_));
-              ICEBERG_ASSIGN_OR_RAISE(auto iterator, group_->ignore_deleted_
-                                                         ? reader->LiveEntriesStream()
-                                                         : reader->EntriesStream());
+              ICEBERG_ASSIGN_OR_RAISE(auto stream, group_->ignore_deleted_
+                                                       ? reader->LiveEntriesStream()
+                                                       : reader->EntriesStream());
 
-              std::vector<TaggedIterator> tagged_iterators;
-              tagged_iterators.emplace_back(manifest->partition_spec_id,
-                                            std::move(iterator));
-              return tagged_iterators;
+              std::vector<TaggedStream> tagged_streams;
+              tagged_streams.emplace_back(manifest->partition_spec_id, std::move(stream));
+              return tagged_streams;
             }));
-    next_batch_iterator_ = 0;
+    next_batch_stream_ = 0;
     return true;
   }
 
@@ -423,14 +422,14 @@ class ManifestGroup::FilePlanningIterator final
   std::vector<std::string> columns_;
   std::unordered_map<int32_t, std::unique_ptr<ManifestEvaluator>> manifest_evaluators_;
   std::unordered_map<int32_t, std::shared_ptr<ResidualEvaluator>> residual_evaluators_;
-  std::unique_ptr<Iterator<ManifestEntry>> entry_iterator_;
-  std::vector<TaggedIterator> batch_iterators_;
+  std::unique_ptr<Stream<ManifestEntry>> entry_stream_;
+  std::vector<TaggedStream> batch_streams_;
   size_t next_manifest_ = 0;
-  size_t next_batch_iterator_ = 0;
+  size_t next_batch_stream_ = 0;
   int32_t current_spec_id_ = 0;
   bool drop_stats_;
 
-  // Limit the number of manifest readers and iterators retained by executor-backed
+  // Limit the number of manifest readers and streams retained by executor-backed
   // planning. The executor still controls actual task concurrency, while this fixed
   // cap prevents resource use from scaling with the total manifest count. Entries
   // within each manifest remain streamed, so this does not cap manifest size.
@@ -562,7 +561,7 @@ Result<std::vector<std::shared_ptr<FileScanTask>>> ManifestGroup::PlanFiles() {
 
 Result<FileScanTaskStream> ManifestGroup::PlanFilesStream() && {
   auto group = std::make_unique<ManifestGroup>(std::move(*this));
-  return FilePlanningIterator::Make(std::move(group));
+  return FilePlanningStream::Make(std::move(group));
 }
 
 Result<std::vector<std::shared_ptr<ScanTask>>> ManifestGroup::Plan(
@@ -691,7 +690,7 @@ ManifestGroup::StatsProjection ManifestGroup::PrepareStatsProjection(
   // The caller's projection records whether stats were requested. Equality-delete
   // matching may add stats temporarily, but they should still be dropped from the
   // result when the original projection did not request them. Keeping this decision
-  // here ensures eager and iterator planning use identical semantics.
+  // here ensures eager and stream planning use identical semantics.
   StatsProjection result{.columns = columns_,
                          .drop_stats = ManifestReader::ShouldDropStats(columns_)};
   if (has_equality_deletes) {

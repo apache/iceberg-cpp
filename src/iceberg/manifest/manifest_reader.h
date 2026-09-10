@@ -33,7 +33,7 @@
 #include "iceberg/metrics/counter.h"
 #include "iceberg/result.h"
 #include "iceberg/type_fwd.h"
-#include "iceberg/util/iterator.h"
+#include "iceberg/util/stream.h"
 
 namespace iceberg {
 
@@ -53,14 +53,14 @@ class ICEBERG_EXPORT ManifestReader {
   /// Implementations using SupportsManifestEntryStreaming produce entries lazily. Other
   /// implementations are adapted from Entries() for compatibility. The returned stream
   /// is fallible and single-pass.
-  Result<std::unique_ptr<Iterator<ManifestEntry>>> EntriesStream();
+  Result<std::unique_ptr<Stream<ManifestEntry>>> EntriesStream();
 
   /// \brief Lazily read only live (non-deleted) manifest entries.
   ///
   /// Implementations using SupportsManifestEntryStreaming produce entries lazily. Other
   /// implementations are adapted from LiveEntries() for compatibility. The returned
   /// stream is fallible and single-pass.
-  Result<std::unique_ptr<Iterator<ManifestEntry>>> LiveEntriesStream();
+  Result<std::unique_ptr<Stream<ManifestEntry>>> LiveEntriesStream();
 
   /// \brief Select specific columns of data file to read from the manifest entries.
   ///
@@ -155,15 +155,15 @@ class ICEBERG_EXPORT SupportsManifestEntryStreaming {
 
   /// \brief Lazily read manifest entries.
   ///
-  /// The returned stream must own all resources required for iteration and must not
+  /// The returned stream must own all resources required for consumption and must not
   /// depend on this reader remaining alive.
-  virtual Result<std::unique_ptr<Iterator<ManifestEntry>>> EntriesStream() = 0;
+  virtual Result<std::unique_ptr<Stream<ManifestEntry>>> EntriesStream() = 0;
 
   /// \brief Lazily read only live (non-deleted) manifest entries.
   ///
-  /// The returned stream must own all resources required for iteration and must not
+  /// The returned stream must own all resources required for consumption and must not
   /// depend on this reader remaining alive.
-  virtual Result<std::unique_ptr<Iterator<ManifestEntry>>> LiveEntriesStream() = 0;
+  virtual Result<std::unique_ptr<Stream<ManifestEntry>>> LiveEntriesStream() = 0;
 };
 
 /// \brief Read manifest files from a manifest list file.

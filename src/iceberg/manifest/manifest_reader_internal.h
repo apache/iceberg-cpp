@@ -66,9 +66,9 @@ class ManifestReaderImpl : public ManifestReader, public SupportsManifestEntrySt
 
   Result<std::vector<ManifestEntry>> LiveEntries() override;
 
-  Result<std::unique_ptr<Iterator<ManifestEntry>>> EntriesStream() override;
+  Result<std::unique_ptr<Stream<ManifestEntry>>> EntriesStream() override;
 
-  Result<std::unique_ptr<Iterator<ManifestEntry>>> LiveEntriesStream() override;
+  Result<std::unique_ptr<Stream<ManifestEntry>>> LiveEntriesStream() override;
 
   ManifestReader& Select(const std::vector<std::string>& columns) override;
 
@@ -85,8 +85,8 @@ class ManifestReaderImpl : public ManifestReader, public SupportsManifestEntrySt
   ManifestReader& SkipCounter(std::shared_ptr<Counter> counter) override;
 
  private:
-  /// \brief Create an entry iterator with optional live-only filtering.
-  Result<std::unique_ptr<Iterator<ManifestEntry>>> MakeEntriesStream(bool only_live);
+  /// \brief Create an entry stream with optional live-only filtering.
+  Result<std::unique_ptr<Stream<ManifestEntry>>> MakeEntriesStream(bool only_live);
 
   /// \brief Lazily open the underlying Avro reader with appropriate schema projection.
   Status OpenReader(std::shared_ptr<Schema> projection);

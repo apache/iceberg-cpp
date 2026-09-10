@@ -266,18 +266,18 @@ TEST_P(TestManifestReader, EntriesStreamOwnsReaderResources) {
 
   ICEBERG_UNWRAP_OR_FAIL(auto reader,
                          ManifestReader::Make(manifest, file_io_, schema_, spec_));
-  ICEBERG_UNWRAP_OR_FAIL(auto iterator, reader->EntriesStream());
+  ICEBERG_UNWRAP_OR_FAIL(auto stream, reader->EntriesStream());
   reader.reset();
 
-  ICEBERG_UNWRAP_OR_FAIL(auto first, iterator->Next());
+  ICEBERG_UNWRAP_OR_FAIL(auto first, stream->Next());
   ASSERT_TRUE(first.has_value());
   EXPECT_EQ(first->data_file->file_path, "/path/to/data-a.parquet");
 
-  ICEBERG_UNWRAP_OR_FAIL(auto second, iterator->Next());
+  ICEBERG_UNWRAP_OR_FAIL(auto second, stream->Next());
   ASSERT_TRUE(second.has_value());
   EXPECT_EQ(second->data_file->file_path, "/path/to/data-b.parquet");
 
-  ICEBERG_UNWRAP_OR_FAIL(auto end, iterator->Next());
+  ICEBERG_UNWRAP_OR_FAIL(auto end, stream->Next());
   EXPECT_FALSE(end.has_value());
 }
 

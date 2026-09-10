@@ -3,7 +3,7 @@
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
  * regarding copyright ownership.  The ASF licenses this file
- * under the Apache License, Version 2.0 (the
+ * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
@@ -24,12 +24,12 @@
 
 #include <memory>
 
-#include "iceberg/util/iterator.h"
+#include "iceberg/util/stream.h"
 
 namespace iceberg {
 
 class FileScanTask;
 
-using FileScanTaskStream = std::unique_ptr<Iterator<std::shared_ptr<FileScanTask>>>;
+using FileScanTaskStream = std::unique_ptr<Stream<std::shared_ptr<FileScanTask>>>;
 
 }  // namespace iceberg

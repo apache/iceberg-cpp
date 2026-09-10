@@ -67,7 +67,7 @@ const std::vector<std::string> kScanColumnsWithStats = [] {
 }();
 
 template <typename T>
-class EmptyIterator final : public Iterator<T> {
+class EmptyStream final : public Stream<T> {
  public:
   Result<std::optional<T>> NextImpl() override { return std::nullopt; }
 };
@@ -108,23 +108,23 @@ Result<ScanReport> MakeScanReport(const DataTableScan& scan, const Snapshot& sna
   };
 }
 
-class ReportingFileTaskIterator final : public Iterator<std::shared_ptr<FileScanTask>> {
+class ReportingFileTaskStream final : public Stream<std::shared_ptr<FileScanTask>> {
  public:
-  ReportingFileTaskIterator(FileScanTaskStream iterator,
-                            std::shared_ptr<ScanMetrics> scan_metrics,
-                            std::chrono::nanoseconds planning_duration,
-                            std::shared_ptr<MetricsReporter> reporter, ScanReport report)
-      : iterator_(std::move(iterator)),
+  ReportingFileTaskStream(FileScanTaskStream stream,
+                          std::shared_ptr<ScanMetrics> scan_metrics,
+                          std::chrono::nanoseconds planning_duration,
+                          std::shared_ptr<MetricsReporter> reporter, ScanReport report)
+      : stream_(std::move(stream)),
         scan_metrics_(std::move(scan_metrics)),
         planning_duration_(std::move(planning_duration)),
         reporter_(std::move(reporter)),
         report_(std::move(report)) {}
 
-  ~ReportingFileTaskIterator() override { Finalize(); }
+  ~ReportingFileTaskStream() override { Finalize(); }
 
   Result<std::optional<std::shared_ptr<FileScanTask>>> NextImpl() override {
     auto start = std::chrono::steady_clock::now();
-    auto result = iterator_->Next();
+    auto result = stream_->Next();
     planning_duration_ += std::chrono::duration_cast<std::chrono::nanoseconds>(
         std::chrono::steady_clock::now() - start);
     if (!result.has_value()) {
@@ -147,7 +147,7 @@ class ReportingFileTaskIterator final : public Iterator<std::shared_ptr<FileScan
     std::ignore = reporter_->Report(report_);
   }
 
-  FileScanTaskStream iterator_;
+  FileScanTaskStream stream_;
   std::shared_ptr<ScanMetrics> scan_metrics_;
   std::chrono::nanoseconds planning_duration_;
   std::shared_ptr<MetricsReporter> reporter_;
@@ -724,7 +724,7 @@ Result<std::vector<std::shared_ptr<FileScanTask>>> DataTableScan::PlanFiles() co
 Result<FileScanTaskStream> DataTableScan::PlanFilesStream() const {
   ICEBERG_ASSIGN_OR_RAISE(auto snapshot, this->snapshot());
   if (!snapshot) {
-    return std::make_unique<EmptyIterator<std::shared_ptr<FileScanTask>>>();
+    return std::make_unique<EmptyStream<std::shared_ptr<FileScanTask>>>();
   }
 
   std::shared_ptr<ScanMetrics> scan_metrics;
@@ -771,9 +771,9 @@ Result<FileScanTaskStream> DataTableScan::PlanFilesStream() const {
     manifest_group->IgnoreResiduals();
   }
 
-  ICEBERG_ASSIGN_OR_RAISE(auto iterator, std::move(*manifest_group).PlanFilesStream());
+  ICEBERG_ASSIGN_OR_RAISE(auto stream, std::move(*manifest_group).PlanFilesStream());
   if (!planning_start.has_value()) {
-    return iterator;
+    return stream;
   }
 
   auto planning_duration = std::chrono::duration_cast<std::chrono::nanoseconds>(
@@ -782,11 +782,11 @@ Result<FileScanTaskStream> DataTableScan::PlanFilesStream() const {
   auto report = MakeScanReport(*this, *snapshot, ScanMetricsResult{});
   if (!report.has_value()) {
     // Scan reporting is best effort, matching PlanFiles().
-    return iterator;
+    return stream;
   }
 
-  return std::make_unique<ReportingFileTaskIterator>(
-      std::move(iterator), std::move(scan_metrics), planning_duration,
+  return std::make_unique<ReportingFileTaskStream>(
+      std::move(stream), std::move(scan_metrics), planning_duration,
       context_.metrics_reporter, std::move(report).value());
 }
 

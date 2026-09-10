@@ -323,8 +323,8 @@ TEST_P(ManifestGroupTest, PlanFilesStreamPreservesSelectAllWithEqualityDeletes) 
   ICEBERG_UNWRAP_OR_FAIL(
       auto group, ManifestGroup::Make(file_io_, schema_, GetSpecsById(), {data_manifest},
                                       {delete_manifest}));
-  ICEBERG_UNWRAP_OR_FAIL(auto iterator, std::move(*group).PlanFilesStream());
-  ICEBERG_UNWRAP_OR_FAIL(auto task, iterator->Next());
+  ICEBERG_UNWRAP_OR_FAIL(auto stream, std::move(*group).PlanFilesStream());
+  ICEBERG_UNWRAP_OR_FAIL(auto task, stream->Next());
 
   ASSERT_TRUE(task.has_value());
   EXPECT_EQ(task.value()->data_file()->file_path, "/path/to/data.parquet");
@@ -335,7 +335,7 @@ TEST_P(ManifestGroupTest, PlanFilesStreamPreservesSelectAllWithEqualityDeletes) 
   EXPECT_EQ(task.value()->delete_files().front()->file_path,
             "/path/to/equality-delete.parquet");
 
-  ICEBERG_UNWRAP_OR_FAIL(auto end, iterator->Next());
+  ICEBERG_UNWRAP_OR_FAIL(auto end, stream->Next());
   EXPECT_FALSE(end.has_value());
 }
 
@@ -753,8 +753,8 @@ TEST_P(ManifestGroupTest, PlanFilesStreamUsesExecutor) {
   test::ThreadExecutor executor;
   group->PlanWith(std::ref(executor));
 
-  ICEBERG_UNWRAP_OR_FAIL(auto iterator, std::move(*group).PlanFilesStream());
-  ICEBERG_UNWRAP_OR_FAIL(auto tasks, iterator->ToVector());
+  ICEBERG_UNWRAP_OR_FAIL(auto stream, std::move(*group).PlanFilesStream());
+  ICEBERG_UNWRAP_OR_FAIL(auto tasks, stream->ToVector());
 
   EXPECT_THAT(GetPaths(tasks), testing::UnorderedElementsAre("/path/to/data1.parquet",
                                                              "/path/to/data2.parquet"));

@@ -691,9 +691,9 @@ Result<std::shared_ptr<Schema>> ProjectSchema(std::shared_ptr<Schema> schema,
 }
 
 template <typename T>
-class VectorIterator final : public Iterator<T> {
+class VectorStream final : public Stream<T> {
  public:
-  explicit VectorIterator(std::vector<T> values) : values_(std::move(values)) {}
+  explicit VectorStream(std::vector<T> values) : values_(std::move(values)) {}
 
   Result<std::optional<T>> NextImpl() override {
     if (next_ == values_.size()) {
@@ -707,16 +707,16 @@ class VectorIterator final : public Iterator<T> {
   size_t next_ = 0;
 };
 
-class ManifestEntryIteratorImpl final : public Iterator<ManifestEntry> {
+class ManifestEntryStreamImpl final : public Stream<ManifestEntry> {
  public:
-  ManifestEntryIteratorImpl(std::unique_ptr<Reader> reader,
-                            std::shared_ptr<Schema> file_schema, ArrowSchema arrow_schema,
-                            std::shared_ptr<InheritableMetadata> inheritable_metadata,
-                            std::optional<int64_t> first_row_id, bool is_committed,
-                            bool only_live, std::unique_ptr<Evaluator> evaluator,
-                            std::unique_ptr<InclusiveMetricsEvaluator> metrics_evaluator,
-                            std::shared_ptr<PartitionSet> partition_set,
-                            std::shared_ptr<Counter> skip_counter, bool drop_stats)
+  ManifestEntryStreamImpl(std::unique_ptr<Reader> reader,
+                          std::shared_ptr<Schema> file_schema, ArrowSchema arrow_schema,
+                          std::shared_ptr<InheritableMetadata> inheritable_metadata,
+                          std::optional<int64_t> first_row_id, bool is_committed,
+                          bool only_live, std::unique_ptr<Evaluator> evaluator,
+                          std::unique_ptr<InclusiveMetricsEvaluator> metrics_evaluator,
+                          std::shared_ptr<PartitionSet> partition_set,
+                          std::shared_ptr<Counter> skip_counter, bool drop_stats)
       : reader_(std::move(reader)),
         file_schema_(std::move(file_schema)),
         arrow_schema_(std::exchange(arrow_schema, ArrowSchema{})),
@@ -815,20 +815,20 @@ class ManifestEntryIteratorImpl final : public Iterator<ManifestEntry> {
 
 }  // namespace
 
-Result<std::unique_ptr<Iterator<ManifestEntry>>> ManifestReader::EntriesStream() {
-  if (auto* iterable = dynamic_cast<SupportsManifestEntryStreaming*>(this)) {
-    return iterable->EntriesStream();
+Result<std::unique_ptr<Stream<ManifestEntry>>> ManifestReader::EntriesStream() {
+  if (auto* streaming_reader = dynamic_cast<SupportsManifestEntryStreaming*>(this)) {
+    return streaming_reader->EntriesStream();
   }
   ICEBERG_ASSIGN_OR_RAISE(auto entries, Entries());
-  return std::make_unique<VectorIterator<ManifestEntry>>(std::move(entries));
+  return std::make_unique<VectorStream<ManifestEntry>>(std::move(entries));
 }
 
-Result<std::unique_ptr<Iterator<ManifestEntry>>> ManifestReader::LiveEntriesStream() {
-  if (auto* iterable = dynamic_cast<SupportsManifestEntryStreaming*>(this)) {
-    return iterable->LiveEntriesStream();
+Result<std::unique_ptr<Stream<ManifestEntry>>> ManifestReader::LiveEntriesStream() {
+  if (auto* streaming_reader = dynamic_cast<SupportsManifestEntryStreaming*>(this)) {
+    return streaming_reader->LiveEntriesStream();
   }
   ICEBERG_ASSIGN_OR_RAISE(auto entries, LiveEntries());
-  return std::make_unique<VectorIterator<ManifestEntry>>(std::move(entries));
+  return std::make_unique<VectorStream<ManifestEntry>>(std::move(entries));
 }
 
 bool ManifestReader::ShouldDropStats(const std::vector<std::string>& columns) {
@@ -1011,15 +1011,15 @@ Result<std::vector<ManifestEntry>> ManifestReaderImpl::LiveEntries() {
   return entries->ToVector();
 }
 
-Result<std::unique_ptr<Iterator<ManifestEntry>>> ManifestReaderImpl::EntriesStream() {
+Result<std::unique_ptr<Stream<ManifestEntry>>> ManifestReaderImpl::EntriesStream() {
   return MakeEntriesStream(/*only_live=*/false);
 }
 
-Result<std::unique_ptr<Iterator<ManifestEntry>>> ManifestReaderImpl::LiveEntriesStream() {
+Result<std::unique_ptr<Stream<ManifestEntry>>> ManifestReaderImpl::LiveEntriesStream() {
   return MakeEntriesStream(/*only_live=*/true);
 }
 
-Result<std::unique_ptr<Iterator<ManifestEntry>>> ManifestReaderImpl::MakeEntriesStream(
+Result<std::unique_ptr<Stream<ManifestEntry>>> ManifestReaderImpl::MakeEntriesStream(
     bool only_live) {
   ICEBERG_ASSIGN_OR_RAISE(auto partition_type, spec_->RawPartitionType(*schema_));
   auto data_file_schema = DataFile::Type(std::move(partition_type))->ToSchema();
@@ -1060,13 +1060,13 @@ Result<std::unique_ptr<Iterator<ManifestEntry>>> ManifestReaderImpl::MakeEntries
   }
 
   bool drop_stats = drop_stats_ && ShouldDropStats(columns_);
-  auto iterator = std::unique_ptr<Iterator<ManifestEntry>>(new ManifestEntryIteratorImpl(
+  auto stream = std::unique_ptr<Stream<ManifestEntry>>(new ManifestEntryStreamImpl(
       std::move(file_reader_), file_schema_, std::move(arrow_schema),
       inheritable_metadata_, first_row_id_, is_committed_, only_live,
       std::move(evaluator), std::move(metrics_evaluator), partition_set_, skip_counter_,
       drop_stats));
   schema_guard.Release();
-  return iterator;
+  return stream;
 }
 
 Result<std::vector<ManifestFile>> ManifestListReaderImpl::Files() const {

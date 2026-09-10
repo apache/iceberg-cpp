@@ -164,7 +164,7 @@ class ICEBERG_EXPORT ManifestGroup : public ErrorCollector {
       const CreateTasksFunction& create_tasks);
 
  private:
-  class FilePlanningIterator;
+  class FilePlanningStream;
 
   struct StatsProjection {
     std::vector<std::string> columns;

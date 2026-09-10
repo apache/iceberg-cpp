@@ -244,7 +244,7 @@ TEST_P(ScanPlanningMetricsTest, ReportsToTableAndScanReporters) {
   EXPECT_EQ(scan_reporter->last()->table_name, "test.table");
 }
 
-TEST_P(ScanPlanningMetricsTest, IteratorReportsWhenDestroyedEarly) {
+TEST_P(ScanPlanningMetricsTest, StreamReportsWhenDestroyedEarly) {
   auto version = GetParam();
   constexpr int64_t kSnapshotId = 2010L;
   const auto part = PartitionValues({Literal::Int(0)});
@@ -266,14 +266,14 @@ TEST_P(ScanPlanningMetricsTest, IteratorReportsWhenDestroyedEarly) {
   ICEBERG_UNWRAP_OR_FAIL(auto builder, MakeScanBuilder<DataTableScan>(metadata));
   builder->ReportWith(reporter_);
   ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
-  ICEBERG_UNWRAP_OR_FAIL(auto iterator, scan->PlanFilesStream());
+  ICEBERG_UNWRAP_OR_FAIL(auto stream, scan->PlanFilesStream());
   scan.reset();
 
-  ICEBERG_UNWRAP_OR_FAIL(auto first, iterator->Next());
+  ICEBERG_UNWRAP_OR_FAIL(auto first, stream->Next());
   ASSERT_TRUE(first.has_value());
   EXPECT_EQ(reporter_->report_count(), 0);
 
-  iterator.reset();
+  stream.reset();
   ASSERT_EQ(reporter_->report_count(), 1);
   ASSERT_TRUE(reporter_->last().has_value());
   const auto& metrics = reporter_->last()->scan_metrics;
@@ -281,7 +281,7 @@ TEST_P(ScanPlanningMetricsTest, IteratorReportsWhenDestroyedEarly) {
   EXPECT_EQ(metrics.result_data_files->value, 1);
 }
 
-TEST_P(ScanPlanningMetricsTest, IteratorDoesNotReportFailedPlanning) {
+TEST_P(ScanPlanningMetricsTest, StreamDoesNotReportFailedPlanning) {
   auto version = GetParam();
   constexpr int64_t kSnapshotId = 2011L;
   const auto part = PartitionValues({Literal::Int(0)});
@@ -300,13 +300,13 @@ TEST_P(ScanPlanningMetricsTest, IteratorDoesNotReportFailedPlanning) {
   ICEBERG_UNWRAP_OR_FAIL(auto builder, MakeScanBuilder<DataTableScan>(metadata));
   builder->ReportWith(reporter_);
   ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
-  ICEBERG_UNWRAP_OR_FAIL(auto iterator, scan->PlanFilesStream());
+  ICEBERG_UNWRAP_OR_FAIL(auto stream, scan->PlanFilesStream());
 
-  auto next = iterator->Next();
+  auto next = stream->Next();
   EXPECT_FALSE(next.has_value());
   EXPECT_EQ(reporter_->report_count(), 0);
 
-  iterator.reset();
+  stream.reset();
   EXPECT_EQ(reporter_->report_count(), 0);
 }
 

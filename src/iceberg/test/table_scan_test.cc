@@ -321,8 +321,8 @@ TEST_P(TableScanTest, DataTableScanPlanFilesEmpty) {
   ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
   EXPECT_TRUE(tasks.empty());
 
-  ICEBERG_UNWRAP_OR_FAIL(auto iterator, scan->PlanFilesStream());
-  ICEBERG_UNWRAP_OR_FAIL(auto next, iterator->Next());
+  ICEBERG_UNWRAP_OR_FAIL(auto stream, scan->PlanFilesStream());
+  ICEBERG_UNWRAP_OR_FAIL(auto next, stream->Next());
   EXPECT_FALSE(next.has_value());
 }
 
@@ -385,9 +385,9 @@ TEST_P(TableScanTest, PlanFilesWithDataManifests) {
   EXPECT_THAT(GetPaths(tasks), testing::UnorderedElementsAre("/path/to/data1.parquet",
                                                              "/path/to/data2.parquet"));
 
-  ICEBERG_UNWRAP_OR_FAIL(auto iterator, scan->PlanFilesStream());
+  ICEBERG_UNWRAP_OR_FAIL(auto stream, scan->PlanFilesStream());
   scan.reset();
-  ICEBERG_UNWRAP_OR_FAIL(auto streamed_tasks, iterator->ToVector());
+  ICEBERG_UNWRAP_OR_FAIL(auto streamed_tasks, stream->ToVector());
   ASSERT_EQ(streamed_tasks.size(), 2);
   EXPECT_THAT(
       GetPaths(streamed_tasks),
@@ -695,8 +695,8 @@ TEST_P(TableScanTest, PlanFilesWithDeleteFiles) {
   };
   verify_tasks(tasks);
 
-  ICEBERG_UNWRAP_OR_FAIL(auto iterator, scan->PlanFilesStream());
-  ICEBERG_UNWRAP_OR_FAIL(auto streamed_tasks, iterator->ToVector());
+  ICEBERG_UNWRAP_OR_FAIL(auto stream, scan->PlanFilesStream());
+  ICEBERG_UNWRAP_OR_FAIL(auto streamed_tasks, stream->ToVector());
   verify_tasks(streamed_tasks);
 }
 
