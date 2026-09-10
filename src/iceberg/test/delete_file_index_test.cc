@@ -65,6 +65,11 @@ class DeleteFileIndexTest : public testing::TestWithParam<int8_t> {
         PartitionSpec::Make(
             /*spec_id=*/1, {PartitionField(/*source_id=*/2, /*field_id=*/1000,
                                            "data_bucket", Transform::Bucket(16))}));
+    ICEBERG_UNWRAP_OR_FAIL(
+        equivalent_partitioned_spec_,
+        PartitionSpec::Make(
+            /*spec_id=*/2, {PartitionField(/*source_id=*/2, /*field_id=*/1000,
+                                           "data_bucket", Transform::Bucket(16))}));
 
     // Unpartitioned spec
     unpartitioned_spec_ = PartitionSpec::Unpartitioned();
@@ -187,6 +192,7 @@ class DeleteFileIndexTest : public testing::TestWithParam<int8_t> {
 
   std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>> GetSpecsById() {
     return {{partitioned_spec_->spec_id(), partitioned_spec_},
+            {equivalent_partitioned_spec_->spec_id(), equivalent_partitioned_spec_},
             {unpartitioned_spec_->spec_id(), unpartitioned_spec_}};
   }
 
@@ -209,6 +215,7 @@ class DeleteFileIndexTest : public testing::TestWithParam<int8_t> {
   std::shared_ptr<FileIO> file_io_;
   std::shared_ptr<Schema> schema_;
   std::shared_ptr<PartitionSpec> partitioned_spec_;
+  std::shared_ptr<PartitionSpec> equivalent_partitioned_spec_;
   std::shared_ptr<PartitionSpec> unpartitioned_spec_;
 
   std::shared_ptr<DataFile> file_a_;
@@ -1041,8 +1048,9 @@ TEST_P(DeleteFileIndexTest, TestMixDeleteFilesAndDVs) {
   auto partition_b = PartitionValues({Literal::Int(1)});
 
   // Position delete for file_a_
-  auto pos_delete_a = MakePositionDeleteFile("/path/to/pos-delete-a.parquet", partition_a,
-                                             partitioned_spec_->spec_id());
+  auto pos_delete_a =
+      MakePositionDeleteFile("/path/to/pos-delete-a.parquet", partition_a,
+                             partitioned_spec_->spec_id(), file_a_->file_path);
   // DV for file_a_ (should take precedence)
   auto dv_a = MakeDV("/path/to/dv-a.puffin", partition_a, partitioned_spec_->spec_id(),
                      file_a_->file_path);
@@ -1113,7 +1121,82 @@ TEST_P(DeleteFileIndexTest, TestMultipleDVs) {
   EXPECT_THAT(index_result, HasErrorMessage(file_a_->file_path));
 }
 
-TEST_P(DeleteFileIndexTest, TestInvalidDVSequenceNumber) {
+TEST_P(DeleteFileIndexTest, TestDVApplicability) {
+  auto version = GetParam();
+  if (version < 3) {
+    GTEST_SKIP() << "DVs only supported in V3+";
+  }
+
+  const auto null_partition = PartitionValues({Literal::Null(int32())});
+  auto null_partition_file = MakeDataFile("/path/to/data-null.parquet", null_partition,
+                                          partitioned_spec_->spec_id());
+
+  struct TestCase {
+    std::string name;
+    PartitionValues dv_partition;
+    std::shared_ptr<PartitionSpec> dv_spec;
+    std::shared_ptr<DataFile> data_file;
+    bool applies;
+  };
+  const std::vector<TestCase> cases = {
+      {
+          .name = "equal-partition",
+          .dv_partition = file_a_->partition,
+          .dv_spec = partitioned_spec_,
+          .data_file = file_a_,
+          .applies = true,
+      },
+      {
+          .name = "different-spec",
+          .dv_partition = file_a_->partition,
+          .dv_spec = equivalent_partitioned_spec_,
+          .data_file = file_a_,
+          .applies = false,
+      },
+      {
+          .name = "different-partition-value",
+          .dv_partition = file_b_->partition,
+          .dv_spec = partitioned_spec_,
+          .data_file = file_a_,
+          .applies = false,
+      },
+      {
+          .name = "equal-null-partition",
+          .dv_partition = null_partition,
+          .dv_spec = partitioned_spec_,
+          .data_file = null_partition_file,
+          .applies = true,
+      },
+      {
+          .name = "null-partition-mismatch",
+          .dv_partition = file_a_->partition,
+          .dv_spec = partitioned_spec_,
+          .data_file = null_partition_file,
+          .applies = false,
+      },
+  };
+
+  for (const auto& test_case : cases) {
+    SCOPED_TRACE(test_case.name);
+    auto dv = MakeDV("/path/to/" + test_case.name + ".puffin", test_case.dv_partition,
+                     test_case.dv_spec->spec_id(), test_case.data_file->file_path);
+    std::vector<ManifestEntry> entries;
+    entries.push_back(MakeDeleteEntry(/*snapshot_id=*/1000L, /*sequence_number=*/2, dv));
+    auto manifest = WriteDeleteManifest(version, /*snapshot_id=*/1000L,
+                                        std::move(entries), test_case.dv_spec);
+    ICEBERG_UNWRAP_OR_FAIL(auto index, BuildIndex({manifest}));
+    ICEBERG_UNWRAP_OR_FAIL(auto deletes, index->ForDataFile(1, *test_case.data_file));
+
+    if (test_case.applies) {
+      ASSERT_EQ(deletes.size(), 1);
+      EXPECT_EQ(deletes[0]->file_path, dv->file_path);
+    } else {
+      EXPECT_TRUE(deletes.empty());
+    }
+  }
+}
+
+TEST_P(DeleteFileIndexTest, TestInapplicableDVSequenceNumber) {
   auto version = GetParam();
   if (version < 3) {
     GTEST_SKIP() << "DVs only supported in V3+";
@@ -1123,20 +1206,23 @@ TEST_P(DeleteFileIndexTest, TestInvalidDVSequenceNumber) {
 
   auto dv = MakeDV("/path/to/dv.puffin", partition_a, partitioned_spec_->spec_id(),
                    file_a_->file_path);
+  auto pos_delete =
+      MakePositionDeleteFile("/path/to/pos-delete.parquet", partition_a,
+                             partitioned_spec_->spec_id(), file_a_->file_path);
 
   std::vector<ManifestEntry> entries;
   entries.push_back(MakeDeleteEntry(/*snapshot_id=*/1000L, /*sequence_number=*/1, dv));
+  entries.push_back(
+      MakeDeleteEntry(/*snapshot_id=*/1000L, /*sequence_number=*/2, pos_delete));
 
   auto manifest = WriteDeleteManifest(version, /*snapshot_id=*/1000L, std::move(entries),
                                       partitioned_spec_);
 
   ICEBERG_UNWRAP_OR_FAIL(auto index, BuildIndex({manifest}));
 
-  // Querying with sequence number > DV sequence number should fail
-  auto result = index->ForDataFile(2, *file_a_);
-  EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
-  EXPECT_THAT(result, HasErrorMessage(
-                          "must be greater than or equal to data file sequence number"));
+  ICEBERG_UNWRAP_OR_FAIL(auto deletes, index->ForDataFile(2, *file_a_));
+  ASSERT_EQ(deletes.size(), 1);
+  EXPECT_EQ(deletes[0]->file_path, pos_delete->file_path);
 }
 
 TEST_P(DeleteFileIndexTest, TestReferencedDeleteFiles) {
