@@ -77,6 +77,8 @@ start_minio_macos() {
 download_mc() {
   local uname_out
   uname_out="$(uname -s)"
+  local mc_release="RELEASE.2025-08-13T08-35-41Z"
+  local mc_download_url="https://github.com/minio/mc/releases/download/${mc_release}"
 
   local mc_dir
   mc_dir="${RUNNER_TEMP:-/tmp}"
@@ -85,7 +87,7 @@ download_mc() {
   case "${uname_out}" in
     Linux*)
       MC_BIN="${mc_dir}/mc"
-      curl -sSL "https://dl.min.io/client/mc/release/linux-amd64/mc" -o "${MC_BIN}"
+      curl -fsSL "${mc_download_url}/mc.linux-amd64.${mc_release}" -o "${MC_BIN}"
       chmod +x "${MC_BIN}"
       ;;
     Darwin*)
@@ -93,15 +95,15 @@ download_mc() {
       local arch
       arch="$(uname -m)"
       if [ "${arch}" = "arm64" ]; then
-        curl -sSL "https://dl.min.io/client/mc/release/darwin-arm64/mc" -o "${MC_BIN}"
+        curl -fsSL "${mc_download_url}/mc.darwin-arm64.${mc_release}" -o "${MC_BIN}"
       else
-        curl -sSL "https://dl.min.io/client/mc/release/darwin-amd64/mc" -o "${MC_BIN}"
+        curl -fsSL "${mc_download_url}/mc.darwin-amd64.${mc_release}" -o "${MC_BIN}"
       fi
       chmod +x "${MC_BIN}"
       ;;
     MINGW*|MSYS*|CYGWIN*)
       MC_BIN="${mc_dir}/mc.exe"
-      curl -sSL "https://dl.min.io/client/mc/release/windows-amd64/mc.exe" -o "${MC_BIN}"
+      curl -fsSL "${mc_download_url}/mc.windows-amd64.${mc_release}.exe" -o "${MC_BIN}"
       ;;
     *)
       echo "Unsupported OS for mc: ${uname_out}" >&2
@@ -124,7 +126,10 @@ create_bucket() {
 start_minio_windows() {
   local minio_dir="${RUNNER_TEMP:-/tmp}"
   local minio_bin="${minio_dir}/minio.exe"
-  curl -sSL "https://dl.min.io/server/minio/release/windows-amd64/minio.exe" -o "${minio_bin}"
+  local minio_release="RELEASE.2025-09-07T16-13-09Z"
+  curl -fsSL \
+    "https://github.com/minio/minio/releases/download/${minio_release}/minio.windows-amd64.${minio_release}.exe" \
+    -o "${minio_bin}"
   MINIO_ROOT_USER="${MINIO_ROOT_USER}" MINIO_ROOT_PASSWORD="${MINIO_ROOT_PASSWORD}" \
     "${minio_bin}" server "${minio_dir}/minio-data" --console-address ":${MINIO_CONSOLE_PORT}" &
   wait_for_minio
