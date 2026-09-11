@@ -311,6 +311,9 @@ class ICEBERG_TEMPLATE_CLASS_EXPORT TableScanBuilder : public ErrorCollector {
 
   /// \brief Configure an executor for manifest planning.
   ///
+  /// The executor is borrowed and must remain alive throughout planning by scans built
+  /// from this builder and until any stream returned by PlanFilesStream() is destroyed.
+  ///
   /// \param executor Executor to use while planning manifests.
   /// \return Reference to this for method chaining.
   TableScanBuilder& PlanWith(Executor& executor);
@@ -474,7 +477,9 @@ class ICEBERG_EXPORT DataTableScan : public TableScan {
   ///
   /// Unlike PlanFiles(), this method does not materialize all manifest entries and scan
   /// tasks. The returned fallible, single-pass stream owns its planning resources and
-  /// can outlive this scan.
+  /// can outlive this scan. An executor configured through PlanWith() is borrowed and
+  /// must remain alive until the stream is destroyed, as later Next() calls may submit
+  /// work to it.
   Result<FileScanTaskStreamPtr> PlanFilesStream() const;
 
  private:

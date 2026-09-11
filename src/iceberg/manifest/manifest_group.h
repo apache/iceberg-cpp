@@ -127,6 +127,9 @@ class ICEBERG_EXPORT ManifestGroup : public ErrorCollector {
 
   /// \brief Configure an optional executor for manifest planning.
   ///
+  /// The executor is borrowed and must remain alive throughout planning and until any
+  /// stream returned by PlanFilesStream() is destroyed.
+  ///
   /// \param executor Executor to use, or std::nullopt to plan manifests serially.
   /// \return Reference to this for method chaining.
   ManifestGroup& PlanWith(OptionalExecutor executor);
@@ -140,6 +143,9 @@ class ICEBERG_EXPORT ManifestGroup : public ErrorCollector {
   /// \brief Lazily plan scan tasks for matching data files.
   ///
   /// The returned stream owns the planning state and may outlive this ManifestGroup.
+  /// An executor configured through PlanWith() is borrowed and must remain alive until
+  /// the stream is destroyed, as later Next() calls may submit work to it.
+  ///
   /// It reads one bounded manifest batch at a time instead of materializing all manifest
   /// entries and scan tasks. When PlanWith() configures an executor, entry streams for
   /// manifests in each batch are opened in parallel, while entries are consumed one
