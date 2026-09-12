@@ -54,8 +54,13 @@ if(NOT TARGET thrift::thrift)
                       "-DICEBERG_BUNDLE_THRIFT=OFF against a system Thrift install.")
 endif()
 
-set(ICEBERG_HIVE_SOURCES hive_catalog.cc hive_catalog_properties.cc hms_client.cc
-                         ${ICEBERG_HIVE_THRIFT_GEN_SOURCES})
+set(ICEBERG_HIVE_SOURCES
+    hive_catalog.cc
+    hive_catalog_properties.cc
+    hive_schema.cc
+    hive_utils.cc
+    hms_client.cc
+    ${ICEBERG_HIVE_THRIFT_GEN_SOURCES})
 
 set(ICEBERG_HIVE_STATIC_BUILD_INTERFACE_LIBS)
 set(ICEBERG_HIVE_SHARED_BUILD_INTERFACE_LIBS)
