@@ -36,6 +36,7 @@
 #include "iceberg/type_fwd.h"
 #include "iceberg/util/error_collector.h"
 #include "iceberg/util/executor.h"
+#include "iceberg/util/stream.h"
 
 namespace iceberg {
 
@@ -95,6 +96,12 @@ class ICEBERG_EXPORT FileScanTask : public ScanTask {
   std::vector<std::shared_ptr<DataFile>> delete_files_;
   std::shared_ptr<Expression> residual_filter_;
 };
+
+/// \brief Stream of file scan tasks.
+using FileScanTaskStream = Stream<std::shared_ptr<FileScanTask>>;
+
+/// \brief Owning pointer to a file scan task stream.
+using FileScanTaskStreamPtr = std::unique_ptr<FileScanTaskStream>;
 
 enum class ChangelogOperation : uint8_t {
   kInsert,
@@ -304,6 +311,9 @@ class ICEBERG_TEMPLATE_CLASS_EXPORT TableScanBuilder : public ErrorCollector {
 
   /// \brief Configure an executor for manifest planning.
   ///
+  /// The executor is borrowed and must remain alive throughout planning by scans built
+  /// from this builder and until any stream returned by PlanFilesStream() is destroyed.
+  ///
   /// \param executor Executor to use while planning manifests.
   /// \return Reference to this for method chaining.
   TableScanBuilder& PlanWith(Executor& executor);
@@ -462,6 +472,15 @@ class ICEBERG_EXPORT DataTableScan : public TableScan {
   /// \brief Plans the scan tasks by resolving manifests and data files.
   /// \return A Result containing scan tasks or an error.
   Result<std::vector<std::shared_ptr<FileScanTask>>> PlanFiles() const;
+
+  /// \brief Lazily plans scan tasks by resolving manifests and data files on demand.
+  ///
+  /// Unlike PlanFiles(), this method does not materialize all manifest entries and scan
+  /// tasks. The returned fallible, single-pass stream owns its planning resources and
+  /// can outlive this scan. An executor configured through PlanWith() is borrowed and
+  /// must remain alive until the stream is destroyed, as later Next() calls may submit
+  /// work to it.
+  Result<FileScanTaskStreamPtr> PlanFilesStream() const;
 
  private:
   Status ReportScan(const Snapshot& snapshot, const ScanMetrics& scan_metrics) const;

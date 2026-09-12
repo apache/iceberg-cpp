@@ -19,8 +19,8 @@
 
 #pragma once
 
-/// \file iceberg/util/iterator.h
-/// \brief Pull-based iterator interface for fallible, lazily produced values.
+/// \file iceberg/util/stream.h
+/// \brief Pull-based stream interface for fallible, lazily produced values.
 
 #include <deque>
 #include <optional>
@@ -32,27 +32,37 @@
 
 namespace iceberg {
 
-/// \brief A pull-based iterator whose reads may fail.
+/// \brief A pull-based stream whose reads may fail.
 ///
-/// Iterator implementations own any resources needed to produce values. Destroying an
-/// iterator releases those resources, including when iteration stops before reaching the
-/// end. Iterators are not thread-safe unless an implementation explicitly says otherwise.
-/// Once Next() returns an error or std::nullopt, the iterator is terminal. Subsequent
+/// Stream implementations own any resources needed to produce values. Destroying a
+/// stream releases those resources, including when consumption stops before reaching the
+/// end. Streams are not thread-safe unless an implementation explicitly says otherwise.
+/// Once Next() returns an error or std::nullopt, the stream is terminal. Subsequent
 /// calls return the same terminal result without invoking the implementation again.
 ///
-/// \tparam T Value returned by the iterator.
+/// \tparam T Value returned by the stream.
 template <typename T>
-class Iterator {
+class Stream {
  public:
-  virtual ~Iterator() = default;
+  /// \brief Destroy this stream and release its producer resources.
+  virtual ~Stream() = default;
 
-  Iterator() = default;
-  Iterator(const Iterator&) = delete;
-  Iterator& operator=(const Iterator&) = delete;
-  Iterator(Iterator&&) noexcept = default;
-  Iterator& operator=(Iterator&&) noexcept = default;
+  /// \brief Construct a stream in its initial state.
+  Stream() = default;
 
-  /// \brief Return the next value, or std::nullopt when the iterator is exhausted.
+  /// \brief Streams cannot be copied.
+  Stream(const Stream&) = delete;
+
+  /// \brief Streams cannot be copy-assigned.
+  Stream& operator=(const Stream&) = delete;
+
+  /// \brief Move a stream and its terminal state.
+  Stream(Stream&&) noexcept = default;
+
+  /// \brief Move-assign a stream and its terminal state.
+  Stream& operator=(Stream&&) noexcept = default;
+
+  /// \brief Return the next value, or std::nullopt when the stream is exhausted.
   ///
   /// After this method returns an error or std::nullopt, subsequent calls return the same
   /// terminal result without invoking NextImpl().
@@ -92,7 +102,7 @@ class Iterator {
 
     if constexpr (!std::is_move_constructible_v<T>) {
       static_assert(std::is_copy_constructible_v<T>,
-                    "Iterator::ToVector requires T to be move- or copy-constructible");
+                    "Stream::ToVector requires T to be move- or copy-constructible");
 
       // For strictly copy-only T, collecting directly into a vector can repeatedly copy
       // previously collected elements during vector growth. Stage values in a deque,

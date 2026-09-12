@@ -197,6 +197,7 @@ class ManifestListReader;
 class ManifestListWriter;
 class ManifestReader;
 class ManifestWriter;
+class SupportsManifestEntryStreaming;
 class PartitionSummary;
 
 /// \brief File I/O.
@@ -230,7 +231,7 @@ struct SessionContext;
 /// \brief Task execution.
 class Executor;
 template <typename T>
-class Iterator;
+class Stream;
 
 /// \brief Metrics reporting.
 class MetricsReporter;

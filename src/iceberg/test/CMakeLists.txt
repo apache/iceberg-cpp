@@ -135,7 +135,7 @@ add_iceberg_test(util_test
                  endian_test.cc
                  file_io_test.cc
                  formatter_test.cc
-                 iterator_test.cc
+                 stream_test.cc
                  lazy_test.cc
                  location_util_test.cc
                  math_util_internal_test.cc

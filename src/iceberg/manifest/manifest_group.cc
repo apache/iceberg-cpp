@@ -131,6 +131,310 @@ ManifestGroup::~ManifestGroup() = default;
 ManifestGroup::ManifestGroup(ManifestGroup&&) noexcept = default;
 ManifestGroup& ManifestGroup::operator=(ManifestGroup&&) noexcept = default;
 
+class ManifestGroup::FilePlanningStream final : public FileScanTaskStream {
+ public:
+  static Result<FileScanTaskStreamPtr> Make(std::unique_ptr<ManifestGroup> group) {
+    ICEBERG_RETURN_UNEXPECTED(group->CheckErrors());
+
+    group->delete_index_builder_.WithScanMetrics(group->scan_metrics_);
+    ICEBERG_ASSIGN_OR_RAISE(auto delete_index, group->delete_index_builder_.Build());
+
+    auto stats_projection =
+        group->PrepareStatsProjection(delete_index->has_equality_deletes());
+
+    std::unique_ptr<Evaluator> data_file_evaluator;
+    if (group->file_filter_ &&
+        group->file_filter_->op() != Expression::Operation::kTrue) {
+      ICEBERG_ASSIGN_OR_RAISE(
+          data_file_evaluator,
+          Evaluator::Make(*DataFileFilterSchema(), group->file_filter_,
+                          group->case_sensitive_));
+    }
+    const bool drop_stats = stats_projection.drop_stats;
+
+    return FileScanTaskStreamPtr(new FilePlanningStream(
+        std::move(group), std::move(delete_index), std::move(data_file_evaluator),
+        std::move(stats_projection.columns), drop_stats));
+  }
+
+  Result<std::optional<std::shared_ptr<FileScanTask>>> NextImpl() override {
+    while (true) {
+      ICEBERG_ASSIGN_OR_RAISE(auto entry, NextEntry());
+      if (!entry.has_value()) {
+        return std::nullopt;
+      }
+
+      auto [spec_id, value] = std::move(entry).value();
+      if (group_->ignore_existing_ && value.status == ManifestStatus::kExisting) {
+        IncrementSkippedDataFiles();
+        continue;
+      }
+
+      ICEBERG_DCHECK(value.data_file != nullptr, "Data file cannot be null");
+      if (data_file_evaluator_) {
+        DataFileStructLike data_file(*value.data_file);
+        ICEBERG_ASSIGN_OR_RAISE(bool should_match,
+                                data_file_evaluator_->Evaluate(data_file));
+        if (!should_match) {
+          IncrementSkippedDataFiles();
+          continue;
+        }
+      }
+
+      if (!group_->manifest_entry_predicate_(value)) {
+        IncrementSkippedDataFiles();
+        continue;
+      }
+
+      ICEBERG_ASSIGN_OR_RAISE(auto delete_files, delete_index_->ForEntry(value));
+
+      // Equality-delete matching uses data-file statistics. Drop unrequested stats only
+      // after the delete index has finished matching this entry.
+      if (drop_stats_) {
+        ContentFileUtil::DropAllStats(*value.data_file);
+      } else if (!group_->columns_to_keep_stats_.empty()) {
+        ContentFileUtil::DropUnselectedStats(*value.data_file,
+                                             group_->columns_to_keep_stats_);
+      }
+
+      UpdateResultMetrics(*value.data_file, delete_files);
+
+      ICEBERG_ASSIGN_OR_RAISE(auto residuals, GetResidualEvaluator(spec_id));
+      ICEBERG_ASSIGN_OR_RAISE(auto residual,
+                              residuals->ResidualFor(value.data_file->partition));
+
+      return std::optional<std::shared_ptr<FileScanTask>>{std::make_shared<FileScanTask>(
+          std::move(value.data_file), std::move(delete_files), std::move(residual))};
+    }
+  }
+
+ private:
+  FilePlanningStream(std::unique_ptr<ManifestGroup> group,
+                     std::unique_ptr<DeleteFileIndex> delete_index,
+                     std::unique_ptr<Evaluator> data_file_evaluator,
+                     std::vector<std::string> columns, bool drop_stats)
+      : group_(std::move(group)),
+        delete_index_(std::move(delete_index)),
+        data_file_evaluator_(std::move(data_file_evaluator)),
+        columns_(std::move(columns)),
+        drop_stats_(drop_stats) {}
+
+  using TaggedEntry = std::pair<int32_t, ManifestEntry>;
+  using TaggedStream = std::pair<int32_t, ManifestEntryStreamPtr>;
+
+  Result<std::optional<TaggedEntry>> NextEntry() {
+    if (!group_->executor_.has_value()) {
+      while (true) {
+        if (!entry_stream_) {
+          ICEBERG_ASSIGN_OR_RAISE(bool opened, OpenNextManifest());
+          if (!opened) {
+            return std::nullopt;
+          }
+        }
+
+        ICEBERG_ASSIGN_OR_RAISE(auto entry, entry_stream_->Next());
+        if (!entry.has_value()) {
+          entry_stream_.reset();
+          continue;
+        }
+        return std::optional<TaggedEntry>{std::in_place, current_spec_id_,
+                                          std::move(entry).value()};
+      }
+    }
+
+    while (true) {
+      if (next_batch_stream_ == batch_streams_.size()) {
+        ICEBERG_ASSIGN_OR_RAISE(bool loaded, LoadNextManifestBatch());
+        if (!loaded) {
+          return std::nullopt;
+        }
+      }
+
+      auto& [spec_id, stream] = batch_streams_[next_batch_stream_];
+      ICEBERG_ASSIGN_OR_RAISE(auto entry, stream->Next());
+      if (!entry.has_value()) {
+        stream.reset();
+        ++next_batch_stream_;
+        continue;
+      }
+      return std::optional<TaggedEntry>{std::in_place, spec_id, std::move(entry).value()};
+    }
+  }
+
+  Result<ManifestEvaluator*> GetManifestEvaluator(int32_t spec_id) {
+    auto cached = manifest_evaluators_.find(spec_id);
+    if (cached != manifest_evaluators_.end()) {
+      return cached->second.get();
+    }
+
+    auto spec_iter = group_->specs_by_id_.find(spec_id);
+    ICEBERG_CHECK(spec_iter != group_->specs_by_id_.cend(),
+                  "Cannot find partition spec for ID {}", spec_id);
+
+    const auto& spec = spec_iter->second;
+    auto projector =
+        Projections::Inclusive(*spec, *group_->schema_, group_->case_sensitive_);
+    ICEBERG_ASSIGN_OR_RAISE(auto partition_filter,
+                            projector->Project(group_->data_filter_));
+    ICEBERG_ASSIGN_OR_RAISE(partition_filter, And::Make(std::move(partition_filter),
+                                                        group_->partition_filter_));
+    ICEBERG_ASSIGN_OR_RAISE(auto evaluator,
+                            ManifestEvaluator::MakePartitionFilter(
+                                std::move(partition_filter), spec, *group_->schema_,
+                                group_->case_sensitive_));
+    auto* result = evaluator.get();
+    manifest_evaluators_.emplace(spec_id, std::move(evaluator));
+    return result;
+  }
+
+  Result<ResidualEvaluator*> GetResidualEvaluator(int32_t spec_id) {
+    auto cached = residual_evaluators_.find(spec_id);
+    if (cached != residual_evaluators_.end()) {
+      return cached->second.get();
+    }
+
+    auto spec_iter = group_->specs_by_id_.find(spec_id);
+    ICEBERG_CHECK(spec_iter != group_->specs_by_id_.cend(),
+                  "Cannot find partition spec for ID {}", spec_id);
+
+    ICEBERG_ASSIGN_OR_RAISE(
+        auto evaluator,
+        ResidualEvaluator::Make(
+            (group_->ignore_residuals_ ? True::Instance() : group_->data_filter_),
+            *spec_iter->second, *group_->schema_, group_->case_sensitive_));
+    auto* result = evaluator.get();
+    residual_evaluators_.emplace(spec_id, std::move(evaluator));
+    return result;
+  }
+
+  Result<bool> ShouldReadManifest(const ManifestFile& manifest) {
+    ICEBERG_ASSIGN_OR_RAISE(auto evaluator,
+                            GetManifestEvaluator(manifest.partition_spec_id));
+    ICEBERG_ASSIGN_OR_RAISE(bool should_match, evaluator->Evaluate(manifest));
+    const bool has_non_deleted_files =
+        manifest.has_added_files() || manifest.has_existing_files();
+    const bool has_non_existing_files =
+        manifest.has_added_files() || manifest.has_deleted_files();
+    const bool has_only_ignored_files =
+        (group_->ignore_deleted_ && !has_non_deleted_files) ||
+        (group_->ignore_existing_ && !has_non_existing_files);
+    if (!should_match || has_only_ignored_files) {
+      IncrementSkippedDataManifests();
+      return false;
+    }
+
+    if (group_->scan_metrics_) {
+      group_->scan_metrics_->scanned_data_manifests->Increment(1);
+    }
+    return true;
+  }
+
+  Result<bool> OpenNextManifest() {
+    while (next_manifest_ < group_->data_manifests_.size()) {
+      const auto& manifest = group_->data_manifests_[next_manifest_++];
+      ICEBERG_ASSIGN_OR_RAISE(bool should_read, ShouldReadManifest(manifest));
+      if (!should_read) {
+        continue;
+      }
+
+      ICEBERG_ASSIGN_OR_RAISE(auto reader, group_->MakeReader(manifest, columns_));
+      ICEBERG_ASSIGN_OR_RAISE(entry_stream_, group_->ignore_deleted_
+                                                 ? reader->LiveEntriesStream()
+                                                 : reader->EntriesStream());
+      current_spec_id_ = manifest.partition_spec_id;
+      return true;
+    }
+    return false;
+  }
+
+  Result<bool> LoadNextManifestBatch() {
+    std::vector<const ManifestFile*> manifests;
+    manifests.reserve(kManifestReadBatchSize);
+    while (next_manifest_ < group_->data_manifests_.size() &&
+           manifests.size() < kManifestReadBatchSize) {
+      const auto& manifest = group_->data_manifests_[next_manifest_++];
+      ICEBERG_ASSIGN_OR_RAISE(bool should_read, ShouldReadManifest(manifest));
+      if (should_read) {
+        manifests.push_back(&manifest);
+      }
+    }
+
+    if (manifests.empty()) {
+      return false;
+    }
+
+    // Open the readers concurrently, but keep their streams instead of collecting
+    // entries here. This preserves bounded memory for large manifests while retaining
+    // parallel manifest initialization when an executor is configured.
+    ICEBERG_ASSIGN_OR_RAISE(
+        batch_streams_,
+        ParallelCollect(
+            group_->executor_, manifests,
+            [this](const ManifestFile* manifest) -> Result<std::vector<TaggedStream>> {
+              ICEBERG_ASSIGN_OR_RAISE(auto reader,
+                                      group_->MakeReader(*manifest, columns_));
+              ICEBERG_ASSIGN_OR_RAISE(auto stream, group_->ignore_deleted_
+                                                       ? reader->LiveEntriesStream()
+                                                       : reader->EntriesStream());
+
+              std::vector<TaggedStream> tagged_streams;
+              tagged_streams.emplace_back(manifest->partition_spec_id, std::move(stream));
+              return tagged_streams;
+            }));
+    next_batch_stream_ = 0;
+    return true;
+  }
+
+  void IncrementSkippedDataManifests() {
+    if (group_->scan_metrics_) {
+      group_->scan_metrics_->skipped_data_manifests->Increment(1);
+    }
+  }
+
+  void IncrementSkippedDataFiles() {
+    if (group_->scan_metrics_) {
+      group_->scan_metrics_->skipped_data_files->Increment(1);
+    }
+  }
+
+  void UpdateResultMetrics(const DataFile& data_file,
+                           const std::vector<std::shared_ptr<DataFile>>& delete_files) {
+    if (!group_->scan_metrics_) {
+      return;
+    }
+
+    group_->scan_metrics_->total_file_size_in_bytes->Increment(
+        ContentFileUtil::ContentSizeInBytes(data_file));
+    group_->scan_metrics_->result_data_files->Increment(1);
+    group_->scan_metrics_->result_delete_files->Increment(
+        static_cast<int64_t>(delete_files.size()));
+    int64_t deletes_size = 0;
+    for (const auto& delete_file : delete_files) {
+      deletes_size += ContentFileUtil::ContentSizeInBytes(*delete_file);
+    }
+    group_->scan_metrics_->total_delete_file_size_in_bytes->Increment(deletes_size);
+  }
+
+  std::unique_ptr<ManifestGroup> group_;
+  std::unique_ptr<DeleteFileIndex> delete_index_;
+  std::unique_ptr<Evaluator> data_file_evaluator_;
+  std::vector<std::string> columns_;
+  std::unordered_map<int32_t, std::unique_ptr<ManifestEvaluator>> manifest_evaluators_;
+  std::unordered_map<int32_t, std::shared_ptr<ResidualEvaluator>> residual_evaluators_;
+  ManifestEntryStreamPtr entry_stream_;
+  std::vector<TaggedStream> batch_streams_;
+  size_t next_manifest_ = 0;
+  size_t next_batch_stream_ = 0;
+  int32_t current_spec_id_ = 0;
+  bool drop_stats_;
+
+  // Limit the number of manifest readers and streams retained by executor-backed
+  // planning. The executor still controls actual task concurrency, while this fixed
+  // cap prevents resource use from scaling with the total manifest count. Entries
+  // within each manifest remain streamed, so this does not cap manifest size.
+  static constexpr size_t kManifestReadBatchSize = 32;
+};
+
 ManifestGroup& ManifestGroup::FilterData(std::shared_ptr<Expression> filter) {
   ICEBERG_BUILDER_ASSIGN_OR_RETURN(data_filter_, And::Make(data_filter_, filter));
   delete_index_builder_.DataFilter(std::move(filter));
@@ -211,12 +515,15 @@ Result<std::vector<std::shared_ptr<FileScanTask>>> ManifestGroup::PlanFiles() {
     tasks.reserve(entries.size());
 
     for (auto& entry : entries) {
+      ICEBERG_ASSIGN_OR_RAISE(auto delete_files, ctx.deletes->ForEntry(entry));
+
+      // Equality-delete matching uses data-file statistics. Drop unrequested stats only
+      // after the delete index has finished matching this entry.
       if (ctx.drop_stats) {
         ContentFileUtil::DropAllStats(*entry.data_file);
       } else if (!ctx.columns_to_keep_stats.empty()) {
         ContentFileUtil::DropUnselectedStats(*entry.data_file, ctx.columns_to_keep_stats);
       }
-      ICEBERG_ASSIGN_OR_RAISE(auto delete_files, ctx.deletes->ForEntry(entry));
       // Count result metrics once per data file task. A delete file shared by
       // multiple data files contributes once to each task, unlike indexed delete files.
       if (scan_metrics_) {
@@ -251,6 +558,11 @@ Result<std::vector<std::shared_ptr<FileScanTask>>> ManifestGroup::PlanFiles() {
   return file_tasks;
 }
 
+Result<FileScanTaskStreamPtr> ManifestGroup::PlanFilesStream() && {
+  auto group = std::make_unique<ManifestGroup>(std::move(*this));
+  return FilePlanningStream::Make(std::move(group));
+}
+
 Result<std::vector<std::shared_ptr<ScanTask>>> ManifestGroup::Plan(
     const CreateTasksFunction& create_tasks) {
   std::unordered_map<int32_t, std::shared_ptr<ResidualEvaluator>> residual_cache;
@@ -276,10 +588,7 @@ Result<std::vector<std::shared_ptr<ScanTask>>> ManifestGroup::Plan(
   delete_index_builder_.WithScanMetrics(scan_metrics_);
   ICEBERG_ASSIGN_OR_RAISE(auto delete_index, delete_index_builder_.Build());
 
-  bool drop_stats = ManifestReader::ShouldDropStats(columns_);
-  if (delete_index->has_equality_deletes()) {
-    columns_ = ManifestReader::WithStatsColumns(columns_);
-  }
+  auto stats_projection = PrepareStatsProjection(delete_index->has_equality_deletes());
 
   std::unordered_map<int32_t, std::unique_ptr<TaskContext>> task_context_cache;
   auto get_task_context = [&](int32_t spec_id) -> Result<TaskContext*> {
@@ -297,13 +606,13 @@ Result<std::vector<std::shared_ptr<ScanTask>>> ManifestGroup::Plan(
         TaskContext{.spec = spec,
                     .deletes = delete_index.get(),
                     .residuals = residuals,
-                    .drop_stats = drop_stats,
+                    .drop_stats = stats_projection.drop_stats,
                     .columns_to_keep_stats = columns_to_keep_stats_});
 
     return task_context_cache[spec_id].get();
   };
 
-  ICEBERG_ASSIGN_OR_RAISE(auto entry_groups, ReadEntries());
+  ICEBERG_ASSIGN_OR_RAISE(auto entry_groups, ReadEntries(stats_projection.columns));
 
   std::vector<std::shared_ptr<ScanTask>> all_tasks;
   for (auto& [spec_id, entries] : entry_groups) {
@@ -317,7 +626,7 @@ Result<std::vector<std::shared_ptr<ScanTask>>> ManifestGroup::Plan(
 }
 
 Result<std::vector<ManifestEntry>> ManifestGroup::Entries() {
-  ICEBERG_ASSIGN_OR_RAISE(auto entry_groups, ReadEntries());
+  ICEBERG_ASSIGN_OR_RAISE(auto entry_groups, ReadEntries(columns_));
 
   std::vector<ManifestEntry> all_entries;
   for (auto& [_, entries] : entry_groups) {
@@ -329,13 +638,14 @@ Result<std::vector<ManifestEntry>> ManifestGroup::Entries() {
 }
 
 Result<std::unique_ptr<ManifestReader>> ManifestGroup::MakeReader(
-    const ManifestFile& manifest) {
+    const ManifestFile& manifest, const std::vector<std::string>& columns) {
   ICEBERG_ASSIGN_OR_RAISE(auto reader,
                           ManifestReader::Make(manifest, io_, schema_, specs_by_id_));
 
-  auto columns = columns_;
+  auto reader_columns = columns;
   if (file_filter_ && file_filter_->op() != Expression::Operation::kTrue &&
-      !columns.empty() && !std::ranges::contains(columns, Schema::kAllColumns)) {
+      !reader_columns.empty() &&
+      !std::ranges::contains(reader_columns, Schema::kAllColumns)) {
     auto data_file_schema = DataFileFilterSchema();
     ICEBERG_ASSIGN_OR_RAISE(
         auto bound_file_filter,
@@ -343,7 +653,8 @@ Result<std::unique_ptr<ManifestReader>> ManifestGroup::MakeReader(
     ICEBERG_ASSIGN_OR_RAISE(auto referenced_field_ids,
                             ReferenceVisitor::GetReferencedFieldIds(bound_file_filter));
 
-    std::unordered_set<std::string> selected_columns(columns.cbegin(), columns.cend());
+    std::unordered_set<std::string> selected_columns(reader_columns.cbegin(),
+                                                     reader_columns.cend());
     for (const auto field_id : referenced_field_ids) {
       if (field_id == DataFile::kSpecIdFieldId) {
         continue;
@@ -355,8 +666,8 @@ Result<std::unique_ptr<ManifestReader>> ManifestGroup::MakeReader(
         if (selected_columns.contains(column_name_str)) {
           continue;
         }
-        columns.push_back(std::move(column_name_str));
-        selected_columns.insert(columns.back());
+        reader_columns.push_back(std::move(column_name_str));
+        selected_columns.insert(reader_columns.back());
       }
     }
   }
@@ -364,7 +675,7 @@ Result<std::unique_ptr<ManifestReader>> ManifestGroup::MakeReader(
   reader->FilterRows(data_filter_)
       .FilterPartitions(partition_filter_)
       .CaseSensitive(case_sensitive_)
-      .Select(std::move(columns));
+      .Select(std::move(reader_columns));
 
   if (scan_metrics_) {
     reader->SkipCounter(scan_metrics_->skipped_data_files);
@@ -373,8 +684,22 @@ Result<std::unique_ptr<ManifestReader>> ManifestGroup::MakeReader(
   return reader;
 }
 
+ManifestGroup::StatsProjection ManifestGroup::PrepareStatsProjection(
+    bool has_equality_deletes) const {
+  // The caller's projection records whether stats were requested. Equality-delete
+  // matching may add stats temporarily, but they should still be dropped from the
+  // result when the original projection did not request them. Keeping this decision
+  // here ensures eager and stream planning use identical semantics.
+  StatsProjection result{.columns = columns_,
+                         .drop_stats = ManifestReader::ShouldDropStats(columns_)};
+  if (has_equality_deletes) {
+    result.columns = ManifestReader::WithStatsColumns(result.columns);
+  }
+  return result;
+}
+
 Result<std::unordered_map<int32_t, std::vector<ManifestEntry>>>
-ManifestGroup::ReadEntries() {
+ManifestGroup::ReadEntries(const std::vector<std::string>& columns) {
   const auto cache_capacity = static_cast<int32_t>(specs_by_id_.size());
   auto get_manifest_evaluator = internal::MemoizeLru(
       [this](int32_t spec_id) -> Result<std::shared_ptr<ManifestEvaluator>> {
@@ -441,7 +766,7 @@ ManifestGroup::ReadEntries() {
         }
 
         // Read manifest entries
-        ICEBERG_ASSIGN_OR_RAISE(auto reader, MakeReader(manifest));
+        ICEBERG_ASSIGN_OR_RAISE(auto reader, MakeReader(manifest, columns));
         ICEBERG_ASSIGN_OR_RAISE(
             auto entries, ignore_deleted_ ? reader->LiveEntries() : reader->Entries());
 

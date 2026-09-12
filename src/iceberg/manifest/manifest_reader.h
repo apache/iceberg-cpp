@@ -30,11 +30,19 @@
 #include <vector>
 
 #include "iceberg/iceberg_export.h"
+#include "iceberg/manifest/manifest_entry.h"
 #include "iceberg/metrics/counter.h"
 #include "iceberg/result.h"
 #include "iceberg/type_fwd.h"
+#include "iceberg/util/stream.h"
 
 namespace iceberg {
+
+/// \brief Stream of manifest entries.
+using ManifestEntryStream = Stream<ManifestEntry>;
+
+/// \brief Owning pointer to a manifest entry stream.
+using ManifestEntryStreamPtr = std::unique_ptr<ManifestEntryStream>;
 
 /// \brief Read manifest entries from a manifest file.
 class ICEBERG_EXPORT ManifestReader {
@@ -42,12 +50,24 @@ class ICEBERG_EXPORT ManifestReader {
   virtual ~ManifestReader() = default;
 
   /// \brief Read all manifest entries in the manifest file.
-  ///
-  /// TODO(gangwu): provide a lazy-evaluated iterator interface for better performance.
   virtual Result<std::vector<ManifestEntry>> Entries() = 0;
 
   /// \brief Read only live (non-deleted) manifest entries.
   virtual Result<std::vector<ManifestEntry>> LiveEntries() = 0;
+
+  /// \brief Lazily read manifest entries.
+  ///
+  /// Implementations using SupportsManifestEntryStreaming produce entries lazily. Other
+  /// implementations are adapted from Entries() for compatibility. The returned stream
+  /// is fallible and single-pass.
+  Result<ManifestEntryStreamPtr> EntriesStream();
+
+  /// \brief Lazily read only live (non-deleted) manifest entries.
+  ///
+  /// Implementations using SupportsManifestEntryStreaming produce entries lazily. Other
+  /// implementations are adapted from LiveEntries() for compatibility. The returned
+  /// stream is fallible and single-pass.
+  Result<ManifestEntryStreamPtr> LiveEntriesStream();
 
   /// \brief Select specific columns of data file to read from the manifest entries.
   ///
@@ -132,6 +152,26 @@ class ICEBERG_EXPORT ManifestReader {
   /// \brief Add stats columns to the column list if needed.
   static std::vector<std::string> WithStatsColumns(
       const std::vector<std::string>& columns);
+};
+
+/// \brief Optional mix-in for ManifestReader implementations that support entry
+/// streaming.
+class ICEBERG_EXPORT SupportsManifestEntryStreaming {
+ public:
+  /// \brief Destroy this streaming extension.
+  virtual ~SupportsManifestEntryStreaming() = default;
+
+  /// \brief Lazily read manifest entries.
+  ///
+  /// The returned stream must own all resources required for consumption and must not
+  /// depend on this reader remaining alive.
+  virtual Result<ManifestEntryStreamPtr> EntriesStream() = 0;
+
+  /// \brief Lazily read only live (non-deleted) manifest entries.
+  ///
+  /// The returned stream must own all resources required for consumption and must not
+  /// depend on this reader remaining alive.
+  virtual Result<ManifestEntryStreamPtr> LiveEntriesStream() = 0;
 };
 
 /// \brief Read manifest files from a manifest list file.

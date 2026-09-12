@@ -32,7 +32,7 @@ install_headers(
         'formatter.h',
         'functional.h',
         'int128.h',
-        'iterator.h',
+        'stream.h',
         'lazy.h',
         'location_util.h',
         'macros.h',
