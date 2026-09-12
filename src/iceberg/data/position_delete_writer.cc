@@ -19,8 +19,11 @@
 
 #include "iceberg/data/position_delete_writer.h"
 
+#include <functional>
 #include <map>
 #include <set>
+#include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -57,15 +60,68 @@ class PositionDeleteWriter::Impl {
     ICEBERG_ASSIGN_OR_RAISE(auto writer,
                             WriterFactoryRegistry::Open(options.format, writer_options));
 
-    return std::unique_ptr<Impl>(
+    auto impl = std::unique_ptr<Impl>(
         new Impl(std::move(options), std::move(delete_schema), std::move(writer)));
+    ICEBERG_RETURN_UNEXPECTED(impl->InitSchema());
+    return impl;
+  }
+
+  ~Impl() {
+    ArrowArrayViewReset(&array_view_);
+    if (arrow_schema_.release != nullptr) {
+      ArrowSchemaRelease(&arrow_schema_);
+    }
   }
 
   Status Write(ArrowArray* data) {
+    ICEBERG_PRECHECK(data != nullptr, "Position delete data must not be null");
+    internal::ArrowArrayGuard data_guard(data);
+    ICEBERG_PRECHECK(data->offset == 0,
+                     "Position delete data with a non-zero offset is not supported");
     ICEBERG_PRECHECK(buffered_paths_.empty(),
                      "Cannot write batch data when there are buffered deletes.");
-    // TODO(anyone): Extract file paths from ArrowArray to update referenced_paths_.
-    return writer_->Write(data);
+
+    ArrowError error;
+    ICEBERG_NANOARROW_RETURN_UNEXPECTED_WITH_ERROR(
+        ArrowArrayViewSetArray(&array_view_, data, &error), error);
+
+    const auto* path_view = array_view_.children[0];
+    const auto* pos_view = array_view_.children[1];
+
+    // A batch usually references files that earlier batches already referenced, so
+    // record paths optimistically: a known path costs a lookup instead of a scratch
+    // allocation. Entries added by this batch are rolled back unless the write
+    // succeeds, so a rejected batch still leaves no trace in the metadata.
+    pending_references_.clear();
+    for (int64_t i = 0; i < data->length; ++i) {
+      if (ArrowArrayViewIsNull(path_view, i)) {
+        RollbackPendingReferences();
+        return InvalidArrowData(
+            "Position delete file paths must not contain null values");
+      }
+      if (ArrowArrayViewIsNull(pos_view, i)) {
+        RollbackPendingReferences();
+        return InvalidArrowData("Position delete positions must not contain null values");
+      }
+      auto path = ArrowArrayViewGetStringUnsafe(path_view, i);
+      if (path.size_bytes == 0) {
+        RollbackPendingReferences();
+        return InvalidArrowData("Position delete file paths must not be empty");
+      }
+      std::string_view file_path(path.data, static_cast<size_t>(path.size_bytes));
+      if (!referenced_paths_.contains(file_path)) {
+        pending_references_.push_back(
+            referenced_paths_.insert(std::string(file_path)).first);
+      }
+    }
+
+    Status status = writer_->Write(data);
+    if (!status) {
+      RollbackPendingReferences();
+      return status;
+    }
+    pending_references_.clear();
+    return {};
   }
 
   Status WriteDelete(std::string_view file_path, int64_t pos) {
@@ -163,6 +219,8 @@ class PositionDeleteWriter::Impl {
 
     WriteResult result;
     result.data_files.push_back(std::move(data_file));
+    result.referenced_data_files.assign(referenced_paths_.begin(),
+                                        referenced_paths_.end());
     return result;
   }
 
@@ -173,15 +231,29 @@ class PositionDeleteWriter::Impl {
         delete_schema_(std::move(delete_schema)),
         writer_(std::move(writer)) {}
 
-  Status FlushBuffer() {
-    ArrowSchema arrow_schema;
-    ICEBERG_RETURN_UNEXPECTED(ToArrowSchema(*delete_schema_, &arrow_schema));
-    internal::ArrowSchemaGuard schema_guard(&arrow_schema);
+  Status InitSchema() {
+    ICEBERG_RETURN_UNEXPECTED(ToArrowSchema(*delete_schema_, &arrow_schema_));
+    ArrowError error;
+    // The delete schema never changes, so the view is initialized once here and
+    // merely rebound to each incoming batch in Write.
+    ICEBERG_NANOARROW_RETURN_UNEXPECTED_WITH_ERROR(
+        ArrowArrayViewInitFromSchema(&array_view_, &arrow_schema_, &error), error);
+    return {};
+  }
 
+  /// \brief Undo the referenced paths added by the batch that failed to write.
+  void RollbackPendingReferences() {
+    for (auto it : pending_references_) {
+      referenced_paths_.erase(it);
+    }
+    pending_references_.clear();
+  }
+
+  Status FlushBuffer() {
     ArrowArray array;
     ArrowError error;
     ICEBERG_NANOARROW_RETURN_UNEXPECTED_WITH_ERROR(
-        ArrowArrayInitFromSchema(&array, &arrow_schema, &error), error);
+        ArrowArrayInitFromSchema(&array, &arrow_schema_, &error), error);
     internal::ArrowArrayGuard array_guard(&array);
     ICEBERG_NANOARROW_RETURN_UNEXPECTED(ArrowArrayStartAppending(&array));
 
@@ -205,13 +277,24 @@ class PositionDeleteWriter::Impl {
     return {};
   }
 
+  // Transparent comparator so that paths arriving as string_view can be looked up
+  // without first materializing a std::string.
+  using ReferencedPaths = std::set<std::string, std::less<>>;
+
   PositionDeleteWriterOptions options_;
   std::shared_ptr<Schema> delete_schema_;
   std::unique_ptr<Writer> writer_;
+  // The immutable delete schema in Arrow form, paired with the view bound to it.
+  // Declared before the view and released after it in the destructor.
+  ArrowSchema arrow_schema_{};
+  ArrowArrayView array_view_{};
   bool closed_ = false;
   std::vector<std::string> buffered_paths_;
   std::vector<int64_t> buffered_positions_;
-  std::set<std::string> referenced_paths_;
+  ReferencedPaths referenced_paths_;
+  // Iterators of the entries added to referenced_paths_ by the batch in flight, so
+  // that they can be removed again if that batch is rejected.
+  std::vector<ReferencedPaths::iterator> pending_references_;
 };
 
 PositionDeleteWriter::PositionDeleteWriter(std::unique_ptr<Impl> impl)
