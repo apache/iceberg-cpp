@@ -40,6 +40,10 @@ class ICEBERG_EXPORT HistoryTable : public MetadataTable {
 
   Kind kind() const noexcept override { return Kind::kHistory; }
 
+  const std::shared_ptr<Schema>& schema() const override;
+
+  Result<ArrowArrayStream> Scan() override;
+
  private:
   explicit HistoryTable(std::shared_ptr<Table> table);
 };
