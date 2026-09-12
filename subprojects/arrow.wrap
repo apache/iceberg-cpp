@@ -15,20 +15,15 @@
 # specific language governing permissions and limitations
 # under the License.
 
-benchmark_dep = dependency(
-    'benchmark',
-    required: true,
-    static: true,
-    default_options: ['default_library=static'],
-)
+[wrap-file]
+directory = apache-arrow-25.0.0
+source_url = https://www.apache.org/dyn/closer.lua?action=download&filename=arrow/arrow-25.0.0/apache-arrow-25.0.0.tar.gz
+source_fallback_url = https://archive.apache.org/dist/arrow/arrow-25.0.0/apache-arrow-25.0.0.tar.gz
+source_filename = apache-arrow-25.0.0.tar.gz
+source_hash = 12afc2dc8137bdd4a68876cec939f664c9d55cfc7b75f55b45163ebb4e344d81
+patch_directory = arrow
+method = cmake
 
-benchmark_smoke = executable(
-    'benchmark_smoke',
-    sources: files('benchmark_smoke.cc'),
-    dependencies: [
-        get_variable('iceberg_static_dep', iceberg_dep),
-        benchmark_dep,
-    ],
-)
-
-benchmark('benchmark_smoke', benchmark_smoke)
+[provide]
+arrow = arrow_static_dep
+parquet = parquet_static_dep

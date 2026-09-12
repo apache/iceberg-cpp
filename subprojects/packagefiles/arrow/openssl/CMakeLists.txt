@@ -15,20 +15,9 @@
 # specific language governing permissions and limitations
 # under the License.
 
-benchmark_dep = dependency(
-    'benchmark',
-    required: true,
-    static: true,
-    default_options: ['default_library=static'],
-)
+cmake_minimum_required(VERSION 3.25)
 
-benchmark_smoke = executable(
-    'benchmark_smoke',
-    sources: files('benchmark_smoke.cc'),
-    dependencies: [
-        get_variable('iceberg_static_dep', iceberg_dep),
-        benchmark_dep,
-    ],
-)
-
-benchmark('benchmark_smoke', benchmark_smoke)
+# Provide s2n's expected target without introducing a second libcrypto.
+find_package(OpenSSL REQUIRED GLOBAL)
+add_library(crypto INTERFACE IMPORTED GLOBAL)
+target_link_libraries(crypto INTERFACE OpenSSL::Crypto)

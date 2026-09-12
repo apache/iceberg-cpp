@@ -15,20 +15,13 @@
 # specific language governing permissions and limitations
 # under the License.
 
-benchmark_dep = dependency(
-    'benchmark',
-    required: true,
-    static: true,
-    default_options: ['default_library=static'],
-)
-
-benchmark_smoke = executable(
-    'benchmark_smoke',
-    sources: files('benchmark_smoke.cc'),
-    dependencies: [
-        get_variable('iceberg_static_dep', iceberg_dep),
-        benchmark_dep,
+install_headers(
+    [
+        'avro_constants.h',
+        'avro_metrics.h',
+        'avro_reader.h',
+        'avro_register.h',
+        'avro_writer.h',
     ],
+    subdir: 'iceberg/avro',
 )
-
-benchmark('benchmark_smoke', benchmark_smoke)

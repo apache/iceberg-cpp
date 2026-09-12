@@ -25,3 +25,12 @@ install_headers(
 if get_option('rest').enabled()
     subdir('rest')
 endif
+
+if get_option('hive').enabled()
+    subdir('hive')
+endif
+
+sql_sqlite_enabled = false
+if get_option('sql_catalog').enabled()
+    subdir('sql')
+endif

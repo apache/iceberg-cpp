@@ -184,6 +184,7 @@ list(APPEND
      roaring::roaring)
 list(APPEND
      ICEBERG_STATIC_INSTALL_INTERFACE_LIBS
+     ZLIB::ZLIB
      "$<IF:$<BOOL:${NANOARROW_VENDORED}>,iceberg::nanoarrow_static,$<IF:$<TARGET_EXISTS:nanoarrow::nanoarrow_static>,nanoarrow::nanoarrow_static,nanoarrow::nanoarrow_shared>>"
      "$<IF:$<BOOL:${NLOHMANN_JSON_VENDORED}>,iceberg::nlohmann_json,$<IF:$<TARGET_EXISTS:nlohmann_json::nlohmann_json>,nlohmann_json::nlohmann_json,nlohmann_json::nlohmann_json>>"
      "$<IF:$<BOOL:${UTF8PROC_VENDORED}>,iceberg::utf8proc,utf8proc::utf8proc>"

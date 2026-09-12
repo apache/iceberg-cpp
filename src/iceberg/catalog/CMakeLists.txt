@@ -19,6 +19,8 @@ iceberg_install_all_headers(iceberg/catalog)
 
 add_subdirectory(memory)
 
+iceberg_install_all_headers(iceberg/catalog)
+
 if(ICEBERG_BUILD_REST)
   add_subdirectory(rest)
 endif()
