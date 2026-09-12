@@ -46,7 +46,9 @@
 
 namespace iceberg {
 
+using ::testing::ElementsAre;
 using ::testing::HasSubstr;
+using ::testing::UnorderedElementsAre;
 
 class DataWriterTest : public ::testing::Test {
  protected:
@@ -487,26 +489,30 @@ TEST_F(PositionDeleteWriterTest, FailedBatchWriteDoesNotTrackReferencedFiles) {
   ASSERT_THAT(writer_result, IsOk());
   auto writer = std::move(writer_result.value());
 
-  // A rejected batch must not contribute referenced paths.
+  auto good_data = CreatePositionDeleteData(R"([["data_file_1.parquet", 0]])");
+  ArrowArray good_array;
+  ASSERT_TRUE(::arrow::ExportArray(*good_data, &good_array).ok());
+  ASSERT_THAT(writer->Write(&good_array), IsOk());
+
+  // The batch references a valid path before the null path rejects it, and none of
+  // its paths may end up in the metadata.
   auto bad_data =
-      CreatePositionDeleteData(R"([[null, 0], ["data_file_bad.parquet", 1]])");
+      CreatePositionDeleteData(R"([["data_file_bad.parquet", 1], [null, 2]])");
   ArrowArray bad_array;
   ASSERT_TRUE(::arrow::ExportArray(*bad_data, &bad_array).ok());
   internal::ArrowArrayGuard bad_array_guard(&bad_array);
   ASSERT_THAT(writer->Write(&bad_array), IsError(ErrorKind::kInvalidArrowData));
 
-  auto test_data = CreatePositionDeleteData(R"([["data_file_1.parquet", 0]])");
-  ArrowArray arrow_array;
-  ASSERT_TRUE(::arrow::ExportArray(*test_data, &arrow_array).ok());
-  ASSERT_THAT(writer->Write(&arrow_array), IsOk());
   ASSERT_THAT(writer->Close(), IsOk());
 
   auto metadata_result = writer->Metadata();
   ASSERT_THAT(metadata_result, IsOk());
 
-  const auto& data_file = metadata_result.value().data_files[0];
+  const auto& write_result = metadata_result.value();
+  const auto& data_file = write_result.data_files[0];
   ASSERT_TRUE(data_file->referenced_data_file.has_value());
   EXPECT_EQ(data_file->referenced_data_file.value(), "data_file_1.parquet");
+  EXPECT_THAT(write_result.referenced_data_files, ElementsAre("data_file_1.parquet"));
 }
 
 TEST_F(PositionDeleteWriterTest, WriteBatchDataForMultipleFiles) {
@@ -514,18 +520,27 @@ TEST_F(PositionDeleteWriterTest, WriteBatchDataForMultipleFiles) {
   ASSERT_THAT(writer_result, IsOk());
   auto writer = std::move(writer_result.value());
 
-  auto test_data = CreatePositionDeleteData(
-      R"([["data_file_1.parquet", 0], ["data_file_2.parquet", 5]])");
-  ArrowArray arrow_array;
-  ASSERT_TRUE(::arrow::ExportArray(*test_data, &arrow_array).ok());
-  ASSERT_THAT(writer->Write(&arrow_array), IsOk());
+  // Disjoint paths across two successful batches must be unioned, not replaced.
+  auto first_data = CreatePositionDeleteData(R"([["data_file_1.parquet", 0]])");
+  ArrowArray first_array;
+  ASSERT_TRUE(::arrow::ExportArray(*first_data, &first_array).ok());
+  ASSERT_THAT(writer->Write(&first_array), IsOk());
+
+  auto second_data = CreatePositionDeleteData(R"([["data_file_2.parquet", 5]])");
+  ArrowArray second_array;
+  ASSERT_TRUE(::arrow::ExportArray(*second_data, &second_array).ok());
+  ASSERT_THAT(writer->Write(&second_array), IsOk());
+
   ASSERT_THAT(writer->Close(), IsOk());
 
   auto metadata_result = writer->Metadata();
   ASSERT_THAT(metadata_result, IsOk());
 
-  const auto& data_file = metadata_result.value().data_files[0];
+  const auto& write_result = metadata_result.value();
+  const auto& data_file = write_result.data_files[0];
   EXPECT_FALSE(data_file->referenced_data_file.has_value());
+  EXPECT_THAT(write_result.referenced_data_files,
+              UnorderedElementsAre("data_file_1.parquet", "data_file_2.parquet"));
   EXPECT_FALSE(
       data_file->lower_bounds.contains(MetadataColumns::kDeleteFilePathColumnId));
   EXPECT_FALSE(data_file->lower_bounds.contains(MetadataColumns::kDeleteFilePosColumnId));
@@ -548,34 +563,76 @@ TEST_F(PositionDeleteWriterTest, WriteBatchThenDeleteTracksAllReferencedFiles) {
 
   auto metadata_result = writer->Metadata();
   ASSERT_THAT(metadata_result, IsOk());
-  EXPECT_FALSE(metadata_result.value().data_files[0]->referenced_data_file.has_value());
+  const auto& write_result = metadata_result.value();
+  EXPECT_FALSE(write_result.data_files[0]->referenced_data_file.has_value());
+  EXPECT_THAT(write_result.referenced_data_files,
+              UnorderedElementsAre("data_file_1.parquet", "data_file_2.parquet"));
 }
 
-TEST_F(PositionDeleteWriterTest, WriteBatchRejectsNullFilePath) {
-  auto writer_result = PositionDeleteWriter::Make(MakeDeleteOptions());
-  ASSERT_THAT(writer_result, IsOk());
-  auto writer = std::move(writer_result.value());
+TEST_F(PositionDeleteWriterTest, WriteBatchRejectsInvalidInput) {
+  // A null array.
+  {
+    auto writer_result = PositionDeleteWriter::Make(MakeDeleteOptions());
+    ASSERT_THAT(writer_result, IsOk());
+    auto writer = std::move(writer_result.value());
 
-  auto test_data = CreatePositionDeleteData(R"([[null, 0]])");
-  ArrowArray arrow_array;
-  ASSERT_TRUE(::arrow::ExportArray(*test_data, &arrow_array).ok());
+    auto result = writer->Write(nullptr);
+    ASSERT_THAT(result, IsError(ErrorKind::kInvalidArgument));
+    EXPECT_THAT(result, HasErrorMessage("Position delete data must not be null"));
+  }
 
-  auto result = writer->Write(&arrow_array);
-  EXPECT_EQ(arrow_array.release, nullptr);
-  internal::ArrowArrayGuard array_guard(&arrow_array);
-  ASSERT_THAT(result, IsError(ErrorKind::kInvalidArrowData));
-  EXPECT_THAT(result,
-              HasErrorMessage("Position delete file paths must not contain null values"));
-}
+  // A null file path.
+  {
+    auto writer_result = PositionDeleteWriter::Make(MakeDeleteOptions());
+    ASSERT_THAT(writer_result, IsOk());
+    auto writer = std::move(writer_result.value());
 
-TEST_F(PositionDeleteWriterTest, WriteBatchRejectsNullData) {
-  auto writer_result = PositionDeleteWriter::Make(MakeDeleteOptions());
-  ASSERT_THAT(writer_result, IsOk());
-  auto writer = std::move(writer_result.value());
+    auto test_data = CreatePositionDeleteData(R"([[null, 0]])");
+    ArrowArray arrow_array;
+    ASSERT_TRUE(::arrow::ExportArray(*test_data, &arrow_array).ok());
 
-  auto result = writer->Write(nullptr);
-  ASSERT_THAT(result, IsError(ErrorKind::kInvalidArgument));
-  EXPECT_THAT(result, HasErrorMessage("Position delete data must not be null"));
+    auto result = writer->Write(&arrow_array);
+    EXPECT_EQ(arrow_array.release, nullptr);
+    internal::ArrowArrayGuard array_guard(&arrow_array);
+    ASSERT_THAT(result, IsError(ErrorKind::kInvalidArrowData));
+    EXPECT_THAT(result, HasErrorMessage(
+                            "Position delete file paths must not contain null values"));
+  }
+
+  // A null position.
+  {
+    auto writer_result = PositionDeleteWriter::Make(MakeDeleteOptions());
+    ASSERT_THAT(writer_result, IsOk());
+    auto writer = std::move(writer_result.value());
+
+    auto test_data = CreatePositionDeleteData(R"([["data_file_1.parquet", null]])");
+    ArrowArray arrow_array;
+    ASSERT_TRUE(::arrow::ExportArray(*test_data, &arrow_array).ok());
+
+    auto result = writer->Write(&arrow_array);
+    EXPECT_EQ(arrow_array.release, nullptr);
+    internal::ArrowArrayGuard array_guard(&arrow_array);
+    ASSERT_THAT(result, IsError(ErrorKind::kInvalidArrowData));
+    EXPECT_THAT(result, HasErrorMessage(
+                            "Position delete positions must not contain null values"));
+  }
+
+  // An empty file path.
+  {
+    auto writer_result = PositionDeleteWriter::Make(MakeDeleteOptions());
+    ASSERT_THAT(writer_result, IsOk());
+    auto writer = std::move(writer_result.value());
+
+    auto test_data = CreatePositionDeleteData(R"([["", 0]])");
+    ArrowArray arrow_array;
+    ASSERT_TRUE(::arrow::ExportArray(*test_data, &arrow_array).ok());
+
+    auto result = writer->Write(&arrow_array);
+    EXPECT_EQ(arrow_array.release, nullptr);
+    internal::ArrowArrayGuard array_guard(&arrow_array);
+    ASSERT_THAT(result, IsError(ErrorKind::kInvalidArrowData));
+    EXPECT_THAT(result, HasErrorMessage("Position delete file paths must not be empty"));
+  }
 }
 
 TEST_F(PositionDeleteWriterTest, WriteEmptyBatchDoesNotAddReferencedFiles) {
