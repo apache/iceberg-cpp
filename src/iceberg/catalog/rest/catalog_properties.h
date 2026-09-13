@@ -74,7 +74,7 @@ class ICEBERG_REST_EXPORT RestCatalogProperties
   inline static constexpr std::string_view kHeaderPrefix = "header.";
   /// \brief HTTP connection timeout in milliseconds, matching Java REST clients.
   inline static Entry<int64_t> kClientConnectionTimeoutMs{
-      "rest.client.connection-timeout-ms", 0};
+      "rest.client.connection-timeout-ms", 180000};
   /// \brief HTTP socket/read timeout in milliseconds, matching Java REST clients.
   inline static Entry<int64_t> kClientSocketTimeoutMs{"rest.client.socket-timeout-ms", 0};
 

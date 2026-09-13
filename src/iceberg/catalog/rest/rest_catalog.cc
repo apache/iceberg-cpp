@@ -453,15 +453,11 @@ Result<std::shared_ptr<RestCatalog>> RestCatalog::Make(
   if (!client_factory) {
     client_factory = [](const RestCatalogProperties& properties)
         -> Result<std::shared_ptr<HttpClient>> {
-      // A value that is not positive leaves requests unbounded.
-      const auto timeout_of = [&properties](const auto& entry) {
-        return std::chrono::milliseconds(std::max<int64_t>(0, properties.Get(entry)));
-      };
+      ICEBERG_ASSIGN_OR_RAISE(auto options,
+                              HttpClientOptions::FromProperties(properties.configs()));
       ICEBERG_ASSIGN_OR_RAISE(auto uri, properties.Uri());
-      return std::make_shared<HttpClient>(
-          properties.ExtractHeaders(),
-          timeout_of(RestCatalogProperties::kClientConnectionTimeoutMs),
-          timeout_of(RestCatalogProperties::kClientSocketTimeoutMs), std::string(uri));
+      return HttpClient::Make(properties.ExtractHeaders(), std::move(options),
+                              std::string(uri));
     };
   }
   ICEBERG_ASSIGN_OR_RAISE(auto uri, config.Uri());

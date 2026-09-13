@@ -49,9 +49,12 @@ constexpr std::string_view kAuthorizationHeader = "Authorization";
 constexpr std::string_view kBearerPrefix = "Bearer ";
 
 Result<OAuthTokenResponse> ParseTokenResponse(const std::string& response_body) {
-  ICEBERG_ASSIGN_OR_RAISE(auto json, FromJsonString(response_body));
-  ICEBERG_ASSIGN_OR_RAISE(auto token_response, FromJson<OAuthTokenResponse>(json));
-  ICEBERG_RETURN_UNEXPECTED(token_response.Validate());
+  // Never propagate the underlying JSON errors: they echo the response body,
+  // which may contain token material. FromJson already validates the response.
+  auto json = FromJsonString(response_body);
+  if (!json) return InvalidArgument("Invalid OAuth2 token response");
+  auto token_response = FromJson<OAuthTokenResponse>(*json);
+  if (!token_response) return InvalidArgument("Invalid OAuth2 token response");
   return token_response;
 }
 
