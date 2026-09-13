@@ -24,6 +24,7 @@
 
 #include "iceberg/catalog/rest/iceberg_rest_export.h"
 #include "iceberg/catalog/rest/rest_table_scan.h"
+#include "iceberg/metrics/metrics_reporter.h"
 #include "iceberg/result.h"
 #include "iceberg/table.h"
 #include "iceberg/type_fwd.h"
@@ -42,6 +43,8 @@ class ICEBERG_REST_EXPORT RestTable final : public Table {
                                                  std::string metadata_location,
                                                  std::shared_ptr<FileIO> io,
                                                  std::shared_ptr<Catalog> catalog,
+                                                 std::string full_name,
+                                                 std::shared_ptr<MetricsReporter> reporter,
                                                  RestScanContext rest_context);
 
   ~RestTable() override;
@@ -53,7 +56,8 @@ class ICEBERG_REST_EXPORT RestTable final : public Table {
  private:
   RestTable(TableIdentifier identifier, std::shared_ptr<TableMetadata> metadata,
             std::string metadata_location, std::shared_ptr<FileIO> io,
-            std::shared_ptr<Catalog> catalog, RestScanContext rest_context);
+            std::shared_ptr<Catalog> catalog, std::string full_name,
+            std::shared_ptr<MetricsReporter> reporter, RestScanContext rest_context);
 
   RestScanContext rest_context_;
 };

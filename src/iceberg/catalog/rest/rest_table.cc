@@ -31,9 +31,12 @@ namespace iceberg::rest {
 
 RestTable::RestTable(TableIdentifier identifier, std::shared_ptr<TableMetadata> metadata,
                      std::string metadata_location, std::shared_ptr<FileIO> io,
-                     std::shared_ptr<Catalog> catalog, RestScanContext rest_context)
+                     std::shared_ptr<Catalog> catalog, std::string full_name,
+                     std::shared_ptr<MetricsReporter> reporter,
+                     RestScanContext rest_context)
     : Table(std::move(identifier), std::move(metadata), std::move(metadata_location),
-            std::move(io), std::move(catalog)),
+            std::move(io), std::move(catalog), std::move(full_name),
+            std::move(reporter)),
       rest_context_(std::move(rest_context)) {}
 
 RestTable::~RestTable() = default;
@@ -43,6 +46,8 @@ Result<std::shared_ptr<RestTable>> RestTable::Make(TableIdentifier identifier,
                                                    std::string metadata_location,
                                                    std::shared_ptr<FileIO> io,
                                                    std::shared_ptr<Catalog> catalog,
+                                                   std::string full_name,
+                                                   std::shared_ptr<MetricsReporter> reporter,
                                                    RestScanContext rest_context) {
   if (metadata == nullptr) {
     return InvalidArgument("Metadata cannot be null");
@@ -50,11 +55,12 @@ Result<std::shared_ptr<RestTable>> RestTable::Make(TableIdentifier identifier,
   return std::shared_ptr<RestTable>(
       new RestTable(std::move(identifier), std::move(metadata),
                     std::move(metadata_location), std::move(io), std::move(catalog),
-                    std::move(rest_context)));
+                    std::move(full_name), std::move(reporter), std::move(rest_context)));
 }
 
 Result<std::unique_ptr<DataTableScanBuilder>> RestTable::NewScan() const {
-  return std::make_unique<RestTableScanBuilder>(metadata_, io_, rest_context_);
+  return std::make_unique<RestTableScanBuilder>(metadata_, io_, full_name_, reporter_,
+                                                rest_context_);
 }
 
 }  // namespace iceberg::rest

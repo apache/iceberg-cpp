@@ -262,8 +262,11 @@ void RestTableScan::CancelPlanning(const std::string& plan_id) const {
 
 RestTableScanBuilder::RestTableScanBuilder(std::shared_ptr<TableMetadata> metadata,
                                            std::shared_ptr<FileIO> io,
+                                           std::string table_name,
+                                           std::shared_ptr<MetricsReporter> metrics_reporter,
                                            RestScanContext rest_context)
-    : DataTableScanBuilder(std::move(metadata), std::move(io)),
+    : DataTableScanBuilder(std::move(metadata), std::move(io), std::move(table_name),
+                           std::move(metrics_reporter)),
       rest_context_(std::move(rest_context)) {}
 
 Result<std::unique_ptr<DataTableScan>> RestTableScanBuilder::Build() {

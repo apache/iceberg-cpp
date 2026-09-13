@@ -372,7 +372,8 @@ TEST_F(RestTableScanTest, FetchScanTasksEndpointNotSupported) {
 // --------------------------------------------------------------------------
 TEST_F(RestTableScanTest, UseSnapshotPropagatesUseSnapshotSchemaInContext) {
   constexpr int64_t kSnapshotId = 1000L;
-  RestTableScanBuilder builder(metadata_, file_io_, MakeContext(std::nullopt));
+  RestTableScanBuilder builder(metadata_, file_io_, "test.my_table", nullptr,
+                               MakeContext(std::nullopt));
   builder.UseSnapshot(kSnapshotId);
   ICEBERG_UNWRAP_OR_FAIL(auto scan, builder.Build());
   EXPECT_TRUE(scan->context().use_snapshot_schema);
@@ -382,7 +383,8 @@ TEST_F(RestTableScanTest, UseSnapshotPropagatesUseSnapshotSchemaInContext) {
 // use_snapshot_schema: default scan does not set use_snapshot_schema.
 // --------------------------------------------------------------------------
 TEST_F(RestTableScanTest, DefaultScanDoesNotSetUseSnapshotSchema) {
-  RestTableScanBuilder builder(metadata_, file_io_, MakeContext(std::nullopt));
+  RestTableScanBuilder builder(metadata_, file_io_, "test.my_table", nullptr,
+                               MakeContext(std::nullopt));
   ICEBERG_UNWRAP_OR_FAIL(auto scan, builder.Build());
   EXPECT_FALSE(scan->context().use_snapshot_schema);
 }
@@ -394,7 +396,8 @@ TEST_F(RestTableScanTest, RestTableNewScanReturnsRestTableScanBuilder) {
   ICEBERG_UNWRAP_OR_FAIL(
       auto table,
       RestTable::Make(identifier_, metadata_, "/tmp/metadata.json", file_io_,
-                      /*catalog=*/nullptr, MakeContext(std::nullopt)));
+                      /*catalog=*/nullptr, "test.my_table", nullptr,
+                      MakeContext(std::nullopt)));
   ICEBERG_UNWRAP_OR_FAIL(auto builder, table->NewScan());
   auto* typed = dynamic_cast<RestTableScanBuilder*>(builder.get());
   EXPECT_NE(typed, nullptr);
