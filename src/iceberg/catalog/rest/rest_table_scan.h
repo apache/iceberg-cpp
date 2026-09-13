@@ -29,6 +29,7 @@
 #include "iceberg/catalog/rest/iceberg_rest_export.h"
 #include "iceberg/metrics/metrics_reporter.h"
 #include "iceberg/result.h"
+#include "iceberg/storage_credential.h"
 #include "iceberg/table_identifier.h"
 #include "iceberg/table_scan.h"
 #include "iceberg/type_fwd.h"
@@ -52,6 +53,11 @@ struct ICEBERG_REST_EXPORT RestScanContext {
   std::shared_ptr<auth::AuthSession> session;
   std::unordered_set<Endpoint> supported_endpoints;
   TableIdentifier identifier;
+  /// Catalog-level config, used with table_config to build a scan-scoped FileIO
+  /// when the server vends storage credentials in a planning response.
+  std::unordered_map<std::string, std::string> catalog_config;
+  /// Table-level config merged with catalog_config for scan-scoped FileIO creation.
+  std::unordered_map<std::string, std::string> table_config;
 };
 
 /// \brief A DataTableScan that delegates PlanFiles() to the REST catalog server
@@ -68,6 +74,13 @@ class ICEBERG_REST_EXPORT RestTableScan : public DataTableScan {
 
   /// \brief Plans files via the REST scan planning endpoints.
   Result<std::vector<std::shared_ptr<FileScanTask>>> PlanFiles() const override;
+
+  /// \brief Returns the FileIO to use when reading scan results.
+  ///
+  /// If the server vended storage credentials during planning, returns a FileIO
+  /// initialised with those credentials; otherwise returns the table's FileIO.
+  /// Must be called after PlanFiles().
+  const std::shared_ptr<FileIO>& effective_io() const;
 
  private:
   RestTableScan(std::shared_ptr<TableMetadata> metadata, std::shared_ptr<Schema> schema,
@@ -98,14 +111,19 @@ class ICEBERG_REST_EXPORT RestTableScan : public DataTableScan {
   /// DELETE /plan/{plan_id}; best-effort, errors are silently ignored.
   void CancelPlanning(const std::string& plan_id) const;
 
+  /// Builds a scan-scoped FileIO from vended credentials and caches it in scan_io_.
+  /// No-op if credentials is empty.
+  Status ApplyStorageCredentials(const std::vector<StorageCredential>& credentials) const;
+
   RestScanContext rest_context_;
+  mutable std::shared_ptr<FileIO> scan_io_;
 };
 
 /// \brief Builder that produces a RestTableScan with the REST HTTP context injected.
 class ICEBERG_REST_EXPORT RestTableScanBuilder : public DataTableScanBuilder {
  public:
-  RestTableScanBuilder(std::shared_ptr<TableMetadata> metadata, std::shared_ptr<FileIO> io,
-                       std::string table_name,
+  RestTableScanBuilder(std::shared_ptr<TableMetadata> metadata,
+                       std::shared_ptr<FileIO> io, std::string table_name,
                        std::shared_ptr<MetricsReporter> metrics_reporter,
                        RestScanContext rest_context);
 

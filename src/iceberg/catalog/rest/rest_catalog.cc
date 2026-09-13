@@ -43,8 +43,8 @@
 #include "iceberg/catalog/rest/rest_util.h"
 #include "iceberg/catalog/rest/types.h"
 #include "iceberg/json_serde_internal.h"
-#include "iceberg/logging/logger.h"
 #include "iceberg/logging/log_level.h"
+#include "iceberg/logging/logger.h"
 #include "iceberg/metrics/metrics_reporters.h"
 #include "iceberg/partition_spec.h"
 #include "iceberg/result.h"
@@ -934,6 +934,8 @@ Result<std::shared_ptr<Table>> RestCatalog::MakeTableFromLoadResult(
         .session = table_session,
         .supported_endpoints = supported_endpoints_,
         .identifier = identifier,
+        .catalog_config = config_.configs(),
+        .table_config = table_config,
     };
     return RestTable::Make(identifier, std::move(result.metadata),
                            std::move(result.metadata_location), std::move(table_io),

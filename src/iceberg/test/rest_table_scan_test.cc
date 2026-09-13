@@ -61,21 +61,21 @@ class MockHttpClient : public HttpClient {
 
   MOCK_METHOD(Result<HttpResponse>, Get,
               (const std::string& path,
-               (const std::unordered_map<std::string, std::string>&) params,
-               (const std::unordered_map<std::string, std::string>&) headers,
+               (const std::unordered_map<std::string, std::string>&)params,
+               (const std::unordered_map<std::string, std::string>&)headers,
                const ErrorHandler& error_handler, auth::AuthSession& session),
               (override));
 
   MOCK_METHOD(Result<HttpResponse>, Post,
               (const std::string& path, const std::string& body,
-               (const std::unordered_map<std::string, std::string>&) headers,
+               (const std::unordered_map<std::string, std::string>&)headers,
                const ErrorHandler& error_handler, auth::AuthSession& session),
               (override));
 
   MOCK_METHOD(Result<HttpResponse>, Delete,
               (const std::string& path,
-               (const std::unordered_map<std::string, std::string>&) params,
-               (const std::unordered_map<std::string, std::string>&) headers,
+               (const std::unordered_map<std::string, std::string>&)params,
+               (const std::unordered_map<std::string, std::string>&)headers,
                const ErrorHandler& error_handler, auth::AuthSession& session),
               (override));
 };
@@ -85,8 +85,7 @@ class MockHttpClient : public HttpClient {
 // --------------------------------------------------------------------------
 class NoOpFileIO : public FileIO {
  public:
-  Result<std::string> ReadFile(const std::string&,
-                               std::optional<size_t>) override {
+  Result<std::string> ReadFile(const std::string&, std::optional<size_t>) override {
     return IOError("NoOpFileIO");
   }
   Status WriteFile(const std::string&, std::string_view) override { return {}; }
@@ -99,9 +98,9 @@ class NoOpFileIO : public FileIO {
 class RestTableScanTest : public ::testing::Test {
  protected:
   void SetUp() override {
-    schema_ = std::make_shared<Schema>(std::vector<SchemaField>{
-        SchemaField::MakeRequired(1, "id", int32()),
-        SchemaField::MakeRequired(2, "data", string())});
+    schema_ = std::make_shared<Schema>(
+        std::vector<SchemaField>{SchemaField::MakeRequired(1, "id", int32()),
+                                 SchemaField::MakeRequired(2, "data", string())});
 
     auto spec = PartitionSpec::Unpartitioned();
 
@@ -113,36 +112,35 @@ class RestTableScanTest : public ::testing::Test {
                  .manifest_list = "/tmp/manifest-list.avro",
                  .schema_id = schema_->schema_id()});
 
-    metadata_ = std::make_shared<TableMetadata>(TableMetadata{
-        .format_version = 2,
-        .table_uuid = "test-uuid",
-        .location = "/tmp/table",
-        .last_sequence_number = 1L,
-        .last_updated_ms = TimePointMsFromUnixMs(1609459200000L),
-        .last_column_id = 2,
-        .schemas = {schema_},
-        .current_schema_id = schema_->schema_id(),
-        .partition_specs = {spec},
-        .default_spec_id = spec->spec_id(),
-        .last_partition_id = 999,
-        .current_snapshot_id = kSnapshotId,
-        .snapshots = {snapshot},
-        .refs = {{"main",
-                  std::make_shared<SnapshotRef>(SnapshotRef{
-                      .snapshot_id = kSnapshotId,
-                      .retention = SnapshotRef::Branch{}})}}});
+    metadata_ = std::make_shared<TableMetadata>(
+        TableMetadata{.format_version = 2,
+                      .table_uuid = "test-uuid",
+                      .location = "/tmp/table",
+                      .last_sequence_number = 1L,
+                      .last_updated_ms = TimePointMsFromUnixMs(1609459200000L),
+                      .last_column_id = 2,
+                      .schemas = {schema_},
+                      .current_schema_id = schema_->schema_id(),
+                      .partition_specs = {spec},
+                      .default_spec_id = spec->spec_id(),
+                      .last_partition_id = 999,
+                      .current_snapshot_id = kSnapshotId,
+                      .snapshots = {snapshot},
+                      .refs = {{"main", std::make_shared<SnapshotRef>(SnapshotRef{
+                                            .snapshot_id = kSnapshotId,
+                                            .retention = SnapshotRef::Branch{}})}}});
 
     file_io_ = std::make_shared<NoOpFileIO>();
 
     mock_client_ = std::make_shared<MockHttpClient>();
 
-    ICEBERG_UNWRAP_OR_FAIL(paths_, ResourcePaths::Make(
-                                       "http://test-server", /*prefix=*/"",
-                                       /*namespace_separator=*/"%1F"));
+    ICEBERG_UNWRAP_OR_FAIL(paths_,
+                           ResourcePaths::Make("http://test-server", /*prefix=*/"",
+                                               /*namespace_separator=*/"%1F"));
 
     session_ = auth::AuthSession::MakeDefault(/*headers=*/{});
 
-    identifier_ = TableIdentifier{Namespace{{"default"}}, "my_table"};
+    identifier_ = TableIdentifier{.ns = Namespace{{"default"}}, .name = "my_table"};
 
     all_plan_endpoints_ = {Endpoint::PlanTableScan(), Endpoint::FetchPlanningResult(),
                            Endpoint::CancelPlanning(), Endpoint::FetchScanTasks()};
@@ -152,8 +150,7 @@ class RestTableScanTest : public ::testing::Test {
   // Pass an explicit set (including empty) to use exactly that set.
   RestScanContext MakeContext(
       std::optional<std::unordered_set<Endpoint>> endpoints = std::nullopt) {
-    auto effective =
-        endpoints.has_value() ? std::move(*endpoints) : all_plan_endpoints_;
+    auto effective = endpoints.has_value() ? std::move(*endpoints) : all_plan_endpoints_;
     return RestScanContext{
         .client = mock_client_,
         .paths = paths_,
@@ -164,8 +161,8 @@ class RestTableScanTest : public ::testing::Test {
   }
 
   Result<std::unique_ptr<DataTableScan>> MakeScan(RestScanContext ctx) {
-    return RestTableScan::Make(metadata_, schema_, file_io_,
-                               internal::TableScanContext{}, std::move(ctx));
+    return RestTableScan::Make(metadata_, schema_, file_io_, internal::TableScanContext{},
+                               std::move(ctx));
   }
 
   std::shared_ptr<Schema> schema_;
@@ -241,8 +238,8 @@ TEST_F(RestTableScanTest, PlanFilesFailed) {
 // PlanFiles: PlanTableScan endpoint missing → NotSupported error.
 // --------------------------------------------------------------------------
 TEST_F(RestTableScanTest, PlanFilesEndpointNotSupported) {
-  ICEBERG_UNWRAP_OR_FAIL(
-      auto scan, MakeScan(MakeContext(std::unordered_set<Endpoint>{})));
+  ICEBERG_UNWRAP_OR_FAIL(auto scan,
+                         MakeScan(MakeContext(std::unordered_set<Endpoint>{})));
   auto result = scan->PlanFiles();
   EXPECT_THAT(result, IsError(ErrorKind::kNotSupported));
 }
@@ -254,7 +251,8 @@ TEST_F(RestTableScanTest, PlanFilesEndpointNotSupported) {
 TEST_F(RestTableScanTest, PlanFilesWithPlanTasks) {
   constexpr std::string_view kPlanResponse =
       R"({"status":"completed","plan-id":"plan-1","plan-tasks":["tok-1"]})";
-  // FetchScanTasksResponse requires at least one of plan-tasks or file-scan-tasks present.
+  // FetchScanTasksResponse requires at least one of plan-tasks or file-scan-tasks
+  // present.
   constexpr std::string_view kTasksResponse = R"({"file-scan-tasks":[]})";
 
   EXPECT_CALL(*mock_client_, Post(_, _, _, _, _))
@@ -318,8 +316,7 @@ TEST_F(RestTableScanTest, CancelIsNoOpWhenEndpointNotAdvertised) {
       .WillOnce(Return(IOError("FetchScanTasks failed")));
   EXPECT_CALL(*mock_client_, Delete(_, _, _, _, _)).Times(0);
 
-  ICEBERG_UNWRAP_OR_FAIL(auto scan,
-                         MakeScan(MakeContext(endpoints_without_cancel)));
+  ICEBERG_UNWRAP_OR_FAIL(auto scan, MakeScan(MakeContext(endpoints_without_cancel)));
   auto result = scan->PlanFiles();
   EXPECT_THAT(result, IsError(ErrorKind::kIOError));
 }
@@ -332,14 +329,12 @@ TEST_F(RestTableScanTest, FetchPlanningResultEndpointNotSupported) {
       R"({"status":"submitted","plan-id":"plan-3"})";
 
   std::unordered_set<Endpoint> endpoints_without_fetch = {
-      Endpoint::PlanTableScan(), Endpoint::CancelPlanning(),
-      Endpoint::FetchScanTasks()};
+      Endpoint::PlanTableScan(), Endpoint::CancelPlanning(), Endpoint::FetchScanTasks()};
 
   EXPECT_CALL(*mock_client_, Post(_, _, _, _, _))
       .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kSubmittedBody))));
 
-  ICEBERG_UNWRAP_OR_FAIL(auto scan,
-                         MakeScan(MakeContext(endpoints_without_fetch)));
+  ICEBERG_UNWRAP_OR_FAIL(auto scan, MakeScan(MakeContext(endpoints_without_fetch)));
   auto result = scan->PlanFiles();
   EXPECT_THAT(result, IsError(ErrorKind::kNotSupported));
 }
@@ -351,17 +346,16 @@ TEST_F(RestTableScanTest, FetchScanTasksEndpointNotSupported) {
   constexpr std::string_view kPlanResponse =
       R"({"status":"completed","plan-id":"plan-4","plan-tasks":["tok-d"]})";
 
-  std::unordered_set<Endpoint> endpoints_without_tasks = {
-      Endpoint::PlanTableScan(), Endpoint::FetchPlanningResult(),
-      Endpoint::CancelPlanning()};
+  std::unordered_set<Endpoint> endpoints_without_tasks = {Endpoint::PlanTableScan(),
+                                                          Endpoint::FetchPlanningResult(),
+                                                          Endpoint::CancelPlanning()};
 
   EXPECT_CALL(*mock_client_, Post(_, _, _, _, _))
       .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kPlanResponse))));
   EXPECT_CALL(*mock_client_, Delete(_, _, _, _, _))
       .WillOnce(Return(HttpResponse::MakeForTesting(200, "{}")));
 
-  ICEBERG_UNWRAP_OR_FAIL(auto scan,
-                         MakeScan(MakeContext(endpoints_without_tasks)));
+  ICEBERG_UNWRAP_OR_FAIL(auto scan, MakeScan(MakeContext(endpoints_without_tasks)));
   auto result = scan->PlanFiles();
   EXPECT_THAT(result, IsError(ErrorKind::kNotSupported));
 }
@@ -390,14 +384,81 @@ TEST_F(RestTableScanTest, DefaultScanDoesNotSetUseSnapshotSchema) {
 }
 
 // --------------------------------------------------------------------------
+// Storage credentials in COMPLETED response: effective_io() returns a
+// credential-scoped IO, not the original table IO.
+// --------------------------------------------------------------------------
+TEST_F(RestTableScanTest, StorageCredentialsInPlanResponseUpdatesEffectiveIO) {
+  constexpr std::string_view kResponseBody = R"({
+    "status": "completed",
+    "storage-credentials": [
+      {"prefix": "s3://bucket/prefix", "config": {"key": "value"}}
+    ]
+  })";
+  EXPECT_CALL(*mock_client_, Post(_, _, _, _, _))
+      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kResponseBody))));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto scan, MakeScan(MakeContext()));
+  ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
+  EXPECT_TRUE(tasks.empty());
+
+  auto* rest_scan = dynamic_cast<RestTableScan*>(scan.get());
+  ASSERT_NE(rest_scan, nullptr);
+  // effective_io() must return a credential-scoped IO, not the original file_io_.
+  EXPECT_NE(rest_scan->effective_io().get(), file_io_.get());
+}
+
+// --------------------------------------------------------------------------
+// No storage credentials: effective_io() falls back to the table's FileIO.
+// --------------------------------------------------------------------------
+TEST_F(RestTableScanTest, NoStorageCredentialsEffectiveIoFallsBackToTableIO) {
+  constexpr std::string_view kResponseBody = R"({"status":"completed"})";
+  EXPECT_CALL(*mock_client_, Post(_, _, _, _, _))
+      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kResponseBody))));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto scan, MakeScan(MakeContext()));
+  ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
+  EXPECT_TRUE(tasks.empty());
+
+  auto* rest_scan = dynamic_cast<RestTableScan*>(scan.get());
+  ASSERT_NE(rest_scan, nullptr);
+  EXPECT_EQ(rest_scan->effective_io().get(), file_io_.get());
+}
+
+// --------------------------------------------------------------------------
+// Storage credentials returned in FetchScanTasksResponse also update
+// effective_io().
+// --------------------------------------------------------------------------
+TEST_F(RestTableScanTest, StorageCredentialsInFetchScanTasksResponseUpdatesEffectiveIO) {
+  constexpr std::string_view kPlanResponse =
+      R"({"status":"completed","plan-id":"plan-cred","plan-tasks":["tok-cred"]})";
+  constexpr std::string_view kTasksResponse = R"({
+    "file-scan-tasks": [],
+    "storage-credentials": [
+      {"prefix": "s3://bucket/prefix", "config": {"key": "value"}}
+    ]
+  })";
+
+  EXPECT_CALL(*mock_client_, Post(_, _, _, _, _))
+      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kPlanResponse))))
+      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kTasksResponse))));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto scan, MakeScan(MakeContext()));
+  ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
+  EXPECT_TRUE(tasks.empty());
+
+  auto* rest_scan = dynamic_cast<RestTableScan*>(scan.get());
+  ASSERT_NE(rest_scan, nullptr);
+  EXPECT_NE(rest_scan->effective_io().get(), file_io_.get());
+}
+
+// --------------------------------------------------------------------------
 // RestTable::NewScan returns a RestTableScanBuilder (not a plain builder).
 // --------------------------------------------------------------------------
 TEST_F(RestTableScanTest, RestTableNewScanReturnsRestTableScanBuilder) {
   ICEBERG_UNWRAP_OR_FAIL(
-      auto table,
-      RestTable::Make(identifier_, metadata_, "/tmp/metadata.json", file_io_,
-                      /*catalog=*/nullptr, "test.my_table", nullptr,
-                      MakeContext(std::nullopt)));
+      auto table, RestTable::Make(identifier_, metadata_, "/tmp/metadata.json", file_io_,
+                                  /*catalog=*/nullptr, "test.my_table", nullptr,
+                                  MakeContext(std::nullopt)));
   ICEBERG_UNWRAP_OR_FAIL(auto builder, table->NewScan());
   auto* typed = dynamic_cast<RestTableScanBuilder*>(builder.get());
   EXPECT_NE(typed, nullptr);
