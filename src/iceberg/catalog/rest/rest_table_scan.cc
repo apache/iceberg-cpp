@@ -29,6 +29,7 @@
 #include "iceberg/catalog/rest/http_client.h"
 #include "iceberg/catalog/rest/json_serde_internal.h"
 #include "iceberg/catalog/rest/resource_paths.h"
+#include "iceberg/catalog/rest/rest_file_io.h"
 #include "iceberg/catalog/rest/types.h"
 #include "iceberg/json_serde_internal.h"
 #include "iceberg/partition_spec.h"
@@ -115,8 +116,7 @@ Result<std::vector<std::shared_ptr<FileScanTask>>> RestTableScan::PlanTableScan(
     }
   }
 
-  ICEBERG_ASSIGN_OR_RAISE(auto path,
-                          rest_context_.paths->Plan(rest_context_.identifier));
+  ICEBERG_ASSIGN_OR_RAISE(auto path, rest_context_.paths->Plan(rest_context_.identifier));
   ICEBERG_ASSIGN_OR_RAISE(auto request_json, ToJson(request));
   ICEBERG_ASSIGN_OR_RAISE(auto json_request, ToJsonString(request_json));
   ICEBERG_ASSIGN_OR_RAISE(
@@ -132,6 +132,7 @@ Result<std::vector<std::shared_ptr<FileScanTask>>> RestTableScan::PlanTableScan(
 
   switch (result.plan_status) {
     case PlanStatus::kCompleted: {
+      ICEBERG_RETURN_UNEXPECTED(ApplyStorageCredentials(result.storage_credentials));
       auto tasks = ResolveScanTasks(result.plan_tasks, result.file_scan_tasks, specs);
       if (!tasks.has_value()) CancelPlanning(plan_id);
       return tasks;
@@ -140,7 +141,7 @@ Result<std::vector<std::shared_ptr<FileScanTask>>> RestTableScan::PlanTableScan(
       return FetchPlanningResult(plan_id, specs);
     case PlanStatus::kFailed:
       return IOError("Scan planning failed: {}",
-                      result.error ? result.error->message : "unknown error");
+                     result.error ? result.error->message : "unknown error");
     case PlanStatus::kCancelled:
       return IOError("Scan planning was cancelled for plan_id={}", plan_id);
   }
@@ -171,6 +172,7 @@ Result<std::vector<std::shared_ptr<FileScanTask>>> RestTableScan::FetchPlanningR
 
     switch (result.plan_status) {
       case PlanStatus::kCompleted: {
+        ICEBERG_RETURN_UNEXPECTED(ApplyStorageCredentials(result.storage_credentials));
         auto tasks = ResolveScanTasks(result.plan_tasks, result.file_scan_tasks, specs);
         if (!tasks.has_value()) CancelPlanning(plan_id);
         return tasks;
@@ -181,9 +183,8 @@ Result<std::vector<std::shared_ptr<FileScanTask>>> RestTableScan::FetchPlanningR
                               .count();
         if (elapsed_ms >= kMaxWaitTimeMs) {
           CancelPlanning(plan_id);
-          return IOError(
-              "Scan planning timed out after {}ms waiting for plan_id={}", elapsed_ms,
-              plan_id);
+          return IOError("Scan planning timed out after {}ms waiting for plan_id={}",
+                         elapsed_ms, plan_id);
         }
         std::this_thread::sleep_for(std::chrono::milliseconds(delay_ms));
         delay_ms = std::min(delay_ms * 2, kMaxSleepMs);
@@ -192,15 +193,15 @@ Result<std::vector<std::shared_ptr<FileScanTask>>> RestTableScan::FetchPlanningR
       case PlanStatus::kFailed:
         CancelPlanning(plan_id);
         return IOError("Scan planning failed: {}",
-                        result.error ? result.error->message : "unknown error");
+                       result.error ? result.error->message : "unknown error");
       case PlanStatus::kCancelled:
         return IOError("Scan planning was cancelled for plan_id={}", plan_id);
     }
   }
 
   CancelPlanning(plan_id);
-  return IOError("Scan planning exceeded max retries ({}) for plan_id={}",
-                          kMaxRetries, plan_id);
+  return IOError("Scan planning exceeded max retries ({}) for plan_id={}", kMaxRetries,
+                 plan_id);
 }
 
 Result<std::vector<std::shared_ptr<FileScanTask>>> RestTableScan::FetchScanTasks(
@@ -212,15 +213,15 @@ Result<std::vector<std::shared_ptr<FileScanTask>>> RestTableScan::FetchScanTasks
                           rest_context_.paths->FetchScanTasks(rest_context_.identifier));
   FetchScanTasksRequest request{.planTask = plan_task};
   ICEBERG_ASSIGN_OR_RAISE(auto json_request, ToJsonString(ToJson(request)));
-  ICEBERG_ASSIGN_OR_RAISE(
-      const auto response,
-      rest_context_.client->Post(path, json_request, /*headers=*/{},
-                                 *PlanTaskErrorHandler::Instance(),
-                                 *rest_context_.session));
+  ICEBERG_ASSIGN_OR_RAISE(const auto response,
+                          rest_context_.client->Post(path, json_request, /*headers=*/{},
+                                                     *PlanTaskErrorHandler::Instance(),
+                                                     *rest_context_.session));
   ICEBERG_ASSIGN_OR_RAISE(auto json, FromJsonString(response.body()));
   ICEBERG_ASSIGN_OR_RAISE(auto result,
                           FetchScanTasksResponseFromJson(json, specs, *schema_));
   ICEBERG_RETURN_UNEXPECTED(result.Validate());
+  ICEBERG_RETURN_UNEXPECTED(ApplyStorageCredentials(result.storage_credentials));
 
   return ResolveScanTasks(result.plan_tasks, result.file_scan_tasks, specs);
 }
@@ -253,18 +254,31 @@ void RestTableScan::CancelPlanning(const std::string& plan_id) const {
   if (!path.has_value()) return;
 
   // Best-effort: ignore errors.
-  std::ignore = rest_context_.client->Delete(*path, /*params=*/{}, /*headers=*/{},
-                                             *PlanErrorHandler::Instance(),
-                                             *rest_context_.session);
+  std::ignore =
+      rest_context_.client->Delete(*path, /*params=*/{}, /*headers=*/{},
+                                   *PlanErrorHandler::Instance(), *rest_context_.session);
+}
+
+const std::shared_ptr<FileIO>& RestTableScan::effective_io() const {
+  return scan_io_ ? scan_io_ : io_;
+}
+
+Status RestTableScan::ApplyStorageCredentials(
+    const std::vector<StorageCredential>& credentials) const {
+  if (credentials.empty()) return {};
+  ICEBERG_ASSIGN_OR_RAISE(
+      auto io, MakeTableFileIO(rest_context_.catalog_config, rest_context_.table_config,
+                               credentials));
+  scan_io_ = std::move(io);
+  return {};
 }
 
 // RestTableScanBuilder
 
-RestTableScanBuilder::RestTableScanBuilder(std::shared_ptr<TableMetadata> metadata,
-                                           std::shared_ptr<FileIO> io,
-                                           std::string table_name,
-                                           std::shared_ptr<MetricsReporter> metrics_reporter,
-                                           RestScanContext rest_context)
+RestTableScanBuilder::RestTableScanBuilder(
+    std::shared_ptr<TableMetadata> metadata, std::shared_ptr<FileIO> io,
+    std::string table_name, std::shared_ptr<MetricsReporter> metrics_reporter,
+    RestScanContext rest_context)
     : DataTableScanBuilder(std::move(metadata), std::move(io), std::move(table_name),
                            std::move(metrics_reporter)),
       rest_context_(std::move(rest_context)) {}

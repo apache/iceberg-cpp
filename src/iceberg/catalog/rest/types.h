@@ -337,7 +337,7 @@ struct ICEBERG_REST_EXPORT PlanTableScanResponse {
   PlanStatus plan_status = PlanStatus::kCompleted;
   std::string plan_id;
   std::optional<ErrorResponse> error;
-  // TODO(sandeepg): Add storage credentials and bind scan FileIO to them.
+  std::vector<StorageCredential> storage_credentials;
 
   Status Validate() const;
 
@@ -352,7 +352,7 @@ struct ICEBERG_REST_EXPORT FetchPlanningResultResponse {
   std::vector<std::shared_ptr<DataFile>> delete_files;
   PlanStatus plan_status = PlanStatus::kCompleted;
   std::optional<ErrorResponse> error;
-  // TODO(sandeepg): Add storage credentials and bind scan FileIO to them.
+  std::vector<StorageCredential> storage_credentials;
 
   Status Validate() const;
 
@@ -373,6 +373,7 @@ struct ICEBERG_REST_EXPORT FetchScanTasksResponse {
   std::optional<std::vector<std::string>> plan_tasks;
   std::optional<std::vector<std::shared_ptr<FileScanTask>>> file_scan_tasks;
   std::vector<std::shared_ptr<DataFile>> delete_files;
+  std::vector<StorageCredential> storage_credentials;
 
   Status Validate() const;
 
