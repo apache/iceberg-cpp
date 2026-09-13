@@ -316,6 +316,7 @@ TableScanBuilder<ScanType>& TableScanBuilder<ScanType>::UseSnapshot(int64_t snap
                         context_.snapshot_id.value());
   ICEBERG_BUILDER_ASSIGN_OR_RETURN(std::ignore, metadata_->SnapshotById(snapshot_id));
   context_.snapshot_id = snapshot_id;
+  context_.use_snapshot_schema = true;
   return *this;
 }
 
@@ -323,6 +324,7 @@ template <typename ScanType>
 TableScanBuilder<ScanType>& TableScanBuilder<ScanType>::UseRef(const std::string& ref) {
   if (ref == SnapshotRef::kMainBranch) {
     context_.snapshot_id.reset();
+    context_.use_snapshot_schema = false;
     return *this;
   }
 
@@ -335,6 +337,7 @@ TableScanBuilder<ScanType>& TableScanBuilder<ScanType>::UseRef(const std::string
   const int64_t snapshot_id = iter->second->snapshot_id;
   ICEBERG_BUILDER_ASSIGN_OR_RETURN(std::ignore, metadata_->SnapshotById(snapshot_id));
   context_.snapshot_id = snapshot_id;
+  context_.use_snapshot_schema = (iter->second->type() == SnapshotRefType::kTag);
 
   return *this;
 }

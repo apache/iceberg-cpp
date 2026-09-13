@@ -100,8 +100,10 @@ Result<std::vector<std::shared_ptr<FileScanTask>>> RestTableScan::PlanTableScan(
   if (context_.from_snapshot_id.has_value() && context_.to_snapshot_id.has_value()) {
     request.start_snapshot_id = context_.from_snapshot_id;
     request.end_snapshot_id = context_.to_snapshot_id;
+    request.use_snapshot_schema = true;
   } else if (context_.snapshot_id.has_value()) {
     request.snapshot_id = context_.snapshot_id;
+    request.use_snapshot_schema = context_.use_snapshot_schema;
   }
 
   if (!context_.columns_to_keep_stats.empty()) {
@@ -129,8 +131,11 @@ Result<std::vector<std::shared_ptr<FileScanTask>>> RestTableScan::PlanTableScan(
   plan_id = result.plan_id;
 
   switch (result.plan_status) {
-    case PlanStatus::kCompleted:
-      return ResolveScanTasks(result.plan_tasks, result.file_scan_tasks, specs);
+    case PlanStatus::kCompleted: {
+      auto tasks = ResolveScanTasks(result.plan_tasks, result.file_scan_tasks, specs);
+      if (!tasks.has_value()) CancelPlanning(plan_id);
+      return tasks;
+    }
     case PlanStatus::kSubmitted:
       return FetchPlanningResult(plan_id, specs);
     case PlanStatus::kFailed:
@@ -165,8 +170,11 @@ Result<std::vector<std::shared_ptr<FileScanTask>>> RestTableScan::FetchPlanningR
     ICEBERG_RETURN_UNEXPECTED(result.Validate());
 
     switch (result.plan_status) {
-      case PlanStatus::kCompleted:
-        return ResolveScanTasks(result.plan_tasks, result.file_scan_tasks, specs);
+      case PlanStatus::kCompleted: {
+        auto tasks = ResolveScanTasks(result.plan_tasks, result.file_scan_tasks, specs);
+        if (!tasks.has_value()) CancelPlanning(plan_id);
+        return tasks;
+      }
       case PlanStatus::kSubmitted: {
         auto elapsed_ms = std::chrono::duration_cast<std::chrono::milliseconds>(
                               std::chrono::steady_clock::now() - start)
