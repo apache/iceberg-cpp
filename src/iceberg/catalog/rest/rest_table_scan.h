@@ -27,6 +27,7 @@
 
 #include "iceberg/catalog/rest/endpoint.h"
 #include "iceberg/catalog/rest/iceberg_rest_export.h"
+#include "iceberg/metrics/metrics_reporter.h"
 #include "iceberg/result.h"
 #include "iceberg/table_identifier.h"
 #include "iceberg/table_scan.h"
@@ -104,6 +105,8 @@ class ICEBERG_REST_EXPORT RestTableScan : public DataTableScan {
 class ICEBERG_REST_EXPORT RestTableScanBuilder : public DataTableScanBuilder {
  public:
   RestTableScanBuilder(std::shared_ptr<TableMetadata> metadata, std::shared_ptr<FileIO> io,
+                       std::string table_name,
+                       std::shared_ptr<MetricsReporter> metrics_reporter,
                        RestScanContext rest_context);
 
   /// \brief Resolves schema/context via parent logic then creates a RestTableScan.
