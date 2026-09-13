@@ -53,6 +53,7 @@ iceberg_tests = {
             'metrics_config_test.cc',
             'metrics_reporter_test.cc',
             'metrics_test.cc',
+            'snapshot_summary_builder_test.cc',
             'snapshot_test.cc',
             'snapshot_util_test.cc',
             'table_metadata_builder_test.cc',

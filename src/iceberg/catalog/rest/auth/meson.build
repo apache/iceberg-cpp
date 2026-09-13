@@ -22,6 +22,7 @@ install_headers(
         'auth_properties.h',
         'auth_session.h',
         'oauth2_util.h',
+        'token_refresh_scheduler.h',
     ],
     subdir: 'iceberg/catalog/rest/auth',
 )
