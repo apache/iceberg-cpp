@@ -38,14 +38,11 @@ namespace iceberg::rest {
 /// PlanFiles() to the REST catalog server's scan planning endpoints.
 class ICEBERG_REST_EXPORT RestTable final : public Table {
  public:
-  static Result<std::shared_ptr<RestTable>> Make(TableIdentifier identifier,
-                                                 std::shared_ptr<TableMetadata> metadata,
-                                                 std::string metadata_location,
-                                                 std::shared_ptr<FileIO> io,
-                                                 std::shared_ptr<Catalog> catalog,
-                                                 std::string full_name,
-                                                 std::shared_ptr<MetricsReporter> reporter,
-                                                 RestScanContext rest_context);
+  static Result<std::shared_ptr<RestTable>> Make(
+      TableIdentifier identifier, std::shared_ptr<TableMetadata> metadata,
+      std::string metadata_location, std::shared_ptr<FileIO> io,
+      std::shared_ptr<Catalog> catalog, std::string full_name,
+      std::shared_ptr<MetricsReporter> reporter, RestScanContext rest_context);
 
   ~RestTable() override;
 
