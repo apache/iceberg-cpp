@@ -35,20 +35,16 @@ RestTable::RestTable(TableIdentifier identifier, std::shared_ptr<TableMetadata> 
                      std::shared_ptr<MetricsReporter> reporter,
                      RestScanContext rest_context)
     : Table(std::move(identifier), std::move(metadata), std::move(metadata_location),
-            std::move(io), std::move(catalog), std::move(full_name),
-            std::move(reporter)),
+            std::move(io), std::move(catalog), std::move(full_name), std::move(reporter)),
       rest_context_(std::move(rest_context)) {}
 
 RestTable::~RestTable() = default;
 
-Result<std::shared_ptr<RestTable>> RestTable::Make(TableIdentifier identifier,
-                                                   std::shared_ptr<TableMetadata> metadata,
-                                                   std::string metadata_location,
-                                                   std::shared_ptr<FileIO> io,
-                                                   std::shared_ptr<Catalog> catalog,
-                                                   std::string full_name,
-                                                   std::shared_ptr<MetricsReporter> reporter,
-                                                   RestScanContext rest_context) {
+Result<std::shared_ptr<RestTable>> RestTable::Make(
+    TableIdentifier identifier, std::shared_ptr<TableMetadata> metadata,
+    std::string metadata_location, std::shared_ptr<FileIO> io,
+    std::shared_ptr<Catalog> catalog, std::string full_name,
+    std::shared_ptr<MetricsReporter> reporter, RestScanContext rest_context) {
   if (metadata == nullptr) {
     return InvalidArgument("Metadata cannot be null");
   }
