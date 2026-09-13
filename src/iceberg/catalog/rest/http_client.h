@@ -83,16 +83,15 @@ class ICEBERG_REST_EXPORT HttpClient {
 
   /// \brief Sends a GET request.
   virtual Result<HttpResponse> Get(
-      const std::string& path,
-      const std::unordered_map<std::string, std::string>& params,
+      const std::string& path, const std::unordered_map<std::string, std::string>& params,
       const std::unordered_map<std::string, std::string>& headers,
       const ErrorHandler& error_handler, auth::AuthSession& session);
 
   /// \brief Sends a POST request.
-  virtual Result<HttpResponse> Post(const std::string& path, const std::string& body,
-                                    const std::unordered_map<std::string, std::string>& headers,
-                                    const ErrorHandler& error_handler,
-                                    auth::AuthSession& session);
+  virtual Result<HttpResponse> Post(
+      const std::string& path, const std::string& body,
+      const std::unordered_map<std::string, std::string>& headers,
+      const ErrorHandler& error_handler, auth::AuthSession& session);
 
   /// \brief Sends a POST request with form data.
   virtual Result<HttpResponse> PostForm(
@@ -109,8 +108,7 @@ class ICEBERG_REST_EXPORT HttpClient {
 
   /// \brief Sends a DELETE request.
   virtual Result<HttpResponse> Delete(
-      const std::string& path,
-      const std::unordered_map<std::string, std::string>& params,
+      const std::string& path, const std::unordered_map<std::string, std::string>& params,
       const std::unordered_map<std::string, std::string>& headers,
       const ErrorHandler& error_handler, auth::AuthSession& session);
 

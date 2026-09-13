@@ -33,40 +33,40 @@ TEST(ScanPlanningModeTest, MissingKeyReturnsNullopt) {
 }
 
 TEST(ScanPlanningModeTest, ClientLowercaseReturnsKClient) {
-  auto result = RestCatalogProperties::ScanPlanningModeFrom(
-      {{"scan-planning-mode", "client"}});
+  auto result =
+      RestCatalogProperties::ScanPlanningModeFrom({{"scan-planning-mode", "client"}});
   ASSERT_THAT(result, IsOk());
   ASSERT_TRUE(result->has_value());
   EXPECT_EQ(**result, ScanPlanningMode::kClient);
 }
 
 TEST(ScanPlanningModeTest, ServerLowercaseReturnsKServer) {
-  auto result = RestCatalogProperties::ScanPlanningModeFrom(
-      {{"scan-planning-mode", "server"}});
+  auto result =
+      RestCatalogProperties::ScanPlanningModeFrom({{"scan-planning-mode", "server"}});
   ASSERT_THAT(result, IsOk());
   ASSERT_TRUE(result->has_value());
   EXPECT_EQ(**result, ScanPlanningMode::kServer);
 }
 
 TEST(ScanPlanningModeTest, ClientUppercaseReturnsKClient) {
-  auto result = RestCatalogProperties::ScanPlanningModeFrom(
-      {{"scan-planning-mode", "CLIENT"}});
+  auto result =
+      RestCatalogProperties::ScanPlanningModeFrom({{"scan-planning-mode", "CLIENT"}});
   ASSERT_THAT(result, IsOk());
   ASSERT_TRUE(result->has_value());
   EXPECT_EQ(**result, ScanPlanningMode::kClient);
 }
 
 TEST(ScanPlanningModeTest, ServerUppercaseReturnsKServer) {
-  auto result = RestCatalogProperties::ScanPlanningModeFrom(
-      {{"scan-planning-mode", "SERVER"}});
+  auto result =
+      RestCatalogProperties::ScanPlanningModeFrom({{"scan-planning-mode", "SERVER"}});
   ASSERT_THAT(result, IsOk());
   ASSERT_TRUE(result->has_value());
   EXPECT_EQ(**result, ScanPlanningMode::kServer);
 }
 
 TEST(ScanPlanningModeTest, InvalidValueReturnsError) {
-  auto result = RestCatalogProperties::ScanPlanningModeFrom(
-      {{"scan-planning-mode", "invalid"}});
+  auto result =
+      RestCatalogProperties::ScanPlanningModeFrom({{"scan-planning-mode", "invalid"}});
   EXPECT_THAT(result, IsError(ErrorKind::kInvalidArgument));
 }
 
