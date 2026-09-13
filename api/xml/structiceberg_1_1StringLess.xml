@@ -1,0 +1,57 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1StringLess" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::StringLess</compoundname>
+    <includes refid="string__util_8h" local="no">string_util.h</includes>
+    <sectiondef kind="public-type">
+      <memberdef kind="typedef" id="structiceberg_1_1StringLess_1ada40bd752677ed872ae100550c2b147f" prot="public" static="no">
+        <type>void</type>
+        <definition>using iceberg::StringLess::is_transparent =  void</definition>
+        <argsstring></argsstring>
+        <name>is_transparent</name>
+        <qualifiedname>iceberg::StringLess::is_transparent</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/string_util.h" line="231" column="3" bodyfile="iceberg/util/string_util.h" bodystart="231" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structiceberg_1_1StringLess_1ab38a9ea5d21b206010565c606c409a2b" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::StringLess::operator()</definition>
+        <argsstring>(std::string_view lhs, std::string_view rhs) const</argsstring>
+        <name>operator()</name>
+        <qualifiedname>iceberg::StringLess::operator()</qualifiedname>
+        <param>
+          <type>std::string_view</type>
+          <declname>lhs</declname>
+        </param>
+        <param>
+          <type>std::string_view</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/string_util.h" line="233" column="8" bodyfile="iceberg/util/string_util.h" bodystart="233" bodyend="233"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Transparent less function that supports std::string_view as lookup key. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/util/string_util.h" line="230" column="1" bodyfile="iceberg/util/string_util.h" bodystart="230" bodyend="234"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1StringLess_1ada40bd752677ed872ae100550c2b147f" prot="public" virt="non-virtual"><scope>iceberg::StringLess</scope><name>is_transparent</name></member>
+      <member refid="structiceberg_1_1StringLess_1ab38a9ea5d21b206010565c606c409a2b" prot="public" virt="non-virtual"><scope>iceberg::StringLess</scope><name>operator()</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

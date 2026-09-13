@@ -1,0 +1,302 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1LogMessage" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::LogMessage</compoundname>
+    <basecompoundref prot="private" virt="non-virtual">Builder</basecompoundref>
+    <includes refid="logger_8h" local="no">logger.h</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1LogMessage_1ab6decf28a1d461b21c448a2c4c97f31c" prot="public" static="no" mutable="no">
+        <type><ref refid="namespaceiceberg_1ab9922ae0d07dc85678a1a86c872e387b" kindref="member">LogLevel</ref></type>
+        <definition>LogLevel iceberg::LogMessage::level</definition>
+        <argsstring></argsstring>
+        <name>level</name>
+        <qualifiedname>iceberg::LogMessage::level</qualifiedname>
+        <initializer>= LogLevel::kOff</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/logging/logger.h" line="66" column="12" bodyfile="iceberg/logging/logger.h" bodystart="66" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1LogMessage_1af59dc3f8007ba1a799c999b5ea234400" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::LogMessage::message</definition>
+        <argsstring></argsstring>
+        <name>message</name>
+        <qualifiedname>iceberg::LogMessage::message</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/logging/logger.h" line="67" column="15" bodyfile="iceberg/logging/logger.h" bodystart="67" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1LogMessage_1a3c6eacb7bfea82bfc9d9370d9e608102" prot="public" static="no" mutable="no">
+        <type>std::source_location</type>
+        <definition>std::source_location iceberg::LogMessage::location</definition>
+        <argsstring></argsstring>
+        <name>location</name>
+        <qualifiedname>iceberg::LogMessage::location</qualifiedname>
+        <initializer>= std::source_location::current()</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/logging/logger.h" line="68" column="24" bodyfile="iceberg/logging/logger.h" bodystart="68" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1LogMessage_1af18bbe902d4e064033ef5c99a209f7ca" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; <ref refid="structiceberg_1_1LogAttribute" kindref="compound">LogAttribute</ref> &gt;</type>
+        <definition>std::vector&lt;LogAttribute&gt; iceberg::LogMessage::attributes</definition>
+        <argsstring></argsstring>
+        <name>attributes</name>
+        <qualifiedname>iceberg::LogMessage::attributes</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/logging/logger.h" line="69" column="15" bodyfile="iceberg/logging/logger.h" bodystart="69" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1LogMessage_1a94017c7ce2e4c0c430a1c7c52c5a949b" prot="private" static="no" mutable="no">
+        <type><ref refid="namespaceiceberg_1ab9922ae0d07dc85678a1a86c872e387b" kindref="member">LogLevel</ref></type>
+        <definition>LogLevel iceberg::LogMessage::level_</definition>
+        <argsstring></argsstring>
+        <name>level_</name>
+        <qualifiedname>iceberg::LogMessage::level_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/logging/logger.h" line="121" column="12" bodyfile="iceberg/logging/logger.h" bodystart="121" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1LogMessage_1a7f7980e5b09a481451dc8816056d5ce1" prot="private" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::LogMessage::message_</definition>
+        <argsstring></argsstring>
+        <name>message_</name>
+        <qualifiedname>iceberg::LogMessage::message_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/logging/logger.h" line="122" column="15" bodyfile="iceberg/logging/logger.h" bodystart="122" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1LogMessage_1a7ab0c076d51d19fc652fc3111731667e" prot="private" static="no" mutable="no">
+        <type>std::source_location</type>
+        <definition>std::source_location iceberg::LogMessage::location_</definition>
+        <argsstring></argsstring>
+        <name>location_</name>
+        <qualifiedname>iceberg::LogMessage::location_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/logging/logger.h" line="124" column="24" bodyfile="iceberg/logging/logger.h" bodystart="124" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1LogMessage_1a7c0579dc3656df5bbb658b8a50ffe18f" prot="private" static="no" mutable="no">
+        <type>std::vector&lt; <ref refid="structiceberg_1_1LogAttribute" kindref="compound">LogAttribute</ref> &gt;</type>
+        <definition>std::vector&lt;LogAttribute&gt; iceberg::LogMessage::attributes_</definition>
+        <argsstring></argsstring>
+        <name>attributes_</name>
+        <qualifiedname>iceberg::LogMessage::attributes_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/logging/logger.h" line="125" column="15" bodyfile="iceberg/logging/logger.h" bodystart="125" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structiceberg_1_1LogMessage_1adbc2c729139ce776651e2c0778514ca8" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::LogMessage::Builder</definition>
+        <argsstring>(LogLevel level, std::source_location location=std::source_location::current())</argsstring>
+        <name>Builder</name>
+        <qualifiedname>iceberg::LogMessage::Builder</qualifiedname>
+        <param>
+          <type><ref refid="namespaceiceberg_1ab9922ae0d07dc85678a1a86c872e387b" kindref="member">LogLevel</ref></type>
+          <declname>level</declname>
+        </param>
+        <param>
+          <type>std::source_location</type>
+          <declname>location</declname>
+          <defval>std::source_location::current()</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/logging/logger.h" line="90" column="12" bodyfile="iceberg/logging/logger.h" bodystart="90" bodyend="92"/>
+      </memberdef>
+      <memberdef kind="function" id="structiceberg_1_1LogMessage_1ae4dc68fcc2d7a4f560519a970c473544" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>Builder &amp;</type>
+        <definition>Builder &amp; iceberg::LogMessage::Message</definition>
+        <argsstring>(std::string message)</argsstring>
+        <name>Message</name>
+        <qualifiedname>iceberg::LogMessage::Message</qualifiedname>
+        <param>
+          <type>std::string</type>
+          <declname>message</declname>
+        </param>
+        <briefdescription>
+<para>Set the already-formatted message text. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/logging/logger.h" line="95" column="11" bodyfile="iceberg/logging/logger.h" bodystart="95" bodyend="98"/>
+      </memberdef>
+      <memberdef kind="function" id="structiceberg_1_1LogMessage_1ac07aa97063a1e2d64edbdeaa7024b3e9" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>Builder &amp;</type>
+        <definition>Builder &amp; iceberg::LogMessage::Attribute</definition>
+        <argsstring>(std::string key, std::string value)</argsstring>
+        <name>Attribute</name>
+        <qualifiedname>iceberg::LogMessage::Attribute</qualifiedname>
+        <param>
+          <type>std::string</type>
+          <declname>key</declname>
+        </param>
+        <param>
+          <type>std::string</type>
+          <declname>value</declname>
+        </param>
+        <briefdescription>
+<para>Append a structured key/value attribute. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/logging/logger.h" line="101" column="11" bodyfile="iceberg/logging/logger.h" bodystart="101" bodyend="104"/>
+      </memberdef>
+      <memberdef kind="function" id="structiceberg_1_1LogMessage_1a0af92d415ebac01e9af51071c039c2a6" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>Builder &amp;</type>
+        <definition>Builder &amp; iceberg::LogMessage::Location</definition>
+        <argsstring>(std::source_location location)</argsstring>
+        <name>Location</name>
+        <qualifiedname>iceberg::LogMessage::Location</qualifiedname>
+        <param>
+          <type>std::source_location</type>
+          <declname>location</declname>
+        </param>
+        <briefdescription>
+<para>Override the record&apos;s source location (defaults to the build site). </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/logging/logger.h" line="107" column="11" bodyfile="iceberg/logging/logger.h" bodystart="107" bodyend="110"/>
+      </memberdef>
+      <memberdef kind="function" id="structiceberg_1_1LogMessage_1a2409e275f406fd2cc0f3764dfc0da150" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="structiceberg_1_1LogMessage" kindref="compound">LogMessage</ref></type>
+        <definition>LogMessage iceberg::LogMessage::Build</definition>
+        <argsstring>()</argsstring>
+        <name>Build</name>
+        <qualifiedname>iceberg::LogMessage::Build</qualifiedname>
+        <briefdescription>
+<para>Materialize the <ref refid="structiceberg_1_1LogMessage" kindref="compound">LogMessage</ref>, moving the accumulated state out. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/logging/logger.h" line="113" column="14" bodyfile="iceberg/logging/logger.h" bodystart="113" bodyend="118"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>A single log record handed to a <ref refid="classiceberg_1_1Logger" kindref="compound">Logger</ref>. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>Fluent builder for <ref refid="structiceberg_1_1LogMessage" kindref="compound">LogMessage</ref>, the easy path to attach structured attributes.</para>
+<para>The formatted message is owned (moved in when emitted), so a sink may safely retain the record beyond the <ref refid="namespaceiceberg_1a1aaf619fc9dbd574aa84dea9e41d3288" kindref="member">Log()</ref> call. The member set must not depend on the build&apos;s logging backend (the spdlog backend never appears here). Use LogMessage::Builder for a readable way to assemble one, especially with structured attributes.</para>
+<para>Example: auto record = LogMessage::Builder(LogLevel::kInfo) .Message(&quot;scan finished&quot;) .Attribute(&quot;table&quot;, table_name) .Attribute(&quot;snapshot_id&quot;, std::to_string(id)) .<ref refid="structiceberg_1_1LogMessage_1a2409e275f406fd2cc0f3764dfc0da150" kindref="member">Build()</ref>; logger-&gt;Log(std::move(record));</para>
+<para>The location defaults to the caller&apos;s construction site (captured via the constructor&apos;s default argument); override it with <ref refid="structiceberg_1_1LogMessage_1a0af92d415ebac01e9af51071c039c2a6" kindref="member">Location()</ref> (e.g. to forward a caller&apos;s std::source_location). </para>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>Builder</label>
+      </node>
+      <node id="1">
+        <label>iceberg::LogMessage</label>
+        <link refid="structiceberg_1_1LogMessage"/>
+        <childnode refid="2" relation="private-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="2">
+        <label>Builder</label>
+      </node>
+      <node id="6">
+        <label>iceberg::LogAttribute</label>
+        <link refid="structiceberg_1_1LogAttribute"/>
+        <childnode refid="3" relation="usage">
+          <edgelabel>key</edgelabel>
+          <edgelabel>value</edgelabel>
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::LogMessage</label>
+        <link refid="structiceberg_1_1LogMessage"/>
+        <childnode refid="2" relation="private-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>message</edgelabel>
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>attributes</edgelabel>
+        </childnode>
+      </node>
+      <node id="4">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="3">
+        <label>std::string</label>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>std::vector&lt; iceberg::LogAttribute &gt;</label>
+        <childnode refid="6" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/logging/logger.h" line="65" column="1" bodyfile="iceberg/logging/logger.h" bodystart="65" bodyend="72"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1LogMessage_1ac07aa97063a1e2d64edbdeaa7024b3e9" prot="public" virt="non-virtual"><scope>iceberg::LogMessage</scope><name>Attribute</name></member>
+      <member refid="structiceberg_1_1LogMessage_1af18bbe902d4e064033ef5c99a209f7ca" prot="public" virt="non-virtual"><scope>iceberg::LogMessage</scope><name>attributes</name></member>
+      <member refid="structiceberg_1_1LogMessage_1a7c0579dc3656df5bbb658b8a50ffe18f" prot="private" virt="non-virtual"><scope>iceberg::LogMessage</scope><name>attributes_</name></member>
+      <member refid="structiceberg_1_1LogMessage_1a2409e275f406fd2cc0f3764dfc0da150" prot="public" virt="non-virtual"><scope>iceberg::LogMessage</scope><name>Build</name></member>
+      <member refid="structiceberg_1_1LogMessage_1adbc2c729139ce776651e2c0778514ca8" prot="public" virt="non-virtual"><scope>iceberg::LogMessage</scope><name>Builder</name></member>
+      <member refid="structiceberg_1_1LogMessage_1ab6decf28a1d461b21c448a2c4c97f31c" prot="public" virt="non-virtual"><scope>iceberg::LogMessage</scope><name>level</name></member>
+      <member refid="structiceberg_1_1LogMessage_1a94017c7ce2e4c0c430a1c7c52c5a949b" prot="private" virt="non-virtual"><scope>iceberg::LogMessage</scope><name>level_</name></member>
+      <member refid="structiceberg_1_1LogMessage_1a3c6eacb7bfea82bfc9d9370d9e608102" prot="public" virt="non-virtual"><scope>iceberg::LogMessage</scope><name>location</name></member>
+      <member refid="structiceberg_1_1LogMessage_1a0af92d415ebac01e9af51071c039c2a6" prot="public" virt="non-virtual"><scope>iceberg::LogMessage</scope><name>Location</name></member>
+      <member refid="structiceberg_1_1LogMessage_1a7ab0c076d51d19fc652fc3111731667e" prot="private" virt="non-virtual"><scope>iceberg::LogMessage</scope><name>location_</name></member>
+      <member refid="structiceberg_1_1LogMessage_1af59dc3f8007ba1a799c999b5ea234400" prot="public" virt="non-virtual"><scope>iceberg::LogMessage</scope><name>message</name></member>
+      <member refid="structiceberg_1_1LogMessage_1ae4dc68fcc2d7a4f560519a970c473544" prot="public" virt="non-virtual"><scope>iceberg::LogMessage</scope><name>Message</name></member>
+      <member refid="structiceberg_1_1LogMessage_1a7f7980e5b09a481451dc8816056d5ce1" prot="private" virt="non-virtual"><scope>iceberg::LogMessage</scope><name>message_</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

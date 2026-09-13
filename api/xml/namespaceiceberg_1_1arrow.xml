@@ -1,0 +1,190 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="namespaceiceberg_1_1arrow" kind="namespace" language="C++">
+    <compoundname>iceberg::arrow</compoundname>
+    <innerclass refid="structiceberg_1_1arrow_1_1S3Properties" prot="public">iceberg::arrow::S3Properties</innerclass>
+    <sectiondef kind="var">
+      <memberdef kind="variable" id="namespaceiceberg_1_1arrow_1a4dc2f2056c520e55520c47f2c6b94b37" prot="public" static="no" constexpr="yes" mutable="no">
+        <type>constexpr std::array&lt; std::string_view, 4 &gt;</type>
+        <definition>constexpr std::array&lt;std::string_view, 4&gt; iceberg::arrow::kS3Schemes</definition>
+        <argsstring></argsstring>
+        <name>kS3Schemes</name>
+        <qualifiedname>iceberg::arrow::kS3Schemes</qualifiedname>
+        <initializer>= {&quot;s3&quot;, &quot;s3a&quot;, &quot;s3n&quot;, &quot;oss&quot;}</initializer>
+        <briefdescription>
+<para>URI schemes served by the Arrow S3 <ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref>, lower-case. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Single source of truth: registration, IsS3Scheme and alias canonicalization all derive from this list, so a new alias only has to be added here.</para>
+<para><computeroutput>oss</computeroutput> is served because the store is S3-compatible; see the <ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref> docs. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/arrow/s3/s3_properties.h" line="65" column="29" bodyfile="iceberg/arrow/s3/s3_properties.h" bodystart="65" bodyend="65"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="func">
+      <memberdef kind="function" id="namespaceiceberg_1_1arrow_1ab7a1e810bcc704fe597945b32a96d894" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>ICEBERG_BUNDLE_EXPORT std::unique_ptr&lt; <ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref> &gt;</type>
+        <definition>ICEBERG_BUNDLE_EXPORT std::unique_ptr&lt; FileIO &gt; iceberg::arrow::MakeMockFileIO</definition>
+        <argsstring>()</argsstring>
+        <name>MakeMockFileIO</name>
+        <qualifiedname>iceberg::arrow::MakeMockFileIO</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/arrow/arrow_io_util.h" line="35" column="39" declfile="iceberg/arrow/arrow_io_util.h" declline="35" declcolumn="39"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceiceberg_1_1arrow_1ab2aa5166871ebfd494a4bda12d751e79" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>ICEBERG_BUNDLE_EXPORT std::unique_ptr&lt; <ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref> &gt;</type>
+        <definition>ICEBERG_BUNDLE_EXPORT std::unique_ptr&lt; FileIO &gt; iceberg::arrow::MakeLocalFileIO</definition>
+        <argsstring>()</argsstring>
+        <name>MakeLocalFileIO</name>
+        <qualifiedname>iceberg::arrow::MakeLocalFileIO</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/arrow/arrow_io_util.h" line="37" column="39" declfile="iceberg/arrow/arrow_io_util.h" declline="37" declcolumn="39"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceiceberg_1_1arrow_1aa4c684c9dab81759ea6d8cd322894af3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>ICEBERG_BUNDLE_EXPORT <ref refid="namespaceiceberg_1a9d5594e371beb516b0120e07e69d3af6" kindref="member">Result</ref>&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref> &gt; &gt;</type>
+        <definition>ICEBERG_BUNDLE_EXPORT Result&lt; std::unique_ptr&lt; FileIO &gt; &gt; iceberg::arrow::MakeS3FileIO</definition>
+        <argsstring>(const std::unordered_map&lt; std::string, std::string &gt; &amp;properties={})</argsstring>
+        <name>MakeS3FileIO</name>
+        <qualifiedname>iceberg::arrow::MakeS3FileIO</qualifiedname>
+        <param>
+          <type>const std::unordered_map&lt; std::string, std::string &gt; &amp;</type>
+          <declname>properties</declname>
+          <defval>{}</defval>
+        </param>
+        <briefdescription>
+<para>Create an S3 <ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref> backed by Arrow&apos;s S3FileSystem. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This function initializes the S3 subsystem if not already initialized (thread-safe). The S3 initialization is cached once per process.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>properties</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Configuration properties for S3 access. See <ref refid="structiceberg_1_1arrow_1_1S3Properties" kindref="compound">S3Properties</ref> for available keys (credentials, region, endpoint, timeouts, etc.). </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A <ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref> instance for S3 operations, or an error if S3 is not supported. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/arrow/arrow_io_util.h" line="47" column="30" declfile="iceberg/arrow/arrow_io_util.h" declline="47" declcolumn="30"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceiceberg_1_1arrow_1afe534529616b1e1b86fb707c29390931" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>ICEBERG_BUNDLE_EXPORT Status</type>
+        <definition>ICEBERG_BUNDLE_EXPORT Status iceberg::arrow::FinalizeS3</definition>
+        <argsstring>()</argsstring>
+        <name>FinalizeS3</name>
+        <qualifiedname>iceberg::arrow::FinalizeS3</qualifiedname>
+        <briefdescription>
+<para>Finalize (clean up) the Arrow S3 subsystem. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Must be called before process exit if S3 was initialized, otherwise Arrow&apos;s static destructors may cause a non-zero exit. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/arrow/arrow_io_util.h" line="54" column="30" declfile="iceberg/arrow/arrow_io_util.h" declline="54" declcolumn="30"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceiceberg_1_1arrow_1a537b313f3b1ea07042fee34cfc08c420" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>ICEBERG_BUNDLE_EXPORT void</type>
+        <definition>ICEBERG_BUNDLE_EXPORT void iceberg::arrow::RegisterAll</definition>
+        <argsstring>()</argsstring>
+        <name>RegisterAll</name>
+        <qualifiedname>iceberg::arrow::RegisterAll</qualifiedname>
+        <briefdescription>
+<para>Register Arrow FileIOs and Arrow-backed C Data utilities. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This operation is idempotent and safe to call multiple times. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/arrow/arrow_register.h" line="32" column="28" declfile="iceberg/arrow/arrow_register.h" declline="32" declcolumn="28"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceiceberg_1_1arrow_1aed8332d01e16aeb3ca8c55f222856ae0" prot="public" static="no" constexpr="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>constexpr bool</type>
+        <definition>constexpr bool iceberg::arrow::EqualsIgnoreAsciiCase</definition>
+        <argsstring>(std::string_view left, std::string_view right)</argsstring>
+        <name>EqualsIgnoreAsciiCase</name>
+        <qualifiedname>iceberg::arrow::EqualsIgnoreAsciiCase</qualifiedname>
+        <param>
+          <type>std::string_view</type>
+          <declname>left</declname>
+        </param>
+        <param>
+          <type>std::string_view</type>
+          <declname>right</declname>
+        </param>
+        <briefdescription>
+<para>ASCII-only case-insensitive comparison: schemes are ASCII (RFC 3986), and &lt;cctype&gt; is locale-sensitive. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/arrow/s3/s3_properties.h" line="69" column="23" bodyfile="iceberg/arrow/s3/s3_properties.h" bodystart="69" bodyend="76"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceiceberg_1_1arrow_1af7361a309535725b457d956293b33c76" prot="public" static="no" constexpr="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>constexpr bool</type>
+        <definition>constexpr bool iceberg::arrow::IsS3Scheme</definition>
+        <argsstring>(std::string_view scheme)</argsstring>
+        <name>IsS3Scheme</name>
+        <qualifiedname>iceberg::arrow::IsS3Scheme</qualifiedname>
+        <param>
+          <type>std::string_view</type>
+          <declname>scheme</declname>
+        </param>
+        <briefdescription>
+<para>Return whether a URI scheme is S3-compatible; case-insensitive, because scheme routing is. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/arrow/s3/s3_properties.h" line="80" column="23" bodyfile="iceberg/arrow/s3/s3_properties.h" bodystart="80" bodyend="84"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceiceberg_1_1arrow_1a022f2be841411f9ebbe5f777ef82e588" prot="public" static="no" constexpr="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>constexpr bool</type>
+        <definition>constexpr bool iceberg::arrow::IsS3CredentialPrefix</definition>
+        <argsstring>(std::string_view prefix)</argsstring>
+        <name>IsS3CredentialPrefix</name>
+        <qualifiedname>iceberg::arrow::IsS3CredentialPrefix</qualifiedname>
+        <param>
+          <type>std::string_view</type>
+          <declname>prefix</declname>
+        </param>
+        <briefdescription>
+<para>Return whether a storage credential prefix belongs to S3. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Accepts the bare <computeroutput>s3</computeroutput> prefix (exactly: a case variant would be stored as a key no canonicalized location can match) or a URI prefix such as <computeroutput>s3a://bucket</computeroutput>. Bare aliases such as <computeroutput>oss</computeroutput> are deliberately rejected, matching Java S3FileIO&apos;s credential filter. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/arrow/s3/s3_properties.h" line="92" column="23" bodyfile="iceberg/arrow/s3/s3_properties.h" bodystart="92" bodyend="98"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Arrow-backed IO and data conversion APIs. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/arrow/arrow_io_util.h" line="33" column="1"/>
+  </compounddef>
+</doxygen>
