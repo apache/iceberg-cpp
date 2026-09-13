@@ -20,6 +20,7 @@
 #include "iceberg/catalog/rest/catalog_properties.h"
 
 #include <algorithm>
+#include <optional>
 #include <string>
 #include <string_view>
 
@@ -59,6 +60,16 @@ Result<SnapshotMode> RestCatalogProperties::SnapshotLoadingMode() const {
     return InvalidArgument("Invalid snapshot loading mode: '{}'.",
                            Get(kSnapshotLoadingMode));
   }
+}
+
+Result<std::optional<ScanPlanningMode>> RestCatalogProperties::ScanPlanningModeFrom(
+    const std::unordered_map<std::string, std::string>& config) {
+  auto it = config.find(kScanPlanningMode.key());
+  if (it == config.end()) return std::nullopt;
+  std::string lower = StringUtils::ToLower(it->second);
+  if (lower == "client") return ScanPlanningMode::kClient;
+  if (lower == "server") return ScanPlanningMode::kServer;
+  return InvalidArgument("Invalid scan planning mode: '{}'.", it->second);
 }
 
 }  // namespace iceberg::rest

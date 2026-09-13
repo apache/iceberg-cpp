@@ -43,6 +43,8 @@
 #include "iceberg/catalog/rest/rest_util.h"
 #include "iceberg/catalog/rest/types.h"
 #include "iceberg/json_serde_internal.h"
+#include "iceberg/logging/logger.h"
+#include "iceberg/logging/log_level.h"
 #include "iceberg/metrics/metrics_reporters.h"
 #include "iceberg/partition_spec.h"
 #include "iceberg/result.h"
@@ -900,7 +902,32 @@ Result<std::shared_ptr<Table>> RestCatalog::MakeTableFromLoadResult(
   auto table_catalog = std::make_shared<TableScopedCatalog>(
       shared_from_this(), context, identifier, table_config, table_session, table_io);
 
-  if (supported_endpoints_.contains(Endpoint::PlanTableScan())) {
+  // Determine effective scan planning mode: table config overrides client config.
+  ICEBERG_ASSIGN_OR_RAISE(auto client_mode,
+                          RestCatalogProperties::ScanPlanningModeFrom(config_.configs()));
+  ICEBERG_ASSIGN_OR_RAISE(auto server_mode,
+                          RestCatalogProperties::ScanPlanningModeFrom(table_config));
+
+  if (client_mode.has_value() && server_mode.has_value() &&
+      *client_mode != *server_mode) {
+    Log(LogLevel::kWarn,
+        "Scan planning mode mismatch for table {}: client config={}, server config={}. "
+        "Server config will take precedence.",
+        identifier.ToString(),
+        *client_mode == ScanPlanningMode::kClient ? "client" : "server",
+        *server_mode == ScanPlanningMode::kClient ? "client" : "server");
+  }
+
+  ScanPlanningMode effective_mode =
+      server_mode.value_or(client_mode.value_or(ScanPlanningMode::kClient));
+
+  if (effective_mode == ScanPlanningMode::kServer) {
+    if (!supported_endpoints_.contains(Endpoint::PlanTableScan())) {
+      return NotSupported(
+          "Server requires server-side scan planning for table {} but does not support "
+          "the PlanTableScan endpoint.",
+          identifier.ToString());
+    }
     RestScanContext rest_ctx{
         .client = client_,
         .paths = paths_,
