@@ -212,7 +212,7 @@ class ICEBERG_EXPORT DeletedDataFileScanTask : public ChangelogScanTask {
 namespace internal {
 
 // Internal table scan context used by different scan implementations.
-struct TableScanContext {
+struct ICEBERG_EXPORT TableScanContext {
   std::optional<int64_t> snapshot_id;
   std::shared_ptr<Expression> filter;
   bool ignore_residuals{false};
