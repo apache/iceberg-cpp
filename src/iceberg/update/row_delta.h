@@ -47,7 +47,7 @@ namespace iceberg {
 class ICEBERG_EXPORT RowDelta : public MergingSnapshotUpdate {
  public:
   /// \brief Create a new RowDelta instance.
-  static Result<std::unique_ptr<RowDelta>> Make(std::string table_name,
+  static Result<std::shared_ptr<RowDelta>> Make(std::string table_name,
                                                 std::shared_ptr<TransactionContext> ctx);
 
   /// \brief Add a DataFile to the table.

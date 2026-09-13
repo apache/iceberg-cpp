@@ -57,7 +57,7 @@ class UpdatePartitionStatisticsTest : public UpdateTestBase {
 
 TEST_F(UpdatePartitionStatisticsTest, EmptyUpdate) {
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdatePartitionStatistics());
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Validate());
   EXPECT_TRUE(result.to_set.empty());
   EXPECT_TRUE(result.to_remove.empty());
 }
@@ -68,7 +68,7 @@ TEST_F(UpdatePartitionStatisticsTest, SetPartitionStatistics) {
       1, "/warehouse/test_table/metadata/partition-stats-1.parquet");
   update->SetPartitionStatistics(partition_stats_file);
 
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Validate());
   EXPECT_EQ(result.to_set.size(), 1);
   EXPECT_TRUE(result.to_remove.empty());
 
@@ -90,7 +90,7 @@ TEST_F(UpdatePartitionStatisticsTest, SetMultiplePartitionStatistics) {
   update->SetPartitionStatistics(partition_stats_file1);
   update->SetPartitionStatistics(partition_stats_file2);
 
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Validate());
   EXPECT_EQ(result.to_set.size(), 2);
   EXPECT_TRUE(result.to_remove.empty());
 
@@ -115,7 +115,7 @@ TEST_F(UpdatePartitionStatisticsTest, ReplacePartitionStatistics) {
   update->SetPartitionStatistics(partition_stats_file1);
   update->SetPartitionStatistics(partition_stats_file2);
 
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Validate());
   EXPECT_EQ(result.to_set.size(), 1);
   EXPECT_TRUE(result.to_remove.empty());
 
@@ -130,7 +130,7 @@ TEST_F(UpdatePartitionStatisticsTest, RemovePartitionStatistics) {
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdatePartitionStatistics());
   update->RemovePartitionStatistics(1);
 
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Validate());
   EXPECT_TRUE(result.to_set.empty());
   EXPECT_EQ(result.to_remove.size(), 1);
   EXPECT_EQ(result.to_remove[0], 1);
@@ -144,7 +144,7 @@ TEST_F(UpdatePartitionStatisticsTest, SetThenRemovePartitionStatistics) {
   update->SetPartitionStatistics(partition_stats_file);
   update->RemovePartitionStatistics(1);
 
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Validate());
   EXPECT_TRUE(result.to_set.empty());
   EXPECT_EQ(result.to_remove.size(), 1);
   EXPECT_EQ(result.to_remove[0], 1);
@@ -155,7 +155,7 @@ TEST_F(UpdatePartitionStatisticsTest, SetNullPartitionStatistics) {
 
   update->SetPartitionStatistics(nullptr);
 
-  auto result = update->Apply();
+  auto result = update->Validate();
   EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
   EXPECT_THAT(result, HasErrorMessage("Statistics file cannot be null"));
 }
@@ -172,7 +172,7 @@ TEST_F(UpdatePartitionStatisticsTest, SetAndRemoveMixed) {
   update->SetPartitionStatistics(partition_stats_file2);
   update->RemovePartitionStatistics(3);
 
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Validate());
   EXPECT_EQ(result.to_set.size(), 2);
   EXPECT_EQ(result.to_remove.size(), 1);
   EXPECT_EQ(result.to_remove[0], 3);

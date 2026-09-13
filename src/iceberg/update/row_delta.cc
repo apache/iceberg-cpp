@@ -31,6 +31,7 @@
 #include "iceberg/table.h"
 #include "iceberg/table_metadata.h"
 #include "iceberg/transaction.h"
+#include "iceberg/update/update_util_internal.h"
 #include "iceberg/util/error_collector.h"
 #include "iceberg/util/formatter_internal.h"
 #include "iceberg/util/macros.h"
@@ -38,11 +39,11 @@
 
 namespace iceberg {
 
-Result<std::unique_ptr<RowDelta>> RowDelta::Make(
+Result<std::shared_ptr<RowDelta>> RowDelta::Make(
     std::string table_name, std::shared_ptr<TransactionContext> ctx) {
   ICEBERG_PRECHECK(!table_name.empty(), "Table name cannot be empty");
   ICEBERG_PRECHECK(ctx != nullptr, "Cannot create RowDelta without a context");
-  return std::unique_ptr<RowDelta>(new RowDelta(std::move(table_name), std::move(ctx)));
+  return std::shared_ptr<RowDelta>(new RowDelta(std::move(table_name), std::move(ctx)));
 }
 
 RowDelta::RowDelta(std::string table_name, std::shared_ptr<TransactionContext> ctx)
@@ -50,38 +51,46 @@ RowDelta::RowDelta(std::string table_name, std::shared_ptr<TransactionContext> c
       conflict_detection_filter_(Expressions::AlwaysTrue()) {}
 
 RowDelta& RowDelta::AddRows(const std::shared_ptr<DataFile>& inserts) {
+  EnsureMutable();
   ICEBERG_BUILDER_RETURN_IF_ERROR(AddDataFile(inserts));
   return *this;
 }
 
 RowDelta& RowDelta::AddDeletes(const std::shared_ptr<DataFile>& deletes) {
+  EnsureMutable();
   ICEBERG_BUILDER_RETURN_IF_ERROR(AddDeleteFile(deletes));
   return *this;
 }
 
 RowDelta& RowDelta::RemoveRows(const std::shared_ptr<DataFile>& file) {
+  EnsureMutable();
   ICEBERG_BUILDER_RETURN_IF_ERROR(DeleteDataFile(file));
-  removed_data_files_.insert(file);
+  ICEBERG_BUILDER_ASSIGN_OR_RETURN(auto frozen, internal::CopyUpdateDataFile(*file));
+  removed_data_files_.insert(std::move(frozen));
   return *this;
 }
 
 RowDelta& RowDelta::RemoveDeletes(const std::shared_ptr<DataFile>& deletes) {
+  EnsureMutable();
   ICEBERG_BUILDER_RETURN_IF_ERROR(DeleteDeleteFile(deletes));
   return *this;
 }
 
 RowDelta& RowDelta::ValidateFromSnapshot(int64_t snapshot_id) {
+  EnsureMutable();
   starting_snapshot_id_ = snapshot_id;
   return *this;
 }
 
 RowDelta& RowDelta::CaseSensitive(bool case_sensitive) {
+  EnsureMutable();
   MergingSnapshotUpdate::CaseSensitive(case_sensitive);
   return *this;
 }
 
 RowDelta& RowDelta::ValidateDataFilesExist(
     std::span<const std::string> referenced_files) {
+  EnsureMutable();
   for (const auto& file : referenced_files) {
     referenced_data_files_.insert(file);
   }
@@ -89,22 +98,27 @@ RowDelta& RowDelta::ValidateDataFilesExist(
 }
 
 RowDelta& RowDelta::ValidateDeletedFiles() {
+  EnsureMutable();
   validate_deletes_ = true;
   return *this;
 }
 
 RowDelta& RowDelta::ConflictDetectionFilter(std::shared_ptr<Expression> filter) {
+  EnsureMutable();
   ICEBERG_BUILDER_CHECK(filter != nullptr, "Conflict detection filter cannot be null");
-  conflict_detection_filter_ = std::move(filter);
+  ICEBERG_BUILDER_ASSIGN_OR_RETURN(conflict_detection_filter_,
+                                   internal::CopyUpdateExpression(filter));
   return *this;
 }
 
 RowDelta& RowDelta::ValidateNoConflictingDataFiles() {
+  EnsureMutable();
   validate_new_data_files_ = true;
   return *this;
 }
 
 RowDelta& RowDelta::ValidateNoConflictingDeleteFiles() {
+  EnsureMutable();
   validate_new_delete_files_ = true;
   return *this;
 }

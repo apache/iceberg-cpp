@@ -1212,8 +1212,9 @@ TEST_P(MergeAppendTest, Recovery) {
   ICEBERG_UNWRAP_OR_FAIL(auto second_snapshot, CurrentSnapshot());
   ICEBERG_UNWRAP_OR_FAIL(auto data_manifests, CurrentDataManifests());
   ASSERT_EQ(data_manifests.size(), 1U);
-  EXPECT_EQ(data_manifests[0].manifest_path, pending_manifest.manifest_path);
-  EXPECT_TRUE(FileExists(pending_manifest.manifest_path));
+  EXPECT_NE(data_manifests[0].manifest_path, pending_manifest.manifest_path);
+  EXPECT_FALSE(FileExists(pending_manifest.manifest_path));
+  EXPECT_TRUE(FileExists(data_manifests[0].manifest_path));
   ExpectManifestEntries(
       data_manifests[0], {file_b_, file_a_},
       {ManifestStatus::kAdded, ManifestStatus::kExisting},

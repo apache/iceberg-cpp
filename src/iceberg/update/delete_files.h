@@ -43,7 +43,7 @@ namespace iceberg {
 /// differently-normalized URIs are not considered matches.
 class ICEBERG_EXPORT DeleteFiles : public MergingSnapshotUpdate {
  public:
-  static Result<std::unique_ptr<DeleteFiles>> Make(
+  static Result<std::shared_ptr<DeleteFiles>> Make(
       std::string table_name, std::shared_ptr<TransactionContext> ctx);
 
   /// \brief Delete a file by path from the underlying table.

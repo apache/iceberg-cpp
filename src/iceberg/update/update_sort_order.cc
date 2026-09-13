@@ -47,6 +47,7 @@ UpdateSortOrder::~UpdateSortOrder() = default;
 UpdateSortOrder& UpdateSortOrder::AddSortField(const std::shared_ptr<Term>& term,
                                                SortDirection direction,
                                                NullOrder null_order) {
+  EnsureMutable();
   ICEBERG_BUILDER_CHECK(term != nullptr, "Term cannot be null");
   ICEBERG_BUILDER_CHECK(term->is_unbound(), "Term must be unbound");
 
@@ -75,17 +76,19 @@ UpdateSortOrder& UpdateSortOrder::AddSortField(const std::shared_ptr<Term>& term
 UpdateSortOrder& UpdateSortOrder::AddSortFieldByName(std::string_view name,
                                                      SortDirection direction,
                                                      NullOrder null_order) {
+  EnsureMutable();
   ICEBERG_BUILDER_ASSIGN_OR_RETURN(auto named_ref,
                                    NamedReference::Make(std::string(name)));
   return AddSortField(std::move(named_ref), direction, null_order);
 }
 
 UpdateSortOrder& UpdateSortOrder::CaseSensitive(bool case_sensitive) {
+  EnsureMutable();
   case_sensitive_ = case_sensitive;
   return *this;
 }
 
-Result<std::shared_ptr<SortOrder>> UpdateSortOrder::Apply() {
+Result<std::shared_ptr<SortOrder>> UpdateSortOrder::Validate() const {
   ICEBERG_RETURN_UNEXPECTED(CheckErrors());
 
   // If no sort fields are specified, return an unsorted order (ID = 0).
@@ -96,11 +99,25 @@ Result<std::shared_ptr<SortOrder>> UpdateSortOrder::Apply() {
     // Use -1 as a placeholder for non-empty sort orders.
     // The actual sort order ID will be assigned by TableMetadataBuilder when
     // the AddSortOrder update is applied.
-    ICEBERG_ASSIGN_OR_RAISE(order, SortOrder::Make(/*sort_id=*/-1, sort_fields_));
+    std::vector<SortField> fields;
+    for (const auto& field : sort_fields_) {
+      fields.emplace_back(field.source_id(),
+                          std::make_shared<Transform>(*field.transform()),
+                          field.direction(), field.null_order());
+    }
+    ICEBERG_ASSIGN_OR_RAISE(order, SortOrder::Make(/*sort_id=*/-1, std::move(fields)));
     ICEBERG_ASSIGN_OR_RAISE(auto schema, base().Schema());
     ICEBERG_RETURN_UNEXPECTED(order->Validate(*schema));
   }
   return order;
+}
+
+Status UpdateSortOrder::Freeze() {
+  for (auto& field : sort_fields_) {
+    field = SortField(field.source_id(), std::make_shared<Transform>(*field.transform()),
+                      field.direction(), field.null_order());
+  }
+  return {};
 }
 
 }  // namespace iceberg

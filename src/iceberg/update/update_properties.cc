@@ -46,6 +46,7 @@ UpdateProperties::~UpdateProperties() = default;
 
 UpdateProperties& UpdateProperties::Set(const std::string& key,
                                         const std::string& value) {
+  EnsureMutable();
   ICEBERG_BUILDER_CHECK(!removals_.contains(key),
                         "Cannot set property '{}' that is already marked for removal",
                         key);
@@ -59,6 +60,7 @@ UpdateProperties& UpdateProperties::Set(const std::string& key,
 }
 
 UpdateProperties& UpdateProperties::Remove(const std::string& key) {
+  EnsureMutable();
   ICEBERG_BUILDER_CHECK(!updates_.contains(key),
                         "Cannot remove property '{}' that is already marked for update",
                         key);
@@ -66,8 +68,10 @@ UpdateProperties& UpdateProperties::Remove(const std::string& key) {
   return *this;
 }
 
-Result<UpdateProperties::ApplyResult> UpdateProperties::Apply() {
+Result<UpdateProperties::ApplyResult> UpdateProperties::Validate() const {
   ICEBERG_RETURN_UNEXPECTED(CheckErrors());
+  auto updates = updates_;
+  std::optional<int8_t> format_version;
   const auto& current_props = base().properties.configs();
   std::unordered_map<std::string, std::string> new_properties;
   std::vector<std::string> removals;
@@ -91,17 +95,18 @@ Result<UpdateProperties::ApplyResult> UpdateProperties::Apply() {
           "Cannot upgrade table to unsupported format version: v{} (supported: v{})",
           parsed_version, TableMetadata::kSupportedTableFormatVersion);
     }
-    format_version_ = static_cast<int8_t>(parsed_version);
+    format_version = static_cast<int8_t>(parsed_version);
 
-    updates_.erase(TableProperties::kFormatVersion.key());
+    updates.erase(TableProperties::kFormatVersion.key());
   }
 
   if (auto schema = base().Schema(); schema.has_value()) {
     ICEBERG_RETURN_UNEXPECTED(
         MetricsConfig::VerifyReferencedColumns(new_properties, *schema.value()));
   }
-  return ApplyResult{
-      .updates = updates_, .removals = removals_, .format_version = format_version_};
+  return ApplyResult{.updates = std::move(updates),
+                     .removals = removals_,
+                     .format_version = format_version};
 }
 
 }  // namespace iceberg

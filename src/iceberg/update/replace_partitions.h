@@ -62,7 +62,7 @@ class ICEBERG_EXPORT ReplacePartitions : public MergingSnapshotUpdate {
   /// \param table_name The name of the table
   /// \param ctx The transaction context
   /// \return A Result containing the ReplacePartitions instance or an error
-  static Result<std::unique_ptr<ReplacePartitions>> Make(
+  static Result<std::shared_ptr<ReplacePartitions>> Make(
       std::string table_name, std::shared_ptr<TransactionContext> ctx);
 
   /// \brief Add a data file to the table.

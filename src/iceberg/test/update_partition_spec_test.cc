@@ -173,7 +173,7 @@ class UpdatePartitionSpecTest : public ::testing::TestWithParam<int8_t> {
   // Helper to apply update and get the resulting spec
   std::shared_ptr<PartitionSpec> ApplyUpdateAndGetSpec(
       std::shared_ptr<UpdatePartitionSpec> update) {
-    auto result = update->Apply();
+    auto result = update->Validate();
     if (!result.has_value()) {
       ADD_FAILURE() << "Failed to apply update: " << result.error().message;
       return nullptr;
@@ -207,7 +207,7 @@ class UpdatePartitionSpecTest : public ::testing::TestWithParam<int8_t> {
   // Helper to expect an error with a specific message
   void ExpectError(std::shared_ptr<UpdatePartitionSpec> update, ErrorKind expected_kind,
                    const std::string& expected_message) {
-    auto result = update->Apply();
+    auto result = update->Validate();
     ASSERT_THAT(result, IsError(expected_kind));
     ASSERT_THAT(result, HasErrorMessage(expected_message));
   }
@@ -529,7 +529,7 @@ TEST_P(UpdatePartitionSpecTest, TestMultipleChanges) {
 TEST_P(UpdatePartitionSpecTest, TestAddDeletedName) {
   ICEBERG_UNWRAP_OR_FAIL(auto update, partitioned_table_->NewUpdatePartitionSpec());
   update->RemoveField(Expressions::Bucket("id", 16));
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Validate());
   auto updated_spec = result.spec;
 
   if (format_version_ == 1) {
@@ -608,14 +608,14 @@ TEST_P(UpdatePartitionSpecTest, TestNoEffectAddDeletedSameFieldWithSameName) {
   ICEBERG_UNWRAP_OR_FAIL(auto update1, partitioned_table_->NewUpdatePartitionSpec());
   update1->RemoveField("shard");
   update1->AddField(Expressions::Bucket("id", 16), "shard");
-  ICEBERG_UNWRAP_OR_FAIL(auto result1, update1->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(auto result1, update1->Validate());
   auto spec1 = result1.spec;
   AssertPartitionSpecEquals(*partitioned_spec_, *spec1);
 
   ICEBERG_UNWRAP_OR_FAIL(auto update2, partitioned_table_->NewUpdatePartitionSpec());
   update2->RemoveField("shard");
   update2->AddField(Expressions::Bucket("id", 16));
-  ICEBERG_UNWRAP_OR_FAIL(auto result2, update2->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(auto result2, update2->Validate());
   auto spec2 = result2.spec;
   AssertPartitionSpecEquals(*partitioned_spec_, *spec2);
 }
@@ -624,7 +624,7 @@ TEST_P(UpdatePartitionSpecTest, TestGenerateNewSpecAddDeletedSameFieldWithDiffer
   ICEBERG_UNWRAP_OR_FAIL(auto update, partitioned_table_->NewUpdatePartitionSpec());
   update->RemoveField("shard");
   update->AddField(Expressions::Bucket("id", 16), "new_shard");
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Validate());
   auto updated_spec = result.spec;
 
   ASSERT_EQ(updated_spec->fields().size(), 3);

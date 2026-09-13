@@ -54,8 +54,8 @@ class ICEBERG_EXPORT RewriteFiles : public MergingSnapshotUpdate {
   ///
   /// \param table_name The name of the table
   /// \param ctx The transaction context
-  /// \return A unique pointer to the new RewriteFiles operation
-  static Result<std::unique_ptr<RewriteFiles>> Make(
+  /// \return A shared pointer to the new RewriteFiles operation
+  static Result<std::shared_ptr<RewriteFiles>> Make(
       std::string table_name, std::shared_ptr<TransactionContext> ctx);
 
   ~RewriteFiles() override = default;

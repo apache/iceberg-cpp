@@ -364,14 +364,14 @@ class ICEBERG_EXPORT UpdateSchema : public PendingUpdate {
     std::unordered_map<std::string, std::string> updated_props;
   };
 
-  /// \brief Apply the pending changes to the original schema and return the result.
-  ///
-  /// This does not result in a permanent update.
-  ///
-  /// \return The result Schema and last column id when all pending updates are applied.
-  Result<ApplyResult> Apply();
+  /// \brief Validate and preview changes without staging or modifying this update.
+  Result<ApplyResult> Validate() const;
 
  private:
+  Status Freeze() override;
+
+  bool MayAddFileReferences() const override { return false; }
+
   explicit UpdateSchema(std::shared_ptr<TransactionContext> ctx);
 
   /// \brief Internal implementation for adding a column with full control.

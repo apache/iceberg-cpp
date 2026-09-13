@@ -44,28 +44,39 @@ UpdateStatistics::~UpdateStatistics() = default;
 
 UpdateStatistics& UpdateStatistics::SetStatistics(
     std::shared_ptr<StatisticsFile> statistics_file) {
+  EnsureMutable();
   ICEBERG_BUILDER_CHECK(statistics_file != nullptr, "Statistics file cannot be null");
   statistics_to_set_[statistics_file->snapshot_id] = std::move(statistics_file);
   return *this;
 }
 
 UpdateStatistics& UpdateStatistics::RemoveStatistics(int64_t snapshot_id) {
+  EnsureMutable();
   statistics_to_set_[snapshot_id] = nullptr;
   return *this;
 }
 
-Result<UpdateStatistics::ApplyResult> UpdateStatistics::Apply() {
+Result<UpdateStatistics::ApplyResult> UpdateStatistics::Validate() const {
   ICEBERG_RETURN_UNEXPECTED(CheckErrors());
 
   ApplyResult result;
   for (const auto& [snapshot_id, stats] : statistics_to_set_) {
     if (stats) {
-      result.to_set.emplace_back(snapshot_id, stats);
+      result.to_set.emplace_back(snapshot_id, std::make_shared<StatisticsFile>(*stats));
     } else {
       result.to_remove.push_back(snapshot_id);
     }
   }
   return result;
+}
+
+Status UpdateStatistics::Freeze() {
+  for (auto& [_, value] : statistics_to_set_) {
+    if (value) {
+      value = std::make_shared<StatisticsFile>(*value);
+    }
+  }
+  return {};
 }
 
 }  // namespace iceberg

@@ -26,6 +26,7 @@
 
 #include "iceberg/constants.h"
 #include "iceberg/file_io.h"
+#include "iceberg/logging/log_macros.h"
 #include "iceberg/manifest/manifest_entry.h"
 #include "iceberg/manifest/manifest_list.h"
 #include "iceberg/manifest/manifest_reader.h"
@@ -202,17 +203,17 @@ SnapshotUpdate::SnapshotUpdate(std::shared_ptr<TransactionContext> ctx)
       reporter_(ctx_->table->reporter()) {}
 
 Status SnapshotUpdate::Commit() {
-  commit_metrics_->attempts->Increment();
+  ICEBERG_RETURN_UNEXPECTED(CheckCommitAllowed());
   [[maybe_unused]] auto commit_timer = commit_metrics_->total_duration->Start();
   return PendingUpdate::Commit();
 }
 
-void SnapshotUpdate::ReportCommit() const {
+Status SnapshotUpdate::ReportCommitted() {
   ICEBERG_DCHECK(staged_snapshot_ != nullptr,
                  "Staged snapshot is null after a successful commit");
 
   if (!reporter_) {
-    return;
+    return {};
   }
 
   const auto operation = staged_snapshot_->Operation();
@@ -225,7 +226,7 @@ void SnapshotUpdate::ReportCommit() const {
           CommitMetricsResult::From(*commit_metrics_, staged_snapshot_->summary),
       .metadata = {},
   };
-  std::ignore = reporter_->Report(report);
+  return reporter_->Report(report);
 }
 
 void SnapshotUpdate::SetSummaryProperty(const std::string& property,
@@ -302,17 +303,11 @@ int64_t SnapshotUpdate::SnapshotId() {
 }
 
 Result<SnapshotUpdate::ApplyResult> SnapshotUpdate::Apply() {
+  commit_metrics_->attempts->Increment();
   ICEBERG_RETURN_UNEXPECTED(CheckErrors());
-
-  if (staged_snapshot_ != nullptr) {
-    for (const auto& manifest_list : manifest_lists_) {
-      std::ignore = DeleteFile(manifest_list);
-    }
-    manifest_lists_.clear();
-    ICEBERG_RETURN_UNEXPECTED(CleanUncommitted(std::unordered_set<std::string>{}));
-
-    staged_snapshot_ = nullptr;
-    summary_.Clear();
+  {
+    std::lock_guard lock(staging_mutex_);
+    attempted_deletes_.clear();
   }
 
   ICEBERG_ASSIGN_OR_RAISE(auto parent_snapshot,
@@ -338,7 +333,6 @@ Result<SnapshotUpdate::ApplyResult> SnapshotUpdate::Apply() {
   ICEBERG_RETURN_UNEXPECTED(std::move(metadata_tasks).Run());
 
   std::string manifest_list_path = ManifestListPath();
-  manifest_lists_.push_back(manifest_list_path);
   ICEBERG_ASSIGN_OR_RAISE(
       auto writer, ManifestListWriter::MakeWriter(base().format_version, SnapshotId(),
                                                   parent_snapshot_id, manifest_list_path,
@@ -388,38 +382,42 @@ Result<SnapshotUpdate::ApplyResult> SnapshotUpdate::Apply() {
                      .stage_only = stage_only_};
 }
 
-Status SnapshotUpdate::Finalize(Result<const TableMetadata*> commit_result) {
-  if (!commit_result.has_value()) {
-    if (commit_result.error().kind == ErrorKind::kCommitStateUnknown) {
-      return {};
+Status SnapshotUpdate::Finalize([[maybe_unused]] const TableMetadata& metadata) {
+  ICEBERG_CHECK(staged_snapshot_ != nullptr, "Missing staged snapshot after commit");
+  auto cached_snapshot = SnapshotCache(staged_snapshot_.get());
+  ICEBERG_ASSIGN_OR_RAISE(auto manifests, cached_snapshot.Manifests(ctx_->table->io()));
+  auto committed =
+      manifests |
+      std::views::transform([](const auto& manifest) { return manifest.manifest_path; }) |
+      std::ranges::to<std::unordered_set<std::string>>();
+  // Let derived updates release their caches and clean operation-specific files.
+  try {
+    if (auto status = CleanUncommitted(committed); !status) {
+      ICEBERG_LOG_WARN("Snapshot cleanup failed: {}", status.error().message);
     }
-    std::ignore = CleanAll();
-    return {};
+  } catch (const std::exception& e) {
+    ICEBERG_LOG_WARN("Snapshot cleanup threw: {}", e.what());
+  } catch (...) {
+    ICEBERG_LOG_WARN("Snapshot cleanup threw an unknown exception");
   }
-
-  if (CleanupAfterCommit()) {
-    ICEBERG_CHECK(staged_snapshot_ != nullptr,
-                  "Staged snapshot is null during finalize after commit");
-    auto cached_snapshot = SnapshotCache(staged_snapshot_.get());
-    if (auto manifests = cached_snapshot.Manifests(ctx_->table->io());
-        manifests.has_value()) {
-      std::ignore = CleanUncommitted(manifests.value() |
-                                     std::views::transform([](const auto& manifest) {
-                                       return manifest.manifest_path;
-                                     }) |
-                                     std::ranges::to<std::unordered_set<std::string>>());
+  committed.insert(staged_snapshot_->manifest_list);
+  std::vector<std::string> unused;
+  {
+    std::lock_guard lock(staging_mutex_);
+    for (const auto& path : staged_files_) {
+      if (!committed.contains(path) && !staged_data_files_.contains(path)) {
+        unused.push_back(path);
+      }
     }
   }
-
-  // Also clean up unused manifest lists created by multiple attempts
-  for (const auto& manifest_list : manifest_lists_) {
-    if (manifest_list != staged_snapshot_->manifest_list) {
-      std::ignore = DeleteFile(manifest_list);
-    }
+  for (const auto& path : unused) {
+    std::ignore = DeleteFile(path);
   }
-
-  ReportCommit();
-
+  {
+    std::lock_guard lock(staging_mutex_);
+    staged_files_.clear();
+    staged_data_files_.clear();
+  }
   return {};
 }
 
@@ -473,20 +471,59 @@ Result<std::unordered_map<std::string, std::string>> SnapshotUpdate::ComputeSumm
   return summary;
 }
 
-Status SnapshotUpdate::CleanAll() {
-  for (const auto& manifest_list : manifest_lists_) {
-    std::ignore = DeleteFile(manifest_list);
+Status SnapshotUpdate::CleanStaged() {
+  try {
+    if (auto status = CleanUncommitted({}); !status) {
+      ICEBERG_LOG_WARN("Snapshot staging cleanup failed: {}", status.error().message);
+    }
+  } catch (const std::exception& e) {
+    ICEBERG_LOG_WARN("Snapshot staging cleanup threw: {}", e.what());
+  } catch (...) {
+    ICEBERG_LOG_WARN("Snapshot staging cleanup threw an unknown exception");
   }
-  manifest_lists_.clear();
-  std::ignore = CleanUncommitted(std::unordered_set<std::string>{});
+  // Include paths whose writes failed before a derived cache recorded a manifest.
+  std::unordered_set<std::string> paths;
+  {
+    std::lock_guard lock(staging_mutex_);
+    paths.swap(staged_files_);
+    staged_data_files_.clear();
+  }
+  for (const auto& path : paths) {
+    std::ignore = DeleteFile(path);
+  }
+  staged_snapshot_.reset();
+  summary_.Clear();
   return {};
 }
 
-Status SnapshotUpdate::DeleteFile(const std::string& path) {
-  if (delete_func_) {
-    return delete_func_(path);
+void SnapshotUpdate::RegisterStagedFile(const std::string& path, bool data_file) {
+  std::lock_guard lock(staging_mutex_);
+  staged_files_.insert(path);
+  if (data_file) {
+    staged_data_files_.insert(path);
   }
-  return ctx_->table->io()->DeleteFile(path);
+}
+
+Status SnapshotUpdate::DeleteFile(const std::string& path) noexcept {
+  try {
+    {
+      std::lock_guard lock(staging_mutex_);
+      if (!attempted_deletes_.insert(path).second) {
+        return {};
+      }
+      staged_files_.erase(path);
+      staged_data_files_.erase(path);
+    }
+    auto result = delete_func_ ? delete_func_(path) : ctx_->table->io()->DeleteFile(path);
+    if (!result) {
+      ICEBERG_LOG_WARN("Cannot clean staged file {}: {}", path, result.error().message);
+    }
+  } catch (const std::exception& e) {
+    ICEBERG_LOG_WARN("Cannot clean staged file {}: {}", path, e.what());
+  } catch (...) {
+    ICEBERG_LOG_WARN("Cannot clean staged file {}: unknown exception", path);
+  }
+  return {};
 }
 
 std::string SnapshotUpdate::ManifestListPath() {
@@ -496,7 +533,9 @@ std::string SnapshotUpdate::ManifestListPath() {
   auto attempt = attempt_.fetch_add(1, std::memory_order_relaxed) + 1;
   std::string filename =
       std::format("snap-{}-{}-{}.avro", snapshot_id, attempt, commit_uuid_);
-  return ctx_->MetadataFileLocation(filename);
+  auto path = ctx_->MetadataFileLocation(filename);
+  RegisterStagedFile(path);
+  return path;
 }
 
 SnapshotSummaryBuilder SnapshotUpdate::BuildManifestCountSummary(
@@ -526,7 +565,9 @@ std::string SnapshotUpdate::ManifestPath() {
   // Format: {metadata_location}/{uuid}-m{manifest_count}.avro
   auto manifest_count = manifest_count_.fetch_add(1, std::memory_order_relaxed);
   std::string filename = std::format("{}-m{}.avro", commit_uuid_, manifest_count);
-  return ctx_->MetadataFileLocation(filename);
+  auto path = ctx_->MetadataFileLocation(filename);
+  RegisterStagedFile(path);
+  return path;
 }
 
 }  // namespace iceberg

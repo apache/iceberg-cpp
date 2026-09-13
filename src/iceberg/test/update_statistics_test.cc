@@ -31,6 +31,7 @@
 #include "iceberg/test/matchers.h"
 #include "iceberg/test/mock_catalog.h"
 #include "iceberg/test/update_test_base.h"
+#include "iceberg/transaction.h"
 
 namespace iceberg {
 
@@ -99,7 +100,7 @@ class UpdateStatisticsRetryTest : public UpdateStatisticsTest {
 
 TEST_F(UpdateStatisticsTest, EmptyUpdate) {
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateStatistics());
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Validate());
   EXPECT_TRUE(result.to_set.empty());
   EXPECT_TRUE(result.to_remove.empty());
 }
@@ -110,10 +111,11 @@ TEST_F(UpdateStatisticsTest, SetStatistics) {
       MakeStatisticsFile(1, "/warehouse/test_table/metadata/stats-1.puffin");
   update->SetStatistics(stats_file);
 
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Validate());
   EXPECT_EQ(result.to_set.size(), 1);
   EXPECT_TRUE(result.to_remove.empty());
-  EXPECT_EQ(FindStatistics(result.to_set, 1), stats_file);
+  EXPECT_THAT(FindStatistics(result.to_set, 1),
+              ::testing::Pointee(::testing::Eq(*stats_file)));
 }
 
 TEST_F(UpdateStatisticsTest, SetMultipleStatistics) {
@@ -125,18 +127,20 @@ TEST_F(UpdateStatisticsTest, SetMultipleStatistics) {
 
   update->SetStatistics(stats_file_1).SetStatistics(stats_file_2);
 
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Validate());
   EXPECT_EQ(result.to_set.size(), 2);
   EXPECT_TRUE(result.to_remove.empty());
-  EXPECT_EQ(FindStatistics(result.to_set, 1), stats_file_1);
-  EXPECT_EQ(FindStatistics(result.to_set, 2), stats_file_2);
+  EXPECT_THAT(FindStatistics(result.to_set, 1),
+              ::testing::Pointee(::testing::Eq(*stats_file_1)));
+  EXPECT_THAT(FindStatistics(result.to_set, 2),
+              ::testing::Pointee(::testing::Eq(*stats_file_2)));
 }
 
 TEST_F(UpdateStatisticsTest, RemoveStatistics) {
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateStatistics());
   update->RemoveStatistics(1);
 
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Validate());
   EXPECT_TRUE(result.to_set.empty());
   EXPECT_EQ(result.to_remove.size(), 1);
   EXPECT_THAT(result.to_remove, ::testing::Contains(1));
@@ -146,7 +150,7 @@ TEST_F(UpdateStatisticsTest, RemoveMultipleStatistics) {
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateStatistics());
   update->RemoveStatistics(1).RemoveStatistics(2).RemoveStatistics(3);
 
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Validate());
   EXPECT_TRUE(result.to_set.empty());
   EXPECT_EQ(result.to_remove.size(), 3);
   EXPECT_THAT(result.to_remove, ::testing::UnorderedElementsAre(1, 2, 3));
@@ -159,9 +163,10 @@ TEST_F(UpdateStatisticsTest, SetAndRemoveDifferentSnapshots) {
 
   update->SetStatistics(stats_file).RemoveStatistics(2);
 
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Validate());
   EXPECT_EQ(result.to_set.size(), 1);
-  EXPECT_EQ(FindStatistics(result.to_set, 1), stats_file);
+  EXPECT_THAT(FindStatistics(result.to_set, 1),
+              ::testing::Pointee(::testing::Eq(*stats_file)));
   EXPECT_EQ(result.to_remove.size(), 1);
   EXPECT_THAT(result.to_remove, ::testing::Contains(2));
 }
@@ -176,11 +181,12 @@ TEST_F(UpdateStatisticsTest, ReplaceStatistics) {
   // Set statistics for snapshot 1, then replace it
   update->SetStatistics(stats_file_1).SetStatistics(stats_file_2);
 
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Validate());
   EXPECT_EQ(result.to_set.size(), 1);
   EXPECT_TRUE(result.to_remove.empty());
   // Should have the second one (replacement)
-  EXPECT_EQ(FindStatistics(result.to_set, 1), stats_file_2);
+  EXPECT_THAT(FindStatistics(result.to_set, 1),
+              ::testing::Pointee(::testing::Eq(*stats_file_2)));
   EXPECT_NE(FindStatistics(result.to_set, 1), stats_file_1);
 }
 
@@ -192,7 +198,7 @@ TEST_F(UpdateStatisticsTest, SetThenRemoveSameSnapshot) {
   // Set statistics for snapshot 1, then remove it
   update->SetStatistics(stats_file).RemoveStatistics(1);
 
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Validate());
   EXPECT_TRUE(result.to_set.empty());
   EXPECT_EQ(result.to_remove.size(), 1);
   EXPECT_THAT(result.to_remove, ::testing::Contains(1));
@@ -206,10 +212,11 @@ TEST_F(UpdateStatisticsTest, RemoveThenSetSameSnapshot) {
   // Remove statistics for snapshot 1, then set new ones
   update->RemoveStatistics(1).SetStatistics(stats_file);
 
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Validate());
   EXPECT_EQ(result.to_set.size(), 1);
   EXPECT_TRUE(result.to_remove.empty());
-  EXPECT_EQ(FindStatistics(result.to_set, 1), stats_file);
+  EXPECT_THAT(FindStatistics(result.to_set, 1),
+              ::testing::Pointee(::testing::Eq(*stats_file)));
 }
 
 TEST_F(UpdateStatisticsTest, SetNullStatistics) {
@@ -217,7 +224,7 @@ TEST_F(UpdateStatisticsTest, SetNullStatistics) {
 
   update->SetStatistics(nullptr);
 
-  auto result = update->Apply();
+  auto result = update->Validate();
   EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
   EXPECT_THAT(result, HasErrorMessage("Statistics file cannot be null"));
 }
@@ -279,6 +286,31 @@ TEST_F(UpdateStatisticsRetryTest, StandaloneCommitRetriesAfterConflict) {
   EXPECT_THAT(update->Commit(), IsOk());
   EXPECT_EQ(update_call_count, 2);
   EXPECT_EQ(load_table_count_, 1);
+}
+
+TEST_F(UpdateStatisticsTest, FreezeCopiesInputsAndPreviewResults) {
+  FailCommits(2);
+  ICEBERG_UNWRAP_OR_FAIL(auto snapshot, table_->current_snapshot());
+  const auto snapshot_id = snapshot->snapshot_id;
+  ICEBERG_UNWRAP_OR_FAIL(auto txn, table_->NewTransaction());
+  ICEBERG_UNWRAP_OR_FAIL(auto update, txn->NewUpdateStatistics());
+  auto statistics =
+      MakeStatisticsFile(snapshot_id, table_location_ + "/metadata/frozen.puffin");
+  const auto expected = *statistics;
+  update->SetStatistics(statistics);
+  ASSERT_THAT(update->Commit(), IsOk());
+  statistics->path = "/changed.puffin";
+  statistics->blob_metadata[0].properties["ndv"] = "999";
+  ICEBERG_UNWRAP_OR_FAIL(auto preview, update->Validate());
+  ASSERT_EQ(preview.to_set.size(), 1U);
+  preview.to_set[0].second->path = "/changed-preview.puffin";
+  ASSERT_THAT(txn->Commit(), IsOk());
+  auto metadata = ReloadMetadata();
+  auto it = std::ranges::find_if(metadata->statistics, [&](const auto& file) {
+    return file->snapshot_id == snapshot_id;
+  });
+  ASSERT_NE(it, metadata->statistics.end());
+  EXPECT_EQ(**it, expected);
 }
 
 }  // namespace iceberg

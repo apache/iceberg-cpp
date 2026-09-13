@@ -29,11 +29,11 @@
 
 namespace iceberg {
 
-Result<std::unique_ptr<MergeAppend>> MergeAppend::Make(
+Result<std::shared_ptr<MergeAppend>> MergeAppend::Make(
     std::string table_name, std::shared_ptr<TransactionContext> ctx) {
   ICEBERG_PRECHECK(!table_name.empty(), "Table name cannot be empty");
   ICEBERG_PRECHECK(ctx != nullptr, "Cannot create MergeAppend without a context");
-  return std::unique_ptr<MergeAppend>(
+  return std::shared_ptr<MergeAppend>(
       new MergeAppend(std::move(table_name), std::move(ctx)));
 }
 
@@ -41,11 +41,13 @@ MergeAppend::MergeAppend(std::string table_name, std::shared_ptr<TransactionCont
     : MergingSnapshotUpdate(std::move(table_name), std::move(ctx)) {}
 
 MergeAppend& MergeAppend::AppendFile(const std::shared_ptr<DataFile>& file) {
+  EnsureMutable();
   ICEBERG_BUILDER_RETURN_IF_ERROR(AddDataFile(file));
   return *this;
 }
 
 MergeAppend& MergeAppend::AppendManifest(const ManifestFile& manifest) {
+  EnsureMutable();
   ICEBERG_BUILDER_CHECK(!manifest.has_existing_files(),
                         "Cannot append manifest with existing files");
   ICEBERG_BUILDER_CHECK(!manifest.has_deleted_files(),
