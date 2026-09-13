@@ -227,6 +227,7 @@ struct TableScanContext {
   std::optional<int64_t> to_snapshot_id;
   std::string branch{};
   std::optional<int64_t> min_rows_requested;
+  bool use_snapshot_schema{false};
   OptionalExecutor plan_executor;
   std::string table_name;
   std::shared_ptr<MetricsReporter> metrics_reporter;
