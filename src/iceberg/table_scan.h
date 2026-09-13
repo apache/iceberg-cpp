@@ -212,7 +212,7 @@ class ICEBERG_EXPORT DeletedDataFileScanTask : public ChangelogScanTask {
 namespace internal {
 
 // Internal table scan context used by different scan implementations.
-struct TableScanContext {
+struct ICEBERG_EXPORT TableScanContext {
   std::optional<int64_t> snapshot_id;
   std::shared_ptr<Expression> filter;
   bool ignore_residuals{false};
@@ -227,6 +227,7 @@ struct TableScanContext {
   std::optional<int64_t> to_snapshot_id;
   std::string branch{};
   std::optional<int64_t> min_rows_requested;
+  bool use_snapshot_schema{false};
   OptionalExecutor plan_executor;
   std::string table_name;
   std::shared_ptr<MetricsReporter> metrics_reporter;
@@ -389,12 +390,15 @@ class ICEBERG_TEMPLATE_CLASS_EXPORT TableScanBuilder : public ErrorCollector {
 
   /// \brief Builds and returns a TableScan instance.
   /// \return A Result containing the TableScan or an error.
-  Result<std::unique_ptr<ScanType>> Build();
+  virtual Result<std::unique_ptr<ScanType>> Build();
 
  protected:
   TableScanBuilder(std::shared_ptr<TableMetadata> metadata, std::shared_ptr<FileIO> io,
                    std::string table_name,
                    std::shared_ptr<MetricsReporter> metrics_reporter);
+
+  TableScanBuilder(TableScanBuilder&&) = default;
+  TableScanBuilder& operator=(TableScanBuilder&&) = default;
 
   // Return the schema bound to the specified snapshot.
   Result<std::reference_wrapper<const std::shared_ptr<Schema>>> ResolveSnapshotSchema();
@@ -461,7 +465,7 @@ class ICEBERG_EXPORT DataTableScan : public TableScan {
 
   /// \brief Plans the scan tasks by resolving manifests and data files.
   /// \return A Result containing scan tasks or an error.
-  Result<std::vector<std::shared_ptr<FileScanTask>>> PlanFiles() const;
+  virtual Result<std::vector<std::shared_ptr<FileScanTask>>> PlanFiles() const;
 
  private:
   Status ReportScan(const Snapshot& snapshot, const ScanMetrics& scan_metrics) const;

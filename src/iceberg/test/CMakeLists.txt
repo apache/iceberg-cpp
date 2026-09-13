@@ -313,11 +313,13 @@ if(ICEBERG_BUILD_REST)
   add_rest_iceberg_test(rest_catalog_test
                         SOURCES
                         auth_manager_test.cc
+                        catalog_properties_test.cc
                         error_handlers_test.cc
                         endpoint_test.cc
                         rest_file_io_test.cc
                         rest_json_serde_test.cc
                         rest_metrics_reporter_test.cc
+                        rest_table_scan_test.cc
                         rest_util_test.cc)
 
   if(ICEBERG_SIGV4)
