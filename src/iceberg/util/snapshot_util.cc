@@ -17,6 +17,8 @@
  * under the License.
  */
 
+#include "iceberg/util/snapshot_util.h"
+
 #include <ranges>
 
 #include "iceberg/schema.h"
@@ -24,7 +26,6 @@
 #include "iceberg/table.h"
 #include "iceberg/table_metadata.h"
 #include "iceberg/util/macros.h"
-#include "iceberg/util/snapshot_util_internal.h"
 #include "iceberg/util/timepoint.h"
 #include "iceberg/util/uuid.h"
 

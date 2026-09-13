@@ -53,7 +53,7 @@
 #include "iceberg/transaction.h"
 #include "iceberg/util/content_file_util.h"
 #include "iceberg/util/macros.h"
-#include "iceberg/util/snapshot_util_internal.h"
+#include "iceberg/util/snapshot_util.h"
 #include "iceberg/util/struct_like_set.h"
 
 namespace iceberg {

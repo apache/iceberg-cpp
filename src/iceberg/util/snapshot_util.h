@@ -19,6 +19,9 @@
 
 #pragma once
 
+/// \file iceberg/util/snapshot_util.h
+/// \brief Utility functions for working with snapshots.
+
 #include <functional>
 #include <memory>
 #include <optional>

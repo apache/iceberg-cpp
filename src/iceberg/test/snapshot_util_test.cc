@@ -17,6 +17,8 @@
  * under the License.
  */
 
+#include "iceberg/util/snapshot_util.h"
+
 #include <chrono>
 #include <memory>
 #include <vector>
@@ -33,7 +35,6 @@
 #include "iceberg/test/matchers.h"
 #include "iceberg/test/mock_catalog.h"
 #include "iceberg/test/mock_io.h"
-#include "iceberg/util/snapshot_util_internal.h"
 #include "iceberg/util/timepoint.h"
 
 namespace iceberg {

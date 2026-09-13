@@ -39,6 +39,7 @@ install_headers(
         'partition_value_util.h',
         'property_util.h',
         'retry_util.h',
+        'snapshot_util.h',
         'string_util.h',
         'struct_like_set.h',
         'task_group.h',
