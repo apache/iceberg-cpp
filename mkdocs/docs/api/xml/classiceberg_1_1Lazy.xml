@@ -1,0 +1,114 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1Lazy" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::Lazy</compoundname>
+    <templateparamlist>
+      <param>
+        <type>auto</type>
+        <declname>InitFunc</declname>
+        <defname>InitFunc</defname>
+      </param>
+    </templateparamlist>
+    <sectiondef kind="private-type">
+      <memberdef kind="typedef" id="classiceberg_1_1Lazy_1a0d37b732a849b488a4ca671f2b401974" prot="private" static="no">
+        <type>typename decltype(std::function{InitFunc})::result_type</type>
+        <definition>using iceberg::Lazy&lt; InitFunc &gt;::InitResult =  typename decltype(std::function{InitFunc})::result_type</definition>
+        <argsstring></argsstring>
+        <name>InitResult</name>
+        <qualifiedname>iceberg::Lazy::InitResult</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/lazy.h" line="37" column="3" bodyfile="iceberg/util/lazy.h" bodystart="37" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="classiceberg_1_1Lazy_1a03f7e991da7c7a6a8f1d645733eaf782" prot="private" static="no">
+        <type>ResultValueT&lt; InitResult &gt;</type>
+        <definition>using iceberg::Lazy&lt; InitFunc &gt;::T =  ResultValueT&lt;InitResult&gt;</definition>
+        <argsstring></argsstring>
+        <name>T</name>
+        <qualifiedname>iceberg::Lazy::T</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/lazy.h" line="38" column="3" bodyfile="iceberg/util/lazy.h" bodystart="38" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1Lazy_1a27fa4dcca9ed905059d636f10c2ef47d" prot="private" static="no" mutable="yes">
+        <type><ref refid="namespaceiceberg_1a9d5594e371beb516b0120e07e69d3af6" kindref="member">Result</ref>&lt; T &gt;</type>
+        <definition>Result&lt;T&gt; iceberg::Lazy&lt; InitFunc &gt;::value_</definition>
+        <argsstring></argsstring>
+        <name>value_</name>
+        <qualifiedname>iceberg::Lazy::value_</qualifiedname>
+        <initializer>= Invalid(&quot;Lazy value has not been initialized&quot;)</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/lazy.h" line="51" column="18" bodyfile="iceberg/util/lazy.h" bodystart="51" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1Lazy_1ab3fca2a4a50b8a02431640663776ff7e" prot="private" static="no" mutable="yes">
+        <type>std::once_flag</type>
+        <definition>std::once_flag iceberg::Lazy&lt; InitFunc &gt;::flag_</definition>
+        <argsstring></argsstring>
+        <name>flag_</name>
+        <qualifiedname>iceberg::Lazy::flag_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/lazy.h" line="52" column="26" bodyfile="iceberg/util/lazy.h" bodystart="52" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1Lazy_1a07f89e77d473a1add60bca0a3a9a079a" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename...</type>
+            <declname>Args</declname>
+            <defname>Args</defname>
+          </param>
+        </templateparamlist>
+        <type><ref refid="namespaceiceberg_1a9d5594e371beb516b0120e07e69d3af6" kindref="member">Result</ref>&lt; std::reference_wrapper&lt; T &gt; &gt;</type>
+        <definition>Result&lt; std::reference_wrapper&lt; T &gt; &gt; iceberg::Lazy&lt; InitFunc &gt;::Get</definition>
+        <argsstring>(Args &amp;&amp;... args) const</argsstring>
+        <name>Get</name>
+        <qualifiedname>iceberg::Lazy::Get</qualifiedname>
+        <param>
+          <type>Args &amp;&amp;...</type>
+          <declname>args</declname>
+        </param>
+    <requiresclause>std::invocable&lt;decltype(InitFunc), Args...&gt;    </requiresclause>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/lazy.h" line="43" column="10" bodyfile="iceberg/util/lazy.h" bodystart="43" bodyend="48"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/util/lazy.h" line="36" column="1" bodyfile="iceberg/util/lazy.h" bodystart="36" bodyend="53"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1Lazy_1ab3fca2a4a50b8a02431640663776ff7e" prot="private" virt="non-virtual"><scope>iceberg::Lazy</scope><name>flag_</name></member>
+      <member refid="classiceberg_1_1Lazy_1a07f89e77d473a1add60bca0a3a9a079a" prot="public" virt="non-virtual"><scope>iceberg::Lazy</scope><name>Get</name></member>
+      <member refid="classiceberg_1_1Lazy_1a0d37b732a849b488a4ca671f2b401974" prot="private" virt="non-virtual"><scope>iceberg::Lazy</scope><name>InitResult</name></member>
+      <member refid="classiceberg_1_1Lazy_1a03f7e991da7c7a6a8f1d645733eaf782" prot="private" virt="non-virtual"><scope>iceberg::Lazy</scope><name>T</name></member>
+      <member refid="classiceberg_1_1Lazy_1a27fa4dcca9ed905059d636f10c2ef47d" prot="private" virt="non-virtual"><scope>iceberg::Lazy</scope><name>value_</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

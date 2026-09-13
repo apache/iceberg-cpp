@@ -1,0 +1,189 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="snapshot__manager_8h" kind="file" language="C++">
+    <compoundname>snapshot_manager.h</compoundname>
+    <includes local="no">memory</includes>
+    <includes local="no">string</includes>
+    <includes refid="iceberg__export_8h" local="yes">iceberg/iceberg_export.h</includes>
+    <includes refid="result_8h" local="yes">iceberg/result.h</includes>
+    <includes refid="type__fwd_8h" local="yes">iceberg/type_fwd.h</includes>
+    <includes refid="error__collector_8h" local="yes">iceberg/util/error_collector.h</includes>
+    <incdepgraph>
+      <node id="4">
+        <label>iceberg/iceberg_export.h</label>
+        <link refid="iceberg__export_8h"/>
+      </node>
+      <node id="5">
+        <label>iceberg/result.h</label>
+        <link refid="result_8h"/>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+      </node>
+      <node id="10">
+        <label>iceberg/type_fwd.h</label>
+        <link refid="type__fwd_8h"/>
+      </node>
+      <node id="1">
+        <label>iceberg/update/snapshot_manager.h</label>
+        <link refid="snapshot__manager_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+      </node>
+      <node id="11">
+        <label>iceberg/util/error_collector.h</label>
+        <link refid="error__collector_8h"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+      </node>
+      <node id="6">
+        <label>concepts</label>
+      </node>
+      <node id="7">
+        <label>expected</label>
+      </node>
+      <node id="8">
+        <label>format</label>
+      </node>
+      <node id="2">
+        <label>memory</label>
+      </node>
+      <node id="3">
+        <label>string</label>
+      </node>
+      <node id="9">
+        <label>type_traits</label>
+      </node>
+      <node id="12">
+        <label>vector</label>
+      </node>
+    </incdepgraph>
+    <innerclass refid="classiceberg_1_1SnapshotManager" prot="public">iceberg::SnapshotManager</innerclass>
+    <innernamespace refid="namespaceiceberg">iceberg</innernamespace>
+    <briefdescription>
+<para>API for managing snapshots and snapshot references. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="comment">/*</highlight></codeline>
+<codeline lineno="2"><highlight class="comment"><sp/>*<sp/>Licensed<sp/>to<sp/>the<sp/>Apache<sp/>Software<sp/>Foundation<sp/>(ASF)<sp/>under<sp/>one</highlight></codeline>
+<codeline lineno="3"><highlight class="comment"><sp/>*<sp/>or<sp/>more<sp/>contributor<sp/>license<sp/>agreements.<sp/><sp/>See<sp/>the<sp/>NOTICE<sp/>file</highlight></codeline>
+<codeline lineno="4"><highlight class="comment"><sp/>*<sp/>distributed<sp/>with<sp/>this<sp/>work<sp/>for<sp/>additional<sp/>information</highlight></codeline>
+<codeline lineno="5"><highlight class="comment"><sp/>*<sp/>regarding<sp/>copyright<sp/>ownership.<sp/><sp/>The<sp/>ASF<sp/>licenses<sp/>this<sp/>file</highlight></codeline>
+<codeline lineno="6"><highlight class="comment"><sp/>*<sp/>to<sp/>you<sp/>under<sp/>the<sp/>Apache<sp/>License,<sp/>Version<sp/>2.0<sp/>(the</highlight></codeline>
+<codeline lineno="7"><highlight class="comment"><sp/>*<sp/>&quot;License&quot;);<sp/>you<sp/>may<sp/>not<sp/>use<sp/>this<sp/>file<sp/>except<sp/>in<sp/>compliance</highlight></codeline>
+<codeline lineno="8"><highlight class="comment"><sp/>*<sp/>with<sp/>the<sp/>License.<sp/><sp/>You<sp/>may<sp/>obtain<sp/>a<sp/>copy<sp/>of<sp/>the<sp/>License<sp/>at</highlight></codeline>
+<codeline lineno="9"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="10"><highlight class="comment"><sp/>*<sp/><sp/><sp/>http://www.apache.org/licenses/LICENSE-2.0</highlight></codeline>
+<codeline lineno="11"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="12"><highlight class="comment"><sp/>*<sp/>Unless<sp/>required<sp/>by<sp/>applicable<sp/>law<sp/>or<sp/>agreed<sp/>to<sp/>in<sp/>writing,</highlight></codeline>
+<codeline lineno="13"><highlight class="comment"><sp/>*<sp/>software<sp/>distributed<sp/>under<sp/>the<sp/>License<sp/>is<sp/>distributed<sp/>on<sp/>an</highlight></codeline>
+<codeline lineno="14"><highlight class="comment"><sp/>*<sp/>&quot;AS<sp/>IS&quot;<sp/>BASIS,<sp/>WITHOUT<sp/>WARRANTIES<sp/>OR<sp/>CONDITIONS<sp/>OF<sp/>ANY</highlight></codeline>
+<codeline lineno="15"><highlight class="comment"><sp/>*<sp/>KIND,<sp/>either<sp/>express<sp/>or<sp/>implied.<sp/><sp/>See<sp/>the<sp/>License<sp/>for<sp/>the</highlight></codeline>
+<codeline lineno="16"><highlight class="comment"><sp/>*<sp/>specific<sp/>language<sp/>governing<sp/>permissions<sp/>and<sp/>limitations</highlight></codeline>
+<codeline lineno="17"><highlight class="comment"><sp/>*<sp/>under<sp/>the<sp/>License.</highlight></codeline>
+<codeline lineno="18"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="19"><highlight class="normal"></highlight></codeline>
+<codeline lineno="20"><highlight class="normal"></highlight><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="21"><highlight class="normal"></highlight></codeline>
+<codeline lineno="22"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;memory&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="23"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;string&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="24"><highlight class="normal"></highlight></codeline>
+<codeline lineno="25"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="iceberg__export_8h" kindref="compound">iceberg/iceberg_export.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="26"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="result_8h" kindref="compound">iceberg/result.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="27"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="type__fwd_8h" kindref="compound">iceberg/type_fwd.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="28"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="error__collector_8h" kindref="compound">iceberg/util/error_collector.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="29"><highlight class="normal"></highlight></codeline>
+<codeline lineno="32"><highlight class="normal"></highlight></codeline>
+<codeline lineno="33"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespaceiceberg" kindref="compound">iceberg</ref><sp/>{</highlight></codeline>
+<codeline lineno="34"><highlight class="normal"></highlight></codeline>
+<codeline lineno="50" refid="classiceberg_1_1SnapshotManager" refkind="compound"><highlight class="keyword">class<sp/></highlight><highlight class="normal">ICEBERG_EXPORT<sp/><ref refid="classiceberg_1_1SnapshotManager" kindref="compound">SnapshotManager</ref><sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1ErrorCollector" kindref="compound">ErrorCollector</ref><sp/>{</highlight></codeline>
+<codeline lineno="51"><highlight class="normal"><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="53" refid="classiceberg_1_1SnapshotManager_1ab2b7fdab0ca1e8605f343b591a505a9b" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/><ref refid="namespaceiceberg_1a9d5594e371beb516b0120e07e69d3af6" kindref="member">Result&lt;std::shared_ptr&lt;SnapshotManager&gt;</ref>&gt;<sp/><ref refid="classiceberg_1_1SnapshotManager_1ab2b7fdab0ca1e8605f343b591a505a9b" kindref="member">Make</ref>(std::shared_ptr&lt;Table&gt;<sp/>table);</highlight></codeline>
+<codeline lineno="54"><highlight class="normal"></highlight></codeline>
+<codeline lineno="58" refid="classiceberg_1_1SnapshotManager_1a418d568e839df97f7bcb856d7f179747" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/><ref refid="namespaceiceberg_1a9d5594e371beb516b0120e07e69d3af6" kindref="member">Result&lt;std::shared_ptr&lt;SnapshotManager&gt;</ref>&gt;<sp/><ref refid="classiceberg_1_1SnapshotManager_1a418d568e839df97f7bcb856d7f179747" kindref="member">Make</ref>(</highlight></codeline>
+<codeline lineno="59"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>std::shared_ptr&lt;Transaction&gt;<sp/>transaction);</highlight></codeline>
+<codeline lineno="60"><highlight class="normal"></highlight></codeline>
+<codeline lineno="61"><highlight class="normal"><sp/><sp/><ref refid="classiceberg_1_1SnapshotManager" kindref="compound">~SnapshotManager</ref>()<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="62"><highlight class="normal"></highlight></codeline>
+<codeline lineno="68" refid="classiceberg_1_1SnapshotManager_1ab60628b03913f1a4d2b624399af130cb" refkind="member"><highlight class="normal"><sp/><sp/><ref refid="classiceberg_1_1SnapshotManager" kindref="compound">SnapshotManager</ref>&amp;<sp/><ref refid="classiceberg_1_1SnapshotManager_1ab60628b03913f1a4d2b624399af130cb" kindref="member">Cherrypick</ref>(int64_t<sp/>snapshot_id);</highlight></codeline>
+<codeline lineno="69"><highlight class="normal"></highlight></codeline>
+<codeline lineno="74" refid="classiceberg_1_1SnapshotManager_1a6b15c7298bda1a2967efaedf2e0a4805" refkind="member"><highlight class="normal"><sp/><sp/><ref refid="classiceberg_1_1SnapshotManager" kindref="compound">SnapshotManager</ref>&amp;<sp/><ref refid="classiceberg_1_1SnapshotManager_1a6b15c7298bda1a2967efaedf2e0a4805" kindref="member">SetCurrentSnapshot</ref>(int64_t<sp/>snapshot_id);</highlight></codeline>
+<codeline lineno="75"><highlight class="normal"></highlight></codeline>
+<codeline lineno="80" refid="classiceberg_1_1SnapshotManager_1a1ca5336955462dd098f3f2eedb5a0b2e" refkind="member"><highlight class="normal"><sp/><sp/><ref refid="classiceberg_1_1SnapshotManager" kindref="compound">SnapshotManager</ref>&amp;<sp/><ref refid="classiceberg_1_1SnapshotManager_1a1ca5336955462dd098f3f2eedb5a0b2e" kindref="member">RollbackToTime</ref>(int64_t<sp/>timestamp_ms);</highlight></codeline>
+<codeline lineno="81"><highlight class="normal"></highlight></codeline>
+<codeline lineno="87" refid="classiceberg_1_1SnapshotManager_1ac6ab9f78d03bbab1b9d206df564f6f23" refkind="member"><highlight class="normal"><sp/><sp/><ref refid="classiceberg_1_1SnapshotManager" kindref="compound">SnapshotManager</ref>&amp;<sp/><ref refid="classiceberg_1_1SnapshotManager_1ac6ab9f78d03bbab1b9d206df564f6f23" kindref="member">RollbackTo</ref>(int64_t<sp/>snapshot_id);</highlight></codeline>
+<codeline lineno="88"><highlight class="normal"></highlight></codeline>
+<codeline lineno="95" refid="classiceberg_1_1SnapshotManager_1aadee369ad7fbd83f72b607ab76a674ad" refkind="member"><highlight class="normal"><sp/><sp/><ref refid="classiceberg_1_1SnapshotManager" kindref="compound">SnapshotManager</ref>&amp;<sp/><ref refid="classiceberg_1_1SnapshotManager_1aadee369ad7fbd83f72b607ab76a674ad" kindref="member">CreateBranch</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string&amp;<sp/>name);</highlight></codeline>
+<codeline lineno="96"><highlight class="normal"></highlight></codeline>
+<codeline lineno="102" refid="classiceberg_1_1SnapshotManager_1a525ee075af2d279ef383baec80b25feb" refkind="member"><highlight class="normal"><sp/><sp/><ref refid="classiceberg_1_1SnapshotManager" kindref="compound">SnapshotManager</ref>&amp;<sp/><ref refid="classiceberg_1_1SnapshotManager_1a525ee075af2d279ef383baec80b25feb" kindref="member">CreateBranch</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string&amp;<sp/>name,<sp/>int64_t<sp/>snapshot_id);</highlight></codeline>
+<codeline lineno="103"><highlight class="normal"></highlight></codeline>
+<codeline lineno="109" refid="classiceberg_1_1SnapshotManager_1ad0349e69da84c17e95238499aed8c0d2" refkind="member"><highlight class="normal"><sp/><sp/><ref refid="classiceberg_1_1SnapshotManager" kindref="compound">SnapshotManager</ref>&amp;<sp/><ref refid="classiceberg_1_1SnapshotManager_1ad0349e69da84c17e95238499aed8c0d2" kindref="member">CreateTag</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string&amp;<sp/>name,<sp/>int64_t<sp/>snapshot_id);</highlight></codeline>
+<codeline lineno="110"><highlight class="normal"></highlight></codeline>
+<codeline lineno="115" refid="classiceberg_1_1SnapshotManager_1acfa30c80bfa16531b86e8725b38a98b2" refkind="member"><highlight class="normal"><sp/><sp/><ref refid="classiceberg_1_1SnapshotManager" kindref="compound">SnapshotManager</ref>&amp;<sp/><ref refid="classiceberg_1_1SnapshotManager_1acfa30c80bfa16531b86e8725b38a98b2" kindref="member">RemoveBranch</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string&amp;<sp/>name);</highlight></codeline>
+<codeline lineno="116"><highlight class="normal"></highlight></codeline>
+<codeline lineno="121" refid="classiceberg_1_1SnapshotManager_1a306e48e9f5d9f7b45ebc33491bf67772" refkind="member"><highlight class="normal"><sp/><sp/><ref refid="classiceberg_1_1SnapshotManager" kindref="compound">SnapshotManager</ref>&amp;<sp/><ref refid="classiceberg_1_1SnapshotManager_1a306e48e9f5d9f7b45ebc33491bf67772" kindref="member">RemoveTag</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string&amp;<sp/>name);</highlight></codeline>
+<codeline lineno="122"><highlight class="normal"></highlight></codeline>
+<codeline lineno="128" refid="classiceberg_1_1SnapshotManager_1a4b22b00bd9d5293642e165ff6069a004" refkind="member"><highlight class="normal"><sp/><sp/><ref refid="classiceberg_1_1SnapshotManager" kindref="compound">SnapshotManager</ref>&amp;<sp/><ref refid="classiceberg_1_1SnapshotManager_1a4b22b00bd9d5293642e165ff6069a004" kindref="member">ReplaceTag</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string&amp;<sp/>name,<sp/>int64_t<sp/>snapshot_id);</highlight></codeline>
+<codeline lineno="129"><highlight class="normal"></highlight></codeline>
+<codeline lineno="135" refid="classiceberg_1_1SnapshotManager_1ab94242a00fc7f93c2d2a636eb5c74b0c" refkind="member"><highlight class="normal"><sp/><sp/><ref refid="classiceberg_1_1SnapshotManager" kindref="compound">SnapshotManager</ref>&amp;<sp/><ref refid="classiceberg_1_1SnapshotManager_1ab94242a00fc7f93c2d2a636eb5c74b0c" kindref="member">ReplaceBranch</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string&amp;<sp/>name,<sp/>int64_t<sp/>snapshot_id);</highlight></codeline>
+<codeline lineno="136"><highlight class="normal"></highlight></codeline>
+<codeline lineno="144" refid="classiceberg_1_1SnapshotManager_1a0a712e72371916977e57df6370ac70d7" refkind="member"><highlight class="normal"><sp/><sp/><ref refid="classiceberg_1_1SnapshotManager" kindref="compound">SnapshotManager</ref>&amp;<sp/><ref refid="classiceberg_1_1SnapshotManager_1a0a712e72371916977e57df6370ac70d7" kindref="member">ReplaceBranch</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string&amp;<sp/>from,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string&amp;<sp/>to);</highlight></codeline>
+<codeline lineno="145"><highlight class="normal"></highlight></codeline>
+<codeline lineno="154" refid="classiceberg_1_1SnapshotManager_1ad623cbcd0f3868ba8ee8554b86eeb34b" refkind="member"><highlight class="normal"><sp/><sp/><ref refid="classiceberg_1_1SnapshotManager" kindref="compound">SnapshotManager</ref>&amp;<sp/><ref refid="classiceberg_1_1SnapshotManager_1ad623cbcd0f3868ba8ee8554b86eeb34b" kindref="member">FastForwardBranch</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string&amp;<sp/>from,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string&amp;<sp/>to);</highlight></codeline>
+<codeline lineno="155"><highlight class="normal"></highlight></codeline>
+<codeline lineno="161" refid="classiceberg_1_1SnapshotManager_1ab2227f4b81eb2914817e4c3a3b7bb3c7" refkind="member"><highlight class="normal"><sp/><sp/><ref refid="classiceberg_1_1SnapshotManager" kindref="compound">SnapshotManager</ref>&amp;<sp/><ref refid="classiceberg_1_1SnapshotManager_1ab2227f4b81eb2914817e4c3a3b7bb3c7" kindref="member">RenameBranch</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string&amp;<sp/>name,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string&amp;<sp/>new_name);</highlight></codeline>
+<codeline lineno="162"><highlight class="normal"></highlight></codeline>
+<codeline lineno="168" refid="classiceberg_1_1SnapshotManager_1afba03f50a532714e6040166ae2765859" refkind="member"><highlight class="normal"><sp/><sp/><ref refid="classiceberg_1_1SnapshotManager" kindref="compound">SnapshotManager</ref>&amp;<sp/><ref refid="classiceberg_1_1SnapshotManager_1afba03f50a532714e6040166ae2765859" kindref="member">SetMinSnapshotsToKeep</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string&amp;<sp/>branch_name,</highlight></codeline>
+<codeline lineno="169"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int32_t<sp/>min_snapshots_to_keep);</highlight></codeline>
+<codeline lineno="170"><highlight class="normal"></highlight></codeline>
+<codeline lineno="176" refid="classiceberg_1_1SnapshotManager_1a1d0927fd7c4d54c6fa740d7653cf8904" refkind="member"><highlight class="normal"><sp/><sp/><ref refid="classiceberg_1_1SnapshotManager" kindref="compound">SnapshotManager</ref>&amp;<sp/><ref refid="classiceberg_1_1SnapshotManager_1a1d0927fd7c4d54c6fa740d7653cf8904" kindref="member">SetMaxSnapshotAgeMs</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string&amp;<sp/>branch_name,</highlight></codeline>
+<codeline lineno="177"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>int64_t<sp/>max_snapshot_age_ms);</highlight></codeline>
+<codeline lineno="178"><highlight class="normal"></highlight></codeline>
+<codeline lineno="184" refid="classiceberg_1_1SnapshotManager_1a85a6637511fe63774bf2aef83992d506" refkind="member"><highlight class="normal"><sp/><sp/><ref refid="classiceberg_1_1SnapshotManager" kindref="compound">SnapshotManager</ref>&amp;<sp/><ref refid="classiceberg_1_1SnapshotManager_1a85a6637511fe63774bf2aef83992d506" kindref="member">SetMaxRefAgeMs</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string&amp;<sp/>name,<sp/>int64_t<sp/>max_ref_age_ms);</highlight></codeline>
+<codeline lineno="185"><highlight class="normal"></highlight></codeline>
+<codeline lineno="187" refid="classiceberg_1_1SnapshotManager_1a57be94c9cc26978a4dedf87e71f169e3" refkind="member"><highlight class="normal"><sp/><sp/>Status<sp/><ref refid="classiceberg_1_1SnapshotManager_1a57be94c9cc26978a4dedf87e71f169e3" kindref="member">Commit</ref>();</highlight></codeline>
+<codeline lineno="188"><highlight class="normal"></highlight></codeline>
+<codeline lineno="189"><highlight class="normal"><sp/></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="190"><highlight class="normal"><sp/><sp/><ref refid="classiceberg_1_1SnapshotManager" kindref="compound">SnapshotManager</ref>(std::shared_ptr&lt;Transaction&gt;<sp/>transaction,<sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>is_external_transaction);</highlight></codeline>
+<codeline lineno="191"><highlight class="normal"></highlight></codeline>
+<codeline lineno="193"><highlight class="normal"><sp/><sp/><ref refid="namespaceiceberg_1a9d5594e371beb516b0120e07e69d3af6" kindref="member">Result&lt;std::shared_ptr&lt;UpdateSnapshotReference&gt;</ref>&gt;<sp/>UpdateSnapshotReferencesOperation();</highlight></codeline>
+<codeline lineno="194"><highlight class="normal"></highlight></codeline>
+<codeline lineno="196"><highlight class="normal"><sp/><sp/>Status<sp/>CommitIfRefUpdatesExist();</highlight></codeline>
+<codeline lineno="197"><highlight class="normal"></highlight></codeline>
+<codeline lineno="198"><highlight class="normal"><sp/><sp/>std::shared_ptr&lt;Transaction&gt;<sp/>transaction_;</highlight></codeline>
+<codeline lineno="199"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>is_external_transaction_;</highlight></codeline>
+<codeline lineno="200"><highlight class="normal"><sp/><sp/>std::shared_ptr&lt;UpdateSnapshotReference&gt;<sp/>update_snap_refs_;</highlight></codeline>
+<codeline lineno="201"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="202"><highlight class="normal"></highlight></codeline>
+<codeline lineno="203"><highlight class="normal">}<sp/><sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>iceberg</highlight><highlight class="normal"></highlight></codeline>
+    </programlisting>
+    <location file="iceberg/update/snapshot_manager.h"/>
+  </compounddef>
+</doxygen>

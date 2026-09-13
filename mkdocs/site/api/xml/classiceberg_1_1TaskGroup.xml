@@ -1,0 +1,208 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1TaskGroup" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::TaskGroup</compoundname>
+    <innerclass refid="structiceberg_1_1TaskGroup_1_1Empty" prot="private">iceberg::TaskGroup::Empty</innerclass>
+    <templateparamlist>
+      <param>
+        <type>retry::Policy</type>
+        <declname>RetryPolicy</declname>
+        <defname>RetryPolicy</defname>
+        <defval><ref refid="structiceberg_1_1retry_1_1RetryPolicy" kindref="compound">retry::NoRetry</ref></defval>
+      </param>
+    </templateparamlist>
+    <sectiondef kind="private-type">
+      <memberdef kind="typedef" id="classiceberg_1_1TaskGroup_1ac9b06f4d23729ad97e52c2ae7b63e1e8" prot="private" static="no">
+        <type>std::conditional_t&lt; kRetryEnabled, <ref refid="structiceberg_1_1RetryConfig" kindref="compound">RetryConfig</ref>, Empty &gt;</type>
+        <definition>using iceberg::TaskGroup&lt; RetryPolicy &gt;::RetryConfigStorage =  std::conditional_t&lt;kRetryEnabled, RetryConfig, Empty&gt;</definition>
+        <argsstring></argsstring>
+        <name>RetryConfigStorage</name>
+        <qualifiedname>iceberg::TaskGroup::RetryConfigStorage</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/task_group.h" line="67" column="3" bodyfile="iceberg/util/task_group.h" bodystart="67" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-static-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1TaskGroup_1ab76d6988fa6045cc7617aef1f5dfadfd" prot="private" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr bool</type>
+        <definition>constexpr bool iceberg::TaskGroup&lt; RetryPolicy &gt;::kRetryEnabled</definition>
+        <argsstring></argsstring>
+        <name>kRetryEnabled</name>
+        <qualifiedname>iceberg::TaskGroup::kRetryEnabled</qualifiedname>
+        <initializer>= !std::same_as&lt;RetryPolicy, <ref refid="structiceberg_1_1retry_1_1RetryPolicy" kindref="compound">retry::NoRetry</ref>&gt;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/task_group.h" line="63" column="25" bodyfile="iceberg/util/task_group.h" bodystart="63" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1TaskGroup_1a1c8a57595d8baff4ee03b37ca3c056cb" prot="private" static="no" mutable="no">
+        <type>std::vector&lt; <ref refid="classiceberg_1_1FnOnce" kindref="compound">FnOnce</ref>&lt; Status()&gt; &gt;</type>
+        <definition>std::vector&lt;FnOnce&lt;Status()&gt; &gt; iceberg::TaskGroup&lt; RetryPolicy &gt;::tasks_</definition>
+        <argsstring></argsstring>
+        <name>tasks_</name>
+        <qualifiedname>iceberg::TaskGroup::tasks_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/task_group.h" line="106" column="15" bodyfile="iceberg/util/task_group.h" bodystart="106" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TaskGroup_1a2a2a6c5c9d60bfef1a02e719e1090420" prot="private" static="no" mutable="no">
+        <type>OptionalExecutor</type>
+        <definition>OptionalExecutor iceberg::TaskGroup&lt; RetryPolicy &gt;::executor_</definition>
+        <argsstring></argsstring>
+        <name>executor_</name>
+        <qualifiedname>iceberg::TaskGroup::executor_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/task_group.h" line="107" column="20" bodyfile="iceberg/util/task_group.h" bodystart="107" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TaskGroup_1a7790f713b2f562c768bb7b5f316e16d3" prot="private" static="no" mutable="no">
+        <type>RetryConfigStorage</type>
+        <definition>RetryConfigStorage iceberg::TaskGroup&lt; RetryPolicy &gt;::retry_config_</definition>
+        <argsstring></argsstring>
+        <name>retry_config_</name>
+        <qualifiedname>iceberg::TaskGroup::retry_config_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/task_group.h" line="108" column="23" bodyfile="iceberg/util/task_group.h" bodystart="108" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1TaskGroup_1afc9284913ec9894be921d0bbd2fe9686" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::TaskGroup&lt; RetryPolicy &gt;::TaskGroup</definition>
+        <argsstring>()=default</argsstring>
+        <name>TaskGroup</name>
+        <qualifiedname>iceberg::TaskGroup::TaskGroup</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/task_group.h" line="70" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TaskGroup_1a54ab1369b2b4d90cb289c0e6ac68df28" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::TaskGroup&lt; RetryPolicy &gt;::TaskGroup</definition>
+        <argsstring>(RetryConfig retry_config)</argsstring>
+        <name>TaskGroup</name>
+        <qualifiedname>iceberg::TaskGroup::TaskGroup</qualifiedname>
+        <param>
+          <type><ref refid="structiceberg_1_1RetryConfig" kindref="compound">RetryConfig</ref></type>
+          <declname>retry_config</declname>
+        </param>
+    <requiresclause>(kRetryEnabled)    </requiresclause>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/task_group.h" line="72" column="12" bodyfile="iceberg/util/task_group.h" bodystart="72" bodyend="74"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TaskGroup_1a7e4e47acc681725abb01f413069d382e" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>auto &amp;&amp;</type>
+        <definition>auto &amp;&amp; iceberg::TaskGroup&lt; RetryPolicy &gt;::SetExecutor</definition>
+        <argsstring>(this auto &amp;&amp;self, OptionalExecutor executor)</argsstring>
+        <name>SetExecutor</name>
+        <qualifiedname>iceberg::TaskGroup::SetExecutor</qualifiedname>
+        <param>
+          <type>this auto &amp;&amp;</type>
+          <declname>self</declname>
+        </param>
+        <param>
+          <type>OptionalExecutor</type>
+          <declname>executor</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/task_group.h" line="76" column="8" bodyfile="iceberg/util/task_group.h" bodystart="76" bodyend="79"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TaskGroup_1ad04bb07ac6cb4160290abe5294a649a5" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename F</type>
+          </param>
+        </templateparamlist>
+        <type>auto &amp;&amp;</type>
+        <definition>auto &amp;&amp; iceberg::TaskGroup&lt; RetryPolicy &gt;::Submit</definition>
+        <argsstring>(this auto &amp;&amp;self, F &amp;&amp;task)</argsstring>
+        <name>Submit</name>
+        <qualifiedname>iceberg::TaskGroup::Submit</qualifiedname>
+        <param>
+          <type>this auto &amp;&amp;</type>
+          <declname>self</declname>
+        </param>
+        <param>
+          <type>F &amp;&amp;</type>
+          <declname>task</declname>
+        </param>
+    <requiresclause>((!kRetryEnabled &amp;&amp; internal::OnceStatusTask&lt;F&gt;) || (kRetryEnabled &amp;&amp; internal::RetryableStatusTask&lt;F&gt;))    </requiresclause>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/task_group.h" line="84" column="8" bodyfile="iceberg/util/task_group.h" bodystart="84" bodyend="96"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TaskGroup_1a8ec5147ceccb02cdc6099fcbaf1fb66d" prot="public" static="no" const="no" explicit="no" inline="yes" refqual="rvalue" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::TaskGroup&lt; RetryPolicy &gt;::Run</definition>
+        <argsstring>() &amp;&amp;</argsstring>
+        <name>Run</name>
+        <qualifiedname>iceberg::TaskGroup::Run</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/task_group.h" line="98" column="10" bodyfile="iceberg/util/task_group.h" bodystart="98" bodyend="103"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/util/task_group.h" line="61" column="1" bodyfile="iceberg/util/task_group.h" bodystart="61" bodyend="109"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1TaskGroup_1a2a2a6c5c9d60bfef1a02e719e1090420" prot="private" virt="non-virtual"><scope>iceberg::TaskGroup</scope><name>executor_</name></member>
+      <member refid="classiceberg_1_1TaskGroup_1ab76d6988fa6045cc7617aef1f5dfadfd" prot="private" virt="non-virtual"><scope>iceberg::TaskGroup</scope><name>kRetryEnabled</name></member>
+      <member refid="classiceberg_1_1TaskGroup_1a7790f713b2f562c768bb7b5f316e16d3" prot="private" virt="non-virtual"><scope>iceberg::TaskGroup</scope><name>retry_config_</name></member>
+      <member refid="classiceberg_1_1TaskGroup_1ac9b06f4d23729ad97e52c2ae7b63e1e8" prot="private" virt="non-virtual"><scope>iceberg::TaskGroup</scope><name>RetryConfigStorage</name></member>
+      <member refid="classiceberg_1_1TaskGroup_1a8ec5147ceccb02cdc6099fcbaf1fb66d" prot="public" virt="non-virtual"><scope>iceberg::TaskGroup</scope><name>Run</name></member>
+      <member refid="classiceberg_1_1TaskGroup_1a7e4e47acc681725abb01f413069d382e" prot="public" virt="non-virtual"><scope>iceberg::TaskGroup</scope><name>SetExecutor</name></member>
+      <member refid="classiceberg_1_1TaskGroup_1ad04bb07ac6cb4160290abe5294a649a5" prot="public" virt="non-virtual"><scope>iceberg::TaskGroup</scope><name>Submit</name></member>
+      <member refid="classiceberg_1_1TaskGroup_1afc9284913ec9894be921d0bbd2fe9686" prot="public" virt="non-virtual"><scope>iceberg::TaskGroup</scope><name>TaskGroup</name></member>
+      <member refid="classiceberg_1_1TaskGroup_1a54ab1369b2b4d90cb289c0e6ac68df28" prot="public" virt="non-virtual"><scope>iceberg::TaskGroup</scope><name>TaskGroup</name></member>
+      <member refid="classiceberg_1_1TaskGroup_1a1c8a57595d8baff4ee03b37ca3c056cb" prot="private" virt="non-virtual"><scope>iceberg::TaskGroup</scope><name>tasks_</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

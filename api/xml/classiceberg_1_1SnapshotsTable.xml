@@ -1,0 +1,122 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1SnapshotsTable" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::SnapshotsTable</compoundname>
+    <basecompoundref refid="classiceberg_1_1MetadataTable" prot="public" virt="non-virtual">iceberg::MetadataTable</basecompoundref>
+    <includes refid="snapshots__table_8h" local="no">snapshots_table.h</includes>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classiceberg_1_1SnapshotsTable_1a0a67ad556bee2d87598a8776f2ab947e" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceiceberg_1a9d5594e371beb516b0120e07e69d3af6" kindref="member">Result</ref>&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1SnapshotsTable" kindref="compound">SnapshotsTable</ref> &gt; &gt;</type>
+        <definition>static Result&lt; std::unique_ptr&lt; SnapshotsTable &gt; &gt; iceberg::SnapshotsTable::Make</definition>
+        <argsstring>(std::shared_ptr&lt; Table &gt; table)</argsstring>
+        <name>Make</name>
+        <qualifiedname>iceberg::SnapshotsTable::Make</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Table" kindref="compound">Table</ref> &gt;</type>
+          <declname>table</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/inspect/snapshots_table.h" line="37" column="17"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1SnapshotsTable_1a98243dc49f76a71ba0d43698375e16df" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::SnapshotsTable::~SnapshotsTable</definition>
+        <argsstring>() override</argsstring>
+        <name>~SnapshotsTable</name>
+        <qualifiedname>iceberg::SnapshotsTable::~SnapshotsTable</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/inspect/snapshots_table.h" line="39" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SnapshotsTable_1a197bd0da420c42393fea2fb0385b0e9e" prot="public" static="no" const="yes" explicit="no" inline="yes" noexcept="yes" virt="virtual">
+        <type>Kind</type>
+        <definition>Kind iceberg::SnapshotsTable::kind</definition>
+        <argsstring>() const noexcept override</argsstring>
+        <name>kind</name>
+        <qualifiedname>iceberg::SnapshotsTable::kind</qualifiedname>
+        <reimplements refid="classiceberg_1_1MetadataTable_1a5aa9af92783c3dc041349d6391742146">kind</reimplements>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/inspect/snapshots_table.h" line="41" column="8" bodyfile="iceberg/inspect/snapshots_table.h" bodystart="41" bodyend="41"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classiceberg_1_1SnapshotsTable_1aa6aa2b960bc1f1d1e0d849464207f402" prot="private" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::SnapshotsTable::SnapshotsTable</definition>
+        <argsstring>(std::shared_ptr&lt; Table &gt; table)</argsstring>
+        <name>SnapshotsTable</name>
+        <qualifiedname>iceberg::SnapshotsTable::SnapshotsTable</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Table" kindref="compound">Table</ref> &gt;</type>
+          <declname>table</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/inspect/snapshots_table.h" line="44" column="12"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Snapshots metadata table. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>iceberg::MetadataTable</label>
+        <link refid="classiceberg_1_1MetadataTable"/>
+      </node>
+      <node id="1">
+        <label>iceberg::SnapshotsTable</label>
+        <link refid="classiceberg_1_1SnapshotsTable"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="2">
+        <label>iceberg::MetadataTable</label>
+        <link refid="classiceberg_1_1MetadataTable"/>
+      </node>
+      <node id="1">
+        <label>iceberg::SnapshotsTable</label>
+        <link refid="classiceberg_1_1SnapshotsTable"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/inspect/snapshots_table.h" line="35" column="1" bodyfile="iceberg/inspect/snapshots_table.h" bodystart="35" bodyend="45"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1SnapshotsTable_1a197bd0da420c42393fea2fb0385b0e9e" prot="public" virt="virtual"><scope>iceberg::SnapshotsTable</scope><name>kind</name></member>
+      <member refid="classiceberg_1_1MetadataTable_1ab415f49673094ebf56b168856fc912dc" prot="public" virt="non-virtual"><scope>iceberg::SnapshotsTable</scope><name>Kind</name></member>
+      <member refid="classiceberg_1_1SnapshotsTable_1a0a67ad556bee2d87598a8776f2ab947e" prot="public" virt="non-virtual"><scope>iceberg::SnapshotsTable</scope><name>Make</name></member>
+      <member refid="classiceberg_1_1MetadataTable_1a2e1fe7d202001034922dfa5f59ebbca7" prot="public" virt="non-virtual" ambiguityscope="iceberg::MetadataTable::"><scope>iceberg::SnapshotsTable</scope><name>Make</name></member>
+      <member refid="classiceberg_1_1MetadataTable_1aea6acd268225e31f16e64fb885de3e93" prot="protected" virt="non-virtual"><scope>iceberg::SnapshotsTable</scope><name>MetadataTable</name></member>
+      <member refid="classiceberg_1_1MetadataTable_1a80ffbf5773285c4cfffd87e3f3aa135a" prot="public" virt="non-virtual"><scope>iceberg::SnapshotsTable</scope><name>name</name></member>
+      <member refid="classiceberg_1_1MetadataTable_1a6af80c78f61c912d3a0adc82e31abe55" prot="public" virt="non-virtual"><scope>iceberg::SnapshotsTable</scope><name>schema</name></member>
+      <member refid="classiceberg_1_1SnapshotsTable_1aa6aa2b960bc1f1d1e0d849464207f402" prot="private" virt="non-virtual"><scope>iceberg::SnapshotsTable</scope><name>SnapshotsTable</name></member>
+      <member refid="classiceberg_1_1MetadataTable_1aa2a8830064cb79a84440e656c66d246e" prot="public" virt="non-virtual"><scope>iceberg::SnapshotsTable</scope><name>source_table</name></member>
+      <member refid="classiceberg_1_1MetadataTable_1a25fa687655a43fd964860a941b572499" prot="public" virt="virtual"><scope>iceberg::SnapshotsTable</scope><name>~MetadataTable</name></member>
+      <member refid="classiceberg_1_1SnapshotsTable_1a98243dc49f76a71ba0d43698375e16df" prot="public" virt="non-virtual"><scope>iceberg::SnapshotsTable</scope><name>~SnapshotsTable</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

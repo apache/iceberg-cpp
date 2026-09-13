@@ -1,0 +1,86 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="namespaceiceberg_1_1hive" kind="namespace" language="C++">
+    <compoundname>iceberg::hive</compoundname>
+    <innerclass refid="classiceberg_1_1hive_1_1HiveCatalog" prot="public">iceberg::hive::HiveCatalog</innerclass>
+    <innerclass refid="classiceberg_1_1hive_1_1HiveCatalogProperties" prot="public">iceberg::hive::HiveCatalogProperties</innerclass>
+    <innerclass refid="classiceberg_1_1hive_1_1HmsClient" prot="public">iceberg::hive::HmsClient</innerclass>
+    <innerclass refid="structiceberg_1_1hive_1_1HmsEndpoint" prot="public">iceberg::hive::HmsEndpoint</innerclass>
+    <sectiondef kind="enum">
+      <memberdef kind="enum" id="namespaceiceberg_1_1hive_1a3960254acbead9ea013f258192c6cb9e" prot="public" static="no" strong="yes">
+        <type>uint8_t</type>
+        <name>HiveThriftTransport</name>
+        <qualifiedname>iceberg::hive::HiveThriftTransport</qualifiedname>
+        <enumvalue id="namespaceiceberg_1_1hive_1a3960254acbead9ea013f258192c6cb9ea94f5a611048af894e9e9af74df4fbdda" prot="public">
+          <name>kBuffered</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="namespaceiceberg_1_1hive_1a3960254acbead9ea013f258192c6cb9ea9eb83276e892923810fd9d66de231995" prot="public">
+          <name>kFramed</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <briefdescription>
+<para>Thrift framing mode used to connect to the Hive Metastore. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Most HMS deployments default to TBufferedTransport. TFramedTransport is required by HMS instances that have been configured to use framed transport (for example, certain Hive 3.x setups with SASL enabled). </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/hive_catalog_properties.h" line="39" column="1" bodyfile="iceberg/catalog/hive/hive_catalog_properties.h" bodystart="39" bodyend="39"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="var">
+      <memberdef kind="variable" id="namespaceiceberg_1_1hive_1ab49e066f157b4da08ca41b933484470a" prot="public" static="no" constexpr="yes" mutable="no">
+        <type>constexpr int</type>
+        <definition>constexpr int iceberg::hive::kDefaultHmsPort</definition>
+        <argsstring></argsstring>
+        <name>kDefaultHmsPort</name>
+        <qualifiedname>iceberg::hive::kDefaultHmsPort</qualifiedname>
+        <initializer>= 9083</initializer>
+        <briefdescription>
+<para>Hive&apos;s well-known metastore port, used when an HMS URI omits one. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/hms_client.h" line="39" column="22" bodyfile="iceberg/catalog/hive/hms_client.h" bodystart="39" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="func">
+      <memberdef kind="function" id="namespaceiceberg_1_1hive_1a27c51b7c7c62afef919b21a2eccbb491" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>ICEBERG_HIVE_EXPORT <ref refid="namespaceiceberg_1a9d5594e371beb516b0120e07e69d3af6" kindref="member">Result</ref>&lt; std::vector&lt; <ref refid="structiceberg_1_1hive_1_1HmsEndpoint" kindref="compound">HmsEndpoint</ref> &gt; &gt;</type>
+        <definition>ICEBERG_HIVE_EXPORT Result&lt; std::vector&lt; HmsEndpoint &gt; &gt; iceberg::hive::ParseHmsUris</definition>
+        <argsstring>(std::string_view uri)</argsstring>
+        <name>ParseHmsUris</name>
+        <qualifiedname>iceberg::hive::ParseHmsUris</qualifiedname>
+        <param>
+          <type>std::string_view</type>
+          <declname>uri</declname>
+        </param>
+        <briefdescription>
+<para>Parse an HMS URI string into one or more endpoints. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Each comma-separated segment is treated as an independent endpoint; surrounding whitespace and an optional <computeroutput>thrift://</computeroutput> scheme prefix are stripped. Returns an InvalidArgument error if any segment fails to produce a non-empty host and a port within (0, 65535]. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/hms_client.h" line="61" column="28" declfile="iceberg/catalog/hive/hms_client.h" declline="61" declcolumn="28"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Hive catalog APIs. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/hive_catalog.h" line="34" column="1"/>
+  </compounddef>
+</doxygen>

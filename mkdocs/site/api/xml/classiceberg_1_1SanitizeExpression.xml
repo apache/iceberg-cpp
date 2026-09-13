@@ -1,0 +1,308 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1SanitizeExpression" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::SanitizeExpression</compoundname>
+    <basecompoundref refid="classiceberg_1_1ExpressionVisitor" prot="public" virt="non-virtual">iceberg::ExpressionVisitor&lt; std::shared_ptr&lt; Expression &gt; &gt;</basecompoundref>
+    <includes refid="sanitize__expression_8h" local="no">sanitize_expression.h</includes>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1SanitizeExpression_1a735317e2cb0bf28a94ae5980ebcf6a44" prot="private" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t iceberg::SanitizeExpression::now_</definition>
+        <argsstring></argsstring>
+        <name>now_</name>
+        <qualifiedname>iceberg::SanitizeExpression::now_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/sanitize_expression.h" line="69" column="11" bodyfile="iceberg/expression/sanitize_expression.h" bodystart="69" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1SanitizeExpression_1aeb69d7719c103cc61d5deef2bf120053" prot="private" static="no" mutable="no">
+        <type>int32_t</type>
+        <definition>int32_t iceberg::SanitizeExpression::today_</definition>
+        <argsstring></argsstring>
+        <name>today_</name>
+        <qualifiedname>iceberg::SanitizeExpression::today_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/sanitize_expression.h" line="71" column="11" bodyfile="iceberg/expression/sanitize_expression.h" bodystart="71" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classiceberg_1_1SanitizeExpression_1a91c0272e19e79734d1a4deed85562c6a" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceiceberg_1a9d5594e371beb516b0120e07e69d3af6" kindref="member">Result</ref>&lt; std::shared_ptr&lt; <ref refid="classiceberg_1_1Expression" kindref="compound">Expression</ref> &gt; &gt;</type>
+        <definition>static Result&lt; std::shared_ptr&lt; Expression &gt; &gt; iceberg::SanitizeExpression::Sanitize</definition>
+        <argsstring>(const std::shared_ptr&lt; Expression &gt; &amp;expr)</argsstring>
+        <name>Sanitize</name>
+        <qualifiedname>iceberg::SanitizeExpression::Sanitize</qualifiedname>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1Expression" kindref="compound">Expression</ref> &gt; &amp;</type>
+          <declname>expr</declname>
+        </param>
+        <briefdescription>
+<para>Sanitize an expression tree and return an unbound expression. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/sanitize_expression.h" line="42" column="17"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SanitizeExpression_1a6a8f148f322876f8e7d5621cc55f99b3" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceiceberg_1a9d5594e371beb516b0120e07e69d3af6" kindref="member">Result</ref>&lt; std::shared_ptr&lt; <ref refid="classiceberg_1_1Expression" kindref="compound">Expression</ref> &gt; &gt;</type>
+        <definition>static Result&lt; std::shared_ptr&lt; Expression &gt; &gt; iceberg::SanitizeExpression::Sanitize</definition>
+        <argsstring>(const Schema &amp;schema, const std::shared_ptr&lt; Expression &gt; &amp;expr, bool case_sensitive)</argsstring>
+        <name>Sanitize</name>
+        <qualifiedname>iceberg::SanitizeExpression::Sanitize</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &amp;</type>
+          <declname>schema</declname>
+        </param>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1Expression" kindref="compound">Expression</ref> &gt; &amp;</type>
+          <declname>expr</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>case_sensitive</declname>
+        </param>
+        <briefdescription>
+<para>Bind <computeroutput>expr</computeroutput> to <computeroutput>schema</computeroutput> first, falling back to sanitizing the unbound expression if binding fails. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/sanitize_expression.h" line="47" column="17"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1SanitizeExpression_1a6dabc608129956f6963e14683c5819b3" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type><ref refid="namespaceiceberg_1a9d5594e371beb516b0120e07e69d3af6" kindref="member">Result</ref>&lt; std::shared_ptr&lt; <ref refid="classiceberg_1_1Expression" kindref="compound">Expression</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::shared_ptr&lt; Expression &gt; &gt; iceberg::SanitizeExpression::AlwaysTrue</definition>
+        <argsstring>() override</argsstring>
+        <name>AlwaysTrue</name>
+        <qualifiedname>iceberg::SanitizeExpression::AlwaysTrue</qualifiedname>
+        <reimplements refid="classiceberg_1_1ExpressionVisitor_1aed1c555ca56ff0aaa898d31aa52f7287">AlwaysTrue</reimplements>
+        <briefdescription>
+<para>Visit a <ref refid="classiceberg_1_1True" kindref="compound">True</ref> expression (always evaluates to true). </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/sanitize_expression.h" line="50" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SanitizeExpression_1a2d7594a11c9ccf40e7a58bd44f20c067" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type><ref refid="namespaceiceberg_1a9d5594e371beb516b0120e07e69d3af6" kindref="member">Result</ref>&lt; std::shared_ptr&lt; <ref refid="classiceberg_1_1Expression" kindref="compound">Expression</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::shared_ptr&lt; Expression &gt; &gt; iceberg::SanitizeExpression::AlwaysFalse</definition>
+        <argsstring>() override</argsstring>
+        <name>AlwaysFalse</name>
+        <qualifiedname>iceberg::SanitizeExpression::AlwaysFalse</qualifiedname>
+        <reimplements refid="classiceberg_1_1ExpressionVisitor_1aa6abb6e1020467e2ab3a2e17563990be">AlwaysFalse</reimplements>
+        <briefdescription>
+<para>Visit a <ref refid="classiceberg_1_1False" kindref="compound">False</ref> expression (always evaluates to false). </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/sanitize_expression.h" line="51" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SanitizeExpression_1a6019ad59c6574e8b29c6e2e296f28cb5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceiceberg_1a9d5594e371beb516b0120e07e69d3af6" kindref="member">Result</ref>&lt; std::shared_ptr&lt; <ref refid="classiceberg_1_1Expression" kindref="compound">Expression</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::shared_ptr&lt; Expression &gt; &gt; iceberg::SanitizeExpression::Not</definition>
+        <argsstring>(const std::shared_ptr&lt; Expression &gt; &amp;child_result) override</argsstring>
+        <name>Not</name>
+        <qualifiedname>iceberg::SanitizeExpression::Not</qualifiedname>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1Expression" kindref="compound">Expression</ref> &gt; &amp;</type>
+          <declname>child_result</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/sanitize_expression.h" line="52" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SanitizeExpression_1a3d077a187adc3378a3139aff4cae277a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceiceberg_1a9d5594e371beb516b0120e07e69d3af6" kindref="member">Result</ref>&lt; std::shared_ptr&lt; <ref refid="classiceberg_1_1Expression" kindref="compound">Expression</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::shared_ptr&lt; Expression &gt; &gt; iceberg::SanitizeExpression::And</definition>
+        <argsstring>(const std::shared_ptr&lt; Expression &gt; &amp;left_result, const std::shared_ptr&lt; Expression &gt; &amp;right_result) override</argsstring>
+        <name>And</name>
+        <qualifiedname>iceberg::SanitizeExpression::And</qualifiedname>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1Expression" kindref="compound">Expression</ref> &gt; &amp;</type>
+          <declname>left_result</declname>
+        </param>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1Expression" kindref="compound">Expression</ref> &gt; &amp;</type>
+          <declname>right_result</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/sanitize_expression.h" line="54" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SanitizeExpression_1a7883129bcf60b0ae4d4b1f3a3737d470" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceiceberg_1a9d5594e371beb516b0120e07e69d3af6" kindref="member">Result</ref>&lt; std::shared_ptr&lt; <ref refid="classiceberg_1_1Expression" kindref="compound">Expression</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::shared_ptr&lt; Expression &gt; &gt; iceberg::SanitizeExpression::Or</definition>
+        <argsstring>(const std::shared_ptr&lt; Expression &gt; &amp;left_result, const std::shared_ptr&lt; Expression &gt; &amp;right_result) override</argsstring>
+        <name>Or</name>
+        <qualifiedname>iceberg::SanitizeExpression::Or</qualifiedname>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1Expression" kindref="compound">Expression</ref> &gt; &amp;</type>
+          <declname>left_result</declname>
+        </param>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1Expression" kindref="compound">Expression</ref> &gt; &amp;</type>
+          <declname>right_result</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/sanitize_expression.h" line="57" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SanitizeExpression_1ada4e31a93618b973ece2657ae4868f7e" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type><ref refid="namespaceiceberg_1a9d5594e371beb516b0120e07e69d3af6" kindref="member">Result</ref>&lt; std::shared_ptr&lt; <ref refid="classiceberg_1_1Expression" kindref="compound">Expression</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::shared_ptr&lt; Expression &gt; &gt; iceberg::SanitizeExpression::Predicate</definition>
+        <argsstring>(const std::shared_ptr&lt; BoundPredicate &gt; &amp;pred) override</argsstring>
+        <name>Predicate</name>
+        <qualifiedname>iceberg::SanitizeExpression::Predicate</qualifiedname>
+        <reimplements refid="classiceberg_1_1ExpressionVisitor_1ae15b69bbbd82d8c0b941cb4bc3324fc4">Predicate</reimplements>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1BoundPredicate" kindref="compound">BoundPredicate</ref> &gt; &amp;</type>
+          <declname>pred</declname>
+        </param>
+        <briefdescription>
+<para>Visit a bound predicate. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>pred</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The bound predicate to visit </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/sanitize_expression.h" line="60" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SanitizeExpression_1af95633f39e93571e84ab8d3db0d98a07" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type><ref refid="namespaceiceberg_1a9d5594e371beb516b0120e07e69d3af6" kindref="member">Result</ref>&lt; std::shared_ptr&lt; <ref refid="classiceberg_1_1Expression" kindref="compound">Expression</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::shared_ptr&lt; Expression &gt; &gt; iceberg::SanitizeExpression::Predicate</definition>
+        <argsstring>(const std::shared_ptr&lt; UnboundPredicate &gt; &amp;pred) override</argsstring>
+        <name>Predicate</name>
+        <qualifiedname>iceberg::SanitizeExpression::Predicate</qualifiedname>
+        <reimplements refid="classiceberg_1_1ExpressionVisitor_1a1c01ceb403a5c6e2706f9b197d729ead">Predicate</reimplements>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1UnboundPredicate" kindref="compound">UnboundPredicate</ref> &gt; &amp;</type>
+          <declname>pred</declname>
+        </param>
+        <briefdescription>
+<para>Visit an unbound predicate. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>pred</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The unbound predicate to visit </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/sanitize_expression.h" line="62" column="10"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classiceberg_1_1SanitizeExpression_1a395f302be5ad618dc03baea02e5c3cc7" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::SanitizeExpression::SanitizeExpression</definition>
+        <argsstring>()</argsstring>
+        <name>SanitizeExpression</name>
+        <qualifiedname>iceberg::SanitizeExpression::SanitizeExpression</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/sanitize_expression.h" line="66" column="3"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Rewrites an expression tree as an unbound expression whose literal values are replaced with type-aware placeholders (e.g. &quot;(2-digit-int)&quot;, &quot;(hash-3f9a1c02)&quot;, &quot;(date-5-days-ago)&quot;). </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>iceberg::ExpressionVisitor&lt; std::shared_ptr&lt; Expression &gt; &gt;</label>
+        <link refid="classiceberg_1_1ExpressionVisitor"/>
+      </node>
+      <node id="1">
+        <label>iceberg::SanitizeExpression</label>
+        <link refid="classiceberg_1_1SanitizeExpression"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="2">
+        <label>iceberg::ExpressionVisitor&lt; std::shared_ptr&lt; Expression &gt; &gt;</label>
+        <link refid="classiceberg_1_1ExpressionVisitor"/>
+      </node>
+      <node id="1">
+        <label>iceberg::SanitizeExpression</label>
+        <link refid="classiceberg_1_1SanitizeExpression"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/expression/sanitize_expression.h" line="38" column="1" bodyfile="iceberg/expression/sanitize_expression.h" bodystart="39" bodyend="72"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1ExpressionVisitor_1a4a7c83473af339c9c64cef5e9f3947ee" prot="public" virt="virtual"><scope>iceberg::SanitizeExpression</scope><name>Aggregate</name></member>
+      <member refid="classiceberg_1_1ExpressionVisitor_1a699e13e4420928256b3fb08a87674a9f" prot="public" virt="virtual"><scope>iceberg::SanitizeExpression</scope><name>Aggregate</name></member>
+      <member refid="classiceberg_1_1SanitizeExpression_1a2d7594a11c9ccf40e7a58bd44f20c067" prot="public" virt="virtual"><scope>iceberg::SanitizeExpression</scope><name>AlwaysFalse</name></member>
+      <member refid="classiceberg_1_1SanitizeExpression_1a6dabc608129956f6963e14683c5819b3" prot="public" virt="virtual"><scope>iceberg::SanitizeExpression</scope><name>AlwaysTrue</name></member>
+      <member refid="classiceberg_1_1SanitizeExpression_1a3d077a187adc3378a3139aff4cae277a" prot="public" virt="non-virtual"><scope>iceberg::SanitizeExpression</scope><name>And</name></member>
+      <member refid="classiceberg_1_1ExpressionVisitor_1a134636ef9aac1bbf8ade254e1c1c24d6" prot="public" virt="pure-virtual" ambiguityscope="ExpressionVisitor&lt; std::shared_ptr&lt; Expression &gt; &gt;::"><scope>iceberg::SanitizeExpression</scope><name>And</name></member>
+      <member refid="classiceberg_1_1SanitizeExpression_1a6019ad59c6574e8b29c6e2e296f28cb5" prot="public" virt="non-virtual"><scope>iceberg::SanitizeExpression</scope><name>Not</name></member>
+      <member refid="classiceberg_1_1ExpressionVisitor_1a3785b1824deecc35b76c64ae6bb57f23" prot="public" virt="pure-virtual" ambiguityscope="ExpressionVisitor&lt; std::shared_ptr&lt; Expression &gt; &gt;::"><scope>iceberg::SanitizeExpression</scope><name>Not</name></member>
+      <member refid="classiceberg_1_1SanitizeExpression_1a735317e2cb0bf28a94ae5980ebcf6a44" prot="private" virt="non-virtual"><scope>iceberg::SanitizeExpression</scope><name>now_</name></member>
+      <member refid="classiceberg_1_1SanitizeExpression_1a7883129bcf60b0ae4d4b1f3a3737d470" prot="public" virt="non-virtual"><scope>iceberg::SanitizeExpression</scope><name>Or</name></member>
+      <member refid="classiceberg_1_1ExpressionVisitor_1aa21a66f372f1b32f94d8be2bb5643440" prot="public" virt="pure-virtual" ambiguityscope="ExpressionVisitor&lt; std::shared_ptr&lt; Expression &gt; &gt;::"><scope>iceberg::SanitizeExpression</scope><name>Or</name></member>
+      <member refid="classiceberg_1_1SanitizeExpression_1ada4e31a93618b973ece2657ae4868f7e" prot="public" virt="virtual"><scope>iceberg::SanitizeExpression</scope><name>Predicate</name></member>
+      <member refid="classiceberg_1_1SanitizeExpression_1af95633f39e93571e84ab8d3db0d98a07" prot="public" virt="virtual"><scope>iceberg::SanitizeExpression</scope><name>Predicate</name></member>
+      <member refid="classiceberg_1_1SanitizeExpression_1a91c0272e19e79734d1a4deed85562c6a" prot="public" virt="non-virtual"><scope>iceberg::SanitizeExpression</scope><name>Sanitize</name></member>
+      <member refid="classiceberg_1_1SanitizeExpression_1a6a8f148f322876f8e7d5621cc55f99b3" prot="public" virt="non-virtual"><scope>iceberg::SanitizeExpression</scope><name>Sanitize</name></member>
+      <member refid="classiceberg_1_1SanitizeExpression_1a395f302be5ad618dc03baea02e5c3cc7" prot="private" virt="non-virtual"><scope>iceberg::SanitizeExpression</scope><name>SanitizeExpression</name></member>
+      <member refid="classiceberg_1_1SanitizeExpression_1aeb69d7719c103cc61d5deef2bf120053" prot="private" virt="non-virtual"><scope>iceberg::SanitizeExpression</scope><name>today_</name></member>
+      <member refid="classiceberg_1_1ExpressionVisitor_1a94e8c3eb4910ab2e221163c19fda6492" prot="public" virt="virtual"><scope>iceberg::SanitizeExpression</scope><name>~ExpressionVisitor</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

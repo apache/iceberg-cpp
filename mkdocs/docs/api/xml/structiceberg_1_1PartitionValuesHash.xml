@@ -1,0 +1,36 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1PartitionValuesHash" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::PartitionValuesHash</compoundname>
+    <includes refid="partition__value__util_8h" local="no">partition_value_util.h</includes>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structiceberg_1_1PartitionValuesHash_1a7ce5a52178cc5e621b9c421f2c3d011f" prot="public" static="no" const="yes" explicit="no" inline="yes" noexcept="yes" virt="non-virtual">
+        <type>std::size_t</type>
+        <definition>std::size_t iceberg::PartitionValuesHash::operator()</definition>
+        <argsstring>(const PartitionValues &amp;partition) const noexcept</argsstring>
+        <name>operator()</name>
+        <qualifiedname>iceberg::PartitionValuesHash::operator()</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1PartitionValues" kindref="compound">PartitionValues</ref> &amp;</type>
+          <declname>partition</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/partition_value_util.h" line="51" column="15" bodyfile="iceberg/util/partition_value_util.h" bodystart="51" bodyend="58"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Hash functor for <ref refid="classiceberg_1_1PartitionValues" kindref="compound">PartitionValues</ref>. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/util/partition_value_util.h" line="50" column="1" bodyfile="iceberg/util/partition_value_util.h" bodystart="50" bodyend="59"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1PartitionValuesHash_1a7ce5a52178cc5e621b9c421f2c3d011f" prot="public" virt="non-virtual"><scope>iceberg::PartitionValuesHash</scope><name>operator()</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

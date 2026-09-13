@@ -1,0 +1,177 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="src_2iceberg_2catalog_2sql_2README_8md" kind="file" language="Markdown">
+    <compoundname>README.md</compoundname>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline><highlight class="normal">&lt;!--</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>~<sp/>Licensed<sp/>to<sp/>the<sp/>Apache<sp/>Software<sp/>Foundation<sp/>(ASF)<sp/>under<sp/>one</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>~<sp/>or<sp/>more<sp/>contributor<sp/>license<sp/>agreements.<sp/><sp/>See<sp/>the<sp/>NOTICE<sp/>file</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>~<sp/>distributed<sp/>with<sp/>this<sp/>work<sp/>for<sp/>additional<sp/>information</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>~<sp/>regarding<sp/>copyright<sp/>ownership.<sp/><sp/>The<sp/>ASF<sp/>licenses<sp/>this<sp/>file</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>~<sp/>to<sp/>you<sp/>under<sp/>the<sp/>Apache<sp/>License,<sp/>Version<sp/>2.0<sp/>(the</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>~<sp/>&quot;License&quot;);<sp/>you<sp/>may<sp/>not<sp/>use<sp/>this<sp/>file<sp/>except<sp/>in<sp/>compliance</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>~<sp/>with<sp/>the<sp/>License.<sp/><sp/>You<sp/>may<sp/>obtain<sp/>a<sp/>copy<sp/>of<sp/>the<sp/>License<sp/>at</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>~</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>~<sp/><sp/><sp/>http://www.apache.org/licenses/LICENSE-2.0</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>~</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>~<sp/>Unless<sp/>required<sp/>by<sp/>applicable<sp/>law<sp/>or<sp/>agreed<sp/>to<sp/>in<sp/>writing,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>~<sp/>software<sp/>distributed<sp/>under<sp/>the<sp/>License<sp/>is<sp/>distributed<sp/>on<sp/>an</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>~<sp/>&quot;AS<sp/>IS&quot;<sp/>BASIS,<sp/>WITHOUT<sp/>WARRANTIES<sp/>OR<sp/>CONDITIONS<sp/>OF<sp/>ANY</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>~<sp/>KIND,<sp/>either<sp/>express<sp/>or<sp/>implied.<sp/><sp/>See<sp/>the<sp/>License<sp/>for<sp/>the</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>~<sp/>specific<sp/>language<sp/>governing<sp/>permissions<sp/>and<sp/>limitations</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>~<sp/>under<sp/>the<sp/>License.</highlight></codeline>
+<codeline><highlight class="normal">--&gt;</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">#<sp/>SQL<sp/>Catalog</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">`SqlCatalog`<sp/>implements<sp/>the<sp/>Iceberg<sp/>`Catalog`<sp/>API<sp/>on<sp/>top<sp/>of<sp/>a<sp/>relational</highlight></codeline>
+<codeline><highlight class="normal">database.<sp/>Its<sp/>on-disk<sp/>schema<sp/>is<sp/>compatible<sp/>with<sp/>the<sp/>Apache<sp/>Iceberg<sp/>Java</highlight></codeline>
+<codeline><highlight class="normal">`JdbcCatalog`:<sp/>two<sp/>tables,<sp/>`iceberg_tables`<sp/>and<sp/>`iceberg_namespace_properties`,</highlight></codeline>
+<codeline><highlight class="normal">scoped<sp/>by<sp/>a<sp/>catalog<sp/>name<sp/>so<sp/>multiple<sp/>catalogs<sp/>can<sp/>share<sp/>one<sp/>database.</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">##<sp/>Design</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">`SqlCatalog`<sp/>owns<sp/>the<sp/>Iceberg<sp/>catalog<sp/>behavior.<sp/>It<sp/>validates<sp/>namespaces,<sp/>reads</highlight></codeline>
+<codeline><highlight class="normal">and<sp/>writes<sp/>table<sp/>metadata<sp/>files,<sp/>and<sp/>performs<sp/>optimistic-concurrency<sp/>commits.</highlight></codeline>
+<codeline><highlight class="normal">Database<sp/>access<sp/>is<sp/>delegated<sp/>to<sp/>a<sp/>small<sp/>storage<sp/>interface:</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">```</highlight></codeline>
+<codeline><highlight class="normal">Application</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>|</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>v</highlight></codeline>
+<codeline><highlight class="normal">SqlCatalog</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>|</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>|<sp/>CatalogStore<sp/>API</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>v</highlight></codeline>
+<codeline><highlight class="normal">CatalogStore<sp/>implementation</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>|</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>v</highlight></codeline>
+<codeline><highlight class="normal">SQL<sp/>database</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>-<sp/>iceberg_tables</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>-<sp/>iceberg_namespace_properties</highlight></codeline>
+<codeline><highlight class="normal">```</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">`CatalogStore`<sp/>(see<sp/>[`catalog_store.h`](catalog_store.h))<sp/>exposes<sp/>typed<sp/>row</highlight></codeline>
+<codeline><highlight class="normal">operations<sp/>such<sp/>as<sp/>`InsertTable`,<sp/>`GetTableMetadataLocation`,</highlight></codeline>
+<codeline><highlight class="normal">`UpdateTableMetadataLocation(expected_current)`,<sp/>namespace-property<sp/>CRUD,<sp/>and</highlight></codeline>
+<codeline><highlight class="normal">`RunInTransaction`.<sp/>It<sp/>exposes<sp/>no<sp/>SQL<sp/>strings<sp/>or<sp/>driver-specific<sp/>types.</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">The<sp/>project<sp/>provides<sp/>built-in<sp/>`CatalogStore`<sp/>implementations<sp/>for<sp/>SQLite,</highlight></codeline>
+<codeline><highlight class="normal">PostgreSQL,<sp/>and<sp/>MySQL.<sp/>They<sp/>are<sp/>implemented<sp/>with</highlight></codeline>
+<codeline><highlight class="normal">[sqlpp23](https://github.com/rbock/sqlpp23),<sp/>and<sp/>the<sp/>shared<sp/>query<sp/>code<sp/>lives<sp/>in</highlight></codeline>
+<codeline><highlight class="normal">`catalog_store_sqlpp23_internal.h`.<sp/>Users<sp/>can<sp/>also<sp/>provide<sp/>their<sp/>own</highlight></codeline>
+<codeline><highlight class="normal">`CatalogStore`<sp/>implementation<sp/>for<sp/>another<sp/>database,<sp/>driver,<sp/>or<sp/>connection<sp/>pool.</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">sqlpp23<sp/>is<sp/>a<sp/>build-time-only<sp/>dependency<sp/>for<sp/>the<sp/>built-in<sp/>stores.<sp/>It<sp/>is<sp/>compiled</highlight></codeline>
+<codeline><highlight class="normal">into<sp/>the<sp/>connector<sp/>translation<sp/>units<sp/>and<sp/>does<sp/>not<sp/>appear<sp/>in<sp/>the<sp/>installed</highlight></codeline>
+<codeline><highlight class="normal">interface,<sp/>so<sp/>downstream<sp/>consumers<sp/>only<sp/>need<sp/>the<sp/>native<sp/>client<sp/>libraries.</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">&gt;<sp/>The<sp/>built-in<sp/>sqlpp23<sp/>connectors<sp/>require<sp/>CMake<sp/>&gt;=<sp/>3.28<sp/>and<sp/>C++23;<sp/>sqlpp23<sp/>is</highlight></codeline>
+<codeline><highlight class="normal">&gt;<sp/>fetched<sp/>automatically<sp/>via<sp/>`FetchContent`<sp/>when<sp/>at<sp/>least<sp/>one<sp/>built-in<sp/>connector</highlight></codeline>
+<codeline><highlight class="normal">&gt;<sp/>is<sp/>enabled.<sp/>A<sp/>SQL<sp/>catalog<sp/>backed<sp/>only<sp/>by<sp/>a<sp/>user-supplied<sp/>`CatalogStore`<sp/>does<sp/>not</highlight></codeline>
+<codeline><highlight class="normal">&gt;<sp/>need<sp/>sqlpp23.<sp/>The<sp/>SQL<sp/>catalog<sp/>is<sp/>currently<sp/>wired<sp/>into<sp/>the<sp/>CMake<sp/>build<sp/>only;</highlight></codeline>
+<codeline><highlight class="normal">&gt;<sp/>the<sp/>Meson<sp/>build<sp/>does<sp/>not<sp/>build<sp/>or<sp/>install<sp/>it<sp/>yet.</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">##<sp/>Out-of-the-box<sp/>usage</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">Enable<sp/>the<sp/>SQL<sp/>catalog<sp/>and<sp/>any<sp/>built-in<sp/>connectors<sp/>at<sp/>configure<sp/>time.<sp/>Built-in</highlight></codeline>
+<codeline><highlight class="normal">connectors<sp/>pull<sp/>in<sp/>their<sp/>native<sp/>client<sp/>libraries<sp/>via<sp/>sqlpp23:</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">|<sp/>CMake<sp/>option<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>|<sp/>Default<sp/>|<sp/>sqlpp23<sp/>target<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>|<sp/>Native<sp/>dependency<sp/><sp/><sp/><sp/><sp/><sp/>|</highlight></codeline>
+<codeline><highlight class="normal">|-----------------------------|---------|-----------------------|------------------------|</highlight></codeline>
+<codeline><highlight class="normal">|<sp/>`ICEBERG_BUILD_SQL_CATALOG`<sp/>|<sp/>`OFF`<sp/><sp/><sp/>|<sp/>-<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>|<sp/>-<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>|</highlight></codeline>
+<codeline><highlight class="normal">|<sp/>`ICEBERG_SQL_SQLITE`<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>|<sp/>`OFF`<sp/><sp/><sp/>|<sp/>`sqlpp23::sqlite3`<sp/><sp/><sp/><sp/>|<sp/>SQLite3<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>|</highlight></codeline>
+<codeline><highlight class="normal">|<sp/>`ICEBERG_SQL_POSTGRESQL`<sp/><sp/><sp/><sp/>|<sp/>`OFF`<sp/><sp/><sp/>|<sp/>`sqlpp23::postgresql`<sp/>|<sp/>libpq<sp/>(PostgreSQL)<sp/><sp/><sp/><sp/><sp/>|</highlight></codeline>
+<codeline><highlight class="normal">|<sp/>`ICEBERG_SQL_MYSQL`<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>|<sp/>`OFF`<sp/><sp/><sp/>|<sp/>`sqlpp23::mysql`<sp/><sp/><sp/><sp/><sp/><sp/>|<sp/>libmysqlclient<sp/>(MySQL)<sp/>|</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">```bash</highlight></codeline>
+<codeline><highlight class="normal">cmake<sp/>-S<sp/>.<sp/>-B<sp/>build<sp/>-DICEBERG_BUILD_SQL_CATALOG=ON<sp/>-DICEBERG_SQL_SQLITE=ON</highlight></codeline>
+<codeline><highlight class="normal">```</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">```cpp</highlight></codeline>
+<codeline><highlight class="normal">#include<sp/>&quot;iceberg/catalog/sql/sql_catalog.h&quot;</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">using<sp/>iceberg::sql::SqlCatalog;</highlight></codeline>
+<codeline><highlight class="normal">using<sp/>iceberg::sql::SqlCatalogConfig;</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">SqlCatalogConfig<sp/>config{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>.name<sp/>=<sp/>&quot;prod&quot;,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>.uri<sp/>=<sp/>&quot;/var/lib/iceberg/catalog.db&quot;,<sp/><sp/><sp/>//<sp/>SQLite<sp/>file<sp/>path</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>.warehouse_location<sp/>=<sp/>&quot;s3://my-bucket/warehouse&quot;,</highlight></codeline>
+<codeline><highlight class="normal">};</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">auto<sp/>catalog<sp/>=<sp/>SqlCatalog::MakeSqliteCatalog(config,<sp/>file_io).value();</highlight></codeline>
+<codeline><highlight class="normal">//<sp/>catalog-&gt;CreateNamespace(...),<sp/>CreateTable(...),<sp/>LoadTable(...),<sp/>...</highlight></codeline>
+<codeline><highlight class="normal">```</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">`MakePostgreSqlCatalog`<sp/>and<sp/>`MakeMySqlCatalog`<sp/>use<sp/>the<sp/>same</highlight></codeline>
+<codeline><highlight class="normal">`[scheme://][user[:password]@]host[:port][/database]`<sp/>URI<sp/>form.<sp/>Connector</highlight></codeline>
+<codeline><highlight class="normal">factories<sp/>are<sp/>always<sp/>declared<sp/>in<sp/>the<sp/>public<sp/>headers;<sp/>if<sp/>a<sp/>connector<sp/>was<sp/>not</highlight></codeline>
+<codeline><highlight class="normal">built,<sp/>its<sp/>factory<sp/>returns<sp/>`ErrorKind::kNotSupported`.<sp/>Each<sp/>enabled<sp/>factory</highlight></codeline>
+<codeline><highlight class="normal">creates<sp/>the<sp/>schema<sp/>if<sp/>it<sp/>does<sp/>not<sp/>yet<sp/>exist.</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">The<sp/>PostgreSQL<sp/>and<sp/>MySQL<sp/>stores<sp/>use<sp/>a<sp/>single<sp/>sqlpp23<sp/>connection<sp/>when</highlight></codeline>
+<codeline><highlight class="normal">`max_connections<sp/>&lt;=<sp/>1`<sp/>and<sp/>a<sp/>bounded<sp/>sqlpp23<sp/>connection<sp/>pool<sp/>otherwise.</highlight></codeline>
+<codeline><highlight class="normal">Transaction<sp/>bodies<sp/>reuse<sp/>the<sp/>same<sp/>leased<sp/>connection<sp/>for<sp/>every<sp/>store<sp/>operation</highlight></codeline>
+<codeline><highlight class="normal">issued<sp/>inside<sp/>`RunInTransaction`.<sp/>The<sp/>SQLite<sp/>store<sp/>ignores<sp/>`max_connections`<sp/>and</highlight></codeline>
+<codeline><highlight class="normal">always<sp/>uses<sp/>a<sp/>single<sp/>connection:<sp/>a<sp/>file<sp/>database<sp/>only<sp/>allows<sp/>one<sp/>writer<sp/>(a<sp/>pool</highlight></codeline>
+<codeline><highlight class="normal">of<sp/>write<sp/>connections<sp/>would<sp/>just<sp/>hit<sp/>`SQLITE_BUSY`)<sp/>and<sp/>a<sp/>`:memory:`<sp/>database<sp/>is</highlight></codeline>
+<codeline><highlight class="normal">private<sp/>to<sp/>each<sp/>connection.</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">The<sp/>backing<sp/>schema<sp/>follows<sp/>the<sp/>Java/Rust-compatible<sp/>`iceberg_tables`<sp/>layout,</highlight></codeline>
+<codeline><highlight class="normal">including<sp/>the<sp/>optional<sp/>`iceberg_type`<sp/>column.<sp/>New<sp/>table<sp/>rows<sp/>write</highlight></codeline>
+<codeline><highlight class="normal">`iceberg_type<sp/>=<sp/>&apos;TABLE&apos;`<sp/>as<sp/>the<sp/>record<sp/>type;<sp/>existing<sp/>rows<sp/>with<sp/>`NULL`<sp/>remain</highlight></codeline>
+<codeline><highlight class="normal">readable<sp/>for<sp/>compatibility.</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">##<sp/>Bring<sp/>your<sp/>own<sp/>store</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">To<sp/>use<sp/>a<sp/>database,<sp/>driver,<sp/>or<sp/>connection<sp/>pool<sp/>that<sp/>is<sp/>not<sp/>built<sp/>in,<sp/>implement</highlight></codeline>
+<codeline><highlight class="normal">`CatalogStore`<sp/>and<sp/>inject<sp/>it.<sp/>No<sp/>catalog<sp/>code<sp/>changes<sp/>are<sp/>required:</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">```cpp</highlight></codeline>
+<codeline><highlight class="normal">class<sp/>MyCatalogStore<sp/>:<sp/>public<sp/>iceberg::sql::CatalogStore<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/>public:</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>iceberg::Status<sp/>Initialize()<sp/>override<sp/>{<sp/>/*<sp/>CREATE<sp/>TABLE<sp/>IF<sp/>NOT<sp/>EXISTS<sp/>...<sp/>*/<sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>iceberg::Result&lt;std::optional&lt;std::string&gt;&gt;<sp/>GetTableMetadataLocation(</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>std::string_view<sp/>ns,<sp/>std::string_view<sp/>name)<sp/>override<sp/>{<sp/>/*<sp/>...<sp/>*/<sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>iceberg::Status<sp/>InsertTable(std::string_view<sp/>ns,<sp/>std::string_view<sp/>name,</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::string_view<sp/>metadata_location)<sp/>override<sp/>{<sp/>/*<sp/>...<sp/>*/<sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>//<sp/>...<sp/>the<sp/>remaining<sp/>CatalogStore<sp/>operations<sp/>...</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>iceberg::Status<sp/>RunInTransaction(</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>const<sp/>std::function&lt;iceberg::Status()&gt;&amp;<sp/>body)<sp/>override<sp/>{<sp/>/*<sp/>...<sp/>*/<sp/>}</highlight></codeline>
+<codeline><highlight class="normal">};</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">auto<sp/>store<sp/>=<sp/>std::make_shared&lt;MyCatalogStore&gt;(/*<sp/>...<sp/>*/);</highlight></codeline>
+<codeline><highlight class="normal">auto<sp/>catalog<sp/>=<sp/>SqlCatalog::Make(config,<sp/>file_io,<sp/>std::move(store)).value();</highlight></codeline>
+<codeline><highlight class="normal">```</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">###<sp/>Implementation<sp/>contract</highlight></codeline>
+<codeline></codeline>
+<codeline><highlight class="normal">-<sp/>**Catalog<sp/>scope**:<sp/>a<sp/>store<sp/>instance<sp/>is<sp/>bound<sp/>to<sp/>one<sp/>catalog<sp/>name;<sp/>every<sp/>row<sp/>it</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>reads<sp/>or<sp/>writes<sp/>must<sp/>be<sp/>scoped<sp/>by<sp/>that<sp/>name.</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>**Namespace<sp/>identifiers**:<sp/>namespace<sp/>levels<sp/>must<sp/>not<sp/>be<sp/>empty<sp/>and<sp/>must<sp/>not</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>contain<sp/>`.`<sp/>because<sp/>the<sp/>backing<sp/>schema<sp/>stores<sp/>a<sp/>namespace<sp/>as<sp/>a<sp/>dot-joined</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>string.</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>**Table<sp/>rows**:<sp/>new<sp/>table<sp/>inserts<sp/>should<sp/>write<sp/>`iceberg_type<sp/>=<sp/>&apos;TABLE&apos;`<sp/>as</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>the<sp/>record<sp/>type.</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>Reads<sp/>should<sp/>treat<sp/>both<sp/>`TABLE`<sp/>and<sp/>`NULL`<sp/>as<sp/>table<sp/>rows<sp/>so<sp/>older<sp/>databases</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>remain<sp/>readable.</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>**Unique<sp/>violations**:<sp/>`InsertTable`,<sp/>`InsertNamespaceProperty`,<sp/>and</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>`RenameTable`<sp/>must<sp/>report<sp/>a<sp/>primary-key<sp/>collision<sp/>as<sp/>`ErrorKind::kAlreadyExists`.</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>The<sp/>catalog<sp/>relies<sp/>on<sp/>this<sp/>as<sp/>the<sp/>authoritative<sp/>signal<sp/>for<sp/>concurrent<sp/>creates.</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>**Affected<sp/>rows**:<sp/>`UpdateTableMetadataLocation`<sp/>performs<sp/>the<sp/>optimistic</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>compare-and-set;<sp/>it<sp/>must<sp/>return<sp/>the<sp/>number<sp/>of<sp/>rows<sp/>updated<sp/>(0<sp/>on<sp/>a<sp/>stale<sp/>base).</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>**Atomicity**:<sp/>`RunInTransaction`<sp/>must<sp/>commit<sp/>on<sp/>success<sp/>and<sp/>roll<sp/>back<sp/>on<sp/>any</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>error<sp/>so<sp/>the<sp/>database<sp/>is<sp/>left<sp/>unchanged.</highlight></codeline>
+<codeline><highlight class="normal">-<sp/>**Threading**:<sp/>a<sp/>store<sp/>may<sp/>be<sp/>called<sp/>from<sp/>multiple<sp/>threads;<sp/>serialize</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>internally<sp/>or<sp/>use<sp/>one<sp/>connection<sp/>per<sp/>concurrent<sp/>operation.<sp/>The<sp/>built-in</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>PostgreSQL<sp/>and<sp/>MySQL<sp/>stores<sp/>use<sp/>a<sp/>bounded<sp/>sqlpp23<sp/>connection<sp/>pool<sp/>when</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>`max_connections<sp/>&gt;<sp/>1`;<sp/>the<sp/>SQLite<sp/>store<sp/>always<sp/>uses<sp/>a<sp/>single<sp/>connection.</highlight></codeline>
+    </programlisting>
+    <location file="iceberg/catalog/sql/README.md"/>
+  </compounddef>
+</doxygen>

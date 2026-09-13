@@ -1,0 +1,131 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1SessionContext" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::SessionContext</compoundname>
+    <includes refid="session__context_8h" local="no">session_context.h</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1SessionContext_1a2142195dbea1438bbccec17d8c0927c4" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::SessionContext::session_id</definition>
+        <argsstring></argsstring>
+        <name>session_id</name>
+        <qualifiedname>iceberg::SessionContext::session_id</qualifiedname>
+        <briefdescription>
+<para>Unique session identifier. Explicit contexts must provide a non-empty ID. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/session_context.h" line="44" column="15" bodyfile="iceberg/catalog/session_context.h" bodystart="44" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1SessionContext_1a760278eec8fb341c643ee795bd3cf383" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::SessionContext::identity</definition>
+        <argsstring></argsstring>
+        <name>identity</name>
+        <qualifiedname>iceberg::SessionContext::identity</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Caller identity. Empty means no identity was supplied. This value is descriptive and is not implicitly inserted into authentication properties. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/session_context.h" line="48" column="15" bodyfile="iceberg/catalog/session_context.h" bodystart="48" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1SessionContext_1ab5e9186862d4bd273f62c33c6a32be4b" prot="public" static="no" mutable="no">
+        <type>std::unordered_map&lt; std::string, std::string &gt;</type>
+        <definition>std::unordered_map&lt;std::string, std::string&gt; iceberg::SessionContext::credentials</definition>
+        <argsstring></argsstring>
+        <name>credentials</name>
+        <qualifiedname>iceberg::SessionContext::credentials</qualifiedname>
+        <briefdescription>
+<para>Sensitive context-specific credentials, such as delegated auth material. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/session_context.h" line="51" column="22" bodyfile="iceberg/catalog/session_context.h" bodystart="51" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1SessionContext_1aa6c674958e10672e7a07311d984546ed" prot="public" static="no" mutable="no">
+        <type>std::unordered_map&lt; std::string, std::string &gt;</type>
+        <definition>std::unordered_map&lt;std::string, std::string&gt; iceberg::SessionContext::properties</definition>
+        <argsstring></argsstring>
+        <name>properties</name>
+        <qualifiedname>iceberg::SessionContext::properties</qualifiedname>
+        <briefdescription>
+<para>Non-secret context-specific properties, such as tenant or auth options. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/session_context.h" line="54" column="22" bodyfile="iceberg/catalog/session_context.h" bodystart="54" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="structiceberg_1_1SessionContext_1a4e99ec1d24595876c16a651d8d0d03c2" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="structiceberg_1_1SessionContext" kindref="compound">SessionContext</ref></type>
+        <definition>static SessionContext iceberg::SessionContext::Empty</definition>
+        <argsstring>()</argsstring>
+        <name>Empty</name>
+        <qualifiedname>iceberg::SessionContext::Empty</qualifiedname>
+        <briefdescription>
+<para>Create an empty caller context with a generated non-empty session ID. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Each call returns a distinct session ID. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/session_context.h" line="59" column="25"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Session state used to bind catalog operations to a caller context. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>Session context is the isolation boundary for session-aware catalogs. REST catalogs use <computeroutput>session_id</computeroutput> to derive contextual authentication sessions while keeping user-visible catalog operations on the normal <computeroutput><ref refid="classiceberg_1_1Catalog" kindref="compound">Catalog</ref></computeroutput> interface.</para>
+<para>The type is intentionally an aggregate so callers can construct it with designated initializers. <computeroutput>properties</computeroutput> and <computeroutput>credentials</computeroutput> are kept separate so authentication implementations can detect conflicting keys instead of silently overriding credentials. </para>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::SessionContext</label>
+        <link refid="structiceberg_1_1SessionContext"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>identity</edgelabel>
+          <edgelabel>session_id</edgelabel>
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>credentials</edgelabel>
+          <edgelabel>properties</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="2">
+        <label>std::string</label>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>std::unordered_map&lt; std::string, std::string &gt;</label>
+        <childnode refid="2" relation="usage">
+          <edgelabel>elements</edgelabel>
+          <edgelabel>keys</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/session_context.h" line="42" column="1" bodyfile="iceberg/catalog/session_context.h" bodystart="42" bodyend="60"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1SessionContext_1ab5e9186862d4bd273f62c33c6a32be4b" prot="public" virt="non-virtual"><scope>iceberg::SessionContext</scope><name>credentials</name></member>
+      <member refid="structiceberg_1_1SessionContext_1a4e99ec1d24595876c16a651d8d0d03c2" prot="public" virt="non-virtual"><scope>iceberg::SessionContext</scope><name>Empty</name></member>
+      <member refid="structiceberg_1_1SessionContext_1a760278eec8fb341c643ee795bd3cf383" prot="public" virt="non-virtual"><scope>iceberg::SessionContext</scope><name>identity</name></member>
+      <member refid="structiceberg_1_1SessionContext_1aa6c674958e10672e7a07311d984546ed" prot="public" virt="non-virtual"><scope>iceberg::SessionContext</scope><name>properties</name></member>
+      <member refid="structiceberg_1_1SessionContext_1a2142195dbea1438bbccec17d8c0927c4" prot="public" virt="non-virtual"><scope>iceberg::SessionContext</scope><name>session_id</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,84 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1rest_1_1FetchScanTasksRequest" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::rest::FetchScanTasksRequest</compoundname>
+    <includes refid="types_8h" local="no">types.h</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1rest_1_1FetchScanTasksRequest_1a68188263345a0b7d11ca70d743a2f549" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::rest::FetchScanTasksRequest::planTask</definition>
+        <argsstring></argsstring>
+        <name>planTask</name>
+        <qualifiedname>iceberg::rest::FetchScanTasksRequest::planTask</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/types.h" line="364" column="15" bodyfile="iceberg/catalog/rest/types.h" bodystart="364" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structiceberg_1_1rest_1_1FetchScanTasksRequest_1a7c3c3f4d53e3d1d1d045a22a2f2e9271" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::rest::FetchScanTasksRequest::Validate</definition>
+        <argsstring>() const</argsstring>
+        <name>Validate</name>
+        <qualifiedname>iceberg::rest::FetchScanTasksRequest::Validate</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/types.h" line="366" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="structiceberg_1_1rest_1_1FetchScanTasksRequest_1a5fd56b71d4f714b637a4cbc12713faad" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::rest::FetchScanTasksRequest::operator==</definition>
+        <argsstring>(const FetchScanTasksRequest &amp;) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>iceberg::rest::FetchScanTasksRequest::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1rest_1_1FetchScanTasksRequest" kindref="compound">FetchScanTasksRequest</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/types.h" line="368" column="8"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Request to fetch the scan tasks for a given plan task token. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::rest::FetchScanTasksRequest</label>
+        <link refid="structiceberg_1_1rest_1_1FetchScanTasksRequest"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>planTask</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="2">
+        <label>std::string</label>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/rest/types.h" line="363" column="1" bodyfile="iceberg/catalog/rest/types.h" bodystart="363" bodyend="369"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1rest_1_1FetchScanTasksRequest_1a5fd56b71d4f714b637a4cbc12713faad" prot="public" virt="non-virtual"><scope>iceberg::rest::FetchScanTasksRequest</scope><name>operator==</name></member>
+      <member refid="structiceberg_1_1rest_1_1FetchScanTasksRequest_1a68188263345a0b7d11ca70d743a2f549" prot="public" virt="non-virtual"><scope>iceberg::rest::FetchScanTasksRequest</scope><name>planTask</name></member>
+      <member refid="structiceberg_1_1rest_1_1FetchScanTasksRequest_1a7c3c3f4d53e3d1d1d045a22a2f2e9271" prot="public" virt="non-virtual"><scope>iceberg::rest::FetchScanTasksRequest</scope><name>Validate</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

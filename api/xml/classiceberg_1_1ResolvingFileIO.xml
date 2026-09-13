@@ -1,0 +1,368 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1ResolvingFileIO" kind="class" language="C++" prot="public" final="yes">
+    <compoundname>iceberg::ResolvingFileIO</compoundname>
+    <basecompoundref refid="classiceberg_1_1FileIO" prot="public" virt="non-virtual">iceberg::FileIO</basecompoundref>
+    <basecompoundref refid="classiceberg_1_1SupportsStorageCredentials" prot="public" virt="non-virtual">iceberg::SupportsStorageCredentials</basecompoundref>
+    <includes refid="resolving__file__io_8h" local="no">resolving_file_io.h</includes>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1ResolvingFileIO_1ac1776c7a12c7b09d8d1a6da6c005938b" prot="private" static="no" mutable="no">
+        <type>std::unordered_map&lt; std::string, std::string &gt;</type>
+        <definition>std::unordered_map&lt;std::string, std::string&gt; iceberg::ResolvingFileIO::properties_</definition>
+        <argsstring></argsstring>
+        <name>properties_</name>
+        <qualifiedname>iceberg::ResolvingFileIO::properties_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/resolving_file_io.h" line="69" column="22" bodyfile="iceberg/resolving_file_io.h" bodystart="69" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1ResolvingFileIO_1a54bea92298f176f510e7ffea5e75cad6" prot="private" static="no" mutable="no">
+        <type>std::shared_mutex</type>
+        <definition>std::shared_mutex iceberg::ResolvingFileIO::mutex_</definition>
+        <argsstring></argsstring>
+        <name>mutex_</name>
+        <qualifiedname>iceberg::ResolvingFileIO::mutex_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/resolving_file_io.h" line="71" column="21" bodyfile="iceberg/resolving_file_io.h" bodystart="71" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1ResolvingFileIO_1ae105665d7533d910d4b9cb2143557733" prot="private" static="no" mutable="no">
+        <type>std::vector&lt; <ref refid="structiceberg_1_1StorageCredential" kindref="compound">StorageCredential</ref> &gt;</type>
+        <definition>std::vector&lt;StorageCredential&gt; iceberg::ResolvingFileIO::storage_credentials_</definition>
+        <argsstring></argsstring>
+        <name>storage_credentials_</name>
+        <qualifiedname>iceberg::ResolvingFileIO::storage_credentials_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/resolving_file_io.h" line="72" column="15" bodyfile="iceberg/resolving_file_io.h" bodystart="72" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1ResolvingFileIO_1abc5016341bbb667ed81144dfb693efe7" prot="private" static="no" mutable="no">
+        <type>std::unordered_map&lt; std::string, std::shared_ptr&lt; <ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref> &gt;, <ref refid="structiceberg_1_1StringHash" kindref="compound">StringHash</ref>, <ref refid="structiceberg_1_1StringEqual" kindref="compound">StringEqual</ref> &gt;</type>
+        <definition>std::unordered_map&lt;std::string, std::shared_ptr&lt;FileIO&gt;, StringHash, StringEqual&gt; iceberg::ResolvingFileIO::io_by_name_</definition>
+        <argsstring></argsstring>
+        <name>io_by_name_</name>
+        <qualifiedname>iceberg::ResolvingFileIO::io_by_name_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/resolving_file_io.h" line="74" column="7" bodyfile="iceberg/resolving_file_io.h" bodystart="74" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1ResolvingFileIO_1a5ac8d2219957324d1b18834e3ddf0748" prot="public" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::ResolvingFileIO::ResolvingFileIO</definition>
+        <argsstring>(std::unordered_map&lt; std::string, std::string &gt; properties)</argsstring>
+        <name>ResolvingFileIO</name>
+        <qualifiedname>iceberg::ResolvingFileIO::ResolvingFileIO</qualifiedname>
+        <param>
+          <type>std::unordered_map&lt; std::string, std::string &gt;</type>
+          <declname>properties</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/resolving_file_io.h" line="44" column="12"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ResolvingFileIO_1a3bb517cbb895347487936fb97cf235a1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::ResolvingFileIO::~ResolvingFileIO</definition>
+        <argsstring>() override</argsstring>
+        <name>~ResolvingFileIO</name>
+        <qualifiedname>iceberg::ResolvingFileIO::~ResolvingFileIO</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/resolving_file_io.h" line="45" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ResolvingFileIO_1a992176e5ba40af823e6b1b377f7776ab" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type><ref refid="namespaceiceberg_1a9d5594e371beb516b0120e07e69d3af6" kindref="member">Result</ref>&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1InputFile" kindref="compound">InputFile</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::unique_ptr&lt; InputFile &gt; &gt; iceberg::ResolvingFileIO::NewInputFile</definition>
+        <argsstring>(std::string file_location) override</argsstring>
+        <name>NewInputFile</name>
+        <qualifiedname>iceberg::ResolvingFileIO::NewInputFile</qualifiedname>
+        <reimplements refid="classiceberg_1_1FileIO_1a69825dcdb4b389ad96bfc0cb66047f04">NewInputFile</reimplements>
+        <param>
+          <type>std::string</type>
+          <declname>file_location</declname>
+        </param>
+        <briefdescription>
+<para>Create an input file handle for the given location. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/resolving_file_io.h" line="47" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ResolvingFileIO_1a20daf82c852a4180c81a789d63807eb2" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type><ref refid="namespaceiceberg_1a9d5594e371beb516b0120e07e69d3af6" kindref="member">Result</ref>&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1InputFile" kindref="compound">InputFile</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::unique_ptr&lt; InputFile &gt; &gt; iceberg::ResolvingFileIO::NewInputFile</definition>
+        <argsstring>(std::string file_location, size_t length) override</argsstring>
+        <name>NewInputFile</name>
+        <qualifiedname>iceberg::ResolvingFileIO::NewInputFile</qualifiedname>
+        <reimplements refid="classiceberg_1_1FileIO_1a033abce013bf469c31bfeb014a80f729">NewInputFile</reimplements>
+        <param>
+          <type>std::string</type>
+          <declname>file_location</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>length</declname>
+        </param>
+        <briefdescription>
+<para>Create an input file handle for the given location with a known length. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>The length is a caller-provided content length hint. Implementations may use it to avoid an extra metadata lookup. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/resolving_file_io.h" line="49" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ResolvingFileIO_1a162270735464ebdf1cc58a522f0b240e" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type><ref refid="namespaceiceberg_1a9d5594e371beb516b0120e07e69d3af6" kindref="member">Result</ref>&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1OutputFile" kindref="compound">OutputFile</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::unique_ptr&lt; OutputFile &gt; &gt; iceberg::ResolvingFileIO::NewOutputFile</definition>
+        <argsstring>(std::string file_location) override</argsstring>
+        <name>NewOutputFile</name>
+        <qualifiedname>iceberg::ResolvingFileIO::NewOutputFile</qualifiedname>
+        <reimplements refid="classiceberg_1_1FileIO_1a0d9bbfec5421979aa3c6949dcbb03e9d">NewOutputFile</reimplements>
+        <param>
+          <type>std::string</type>
+          <declname>file_location</declname>
+        </param>
+        <briefdescription>
+<para>Create an output file handle for the given location. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/resolving_file_io.h" line="52" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ResolvingFileIO_1a434e10c12d44fc17a746246172679708" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>Status</type>
+        <definition>Status iceberg::ResolvingFileIO::DeleteFile</definition>
+        <argsstring>(const std::string &amp;file_location) override</argsstring>
+        <name>DeleteFile</name>
+        <qualifiedname>iceberg::ResolvingFileIO::DeleteFile</qualifiedname>
+        <reimplements refid="classiceberg_1_1FileIO_1ace7c9ec329017d5a99082739e8578937">DeleteFile</reimplements>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>file_location</declname>
+        </param>
+        <briefdescription>
+<para>Delete a file at the given location. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>file_location</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The location of the file to delete. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>void if the delete succeeded, an error code if the delete failed. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/resolving_file_io.h" line="54" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ResolvingFileIO_1a7a429c4f15101f6060bb56149960cfb4" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>Status</type>
+        <definition>Status iceberg::ResolvingFileIO::DeleteFiles</definition>
+        <argsstring>(const std::vector&lt; std::string &gt; &amp;file_locations) override</argsstring>
+        <name>DeleteFiles</name>
+        <qualifiedname>iceberg::ResolvingFileIO::DeleteFiles</qualifiedname>
+        <reimplements refid="classiceberg_1_1FileIO_1a8f90138ef899b636494eee5f49243040">DeleteFiles</reimplements>
+        <param>
+          <type>const std::vector&lt; std::string &gt; &amp;</type>
+          <declname>file_locations</declname>
+        </param>
+        <briefdescription>
+<para>Delete files at the given locations. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Implementations that can delete multiple files efficiently should override this method. The default implementation deletes files sequentially using DeleteFile and returns the first error encountered.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>file_locations</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The locations of the files to delete. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>void if all deletes succeed, or an error code if any delete fails. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/resolving_file_io.h" line="56" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ResolvingFileIO_1ae36b65b5290ac85301946fa306fba3b2" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>Status</type>
+        <definition>Status iceberg::ResolvingFileIO::SetStorageCredentials</definition>
+        <argsstring>(const std::vector&lt; StorageCredential &gt; &amp;storage_credentials) override</argsstring>
+        <name>SetStorageCredentials</name>
+        <qualifiedname>iceberg::ResolvingFileIO::SetStorageCredentials</qualifiedname>
+        <reimplements refid="classiceberg_1_1SupportsStorageCredentials_1a18edfa09bc3f03377037ab68fc89e491">SetStorageCredentials</reimplements>
+        <param>
+          <type>const std::vector&lt; <ref refid="structiceberg_1_1StorageCredential" kindref="compound">StorageCredential</ref> &gt; &amp;</type>
+          <declname>storage_credentials</declname>
+        </param>
+        <briefdescription>
+<para>Install vended storage credentials. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/resolving_file_io.h" line="58" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ResolvingFileIO_1ad13c01f374eda211fe30832ef080279d" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>const std::vector&lt; <ref refid="structiceberg_1_1StorageCredential" kindref="compound">StorageCredential</ref> &gt; &amp;</type>
+        <definition>const std::vector&lt; StorageCredential &gt; &amp; iceberg::ResolvingFileIO::credentials</definition>
+        <argsstring>() const override</argsstring>
+        <name>credentials</name>
+        <qualifiedname>iceberg::ResolvingFileIO::credentials</qualifiedname>
+        <reimplements refid="classiceberg_1_1SupportsStorageCredentials_1ae09ebd413d3a6423163e23f4ea4a9a86">credentials</reimplements>
+        <briefdescription>
+<para>Return currently installed storage credentials. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/resolving_file_io.h" line="61" column="21"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ResolvingFileIO_1a3ce6216e6a2a8b845c9d29abfcd0e850" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type><ref refid="classiceberg_1_1SupportsStorageCredentials" kindref="compound">SupportsStorageCredentials</ref> *</type>
+        <definition>SupportsStorageCredentials * iceberg::ResolvingFileIO::AsSupportsStorageCredentials</definition>
+        <argsstring>() override</argsstring>
+        <name>AsSupportsStorageCredentials</name>
+        <qualifiedname>iceberg::ResolvingFileIO::AsSupportsStorageCredentials</qualifiedname>
+        <reimplements refid="classiceberg_1_1FileIO_1a4164a9a6aa9d34dd736eb512e20d7207">AsSupportsStorageCredentials</reimplements>
+        <briefdescription>
+<para>Return storage-credential support when implemented by this <ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref>. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/resolving_file_io.h" line="63" column="30" bodyfile="iceberg/resolving_file_io.h" bodystart="63" bodyend="63"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classiceberg_1_1ResolvingFileIO_1a7a4b117dd16d9eac067a194c1c714e80" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceiceberg_1a9d5594e371beb516b0120e07e69d3af6" kindref="member">Result</ref>&lt; std::shared_ptr&lt; <ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::shared_ptr&lt; FileIO &gt; &gt; iceberg::ResolvingFileIO::FileIOForPath</definition>
+        <argsstring>(std::string_view location)</argsstring>
+        <name>FileIOForPath</name>
+        <qualifiedname>iceberg::ResolvingFileIO::FileIOForPath</qualifiedname>
+        <param>
+          <type>std::string_view</type>
+          <declname>location</declname>
+        </param>
+        <briefdescription>
+<para>Load or reuse the implementation serving <computeroutput>location</computeroutput>. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/resolving_file_io.h" line="67" column="10"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para><ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref> that resolves and caches implementations by registry name. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>iceberg::FileIO</label>
+        <link refid="classiceberg_1_1FileIO"/>
+      </node>
+      <node id="1">
+        <label>iceberg::ResolvingFileIO</label>
+        <link refid="classiceberg_1_1ResolvingFileIO"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>iceberg::SupportsStorageCredentials</label>
+        <link refid="classiceberg_1_1SupportsStorageCredentials"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="2">
+        <label>iceberg::FileIO</label>
+        <link refid="classiceberg_1_1FileIO"/>
+      </node>
+      <node id="1">
+        <label>iceberg::ResolvingFileIO</label>
+        <link refid="classiceberg_1_1ResolvingFileIO"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>iceberg::SupportsStorageCredentials</label>
+        <link refid="classiceberg_1_1SupportsStorageCredentials"/>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/resolving_file_io.h" line="41" column="1" bodyfile="iceberg/resolving_file_io.h" bodystart="42" bodyend="75"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1ResolvingFileIO_1a3ce6216e6a2a8b845c9d29abfcd0e850" prot="public" virt="virtual"><scope>iceberg::ResolvingFileIO</scope><name>AsSupportsStorageCredentials</name></member>
+      <member refid="classiceberg_1_1ResolvingFileIO_1ad13c01f374eda211fe30832ef080279d" prot="public" virt="virtual"><scope>iceberg::ResolvingFileIO</scope><name>credentials</name></member>
+      <member refid="classiceberg_1_1ResolvingFileIO_1a434e10c12d44fc17a746246172679708" prot="public" virt="virtual"><scope>iceberg::ResolvingFileIO</scope><name>DeleteFile</name></member>
+      <member refid="classiceberg_1_1ResolvingFileIO_1a7a429c4f15101f6060bb56149960cfb4" prot="public" virt="virtual"><scope>iceberg::ResolvingFileIO</scope><name>DeleteFiles</name></member>
+      <member refid="classiceberg_1_1FileIO_1a4c7135a7de2494ad9b4ad6aacd65bf45" prot="public" virt="non-virtual"><scope>iceberg::ResolvingFileIO</scope><name>FileIO</name></member>
+      <member refid="classiceberg_1_1ResolvingFileIO_1a7a4b117dd16d9eac067a194c1c714e80" prot="private" virt="non-virtual"><scope>iceberg::ResolvingFileIO</scope><name>FileIOForPath</name></member>
+      <member refid="classiceberg_1_1ResolvingFileIO_1abc5016341bbb667ed81144dfb693efe7" prot="private" virt="non-virtual"><scope>iceberg::ResolvingFileIO</scope><name>io_by_name_</name></member>
+      <member refid="classiceberg_1_1ResolvingFileIO_1a54bea92298f176f510e7ffea5e75cad6" prot="private" virt="non-virtual"><scope>iceberg::ResolvingFileIO</scope><name>mutex_</name></member>
+      <member refid="classiceberg_1_1ResolvingFileIO_1a992176e5ba40af823e6b1b377f7776ab" prot="public" virt="virtual"><scope>iceberg::ResolvingFileIO</scope><name>NewInputFile</name></member>
+      <member refid="classiceberg_1_1ResolvingFileIO_1a20daf82c852a4180c81a789d63807eb2" prot="public" virt="virtual"><scope>iceberg::ResolvingFileIO</scope><name>NewInputFile</name></member>
+      <member refid="classiceberg_1_1ResolvingFileIO_1a162270735464ebdf1cc58a522f0b240e" prot="public" virt="virtual"><scope>iceberg::ResolvingFileIO</scope><name>NewOutputFile</name></member>
+      <member refid="classiceberg_1_1ResolvingFileIO_1ac1776c7a12c7b09d8d1a6da6c005938b" prot="private" virt="non-virtual"><scope>iceberg::ResolvingFileIO</scope><name>properties_</name></member>
+      <member refid="classiceberg_1_1FileIO_1a714e3babeac9395ed6ef4b2f5c94a5cd" prot="public" virt="virtual"><scope>iceberg::ResolvingFileIO</scope><name>ReadFile</name></member>
+      <member refid="classiceberg_1_1ResolvingFileIO_1a5ac8d2219957324d1b18834e3ddf0748" prot="public" virt="non-virtual"><scope>iceberg::ResolvingFileIO</scope><name>ResolvingFileIO</name></member>
+      <member refid="classiceberg_1_1ResolvingFileIO_1ae36b65b5290ac85301946fa306fba3b2" prot="public" virt="virtual"><scope>iceberg::ResolvingFileIO</scope><name>SetStorageCredentials</name></member>
+      <member refid="classiceberg_1_1ResolvingFileIO_1ae105665d7533d910d4b9cb2143557733" prot="private" virt="non-virtual"><scope>iceberg::ResolvingFileIO</scope><name>storage_credentials_</name></member>
+      <member refid="classiceberg_1_1FileIO_1a527a78aca1045034250f50a51d8dc0f9" prot="public" virt="virtual"><scope>iceberg::ResolvingFileIO</scope><name>WriteFile</name></member>
+      <member refid="classiceberg_1_1FileIO_1af3d6e79fa37cfcd2c0a8face664a70ec" prot="public" virt="virtual"><scope>iceberg::ResolvingFileIO</scope><name>~FileIO</name></member>
+      <member refid="classiceberg_1_1ResolvingFileIO_1a3bb517cbb895347487936fb97cf235a1" prot="public" virt="non-virtual"><scope>iceberg::ResolvingFileIO</scope><name>~ResolvingFileIO</name></member>
+      <member refid="classiceberg_1_1SupportsStorageCredentials_1ad44e1252c1decbe25fbf5e4cd55760e6" prot="public" virt="virtual"><scope>iceberg::ResolvingFileIO</scope><name>~SupportsStorageCredentials</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

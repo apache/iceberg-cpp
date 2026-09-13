@@ -1,0 +1,244 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1MetadataTable" kind="class" language="C++" prot="public" abstract="yes">
+    <compoundname>iceberg::MetadataTable</compoundname>
+    <derivedcompoundref refid="classiceberg_1_1HistoryTable" prot="public" virt="non-virtual">iceberg::HistoryTable</derivedcompoundref>
+    <derivedcompoundref refid="classiceberg_1_1SnapshotsTable" prot="public" virt="non-virtual">iceberg::SnapshotsTable</derivedcompoundref>
+    <includes refid="metadata__table_8h" local="no">metadata_table.h</includes>
+    <sectiondef kind="public-type">
+      <memberdef kind="enum" id="classiceberg_1_1MetadataTable_1ab415f49673094ebf56b168856fc912dc" prot="public" static="no" strong="yes">
+        <type></type>
+        <name>Kind</name>
+        <qualifiedname>iceberg::MetadataTable::Kind</qualifiedname>
+        <enumvalue id="classiceberg_1_1MetadataTable_1ab415f49673094ebf56b168856fc912dca6b3ba623453cb9621ebddd13c1d8b606" prot="public">
+          <name>kSnapshots</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="classiceberg_1_1MetadataTable_1ab415f49673094ebf56b168856fc912dcadf7241ad6189d6c137770a202ea22ba9" prot="public">
+          <name>kHistory</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/inspect/metadata_table.h" line="37" column="3" bodyfile="iceberg/inspect/metadata_table.h" bodystart="37" bodyend="40"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1MetadataTable_1a8f0e61b8b780ae14217e40393297cbe0" prot="private" static="no" mutable="no">
+        <type><ref refid="structiceberg_1_1TableIdentifier" kindref="compound">TableIdentifier</ref></type>
+        <definition>TableIdentifier iceberg::MetadataTable::identifier_</definition>
+        <argsstring></argsstring>
+        <name>identifier_</name>
+        <qualifiedname>iceberg::MetadataTable::identifier_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/inspect/metadata_table.h" line="60" column="19" bodyfile="iceberg/inspect/metadata_table.h" bodystart="60" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1MetadataTable_1a2d9f2b6640016677b888a3089500c6fc" prot="private" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;Schema&gt; iceberg::MetadataTable::schema_</definition>
+        <argsstring></argsstring>
+        <name>schema_</name>
+        <qualifiedname>iceberg::MetadataTable::schema_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/inspect/metadata_table.h" line="61" column="19" bodyfile="iceberg/inspect/metadata_table.h" bodystart="61" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1MetadataTable_1a87bf976978ed45ea3dd89a8d6d1e83bc" prot="private" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Table" kindref="compound">Table</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;Table&gt; iceberg::MetadataTable::source_table_</definition>
+        <argsstring></argsstring>
+        <name>source_table_</name>
+        <qualifiedname>iceberg::MetadataTable::source_table_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/inspect/metadata_table.h" line="62" column="19" bodyfile="iceberg/inspect/metadata_table.h" bodystart="62" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classiceberg_1_1MetadataTable_1a2e1fe7d202001034922dfa5f59ebbca7" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceiceberg_1a9d5594e371beb516b0120e07e69d3af6" kindref="member">Result</ref>&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1MetadataTable" kindref="compound">MetadataTable</ref> &gt; &gt;</type>
+        <definition>static Result&lt; std::unique_ptr&lt; MetadataTable &gt; &gt; iceberg::MetadataTable::Make</definition>
+        <argsstring>(std::shared_ptr&lt; Table &gt; table, Kind kind)</argsstring>
+        <name>Make</name>
+        <qualifiedname>iceberg::MetadataTable::Make</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Table" kindref="compound">Table</ref> &gt;</type>
+          <declname>table</declname>
+        </param>
+        <param>
+          <type>Kind</type>
+          <declname>kind</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/inspect/metadata_table.h" line="42" column="17"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1MetadataTable_1a25fa687655a43fd964860a941b572499" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type></type>
+        <definition>virtual iceberg::MetadataTable::~MetadataTable</definition>
+        <argsstring>()</argsstring>
+        <name>~MetadataTable</name>
+        <qualifiedname>iceberg::MetadataTable::~MetadataTable</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/inspect/metadata_table.h" line="45" column="11"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1MetadataTable_1a5aa9af92783c3dc041349d6391742146" prot="public" static="no" const="yes" explicit="no" inline="no" noexcept="yes" virt="pure-virtual">
+        <type>Kind</type>
+        <definition>virtual Kind iceberg::MetadataTable::kind</definition>
+        <argsstring>() const noexcept=0</argsstring>
+        <name>kind</name>
+        <qualifiedname>iceberg::MetadataTable::kind</qualifiedname>
+        <reimplementedby refid="classiceberg_1_1HistoryTable_1a7a7928b3cd4f8c1c6e5f22e79ab13e8d">kind</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1SnapshotsTable_1a197bd0da420c42393fea2fb0385b0e9e">kind</reimplementedby>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/inspect/metadata_table.h" line="47" column="16"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1MetadataTable_1a80ffbf5773285c4cfffd87e3f3aa135a" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>const <ref refid="structiceberg_1_1TableIdentifier" kindref="compound">TableIdentifier</ref> &amp;</type>
+        <definition>const TableIdentifier &amp; iceberg::MetadataTable::name</definition>
+        <argsstring>() const</argsstring>
+        <name>name</name>
+        <qualifiedname>iceberg::MetadataTable::name</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/inspect/metadata_table.h" line="49" column="25" bodyfile="iceberg/inspect/metadata_table.h" bodystart="49" bodyend="49"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1MetadataTable_1a6af80c78f61c912d3a0adc82e31abe55" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &gt; &amp;</type>
+        <definition>const std::shared_ptr&lt; Schema &gt; &amp; iceberg::MetadataTable::schema</definition>
+        <argsstring>() const</argsstring>
+        <name>schema</name>
+        <qualifiedname>iceberg::MetadataTable::schema</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/inspect/metadata_table.h" line="51" column="25" bodyfile="iceberg/inspect/metadata_table.h" bodystart="51" bodyend="51"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1MetadataTable_1aa2a8830064cb79a84440e656c66d246e" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1Table" kindref="compound">Table</ref> &gt; &amp;</type>
+        <definition>const std::shared_ptr&lt; Table &gt; &amp; iceberg::MetadataTable::source_table</definition>
+        <argsstring>() const</argsstring>
+        <name>source_table</name>
+        <qualifiedname>iceberg::MetadataTable::source_table</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/inspect/metadata_table.h" line="53" column="25" bodyfile="iceberg/inspect/metadata_table.h" bodystart="53" bodyend="53"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="protected-func">
+      <memberdef kind="function" id="classiceberg_1_1MetadataTable_1aea6acd268225e31f16e64fb885de3e93" prot="protected" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::MetadataTable::MetadataTable</definition>
+        <argsstring>(std::shared_ptr&lt; Table &gt; source_table, TableIdentifier identifier, std::shared_ptr&lt; Schema &gt; schema)</argsstring>
+        <name>MetadataTable</name>
+        <qualifiedname>iceberg::MetadataTable::MetadataTable</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Table" kindref="compound">Table</ref> &gt;</type>
+          <declname>source_table</declname>
+        </param>
+        <param>
+          <type><ref refid="structiceberg_1_1TableIdentifier" kindref="compound">TableIdentifier</ref></type>
+          <declname>identifier</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &gt;</type>
+          <declname>schema</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/inspect/metadata_table.h" line="56" column="12"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Base class for Iceberg metadata tables. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>iceberg::HistoryTable</label>
+        <link refid="classiceberg_1_1HistoryTable"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::MetadataTable</label>
+        <link refid="classiceberg_1_1MetadataTable"/>
+      </node>
+      <node id="3">
+        <label>iceberg::SnapshotsTable</label>
+        <link refid="classiceberg_1_1SnapshotsTable"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <location file="iceberg/inspect/metadata_table.h" line="35" column="1" bodyfile="iceberg/inspect/metadata_table.h" bodystart="35" bodyend="63"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1MetadataTable_1a8f0e61b8b780ae14217e40393297cbe0" prot="private" virt="non-virtual"><scope>iceberg::MetadataTable</scope><name>identifier_</name></member>
+      <member refid="classiceberg_1_1MetadataTable_1ab415f49673094ebf56b168856fc912dc" prot="public" virt="non-virtual"><scope>iceberg::MetadataTable</scope><name>Kind</name></member>
+      <member refid="classiceberg_1_1MetadataTable_1a5aa9af92783c3dc041349d6391742146" prot="public" virt="pure-virtual"><scope>iceberg::MetadataTable</scope><name>kind</name></member>
+      <member refid="classiceberg_1_1MetadataTable_1a2e1fe7d202001034922dfa5f59ebbca7" prot="public" virt="non-virtual"><scope>iceberg::MetadataTable</scope><name>Make</name></member>
+      <member refid="classiceberg_1_1MetadataTable_1aea6acd268225e31f16e64fb885de3e93" prot="protected" virt="non-virtual"><scope>iceberg::MetadataTable</scope><name>MetadataTable</name></member>
+      <member refid="classiceberg_1_1MetadataTable_1a80ffbf5773285c4cfffd87e3f3aa135a" prot="public" virt="non-virtual"><scope>iceberg::MetadataTable</scope><name>name</name></member>
+      <member refid="classiceberg_1_1MetadataTable_1a6af80c78f61c912d3a0adc82e31abe55" prot="public" virt="non-virtual"><scope>iceberg::MetadataTable</scope><name>schema</name></member>
+      <member refid="classiceberg_1_1MetadataTable_1a2d9f2b6640016677b888a3089500c6fc" prot="private" virt="non-virtual"><scope>iceberg::MetadataTable</scope><name>schema_</name></member>
+      <member refid="classiceberg_1_1MetadataTable_1aa2a8830064cb79a84440e656c66d246e" prot="public" virt="non-virtual"><scope>iceberg::MetadataTable</scope><name>source_table</name></member>
+      <member refid="classiceberg_1_1MetadataTable_1a87bf976978ed45ea3dd89a8d6d1e83bc" prot="private" virt="non-virtual"><scope>iceberg::MetadataTable</scope><name>source_table_</name></member>
+      <member refid="classiceberg_1_1MetadataTable_1a25fa687655a43fd964860a941b572499" prot="public" virt="virtual"><scope>iceberg::MetadataTable</scope><name>~MetadataTable</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

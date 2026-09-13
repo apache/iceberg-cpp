@@ -1,0 +1,49 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1FnOnce_3_01R_07Args_8_8_8_08_4_1_1Impl" kind="struct" language="C++" prot="private" abstract="yes">
+    <compoundname>iceberg::FnOnce&lt; R(Args...)&gt;::Impl</compoundname>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structiceberg_1_1FnOnce_3_01R_07Args_8_8_8_08_4_1_1Impl_1a9eae7649aaa6dc15a0384d8d9625ec46" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type></type>
+        <definition>virtual iceberg::FnOnce&lt; R(Args...)&gt;::Impl::~Impl</definition>
+        <argsstring>()=default</argsstring>
+        <name>~Impl</name>
+        <qualifiedname>iceberg::FnOnce&lt; R(Args...)&gt;::Impl::~Impl</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/functional.h" line="69" column="13"/>
+      </memberdef>
+      <memberdef kind="function" id="structiceberg_1_1FnOnce_3_01R_07Args_8_8_8_08_4_1_1Impl_1a960fceffa7c32ace758b87710f0f7547" prot="public" static="no" const="no" explicit="no" inline="no" refqual="rvalue" virt="pure-virtual">
+        <type>R</type>
+        <definition>virtual R iceberg::FnOnce&lt; R(Args...)&gt;::Impl::Invoke</definition>
+        <argsstring>(Args &amp;&amp;... args) &amp;&amp;=0</argsstring>
+        <name>Invoke</name>
+        <qualifiedname>iceberg::FnOnce&lt; R(Args...)&gt;::Impl::Invoke</qualifiedname>
+        <param>
+          <type>Args &amp;&amp;...</type>
+          <declname>args</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/functional.h" line="70" column="15"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/util/functional.h" line="68" column="3" bodyfile="iceberg/util/functional.h" bodystart="68" bodyend="71"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1FnOnce_3_01R_07Args_8_8_8_08_4_1_1Impl_1a960fceffa7c32ace758b87710f0f7547" prot="public" virt="pure-virtual"><scope>iceberg::FnOnce&lt; R(Args...)&gt;::Impl</scope><name>Invoke</name></member>
+      <member refid="structiceberg_1_1FnOnce_3_01R_07Args_8_8_8_08_4_1_1Impl_1a9eae7649aaa6dc15a0384d8d9625ec46" prot="public" virt="virtual"><scope>iceberg::FnOnce&lt; R(Args...)&gt;::Impl</scope><name>~Impl</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

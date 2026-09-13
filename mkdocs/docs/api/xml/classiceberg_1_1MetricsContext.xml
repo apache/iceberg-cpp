@@ -1,0 +1,174 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1MetricsContext" kind="class" language="C++" prot="public" abstract="yes">
+    <compoundname>iceberg::MetricsContext</compoundname>
+    <derivedcompoundref refid="classiceberg_1_1DefaultMetricsContext" prot="public" virt="non-virtual">iceberg::DefaultMetricsContext</derivedcompoundref>
+    <includes refid="metrics__context_8h" local="no">metrics_context.h</includes>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1MetricsContext_1afec8370ada142d244d1e6c5a6f339213" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type></type>
+        <definition>virtual iceberg::MetricsContext::~MetricsContext</definition>
+        <argsstring>()=default</argsstring>
+        <name>~MetricsContext</name>
+        <qualifiedname>iceberg::MetricsContext::~MetricsContext</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/metrics_context.h" line="37" column="11"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1MetricsContext_1a04db6c1286a00a4237e1bf403e9147f8" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Counter" kindref="compound">Counter</ref> &gt;</type>
+        <definition>virtual std::shared_ptr&lt; Counter &gt; iceberg::MetricsContext::GetCounter</definition>
+        <argsstring>(std::string_view name, CounterUnit unit)=0</argsstring>
+        <name>GetCounter</name>
+        <qualifiedname>iceberg::MetricsContext::GetCounter</qualifiedname>
+        <reimplementedby refid="classiceberg_1_1DefaultMetricsContext_1afd37231eefdef92754b51e44f41554ea">GetCounter</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1DefaultMetricsContext_1a04db6c1286a00a4237e1bf403e9147f8">GetCounter</reimplementedby>
+        <param>
+          <type>std::string_view</type>
+          <declname>name</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceiceberg_1ab43be837ffa520a0d8a9186d90edac43" kindref="member">CounterUnit</ref></type>
+          <declname>unit</declname>
+        </param>
+        <briefdescription>
+<para>Get or create a named <ref refid="classiceberg_1_1Counter" kindref="compound">Counter</ref> with an explicit unit. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/metrics_context.h" line="40" column="27"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1MetricsContext_1ad0691fd499918d833d9fe0158245e51a" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Counter" kindref="compound">Counter</ref> &gt;</type>
+        <definition>std::shared_ptr&lt; Counter &gt; iceberg::MetricsContext::GetCounter</definition>
+        <argsstring>(std::string_view name)</argsstring>
+        <name>GetCounter</name>
+        <qualifiedname>iceberg::MetricsContext::GetCounter</qualifiedname>
+        <param>
+          <type>std::string_view</type>
+          <declname>name</declname>
+        </param>
+        <briefdescription>
+<para>Get or create a count-unit <ref refid="classiceberg_1_1Counter" kindref="compound">Counter</ref> by name. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Convenience overload defaulting to CounterUnit::kCount. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/metrics_context.h" line="46" column="19" bodyfile="iceberg/metrics/metrics_context.h" bodystart="46" bodyend="48"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1MetricsContext_1a269394fb5a0537eef70b54f8d10781b0" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Timer" kindref="compound">Timer</ref> &gt;</type>
+        <definition>virtual std::shared_ptr&lt; Timer &gt; iceberg::MetricsContext::GetTimer</definition>
+        <argsstring>(std::string_view name, TimerUnit unit)=0</argsstring>
+        <name>GetTimer</name>
+        <qualifiedname>iceberg::MetricsContext::GetTimer</qualifiedname>
+        <reimplementedby refid="classiceberg_1_1DefaultMetricsContext_1a9a6f4c762fa46b119f7bc7fb5d0a5cd2">GetTimer</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1DefaultMetricsContext_1a269394fb5a0537eef70b54f8d10781b0">GetTimer</reimplementedby>
+        <param>
+          <type>std::string_view</type>
+          <declname>name</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceiceberg_1a392862e5026f65af0f58105ede04659a" kindref="member">TimerUnit</ref></type>
+          <declname>unit</declname>
+        </param>
+        <briefdescription>
+<para>Get or create a named <ref refid="classiceberg_1_1Timer" kindref="compound">Timer</ref> with an explicit unit. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/metrics_context.h" line="51" column="27"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1MetricsContext_1a6dacd2ba7d895ff58c7870a7c2a86eab" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Timer" kindref="compound">Timer</ref> &gt;</type>
+        <definition>std::shared_ptr&lt; Timer &gt; iceberg::MetricsContext::GetTimer</definition>
+        <argsstring>(std::string_view name)</argsstring>
+        <name>GetTimer</name>
+        <qualifiedname>iceberg::MetricsContext::GetTimer</qualifiedname>
+        <param>
+          <type>std::string_view</type>
+          <declname>name</declname>
+        </param>
+        <briefdescription>
+<para>Get or create a nanosecond-precision <ref refid="classiceberg_1_1Timer" kindref="compound">Timer</ref> by name. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Convenience overload defaulting to TimerUnit::kNanoseconds. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/metrics_context.h" line="56" column="19" bodyfile="iceberg/metrics/metrics_context.h" bodystart="56" bodyend="58"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classiceberg_1_1MetricsContext_1a0f5198704f2a80282fe4f45827bfb6d3" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1MetricsContext" kindref="compound">MetricsContext</ref> &gt; &amp;</type>
+        <definition>static const std::shared_ptr&lt; MetricsContext &gt; &amp; iceberg::MetricsContext::Noop</definition>
+        <argsstring>()</argsstring>
+        <name>Noop</name>
+        <qualifiedname>iceberg::MetricsContext::Noop</qualifiedname>
+        <briefdescription>
+<para>Return the no-op <ref refid="classiceberg_1_1MetricsContext" kindref="compound">MetricsContext</ref> singleton. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>All metrics returned by the no-op context are noop; nothing is allocated. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/metrics_context.h" line="63" column="32"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1MetricsContext_1a1b42df11c9bf12bdba8928f4aa6a99dc" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::unique_ptr&lt; <ref refid="classiceberg_1_1MetricsContext" kindref="compound">MetricsContext</ref> &gt;</type>
+        <definition>static std::unique_ptr&lt; MetricsContext &gt; iceberg::MetricsContext::Default</definition>
+        <argsstring>()</argsstring>
+        <name>Default</name>
+        <qualifiedname>iceberg::MetricsContext::Default</qualifiedname>
+        <briefdescription>
+<para>Create a new <ref refid="classiceberg_1_1DefaultMetricsContext" kindref="compound">DefaultMetricsContext</ref>. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/metrics_context.h" line="66" column="26"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Factory for creating named <ref refid="classiceberg_1_1Counter" kindref="compound">Counter</ref> and <ref refid="classiceberg_1_1Timer" kindref="compound">Timer</ref> instances. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>iceberg::DefaultMetricsContext</label>
+        <link refid="classiceberg_1_1DefaultMetricsContext"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::MetricsContext</label>
+        <link refid="classiceberg_1_1MetricsContext"/>
+      </node>
+    </inheritancegraph>
+    <location file="iceberg/metrics/metrics_context.h" line="35" column="1" bodyfile="iceberg/metrics/metrics_context.h" bodystart="35" bodyend="67"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1MetricsContext_1a1b42df11c9bf12bdba8928f4aa6a99dc" prot="public" virt="non-virtual"><scope>iceberg::MetricsContext</scope><name>Default</name></member>
+      <member refid="classiceberg_1_1MetricsContext_1a04db6c1286a00a4237e1bf403e9147f8" prot="public" virt="pure-virtual"><scope>iceberg::MetricsContext</scope><name>GetCounter</name></member>
+      <member refid="classiceberg_1_1MetricsContext_1ad0691fd499918d833d9fe0158245e51a" prot="public" virt="non-virtual"><scope>iceberg::MetricsContext</scope><name>GetCounter</name></member>
+      <member refid="classiceberg_1_1MetricsContext_1a269394fb5a0537eef70b54f8d10781b0" prot="public" virt="pure-virtual"><scope>iceberg::MetricsContext</scope><name>GetTimer</name></member>
+      <member refid="classiceberg_1_1MetricsContext_1a6dacd2ba7d895ff58c7870a7c2a86eab" prot="public" virt="non-virtual"><scope>iceberg::MetricsContext</scope><name>GetTimer</name></member>
+      <member refid="classiceberg_1_1MetricsContext_1a0f5198704f2a80282fe4f45827bfb6d3" prot="public" virt="non-virtual"><scope>iceberg::MetricsContext</scope><name>Noop</name></member>
+      <member refid="classiceberg_1_1MetricsContext_1afec8370ada142d244d1e6c5a6f339213" prot="public" virt="virtual"><scope>iceberg::MetricsContext</scope><name>~MetricsContext</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

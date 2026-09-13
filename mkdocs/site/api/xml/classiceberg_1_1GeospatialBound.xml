@@ -1,0 +1,349 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1GeospatialBound" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::GeospatialBound</compoundname>
+    <includes refid="geospatial_8h" local="no">geospatial.h</includes>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1GeospatialBound_1a337929645d95f00f1440cac821a87509" prot="private" static="no" mutable="no">
+        <type>double</type>
+        <definition>double iceberg::GeospatialBound::x_</definition>
+        <argsstring></argsstring>
+        <name>x_</name>
+        <qualifiedname>iceberg::GeospatialBound::x_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/geospatial.h" line="67" column="10" bodyfile="iceberg/geospatial.h" bodystart="67" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1GeospatialBound_1a21001d2100e6a82286f6cc3e12c2e347" prot="private" static="no" mutable="no">
+        <type>double</type>
+        <definition>double iceberg::GeospatialBound::y_</definition>
+        <argsstring></argsstring>
+        <name>y_</name>
+        <qualifiedname>iceberg::GeospatialBound::y_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/geospatial.h" line="68" column="10" bodyfile="iceberg/geospatial.h" bodystart="68" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1GeospatialBound_1a3a4fe7cf0e18f7fa869e7f4e9ed96a0b" prot="private" static="no" mutable="no">
+        <type>std::optional&lt; double &gt;</type>
+        <definition>std::optional&lt;double&gt; iceberg::GeospatialBound::z_</definition>
+        <argsstring></argsstring>
+        <name>z_</name>
+        <qualifiedname>iceberg::GeospatialBound::z_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/geospatial.h" line="69" column="17" bodyfile="iceberg/geospatial.h" bodystart="69" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1GeospatialBound_1ab297a91cb6f7f289050f7e16bab167c6" prot="private" static="no" mutable="no">
+        <type>std::optional&lt; double &gt;</type>
+        <definition>std::optional&lt;double&gt; iceberg::GeospatialBound::m_</definition>
+        <argsstring></argsstring>
+        <name>m_</name>
+        <qualifiedname>iceberg::GeospatialBound::m_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/geospatial.h" line="70" column="17" bodyfile="iceberg/geospatial.h" bodystart="70" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classiceberg_1_1GeospatialBound_1a5b7b73d527ae1a89b9038305f8b04c60" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1GeospatialBound" kindref="compound">GeospatialBound</ref></type>
+        <definition>static GeospatialBound iceberg::GeospatialBound::XY</definition>
+        <argsstring>(double x, double y)</argsstring>
+        <name>XY</name>
+        <qualifiedname>iceberg::GeospatialBound::XY</qualifiedname>
+        <param>
+          <type>double</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>y</declname>
+        </param>
+        <briefdescription>
+<para>Create a two-dimensional bound. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/geospatial.h" line="40" column="26"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1GeospatialBound_1a71659496f7f313cce12ddaa53c54d368" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1GeospatialBound" kindref="compound">GeospatialBound</ref></type>
+        <definition>static GeospatialBound iceberg::GeospatialBound::XYZ</definition>
+        <argsstring>(double x, double y, double z)</argsstring>
+        <name>XYZ</name>
+        <qualifiedname>iceberg::GeospatialBound::XYZ</qualifiedname>
+        <param>
+          <type>double</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>y</declname>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>z</declname>
+        </param>
+        <briefdescription>
+<para>Create a bound with a Z coordinate. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/geospatial.h" line="42" column="26"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1GeospatialBound_1a4bc65807394273b57fe77619c93735ef" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1GeospatialBound" kindref="compound">GeospatialBound</ref></type>
+        <definition>static GeospatialBound iceberg::GeospatialBound::XYM</definition>
+        <argsstring>(double x, double y, double m)</argsstring>
+        <name>XYM</name>
+        <qualifiedname>iceberg::GeospatialBound::XYM</qualifiedname>
+        <param>
+          <type>double</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>y</declname>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>m</declname>
+        </param>
+        <briefdescription>
+<para>Create a bound with an M coordinate. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/geospatial.h" line="44" column="26"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1GeospatialBound_1a36c67044e926ba48ba3a00845e9603ad" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1GeospatialBound" kindref="compound">GeospatialBound</ref></type>
+        <definition>static GeospatialBound iceberg::GeospatialBound::XYZM</definition>
+        <argsstring>(double x, double y, double z, double m)</argsstring>
+        <name>XYZM</name>
+        <qualifiedname>iceberg::GeospatialBound::XYZM</qualifiedname>
+        <param>
+          <type>double</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>y</declname>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>z</declname>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>m</declname>
+        </param>
+        <briefdescription>
+<para>Create a bound with Z and M coordinates. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/geospatial.h" line="46" column="26"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1GeospatialBound_1af7911abe6a9649d2532bd27743effbf3" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceiceberg_1a9d5594e371beb516b0120e07e69d3af6" kindref="member">Result</ref>&lt; <ref refid="classiceberg_1_1GeospatialBound" kindref="compound">GeospatialBound</ref> &gt;</type>
+        <definition>static Result&lt; GeospatialBound &gt; iceberg::GeospatialBound::Deserialize</definition>
+        <argsstring>(std::span&lt; const uint8_t &gt; bytes)</argsstring>
+        <name>Deserialize</name>
+        <qualifiedname>iceberg::GeospatialBound::Deserialize</qualifiedname>
+        <param>
+          <type>std::span&lt; const uint8_t &gt;</type>
+          <declname>bytes</declname>
+        </param>
+        <briefdescription>
+<para>Decode a little-endian geospatial bound. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/geospatial.h" line="58" column="17"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1GeospatialBound_1a23964d7f0b70e89626e27d0f63aa500f" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>double</type>
+        <definition>double iceberg::GeospatialBound::x</definition>
+        <argsstring>() const</argsstring>
+        <name>x</name>
+        <qualifiedname>iceberg::GeospatialBound::x</qualifiedname>
+        <briefdescription>
+<para>Return the X coordinate. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/geospatial.h" line="49" column="10" bodyfile="iceberg/geospatial.h" bodystart="49" bodyend="49"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1GeospatialBound_1a17c7796d3f77afc3479ca7017464528c" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>double</type>
+        <definition>double iceberg::GeospatialBound::y</definition>
+        <argsstring>() const</argsstring>
+        <name>y</name>
+        <qualifiedname>iceberg::GeospatialBound::y</qualifiedname>
+        <briefdescription>
+<para>Return the Y coordinate. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/geospatial.h" line="51" column="10" bodyfile="iceberg/geospatial.h" bodystart="51" bodyend="51"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1GeospatialBound_1a5919e245b92d705a7d8a82664fe6b3e6" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>const std::optional&lt; double &gt; &amp;</type>
+        <definition>const std::optional&lt; double &gt; &amp; iceberg::GeospatialBound::z</definition>
+        <argsstring>() const</argsstring>
+        <name>z</name>
+        <qualifiedname>iceberg::GeospatialBound::z</qualifiedname>
+        <briefdescription>
+<para>Return the optional Z coordinate. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/geospatial.h" line="53" column="23" bodyfile="iceberg/geospatial.h" bodystart="53" bodyend="53"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1GeospatialBound_1ae426ca3c35292df9281a2165578f10c3" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>const std::optional&lt; double &gt; &amp;</type>
+        <definition>const std::optional&lt; double &gt; &amp; iceberg::GeospatialBound::m</definition>
+        <argsstring>() const</argsstring>
+        <name>m</name>
+        <qualifiedname>iceberg::GeospatialBound::m</qualifiedname>
+        <briefdescription>
+<para>Return the optional M coordinate. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/geospatial.h" line="55" column="23" bodyfile="iceberg/geospatial.h" bodystart="55" bodyend="55"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1GeospatialBound_1ab38fe3e901d2dc4547f7569bd2518914" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>std::vector&lt; uint8_t &gt;</type>
+        <definition>std::vector&lt; uint8_t &gt; iceberg::GeospatialBound::Serialize</definition>
+        <argsstring>() const</argsstring>
+        <name>Serialize</name>
+        <qualifiedname>iceberg::GeospatialBound::Serialize</qualifiedname>
+        <briefdescription>
+<para>Encode this bound using little-endian encoding. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/geospatial.h" line="60" column="15"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="friend">
+      <memberdef kind="friend" id="classiceberg_1_1GeospatialBound_1a286d5ef7174e6830c83c526959937f8c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool operator==</definition>
+        <argsstring>(const GeospatialBound &amp;, const GeospatialBound &amp;)=default</argsstring>
+        <name>operator==</name>
+        <qualifiedname>iceberg::GeospatialBound::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1GeospatialBound" kindref="compound">GeospatialBound</ref> &amp;</type>
+        </param>
+        <param>
+          <type>const <ref refid="classiceberg_1_1GeospatialBound" kindref="compound">GeospatialBound</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/geospatial.h" line="62" column="15"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classiceberg_1_1GeospatialBound_1adc8f00437ed61d349ead094f92777647" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::GeospatialBound::GeospatialBound</definition>
+        <argsstring>(double x, double y, std::optional&lt; double &gt; z, std::optional&lt; double &gt; m)</argsstring>
+        <name>GeospatialBound</name>
+        <qualifiedname>iceberg::GeospatialBound::GeospatialBound</qualifiedname>
+        <param>
+          <type>double</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>y</declname>
+        </param>
+        <param>
+          <type>std::optional&lt; double &gt;</type>
+          <declname>z</declname>
+        </param>
+        <param>
+          <type>std::optional&lt; double &gt;</type>
+          <declname>m</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/geospatial.h" line="65" column="3"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>A point used as a lower or upper geospatial column bound. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/geospatial.h" line="37" column="1" bodyfile="iceberg/geospatial.h" bodystart="37" bodyend="71"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1GeospatialBound_1af7911abe6a9649d2532bd27743effbf3" prot="public" virt="non-virtual"><scope>iceberg::GeospatialBound</scope><name>Deserialize</name></member>
+      <member refid="classiceberg_1_1GeospatialBound_1adc8f00437ed61d349ead094f92777647" prot="private" virt="non-virtual"><scope>iceberg::GeospatialBound</scope><name>GeospatialBound</name></member>
+      <member refid="classiceberg_1_1GeospatialBound_1ae426ca3c35292df9281a2165578f10c3" prot="public" virt="non-virtual"><scope>iceberg::GeospatialBound</scope><name>m</name></member>
+      <member refid="classiceberg_1_1GeospatialBound_1ab297a91cb6f7f289050f7e16bab167c6" prot="private" virt="non-virtual"><scope>iceberg::GeospatialBound</scope><name>m_</name></member>
+      <member refid="classiceberg_1_1GeospatialBound_1a286d5ef7174e6830c83c526959937f8c" prot="public" virt="non-virtual"><scope>iceberg::GeospatialBound</scope><name>operator==</name></member>
+      <member refid="classiceberg_1_1GeospatialBound_1ab38fe3e901d2dc4547f7569bd2518914" prot="public" virt="non-virtual"><scope>iceberg::GeospatialBound</scope><name>Serialize</name></member>
+      <member refid="classiceberg_1_1GeospatialBound_1a23964d7f0b70e89626e27d0f63aa500f" prot="public" virt="non-virtual"><scope>iceberg::GeospatialBound</scope><name>x</name></member>
+      <member refid="classiceberg_1_1GeospatialBound_1a337929645d95f00f1440cac821a87509" prot="private" virt="non-virtual"><scope>iceberg::GeospatialBound</scope><name>x_</name></member>
+      <member refid="classiceberg_1_1GeospatialBound_1a5b7b73d527ae1a89b9038305f8b04c60" prot="public" virt="non-virtual"><scope>iceberg::GeospatialBound</scope><name>XY</name></member>
+      <member refid="classiceberg_1_1GeospatialBound_1a4bc65807394273b57fe77619c93735ef" prot="public" virt="non-virtual"><scope>iceberg::GeospatialBound</scope><name>XYM</name></member>
+      <member refid="classiceberg_1_1GeospatialBound_1a71659496f7f313cce12ddaa53c54d368" prot="public" virt="non-virtual"><scope>iceberg::GeospatialBound</scope><name>XYZ</name></member>
+      <member refid="classiceberg_1_1GeospatialBound_1a36c67044e926ba48ba3a00845e9603ad" prot="public" virt="non-virtual"><scope>iceberg::GeospatialBound</scope><name>XYZM</name></member>
+      <member refid="classiceberg_1_1GeospatialBound_1a17c7796d3f77afc3479ca7017464528c" prot="public" virt="non-virtual"><scope>iceberg::GeospatialBound</scope><name>y</name></member>
+      <member refid="classiceberg_1_1GeospatialBound_1a21001d2100e6a82286f6cc3e12c2e347" prot="private" virt="non-virtual"><scope>iceberg::GeospatialBound</scope><name>y_</name></member>
+      <member refid="classiceberg_1_1GeospatialBound_1a5919e245b92d705a7d8a82664fe6b3e6" prot="public" virt="non-virtual"><scope>iceberg::GeospatialBound</scope><name>z</name></member>
+      <member refid="classiceberg_1_1GeospatialBound_1a3a4fe7cf0e18f7fa869e7f4e9ed96a0b" prot="private" virt="non-virtual"><scope>iceberg::GeospatialBound</scope><name>z_</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

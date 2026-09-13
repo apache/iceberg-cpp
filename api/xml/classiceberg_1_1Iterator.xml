@@ -1,0 +1,220 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1Iterator" kind="class" language="C++" prot="public" abstract="yes">
+    <compoundname>iceberg::Iterator</compoundname>
+    <includes refid="iterator_8h" local="no">iterator.h</includes>
+    <templateparamlist>
+      <param>
+        <type>typename T</type>
+      </param>
+    </templateparamlist>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1Iterator_1a08261b86637c37740ec42f513862ec0b" prot="private" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool iceberg::Iterator&lt; T &gt;::finished_</definition>
+        <argsstring></argsstring>
+        <name>finished_</name>
+        <qualifiedname>iceberg::Iterator::finished_</qualifiedname>
+        <initializer>= false</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/iterator.h" line="125" column="8" bodyfile="iceberg/util/iterator.h" bodystart="125" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1Iterator_1a34755691fb085d6dfba4c8e23fa115f3" prot="private" static="no" mutable="no">
+        <type>std::optional&lt; <ref refid="structiceberg_1_1Error" kindref="compound">Error</ref> &gt;</type>
+        <definition>std::optional&lt;Error&gt; iceberg::Iterator&lt; T &gt;::error_</definition>
+        <argsstring></argsstring>
+        <name>error_</name>
+        <qualifiedname>iceberg::Iterator::error_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/iterator.h" line="126" column="17" bodyfile="iceberg/util/iterator.h" bodystart="126" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1Iterator_1a805404eb62854f5a66e54f615b47c2a4" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type></type>
+        <definition>virtual iceberg::Iterator&lt; T &gt;::~Iterator</definition>
+        <argsstring>()=default</argsstring>
+        <name>~Iterator</name>
+        <qualifiedname>iceberg::Iterator::~Iterator</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/iterator.h" line="47" column="11"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Iterator_1ab89ed78abe5dd1c01550814daeb1e37f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::Iterator&lt; T &gt;::Iterator</definition>
+        <argsstring>()=default</argsstring>
+        <name>Iterator</name>
+        <qualifiedname>iceberg::Iterator::Iterator</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/iterator.h" line="49" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Iterator_1a49d054c15c17888e7df33589cab1a23e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::Iterator&lt; T &gt;::Iterator</definition>
+        <argsstring>(const Iterator &amp;)=delete</argsstring>
+        <name>Iterator</name>
+        <qualifiedname>iceberg::Iterator::Iterator</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Iterator" kindref="compound">Iterator</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/iterator.h" line="50" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Iterator_1a9e97c1f81f0942f8945f14c6b8a70a6e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1Iterator" kindref="compound">Iterator</ref> &amp;</type>
+        <definition>Iterator &amp; iceberg::Iterator&lt; T &gt;::operator=</definition>
+        <argsstring>(const Iterator &amp;)=delete</argsstring>
+        <name>operator=</name>
+        <qualifiedname>iceberg::Iterator::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Iterator" kindref="compound">Iterator</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/iterator.h" line="51" column="12"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Iterator_1a8addb6bdc6658e0a2709eda47f4df873" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::Iterator&lt; T &gt;::Iterator</definition>
+        <argsstring>(Iterator &amp;&amp;) noexcept=default</argsstring>
+        <name>Iterator</name>
+        <qualifiedname>iceberg::Iterator::Iterator</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1Iterator" kindref="compound">Iterator</ref> &amp;&amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/iterator.h" line="52" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Iterator_1af389edaa5546f70ec25c78b5e621bac1" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1Iterator" kindref="compound">Iterator</ref> &amp;</type>
+        <definition>Iterator &amp; iceberg::Iterator&lt; T &gt;::operator=</definition>
+        <argsstring>(Iterator &amp;&amp;) noexcept=default</argsstring>
+        <name>operator=</name>
+        <qualifiedname>iceberg::Iterator::operator=</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1Iterator" kindref="compound">Iterator</ref> &amp;&amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/iterator.h" line="53" column="12"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Iterator_1a0a5d3f0cf558d9105317ea80993f96c4" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="namespaceiceberg_1a9d5594e371beb516b0120e07e69d3af6" kindref="member">Result</ref>&lt; std::optional&lt; T &gt; &gt;</type>
+        <definition>Result&lt; std::optional&lt; T &gt; &gt; iceberg::Iterator&lt; T &gt;::Next</definition>
+        <argsstring>()</argsstring>
+        <name>Next</name>
+        <qualifiedname>iceberg::Iterator::Next</qualifiedname>
+        <briefdescription>
+<para>Return the next value, or std::nullopt when the iterator is exhausted. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>After this method returns an error or std::nullopt, subsequent calls return the same terminal result without invoking <ref refid="classiceberg_1_1Iterator_1a1bbfc3019cd9a5e373f2a515e0533199" kindref="member">NextImpl()</ref>. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/iterator.h" line="59" column="10" bodyfile="iceberg/util/iterator.h" bodystart="59" bodyend="74"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Iterator_1abae2fe7a3310a023ff0597aa68b986f2" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="namespaceiceberg_1a9d5594e371beb516b0120e07e69d3af6" kindref="member">Result</ref>&lt; std::vector&lt; T &gt; &gt;</type>
+        <definition>Result&lt; std::vector&lt; T &gt; &gt; iceberg::Iterator&lt; T &gt;::ToVector</definition>
+        <argsstring>()</argsstring>
+        <name>ToVector</name>
+        <qualifiedname>iceberg::Iterator::ToVector</qualifiedname>
+        <briefdescription>
+<para>Consume the remaining values into a vector. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/iterator.h" line="77" column="10" bodyfile="iceberg/util/iterator.h" bodystart="77" bodyend="115"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="protected-func">
+      <memberdef kind="function" id="classiceberg_1_1Iterator_1a1bbfc3019cd9a5e373f2a515e0533199" prot="protected" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type><ref refid="namespaceiceberg_1a9d5594e371beb516b0120e07e69d3af6" kindref="member">Result</ref>&lt; std::optional&lt; T &gt; &gt;</type>
+        <definition>virtual Result&lt; std::optional&lt; T &gt; &gt; iceberg::Iterator&lt; T &gt;::NextImpl</definition>
+        <argsstring>()=0</argsstring>
+        <name>NextImpl</name>
+        <qualifiedname>iceberg::Iterator::NextImpl</qualifiedname>
+        <briefdescription>
+<para>Produce the next value for <ref refid="classiceberg_1_1Iterator_1a0a5d3f0cf558d9105317ea80993f96c4" kindref="member">Next()</ref>. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Implementations must return std::nullopt when exhausted. <ref refid="classiceberg_1_1Iterator_1a0a5d3f0cf558d9105317ea80993f96c4" kindref="member">Next()</ref> makes the terminal state sticky, so implementations are not called after exhaustion or error. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/iterator.h" line="122" column="18"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>A pull-based iterator whose reads may fail. </para>
+    </briefdescription>
+    <detaileddescription>
+<para><ref refid="classiceberg_1_1Iterator" kindref="compound">Iterator</ref> implementations own any resources needed to produce values. Destroying an iterator releases those resources, including when iteration stops before reaching the end. Iterators are not thread-safe unless an implementation explicitly says otherwise. Once <ref refid="classiceberg_1_1Iterator_1a0a5d3f0cf558d9105317ea80993f96c4" kindref="member">Next()</ref> returns an error or std::nullopt, the iterator is terminal. Subsequent calls return the same terminal result without invoking the implementation again.</para>
+<para><parameterlist kind="templateparam"><parameteritem>
+<parameternamelist>
+<parametername>T</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Value returned by the iterator. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+    </detaileddescription>
+    <location file="iceberg/util/iterator.h" line="45" column="1" bodyfile="iceberg/util/iterator.h" bodystart="45" bodyend="127"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1Iterator_1a34755691fb085d6dfba4c8e23fa115f3" prot="private" virt="non-virtual"><scope>iceberg::Iterator</scope><name>error_</name></member>
+      <member refid="classiceberg_1_1Iterator_1a08261b86637c37740ec42f513862ec0b" prot="private" virt="non-virtual"><scope>iceberg::Iterator</scope><name>finished_</name></member>
+      <member refid="classiceberg_1_1Iterator_1ab89ed78abe5dd1c01550814daeb1e37f" prot="public" virt="non-virtual"><scope>iceberg::Iterator</scope><name>Iterator</name></member>
+      <member refid="classiceberg_1_1Iterator_1a49d054c15c17888e7df33589cab1a23e" prot="public" virt="non-virtual"><scope>iceberg::Iterator</scope><name>Iterator</name></member>
+      <member refid="classiceberg_1_1Iterator_1a8addb6bdc6658e0a2709eda47f4df873" prot="public" virt="non-virtual"><scope>iceberg::Iterator</scope><name>Iterator</name></member>
+      <member refid="classiceberg_1_1Iterator_1a0a5d3f0cf558d9105317ea80993f96c4" prot="public" virt="non-virtual"><scope>iceberg::Iterator</scope><name>Next</name></member>
+      <member refid="classiceberg_1_1Iterator_1a1bbfc3019cd9a5e373f2a515e0533199" prot="protected" virt="pure-virtual"><scope>iceberg::Iterator</scope><name>NextImpl</name></member>
+      <member refid="classiceberg_1_1Iterator_1a9e97c1f81f0942f8945f14c6b8a70a6e" prot="public" virt="non-virtual"><scope>iceberg::Iterator</scope><name>operator=</name></member>
+      <member refid="classiceberg_1_1Iterator_1af389edaa5546f70ec25c78b5e621bac1" prot="public" virt="non-virtual"><scope>iceberg::Iterator</scope><name>operator=</name></member>
+      <member refid="classiceberg_1_1Iterator_1abae2fe7a3310a023ff0597aa68b986f2" prot="public" virt="non-virtual"><scope>iceberg::Iterator</scope><name>ToVector</name></member>
+      <member refid="classiceberg_1_1Iterator_1a805404eb62854f5a66e54f615b47c2a4" prot="public" virt="virtual"><scope>iceberg::Iterator</scope><name>~Iterator</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

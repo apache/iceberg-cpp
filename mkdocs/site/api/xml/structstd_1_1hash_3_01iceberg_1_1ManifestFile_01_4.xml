@@ -1,0 +1,36 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structstd_1_1hash_3_01iceberg_1_1ManifestFile_01_4" kind="struct" language="C++" prot="public">
+    <compoundname>std::hash&lt; iceberg::ManifestFile &gt;</compoundname>
+    <templateparamlist>
+    </templateparamlist>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structstd_1_1hash_3_01iceberg_1_1ManifestFile_01_4_1aa221021935c3ff3650eed3e92f609c1f" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>size_t</type>
+        <definition>size_t std::hash&lt; iceberg::ManifestFile &gt;::operator()</definition>
+        <argsstring>(const iceberg::ManifestFile &amp;manifest_file) const</argsstring>
+        <name>operator()</name>
+        <qualifiedname>std::hash&lt; iceberg::ManifestFile &gt;::operator()</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1ManifestFile" kindref="compound">iceberg::ManifestFile</ref> &amp;</type>
+          <declname>manifest_file</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_list.h" line="281" column="10" bodyfile="iceberg/manifest/manifest_list.h" bodystart="281" bodyend="283"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/manifest/manifest_list.h" line="280" column="1" bodyfile="iceberg/manifest/manifest_list.h" bodystart="280" bodyend="284"/>
+    <listofallmembers>
+      <member refid="structstd_1_1hash_3_01iceberg_1_1ManifestFile_01_4_1aa221021935c3ff3650eed3e92f609c1f" prot="public" virt="non-virtual"><scope>std::hash&lt; iceberg::ManifestFile &gt;</scope><name>operator()</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>
