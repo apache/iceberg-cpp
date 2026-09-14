@@ -21,7 +21,11 @@
 
 #include "iceberg/expression/expressions.h"
 #include "iceberg/expression/term.h"
+#include "iceberg/logging/log_level.h"
+#include "iceberg/snapshot.h"
 #include "iceberg/sort_order.h"
+#include "iceberg/table_metadata.h"
+#include "iceberg/test/logging_test_helpers.h"
 #include "iceberg/test/matchers.h"
 #include "iceberg/test/mock_catalog.h"
 #include "iceberg/test/update_test_base.h"
@@ -173,7 +177,181 @@ TEST_F(TransactionRetryTest, CommitRetryExhausted) {
   EXPECT_EQ(update_call_count, 5);
 }
 
-TEST_F(TransactionRetryTest, CommitNonRetryableErrorStopsImmediately) {
+namespace {
+// True if any captured record has the given level and a message containing `needle`.
+bool HasRecord(const std::vector<LogMessage>& records, LogLevel level,
+               std::string_view needle) {
+  for (const auto& record : records) {
+    if (record.level == level && record.message.find(needle) != std::string::npos) {
+      return true;
+    }
+  }
+  return false;
+}
+}  // namespace
+
+// A commit that succeeds after one retryable conflict emits a WARN for the retry
+// (carrying the prior error) and an INFO for the eventual success.
+TEST_F(TransactionRetryTest, CommitRetryEmitsRetryAndSuccessLogs) {
+  auto capturing = std::make_shared<CapturingLogger>();
+  capturing->SetLevel(LogLevel::kTrace);
+  ScopedDefaultLogger guard(capturing);
+
+  int update_call_count = 0;
+  ON_CALL(*mock_catalog_, UpdateTable(::testing::_, ::testing::_, ::testing::_))
+      .WillByDefault([this, &update_call_count](
+                         const TableIdentifier&,
+                         const std::vector<std::unique_ptr<TableRequirement>>&,
+                         const std::vector<std::unique_ptr<TableUpdate>>&)
+                         -> Result<std::shared_ptr<Table>> {
+        ++update_call_count;
+        if (update_call_count == 1) {
+          return CommitFailed("conflict on first attempt");
+        }
+        return Table::Make(mock_table_->name(), mock_table_->metadata(),
+                           std::string(mock_table_->metadata_file_location()),
+                           mock_table_->io(), mock_catalog_);
+      });
+
+  ICEBERG_UNWRAP_OR_FAIL(auto txn, mock_table_->NewTransaction());
+  ICEBERG_UNWRAP_OR_FAIL(auto update, txn->NewUpdateProperties());
+  update->Set("retry.test", "value");
+  EXPECT_THAT(update->Commit(), IsOk());
+  EXPECT_THAT(txn->Commit(), IsOk());
+
+  auto records = capturing->records();
+  EXPECT_TRUE(
+      HasRecord(records, LogLevel::kWarn, "Retrying transaction commit (attempt 2)"))
+      << "expected a retry WARN";
+  EXPECT_TRUE(HasRecord(records, LogLevel::kWarn, "conflict on first attempt"))
+      << "retry WARN should carry the prior error";
+  EXPECT_TRUE(HasRecord(records, LogLevel::kInfo, "succeeded after 2 attempts"))
+      << "expected a success INFO";
+}
+
+// A metadata-only retry must not attribute a snapshot committed concurrently by
+// another writer to this transaction.
+TEST_F(TransactionRetryTest, MetadataOnlyRetryDoesNotLogConcurrentSnapshot) {
+  auto capturing = std::make_shared<CapturingLogger>();
+  capturing->SetLevel(LogLevel::kTrace);
+  ScopedDefaultLogger guard(capturing);
+
+  constexpr int64_t kConcurrentSnapshotId = 987654321;
+  auto metadata_builder = TableMetadataBuilder::BuildFrom(mock_table_->metadata().get());
+  auto concurrent_snapshot = std::make_shared<Snapshot>(Snapshot{
+      .snapshot_id = kConcurrentSnapshotId,
+      .parent_snapshot_id = mock_table_->metadata()->current_snapshot_id,
+      .sequence_number = mock_table_->metadata()->last_sequence_number + 1,
+      .timestamp_ms = TimePointMs{},
+      .manifest_list = "concurrent-manifest-list.avro",
+      .summary = {{SnapshotSummaryFields::kOperation, "append"}},
+  });
+  metadata_builder->SetBranchSnapshot(concurrent_snapshot,
+                                      std::string(SnapshotRef::kMainBranch));
+  ICEBERG_UNWRAP_OR_FAIL(auto concurrent_metadata, metadata_builder->Build());
+  auto concurrent_metadata_ptr =
+      std::shared_ptr<TableMetadata>(std::move(concurrent_metadata));
+  const std::string concurrent_metadata_location = "concurrent.metadata.json";
+
+  ON_CALL(*mock_catalog_, LoadTable(::testing::_))
+      .WillByDefault([this, concurrent_metadata_ptr, &concurrent_metadata_location](
+                         const TableIdentifier&) -> Result<std::shared_ptr<Table>> {
+        return Table::Make(mock_table_->name(), concurrent_metadata_ptr,
+                           concurrent_metadata_location, mock_table_->io(),
+                           mock_catalog_);
+      });
+
+  int update_call_count = 0;
+  ON_CALL(*mock_catalog_, UpdateTable(::testing::_, ::testing::_, ::testing::_))
+      .WillByDefault(
+          [this, concurrent_metadata_ptr, &concurrent_metadata_location,
+           &update_call_count](const TableIdentifier&,
+                               const std::vector<std::unique_ptr<TableRequirement>>&,
+                               const std::vector<std::unique_ptr<TableUpdate>>&)
+              -> Result<std::shared_ptr<Table>> {
+            if (++update_call_count == 1) {
+              return CommitFailed("conflict on first attempt");
+            }
+            return Table::Make(mock_table_->name(), concurrent_metadata_ptr,
+                               concurrent_metadata_location, mock_table_->io(),
+                               mock_catalog_);
+          });
+
+  ICEBERG_UNWRAP_OR_FAIL(auto txn, mock_table_->NewTransaction());
+  ICEBERG_UNWRAP_OR_FAIL(auto update, txn->NewUpdateProperties());
+  update->Set("retry.test", "value");
+  ASSERT_THAT(update->Commit(), IsOk());
+  ASSERT_THAT(txn->Commit(), IsOk());
+
+  EXPECT_FALSE(HasRecord(capturing->records(), LogLevel::kInfo,
+                         std::to_string(kConcurrentSnapshotId)))
+      << "metadata-only commit attributed the concurrent snapshot to itself";
+}
+
+// A commit that exhausts its retries returns the final error without emitting a
+// generic ERROR log. Genuine retry attempts still emit WARN records.
+TEST_F(TransactionRetryTest, CommitRetryExhaustedDoesNotEmitErrorLog) {
+  auto capturing = std::make_shared<CapturingLogger>();
+  capturing->SetLevel(LogLevel::kTrace);
+  ScopedDefaultLogger guard(capturing);
+
+  ON_CALL(*mock_catalog_, UpdateTable(::testing::_, ::testing::_, ::testing::_))
+      .WillByDefault([](const TableIdentifier&,
+                        const std::vector<std::unique_ptr<TableRequirement>>&,
+                        const std::vector<std::unique_ptr<TableUpdate>>&)
+                         -> Result<std::shared_ptr<Table>> {
+        return CommitFailed("always conflicts");
+      });
+
+  ICEBERG_UNWRAP_OR_FAIL(auto txn, mock_table_->NewTransaction());
+  ICEBERG_UNWRAP_OR_FAIL(auto update, txn->NewUpdateProperties());
+  update->Set("retry.test", "value");
+  EXPECT_THAT(update->Commit(), IsOk());
+  EXPECT_THAT(txn->Commit(), IsError(ErrorKind::kCommitFailed));
+
+  auto records = capturing->records();
+  EXPECT_FALSE(HasRecord(records, LogLevel::kError, ""))
+      << "the final commit error should be propagated without a generic ERROR log";
+  // Retries 2..5 each log a WARN.
+  EXPECT_TRUE(
+      HasRecord(records, LogLevel::kWarn, "Retrying transaction commit (attempt 5)"));
+}
+
+// A commit that succeeds on the first attempt emits a plain success INFO (no
+// "after N attempts"). This is the single-attempt case that was previously silent.
+TEST_F(TransactionRetryTest, CommitSuccessEmitsInfoLog) {
+  auto capturing = std::make_shared<CapturingLogger>();
+  capturing->SetLevel(LogLevel::kTrace);
+  ScopedDefaultLogger guard(capturing);
+
+  ON_CALL(*mock_catalog_, UpdateTable(::testing::_, ::testing::_, ::testing::_))
+      .WillByDefault([this](const TableIdentifier&,
+                            const std::vector<std::unique_ptr<TableRequirement>>&,
+                            const std::vector<std::unique_ptr<TableUpdate>>&)
+                         -> Result<std::shared_ptr<Table>> {
+        return Table::Make(mock_table_->name(), mock_table_->metadata(),
+                           std::string(mock_table_->metadata_file_location()),
+                           mock_table_->io(), mock_catalog_);
+      });
+
+  ICEBERG_UNWRAP_OR_FAIL(auto txn, mock_table_->NewTransaction());
+  ICEBERG_UNWRAP_OR_FAIL(auto update, txn->NewUpdateProperties());
+  update->Set("retry.test", "value");
+  EXPECT_THAT(update->Commit(), IsOk());
+  EXPECT_THAT(txn->Commit(), IsOk());
+
+  auto records = capturing->records();
+  EXPECT_TRUE(HasRecord(records, LogLevel::kInfo, "Transaction commit succeeded"))
+      << "expected a success INFO on a single-attempt commit";
+  // No retry happened, so there must be no retry WARN.
+  EXPECT_FALSE(HasRecord(records, LogLevel::kWarn, "Retrying transaction commit"));
+}
+
+TEST_F(TransactionRetryTest, CommitStateUnknownStopsImmediatelyWithoutErrorLog) {
+  auto capturing = std::make_shared<CapturingLogger>();
+  capturing->SetLevel(LogLevel::kTrace);
+  ScopedDefaultLogger guard(capturing);
+
   int update_call_count = 0;
   ON_CALL(*mock_catalog_, UpdateTable(::testing::_, ::testing::_, ::testing::_))
       .WillByDefault(
@@ -193,6 +371,8 @@ TEST_F(TransactionRetryTest, CommitNonRetryableErrorStopsImmediately) {
   auto result = txn->Commit();
   EXPECT_THAT(result, IsError(ErrorKind::kCommitStateUnknown));
   EXPECT_EQ(update_call_count, 1);  // Should not retry
+  EXPECT_FALSE(HasRecord(capturing->records(), LogLevel::kError, ""))
+      << "an unknown commit state must not be logged as a confirmed failure";
 }
 
 TEST_F(TransactionRetryTest, CreateTransactionDoesNotRetry) {
