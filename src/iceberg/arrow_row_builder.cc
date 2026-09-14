@@ -136,6 +136,9 @@ Status AppendBytes(ArrowArray* array, std::span<const uint8_t> value) {
 }
 
 Status AppendIntList(ArrowArray* array, const std::vector<int32_t>& values) {
+  if (values.empty()) {
+    return AppendNull(array);
+  }
   auto list_array = array->children[0];
   for (const auto& value : values) {
     ICEBERG_NANOARROW_RETURN_UNEXPECTED(
@@ -146,6 +149,9 @@ Status AppendIntList(ArrowArray* array, const std::vector<int32_t>& values) {
 }
 
 Status AppendIntList(ArrowArray* array, const std::vector<int64_t>& values) {
+  if (values.empty()) {
+    return AppendNull(array);
+  }
   auto list_array = array->children[0];
   for (const auto& value : values) {
     ICEBERG_NANOARROW_RETURN_UNEXPECTED(ArrowArrayAppendInt(list_array, value));
@@ -174,6 +180,9 @@ Status AppendStringMap(ArrowArray* array,
 }
 
 Status AppendIntMap(ArrowArray* array, const std::map<int32_t, int64_t>& entries) {
+  if (entries.empty()) {
+    return AppendNull(array);
+  }
   auto map_array = array->children[0];
   if (map_array->n_children != 2) {
     return InvalidArrowData("Map array must have exactly 2 children.");
@@ -191,6 +200,9 @@ Status AppendIntMap(ArrowArray* array, const std::map<int32_t, int64_t>& entries
 
 Status AppendBinaryMap(ArrowArray* array,
                        const std::map<int32_t, std::vector<uint8_t>>& entries) {
+  if (entries.empty()) {
+    return AppendNull(array);
+  }
   auto map_array = array->children[0];
   if (map_array->n_children != 2) {
     return InvalidArrowData("Map array must have exactly 2 children.");

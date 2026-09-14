@@ -52,6 +52,29 @@ std::shared_ptr<Schema> MakeTestSchema() {
                                     SchemaField::MakeRequired(7, "value", string())))});
 }
 
+/// \brief A schema exercising the list/map append helpers backing Iceberg's
+/// optional DataFile fields (e.g. equality_ids, split_offsets, column_sizes,
+/// lower_bounds): list<int32>, list<int64>, map<int32, int64>, and
+/// map<int32, binary>.
+std::shared_ptr<Schema> MakeListMapTestSchema() {
+  return std::make_shared<Schema>(std::vector<SchemaField>{
+      SchemaField::MakeOptional(1, "int32_list",
+                                list(SchemaField::MakeRequired(
+                                    2, std::string(ListType::kElementName), int32()))),
+      SchemaField::MakeOptional(3, "int64_list",
+                                list(SchemaField::MakeRequired(
+                                    4, std::string(ListType::kElementName), int64()))),
+      SchemaField::MakeOptional(
+          5, "int_map",
+          map(SchemaField::MakeRequired(6, std::string(MapType::kKeyName), int32()),
+              SchemaField::MakeRequired(7, std::string(MapType::kValueName), int64()))),
+      SchemaField::MakeOptional(
+          8, "binary_map",
+          map(SchemaField::MakeRequired(9, std::string(MapType::kKeyName), int32()),
+              SchemaField::MakeRequired(10, std::string(MapType::kValueName),
+                                        binary())))});
+}
+
 /// \brief Finish a builder and import the result into an Arrow RecordBatch.
 std::shared_ptr<::arrow::RecordBatch> FinishAndImport(ArrowRowBuilder builder,
                                                       const Schema& schema) {
@@ -176,6 +199,88 @@ TEST(ArrowRowBuilderTest, ColumnIndexOutOfRangeReturnsNull) {
   EXPECT_NE(builder.column(4), nullptr);
   EXPECT_EQ(builder.column(-1), nullptr);
   EXPECT_EQ(builder.column(5), nullptr);
+}
+
+TEST(ArrowRowBuilderTest, AppendIntListWritesNullForEmptyInput) {
+  auto schema = MakeListMapTestSchema();
+  ICEBERG_UNWRAP_OR_FAIL(auto builder, ArrowRowBuilder::Make(*schema));
+
+  // Row 0: non-empty lists.
+  ASSERT_THAT(AppendIntList(builder.column(0), std::vector<int32_t>{1, 2}), IsOk());
+  ASSERT_THAT(AppendIntList(builder.column(1), std::vector<int64_t>{3, 4}), IsOk());
+  ASSERT_THAT(AppendNull(builder.column(2)), IsOk());
+  ASSERT_THAT(AppendNull(builder.column(3)), IsOk());
+  ASSERT_THAT(builder.FinishRow(), IsOk());
+
+  // Row 1: empty lists must be encoded as null, not an empty list.
+  ASSERT_THAT(AppendIntList(builder.column(0), std::vector<int32_t>{}), IsOk());
+  ASSERT_THAT(AppendIntList(builder.column(1), std::vector<int64_t>{}), IsOk());
+  ASSERT_THAT(AppendNull(builder.column(2)), IsOk());
+  ASSERT_THAT(AppendNull(builder.column(3)), IsOk());
+  ASSERT_THAT(builder.FinishRow(), IsOk());
+
+  auto batch = FinishAndImport(std::move(builder), *schema);
+  ASSERT_EQ(batch->num_rows(), 2);
+
+  auto int32_list = std::static_pointer_cast<::arrow::ListArray>(batch->column(0));
+  EXPECT_FALSE(int32_list->IsNull(0));
+  EXPECT_TRUE(int32_list->IsNull(1));
+
+  auto int64_list = std::static_pointer_cast<::arrow::ListArray>(batch->column(1));
+  EXPECT_FALSE(int64_list->IsNull(0));
+  EXPECT_TRUE(int64_list->IsNull(1));
+}
+
+TEST(ArrowRowBuilderTest, AppendIntMapWritesNullForEmptyInput) {
+  auto schema = MakeListMapTestSchema();
+  ICEBERG_UNWRAP_OR_FAIL(auto builder, ArrowRowBuilder::Make(*schema));
+
+  // Row 0: a non-empty map.
+  ASSERT_THAT(AppendNull(builder.column(0)), IsOk());
+  ASSERT_THAT(AppendNull(builder.column(1)), IsOk());
+  ASSERT_THAT(AppendIntMap(builder.column(2), {{1, 100}}), IsOk());
+  ASSERT_THAT(AppendNull(builder.column(3)), IsOk());
+  ASSERT_THAT(builder.FinishRow(), IsOk());
+
+  // Row 1: an empty map must be encoded as null, not an empty map.
+  ASSERT_THAT(AppendNull(builder.column(0)), IsOk());
+  ASSERT_THAT(AppendNull(builder.column(1)), IsOk());
+  ASSERT_THAT(AppendIntMap(builder.column(2), {}), IsOk());
+  ASSERT_THAT(AppendNull(builder.column(3)), IsOk());
+  ASSERT_THAT(builder.FinishRow(), IsOk());
+
+  auto batch = FinishAndImport(std::move(builder), *schema);
+  ASSERT_EQ(batch->num_rows(), 2);
+
+  auto int_map = std::static_pointer_cast<::arrow::MapArray>(batch->column(2));
+  EXPECT_FALSE(int_map->IsNull(0));
+  EXPECT_TRUE(int_map->IsNull(1));
+}
+
+TEST(ArrowRowBuilderTest, AppendBinaryMapWritesNullForEmptyInput) {
+  auto schema = MakeListMapTestSchema();
+  ICEBERG_UNWRAP_OR_FAIL(auto builder, ArrowRowBuilder::Make(*schema));
+
+  // Row 0: a non-empty map.
+  ASSERT_THAT(AppendNull(builder.column(0)), IsOk());
+  ASSERT_THAT(AppendNull(builder.column(1)), IsOk());
+  ASSERT_THAT(AppendNull(builder.column(2)), IsOk());
+  ASSERT_THAT(AppendBinaryMap(builder.column(3), {{1, {0x01, 0x02}}}), IsOk());
+  ASSERT_THAT(builder.FinishRow(), IsOk());
+
+  // Row 1: an empty map must be encoded as null, not an empty map.
+  ASSERT_THAT(AppendNull(builder.column(0)), IsOk());
+  ASSERT_THAT(AppendNull(builder.column(1)), IsOk());
+  ASSERT_THAT(AppendNull(builder.column(2)), IsOk());
+  ASSERT_THAT(AppendBinaryMap(builder.column(3), {}), IsOk());
+  ASSERT_THAT(builder.FinishRow(), IsOk());
+
+  auto batch = FinishAndImport(std::move(builder), *schema);
+  ASSERT_EQ(batch->num_rows(), 2);
+
+  auto binary_map = std::static_pointer_cast<::arrow::MapArray>(batch->column(3));
+  EXPECT_FALSE(binary_map->IsNull(0));
+  EXPECT_TRUE(binary_map->IsNull(1));
 }
 
 }  // namespace iceberg
