@@ -17,41 +17,39 @@
  * under the License.
  */
 
+/// \file history_table_test.cc
+/// Unit tests for HistoryTable.
+
 #include "iceberg/inspect/history_table.h"
 
-#include <memory>
-#include <utility>
-#include <vector>
+#include <gmock/gmock.h>
+#include <gtest/gtest.h>
 
+#include "iceberg/inspect/metadata_table.h"
 #include "iceberg/schema.h"
 #include "iceberg/schema_field.h"
-#include "iceberg/table.h"
+#include "iceberg/test/matchers.h"
+#include "iceberg/test/metadata_table_test_base.h"
 #include "iceberg/type.h"
-#include "iceberg/util/macros.h"
 
 namespace iceberg {
+namespace {
 
-HistoryTable::HistoryTable(std::shared_ptr<Table> table)
-    : MetadataTable(std::move(table)) {}
-
-HistoryTable::~HistoryTable() = default;
-
-const std::shared_ptr<Schema>& HistoryTable::schema() const {
-  static const auto schema = std::make_shared<Schema>(std::vector<SchemaField>{
+std::shared_ptr<Schema> MakeHistorySchema() {
+  return std::make_shared<Schema>(std::vector<SchemaField>{
       SchemaField::MakeRequired(1, "made_current_at", timestamp_tz()),
       SchemaField::MakeRequired(2, "snapshot_id", int64()),
       SchemaField::MakeOptional(3, "parent_id", int64()),
       SchemaField::MakeRequired(4, "is_current_ancestor", boolean())});
-  return schema;
 }
 
-Result<std::unique_ptr<HistoryTable>> HistoryTable::Make(std::shared_ptr<Table> table) {
-  ICEBERG_PRECHECK(table != nullptr, "Table cannot be null");
-  return std::unique_ptr<HistoryTable>(new HistoryTable(std::move(table)));
-}
+}  // namespace
 
-Result<ArrowArrayStream> HistoryTable::Scan() {
-  return NotSupported("Scan is not supported for the history table");
+class HistoryTableTest : public MetadataTableTestBase {};
+
+TEST_F(HistoryTableTest, SchemaMatchesIcebergSchema) {
+  ICEBERG_UNWRAP_OR_FAIL(auto history_table, MetadataTable::Make<HistoryTable>(table_));
+  EXPECT_TRUE(*history_table->schema() == *MakeHistorySchema());
 }
 
 }  // namespace iceberg

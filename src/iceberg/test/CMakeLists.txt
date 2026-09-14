@@ -186,7 +186,12 @@ if(ICEBERG_BUILD_BUNDLE)
 
   add_iceberg_test(catalog_test USE_BUNDLE SOURCES in_memory_catalog_test.cc)
 
-  add_iceberg_test(metadata_table_test USE_BUNDLE SOURCES metadata_table_test.cc)
+  add_iceberg_test(metadata_table_test
+                   USE_BUNDLE
+                   SOURCES
+                   history_table_test.cc
+                   metadata_table_test.cc
+                   snapshots_table_test.cc)
 
   add_iceberg_test(eval_expr_test
                    USE_BUNDLE
