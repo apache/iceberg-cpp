@@ -30,16 +30,17 @@
 #include "iceberg/table_metadata.h"
 #include "iceberg/table_properties.h"
 #include "iceberg/transaction.h"
+#include "iceberg/update/update_util_internal.h"
 #include "iceberg/util/error_collector.h"
 #include "iceberg/util/macros.h"
 
 namespace iceberg {
 
-Result<std::unique_ptr<FastAppend>> FastAppend::Make(
+Result<std::shared_ptr<FastAppend>> FastAppend::Make(
     std::string table_name, std::shared_ptr<TransactionContext> ctx) {
   ICEBERG_PRECHECK(!table_name.empty(), "Table name cannot be empty");
   ICEBERG_PRECHECK(ctx != nullptr, "Cannot create FastAppend without a context");
-  return std::unique_ptr<FastAppend>(
+  return std::shared_ptr<FastAppend>(
       new FastAppend(std::move(table_name), std::move(ctx)));
 }
 
@@ -47,6 +48,7 @@ FastAppend::FastAppend(std::string table_name, std::shared_ptr<TransactionContex
     : SnapshotUpdate(std::move(ctx)), table_name_(std::move(table_name)) {}
 
 FastAppend& FastAppend::AppendFile(const std::shared_ptr<DataFile>& file) {
+  EnsureMutable();
   ICEBERG_BUILDER_CHECK(file != nullptr, "Invalid data file: null");
   ICEBERG_BUILDER_CHECK(file->partition_spec_id.has_value(),
                         "Data file must have partition spec ID");
@@ -65,6 +67,7 @@ FastAppend& FastAppend::AppendFile(const std::shared_ptr<DataFile>& file) {
 }
 
 FastAppend& FastAppend::AppendManifest(const ManifestFile& manifest) {
+  EnsureMutable();
   ICEBERG_BUILDER_CHECK(!manifest.has_existing_files(),
                         "Cannot append manifest with existing files");
   ICEBERG_BUILDER_CHECK(!manifest.has_deleted_files(),
@@ -79,13 +82,27 @@ FastAppend& FastAppend::AppendManifest(const ManifestFile& manifest) {
     append_manifests_.push_back(manifest);
   } else {
     // The manifest must be rewritten with this update's snapshot ID
-    ICEBERG_BUILDER_ASSIGN_OR_RETURN(auto copied_manifest,
-                                     CopyManifest(manifest, /*update_summary=*/true));
     append_manifests_to_copy_.push_back(manifest);
-    rewritten_append_manifests_.push_back(std::move(copied_manifest));
   }
 
   return *this;
+}
+
+Status FastAppend::Freeze() {
+  std::unordered_map<int32_t, DataFileSet> frozen;
+  added_data_files_summary_.Clear();
+  for (const auto& [_, files] : new_data_files_by_spec_) {
+    for (const auto& file : files) {
+      ICEBERG_ASSIGN_OR_RAISE(auto copy, internal::CopyUpdateDataFile(*file));
+      ICEBERG_PRECHECK(copy->partition_spec_id.has_value(),
+                       "Data file must have partition spec ID");
+      ICEBERG_ASSIGN_OR_RAISE(auto spec, Spec(*copy->partition_spec_id));
+      frozen[*copy->partition_spec_id].insert(copy);
+      ICEBERG_RETURN_UNEXPECTED(added_data_files_summary_.AddedFile(*spec, *copy));
+    }
+  }
+  new_data_files_by_spec_ = std::move(frozen);
+  return {};
 }
 
 std::string FastAppend::operation() { return DataOperation::kAppend; }
@@ -93,6 +110,10 @@ std::string FastAppend::operation() { return DataOperation::kAppend; }
 Result<std::vector<ManifestFile>> FastAppend::Apply(
     const TableMetadata& metadata_to_update, const std::shared_ptr<Snapshot>& snapshot) {
   std::vector<ManifestFile> manifests;
+  appended_manifests_summary_.Clear();
+  for (const auto& manifest : append_manifests_) {
+    appended_manifests_summary_.AddedManifest(manifest);
+  }
 
   ICEBERG_ASSIGN_OR_RAISE(auto new_written_manifests, WriteNewManifests());
   // A retry cleanup deletes copied append manifests and clears the rewritten
@@ -100,7 +121,7 @@ Result<std::vector<ManifestFile>> FastAppend::Apply(
   if (rewritten_append_manifests_.empty() && !append_manifests_to_copy_.empty()) {
     for (const auto& manifest : append_manifests_to_copy_) {
       ICEBERG_ASSIGN_OR_RAISE(auto copied_manifest,
-                              CopyManifest(manifest, /*update_summary=*/false));
+                              CopyManifest(manifest, /*update_summary=*/true));
       rewritten_append_manifests_.push_back(std::move(copied_manifest));
     }
   }
@@ -182,15 +203,6 @@ Status FastAppend::CleanUncommitted(const std::unordered_set<std::string>& commi
     rewritten_append_manifests_.clear();
   }
   return {};
-}
-
-bool FastAppend::CleanupAfterCommit() const {
-  // Cleanup after committing is disabled for FastAppend unless append manifests
-  // were copied or need to be copied on retry because:
-  // 1.) Directly appended manifests are never rewritten
-  // 2.) Manifests which are written out as part of AppendFile are already cleaned
-  //     up between commit attempts in WriteNewManifests
-  return !rewritten_append_manifests_.empty() || !append_manifests_to_copy_.empty();
 }
 
 Result<std::shared_ptr<PartitionSpec>> FastAppend::Spec(int32_t spec_id) {

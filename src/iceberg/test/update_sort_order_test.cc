@@ -41,7 +41,7 @@ class UpdateSortOrderTest : public UpdateTestBase {
   // Helper function to apply update and verify the resulting sort order
   void ApplyAndExpectSortOrder(UpdateSortOrder* update,
                                std::vector<SortField> expected_fields) {
-    ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+    ICEBERG_UNWRAP_OR_FAIL(auto result, update->Validate());
     ICEBERG_UNWRAP_OR_FAIL(
         auto expected_sort_order,
         SortOrder::Make(result->order_id(), std::move(expected_fields)));
@@ -51,7 +51,7 @@ class UpdateSortOrderTest : public UpdateTestBase {
 
 TEST_F(UpdateSortOrderTest, EmptySortOrder) {
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateSortOrder());
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Validate());
   // Should succeed with an unsorted order
   EXPECT_TRUE(result->fields().empty());
 }
@@ -144,7 +144,7 @@ TEST_F(UpdateSortOrderTest, AddSortFieldNullTerm) {
 
   update->AddSortField(nullptr, SortDirection::kAscending, NullOrder::kFirst);
 
-  auto result = update->Apply();
+  auto result = update->Validate();
   EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
   EXPECT_THAT(result, HasErrorMessage("Term cannot be null"));
 }
@@ -158,7 +158,7 @@ TEST_F(UpdateSortOrderTest, AddSortFieldInvalidTransform) {
 
   update->AddSortField(std::move(term), SortDirection::kAscending, NullOrder::kFirst);
 
-  auto result = update->Apply();
+  auto result = update->Validate();
   EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
   EXPECT_THAT(result, HasErrorMessage("not a valid input type"));
 }
@@ -171,7 +171,7 @@ TEST_F(UpdateSortOrderTest, AddSortFieldNonExistentField) {
 
   update->AddSortField(std::move(term), SortDirection::kAscending, NullOrder::kFirst);
 
-  auto result = update->Apply();
+  auto result = update->Validate();
   EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
   EXPECT_THAT(result, HasErrorMessage("Cannot find"));
 }
@@ -185,7 +185,7 @@ TEST_F(UpdateSortOrderTest, CaseSensitiveTrue) {
   update->CaseSensitive(true).AddSortField(std::move(term), SortDirection::kAscending,
                                            NullOrder::kFirst);
 
-  auto result = update->Apply();
+  auto result = update->Validate();
   // Should fail because schema has "x" (lowercase)
   EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
 }

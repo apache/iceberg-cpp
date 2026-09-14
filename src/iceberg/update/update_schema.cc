@@ -38,6 +38,7 @@
 #include "iceberg/table_properties.h"
 #include "iceberg/transaction.h"
 #include "iceberg/type.h"
+#include "iceberg/update/update_util_internal.h"
 #include "iceberg/util/checked_cast.h"
 #include "iceberg/util/error_collector.h"
 #include "iceberg/util/formatter.h"  // IWYU pragma: keep
@@ -339,11 +340,13 @@ UpdateSchema::Move UpdateSchema::Move::After(int32_t field_id,
 }
 
 UpdateSchema& UpdateSchema::AllowIncompatibleChanges() {
+  EnsureMutable();
   allow_incompatible_changes_ = true;
   return *this;
 }
 
 UpdateSchema& UpdateSchema::CaseSensitive(bool case_sensitive) {
+  EnsureMutable();
   case_sensitive_ = case_sensitive;
   return *this;
 }
@@ -351,6 +354,7 @@ UpdateSchema& UpdateSchema::CaseSensitive(bool case_sensitive) {
 UpdateSchema& UpdateSchema::AddColumn(std::string_view name, std::shared_ptr<Type> type,
                                       std::string_view doc,
                                       std::optional<Literal> default_value) {
+  EnsureMutable();
   ICEBERG_BUILDER_CHECK(!name.contains('.'),
                         "Cannot add column with ambiguous name: {}, use "
                         "AddColumn(parent, name, type, doc)",
@@ -363,6 +367,7 @@ UpdateSchema& UpdateSchema::AddColumn(std::optional<std::string_view> parent,
                                       std::string_view name, std::shared_ptr<Type> type,
                                       std::string_view doc,
                                       std::optional<Literal> default_value) {
+  EnsureMutable();
   return AddColumnInternal(std::move(parent), name, /*is_optional=*/true, std::move(type),
                            doc, std::move(default_value));
 }
@@ -371,6 +376,7 @@ UpdateSchema& UpdateSchema::AddRequiredColumn(std::string_view name,
                                               std::shared_ptr<Type> type,
                                               std::string_view doc,
                                               std::optional<Literal> default_value) {
+  EnsureMutable();
   ICEBERG_BUILDER_CHECK(!name.contains('.'),
                         "Cannot add column with ambiguous name: {}, use "
                         "AddRequiredColumn(parent, name, type, doc)",
@@ -384,12 +390,14 @@ UpdateSchema& UpdateSchema::AddRequiredColumn(std::optional<std::string_view> pa
                                               std::shared_ptr<Type> type,
                                               std::string_view doc,
                                               std::optional<Literal> default_value) {
+  EnsureMutable();
   return AddColumnInternal(std::move(parent), name, /*is_optional=*/false,
                            std::move(type), doc, std::move(default_value));
 }
 
 UpdateSchema& UpdateSchema::UpdateColumn(std::string_view name,
                                          std::shared_ptr<PrimitiveType> new_type) {
+  EnsureMutable();
   ICEBERG_BUILDER_ASSIGN_OR_RETURN(auto field_opt, FindFieldForUpdate(name));
   ICEBERG_BUILDER_CHECK(field_opt.has_value(), "Cannot update missing column: {}", name);
 
@@ -432,6 +440,7 @@ UpdateSchema& UpdateSchema::UpdateColumn(std::string_view name,
 
 UpdateSchema& UpdateSchema::UpdateColumnDoc(std::string_view name,
                                             std::string_view new_doc) {
+  EnsureMutable();
   ICEBERG_BUILDER_ASSIGN_OR_RETURN(auto field_opt, FindFieldForUpdate(name));
   ICEBERG_BUILDER_CHECK(field_opt.has_value(), "Cannot update missing column: {}", name);
 
@@ -452,6 +461,7 @@ UpdateSchema& UpdateSchema::UpdateColumnDoc(std::string_view name,
 
 UpdateSchema& UpdateSchema::UpdateColumnDefault(std::string_view name,
                                                 std::optional<Literal> new_default) {
+  EnsureMutable();
   ICEBERG_BUILDER_ASSIGN_OR_RETURN(auto field_opt, FindFieldForUpdate(name));
   ICEBERG_BUILDER_CHECK(field_opt.has_value(), "Cannot update missing column: {}", name);
 
@@ -489,6 +499,7 @@ UpdateSchema& UpdateSchema::UpdateColumnDefault(std::string_view name,
 
 UpdateSchema& UpdateSchema::RenameColumn(std::string_view name,
                                          std::string_view new_name) {
+  EnsureMutable();
   ICEBERG_BUILDER_ASSIGN_OR_RETURN(auto field_opt, FindField(name));
   ICEBERG_BUILDER_CHECK(field_opt.has_value(), "Cannot rename missing column: {}", name);
   ICEBERG_BUILDER_CHECK(!new_name.empty(), "Cannot rename a column to null");
@@ -514,15 +525,18 @@ UpdateSchema& UpdateSchema::RenameColumn(std::string_view name,
 }
 
 UpdateSchema& UpdateSchema::MakeColumnOptional(std::string_view name) {
+  EnsureMutable();
   return UpdateColumnRequirementInternal(name, /*is_optional=*/true);
 }
 
 UpdateSchema& UpdateSchema::RequireColumn(std::string_view name) {
+  EnsureMutable();
   return UpdateColumnRequirementInternal(name, /*is_optional=*/false);
 }
 
 UpdateSchema& UpdateSchema::UpdateColumnRequirementInternal(std::string_view name,
                                                             bool is_optional) {
+  EnsureMutable();
   ICEBERG_BUILDER_ASSIGN_OR_RETURN(auto field_opt, FindFieldForUpdate(name));
   ICEBERG_BUILDER_CHECK(field_opt.has_value(), "Cannot update missing column: {}", name);
 
@@ -552,6 +566,7 @@ UpdateSchema& UpdateSchema::UpdateColumnRequirementInternal(std::string_view nam
 }
 
 UpdateSchema& UpdateSchema::DeleteColumn(std::string_view name) {
+  EnsureMutable();
   ICEBERG_BUILDER_ASSIGN_OR_RETURN(auto field_opt, FindField(name));
   ICEBERG_BUILDER_CHECK(field_opt.has_value(), "Cannot delete missing column: {}", name);
 
@@ -569,6 +584,7 @@ UpdateSchema& UpdateSchema::DeleteColumn(std::string_view name) {
 }
 
 UpdateSchema& UpdateSchema::MoveFirst(std::string_view name) {
+  EnsureMutable();
   ICEBERG_BUILDER_ASSIGN_OR_RETURN(auto field_id, FindFieldIdForMove(name));
 
   return MoveInternal(name, Move::First(field_id));
@@ -576,6 +592,7 @@ UpdateSchema& UpdateSchema::MoveFirst(std::string_view name) {
 
 UpdateSchema& UpdateSchema::MoveBefore(std::string_view name,
                                        std::string_view before_name) {
+  EnsureMutable();
   ICEBERG_BUILDER_ASSIGN_OR_RETURN(auto field_id, FindFieldIdForMove(name));
   ICEBERG_BUILDER_ASSIGN_OR_RETURN_WITH_ERROR(
       auto before_id, FindFieldIdForMove(before_name),
@@ -588,6 +605,7 @@ UpdateSchema& UpdateSchema::MoveBefore(std::string_view name,
 
 UpdateSchema& UpdateSchema::MoveAfter(std::string_view name,
                                       std::string_view after_name) {
+  EnsureMutable();
   ICEBERG_BUILDER_ASSIGN_OR_RETURN(auto field_id, FindFieldIdForMove(name));
   ICEBERG_BUILDER_ASSIGN_OR_RETURN_WITH_ERROR(
       auto after_id, FindFieldIdForMove(after_name),
@@ -599,6 +617,7 @@ UpdateSchema& UpdateSchema::MoveAfter(std::string_view name,
 }
 
 UpdateSchema& UpdateSchema::UnionByNameWith(std::shared_ptr<Schema> new_schema) {
+  EnsureMutable();
   // TODO(Guotao Yu): Implement UnionByNameWith
   AddError(NotImplemented("UpdateSchema::UnionByNameWith not implemented"));
   return *this;
@@ -606,11 +625,12 @@ UpdateSchema& UpdateSchema::UnionByNameWith(std::shared_ptr<Schema> new_schema) 
 
 UpdateSchema& UpdateSchema::SetIdentifierFields(
     const std::span<std::string_view>& names) {
+  EnsureMutable();
   identifier_field_names_ = names | std::ranges::to<std::vector<std::string>>();
   return *this;
 }
 
-Result<UpdateSchema::ApplyResult> UpdateSchema::Apply() {
+Result<UpdateSchema::ApplyResult> UpdateSchema::Validate() const {
   ICEBERG_RETURN_UNEXPECTED(CheckErrors());
 
   for (const auto& name : identifier_field_names_) {
@@ -653,10 +673,17 @@ Result<UpdateSchema::ApplyResult> UpdateSchema::Apply() {
     fresh_identifier_ids.push_back(field_opt->get().field_id());
   }
 
-  auto new_fields = temp_schema->fields() | std::ranges::to<std::vector<SchemaField>>();
-  ICEBERG_ASSIGN_OR_RAISE(
-      auto new_schema,
-      Schema::Make(std::move(new_fields), schema_->schema_id(), fresh_identifier_ids));
+  // The result must not alias the frozen replay parameters (or the base schema), so
+  // deep-copy the fields before building the schema that is returned.
+  std::vector<SchemaField> new_fields;
+  new_fields.reserve(temp_schema->fields().size());
+  for (const auto& field : temp_schema->fields()) {
+    ICEBERG_ASSIGN_OR_RAISE(auto copy, internal::CopyUpdateField(field));
+    new_fields.push_back(std::move(copy));
+  }
+  ICEBERG_ASSIGN_OR_RAISE(auto new_schema,
+                          Schema::Make(std::move(new_fields), schema_->schema_id(),
+                                       std::move(fresh_identifier_ids)));
   ICEBERG_RETURN_UNEXPECTED(new_schema->Validate(base().format_version));
 
   std::unordered_map<std::string, std::string> updated_props;
@@ -688,6 +715,7 @@ UpdateSchema& UpdateSchema::AddColumnInternal(std::optional<std::string_view> pa
                                               std::shared_ptr<Type> type,
                                               std::string_view doc,
                                               std::optional<Literal> default_value) {
+  EnsureMutable();
   int32_t parent_id = kTableRootId;
   std::string full_name;
   // For map/list adds, this omits synthetic value/element path segments.
@@ -847,6 +875,7 @@ Result<int32_t> UpdateSchema::FindFieldIdForMove(std::string_view name) const {
 }
 
 UpdateSchema& UpdateSchema::MoveInternal(std::string_view name, const Move& move) {
+  EnsureMutable();
   auto parent_it = id_to_parent_.find(move.field_id);
 
   if (parent_it != id_to_parent_.end()) {
@@ -879,6 +908,15 @@ UpdateSchema& UpdateSchema::MoveInternal(std::string_view name, const Move& move
   }
 
   return *this;
+}
+
+Status UpdateSchema::Freeze() {
+  // Field values may contain nested types and mutable aliases to defaults.
+  for (auto& [_, field] : updates_) {
+    ICEBERG_ASSIGN_OR_RAISE(auto copy, internal::CopyUpdateField(*field));
+    field = std::make_shared<SchemaField>(std::move(copy));
+  }
+  return {};
 }
 
 }  // namespace iceberg

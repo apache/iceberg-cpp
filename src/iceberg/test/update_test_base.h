@@ -20,6 +20,7 @@
 #pragma once
 
 #include <format>
+#include <functional>
 #include <memory>
 #include <string>
 
@@ -34,6 +35,7 @@
 #include "iceberg/table_identifier.h"
 #include "iceberg/table_metadata.h"
 #include "iceberg/test/matchers.h"
+#include "iceberg/test/mock_catalog.h"
 #include "iceberg/test/test_resource.h"
 #include "iceberg/util/uuid.h"
 
@@ -83,6 +85,41 @@ class UpdateTestBase : public ::testing::Test {
 
     ICEBERG_UNWRAP_OR_FAIL(table_,
                            catalog_->RegisterTable(table_ident_, metadata_location));
+  }
+
+  // Exercise the public commit retry path against real catalog metadata.
+  void FailCommits(int conflicts, std::function<void(int)> before_attempt = {}) {
+    auto mock = std::make_shared<::testing::NiceMock<MockCatalog>>();
+    EXPECT_CALL(*mock, LoadTable(::testing::_))
+        .Times(::testing::AtLeast(conflicts))
+        .WillRepeatedly([catalog = catalog_](const TableIdentifier& name) {
+          return catalog->LoadTable(name);
+        });
+    EXPECT_CALL(*mock, UpdateTable(::testing::_, ::testing::_, ::testing::_))
+        .Times(conflicts + 1)
+        .WillRepeatedly(
+            [catalog = catalog_, conflicts, before_attempt,
+             attempt = std::make_shared<int>(0)](
+                const auto& name, const auto& requirements,
+                const auto& updates) mutable -> Result<std::shared_ptr<Table>> {
+              if (before_attempt) {
+                before_attempt(*attempt);
+              }
+              if ((*attempt)++ < conflicts) {
+                return CommitFailed("injected conflict");
+              }
+              auto result = catalog->UpdateTable(name, requirements, updates);
+              if (!result) {
+                ADD_FAILURE() << result.error().message;
+                return ValidationFailed("Test catalog failed: {}",
+                                        result.error().message);
+              }
+              return result;
+            });
+    ICEBERG_UNWRAP_OR_FAIL(
+        table_, Table::Make(table_->name(), table_->metadata(),
+                            std::string(table_->metadata_file_location()), file_io_, mock,
+                            table_->full_name(), table_->reporter()));
   }
 
   /// \brief Reload the table from catalog and return its metadata.

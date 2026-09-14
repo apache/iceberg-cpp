@@ -55,6 +55,7 @@
 #include "iceberg/test/retry.h"
 #include "iceberg/test/update_test_base.h"
 #include "iceberg/transaction.h"
+#include "iceberg/update/delete_files.h"
 #include "iceberg/update/fast_append.h"
 #include "iceberg/update/merge_append.h"
 #include "iceberg/update/row_delta.h"
@@ -81,20 +82,28 @@ class MergingSnapshotCapturingReporter final : public MetricsReporter {
 /// \brief Concrete subclass of MergingSnapshotUpdate for testing.
 class TestMergeAppend : public MergingSnapshotUpdate {
  public:
-  static Result<std::unique_ptr<TestMergeAppend>> Make(std::string table_name,
+  static Result<std::shared_ptr<TestMergeAppend>> Make(std::string table_name,
                                                        std::shared_ptr<Table> table) {
     ICEBERG_ASSIGN_OR_RAISE(
         auto ctx, TransactionContext::Make(std::move(table), TransactionKind::kUpdate));
-    return std::unique_ptr<TestMergeAppend>(
+    return std::shared_ptr<TestMergeAppend>(
         new TestMergeAppend(std::move(table_name), std::move(ctx)));
   }
 
   std::string operation() override { return "append"; }
 
   // Expose protected API for test access
-  using MergingSnapshotUpdate::Apply;
-  using MergingSnapshotUpdate::CleanUncommitted;
-  using MergingSnapshotUpdate::Summary;
+  Result<std::shared_ptr<Snapshot>> StagedSnapshot() const {
+    return ctx_->current().Snapshot();
+  }
+
+  Result<std::vector<ManifestFile>> CommitManifests() {
+    ICEBERG_RETURN_UNEXPECTED(Commit());
+    ICEBERG_ASSIGN_OR_RAISE(auto snapshot, ctx_->table->current_snapshot());
+    SnapshotCache cache(snapshot.get());
+    ICEBERG_ASSIGN_OR_RAISE(auto manifests, cache.Manifests(ctx_->table->io()));
+    return std::vector<ManifestFile>(manifests.begin(), manifests.end());
+  }
 
   Status AddFile(std::shared_ptr<DataFile> file) { return AddDataFile(std::move(file)); }
   Status AddDelete(std::shared_ptr<DataFile> file) {
@@ -124,16 +133,6 @@ class TestMergeAppend : public MergingSnapshotUpdate {
   }
   Result<std::shared_ptr<PartitionSpec>> DataSpec() const {
     return MergingSnapshotUpdate::DataSpec();
-  }
-  Result<std::vector<ManifestFile>> WriteDeletesForTest(
-      std::span<const std::shared_ptr<DataFile>> files,
-      const std::shared_ptr<PartitionSpec>& spec) {
-    auto entries = files | std::views::transform([](const auto& file) {
-                     return ContentFileWithSequenceNumber{
-                         .file = file, .data_sequence_number = std::nullopt};
-                   }) |
-                   std::ranges::to<std::vector>();
-    return WriteDeleteManifests(entries, spec);
   }
   int64_t GeneratedSnapshotId() { return SnapshotId(); }
   void SetDataSeqNumber(int64_t seq) { SetNewDataFilesDataSequenceNumber(seq); }
@@ -231,18 +230,24 @@ class TestMergeAppend : public MergingSnapshotUpdate {
 
 class TestOverwriteUpdate : public MergingSnapshotUpdate {
  public:
-  static Result<std::unique_ptr<TestOverwriteUpdate>> Make(std::string table_name,
+  static Result<std::shared_ptr<TestOverwriteUpdate>> Make(std::string table_name,
                                                            std::shared_ptr<Table> table) {
     ICEBERG_ASSIGN_OR_RAISE(
         auto ctx, TransactionContext::Make(std::move(table), TransactionKind::kUpdate));
-    return std::unique_ptr<TestOverwriteUpdate>(
+    return std::shared_ptr<TestOverwriteUpdate>(
         new TestOverwriteUpdate(std::move(table_name), std::move(ctx)));
   }
 
   std::string operation() override { return DataOperation::kOverwrite; }
   int64_t GeneratedSnapshotId() { return SnapshotId(); }
 
-  using MergingSnapshotUpdate::Apply;
+  Result<std::vector<ManifestFile>> CommitManifests() {
+    ICEBERG_RETURN_UNEXPECTED(Commit());
+    ICEBERG_ASSIGN_OR_RAISE(auto snapshot, ctx_->table->current_snapshot());
+    SnapshotCache cache(snapshot.get());
+    ICEBERG_ASSIGN_OR_RAISE(auto manifests, cache.Manifests(ctx_->table->io()));
+    return std::vector<ManifestFile>(manifests.begin(), manifests.end());
+  }
 
   Status AddDelete(std::shared_ptr<DataFile> file) {
     return AddDeleteFile(std::move(file));
@@ -335,11 +340,11 @@ class MergingSnapshotUpdateTest : public MinimalUpdateTestBase {
     return f;
   }
 
-  Result<std::unique_ptr<TestMergeAppend>> NewMergeAppend() {
+  Result<std::shared_ptr<TestMergeAppend>> NewMergeAppend() {
     return TestMergeAppend::Make(TableName(), table_);
   }
 
-  Result<std::unique_ptr<TestOverwriteUpdate>> NewOverwriteUpdate() {
+  Result<std::shared_ptr<TestOverwriteUpdate>> NewOverwriteUpdate() {
     return TestOverwriteUpdate::Make(TableName(), table_);
   }
 
@@ -887,13 +892,28 @@ TEST_F(MergingSnapshotUpdateTest, BaseSetCustomSummaryPropertySurvivesApplyRebui
 // CleanUncommitted test
 // -------------------------------------------------------------------------
 
-TEST_F(MergingSnapshotUpdateTest, CleanUncommittedAfterSuccessfulCommitDoesNotCrash) {
-  ICEBERG_UNWRAP_OR_FAIL(auto op, NewMergeAppend());
-  EXPECT_THAT(op->AddFile(file_a_), IsOk());
-  EXPECT_THAT(op->Commit(), IsOk());
+TEST_F(MergingSnapshotUpdateTest, CommittedFilesSurviveRejectedCommitAndAbort) {
+  ICEBERG_UNWRAP_OR_FAIL(auto txn, table_->NewTransaction());
+  ICEBERG_UNWRAP_OR_FAIL(auto op, txn->NewMergeAppend());
+  std::vector<std::string> deleted_paths;
+  op->AppendFile(file_a_).DeleteWith([&](const std::string& path) {
+    deleted_paths.push_back(path);
+    return file_io_->DeleteFile(path);
+  });
+  ASSERT_THAT(op->Commit(), IsOk());
+  ASSERT_THAT(txn->Commit(), IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(auto snapshot, txn->table()->current_snapshot());
+  SnapshotCache cache(snapshot.get());
+  ICEBERG_UNWRAP_OR_FAIL(auto manifests, cache.Manifests(file_io_));
+  ASSERT_THAT(manifests, ::testing::SizeIs(1));
 
-  // Cleanup may run from an error handler even after commit success.
-  EXPECT_THAT(op->CleanUncommitted({}), IsOk());
+  EXPECT_TRUE(deleted_paths.empty());
+  EXPECT_THAT(op->Commit(), IsError(ErrorKind::kValidationFailed));
+  EXPECT_THAT(txn->Commit(), IsError(ErrorKind::kValidationFailed));
+  EXPECT_THAT(txn->Abort(), IsError(ErrorKind::kValidationFailed));
+  EXPECT_TRUE(deleted_paths.empty());
+  EXPECT_THAT(file_io_->ReadFile(manifests[0].manifest_path, std::nullopt), IsOk());
+  EXPECT_THAT(file_io_->ReadFile(snapshot->manifest_list, std::nullopt), IsOk());
 }
 
 TEST_F(MergingSnapshotUpdateTest,
@@ -901,23 +921,39 @@ TEST_F(MergingSnapshotUpdateTest,
   ICEBERG_UNWRAP_OR_FAIL(auto initial, NewMergeAppend());
   EXPECT_THAT(initial->AddFile(file_a_), IsOk());
   EXPECT_THAT(initial->AddFile(file_b_), IsOk());
-  EXPECT_THAT(initial->Commit(), IsOk());
-  EXPECT_THAT(table_->Refresh(), IsOk());
+  ASSERT_THAT(initial->Commit(), IsOk());
+  ASSERT_THAT(table_->Refresh(), IsOk());
+
+  ICEBERG_UNWRAP_OR_FAIL(auto initial_snapshot, table_->current_snapshot());
+  SnapshotCache initial_cache(initial_snapshot.get());
+  ICEBERG_UNWRAP_OR_FAIL(auto initial_manifests, initial_cache.Manifests(file_io_));
+  ASSERT_THAT(initial_manifests, ::testing::SizeIs(1));
 
   std::vector<std::string> deleted_paths;
-  ICEBERG_UNWRAP_OR_FAIL(auto op, NewMergeAppend());
+  ICEBERG_UNWRAP_OR_FAIL(auto txn, table_->NewTransaction());
+  ICEBERG_UNWRAP_OR_FAIL(auto op, txn->NewDeleteFiles());
   op->DeleteWith([&deleted_paths](const std::string& path) {
     deleted_paths.push_back(path);
     return Status{};
   });
-  EXPECT_THAT(op->RemoveDataFile(file_a_), IsOk());
+  op->DeleteFile(file_a_->file_path);
+  ASSERT_THAT(op->Commit(), IsOk());
 
-  ICEBERG_UNWRAP_OR_FAIL(
-      auto manifests, op->Apply(*table_->metadata(), table_->current_snapshot().value()));
-  EXPECT_THAT(manifests, ::testing::SizeIs(1));
+  ICEBERG_UNWRAP_OR_FAIL(auto staged_snapshot, txn->current().Snapshot());
+  SnapshotCache staged_cache(staged_snapshot.get());
+  ICEBERG_UNWRAP_OR_FAIL(auto staged_manifests, staged_cache.Manifests(file_io_));
+  ASSERT_THAT(staged_manifests, ::testing::SizeIs(1));
+  ASSERT_NE(staged_manifests[0].manifest_path, initial_manifests[0].manifest_path);
+  EXPECT_TRUE(deleted_paths.empty());
 
-  EXPECT_THAT(op->CleanUncommitted({}), IsOk());
-  EXPECT_THAT(deleted_paths, ::testing::Contains(::testing::HasSubstr("/metadata/")));
+  EXPECT_THAT(txn->Abort(), IsOk());
+  EXPECT_THAT(deleted_paths,
+              ::testing::UnorderedElementsAre(staged_manifests[0].manifest_path,
+                                              staged_snapshot->manifest_list));
+  EXPECT_THAT(deleted_paths,
+              ::testing::Not(::testing::Contains(initial_manifests[0].manifest_path)));
+  EXPECT_THAT(deleted_paths,
+              ::testing::Not(::testing::Contains(initial_snapshot->manifest_list)));
 }
 
 // -------------------------------------------------------------------------
@@ -957,7 +993,7 @@ TEST_F(MergingSnapshotUpdateTest, AddDeleteFileWithExplicitSequenceWritesSequenc
 
   ICEBERG_UNWRAP_OR_FAIL(auto op, NewMergeAppend());
   EXPECT_THAT(op->AddDelete(del_file, 17), IsOk());
-  ICEBERG_UNWRAP_OR_FAIL(auto manifests, op->Apply(*table_->metadata(), nullptr));
+  ICEBERG_UNWRAP_OR_FAIL(auto manifests, op->CommitManifests());
   auto delete_manifest_it =
       std::ranges::find_if(manifests, [](const ManifestFile& manifest) {
         return manifest.content == ManifestContent::kDeletes;
@@ -985,7 +1021,10 @@ TEST_F(MergingSnapshotUpdateTest, WriteDeleteGroups) {
                                        static_cast<int64_t>(index % 2));
                }) |
                std::ranges::to<std::vector>();
-  ICEBERG_UNWRAP_OR_FAIL(auto manifests, op->WriteDeletesForTest(files, spec_));
+  for (const auto& file : files) {
+    EXPECT_THAT(op->AddDelete(file), IsOk());
+  }
+  ICEBERG_UNWRAP_OR_FAIL(auto manifests, op->CommitManifests());
 
   EXPECT_EQ(executor.submit_count(), 2);
   ASSERT_EQ(manifests.size(), 2U);
@@ -994,24 +1033,37 @@ TEST_F(MergingSnapshotUpdateTest, WriteDeleteGroups) {
   }
 }
 
-TEST_F(MergingSnapshotUpdateTest, ApplyRebuildsDeleteSummaryAfterPreparingDeletes) {
+TEST_F(MergingSnapshotUpdateTest, RetryRebuildsDeleteSummary) {
   auto del_file = MakeDeleteFile("/delete/del_a.parquet", 1L);
-
-  ICEBERG_UNWRAP_OR_FAIL(auto op, NewMergeAppend());
+  std::shared_ptr<TestMergeAppend> op;
+  FailCommits(2, [&](int attempt) {
+    SCOPED_TRACE(attempt);
+    ICEBERG_UNWRAP_OR_FAIL(auto snapshot, op->StagedSnapshot());
+    EXPECT_EQ(snapshot->summary.at(SnapshotSummaryFields::kAddedDeleteFiles), "1");
+    EXPECT_EQ(snapshot->summary.at(SnapshotSummaryFields::kAddedPosDeleteFiles), "1");
+    SnapshotCache cache(snapshot.get());
+    ICEBERG_UNWRAP_OR_FAIL(auto manifests, cache.DeleteManifests(file_io_));
+    ASSERT_THAT(manifests, ::testing::SizeIs(1));
+    ICEBERG_UNWRAP_OR_FAIL(
+        auto entries,
+        ReadAllEntries(std::vector<ManifestFile>(manifests.begin(), manifests.end()),
+                       *table_->metadata()));
+    ASSERT_THAT(entries, ::testing::SizeIs(1));
+    ASSERT_NE(entries[0].data_file, nullptr);
+    EXPECT_EQ(entries[0].status, ManifestStatus::kAdded);
+    EXPECT_EQ(entries[0].snapshot_id, snapshot->snapshot_id);
+    auto expected_file = *del_file;
+    expected_file.data_sequence_number = snapshot->sequence_number;
+    EXPECT_EQ(*entries[0].data_file, expected_file);
+  });
+  ICEBERG_UNWRAP_OR_FAIL(op, NewMergeAppend());
   EXPECT_THAT(op->AddDelete(del_file), IsOk());
   EXPECT_THAT(op->AddDelete(del_file), IsOk());
-
-  ICEBERG_UNWRAP_OR_FAIL(auto first_manifests, op->Apply(*table_->metadata(), nullptr));
-  EXPECT_THAT(first_manifests, ::testing::Contains(::testing::Field(
-                                   &ManifestFile::content, ManifestContent::kDeletes)));
-
-  ICEBERG_UNWRAP_OR_FAIL(auto second_manifests, op->Apply(*table_->metadata(), nullptr));
-  EXPECT_THAT(second_manifests, ::testing::Contains(::testing::Field(
-                                    &ManifestFile::content, ManifestContent::kDeletes)));
-
-  auto summary = op->Summary();
-  EXPECT_EQ(summary.at(SnapshotSummaryFields::kAddedDeleteFiles), "1");
-  EXPECT_EQ(summary.at(SnapshotSummaryFields::kAddedPosDeleteFiles), "1");
+  EXPECT_THAT(op->Commit(), IsOk());
+  EXPECT_THAT(table_->Refresh(), IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(auto snapshot, table_->current_snapshot());
+  EXPECT_EQ(snapshot->summary.at(SnapshotSummaryFields::kAddedDeleteFiles), "1");
+  EXPECT_EQ(snapshot->summary.at(SnapshotSummaryFields::kAddedPosDeleteFiles), "1");
 }
 
 // Covers the bug where deleted delete files were not tracked in the snapshot summary.
@@ -1101,7 +1153,7 @@ class MergingSnapshotUpdateV1Test : public UpdateTestBase {
     return f;
   }
 
-  Result<std::unique_ptr<TestMergeAppend>> NewMergeAppend() {
+  Result<std::shared_ptr<TestMergeAppend>> NewMergeAppend() {
     return TestMergeAppend::Make(TableName(), table_);
   }
 
@@ -1179,7 +1231,7 @@ TEST_F(MergingSnapshotUpdateTest, ApplyMergesDuplicateDeletionVectors) {
   EXPECT_THAT(op->AddDelete(dv_a2, 7), IsOk());
   EXPECT_THAT(op->AddDelete(dv_b, 8), IsOk());
 
-  ICEBERG_UNWRAP_OR_FAIL(auto manifests, op->Apply(*table_->metadata(), nullptr));
+  ICEBERG_UNWRAP_OR_FAIL(auto manifests, op->CommitManifests());
   auto delete_manifest_it =
       std::ranges::find_if(manifests, [](const ManifestFile& manifest) {
         return manifest.content == ManifestContent::kDeletes;
@@ -1230,7 +1282,7 @@ TEST_F(MergingSnapshotUpdateTest, ApplyMergesDuplicateDeletionVectorsWithNullPar
   EXPECT_THAT(op->AddDelete(dv_a1, 7), IsOk());
   EXPECT_THAT(op->AddDelete(dv_a2, 7), IsOk());
 
-  EXPECT_THAT(op->Apply(*table_->metadata(), nullptr), IsOk());
+  EXPECT_THAT(op->CommitManifests(), IsOk());
 }
 
 TEST_F(MergingSnapshotUpdateTest, ValidateNewDeleteFileRejectsUnsupportedVersion) {
@@ -1252,9 +1304,11 @@ TEST_F(MergingSnapshotUpdateTest, ApplyRejectsV2StagedPositionDeleteAfterV3Upgra
   ICEBERG_UNWRAP_OR_FAIL(auto op, NewMergeAppend());
   EXPECT_THAT(op->AddDelete(del_file), IsOk());
 
-  auto metadata = std::make_shared<TableMetadata>(*table_->metadata());
-  metadata->format_version = 3;
-  EXPECT_THAT(op->Apply(*metadata, nullptr), IsError(ErrorKind::kInvalidArgument));
+  ICEBERG_UNWRAP_OR_FAIL(auto properties, table_->NewUpdateProperties());
+  properties->Set("format-version", "3");
+  ASSERT_THAT(properties->Commit(), IsOk());
+  ASSERT_THAT(table_->Refresh(), IsOk());
+  EXPECT_THAT(op->Commit(), IsError(ErrorKind::kInvalidArgument));
 }
 
 // -------------------------------------------------------------------------
@@ -1314,29 +1368,41 @@ TEST_F(MergingSnapshotUpdateTest, AddManifestRetryCopiesManifestAgain) {
   auto path = table_location_ + "/metadata/retry-input.avro";
   ICEBERG_UNWRAP_OR_FAIL(auto manifest, WriteManifest(path, {file_a_}));
   manifest.added_snapshot_id = 12345;
-
-  ICEBERG_UNWRAP_OR_FAIL(auto op, NewMergeAppend());
+  std::shared_ptr<TestMergeAppend> op;
+  std::vector<std::string> attempt_manifests;
+  std::vector<std::string> attempt_lists;
+  FailCommits(2, [&](int attempt) {
+    SCOPED_TRACE(attempt);
+    ICEBERG_UNWRAP_OR_FAIL(auto snapshot, op->StagedSnapshot());
+    SnapshotCache cache(snapshot.get());
+    ICEBERG_UNWRAP_OR_FAIL(auto manifests, cache.DataManifests(file_io_));
+    ASSERT_THAT(manifests, ::testing::SizeIs(1));
+    const auto& manifest_path = manifests[0].manifest_path;
+    EXPECT_NE(manifest_path, path);
+    EXPECT_THAT(attempt_manifests, ::testing::Not(::testing::Contains(manifest_path)));
+    attempt_manifests.push_back(manifest_path);
+    attempt_lists.push_back(snapshot->manifest_list);
+  });
+  ICEBERG_UNWRAP_OR_FAIL(op, NewMergeAppend());
+  std::vector<std::string> deleted;
+  op->DeleteWith([&](const std::string& path) {
+    deleted.push_back(path);
+    return file_io_->DeleteFile(path);
+  });
   EXPECT_THAT(op->AppendManifest(manifest), IsOk());
-
-  ICEBERG_UNWRAP_OR_FAIL(auto first_apply, static_cast<SnapshotUpdate&>(*op).Apply());
-  SnapshotCache first_snapshot_cache(first_apply.snapshot.get());
-  ICEBERG_UNWRAP_OR_FAIL(auto first_manifests,
-                         first_snapshot_cache.DataManifests(file_io_));
-  ASSERT_EQ(first_manifests.size(), 1U);
-  EXPECT_NE(first_manifests[0].manifest_path, path);
-
-  ICEBERG_UNWRAP_OR_FAIL(auto second_apply, static_cast<SnapshotUpdate&>(*op).Apply());
-  SnapshotCache second_snapshot_cache(second_apply.snapshot.get());
-  ICEBERG_UNWRAP_OR_FAIL(auto second_manifests,
-                         second_snapshot_cache.DataManifests(file_io_));
-  ASSERT_EQ(second_manifests.size(), 1U);
-  EXPECT_NE(second_manifests[0].manifest_path, path);
-  EXPECT_NE(second_manifests[0].manifest_path, first_manifests[0].manifest_path);
-
-  std::vector<ManifestFile> second_manifest_vector(second_manifests.begin(),
-                                                   second_manifests.end());
-  ICEBERG_UNWRAP_OR_FAIL(auto entries,
-                         ReadAllEntries(second_manifest_vector, *table_->metadata()));
+  ICEBERG_UNWRAP_OR_FAIL(auto manifests, op->CommitManifests());
+  ASSERT_EQ(manifests.size(), 1U);
+  ASSERT_THAT(attempt_manifests, ::testing::SizeIs(3));
+  ASSERT_THAT(attempt_lists, ::testing::SizeIs(3));
+  EXPECT_EQ(manifests[0].manifest_path, attempt_manifests[2]);
+  EXPECT_THAT(deleted,
+              ::testing::UnorderedElementsAre(attempt_manifests[0], attempt_lists[0],
+                                              attempt_manifests[1], attempt_lists[1]));
+  EXPECT_THAT(deleted, ::testing::Not(::testing::Contains(path)));
+  EXPECT_THAT(deleted, ::testing::Not(::testing::Contains(manifests[0].manifest_path)));
+  EXPECT_THAT(file_io_->ReadFile(path, std::nullopt), IsOk());
+  EXPECT_THAT(file_io_->ReadFile(attempt_lists[2], std::nullopt), IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(auto entries, ReadAllEntries(manifests, *table_->metadata()));
   ASSERT_EQ(entries.size(), 1U);
   ASSERT_NE(entries[0].data_file, nullptr);
   EXPECT_EQ(entries[0].data_file->file_path, file_a_->file_path);
@@ -1722,7 +1788,7 @@ TEST_F(MergingSnapshotUpdateTest, ValidateDataFilesExistUsesRowFilter) {
   ICEBERG_UNWRAP_OR_FAIL(auto op, NewOverwriteUpdate());
   EXPECT_THAT(op->RemoveDataFile(file_a_), IsOk());
   const int64_t second_snapshot_id = op->GeneratedSnapshotId();
-  ICEBERG_UNWRAP_OR_FAIL(auto manifests, op->Apply(*table_->metadata(), first_snapshot));
+  ICEBERG_UNWRAP_OR_FAIL(auto manifests, op->CommitManifests());
   ICEBERG_UNWRAP_OR_FAIL(
       auto second_snapshot,
       MakeSyntheticSnapshot(DataOperation::kOverwrite, second_snapshot_id,
@@ -1756,7 +1822,7 @@ TEST_F(MergingSnapshotUpdateTest,
   ICEBERG_UNWRAP_OR_FAIL(auto op, NewOverwriteUpdate());
   EXPECT_THAT(op->AddDelete(del_file), IsOk());
   const int64_t second_snapshot_id = op->GeneratedSnapshotId();
-  ICEBERG_UNWRAP_OR_FAIL(auto manifests, op->Apply(*table_->metadata(), first_snapshot));
+  ICEBERG_UNWRAP_OR_FAIL(auto manifests, op->CommitManifests());
   ICEBERG_UNWRAP_OR_FAIL(
       auto second_snapshot,
       MakeSyntheticSnapshot(DataOperation::kOverwrite, second_snapshot_id,
@@ -1784,7 +1850,7 @@ TEST_F(MergingSnapshotUpdateTest, ValidateNoNewDeletesForDataFilesDetectsConflic
   ICEBERG_UNWRAP_OR_FAIL(auto op, NewOverwriteUpdate());
   EXPECT_THAT(op->AddDelete(del_file), IsOk());
   const int64_t second_snapshot_id = op->GeneratedSnapshotId();
-  ICEBERG_UNWRAP_OR_FAIL(auto manifests, op->Apply(*table_->metadata(), first_snapshot));
+  ICEBERG_UNWRAP_OR_FAIL(auto manifests, op->CommitManifests());
   ICEBERG_UNWRAP_OR_FAIL(
       auto second_snapshot,
       MakeSyntheticSnapshot(DataOperation::kOverwrite, second_snapshot_id,
@@ -1813,7 +1879,7 @@ TEST_F(MergingSnapshotUpdateTest,
   ICEBERG_UNWRAP_OR_FAIL(auto op, NewOverwriteUpdate());
   EXPECT_THAT(op->AddDelete(del_file), IsOk());
   const int64_t second_snapshot_id = op->GeneratedSnapshotId();
-  ICEBERG_UNWRAP_OR_FAIL(auto manifests, op->Apply(*table_->metadata(), first_snapshot));
+  ICEBERG_UNWRAP_OR_FAIL(auto manifests, op->CommitManifests());
   ICEBERG_UNWRAP_OR_FAIL(
       auto second_snapshot,
       MakeSyntheticSnapshot(DataOperation::kOverwrite, second_snapshot_id,
@@ -1848,7 +1914,7 @@ TEST_F(MergingSnapshotUpdateTest,
   ICEBERG_UNWRAP_OR_FAIL(auto op, NewOverwriteUpdate());
   EXPECT_THAT(op->AddDelete(del_file), IsOk());
   const int64_t second_snapshot_id = op->GeneratedSnapshotId();
-  ICEBERG_UNWRAP_OR_FAIL(auto manifests, op->Apply(*table_->metadata(), first_snapshot));
+  ICEBERG_UNWRAP_OR_FAIL(auto manifests, op->CommitManifests());
   ICEBERG_UNWRAP_OR_FAIL(
       auto second_snapshot,
       MakeSyntheticSnapshot(DataOperation::kOverwrite, second_snapshot_id,
@@ -1879,8 +1945,7 @@ TEST_F(MergingSnapshotUpdateTest,
   ICEBERG_UNWRAP_OR_FAIL(auto overwrite, NewOverwriteUpdate());
   EXPECT_THAT(overwrite->AddDelete(del_file), IsOk());
   const int64_t second_snapshot_id = overwrite->GeneratedSnapshotId();
-  ICEBERG_UNWRAP_OR_FAIL(auto manifests,
-                         overwrite->Apply(*table_->metadata(), first_snapshot));
+  ICEBERG_UNWRAP_OR_FAIL(auto manifests, overwrite->CommitManifests());
   ICEBERG_UNWRAP_OR_FAIL(
       auto second_snapshot,
       MakeSyntheticSnapshot(DataOperation::kOverwrite, second_snapshot_id,
@@ -1912,7 +1977,7 @@ TEST_F(MergingSnapshotUpdateTest,
   ICEBERG_UNWRAP_OR_FAIL(auto op, NewOverwriteUpdate());
   EXPECT_THAT(op->AddDelete(del_file), IsOk());
   const int64_t second_snapshot_id = op->GeneratedSnapshotId();
-  ICEBERG_UNWRAP_OR_FAIL(auto manifests, op->Apply(*table_->metadata(), first_snapshot));
+  ICEBERG_UNWRAP_OR_FAIL(auto manifests, op->CommitManifests());
   ICEBERG_UNWRAP_OR_FAIL(
       auto second_snapshot,
       MakeSyntheticSnapshot(DataOperation::kOverwrite, second_snapshot_id,
@@ -1940,7 +2005,7 @@ TEST_F(MergingSnapshotUpdateTest, ValidateNoNewDeleteFilesWithExpressionDetectsC
   ICEBERG_UNWRAP_OR_FAIL(auto op, NewOverwriteUpdate());
   EXPECT_THAT(op->AddDelete(del_file), IsOk());
   const int64_t second_snapshot_id = op->GeneratedSnapshotId();
-  ICEBERG_UNWRAP_OR_FAIL(auto manifests, op->Apply(*table_->metadata(), first_snapshot));
+  ICEBERG_UNWRAP_OR_FAIL(auto manifests, op->CommitManifests());
   ICEBERG_UNWRAP_OR_FAIL(
       auto second_snapshot,
       MakeSyntheticSnapshot(DataOperation::kOverwrite, second_snapshot_id,
@@ -1967,7 +2032,7 @@ TEST_F(MergingSnapshotUpdateTest,
   ICEBERG_UNWRAP_OR_FAIL(auto op, NewOverwriteUpdate());
   EXPECT_THAT(op->AddDelete(del_file), IsOk());
   const int64_t second_snapshot_id = op->GeneratedSnapshotId();
-  ICEBERG_UNWRAP_OR_FAIL(auto manifests, op->Apply(*table_->metadata(), first_snapshot));
+  ICEBERG_UNWRAP_OR_FAIL(auto manifests, op->CommitManifests());
   ICEBERG_UNWRAP_OR_FAIL(
       auto second_snapshot,
       MakeSyntheticSnapshot(DataOperation::kOverwrite, second_snapshot_id,
@@ -1994,7 +2059,7 @@ TEST_F(MergingSnapshotUpdateTest,
   ICEBERG_UNWRAP_OR_FAIL(auto op, NewOverwriteUpdate());
   EXPECT_THAT(op->AddDelete(del_file), IsOk());
   const int64_t second_snapshot_id = op->GeneratedSnapshotId();
-  ICEBERG_UNWRAP_OR_FAIL(auto manifests, op->Apply(*table_->metadata(), first_snapshot));
+  ICEBERG_UNWRAP_OR_FAIL(auto manifests, op->CommitManifests());
   ICEBERG_UNWRAP_OR_FAIL(
       auto second_snapshot,
       MakeSyntheticSnapshot(DataOperation::kOverwrite, second_snapshot_id,
@@ -2138,7 +2203,7 @@ TEST_F(MergingSnapshotUpdateTest, ValidateDeletedDataFilesWithExpressionDetectsC
   ICEBERG_UNWRAP_OR_FAIL(auto op, NewOverwriteUpdate());
   EXPECT_THAT(op->RemoveDataFile(file_a_), IsOk());
   const int64_t second_snapshot_id = op->GeneratedSnapshotId();
-  ICEBERG_UNWRAP_OR_FAIL(auto manifests, op->Apply(*table_->metadata(), first_snapshot));
+  ICEBERG_UNWRAP_OR_FAIL(auto manifests, op->CommitManifests());
   ICEBERG_UNWRAP_OR_FAIL(
       auto second_snapshot,
       MakeSyntheticSnapshot(DataOperation::kOverwrite, second_snapshot_id,
@@ -2164,7 +2229,7 @@ TEST_F(MergingSnapshotUpdateTest,
   ICEBERG_UNWRAP_OR_FAIL(auto op, NewOverwriteUpdate());
   EXPECT_THAT(op->RemoveDataFile(file_a_), IsOk());
   const int64_t second_snapshot_id = op->GeneratedSnapshotId();
-  ICEBERG_UNWRAP_OR_FAIL(auto manifests, op->Apply(*table_->metadata(), first_snapshot));
+  ICEBERG_UNWRAP_OR_FAIL(auto manifests, op->CommitManifests());
   ICEBERG_UNWRAP_OR_FAIL(
       auto second_snapshot,
       MakeSyntheticSnapshot(DataOperation::kOverwrite, second_snapshot_id,

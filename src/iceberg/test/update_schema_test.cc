@@ -19,10 +19,12 @@
 
 #include "iceberg/update/update_schema.h"
 
+#include <array>
 #include <format>
 #include <limits>
 #include <memory>
 #include <optional>
+#include <span>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -40,6 +42,7 @@
 #include "iceberg/test/matchers.h"
 #include "iceberg/test/mock_io.h"
 #include "iceberg/test/test_resource.h"
+#include "iceberg/transaction.h"
 #include "iceberg/type.h"
 #include "iceberg/util/checked_cast.h"
 #include "iceberg/util/uuid.h"
@@ -107,7 +110,7 @@ TEST_F(UpdateSchemaTest, AddOptionalColumn) {
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateSchema());
   update->AddColumn("new_col", int32(), "A new integer column");
 
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Validate());
   ASSERT_TRUE(result.schema != nullptr);
 
   ICEBERG_UNWRAP_OR_FAIL(auto new_field_opt, result.schema->FindFieldByName("new_col"));
@@ -115,7 +118,7 @@ TEST_F(UpdateSchemaTest, AddOptionalColumn) {
 
   const auto& new_field = new_field_opt->get();
   EXPECT_EQ(new_field.name(), "new_col");
-  EXPECT_EQ(new_field.type(), int32());
+  EXPECT_EQ(*new_field.type(), *int32());
   EXPECT_TRUE(new_field.optional());
   EXPECT_EQ(new_field.doc(), "A new integer column");
 }
@@ -124,7 +127,7 @@ TEST_F(UpdateSchemaTest, AddRequiredColumnFails) {
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateSchema());
   update->AddRequiredColumn("required_col", string(), "A required string column");
 
-  auto result = update->Apply();
+  auto result = update->Validate();
   EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
   EXPECT_THAT(result, HasErrorMessage("Incompatible change"));
 }
@@ -134,7 +137,7 @@ TEST_F(UpdateSchemaTest, AddRequiredColumnWithAllowIncompatible) {
   update->AllowIncompatibleChanges().AddRequiredColumn("required_col", string(),
                                                        "A required string column");
 
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Validate());
   ASSERT_TRUE(result.schema != nullptr);
 
   ICEBERG_UNWRAP_OR_FAIL(auto new_field_opt,
@@ -143,7 +146,7 @@ TEST_F(UpdateSchemaTest, AddRequiredColumnWithAllowIncompatible) {
 
   const auto& new_field = new_field_opt->get();
   EXPECT_EQ(new_field.name(), "required_col");
-  EXPECT_EQ(new_field.type(), string());
+  EXPECT_EQ(*new_field.type(), *string());
   EXPECT_FALSE(new_field.optional());
   EXPECT_EQ(new_field.doc(), "A required string column");
 }
@@ -169,7 +172,7 @@ TEST_F(UpdateSchemaTest, AddColumnWithDefaultValueRequiresV3) {
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateSchema());
   update->AddColumn("new_col", int32(), "An integer column", Literal::Int(42));
 
-  auto result = update->Apply();
+  auto result = update->Validate();
   EXPECT_THAT(result, IsError(ErrorKind::kInvalidSchema));
   EXPECT_THAT(result, HasErrorMessage("is not supported until v3"));
 }
@@ -178,7 +181,7 @@ TEST_F(UpdateSchemaDefaultValueTest, AddColumnWithDefaultValue) {
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateSchema());
   update->AddColumn("new_col", int32(), "An integer column", Literal::Int(42));
 
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Validate());
   ICEBERG_UNWRAP_OR_FAIL(auto new_field_opt, result.schema->FindFieldByName("new_col"));
   ASSERT_TRUE(new_field_opt.has_value());
 
@@ -194,7 +197,7 @@ TEST_F(UpdateSchemaDefaultValueTest, AddRequiredColumnWithDefaultValue) {
   update->AddRequiredColumn("required_col", string(), "A required string column",
                             Literal::String("n/a"));
 
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Validate());
   ICEBERG_UNWRAP_OR_FAIL(auto new_field_opt,
                          result.schema->FindFieldByName("required_col"));
   ASSERT_TRUE(new_field_opt.has_value());
@@ -211,7 +214,7 @@ TEST_F(UpdateSchemaDefaultValueTest, AddColumnWithMismatchedDefaultValueFails) {
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateSchema());
   update->AddColumn("new_col", int32(), "An integer column", Literal::String("oops"));
 
-  auto result = update->Apply();
+  auto result = update->Validate();
   EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
   EXPECT_THAT(result, HasErrorMessage("Cannot cast default value"));
 }
@@ -221,7 +224,7 @@ TEST_F(UpdateSchemaDefaultValueTest, AddColumnWithNarrowingDefaultValueFails) {
   update->AddColumn("new_col", int32(), "An integer column",
                     Literal::Long(std::numeric_limits<int64_t>::max()));
 
-  auto result = update->Apply();
+  auto result = update->Validate();
   EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
   EXPECT_THAT(result, HasErrorMessage("Cannot cast default value"));
 }
@@ -231,7 +234,7 @@ TEST_F(UpdateSchemaDefaultValueTest, UpdateColumnDefault) {
   update->AddColumn("new_col", int32(), "An integer column", Literal::Int(42))
       .UpdateColumnDefault("new_col", Literal::Int(7));
 
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Validate());
   ICEBERG_UNWRAP_OR_FAIL(auto new_field_opt, result.schema->FindFieldByName("new_col"));
   ASSERT_TRUE(new_field_opt.has_value());
 
@@ -246,7 +249,7 @@ TEST_F(UpdateSchemaDefaultValueTest, UpdateColumnDefaultOnExistingColumn) {
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateSchema());
   update->UpdateColumnDefault("x", Literal::Long(0));
 
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Validate());
   ICEBERG_UNWRAP_OR_FAIL(auto field_opt, result.schema->FindFieldByName("x"));
   ASSERT_TRUE(field_opt.has_value());
 
@@ -261,7 +264,7 @@ TEST_F(UpdateSchemaDefaultValueTest, UpdateColumnDefaultClearsWithNullopt) {
   update->AddColumn("new_col", int32(), "An integer column", Literal::Int(42))
       .UpdateColumnDefault("new_col", std::nullopt);
 
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Validate());
   ICEBERG_UNWRAP_OR_FAIL(auto field_opt, result.schema->FindFieldByName("new_col"));
   ASSERT_TRUE(field_opt.has_value());
 
@@ -280,7 +283,7 @@ TEST_F(UpdateSchemaDefaultValueTest, AddNestedColumnPreservesNestedDefaults) {
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateSchema());
   update->AddColumn("outer", nested_type, "A nested column");
 
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Validate());
   ICEBERG_UNWRAP_OR_FAIL(auto outer_opt, result.schema->FindFieldByName("outer"));
   ASSERT_TRUE(outer_opt.has_value());
 
@@ -294,11 +297,91 @@ TEST_F(UpdateSchemaDefaultValueTest, AddNestedColumnPreservesNestedDefaults) {
   EXPECT_EQ(*inner.write_default(), Literal::Int(9));
 }
 
+TEST_F(UpdateSchemaDefaultValueTest, FrozenNestedInputsAndPreviewsAreIsolated) {
+  auto amount_type = decimal(9, 2);
+  auto key_type = fixed(4);
+  auto initial = std::make_shared<Literal>(Literal::Decimal(1234, 9, 2));
+  auto write = std::make_shared<Literal>(Literal::Decimal(5678, 9, 2));
+  auto element_type = std::make_shared<StructType>(std::vector<SchemaField>{
+      SchemaField(100, "amount", amount_type, false, "amount doc", initial, write)});
+  auto list_type =
+      std::make_shared<ListType>(SchemaField(101, "element", element_type, true));
+  auto map_type = std::make_shared<MapType>(SchemaField(102, "key", key_type, false),
+                                            SchemaField(103, "value", list_type, true));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto txn, table_->NewTransaction());
+  ICEBERG_UNWRAP_OR_FAIL(auto update, txn->NewUpdateSchema());
+  update->AddColumn("nested", map_type, "nested doc")
+      .AddRequiredColumn("copy_id", int64(), "identifier doc", Literal::Long(42));
+  std::array<std::string_view, 1> identifier_names = {"copy_id"};
+  std::span<std::string_view> identifiers(identifier_names);
+  update->SetIdentifierFields(identifiers);
+  ICEBERG_UNWRAP_OR_FAIL(auto expected, update->Validate());
+  const auto identifier_ids = expected.schema->IdentifierFieldIds();
+  ASSERT_THAT(update->Commit(), IsOk());
+
+  auto verify = [&](const Schema& schema) {
+    EXPECT_THAT(schema.fields(), ::testing::ElementsAreArray(expected.schema->fields()));
+    EXPECT_EQ(schema.IdentifierFieldIds(), identifier_ids);
+    ICEBERG_UNWRAP_OR_FAIL(auto nested, schema.FindFieldByName("nested"));
+    ASSERT_TRUE(nested.has_value());
+    EXPECT_EQ(nested->get().doc(), "nested doc");
+    const auto& map = checked_cast<const MapType&>(*nested->get().type());
+    EXPECT_EQ(*map.key().type(), *fixed(4));
+    const auto& list = checked_cast<const ListType&>(*map.value().type());
+    const auto& element = checked_cast<const StructType&>(*list.element().type());
+    ASSERT_EQ(element.fields().size(), 1U);
+    const auto& amount = element.fields()[0];
+    EXPECT_EQ(*amount.type(), *decimal(9, 2));
+    EXPECT_EQ(amount.doc(), "amount doc");
+    ASSERT_NE(amount.initial_default(), nullptr);
+    EXPECT_EQ(*amount.initial_default(), Literal::Decimal(1234, 9, 2));
+    ASSERT_NE(amount.write_default(), nullptr);
+    EXPECT_EQ(*amount.write_default(), Literal::Decimal(5678, 9, 2));
+  };
+
+  // Mutating retained input aliases must not change the frozen operation.
+  *amount_type = DecimalType(18, 4);
+  *key_type = FixedType(8);
+  *initial = Literal::Decimal(9999, 18, 4);
+  *write = Literal::Decimal(8888, 18, 4);
+  ICEBERG_UNWRAP_OR_FAIL(auto preview, update->Validate());
+  EXPECT_EQ(preview.schema->schema_id(), expected.schema->schema_id());
+  verify(*preview.schema);
+
+  // A public preview must also be independent of the frozen inputs and the
+  // metadata already staged in the transaction.
+  ICEBERG_UNWRAP_OR_FAIL(auto nested, preview.schema->FindFieldByName("nested"));
+  ASSERT_TRUE(nested.has_value());
+  auto& map = checked_cast<MapType&>(*nested->get().type());
+  checked_cast<FixedType&>(*map.key().type()) = FixedType(16);
+  auto& list = checked_cast<ListType&>(*map.value().type());
+  auto& element = checked_cast<StructType&>(*list.element().type());
+  const auto& amount = element.fields()[0];
+  checked_cast<DecimalType&>(*amount.type()) = DecimalType(20, 5);
+  checked_cast<DecimalType&>(*amount.initial_default()->type()) = DecimalType(21, 6);
+  checked_cast<DecimalType&>(*amount.write_default()->type()) = DecimalType(22, 7);
+  list = ListType(SchemaField(101, "element", int64(), true));
+  map = MapType(SchemaField(102, "key", string(), false),
+                SchemaField(103, "value", int64(), false));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto fresh_preview, update->Validate());
+  EXPECT_EQ(fresh_preview.schema->schema_id(), expected.schema->schema_id());
+  verify(*fresh_preview.schema);
+  ICEBERG_UNWRAP_OR_FAIL(auto staged, txn->current().Schema());
+  verify(*staged);
+  ASSERT_THAT(txn->Commit(), IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(auto reloaded, catalog_->LoadTable(table_ident_));
+  ICEBERG_UNWRAP_OR_FAIL(auto committed, reloaded->schema());
+  EXPECT_EQ(committed->schema_id(), staged->schema_id());
+  verify(*committed);
+}
+
 TEST_F(UpdateSchemaDefaultValueTest, UpdateColumnDefaultCastsToColumnType) {
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateSchema());
   update->UpdateColumnDefault("x", Literal::Int(5));
 
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Validate());
   ICEBERG_UNWRAP_OR_FAIL(auto field_opt, result.schema->FindFieldByName("x"));
   ASSERT_TRUE(field_opt.has_value());
 
@@ -312,7 +395,7 @@ TEST_F(UpdateSchemaDefaultValueTest, RequireColumnAddedWithDefault) {
   update->AddColumn("new_col", int32(), "An integer column", Literal::Int(42))
       .RequireColumn("new_col");
 
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Validate());
   ICEBERG_UNWRAP_OR_FAIL(auto new_field_opt, result.schema->FindFieldByName("new_col"));
   ASSERT_TRUE(new_field_opt.has_value());
   EXPECT_FALSE(new_field_opt->get().optional());
@@ -345,7 +428,7 @@ TEST_F(UpdateSchemaDefaultValueTest, RequireNestedMapListColumnAddedWithDefault)
       .AddColumn("points", "z", int64(), "z coordinate", Literal::Long(0))
       .RequireColumn("points.z");
 
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Validate());
 
   ICEBERG_UNWRAP_OR_FAIL(auto locations_opt, result.schema->FindFieldByName("locations"));
   ASSERT_TRUE(locations_opt.has_value());
@@ -371,7 +454,7 @@ TEST_F(UpdateSchemaDefaultValueTest, UpdateColumnDocPreservesDefaultValues) {
   update->AddColumn("new_col", int32(), "An integer column", Literal::Int(42))
       .UpdateColumnDoc("new_col", "updated doc");
 
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Validate());
   ICEBERG_UNWRAP_OR_FAIL(auto field_opt, result.schema->FindFieldByName("new_col"));
   ASSERT_TRUE(field_opt.has_value());
 
@@ -388,12 +471,12 @@ TEST_F(UpdateSchemaDefaultValueTest, UpdateColumnTypePromotesDefaultValues) {
   update->AddColumn("new_col", int32(), "An integer column", Literal::Int(42))
       .UpdateColumn("new_col", int64());
 
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Validate());
   ICEBERG_UNWRAP_OR_FAIL(auto field_opt, result.schema->FindFieldByName("new_col"));
   ASSERT_TRUE(field_opt.has_value());
 
   const auto& field = field_opt->get();
-  EXPECT_EQ(field.type(), int64());
+  EXPECT_EQ(*field.type(), *int64());
   ASSERT_NE(field.initial_default(), nullptr);
   EXPECT_EQ(*field.initial_default(), Literal::Long(42));
   ASSERT_NE(field.write_default(), nullptr);
@@ -407,7 +490,7 @@ TEST_F(UpdateSchemaDefaultValueTest, UpdateColumnTypePromotesDecimalDefault) {
                   Literal::Decimal(1234, 9, 2))
       .UpdateColumn("new_col", decimal(18, 2));
 
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Validate());
   ICEBERG_UNWRAP_OR_FAIL(auto field_opt, result.schema->FindFieldByName("new_col"));
   ASSERT_TRUE(field_opt.has_value());
 
@@ -424,7 +507,7 @@ TEST_F(UpdateSchemaDefaultValueTest, AddColumnWithWiderPrecisionDecimalDefault) 
   update->AddColumn("new_col", decimal(18, 2), "A decimal column",
                     Literal::Decimal(1234, 9, 2));
 
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Validate());
   ICEBERG_UNWRAP_OR_FAIL(auto field_opt, result.schema->FindFieldByName("new_col"));
   ASSERT_TRUE(field_opt.has_value());
 
@@ -440,7 +523,7 @@ TEST_F(UpdateSchemaDefaultValueTest, UpdateColumnDefaultWiderPrecisionDecimal) {
   update->AddColumn("new_col", decimal(18, 2), "A decimal column")
       .UpdateColumnDefault("new_col", Literal::Decimal(1234, 9, 2));
 
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Validate());
   ICEBERG_UNWRAP_OR_FAIL(auto field_opt, result.schema->FindFieldByName("new_col"));
   ASSERT_TRUE(field_opt.has_value());
 
@@ -454,7 +537,7 @@ TEST_F(UpdateSchemaDefaultValueTest, AddColumnWithDifferentScaleDecimalDefaultFa
   update->AddColumn("new_col", decimal(18, 2), "A decimal column",
                     Literal::Decimal(1234, 9, 3));
 
-  auto result = update->Apply();
+  auto result = update->Validate();
   EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
   EXPECT_THAT(result, HasErrorMessage("Cannot cast default value"));
 }
@@ -464,7 +547,7 @@ TEST_F(UpdateSchemaDefaultValueTest, UpdateColumnDefaultDifferentScaleDecimalFai
   update->AddColumn("new_col", decimal(18, 2), "A decimal column")
       .UpdateColumnDefault("new_col", Literal::Decimal(1234, 9, 3));
 
-  auto result = update->Apply();
+  auto result = update->Validate();
   EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
   EXPECT_THAT(result, HasErrorMessage("Cannot cast default value"));
 }
@@ -474,7 +557,7 @@ TEST_F(UpdateSchemaDefaultValueTest, AddColumnWithOutOfPrecisionDecimalDefaultFa
   update->AddColumn("new_col", decimal(4, 2), "A decimal column",
                     Literal::Decimal(1234567, 9, 2));
 
-  auto result = update->Apply();
+  auto result = update->Validate();
   EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
   EXPECT_THAT(result, HasErrorMessage("Cannot cast default value"));
 }
@@ -484,7 +567,7 @@ TEST_F(UpdateSchemaDefaultValueTest, AddColumnWithTypedNullDecimalDefaultFails) 
   update->AddColumn("new_col", decimal(18, 2), "A decimal column",
                     Literal::Null(decimal(18, 2)));
 
-  auto result = update->Apply();
+  auto result = update->Validate();
   EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
   EXPECT_THAT(result, HasErrorMessage("Cannot cast default value"));
 }
@@ -495,7 +578,7 @@ TEST_F(UpdateSchemaTest, AddMultipleColumns) {
       .AddColumn("col2", string(), "Second column")
       .AddColumn("col3", boolean(), "Third column");
 
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Validate());
   ASSERT_TRUE(result.schema != nullptr);
 
   ICEBERG_UNWRAP_OR_FAIL(auto col1_opt, result.schema->FindFieldByName("col1"));
@@ -506,16 +589,16 @@ TEST_F(UpdateSchemaTest, AddMultipleColumns) {
   ASSERT_TRUE(col2_opt.has_value());
   ASSERT_TRUE(col3_opt.has_value());
 
-  EXPECT_EQ(col1_opt->get().type(), int32());
-  EXPECT_EQ(col2_opt->get().type(), string());
-  EXPECT_EQ(col3_opt->get().type(), boolean());
+  EXPECT_EQ(*col1_opt->get().type(), *int32());
+  EXPECT_EQ(*col2_opt->get().type(), *string());
+  EXPECT_EQ(*col3_opt->get().type(), *boolean());
 }
 
 TEST_F(UpdateSchemaTest, AddColumnWithDotInNameFails) {
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateSchema());
   update->AddColumn("col.with.dots", int32(), "Column with dots");
 
-  auto result = update->Apply();
+  auto result = update->Validate();
   EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
   EXPECT_THAT(result, HasErrorMessage("Cannot add column with ambiguous name"));
 }
@@ -532,7 +615,7 @@ TEST_F(UpdateSchemaTest, AddColumnToNestedStruct) {
   ICEBERG_UNWRAP_OR_FAIL(auto update, reloaded->NewUpdateSchema());
   update->AddColumn("struct_col", "new_nested_field", string(), "New nested field");
 
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Validate());
   ASSERT_TRUE(result.schema != nullptr);
 
   ICEBERG_UNWRAP_OR_FAIL(auto struct_field_opt,
@@ -549,14 +632,14 @@ TEST_F(UpdateSchemaTest, AddColumnToNestedStruct) {
 
   const auto& nested_field = nested_field_opt->get();
   EXPECT_EQ(nested_field.name(), "new_nested_field");
-  EXPECT_EQ(nested_field.type(), string());
+  EXPECT_EQ(*nested_field.type(), *string());
 }
 
 TEST_F(UpdateSchemaTest, AddColumnToNonExistentParentFails) {
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateSchema());
   update->AddColumn("non_existent_parent", "new_field", int32(), "New field");
 
-  auto result = update->Apply();
+  auto result = update->Validate();
   EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
   EXPECT_THAT(result, HasErrorMessage("Cannot find parent struct"));
 }
@@ -570,7 +653,7 @@ TEST_F(UpdateSchemaTest, AddColumnToNonStructParentFails) {
   ICEBERG_UNWRAP_OR_FAIL(auto update, reloaded->NewUpdateSchema());
   update->AddColumn("primitive_col", "nested_field", string(), "Should fail");
 
-  auto result = update->Apply();
+  auto result = update->Validate();
   EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
   EXPECT_THAT(result, HasErrorMessage("Cannot add to non-struct column"));
 }
@@ -580,7 +663,7 @@ TEST_F(UpdateSchemaTest, AddDuplicateColumnNameFails) {
   update->AddColumn("duplicate_col", int32(), "First column")
       .AddColumn("duplicate_col", string(), "Duplicate column");
 
-  auto result = update->Apply();
+  auto result = update->Validate();
   EXPECT_THAT(result, IsError(ErrorKind::kInvalidSchema));
   EXPECT_THAT(result, HasErrorMessage("Duplicate path found"));
 }
@@ -593,7 +676,7 @@ TEST_F(UpdateSchemaTest, ColumnIdAssignment) {
   update->AddColumn("new_col1", int32(), "First new column")
       .AddColumn("new_col2", string(), "Second new column");
 
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Validate());
 
   EXPECT_EQ(result.new_last_column_id, original_last_id + 2);
 
@@ -615,7 +698,7 @@ TEST_F(UpdateSchemaTest, AddNestedStructColumn) {
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateSchema());
   update->AddColumn("complex_struct", nested_struct, "A complex struct column");
 
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Validate());
   ASSERT_TRUE(result.schema != nullptr);
 
   ICEBERG_UNWRAP_OR_FAIL(auto struct_field_opt,
@@ -636,8 +719,8 @@ TEST_F(UpdateSchemaTest, AddNestedStructColumn) {
   ASSERT_TRUE(field1_opt.has_value());
   ASSERT_TRUE(field2_opt.has_value());
 
-  EXPECT_EQ(field1_opt->get().type(), int32());
-  EXPECT_EQ(field2_opt->get().type(), string());
+  EXPECT_EQ(*field1_opt->get().type(), *int32());
+  EXPECT_EQ(*field2_opt->get().type(), *string());
   EXPECT_TRUE(field1_opt->get().optional());
   EXPECT_FALSE(field2_opt->get().optional());
 }
@@ -648,7 +731,7 @@ TEST_F(UpdateSchemaTest, CaseSensitiveColumnNames) {
       .AddColumn("Column", int32(), "Uppercase column")
       .AddColumn("column", string(), "Lowercase column");
 
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Validate());
   ASSERT_TRUE(result.schema != nullptr);
 
   ICEBERG_UNWRAP_OR_FAIL(auto upper_opt, result.schema->FindFieldByName("Column", true));
@@ -657,8 +740,8 @@ TEST_F(UpdateSchemaTest, CaseSensitiveColumnNames) {
   ASSERT_TRUE(upper_opt.has_value());
   ASSERT_TRUE(lower_opt.has_value());
 
-  EXPECT_EQ(upper_opt->get().type(), int32());
-  EXPECT_EQ(lower_opt->get().type(), string());
+  EXPECT_EQ(*upper_opt->get().type(), *int32());
+  EXPECT_EQ(*lower_opt->get().type(), *string());
 }
 
 TEST_F(UpdateSchemaTest, CaseInsensitiveDuplicateDetection) {
@@ -667,7 +750,7 @@ TEST_F(UpdateSchemaTest, CaseInsensitiveDuplicateDetection) {
       .AddColumn("Column", int32(), "First column")
       .AddColumn("COLUMN", string(), "Duplicate column");
 
-  auto result = update->Apply();
+  auto result = update->Validate();
   EXPECT_THAT(result, IsError(ErrorKind::kInvalidSchema));
   EXPECT_THAT(result, HasErrorMessage("Duplicate path found"));
 }
@@ -676,7 +759,7 @@ TEST_F(UpdateSchemaTest, EmptyUpdate) {
   ICEBERG_UNWRAP_OR_FAIL(auto original_schema, table_->schema());
 
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateSchema());
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Validate());
 
   EXPECT_EQ(*result.schema, *original_schema);
   EXPECT_EQ(result.new_last_column_id, table_->metadata()->last_column_id);
@@ -730,7 +813,7 @@ TEST_F(UpdateSchemaTest, AddFieldsToMapAndList) {
   update->AddColumn("locations", "alt", float32(), "altitude")
       .AddColumn("points", "z", int64(), "z coordinate");
 
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Validate());
 
   ICEBERG_UNWRAP_OR_FAIL(auto locations_opt, result.schema->FindFieldByName("locations"));
   ASSERT_TRUE(locations_opt.has_value());
@@ -741,7 +824,7 @@ TEST_F(UpdateSchemaTest, AddFieldsToMapAndList) {
   const auto& value_struct = checked_cast<const StructType&>(*map.value().type());
   ICEBERG_UNWRAP_OR_FAIL(auto alt_opt, value_struct.GetFieldByName("alt"));
   ASSERT_TRUE(alt_opt.has_value());
-  EXPECT_EQ(alt_opt->get().type(), float32());
+  EXPECT_EQ(*alt_opt->get().type(), *float32());
 
   ICEBERG_UNWRAP_OR_FAIL(auto points_opt, result.schema->FindFieldByName("points"));
   ASSERT_TRUE(points_opt.has_value());
@@ -752,7 +835,7 @@ TEST_F(UpdateSchemaTest, AddFieldsToMapAndList) {
   const auto& element_struct = checked_cast<const StructType&>(*list.element().type());
   ICEBERG_UNWRAP_OR_FAIL(auto z_opt, element_struct.GetFieldByName("z"));
   ASSERT_TRUE(z_opt.has_value());
-  EXPECT_EQ(z_opt->get().type(), int64());
+  EXPECT_EQ(*z_opt->get().type(), *int64());
 }
 
 TEST_F(UpdateSchemaTest, AddNestedStructWithIdReassignment) {
@@ -762,7 +845,7 @@ TEST_F(UpdateSchemaTest, AddNestedStructWithIdReassignment) {
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateSchema());
   update->AddColumn("location", nested_struct);
 
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Validate());
 
   ICEBERG_UNWRAP_OR_FAIL(auto location_opt, result.schema->FindFieldByName("location"));
   ASSERT_TRUE(location_opt.has_value());
@@ -798,7 +881,7 @@ TEST_F(UpdateSchemaTest, AddNestedMapOfStructs) {
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateSchema());
   update->AddColumn("locations", map_type);
 
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Validate());
 
   ICEBERG_UNWRAP_OR_FAIL(auto locations_opt, result.schema->FindFieldByName("locations"));
   ASSERT_TRUE(locations_opt.has_value());
@@ -831,7 +914,7 @@ TEST_F(UpdateSchemaTest, AddNestedListOfStructs) {
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateSchema());
   update->AddColumn("locations", list_type);
 
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Validate());
 
   ICEBERG_UNWRAP_OR_FAIL(auto locations_opt, result.schema->FindFieldByName("locations"));
   ASSERT_TRUE(locations_opt.has_value());
@@ -864,7 +947,7 @@ TEST_F(UpdateSchemaTest, AddFieldWithDotsInName) {
   ICEBERG_UNWRAP_OR_FAIL(auto update, reloaded->NewUpdateSchema());
   update->AddColumn("struct_col", "field.with.dots", int64(), "Field with dots in name");
 
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Validate());
 
   ICEBERG_UNWRAP_OR_FAIL(auto struct_field_opt,
                          result.schema->FindFieldByName("struct_col"));
@@ -877,7 +960,7 @@ TEST_F(UpdateSchemaTest, AddFieldWithDotsInName) {
                          nested_struct.GetFieldByName("field.with.dots"));
   ASSERT_TRUE(dotted_field_opt.has_value());
   EXPECT_EQ(dotted_field_opt->get().name(), "field.with.dots");
-  EXPECT_EQ(dotted_field_opt->get().type(), int64());
+  EXPECT_EQ(*dotted_field_opt->get().type(), *int64());
 }
 
 TEST_F(UpdateSchemaTest, AddFieldToMapKeyFails) {
@@ -899,7 +982,7 @@ TEST_F(UpdateSchemaTest, AddFieldToMapKeyFails) {
   ICEBERG_UNWRAP_OR_FAIL(auto update, reloaded->NewUpdateSchema());
   update->AddColumn("locations.key", "city", string(), "Should fail");
 
-  auto result = update->Apply();
+  auto result = update->Validate();
   EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
   EXPECT_THAT(result, HasErrorMessage("Cannot add fields to map keys"));
 }
@@ -913,7 +996,7 @@ TEST_F(UpdateSchemaTest, DeleteColumn) {
   ICEBERG_UNWRAP_OR_FAIL(auto update, reloaded->NewUpdateSchema());
   update->DeleteColumn("to_delete");
 
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Validate());
 
   ICEBERG_UNWRAP_OR_FAIL(auto field_opt, result.schema->FindFieldByName("to_delete"));
   EXPECT_FALSE(field_opt.has_value());
@@ -932,7 +1015,7 @@ TEST_F(UpdateSchemaTest, DeleteNestedColumn) {
   ICEBERG_UNWRAP_OR_FAIL(auto update, reloaded->NewUpdateSchema());
   update->DeleteColumn("struct_col.field1");
 
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Validate());
 
   ICEBERG_UNWRAP_OR_FAIL(auto struct_field_opt,
                          result.schema->FindFieldByName("struct_col"));
@@ -952,7 +1035,7 @@ TEST_F(UpdateSchemaTest, DeleteMissingColumnFails) {
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateSchema());
   update->DeleteColumn("non_existent");
 
-  auto result = update->Apply();
+  auto result = update->Validate();
   EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
   EXPECT_THAT(result, HasErrorMessage("Cannot delete missing column"));
 }
@@ -967,13 +1050,13 @@ TEST_F(UpdateSchemaTest, DeleteThenAdd) {
   ICEBERG_UNWRAP_OR_FAIL(auto update, reloaded->NewUpdateSchema());
   update->DeleteColumn("col").AddColumn("col", string(), "Now optional string");
 
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Validate());
 
   ICEBERG_UNWRAP_OR_FAIL(auto field_opt, result.schema->FindFieldByName("col"));
   ASSERT_TRUE(field_opt.has_value());
 
   const auto& field = field_opt->get();
-  EXPECT_EQ(field.type(), string());
+  EXPECT_EQ(*field.type(), *string());
   EXPECT_TRUE(field.optional());
 }
 
@@ -990,7 +1073,7 @@ TEST_F(UpdateSchemaTest, DeleteThenAddNested) {
   update->DeleteColumn("struct_col.field1")
       .AddColumn("struct_col", "field1", int32(), "Re-added field");
 
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Validate());
 
   ICEBERG_UNWRAP_OR_FAIL(auto struct_field_opt,
                          result.schema->FindFieldByName("struct_col"));
@@ -1001,14 +1084,14 @@ TEST_F(UpdateSchemaTest, DeleteThenAddNested) {
 
   ICEBERG_UNWRAP_OR_FAIL(auto field1_opt, nested_struct.GetFieldByName("field1"));
   ASSERT_TRUE(field1_opt.has_value());
-  EXPECT_EQ(field1_opt->get().type(), int32());
+  EXPECT_EQ(*field1_opt->get().type(), *int32());
 }
 
 TEST_F(UpdateSchemaTest, AddDeleteConflict) {
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateSchema());
   update->AddColumn("new_col", int32()).DeleteColumn("new_col");
 
-  auto result = update->Apply();
+  auto result = update->Validate();
   EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
   EXPECT_THAT(result, HasErrorMessage("Cannot delete missing column"));
 }
@@ -1025,7 +1108,7 @@ TEST_F(UpdateSchemaTest, DeleteColumnWithAdditionsFails) {
   ICEBERG_UNWRAP_OR_FAIL(auto update, reloaded->NewUpdateSchema());
   update->AddColumn("struct_col", "field2", string()).DeleteColumn("struct_col");
 
-  auto result = update->Apply();
+  auto result = update->Validate();
   EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
   EXPECT_THAT(result, HasErrorMessage("Cannot delete a column that has additions"));
 }
@@ -1042,7 +1125,7 @@ TEST_F(UpdateSchemaTest, DeleteMapKeyFails) {
   ICEBERG_UNWRAP_OR_FAIL(auto update, reloaded->NewUpdateSchema());
   update->DeleteColumn("map_col.key");
 
-  auto result = update->Apply();
+  auto result = update->Validate();
   EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
   EXPECT_THAT(result, HasErrorMessage("Cannot delete map keys"));
 }
@@ -1056,7 +1139,7 @@ TEST_F(UpdateSchemaTest, DeleteColumnCaseInsensitive) {
   ICEBERG_UNWRAP_OR_FAIL(auto update, reloaded->NewUpdateSchema());
   update->CaseSensitive(false).DeleteColumn("mycolumn");
 
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Validate());
 
   ICEBERG_UNWRAP_OR_FAIL(auto field_opt,
                          result.schema->FindFieldByName("MyColumn", false));
@@ -1072,7 +1155,7 @@ TEST_F(UpdateSchemaTest, RenameColumn) {
   ICEBERG_UNWRAP_OR_FAIL(auto update, reloaded->NewUpdateSchema());
   update->RenameColumn("old_name", "new_name");
 
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Validate());
 
   ICEBERG_UNWRAP_OR_FAIL(auto old_field_opt, result.schema->FindFieldByName("old_name"));
   ICEBERG_UNWRAP_OR_FAIL(auto new_field_opt, result.schema->FindFieldByName("new_name"));
@@ -1095,7 +1178,7 @@ TEST_F(UpdateSchemaTest, RenameNestedColumn) {
   ICEBERG_UNWRAP_OR_FAIL(auto update, reloaded->NewUpdateSchema());
   update->RenameColumn("struct_col.field1", "renamed_field");
 
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Validate());
 
   ICEBERG_UNWRAP_OR_FAIL(auto struct_field_opt,
                          result.schema->FindFieldByName("struct_col"));
@@ -1121,7 +1204,7 @@ TEST_F(UpdateSchemaTest, RenameColumnWithDotsInName) {
   ICEBERG_UNWRAP_OR_FAIL(auto update, reloaded->NewUpdateSchema());
   update->RenameColumn("simple_name", "name.with.dots");
 
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Validate());
 
   ICEBERG_UNWRAP_OR_FAIL(auto new_field_opt,
                          result.schema->FindFieldByName("name.with.dots"));
@@ -1133,7 +1216,7 @@ TEST_F(UpdateSchemaTest, RenameMissingColumnFails) {
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateSchema());
   update->RenameColumn("non_existent", "new_name");
 
-  auto result = update->Apply();
+  auto result = update->Validate();
   EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
   EXPECT_THAT(result, HasErrorMessage("Cannot rename missing column"));
 }
@@ -1147,7 +1230,7 @@ TEST_F(UpdateSchemaTest, RenameDeletedColumnFails) {
   ICEBERG_UNWRAP_OR_FAIL(auto update, reloaded->NewUpdateSchema());
   update->DeleteColumn("col").RenameColumn("col", "new_name");
 
-  auto result = update->Apply();
+  auto result = update->Validate();
   EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
   EXPECT_THAT(result, HasErrorMessage("Cannot rename a column that will be deleted"));
 }
@@ -1161,7 +1244,7 @@ TEST_F(UpdateSchemaTest, RenameColumnCaseInsensitive) {
   ICEBERG_UNWRAP_OR_FAIL(auto update, reloaded->NewUpdateSchema());
   update->CaseSensitive(false).RenameColumn("mycolumn", "NewName");
 
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Validate());
 
   ICEBERG_UNWRAP_OR_FAIL(auto old_field_opt,
                          result.schema->FindFieldByName("MyColumn", false));
@@ -1181,7 +1264,7 @@ TEST_F(UpdateSchemaTest, RenameThenDeleteOldNameFails) {
   ICEBERG_UNWRAP_OR_FAIL(auto update, reloaded->NewUpdateSchema());
   update->RenameColumn("old_name", "new_name").DeleteColumn("old_name");
 
-  auto result = update->Apply();
+  auto result = update->Validate();
   EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
   EXPECT_THAT(result, HasErrorMessage("Cannot delete a column that has updates"));
 }
@@ -1195,7 +1278,7 @@ TEST_F(UpdateSchemaTest, RenameThenDeleteNewNameFails) {
   ICEBERG_UNWRAP_OR_FAIL(auto update, reloaded->NewUpdateSchema());
   update->RenameColumn("old_name", "new_name").DeleteColumn("new_name");
 
-  auto result = update->Apply();
+  auto result = update->Validate();
   EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
   EXPECT_THAT(result, HasErrorMessage("Cannot delete missing column"));
 }
@@ -1209,7 +1292,7 @@ TEST_F(UpdateSchemaTest, RenameThenAddWithOldName) {
   ICEBERG_UNWRAP_OR_FAIL(auto update, reloaded->NewUpdateSchema());
   update->RenameColumn("old_name", "new_name").AddColumn("old_name", string());
 
-  auto result = update->Apply();
+  auto result = update->Validate();
   EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
   EXPECT_THAT(result, HasErrorMessage("Cannot add column, name already exists"));
 }
@@ -1218,7 +1301,7 @@ TEST_F(UpdateSchemaTest, AddThenRename) {
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateSchema());
   update->AddColumn("temp_name", string()).RenameColumn("temp_name", "final_name");
 
-  auto result = update->Apply();
+  auto result = update->Validate();
   EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
   EXPECT_THAT(result, HasErrorMessage("Cannot rename missing column"));
 }
@@ -1234,7 +1317,7 @@ TEST_F(UpdateSchemaTest, DeleteThenAddThenRename) {
       .AddColumn("col", string(), "New column with same name")
       .RenameColumn("col", "renamed_col");
 
-  auto result = update->Apply();
+  auto result = update->Validate();
   EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
   EXPECT_THAT(result, HasErrorMessage("Cannot rename a column that will be deleted"));
 }
@@ -1248,7 +1331,7 @@ TEST_F(UpdateSchemaTest, MakeColumnOptional) {
   ICEBERG_UNWRAP_OR_FAIL(auto update, reloaded->NewUpdateSchema());
   update->MakeColumnOptional("id");
 
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Validate());
 
   ICEBERG_UNWRAP_OR_FAIL(auto field_opt, result.schema->FindFieldByName("id"));
   ASSERT_TRUE(field_opt.has_value());
@@ -1264,7 +1347,7 @@ TEST_F(UpdateSchemaTest, RequireColumn) {
   ICEBERG_UNWRAP_OR_FAIL(auto update, reloaded->NewUpdateSchema());
   update->RequireColumn("id");
 
-  auto result = update->Apply();
+  auto result = update->Validate();
   EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
   EXPECT_THAT(result, HasErrorMessage("Cannot change column nullability"));
   EXPECT_THAT(result, HasErrorMessage("optional -> required"));
@@ -1273,7 +1356,7 @@ TEST_F(UpdateSchemaTest, RequireColumn) {
   ICEBERG_UNWRAP_OR_FAIL(auto update2, reloaded2->NewUpdateSchema());
   update2->AllowIncompatibleChanges().RequireColumn("id");
 
-  ICEBERG_UNWRAP_OR_FAIL(auto result2, update2->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(auto result2, update2->Validate());
 
   ICEBERG_UNWRAP_OR_FAIL(auto field_opt, result2.schema->FindFieldByName("id"));
   ASSERT_TRUE(field_opt.has_value());
@@ -1289,7 +1372,7 @@ TEST_F(UpdateSchemaTest, RequireColumnNoop) {
   ICEBERG_UNWRAP_OR_FAIL(auto update, reloaded->NewUpdateSchema());
   update->RequireColumn("id");
 
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Validate());
 
   ICEBERG_UNWRAP_OR_FAIL(auto field_opt, result.schema->FindFieldByName("id"));
   ASSERT_TRUE(field_opt.has_value());
@@ -1305,7 +1388,7 @@ TEST_F(UpdateSchemaTest, MakeColumnOptionalNoop) {
   ICEBERG_UNWRAP_OR_FAIL(auto update, reloaded->NewUpdateSchema());
   update->MakeColumnOptional("id");
 
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Validate());
 
   ICEBERG_UNWRAP_OR_FAIL(auto field_opt, result.schema->FindFieldByName("id"));
   ASSERT_TRUE(field_opt.has_value());
@@ -1321,7 +1404,7 @@ TEST_F(UpdateSchemaTest, RequireColumnCaseInsensitive) {
   ICEBERG_UNWRAP_OR_FAIL(auto update, reloaded->NewUpdateSchema());
   update->CaseSensitive(false).AllowIncompatibleChanges().RequireColumn("id");
 
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Validate());
 
   ICEBERG_UNWRAP_OR_FAIL(auto field_opt, result.schema->FindFieldByName("ID", false));
   ASSERT_TRUE(field_opt.has_value());
@@ -1332,7 +1415,7 @@ TEST_F(UpdateSchemaTest, MakeColumnOptionalMissingFails) {
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateSchema());
   update->MakeColumnOptional("non_existent");
 
-  auto result = update->Apply();
+  auto result = update->Validate();
   EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
   EXPECT_THAT(result, HasErrorMessage("Cannot update missing column"));
 }
@@ -1341,7 +1424,7 @@ TEST_F(UpdateSchemaTest, RequireColumnMissingFails) {
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateSchema());
   update->AllowIncompatibleChanges().RequireColumn("non_existent");
 
-  auto result = update->Apply();
+  auto result = update->Validate();
   EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
   EXPECT_THAT(result, HasErrorMessage("Cannot update missing column"));
 }
@@ -1355,7 +1438,7 @@ TEST_F(UpdateSchemaTest, MakeColumnOptionalDeletedFails) {
   ICEBERG_UNWRAP_OR_FAIL(auto update, reloaded->NewUpdateSchema());
   update->DeleteColumn("col").MakeColumnOptional("col");
 
-  auto result = update->Apply();
+  auto result = update->Validate();
   EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
   EXPECT_THAT(result, HasErrorMessage("Cannot update a column that will be deleted"));
 }
@@ -1369,7 +1452,7 @@ TEST_F(UpdateSchemaTest, RequireColumnDeletedFails) {
   ICEBERG_UNWRAP_OR_FAIL(auto update, reloaded->NewUpdateSchema());
   update->DeleteColumn("col").AllowIncompatibleChanges().RequireColumn("col");
 
-  auto result = update->Apply();
+  auto result = update->Validate();
   EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
   EXPECT_THAT(result, HasErrorMessage("Cannot update a column that will be deleted"));
 }
@@ -1379,7 +1462,7 @@ TEST_F(UpdateSchemaTest, UpdateColumnDoc) {
   update->AddColumn("col", int32(), "original doc");
   update->UpdateColumnDoc("col", "updated doc");
 
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Validate());
 
   ICEBERG_UNWRAP_OR_FAIL(auto field_opt, result.schema->FindFieldByName("col"));
   ASSERT_TRUE(field_opt.has_value());
@@ -1390,7 +1473,7 @@ TEST_F(UpdateSchemaTest, UpdateColumnDocMissingFails) {
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateSchema());
   update->UpdateColumnDoc("non_existent", "some doc");
 
-  auto result = update->Apply();
+  auto result = update->Validate();
   EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
   EXPECT_THAT(result, HasErrorMessage("Cannot update missing column"));
 }
@@ -1404,7 +1487,7 @@ TEST_F(UpdateSchemaTest, UpdateColumnDocDeletedFails) {
   ICEBERG_UNWRAP_OR_FAIL(auto update, reloaded->NewUpdateSchema());
   update->DeleteColumn("col").UpdateColumnDoc("col", "new doc");
 
-  auto result = update->Apply();
+  auto result = update->Validate();
   EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
   EXPECT_THAT(result, HasErrorMessage("Cannot update a column that will be deleted"));
 }
@@ -1418,7 +1501,7 @@ TEST_F(UpdateSchemaTest, UpdateColumnDocNoop) {
   ICEBERG_UNWRAP_OR_FAIL(auto update, reloaded->NewUpdateSchema());
   update->UpdateColumnDoc("col", "same doc");
 
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Validate());
 
   ICEBERG_UNWRAP_OR_FAIL(auto field_opt, result.schema->FindFieldByName("col"));
   ASSERT_TRUE(field_opt.has_value());
@@ -1430,7 +1513,7 @@ TEST_F(UpdateSchemaTest, UpdateColumnDocEmptyString) {
   update->AddColumn("col", int32(), "original doc");
   update->UpdateColumnDoc("col", "");
 
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Validate());
 
   ICEBERG_UNWRAP_OR_FAIL(auto field_opt, result.schema->FindFieldByName("col"));
   ASSERT_TRUE(field_opt.has_value());
@@ -1442,7 +1525,7 @@ TEST_F(UpdateSchemaTest, UpdateColumnIntToLong) {
   update->AddColumn("id", int32(), "An integer ID");
   update->UpdateColumn("id", int64());
 
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Validate());
 
   ICEBERG_UNWRAP_OR_FAIL(auto field_opt, result.schema->FindFieldByName("id"));
   ASSERT_TRUE(field_opt.has_value());
@@ -1455,7 +1538,7 @@ TEST_F(UpdateSchemaTest, UpdateColumnFloatToDouble) {
   update->AddColumn("value", float32(), "A float value");
   update->UpdateColumn("value", float64());
 
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Validate());
 
   ICEBERG_UNWRAP_OR_FAIL(auto field_opt, result.schema->FindFieldByName("value"));
   ASSERT_TRUE(field_opt.has_value());
@@ -1467,7 +1550,7 @@ TEST_F(UpdateSchemaTest, UpdateColumnUnknownToPrimitive) {
   update->AddColumn("mystery", unknown(), "A null-only placeholder");
   update->UpdateColumn("mystery", string());
 
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Validate());
 
   ICEBERG_UNWRAP_OR_FAIL(auto field_opt, result.schema->FindFieldByName("mystery"));
   ASSERT_TRUE(field_opt.has_value());
@@ -1480,7 +1563,7 @@ TEST_F(UpdateSchemaTest, AddRequiredUnknownColumnFails) {
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateSchema());
   update->AllowIncompatibleChanges().AddRequiredColumn("mystery", unknown());
 
-  auto result = update->Apply();
+  auto result = update->Validate();
   EXPECT_THAT(result, IsError(ErrorKind::kInvalidArgument));
   EXPECT_THAT(result, HasErrorMessage("Unknown type field 'mystery' must be optional"));
 }
@@ -1491,7 +1574,7 @@ TEST_F(UpdateSchemaTest, AddColumnWithRequiredNestedUnknownFails) {
                                    SchemaField::MakeRequired(3, "mystery", unknown()),
                                }));
 
-  auto result = update->Apply();
+  auto result = update->Validate();
   EXPECT_THAT(result, IsError(ErrorKind::kInvalidArgument));
   EXPECT_THAT(result, HasErrorMessage("Unknown type field 'mystery' must be optional"));
 }
@@ -1501,7 +1584,7 @@ TEST_F(UpdateSchemaTest, UpdateColumnSameType) {
   update->AddColumn("id", int32());
   update->UpdateColumn("id", int32());
 
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Validate());
 
   ICEBERG_UNWRAP_OR_FAIL(auto field_opt, result.schema->FindFieldByName("id"));
   ASSERT_TRUE(field_opt.has_value());
@@ -1512,7 +1595,7 @@ TEST_F(UpdateSchemaTest, UpdateColumnMissingFails) {
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateSchema());
   update->UpdateColumn("non_existent", int64());
 
-  auto result = update->Apply();
+  auto result = update->Validate();
   EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
   EXPECT_THAT(result, HasErrorMessage("Cannot update missing column"));
 }
@@ -1526,7 +1609,7 @@ TEST_F(UpdateSchemaTest, UpdateColumnDeletedFails) {
   ICEBERG_UNWRAP_OR_FAIL(auto update, reloaded->NewUpdateSchema());
   update->DeleteColumn("col").UpdateColumn("col", int64());
 
-  auto result = update->Apply();
+  auto result = update->Validate();
   EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
   EXPECT_THAT(result, HasErrorMessage("Cannot update a column that will be deleted"));
 }
@@ -1536,7 +1619,7 @@ TEST_F(UpdateSchemaTest, UpdateColumnInvalidPromotionFails) {
   update->AddColumn("id", int64());
   update->UpdateColumn("id", int32());
 
-  auto result = update->Apply();
+  auto result = update->Validate();
   EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
   EXPECT_THAT(result, HasErrorMessage("Cannot change column type"));
 }
@@ -1546,7 +1629,7 @@ TEST_F(UpdateSchemaTest, UpdateColumnInvalidPromotionDoubleToFloatFails) {
   update->AddColumn("value", float64());
   update->UpdateColumn("value", float32());
 
-  auto result = update->Apply();
+  auto result = update->Validate();
   EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
   EXPECT_THAT(result, HasErrorMessage("Cannot change column type"));
 }
@@ -1556,7 +1639,7 @@ TEST_F(UpdateSchemaTest, UpdateColumnIncompatibleTypesFails) {
   update->AddColumn("id", int32());
   update->UpdateColumn("id", string());
 
-  auto result = update->Apply();
+  auto result = update->Validate();
   EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
   EXPECT_THAT(result, HasErrorMessage("Cannot change column type"));
 }
@@ -1567,7 +1650,7 @@ TEST_F(UpdateSchemaTest, RenameAndUpdateColumnInSameTransaction) {
   update->UpdateColumn("old_name", int64());
   update->RenameColumn("old_name", "new_name");
 
-  auto result = update->Apply();
+  auto result = update->Validate();
   EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
   EXPECT_THAT(result, HasErrorMessage("Cannot rename missing column"));
 }
@@ -1579,7 +1662,7 @@ TEST_F(UpdateSchemaTest, UpdateColumnDecimalPrecisionWidening) {
   update->AddColumn("price", decimal_10_2);
   update->UpdateColumn("price", decimal_20_2);
 
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Validate());
 
   ICEBERG_UNWRAP_OR_FAIL(auto field_opt, result.schema->FindFieldByName("price"));
   ASSERT_TRUE(field_opt.has_value());
@@ -1593,7 +1676,7 @@ TEST_F(UpdateSchemaTest, UpdateColumnDecimalDifferentScaleFails) {
   update->AddColumn("price", decimal_10_2);
   update->UpdateColumn("price", decimal_10_3);
 
-  auto result = update->Apply();
+  auto result = update->Validate();
   EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
   EXPECT_THAT(result, HasErrorMessage("Cannot change column type"));
 }
@@ -1605,7 +1688,7 @@ TEST_F(UpdateSchemaTest, UpdateColumnDecimalPrecisionNarrowingFails) {
   update->AddColumn("price", decimal_20_2);
   update->UpdateColumn("price", decimal_10_2);
 
-  auto result = update->Apply();
+  auto result = update->Validate();
   EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
   EXPECT_THAT(result, HasErrorMessage("Cannot change column type"));
 }
@@ -1616,7 +1699,7 @@ TEST_F(UpdateSchemaTest, UpdateTypePreservesOtherMetadata) {
 
   update->UpdateColumn("value", int64());
 
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Validate());
 
   ICEBERG_UNWRAP_OR_FAIL(auto field_opt, result.schema->FindFieldByName("value"));
   ASSERT_TRUE(field_opt.has_value());
@@ -1633,7 +1716,7 @@ TEST_F(UpdateSchemaTest, UpdateDocPreservesOtherMetadata) {
 
   update->UpdateColumnDoc("id", "new doc");
 
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Validate());
 
   ICEBERG_UNWRAP_OR_FAIL(auto field_opt, result.schema->FindFieldByName("id"));
   ASSERT_TRUE(field_opt.has_value());
@@ -1653,7 +1736,7 @@ TEST_F(UpdateSchemaTest, RenameDeleteConflict) {
   ICEBERG_UNWRAP_OR_FAIL(auto update, reloaded->NewUpdateSchema());
   update->RenameColumn("col", "new_name").DeleteColumn("col");
 
-  auto result = update->Apply();
+  auto result = update->Validate();
   EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
   EXPECT_THAT(result, HasErrorMessage("Cannot delete a column that has updates"));
 }
@@ -1667,7 +1750,7 @@ TEST_F(UpdateSchemaTest, DeleteRenameConflict) {
   ICEBERG_UNWRAP_OR_FAIL(auto update, reloaded->NewUpdateSchema());
   update->DeleteColumn("col").RenameColumn("col", "new_name");
 
-  auto result = update->Apply();
+  auto result = update->Validate();
   EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
   EXPECT_THAT(result, HasErrorMessage("Cannot rename a column that will be deleted"));
 }
@@ -1678,7 +1761,7 @@ TEST_F(UpdateSchemaTest, CaseInsensitiveAddThenUpdate) {
       .AddColumn("Foo", int32(), "A column with uppercase name")
       .UpdateColumn("foo", int64());
 
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Validate());
 
   ICEBERG_UNWRAP_OR_FAIL(auto field_opt, result.schema->FindFieldByName("Foo", false));
   ASSERT_TRUE(field_opt.has_value());
@@ -1691,7 +1774,7 @@ TEST_F(UpdateSchemaTest, CaseInsensitiveAddThenUpdateDoc) {
       .AddColumn("Foo", int32(), "original doc")
       .UpdateColumnDoc("foo", "updated doc");
 
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Validate());
 
   ICEBERG_UNWRAP_OR_FAIL(auto field_opt, result.schema->FindFieldByName("Foo", false));
   ASSERT_TRUE(field_opt.has_value());
@@ -1705,7 +1788,7 @@ TEST_F(UpdateSchemaTest, CaseInsensitiveAddThenMakeOptional) {
       .AddRequiredColumn("Foo", int32(), "required column")
       .MakeColumnOptional("foo");
 
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Validate());
 
   ICEBERG_UNWRAP_OR_FAIL(auto field_opt, result.schema->FindFieldByName("Foo", false));
   ASSERT_TRUE(field_opt.has_value());
@@ -1719,7 +1802,7 @@ TEST_F(UpdateSchemaTest, CaseInsensitiveAddThenRequire) {
       .AddColumn("Foo", int32(), "optional column")
       .RequireColumn("foo");  // Require using lowercase
 
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Validate());
 
   ICEBERG_UNWRAP_OR_FAIL(auto field_opt, result.schema->FindFieldByName("Foo", false));
   ASSERT_TRUE(field_opt.has_value());
@@ -1791,7 +1874,7 @@ TEST_F(UpdateSchemaTest, MixedChanges) {
       .RequireColumn("data")
       .AddRequiredColumn("locations", "description", string(), "Location description");
 
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Validate());
 
   ICEBERG_UNWRAP_OR_FAIL(auto id_opt, result.schema->FindFieldByName("id"));
   ASSERT_TRUE(id_opt.has_value());
@@ -1913,7 +1996,7 @@ TEST_F(UpdateSchemaTest, TestMultipleMoves) {
 
   update->MoveFirst("w").MoveFirst("z").MoveAfter("y", "w").MoveBefore("w", "x");
 
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Validate());
   ASSERT_TRUE(result.schema != nullptr);
 
   const auto& fields = result.schema->fields();
@@ -1935,7 +2018,7 @@ TEST_F(UpdateSchemaTest, TestMoveTopLevelColumnFirst) {
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateSchema());
   update->MoveFirst("y");
 
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Validate());
   ASSERT_TRUE(result.schema != nullptr);
 
   const auto& fields = result.schema->fields();
@@ -1946,7 +2029,7 @@ TEST_F(UpdateSchemaTest, TestMoveTopLevelColumnBeforeFirst) {
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateSchema());
   update->MoveBefore("y", "x");
 
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Validate());
   ASSERT_TRUE(result.schema != nullptr);
 
   const auto& fields = result.schema->fields();
@@ -1965,7 +2048,7 @@ TEST_F(UpdateSchemaTest, TestMoveTopLevelColumnAfterLast) {
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateSchema());
   update->MoveAfter("x", "z");
 
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Validate());
   ASSERT_TRUE(result.schema != nullptr);
 
   const auto& fields = result.schema->fields();
@@ -1981,7 +2064,7 @@ TEST_F(UpdateSchemaTest, TestMoveTopLevelColumnAfter) {
   ICEBERG_UNWRAP_OR_FAIL(auto update, reloaded->NewUpdateSchema());
   update->MoveAfter("w", "x");
 
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Validate());
   ASSERT_TRUE(result.schema != nullptr);
 
   const auto& fields = result.schema->fields();
@@ -2005,7 +2088,7 @@ TEST_F(UpdateSchemaTest, TestMoveTopLevelColumnBefore) {
   ICEBERG_UNWRAP_OR_FAIL(auto update, reloaded->NewUpdateSchema());
   update->MoveBefore("w", "z");
 
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Validate());
   ASSERT_TRUE(result.schema != nullptr);
 
   const auto& fields = result.schema->fields();
@@ -2031,7 +2114,7 @@ TEST_F(UpdateSchemaTest, TestMoveNestedFieldFirst) {
   ICEBERG_UNWRAP_OR_FAIL(auto update, reloaded->NewUpdateSchema());
   update->MoveFirst("s.b");
 
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Validate());
   ASSERT_TRUE(result.schema != nullptr);
 
   ICEBERG_UNWRAP_OR_FAIL(auto s_opt, result.schema->FindFieldByName("s"));
@@ -2053,7 +2136,7 @@ TEST_F(UpdateSchemaTest, TestMoveNestedFieldBeforeFirst) {
   ICEBERG_UNWRAP_OR_FAIL(auto update, reloaded->NewUpdateSchema());
   update->MoveBefore("s.b", "s.a");
 
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Validate());
   ASSERT_TRUE(result.schema != nullptr);
 
   ICEBERG_UNWRAP_OR_FAIL(auto s_opt, result.schema->FindFieldByName("s"));
@@ -2083,7 +2166,7 @@ TEST_F(UpdateSchemaTest, TestMoveNestedFieldAfterLast) {
   ICEBERG_UNWRAP_OR_FAIL(auto update, reloaded->NewUpdateSchema());
   update->MoveAfter("s.a", "s.b");
 
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Validate());
   ASSERT_TRUE(result.schema != nullptr);
 
   ICEBERG_UNWRAP_OR_FAIL(auto s_opt, result.schema->FindFieldByName("s"));
@@ -2106,7 +2189,7 @@ TEST_F(UpdateSchemaTest, TestMoveNestedFieldAfter) {
   ICEBERG_UNWRAP_OR_FAIL(auto update, reloaded->NewUpdateSchema());
   update->MoveAfter("s.c", "s.a");
 
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Validate());
   ASSERT_TRUE(result.schema != nullptr);
 
   ICEBERG_UNWRAP_OR_FAIL(auto s_opt, result.schema->FindFieldByName("s"));
@@ -2137,7 +2220,7 @@ TEST_F(UpdateSchemaTest, TestMoveNestedFieldBefore) {
   ICEBERG_UNWRAP_OR_FAIL(auto update, reloaded->NewUpdateSchema());
   update->MoveBefore("s.c", "s.b");
 
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Validate());
   ASSERT_TRUE(result.schema != nullptr);
 
   ICEBERG_UNWRAP_OR_FAIL(auto s_opt, result.schema->FindFieldByName("s"));
@@ -2169,7 +2252,7 @@ TEST_F(UpdateSchemaTest, TestMoveListElementField) {
   ICEBERG_UNWRAP_OR_FAIL(auto update, reloaded->NewUpdateSchema());
   update->MoveAfter("list.a", "list.b");
 
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Validate());
   ASSERT_TRUE(result.schema != nullptr);
 
   ICEBERG_UNWRAP_OR_FAIL(auto list_opt, result.schema->FindFieldByName("list"));
@@ -2205,7 +2288,7 @@ TEST_F(UpdateSchemaTest, TestMoveMapValueStructField) {
   ICEBERG_UNWRAP_OR_FAIL(auto update, reloaded->NewUpdateSchema());
   update->MoveAfter("locations.lat", "locations.long");
 
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Validate());
   ASSERT_TRUE(result.schema != nullptr);
 
   ICEBERG_UNWRAP_OR_FAIL(auto locs_opt, result.schema->FindFieldByName("locations"));
@@ -2230,7 +2313,7 @@ TEST_F(UpdateSchemaTest, TestMoveAddedTopLevelColumn) {
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateSchema());
   update->AddColumn("ts", timestamp_tz()).MoveAfter("ts", "x");
 
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Validate());
   ASSERT_TRUE(result.schema != nullptr);
 
   const auto& fields = result.schema->fields();
@@ -2252,7 +2335,7 @@ TEST_F(UpdateSchemaTest, TestMoveAddedTopLevelColumnAfterAddedColumn) {
       .MoveAfter("ts", "x")
       .MoveAfter("count", "ts");
 
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Validate());
   ASSERT_TRUE(result.schema != nullptr);
 
   const auto& fields = result.schema->fields();
@@ -2284,7 +2367,7 @@ TEST_F(UpdateSchemaTest, TestMoveAddedNestedStructField) {
   update->AddColumn("preferences", "ts", timestamp_tz())
       .MoveBefore("preferences.ts", "preferences.feature1");
 
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Validate());
   ASSERT_TRUE(result.schema != nullptr);
 
   ICEBERG_UNWRAP_OR_FAIL(auto prefs_opt, result.schema->FindFieldByName("preferences"));
@@ -2310,7 +2393,7 @@ TEST_F(UpdateSchemaTest, TestMoveAddedNestedStructFieldBeforeAddedColumn) {
       .MoveBefore("preferences.ts", "preferences.feature1")
       .MoveBefore("preferences.size", "preferences.ts");
 
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Validate());
   ASSERT_TRUE(result.schema != nullptr);
 
   ICEBERG_UNWRAP_OR_FAIL(auto prefs_opt, result.schema->FindFieldByName("preferences"));
@@ -2325,13 +2408,13 @@ TEST_F(UpdateSchemaTest, TestMoveAddedNestedStructFieldBeforeAddedColumn) {
 TEST_F(UpdateSchemaTest, TestMoveSelfReferenceFails) {
   ICEBERG_UNWRAP_OR_FAIL(auto update1, table_->NewUpdateSchema());
   update1->MoveBefore("x", "x");
-  auto result1 = update1->Apply();
+  auto result1 = update1->Validate();
   EXPECT_THAT(result1, IsError(ErrorKind::kValidationFailed));
   EXPECT_THAT(result1, HasErrorMessage("Cannot move x before itself"));
 
   ICEBERG_UNWRAP_OR_FAIL(auto update2, table_->NewUpdateSchema());
   update2->MoveAfter("x", "x");
-  auto result2 = update2->Apply();
+  auto result2 = update2->Validate();
   EXPECT_THAT(result2, IsError(ErrorKind::kValidationFailed));
   EXPECT_THAT(result2, HasErrorMessage("Cannot move x after itself"));
 }
@@ -2339,19 +2422,19 @@ TEST_F(UpdateSchemaTest, TestMoveSelfReferenceFails) {
 TEST_F(UpdateSchemaTest, TestMoveMissingColumnFails) {
   ICEBERG_UNWRAP_OR_FAIL(auto update1, table_->NewUpdateSchema());
   update1->MoveFirst("items");
-  auto result1 = update1->Apply();
+  auto result1 = update1->Validate();
   EXPECT_THAT(result1, IsError(ErrorKind::kValidationFailed));
   EXPECT_THAT(result1, HasErrorMessage("Cannot move missing column: items"));
 
   ICEBERG_UNWRAP_OR_FAIL(auto update2, table_->NewUpdateSchema());
   update2->MoveBefore("items", "x");
-  auto result2 = update2->Apply();
+  auto result2 = update2->Validate();
   EXPECT_THAT(result2, IsError(ErrorKind::kValidationFailed));
   EXPECT_THAT(result2, HasErrorMessage("Cannot move missing column: items"));
 
   ICEBERG_UNWRAP_OR_FAIL(auto update3, table_->NewUpdateSchema());
   update3->MoveAfter("items", "y");
-  auto result3 = update3->Apply();
+  auto result3 = update3->Validate();
   EXPECT_THAT(result3, IsError(ErrorKind::kValidationFailed));
   EXPECT_THAT(result3, HasErrorMessage("Cannot move missing column: items"));
 }
@@ -2359,7 +2442,7 @@ TEST_F(UpdateSchemaTest, TestMoveMissingColumnFails) {
 TEST_F(UpdateSchemaTest, TestMoveBeforeAddFails) {
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateSchema());
   update->MoveBefore("ts", "x").AddColumn("ts", timestamp_tz());
-  auto result = update->Apply();
+  auto result = update->Validate();
   EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
   EXPECT_THAT(result, HasErrorMessage("Cannot move missing column: ts"));
 }
@@ -2367,13 +2450,13 @@ TEST_F(UpdateSchemaTest, TestMoveBeforeAddFails) {
 TEST_F(UpdateSchemaTest, TestMoveMissingReferenceColumnFails) {
   ICEBERG_UNWRAP_OR_FAIL(auto update1, table_->NewUpdateSchema());
   update1->MoveBefore("x", "items");
-  auto result1 = update1->Apply();
+  auto result1 = update1->Validate();
   EXPECT_THAT(result1, IsError(ErrorKind::kValidationFailed));
   EXPECT_THAT(result1, HasErrorMessage("Cannot move x before missing column: items"));
 
   ICEBERG_UNWRAP_OR_FAIL(auto update2, table_->NewUpdateSchema());
   update2->MoveAfter("y", "items");
-  auto result2 = update2->Apply();
+  auto result2 = update2->Validate();
   EXPECT_THAT(result2, IsError(ErrorKind::kValidationFailed));
   EXPECT_THAT(result2, HasErrorMessage("Cannot move y after missing column: items"));
 }
@@ -2389,7 +2472,7 @@ TEST_F(UpdateSchemaTest, TestMovePrimitiveMapKeyFails) {
   ICEBERG_UNWRAP_OR_FAIL(auto reloaded, catalog_->LoadTable(table_ident_));
   ICEBERG_UNWRAP_OR_FAIL(auto update, reloaded->NewUpdateSchema());
   update->MoveBefore("properties.key", "properties.value");
-  auto result = update->Apply();
+  auto result = update->Validate();
   EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
   EXPECT_THAT(result, HasErrorMessage("Cannot move fields in non-struct type"));
 }
@@ -2405,7 +2488,7 @@ TEST_F(UpdateSchemaTest, TestMovePrimitiveMapValueFails) {
   ICEBERG_UNWRAP_OR_FAIL(auto reloaded, catalog_->LoadTable(table_ident_));
   ICEBERG_UNWRAP_OR_FAIL(auto update, reloaded->NewUpdateSchema());
   update->MoveBefore("properties.value", "properties.key");
-  auto result = update->Apply();
+  auto result = update->Validate();
   EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
   EXPECT_THAT(result, HasErrorMessage("Cannot move fields in non-struct type"));
 }
@@ -2421,7 +2504,7 @@ TEST_F(UpdateSchemaTest, TestMovePrimitiveListElementFails) {
   ICEBERG_UNWRAP_OR_FAIL(auto reloaded, catalog_->LoadTable(table_ident_));
   ICEBERG_UNWRAP_OR_FAIL(auto update, reloaded->NewUpdateSchema());
   update->MoveBefore("doubles.element", "doubles");
-  auto result = update->Apply();
+  auto result = update->Validate();
   EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
   EXPECT_THAT(result, HasErrorMessage("Cannot move fields in non-struct type"));
 }
@@ -2436,7 +2519,7 @@ TEST_F(UpdateSchemaTest, TestMoveTopLevelBetweenStructsFails) {
   ICEBERG_UNWRAP_OR_FAIL(auto reloaded, catalog_->LoadTable(table_ident_));
   ICEBERG_UNWRAP_OR_FAIL(auto update, reloaded->NewUpdateSchema());
   update->MoveBefore("x", "preferences.feature1");
-  auto result = update->Apply();
+  auto result = update->Validate();
   EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
   EXPECT_THAT(result, HasErrorMessage("Cannot move field x to a different struct"));
 }
@@ -2454,7 +2537,7 @@ TEST_F(UpdateSchemaTest, TestMoveBetweenStructsFails) {
   ICEBERG_UNWRAP_OR_FAIL(auto reloaded, catalog_->LoadTable(table_ident_));
   ICEBERG_UNWRAP_OR_FAIL(auto update, reloaded->NewUpdateSchema());
   update->MoveBefore("points.a", "preferences.feature1");
-  auto result = update->Apply();
+  auto result = update->Validate();
   EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
   EXPECT_THAT(result,
               HasErrorMessage("Cannot move field points.a to a different struct"));
@@ -2467,7 +2550,7 @@ TEST_F(UpdateSchemaTest, TestMoveTopDeletedColumnAfterAnotherColumn) {
       .AddRequiredColumn("z", int32())
       .MoveAfter("z", "y");
 
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Validate());
   ASSERT_TRUE(result.schema != nullptr);
 
   const auto& fields = result.schema->fields();
@@ -2489,7 +2572,7 @@ TEST_F(UpdateSchemaTest, TestMoveTopDeletedColumnBeforeAnotherColumn) {
       .AddRequiredColumn("z", int32())
       .MoveBefore("z", "x");
 
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Validate());
   ASSERT_TRUE(result.schema != nullptr);
 
   const auto& fields = result.schema->fields();
@@ -2511,7 +2594,7 @@ TEST_F(UpdateSchemaTest, TestMoveTopDeletedColumnToFirst) {
       .AddRequiredColumn("z", int32())
       .MoveFirst("z");
 
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Validate());
   ASSERT_TRUE(result.schema != nullptr);
 
   const auto& fields = result.schema->fields();
@@ -2533,7 +2616,7 @@ TEST_F(UpdateSchemaTest, TestMoveDeletedNestedStructFieldAfterAnotherColumn) {
       .AddRequiredColumn("preferences", "feature1", boolean())
       .MoveAfter("preferences.feature1", "preferences.feature2");
 
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Validate());
   ASSERT_TRUE(result.schema != nullptr);
 
   ICEBERG_UNWRAP_OR_FAIL(auto prefs_opt, result.schema->FindFieldByName("preferences"));
@@ -2559,7 +2642,7 @@ TEST_F(UpdateSchemaTest, TestMoveDeletedNestedStructFieldBeforeAnotherColumn) {
       .AddColumn("preferences", "feature2", boolean())
       .MoveBefore("preferences.feature2", "preferences.feature1");
 
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Validate());
   ASSERT_TRUE(result.schema != nullptr);
 
   ICEBERG_UNWRAP_OR_FAIL(auto prefs_opt, result.schema->FindFieldByName("preferences"));
@@ -2585,7 +2668,7 @@ TEST_F(UpdateSchemaTest, TestMoveDeletedNestedStructFieldToFirst) {
       .AddColumn("preferences", "feature2", boolean())
       .MoveFirst("preferences.feature2");
 
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Validate());
   ASSERT_TRUE(result.schema != nullptr);
 
   ICEBERG_UNWRAP_OR_FAIL(auto prefs_opt, result.schema->FindFieldByName("preferences"));
@@ -2600,7 +2683,7 @@ TEST_F(UpdateSchemaTest, TestCaseInsensitiveAddTopLevelAndMove) {
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateSchema());
   update->CaseSensitive(false).AddColumn("TS", timestamp_tz()).MoveAfter("ts", "X");
 
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Validate());
   ASSERT_TRUE(result.schema != nullptr);
 
   const auto& fields = result.schema->fields();
@@ -2628,7 +2711,7 @@ TEST_F(UpdateSchemaTest, TestCaseInsensitiveAddNestedAndMove) {
       .AddColumn("Preferences", "TS", timestamp_tz())
       .MoveBefore("preferences.ts", "PREFERENCES.Feature1");
 
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Validate());
   ASSERT_TRUE(result.schema != nullptr);
 
   ICEBERG_UNWRAP_OR_FAIL(auto prefs_opt, result.schema->FindFieldByName("Preferences"));
@@ -2647,7 +2730,7 @@ TEST_F(UpdateSchemaTest, TestCaseInsensitiveMoveAfterNewlyAddedField) {
       .MoveAfter("ts", "X")
       .MoveAfter("count", "TS");
 
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Validate());
   ASSERT_TRUE(result.schema != nullptr);
 
   const auto& fields = result.schema->fields();

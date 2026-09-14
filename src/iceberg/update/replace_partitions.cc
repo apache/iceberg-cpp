@@ -32,11 +32,11 @@
 
 namespace iceberg {
 
-Result<std::unique_ptr<ReplacePartitions>> ReplacePartitions::Make(
+Result<std::shared_ptr<ReplacePartitions>> ReplacePartitions::Make(
     std::string table_name, std::shared_ptr<TransactionContext> ctx) {
   ICEBERG_PRECHECK(!table_name.empty(), "Table name cannot be empty");
   ICEBERG_PRECHECK(ctx != nullptr, "Cannot create ReplacePartitions without a context");
-  return std::unique_ptr<ReplacePartitions>(
+  return std::shared_ptr<ReplacePartitions>(
       new ReplacePartitions(std::move(table_name), std::move(ctx)));
 }
 
@@ -47,6 +47,7 @@ ReplacePartitions::ReplacePartitions(std::string table_name,
 }
 
 ReplacePartitions& ReplacePartitions::AddFile(const std::shared_ptr<DataFile>& file) {
+  EnsureMutable();
   ICEBERG_BUILDER_CHECK(file != nullptr, "Invalid data file: null");
   ICEBERG_BUILDER_CHECK(file->partition_spec_id.has_value(),
                         "Data file must have partition spec ID");
@@ -59,21 +60,25 @@ ReplacePartitions& ReplacePartitions::AddFile(const std::shared_ptr<DataFile>& f
 }
 
 ReplacePartitions& ReplacePartitions::ValidateAppendOnly() {
+  EnsureMutable();
   FailAnyDelete();
   return *this;
 }
 
 ReplacePartitions& ReplacePartitions::ValidateFromSnapshot(int64_t snapshot_id) {
+  EnsureMutable();
   starting_snapshot_id_ = snapshot_id;
   return *this;
 }
 
 ReplacePartitions& ReplacePartitions::ValidateNoConflictingData() {
+  EnsureMutable();
   validate_conflicting_data_ = true;
   return *this;
 }
 
 ReplacePartitions& ReplacePartitions::ValidateNoConflictingDeletes() {
+  EnsureMutable();
   validate_conflicting_deletes_ = true;
   return *this;
 }

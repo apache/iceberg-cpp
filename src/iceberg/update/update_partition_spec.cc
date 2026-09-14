@@ -86,16 +86,19 @@ UpdatePartitionSpec::UpdatePartitionSpec(std::shared_ptr<TransactionContext> ctx
 UpdatePartitionSpec::~UpdatePartitionSpec() = default;
 
 UpdatePartitionSpec& UpdatePartitionSpec::CaseSensitive(bool is_case_sensitive) {
+  EnsureMutable();
   case_sensitive_ = is_case_sensitive;
   return *this;
 }
 
 UpdatePartitionSpec& UpdatePartitionSpec::AddNonDefaultSpec() {
+  EnsureMutable();
   set_as_default_ = false;
   return *this;
 }
 
 UpdatePartitionSpec& UpdatePartitionSpec::AddField(std::string_view source_name) {
+  EnsureMutable();
   // Find the source field in the schema
   ICEBERG_BUILDER_ASSIGN_OR_RETURN(
       auto field_opt, schema_->FindFieldByName(source_name, case_sensitive_));
@@ -108,6 +111,7 @@ UpdatePartitionSpec& UpdatePartitionSpec::AddField(std::string_view source_name)
 
 UpdatePartitionSpec& UpdatePartitionSpec::AddField(const std::shared_ptr<Term>& term,
                                                    std::string_view part_name) {
+  EnsureMutable();
   ICEBERG_BUILDER_CHECK(term->is_unbound(), "Cannot add bound term to partition spec");
   // Bind the term to get the source id
   if (term->kind() == Term::Kind::kReference) {
@@ -130,6 +134,7 @@ UpdatePartitionSpec& UpdatePartitionSpec::AddField(const std::shared_ptr<Term>& 
 UpdatePartitionSpec& UpdatePartitionSpec::AddFieldInternal(
     std::string_view name, int32_t source_id,
     const std::shared_ptr<Transform>& transform) {
+  EnsureMutable();
   // Check for duplicate name in added fields
   ICEBERG_BUILDER_CHECK(name.empty() || !added_field_names_.contains(name),
                         "Cannot add duplicate partition field: {}", name);
@@ -212,6 +217,7 @@ UpdatePartitionSpec& UpdatePartitionSpec::AddFieldInternal(
 
 UpdatePartitionSpec& UpdatePartitionSpec::RewriteDeleteAndAddField(
     const PartitionField& existing, std::string_view name) {
+  EnsureMutable();
   deletes_.erase(existing.field_id());
   if (name.empty() || std::string(existing.name()) == name) {
     return *this;
@@ -220,6 +226,7 @@ UpdatePartitionSpec& UpdatePartitionSpec::RewriteDeleteAndAddField(
 }
 
 UpdatePartitionSpec& UpdatePartitionSpec::RemoveField(std::string_view name) {
+  EnsureMutable();
   // Cannot delete newly added fields
   ICEBERG_BUILDER_CHECK(!added_field_names_.contains(name),
                         "Cannot delete newly added field: {}", name);
@@ -237,6 +244,7 @@ UpdatePartitionSpec& UpdatePartitionSpec::RemoveField(std::string_view name) {
 }
 
 UpdatePartitionSpec& UpdatePartitionSpec::RemoveField(const std::shared_ptr<Term>& term) {
+  EnsureMutable();
   ICEBERG_BUILDER_CHECK(term->is_unbound(),
                         "Cannot remove bound term from partition spec");
   // Bind the term to get the source id
@@ -263,6 +271,7 @@ UpdatePartitionSpec& UpdatePartitionSpec::RemoveField(const std::shared_ptr<Term
 
 UpdatePartitionSpec& UpdatePartitionSpec::RemoveFieldByTransform(
     const TransformKey& key, std::string_view term_str) {
+  EnsureMutable();
   // Cannot delete newly added fields
   ICEBERG_BUILDER_CHECK(!transform_to_added_field_.contains(key),
                         "Cannot delete newly added field: {}", term_str);
@@ -282,6 +291,7 @@ UpdatePartitionSpec& UpdatePartitionSpec::RemoveFieldByTransform(
 
 UpdatePartitionSpec& UpdatePartitionSpec::RenameField(std::string_view name,
                                                       std::string new_name) {
+  EnsureMutable();
   // Handle existing void field with the new name
   auto existing_it = name_to_field_.find(new_name);
   if (existing_it != name_to_field_.end() && IsVoidTransform(*existing_it->second)) {
@@ -306,7 +316,7 @@ UpdatePartitionSpec& UpdatePartitionSpec::RenameField(std::string_view name,
   return *this;
 }
 
-Result<UpdatePartitionSpec::ApplyResult> UpdatePartitionSpec::Apply() {
+Result<UpdatePartitionSpec::ApplyResult> UpdatePartitionSpec::Validate() const {
   ICEBERG_RETURN_UNEXPECTED(CheckErrors());
 
   std::vector<PartitionField> new_fields;
@@ -340,6 +350,12 @@ Result<UpdatePartitionSpec::ApplyResult> UpdatePartitionSpec::Apply() {
 
   // Add new fields
   new_fields.insert(new_fields.end(), adds_.begin(), adds_.end());
+
+  // Keep preview results independent of this operation's frozen transforms.
+  for (auto& field : new_fields) {
+    field = PartitionField(field.source_id(), field.field_id(), std::string(field.name()),
+                           std::make_shared<Transform>(*field.transform()));
+  }
 
   // Use -1 as a placeholder for the spec id, the actual spec id will be assigned by
   // TableMetadataBuilder when the AddPartitionSpec update is applied.
@@ -444,6 +460,14 @@ void UpdatePartitionSpec::BuildHistoricalFieldsIndex() {
       historical_fields_.emplace(key, field);
     }
   }
+}
+
+Status UpdatePartitionSpec::Freeze() {
+  for (auto& field : adds_) {
+    field = PartitionField(field.source_id(), field.field_id(), std::string(field.name()),
+                           std::make_shared<Transform>(*field.transform()));
+  }
+  return {};
 }
 
 }  // namespace iceberg

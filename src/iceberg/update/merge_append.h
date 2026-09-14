@@ -47,7 +47,7 @@ class ICEBERG_EXPORT MergeAppend : public MergingSnapshotUpdate {
   /// \param table_name The name of the table
   /// \param ctx The transaction context to use for this update
   /// \return A Result containing the MergeAppend instance or an error
-  static Result<std::unique_ptr<MergeAppend>> Make(
+  static Result<std::shared_ptr<MergeAppend>> Make(
       std::string table_name, std::shared_ptr<TransactionContext> ctx);
 
   /// \brief Append a DataFile to the table.

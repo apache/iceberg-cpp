@@ -64,7 +64,7 @@ enum class CleanupLevel : uint8_t {
 /// that were deleted by snapshots that are expired will be deleted. DeleteWith() can be
 /// used to pass an alternative deletion method.
 ///
-/// Apply() returns a list of the snapshots that will be removed.
+/// Validate() previews the snapshots that will be removed without staging cleanup.
 class ICEBERG_EXPORT ExpireSnapshots : public PendingUpdate {
  public:
   static Result<std::shared_ptr<ExpireSnapshots>> Make(
@@ -158,22 +158,21 @@ class ICEBERG_EXPORT ExpireSnapshots : public PendingUpdate {
   Kind kind() const final { return Kind::kExpireSnapshots; }
   bool IsRetryable() const override { return true; }
 
-  /// \brief Apply the pending changes and return the results
-  /// \return The results of changes
-  Result<ApplyResult> Apply();
-
-  /// \brief Finalize the expire snapshots update, cleaning up expired files.
-  ///
-  /// After a successful commit, this method deletes manifest files, manifest lists,
-  /// data files, and statistics files that are no longer referenced by any valid
-  /// snapshot. The cleanup behavior is controlled by the CleanupLevel setting.
-  ///
-  /// \param commit_result The committed table metadata when the commit succeeds, or the
-  /// commit error when it fails.
-  /// \return Status indicating success or failure
-  Status Finalize(Result<const TableMetadata*> commit_result) override;
+  /// \brief Validate and preview changes without staging or modifying this update.
+  Result<ApplyResult> Validate() const;
 
  private:
+  friend class Transaction;
+
+  bool MayAddFileReferences() const override { return false; }
+  Status Finalize(const TableMetadata& committed) override;
+  Status CleanStaged() override {
+    apply_result_.reset();
+    return {};
+  }
+  bool skip_physical_cleanup_ = false;
+  Result<ApplyResult> Apply();
+
   explicit ExpireSnapshots(std::shared_ptr<TransactionContext> ctx);
 
   using SnapshotToRef = std::unordered_map<std::string, std::shared_ptr<SnapshotRef>>;

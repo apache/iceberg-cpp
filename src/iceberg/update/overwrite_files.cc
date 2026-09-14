@@ -34,6 +34,7 @@
 #include "iceberg/table_metadata.h"
 #include "iceberg/transaction.h"
 #include "iceberg/type.h"
+#include "iceberg/update/update_util_internal.h"
 #include "iceberg/util/error_collector.h"
 #include "iceberg/util/macros.h"
 
@@ -54,6 +55,7 @@ OverwriteFiles::OverwriteFiles(std::string table_name,
 OverwriteFiles::~OverwriteFiles() = default;
 
 OverwriteFiles& OverwriteFiles::AddFile(const std::shared_ptr<DataFile>& file) {
+  EnsureMutable();
   ICEBERG_BUILDER_CHECK(file != nullptr, "Invalid data file: null");
   ICEBERG_BUILDER_CHECK(file->content == DataFile::Content::kData,
                         "Invalid data file to add: {} has delete-file content",
@@ -63,17 +65,20 @@ OverwriteFiles& OverwriteFiles::AddFile(const std::shared_ptr<DataFile>& file) {
 }
 
 OverwriteFiles& OverwriteFiles::DeleteFile(const std::shared_ptr<DataFile>& file) {
+  EnsureMutable();
   ICEBERG_BUILDER_CHECK(file != nullptr, "Invalid data file: null");
   ICEBERG_BUILDER_CHECK(file->content == DataFile::Content::kData,
                         "Invalid data file to delete: {} has delete-file content",
                         file->file_path);
-  deleted_data_files_.insert(file);
+  ICEBERG_BUILDER_ASSIGN_OR_RETURN(auto frozen, internal::CopyUpdateDataFile(*file));
+  deleted_data_files_.insert(std::move(frozen));
   ICEBERG_BUILDER_RETURN_IF_ERROR(DeleteDataFile(file));
   return *this;
 }
 
 OverwriteFiles& OverwriteFiles::DeleteFiles(const DataFileSet& data_files_to_delete,
                                             const DeleteFileSet& delete_files_to_delete) {
+  EnsureMutable();
   // Both sets use DataFile pointers, so validate content before forwarding to the
   // data-file and delete-file removal paths.
   for (const auto& file : data_files_to_delete) {
@@ -81,7 +86,8 @@ OverwriteFiles& OverwriteFiles::DeleteFiles(const DataFileSet& data_files_to_del
     ICEBERG_BUILDER_CHECK(file->content == DataFile::Content::kData,
                           "Invalid data file to delete: {} has delete-file content",
                           file->file_path);
-    deleted_data_files_.insert(file);
+    ICEBERG_BUILDER_ASSIGN_OR_RETURN(auto frozen, internal::CopyUpdateDataFile(*file));
+    deleted_data_files_.insert(std::move(frozen));
     ICEBERG_BUILDER_RETURN_IF_ERROR(DeleteDataFile(file));
   }
   for (const auto& file : delete_files_to_delete) {
@@ -95,12 +101,14 @@ OverwriteFiles& OverwriteFiles::DeleteFiles(const DataFileSet& data_files_to_del
 }
 
 OverwriteFiles& OverwriteFiles::OverwriteByRowFilter(std::shared_ptr<Expression> expr) {
+  EnsureMutable();
   ICEBERG_BUILDER_CHECK(expr != nullptr, "Invalid row filter expression: null");
   ICEBERG_BUILDER_RETURN_IF_ERROR(DeleteByRowFilter(std::move(expr)));
   return *this;
 }
 
 OverwriteFiles& OverwriteFiles::ValidateFromSnapshot(int64_t snapshot_id) {
+  EnsureMutable();
   ICEBERG_BUILDER_CHECK(snapshot_id >= 0, "Invalid snapshot id: {}", snapshot_id);
   starting_snapshot_id_ = snapshot_id;
   return *this;
@@ -108,29 +116,35 @@ OverwriteFiles& OverwriteFiles::ValidateFromSnapshot(int64_t snapshot_id) {
 
 OverwriteFiles& OverwriteFiles::ConflictDetectionFilter(
     std::shared_ptr<Expression> expr) {
+  EnsureMutable();
   ICEBERG_BUILDER_CHECK(expr != nullptr, "Invalid conflict detection filter: null");
-  conflict_detection_filter_ = std::move(expr);
+  ICEBERG_BUILDER_ASSIGN_OR_RETURN(conflict_detection_filter_,
+                                   internal::CopyUpdateExpression(expr));
   return *this;
 }
 
 OverwriteFiles& OverwriteFiles::CaseSensitive(bool case_sensitive) {
+  EnsureMutable();
   MergingSnapshotUpdate::CaseSensitive(case_sensitive);
   return *this;
 }
 
 OverwriteFiles& OverwriteFiles::ValidateNoConflictingData() {
+  EnsureMutable();
   validate_new_data_files_ = true;
   FailMissingDeletePaths();
   return *this;
 }
 
 OverwriteFiles& OverwriteFiles::ValidateNoConflictingDeletes() {
+  EnsureMutable();
   validate_new_deletes_ = true;
   FailMissingDeletePaths();
   return *this;
 }
 
 OverwriteFiles& OverwriteFiles::ValidateAddedFilesMatchOverwriteFilter() {
+  EnsureMutable();
   validate_added_files_match_overwrite_filter_ = true;
   return *this;
 }

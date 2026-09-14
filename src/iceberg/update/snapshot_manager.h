@@ -187,6 +187,7 @@ class ICEBERG_EXPORT SnapshotManager : public ErrorCollector {
   Status Commit();
 
  private:
+  void EnsureMutable() const;
   SnapshotManager(std::shared_ptr<Transaction> transaction, bool is_external_transaction);
 
   /// \brief Get or create the UpdateSnapshotReference operation.

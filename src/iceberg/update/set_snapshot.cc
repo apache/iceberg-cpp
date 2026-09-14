@@ -45,6 +45,7 @@ SetSnapshot::SetSnapshot(std::shared_ptr<TransactionContext> ctx)
 SetSnapshot::~SetSnapshot() = default;
 
 SetSnapshot& SetSnapshot::SetCurrentSnapshot(int64_t snapshot_id) {
+  EnsureMutable();
   // Validate that the snapshot exists
   ICEBERG_BUILDER_ASSIGN_OR_RETURN(auto snapshot, base().SnapshotById(snapshot_id));
   ICEBERG_BUILDER_CHECK(snapshot != nullptr,
@@ -54,6 +55,7 @@ SetSnapshot& SetSnapshot::SetCurrentSnapshot(int64_t snapshot_id) {
 }
 
 SetSnapshot& SetSnapshot::RollbackToTime(int64_t timestamp_ms) {
+  EnsureMutable();
   // Find the latest snapshot by timestamp older than timestamp_ms
   ICEBERG_BUILDER_ASSIGN_OR_RETURN(auto snapshot_id_opt,
                                    FindLatestAncestorOlderThan(timestamp_ms));
@@ -69,6 +71,7 @@ SetSnapshot& SetSnapshot::RollbackToTime(int64_t timestamp_ms) {
 }
 
 SetSnapshot& SetSnapshot::RollbackTo(int64_t snapshot_id) {
+  EnsureMutable();
   // Validate that the snapshot exists
   auto snapshot_result = base().SnapshotById(snapshot_id);
   ICEBERG_BUILDER_CHECK(snapshot_result.has_value(),
@@ -85,7 +88,7 @@ SetSnapshot& SetSnapshot::RollbackTo(int64_t snapshot_id) {
   return SetCurrentSnapshot(snapshot_id);
 }
 
-Result<int64_t> SetSnapshot::Apply() {
+Result<int64_t> SetSnapshot::Validate() const {
   ICEBERG_RETURN_UNEXPECTED(CheckErrors());
 
   const TableMetadata& base_metadata = ctx_->current();

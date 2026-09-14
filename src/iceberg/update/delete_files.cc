@@ -30,11 +30,11 @@
 
 namespace iceberg {
 
-Result<std::unique_ptr<DeleteFiles>> DeleteFiles::Make(
+Result<std::shared_ptr<DeleteFiles>> DeleteFiles::Make(
     std::string table_name, std::shared_ptr<TransactionContext> ctx) {
   ICEBERG_PRECHECK(!table_name.empty(), "Table name cannot be empty");
   ICEBERG_PRECHECK(ctx != nullptr, "Cannot create DeleteFiles without a context");
-  return std::unique_ptr<DeleteFiles>(
+  return std::shared_ptr<DeleteFiles>(
       new DeleteFiles(std::move(table_name), std::move(ctx)));
 }
 
@@ -42,27 +42,32 @@ DeleteFiles::DeleteFiles(std::string table_name, std::shared_ptr<TransactionCont
     : MergingSnapshotUpdate(std::move(table_name), std::move(ctx)) {}
 
 DeleteFiles& DeleteFiles::DeleteFile(std::string_view path) {
+  EnsureMutable();
   ICEBERG_BUILDER_CHECK(!path.empty(), "Cannot delete an empty file path");
   ICEBERG_BUILDER_RETURN_IF_ERROR(DeleteByPath(path));
   return *this;
 }
 
 DeleteFiles& DeleteFiles::DeleteFile(const std::shared_ptr<DataFile>& file) {
+  EnsureMutable();
   ICEBERG_BUILDER_RETURN_IF_ERROR(DeleteDataFile(file));
   return *this;
 }
 
 DeleteFiles& DeleteFiles::DeleteFromRowFilter(std::shared_ptr<Expression> expr) {
+  EnsureMutable();
   ICEBERG_BUILDER_RETURN_IF_ERROR(DeleteByRowFilter(std::move(expr)));
   return *this;
 }
 
 DeleteFiles& DeleteFiles::CaseSensitive(bool case_sensitive) {
+  EnsureMutable();
   MergingSnapshotUpdate::CaseSensitive(case_sensitive);
   return *this;
 }
 
 DeleteFiles& DeleteFiles::ValidateFilesExist() {
+  EnsureMutable();
   validate_files_to_delete_exist_ = true;
   return *this;
 }

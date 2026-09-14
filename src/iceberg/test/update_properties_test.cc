@@ -28,7 +28,7 @@ class UpdatePropertiesTest : public UpdateTestBase {};
 
 TEST_F(UpdatePropertiesTest, EmptyUpdate) {
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateProperties());
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Validate());
   EXPECT_THAT(result.updates.empty(), true);
 }
 
@@ -36,7 +36,7 @@ TEST_F(UpdatePropertiesTest, SetProperty) {
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateProperties());
   update->Set("key1", "value1").Set("key2", "value2");
 
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Validate());
   EXPECT_EQ(result.updates.size(), 2);
   EXPECT_EQ(result.updates.at("key1"), "value1");
   EXPECT_EQ(result.updates.at("key2"), "value2");
@@ -54,7 +54,7 @@ TEST_F(UpdatePropertiesTest, RemoveProperty) {
   ICEBERG_UNWRAP_OR_FAIL(auto update, reloaded->NewUpdateProperties());
   update->Remove("key1").Remove("key2");
 
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Validate());
   EXPECT_TRUE(result.updates.empty());
   EXPECT_EQ(result.removals.size(), 2);
   EXPECT_TRUE(result.removals.contains("key1"));
@@ -65,7 +65,7 @@ TEST_F(UpdatePropertiesTest, SetThenRemoveSameKey) {
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateProperties());
   update->Set("key1", "value1").Remove("key1");
 
-  auto result = update->Apply();
+  auto result = update->Validate();
   EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
   EXPECT_THAT(result, HasErrorMessage("already marked for update"));
 }
@@ -74,7 +74,7 @@ TEST_F(UpdatePropertiesTest, RemoveThenSetSameKey) {
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateProperties());
   update->Remove("key1").Set("key1", "value1");
 
-  auto result = update->Apply();
+  auto result = update->Validate();
   EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
   EXPECT_THAT(result, HasErrorMessage("already marked for removal"));
 }
@@ -83,7 +83,7 @@ TEST_F(UpdatePropertiesTest, SetAndRemoveDifferentKeys) {
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateProperties());
   update->Set("key1", "value1").Remove("key2");
 
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Validate());
   EXPECT_EQ(result.updates.size(), 1);
   EXPECT_EQ(result.updates.at("key1"), "value1");
   EXPECT_EQ(result.removals.size(), 1);
@@ -94,7 +94,7 @@ TEST_F(UpdatePropertiesTest, UpgradeFormatVersionValid) {
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateProperties());
   update->Set("format-version", "3");
 
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Validate());
   EXPECT_TRUE(result.updates.empty());
   EXPECT_TRUE(result.removals.empty());
   ASSERT_TRUE(result.format_version.has_value());
@@ -105,7 +105,7 @@ TEST_F(UpdatePropertiesTest, UpgradeFormatVersionInvalidString) {
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateProperties());
   update->Set("format-version", "invalid");
 
-  auto result = update->Apply();
+  auto result = update->Validate();
   EXPECT_THAT(result, IsError(ErrorKind::kInvalidArgument));
   EXPECT_THAT(result, HasErrorMessage("invalid argument"));
 }
@@ -114,7 +114,7 @@ TEST_F(UpdatePropertiesTest, UpgradeFormatVersionOutOfRange) {
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateProperties());
   update->Set("format-version", "5000000000");
 
-  auto result = update->Apply();
+  auto result = update->Validate();
   EXPECT_THAT(result, IsError(ErrorKind::kInvalidArgument));
   EXPECT_THAT(result, HasErrorMessage("out of range"));
 }
@@ -124,7 +124,7 @@ TEST_F(UpdatePropertiesTest, UpgradeFormatVersionUnsupported) {
   update->Set("format-version",
               std::to_string(TableMetadata::kSupportedTableFormatVersion + 1));
 
-  auto result = update->Apply();
+  auto result = update->Validate();
   EXPECT_THAT(result, IsError(ErrorKind::kInvalidArgument));
   EXPECT_THAT(result, HasErrorMessage("unsupported format version"));
 }
@@ -133,7 +133,7 @@ TEST_F(UpdatePropertiesTest, SetReservedPropertyUuid) {
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateProperties());
   update->Set("uuid", "some-uuid");
 
-  auto result = update->Apply();
+  auto result = update->Validate();
   EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
   EXPECT_THAT(result, HasErrorMessage("Cannot set reserved property"));
 }
@@ -142,7 +142,7 @@ TEST_F(UpdatePropertiesTest, SetReservedPropertyCurrentSchema) {
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateProperties());
   update->Set("current-schema", R"({"type": "struct"})");
 
-  auto result = update->Apply();
+  auto result = update->Validate();
   EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
   EXPECT_THAT(result, HasErrorMessage("Cannot set reserved property"));
 }
@@ -151,7 +151,7 @@ TEST_F(UpdatePropertiesTest, SetReservedPropertyCurrentSnapshotId) {
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateProperties());
   update->Set("current-snapshot-id", "12345");
 
-  auto result = update->Apply();
+  auto result = update->Validate();
   EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
   EXPECT_THAT(result, HasErrorMessage("Cannot set reserved property"));
 }
@@ -160,7 +160,7 @@ TEST_F(UpdatePropertiesTest, SetFormatVersionStillAllowed) {
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateProperties());
   update->Set("format-version", "3");
 
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Validate());
   EXPECT_TRUE(result.updates.empty());
   ASSERT_TRUE(result.format_version.has_value());
   EXPECT_EQ(result.format_version.value(), 3);
@@ -171,7 +171,7 @@ TEST_F(UpdatePropertiesTest, SetValidAndReservedProperties) {
   update->Set("valid.key", "valid.value");
   update->Set("snapshot-count", "10");
 
-  auto result = update->Apply();
+  auto result = update->Validate();
   EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
   EXPECT_THAT(result, HasErrorMessage("Cannot set reserved property"));
 }

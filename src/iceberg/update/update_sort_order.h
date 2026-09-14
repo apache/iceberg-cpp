@@ -68,10 +68,14 @@ class ICEBERG_EXPORT UpdateSortOrder : public PendingUpdate {
   Kind kind() const final { return Kind::kUpdateSortOrder; }
   bool IsRetryable() const override { return true; }
 
-  /// \brief Apply the pending changes and return the new SortOrder.
-  Result<std::shared_ptr<SortOrder>> Apply();
+  /// \brief Validate and preview changes without staging or modifying this update.
+  Result<std::shared_ptr<SortOrder>> Validate() const;
 
  private:
+  Status Freeze() override;
+
+  bool MayAddFileReferences() const override { return false; }
+
   explicit UpdateSortOrder(std::shared_ptr<TransactionContext> ctx);
 
   std::vector<SortField> sort_fields_;

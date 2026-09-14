@@ -47,7 +47,7 @@ TEST_F(UpdateLocationTest, SetLocationSuccess) {
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateLocation());
   update->SetLocation(new_location);
 
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Validate());
   EXPECT_EQ(result, new_location);
 
   // Commit and verify the location was persisted
@@ -71,7 +71,7 @@ TEST_F(UpdateLocationTest, SetLocationMultipleTimes) {
       .SetLocation("/warehouse/second_location")
       .SetLocation(final_location);
 
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Validate());
   EXPECT_EQ(result, final_location);
 
   // Commit and verify the final location was persisted
@@ -84,7 +84,7 @@ TEST_F(UpdateLocationTest, SetEmptyLocation) {
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateLocation());
   update->SetLocation("");
 
-  auto result = update->Apply();
+  auto result = update->Validate();
   EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
   EXPECT_THAT(result, HasErrorMessage("Location cannot be empty"));
 }
@@ -92,7 +92,7 @@ TEST_F(UpdateLocationTest, SetEmptyLocation) {
 TEST_F(UpdateLocationTest, ApplyWithoutSettingLocation) {
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateLocation());
 
-  auto result = update->Apply();
+  auto result = update->Validate();
   EXPECT_THAT(result, IsError(ErrorKind::kInvalidArgument));
   EXPECT_THAT(result, HasErrorMessage("Location must be set before applying"));
 }
@@ -109,7 +109,7 @@ TEST_F(UpdateLocationTest, MultipleUpdatesSequentially) {
 
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateLocation());
   update->SetLocation(first_location);
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Validate());
   EXPECT_EQ(result, first_location);
   EXPECT_THAT(update->Commit(), IsOk());
 
@@ -123,7 +123,7 @@ TEST_F(UpdateLocationTest, MultipleUpdatesSequentially) {
 
   ICEBERG_UNWRAP_OR_FAIL(update, reloaded->NewUpdateLocation());
   update->SetLocation(second_location);
-  ICEBERG_UNWRAP_OR_FAIL(result, update->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(result, update->Validate());
   EXPECT_EQ(result, second_location);
   EXPECT_THAT(update->Commit(), IsOk());
 

@@ -47,6 +47,7 @@ UpdatePartitionStatistics::~UpdatePartitionStatistics() = default;
 
 UpdatePartitionStatistics& UpdatePartitionStatistics::SetPartitionStatistics(
     std::shared_ptr<PartitionStatisticsFile> partition_statistics_file) {
+  EnsureMutable();
   ICEBERG_BUILDER_CHECK(partition_statistics_file != nullptr,
                         "Statistics file cannot be null");
 
@@ -57,22 +58,34 @@ UpdatePartitionStatistics& UpdatePartitionStatistics::SetPartitionStatistics(
 
 UpdatePartitionStatistics& UpdatePartitionStatistics::RemovePartitionStatistics(
     int64_t snapshot_id) {
+  EnsureMutable();
   partition_statistics_to_set_[snapshot_id] = nullptr;
   return *this;
 }
 
-Result<UpdatePartitionStatistics::ApplyResult> UpdatePartitionStatistics::Apply() {
+Result<UpdatePartitionStatistics::ApplyResult> UpdatePartitionStatistics::Validate()
+    const {
   ICEBERG_RETURN_UNEXPECTED(CheckErrors());
 
   ApplyResult result;
   for (const auto& [snapshot_id, partition_stats] : partition_statistics_to_set_) {
     if (partition_stats) {
-      result.to_set.emplace_back(snapshot_id, partition_stats);
+      result.to_set.emplace_back(
+          snapshot_id, std::make_shared<PartitionStatisticsFile>(*partition_stats));
     } else {
       result.to_remove.push_back(snapshot_id);
     }
   }
   return result;
+}
+
+Status UpdatePartitionStatistics::Freeze() {
+  for (auto& [_, value] : partition_statistics_to_set_) {
+    if (value) {
+      value = std::make_shared<PartitionStatisticsFile>(*value);
+    }
+  }
+  return {};
 }
 
 }  // namespace iceberg

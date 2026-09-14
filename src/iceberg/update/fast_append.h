@@ -51,7 +51,7 @@ class ICEBERG_EXPORT FastAppend : public SnapshotUpdate {
   /// \param table_name The name of the table
   /// \param ctx The transaction context to use for this update
   /// \return A Result containing the FastAppend instance or an error
-  static Result<std::unique_ptr<FastAppend>> Make(
+  static Result<std::shared_ptr<FastAppend>> Make(
       std::string table_name, std::shared_ptr<TransactionContext> ctx);
 
   /// \brief Append a DataFile to the table.
@@ -73,6 +73,8 @@ class ICEBERG_EXPORT FastAppend : public SnapshotUpdate {
   /// \return This FastAppend for method chaining.
   FastAppend& AppendManifest(const ManifestFile& manifest);
 
+ protected:
+  Status Freeze() override;
   std::string operation() override;
 
   Result<std::vector<ManifestFile>> Apply(
@@ -81,7 +83,6 @@ class ICEBERG_EXPORT FastAppend : public SnapshotUpdate {
   std::unordered_map<std::string, std::string> Summary() override;
   void SetSummaryProperty(const std::string& property, const std::string& value) override;
   Status CleanUncommitted(const std::unordered_set<std::string>& committed) override;
-  bool CleanupAfterCommit() const override;
 
  private:
   explicit FastAppend(std::string table_name, std::shared_ptr<TransactionContext> ctx);

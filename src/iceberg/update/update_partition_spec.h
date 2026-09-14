@@ -111,9 +111,14 @@ class ICEBERG_EXPORT UpdatePartitionSpec : public PendingUpdate {
     std::shared_ptr<PartitionSpec> spec;
     bool set_as_default;
   };
-  Result<ApplyResult> Apply();
+  /// \brief Validate and preview changes without staging or modifying this update.
+  Result<ApplyResult> Validate() const;
 
  private:
+  Status Freeze() override;
+
+  bool MayAddFileReferences() const override { return false; }
+
   explicit UpdatePartitionSpec(std::shared_ptr<TransactionContext> ctx);
 
   /// \brief Pair of source ID and transform string for indexing.

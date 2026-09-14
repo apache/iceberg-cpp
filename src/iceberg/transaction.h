@@ -39,6 +39,16 @@ namespace iceberg {
 /// \brief Whether a transaction creates a new table or updates an existing one.
 enum class TransactionKind : uint8_t { kCreate, kUpdate };
 
+/// \brief Lifecycle outcomes of a transaction. Failed transactions may only be aborted.
+enum class TransactionState : uint8_t {
+  kReady,
+  kUpdatePending,
+  kCommitted,
+  kFailed,
+  kAborted,
+  kCommitStateUnknown,
+};
+
 /// \brief A transaction for performing multiple updates to a table
 class ICEBERG_EXPORT Transaction : public std::enable_shared_from_this<Transaction> {
  public:
@@ -50,8 +60,8 @@ class ICEBERG_EXPORT Transaction : public std::enable_shared_from_this<Transacti
 
   /// \brief Create a detached transaction from an existing context.
   ///
-  /// Used by PendingUpdate::Commit for table-created updates. The transaction is not
-  /// stored in TransactionContext because it exists only for that commit call.
+  /// This overload is used by PendingUpdate::Commit for standalone updates and does not
+  /// attach the temporary transaction to the context.
   static Result<std::shared_ptr<Transaction>> Make(
       std::shared_ptr<TransactionContext> ctx);
 
@@ -76,6 +86,13 @@ class ICEBERG_EXPORT Transaction : public std::enable_shared_from_this<Transacti
   /// - ValidationFailed: if any update cannot be applied to the current table metadata.
   /// - CommitFailed: if the updates cannot be committed due to conflicts.
   Result<std::shared_ptr<Table>> Commit();
+
+  /// \brief Discard staged changes and clean owned files best effort.
+  /// Repeated Abort succeeds without repeating cleanup. Committed and unknown
+  /// transactions cannot be aborted. Destructors never perform cleanup.
+  Status Abort();
+
+  TransactionState state() const { return state_; }
 
   /// \brief Create a new UpdatePartitionSpec to update the partition spec of this table
   /// and commit the changes.
@@ -146,10 +163,14 @@ class ICEBERG_EXPORT Transaction : public std::enable_shared_from_this<Transacti
  private:
   explicit Transaction(std::shared_ptr<TransactionContext> ctx);
 
+  Status CheckReady() const;
+  Status CheckActive() const;
   Status AddUpdate(const std::shared_ptr<PendingUpdate>& update);
 
   /// \brief Apply the pending changes to current table.
-  Status Apply(PendingUpdate& updates);
+  Status Apply(PendingUpdate& update);
+  Status ApplyRegistered(PendingUpdate& update);
+  Status ReplayApply(PendingUpdate& update);
 
   // Helper methods for applying different types of updates
   Status ApplyExpireSnapshots(ExpireSnapshots& update);
@@ -165,23 +186,28 @@ class ICEBERG_EXPORT Transaction : public std::enable_shared_from_this<Transacti
   Status ApplyUpdateStatistics(UpdateStatistics& update);
 
   /// \brief Perform a single commit attempt
-  Result<std::shared_ptr<Table>> CommitOnce(bool is_first_attempt);
+  Result<std::shared_ptr<Table>> CommitOnce(bool is_first_attempt,
+                                            std::optional<Error>& replay_error,
+                                            bool& catalog_state_unknown);
 
   /// \brief Whether this transaction can retry after a commit conflict.
   bool CanRetry() const;
 
+  void SetTerminalState(TransactionState state);
+  void CleanupUpdates() noexcept;
+  void FinalizeUpdates(const TableMetadata& committed) noexcept;
+  void ConfigureExpirationCleanup();
+
  private:
   friend class PendingUpdate;
+  friend class SnapshotManager;
 
   // Shared context owning the table, metadata builder, and kind.
   std::shared_ptr<TransactionContext> ctx_;
   // Keep track of all created pending updates.
   std::vector<std::shared_ptr<PendingUpdate>> pending_updates_;
 
-  // To make the state simple, we require updates are added and committed in order.
-  bool last_update_committed_ = true;
-  // Tracks if transaction has been committed to prevent double-commit
-  bool committed_ = false;
+  TransactionState state_ = TransactionState::kReady;
 };
 
 /// \brief Shared context between Transaction and PendingUpdate instances.
@@ -204,6 +230,14 @@ class ICEBERG_EXPORT TransactionContext {
   // If PendingUpdate is created directly from Table, this is nullopt;
   // otherwise, it holds a weak pointer to the Transaction that created it.
   std::optional<std::weak_ptr<Transaction>> transaction;
+
+ private:
+  friend class Transaction;
+  friend class PendingUpdate;
+
+  // Keep the builder's base alive when Table::Refresh replaces table metadata.
+  std::shared_ptr<TableMetadata> base_metadata_;
+  bool in_progress_ = false;
 };
 
 }  // namespace iceberg
