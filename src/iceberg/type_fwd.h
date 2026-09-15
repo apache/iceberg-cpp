@@ -230,7 +230,7 @@ struct SessionContext;
 /// \brief Task execution.
 class Executor;
 template <typename T>
-class Iterator;
+class Stream;
 
 /// \brief Metrics reporting.
 class MetricsReporter;

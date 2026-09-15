@@ -62,9 +62,11 @@ class ManifestReaderImpl : public ManifestReader {
                      std::unique_ptr<InheritableMetadata> inheritable_metadata,
                      std::optional<int64_t> first_row_id, bool is_committed);
 
-  Result<std::vector<ManifestEntry>> Entries() override;
+  /// \brief Lazily read manifest entries.
+  Result<ManifestEntryStreamPtr> EntriesStream() override;
 
-  Result<std::vector<ManifestEntry>> LiveEntries() override;
+  /// \brief Lazily read only live (non-deleted) manifest entries.
+  Result<ManifestEntryStreamPtr> LiveEntriesStream() override;
 
   ManifestReader& Select(const std::vector<std::string>& columns) override;
 
@@ -81,8 +83,8 @@ class ManifestReaderImpl : public ManifestReader {
   ManifestReader& SkipCounter(std::shared_ptr<Counter> counter) override;
 
  private:
-  /// \brief Read entries with optional live-only filtering.
-  Result<std::vector<ManifestEntry>> ReadEntries(bool only_live);
+  /// \brief Create an entry stream with optional live-only filtering.
+  Result<ManifestEntryStreamPtr> MakeEntriesStream(bool only_live);
 
   /// \brief Lazily open the underlying Avro reader with appropriate schema projection.
   Status OpenReader(std::shared_ptr<Schema> projection);
@@ -93,14 +95,11 @@ class ManifestReaderImpl : public ManifestReader {
   /// \brief Check if there's a non-trivial row filter.
   bool HasRowFilter() const;
 
-  /// \brief Get or create the partition evaluator.
-  Result<Evaluator*> GetEvaluator();
+  /// \brief Get or create and transfer ownership of the partition evaluator.
+  Result<std::unique_ptr<Evaluator>> TakeEvaluator();
 
-  /// \brief Get or create the metrics evaluator.
-  Result<InclusiveMetricsEvaluator*> GetMetricsEvaluator();
-
-  /// \brief Check if a partition is in the partition set.
-  Result<bool> InPartitionSet(const DataFile& file) const;
+  /// \brief Get or create and transfer ownership of the metrics evaluator.
+  Result<std::unique_ptr<InclusiveMetricsEvaluator>> TakeMetricsEvaluator();
 
   // Fields set at construction
   const std::string manifest_path_;
@@ -108,7 +107,7 @@ class ManifestReaderImpl : public ManifestReader {
   const std::shared_ptr<FileIO> file_io_;
   const std::shared_ptr<Schema> schema_;
   const std::shared_ptr<PartitionSpec> spec_;
-  const std::unique_ptr<InheritableMetadata> inheritable_metadata_;
+  const std::shared_ptr<InheritableMetadata> inheritable_metadata_;
   std::optional<int64_t> first_row_id_;
   bool is_committed_;
 

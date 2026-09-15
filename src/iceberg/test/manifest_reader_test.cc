@@ -190,6 +190,37 @@ TEST_P(TestManifestReader, TestManifestReaderWithEmptyInheritableMetadata) {
   EXPECT_EQ(read_entry.snapshot_id, 1000L);
 }
 
+TEST_P(TestManifestReader, EntriesStreamOwnsReaderResources) {
+  auto version = GetParam();
+  auto file_a =
+      MakeDataFile("/path/to/data-a.parquet", PartitionValues({Literal::Int(0)}));
+  auto file_b =
+      MakeDataFile("/path/to/data-b.parquet", PartitionValues({Literal::Int(1)}));
+
+  std::vector<ManifestEntry> entries;
+  entries.push_back(
+      MakeEntry(ManifestStatus::kAdded, /*snapshot_id=*/1000L, std::move(file_a)));
+  entries.push_back(
+      MakeEntry(ManifestStatus::kAdded, /*snapshot_id=*/1000L, std::move(file_b)));
+  auto manifest = WriteManifest(version, /*snapshot_id=*/1000L, entries);
+
+  ICEBERG_UNWRAP_OR_FAIL(auto reader,
+                         ManifestReader::Make(manifest, file_io_, schema_, spec_));
+  ICEBERG_UNWRAP_OR_FAIL(auto stream, reader->EntriesStream());
+  reader.reset();
+
+  ICEBERG_UNWRAP_OR_FAIL(auto first, stream->Next());
+  ASSERT_TRUE(first.has_value());
+  EXPECT_EQ(first->data_file->file_path, "/path/to/data-a.parquet");
+
+  ICEBERG_UNWRAP_OR_FAIL(auto second, stream->Next());
+  ASSERT_TRUE(second.has_value());
+  EXPECT_EQ(second->data_file->file_path, "/path/to/data-b.parquet");
+
+  ICEBERG_UNWRAP_OR_FAIL(auto end, stream->Next());
+  EXPECT_FALSE(end.has_value());
+}
+
 TEST_P(TestManifestReader, DeletedEntriesDoNotInheritFirstRowId) {
   auto version = GetParam();
   if (version < 3) {
@@ -546,6 +577,12 @@ TEST(ManifestReaderStaticTest, TestShouldDropStats) {
       {"file_path", "value_counts", "null_value_counts", "lower_bounds"}));
   EXPECT_FALSE(
       ManifestReader::ShouldDropStats({"file_path", "record_count", "value_counts"}));
+}
+
+TEST(ManifestReaderStaticTest, WithStatsColumnsPreservesSelectAll) {
+  EXPECT_TRUE(ManifestReader::WithStatsColumns({}).empty());
+  EXPECT_THAT(ManifestReader::WithStatsColumns({std::string(Schema::kAllColumns)}),
+              testing::ElementsAre(Schema::kAllColumns));
 }
 
 INSTANTIATE_TEST_SUITE_P(ManifestReaderVersions, TestManifestReader,

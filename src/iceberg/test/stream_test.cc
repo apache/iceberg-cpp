@@ -17,7 +17,7 @@
  * under the License.
  */
 
-#include "iceberg/util/iterator.h"
+#include "iceberg/util/stream.h"
 
 #include <memory>
 #include <optional>
@@ -50,7 +50,7 @@ static_assert(std::is_copy_constructible_v<CopyOnly>);
 static_assert(!std::is_move_constructible_v<CopyOnly>);
 
 // Exercises ToVector() with values that can be copied but not moved.
-class CopyOnlyIterator final : public Iterator<CopyOnly> {
+class CopyOnlyStream final : public Stream<CopyOnly> {
  private:
   Result<std::optional<CopyOnly>> NextImpl() override {
     if (next_ == 3) {
@@ -63,7 +63,7 @@ class CopyOnlyIterator final : public Iterator<CopyOnly> {
 };
 
 // Exercises ToVector() with values that can be moved but not copied.
-class MoveOnlyIterator final : public Iterator<std::unique_ptr<int>> {
+class MoveOnlyStream final : public Stream<std::unique_ptr<int>> {
  public:
   int calls() const { return calls_; }
 
@@ -82,7 +82,7 @@ class MoveOnlyIterator final : public Iterator<std::unique_ptr<int>> {
 };
 
 // Exercises ToVector() error propagation after some values have been consumed.
-class FailingIterator final : public Iterator<int> {
+class FailingStream final : public Stream<int> {
  public:
   int calls() const { return calls_; }
 
@@ -92,22 +92,28 @@ class FailingIterator final : public Iterator<int> {
     if (next_ < 2) {
       return Result<std::optional<int>>(std::in_place, std::in_place, next_++);
     }
-    return Invalid("iteration failed");
+    return Invalid("stream failed");
   }
 
   int next_ = 0;
   int calls_ = 0;
 };
 
-static_assert(std::is_move_constructible_v<CopyOnlyIterator>);
-static_assert(std::is_move_assignable_v<CopyOnlyIterator>);
-static_assert(std::is_move_constructible_v<MoveOnlyIterator>);
-static_assert(std::is_move_assignable_v<MoveOnlyIterator>);
+static_assert(std::is_move_constructible_v<CopyOnlyStream>);
+static_assert(std::is_move_assignable_v<CopyOnlyStream>);
+static_assert(std::is_move_constructible_v<MoveOnlyStream>);
+static_assert(std::is_move_assignable_v<MoveOnlyStream>);
 
-TEST(IteratorTest, ToVectorSupportsCopyOnlyValues) {
-  CopyOnlyIterator iterator;
+TEST(StreamTest, SupportsIncompleteSharedPointerValue) {
+  class IncompleteType;
+  std::unique_ptr<Stream<std::shared_ptr<IncompleteType>>> stream;
+  EXPECT_EQ(stream, nullptr);
+}
 
-  ICEBERG_UNWRAP_OR_FAIL(auto values, iterator.ToVector());
+TEST(StreamTest, ToVectorSupportsCopyOnlyValues) {
+  CopyOnlyStream stream;
+
+  ICEBERG_UNWRAP_OR_FAIL(auto values, stream.ToVector());
 
   ASSERT_EQ(values.size(), 3);
   EXPECT_EQ(values[0].value(), 0);
@@ -115,10 +121,10 @@ TEST(IteratorTest, ToVectorSupportsCopyOnlyValues) {
   EXPECT_EQ(values[2].value(), 2);
 }
 
-TEST(IteratorTest, ToVectorSupportsMoveOnlyValues) {
-  MoveOnlyIterator iterator;
+TEST(StreamTest, ToVectorSupportsMoveOnlyValues) {
+  MoveOnlyStream stream;
 
-  ICEBERG_UNWRAP_OR_FAIL(auto values, iterator.ToVector());
+  ICEBERG_UNWRAP_OR_FAIL(auto values, stream.ToVector());
 
   ASSERT_EQ(values.size(), 3);
   EXPECT_EQ(*values[0], 0);
@@ -126,46 +132,46 @@ TEST(IteratorTest, ToVectorSupportsMoveOnlyValues) {
   EXPECT_EQ(*values[2], 2);
 }
 
-TEST(IteratorTest, NextRemainsAtEndAfterExhaustion) {
-  MoveOnlyIterator iterator;
-  ICEBERG_UNWRAP_OR_FAIL(auto values, iterator.ToVector());
+TEST(StreamTest, NextRemainsAtEndAfterExhaustion) {
+  MoveOnlyStream stream;
+  ICEBERG_UNWRAP_OR_FAIL(auto values, stream.ToVector());
   ASSERT_EQ(values.size(), 3);
-  EXPECT_EQ(iterator.calls(), 4);
+  EXPECT_EQ(stream.calls(), 4);
 
   for (int i = 0; i < 2; ++i) {
-    auto result = iterator.Next();
+    auto result = stream.Next();
     ASSERT_TRUE(result.has_value());
     EXPECT_FALSE(result->has_value());
   }
-  EXPECT_EQ(iterator.calls(), 4);
+  EXPECT_EQ(stream.calls(), 4);
 }
 
-TEST(IteratorTest, ToVectorPropagatesErrorsAfterPartialConsumption) {
-  FailingIterator iterator;
+TEST(StreamTest, ToVectorPropagatesErrorsAfterPartialConsumption) {
+  FailingStream stream;
 
-  ICEBERG_UNWRAP_OR_FAIL(auto first, iterator.Next());
+  ICEBERG_UNWRAP_OR_FAIL(auto first, stream.Next());
   ASSERT_TRUE(first.has_value());
   EXPECT_EQ(first.value(), 0);
 
-  auto result = iterator.ToVector();
+  auto result = stream.ToVector();
 
   EXPECT_THAT(result, IsError(ErrorKind::kInvalid));
-  EXPECT_THAT(result, HasErrorMessage("iteration failed"));
+  EXPECT_THAT(result, HasErrorMessage("stream failed"));
 }
 
-TEST(IteratorTest, NextRepeatsErrorWithoutAdvancing) {
-  FailingIterator iterator;
-  auto first_error = iterator.ToVector();
+TEST(StreamTest, NextRepeatsErrorWithoutAdvancing) {
+  FailingStream stream;
+  auto first_error = stream.ToVector();
   EXPECT_THAT(first_error, IsError(ErrorKind::kInvalid));
-  EXPECT_THAT(first_error, HasErrorMessage("iteration failed"));
-  EXPECT_EQ(iterator.calls(), 3);
+  EXPECT_THAT(first_error, HasErrorMessage("stream failed"));
+  EXPECT_EQ(stream.calls(), 3);
 
   for (int i = 0; i < 2; ++i) {
-    auto result = iterator.Next();
+    auto result = stream.Next();
     EXPECT_THAT(result, IsError(ErrorKind::kInvalid));
-    EXPECT_THAT(result, HasErrorMessage("iteration failed"));
+    EXPECT_THAT(result, HasErrorMessage("stream failed"));
   }
-  EXPECT_EQ(iterator.calls(), 3);
+  EXPECT_EQ(stream.calls(), 3);
 }
 
 }  // namespace

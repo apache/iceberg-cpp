@@ -30,24 +30,52 @@
 #include <vector>
 
 #include "iceberg/iceberg_export.h"
+#include "iceberg/manifest/manifest_entry.h"
 #include "iceberg/metrics/counter.h"
 #include "iceberg/result.h"
 #include "iceberg/type_fwd.h"
+#include "iceberg/util/stream.h"
 
 namespace iceberg {
 
+/// \brief Stream of manifest entries.
+using ManifestEntryStream = Stream<ManifestEntry>;
+
+/// \brief Owning pointer to a manifest entry stream.
+using ManifestEntryStreamPtr = std::unique_ptr<ManifestEntryStream>;
+
 /// \brief Read manifest entries from a manifest file.
+///
+/// Implementations must override EntriesStream() and LiveEntriesStream(), returning
+/// self-contained streams that may outlive the reader. These are the extension points;
+/// Entries() and LiveEntries() are non-virtual eager collection helpers. Custom readers
+/// that previously overrode the eager methods must migrate to the stream methods;
+/// no eager-to-stream fallback is provided.
 class ICEBERG_EXPORT ManifestReader {
  public:
   virtual ~ManifestReader() = default;
 
   /// \brief Read all manifest entries in the manifest file.
   ///
-  /// TODO(gangwu): provide a lazy-evaluated iterator interface for better performance.
-  virtual Result<std::vector<ManifestEntry>> Entries() = 0;
+  /// Collects EntriesStream() into a vector.
+  Result<std::vector<ManifestEntry>> Entries();
 
   /// \brief Read only live (non-deleted) manifest entries.
-  virtual Result<std::vector<ManifestEntry>> LiveEntries() = 0;
+  ///
+  /// Collects LiveEntriesStream() into a vector.
+  Result<std::vector<ManifestEntry>> LiveEntries();
+
+  /// \brief Lazily read manifest entries.
+  ///
+  /// The returned stream is fallible and single-pass. It must own all resources
+  /// required for consumption and must not depend on this reader remaining alive.
+  virtual Result<ManifestEntryStreamPtr> EntriesStream() = 0;
+
+  /// \brief Lazily read only live (non-deleted) manifest entries.
+  ///
+  /// The returned stream is fallible and single-pass. It must own all resources
+  /// required for consumption and must not depend on this reader remaining alive.
+  virtual Result<ManifestEntryStreamPtr> LiveEntriesStream() = 0;
 
   /// \brief Select specific columns of data file to read from the manifest entries.
   ///
