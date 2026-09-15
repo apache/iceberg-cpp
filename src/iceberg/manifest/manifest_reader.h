@@ -45,6 +45,12 @@ using ManifestEntryStream = Stream<ManifestEntry>;
 using ManifestEntryStreamPtr = std::unique_ptr<ManifestEntryStream>;
 
 /// \brief Read manifest entries from a manifest file.
+///
+/// Implementations must override EntriesStream() and LiveEntriesStream(), returning
+/// self-contained streams that may outlive the reader. These are the extension points;
+/// Entries() and LiveEntries() are non-virtual eager collection helpers. Custom readers
+/// that previously overrode the eager methods must migrate to the stream methods;
+/// no eager-to-stream fallback is provided.
 class ICEBERG_EXPORT ManifestReader {
  public:
   virtual ~ManifestReader() = default;
