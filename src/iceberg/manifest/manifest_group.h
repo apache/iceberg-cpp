@@ -138,7 +138,9 @@ class ICEBERG_EXPORT ManifestGroup : public ErrorCollector {
   ManifestGroup& WithScanMetrics(std::shared_ptr<ScanMetrics> scan_metrics);
 
   /// \brief Plan scan tasks for all matching data files.
-  Result<std::vector<std::shared_ptr<FileScanTask>>> PlanFiles();
+  ///
+  /// Consumes this group and collects PlanFilesStream() into a vector.
+  Result<std::vector<std::shared_ptr<FileScanTask>>> PlanFiles() &&;
 
   /// \brief Lazily plan scan tasks for matching data files.
   ///

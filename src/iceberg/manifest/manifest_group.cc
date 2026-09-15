@@ -41,7 +41,6 @@
 #include "iceberg/table_scan.h"
 #include "iceberg/type.h"
 #include "iceberg/util/cache_internal.h"
-#include "iceberg/util/checked_cast.h"
 #include "iceberg/util/content_file_util.h"
 #include "iceberg/util/executor_util_internal.h"
 #include "iceberg/util/macros.h"
@@ -507,55 +506,9 @@ ManifestGroup& ManifestGroup::WithScanMetrics(std::shared_ptr<ScanMetrics> scan_
   return *this;
 }
 
-Result<std::vector<std::shared_ptr<FileScanTask>>> ManifestGroup::PlanFiles() {
-  auto create_file_scan_tasks =
-      [this](std::vector<ManifestEntry>&& entries,
-             const TaskContext& ctx) -> Result<std::vector<std::shared_ptr<ScanTask>>> {
-    std::vector<std::shared_ptr<ScanTask>> tasks;
-    tasks.reserve(entries.size());
-
-    for (auto& entry : entries) {
-      ICEBERG_ASSIGN_OR_RAISE(auto delete_files, ctx.deletes->ForEntry(entry));
-
-      // Equality-delete matching uses data-file statistics. Drop unrequested stats only
-      // after the delete index has finished matching this entry.
-      if (ctx.drop_stats) {
-        ContentFileUtil::DropAllStats(*entry.data_file);
-      } else if (!ctx.columns_to_keep_stats.empty()) {
-        ContentFileUtil::DropUnselectedStats(*entry.data_file, ctx.columns_to_keep_stats);
-      }
-      // Count result metrics once per data file task. A delete file shared by
-      // multiple data files contributes once to each task, unlike indexed delete files.
-      if (scan_metrics_) {
-        scan_metrics_->total_file_size_in_bytes->Increment(
-            ContentFileUtil::ContentSizeInBytes(*entry.data_file));
-        scan_metrics_->result_data_files->Increment(1);
-        scan_metrics_->result_delete_files->Increment(
-            static_cast<int64_t>(delete_files.size()));
-        int64_t deletes_size = 0;
-        for (const auto& delete_file : delete_files) {
-          deletes_size += ContentFileUtil::ContentSizeInBytes(*delete_file);
-        }
-        scan_metrics_->total_delete_file_size_in_bytes->Increment(deletes_size);
-      }
-      ICEBERG_ASSIGN_OR_RAISE(auto residual,
-                              ctx.residuals->ResidualFor(entry.data_file->partition));
-      tasks.push_back(std::make_shared<FileScanTask>(
-          std::move(entry.data_file), std::move(delete_files), std::move(residual)));
-    }
-
-    return tasks;
-  };
-
-  ICEBERG_ASSIGN_OR_RAISE(auto tasks, Plan(create_file_scan_tasks));
-
-  // Convert ScanTask to FileScanTask
-  std::vector<std::shared_ptr<FileScanTask>> file_tasks;
-  file_tasks.reserve(tasks.size());
-  for (auto& task : tasks) {
-    file_tasks.push_back(internal::checked_pointer_cast<FileScanTask>(task));
-  }
-  return file_tasks;
+Result<std::vector<std::shared_ptr<FileScanTask>>> ManifestGroup::PlanFiles() && {
+  ICEBERG_ASSIGN_OR_RAISE(auto stream, std::move(*this).PlanFilesStream());
+  return stream->ToVector();
 }
 
 Result<FileScanTaskStreamPtr> ManifestGroup::PlanFilesStream() && {

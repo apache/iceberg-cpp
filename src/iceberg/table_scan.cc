@@ -128,7 +128,7 @@ class ReportingFileTaskStream final : public FileScanTaskStream {
     planning_duration_ += std::chrono::duration_cast<std::chrono::nanoseconds>(
         std::chrono::steady_clock::now() - start);
     if (!result.has_value()) {
-      // Match PlanFiles(): failed planning does not emit a successful scan report.
+      // Failed planning does not emit a successful scan report.
       finalized_ = true;
     } else if (!result.value().has_value()) {
       Finalize();
@@ -657,68 +657,9 @@ Result<std::unique_ptr<DataTableScan>> DataTableScan::Make(
       std::move(metadata), std::move(schema), std::move(io), std::move(context)));
 }
 
-Status DataTableScan::ReportScan(const Snapshot& snapshot,
-                                 const ScanMetrics& scan_metrics) const {
-  if (!context_.metrics_reporter) {
-    return {};
-  }
-
-  ICEBERG_ASSIGN_OR_RAISE(auto report,
-                          MakeScanReport(*this, snapshot, scan_metrics.ToResult()));
-  return context_.metrics_reporter->Report(report);
-}
-
 Result<std::vector<std::shared_ptr<FileScanTask>>> DataTableScan::PlanFiles() const {
-  ICEBERG_ASSIGN_OR_RAISE(auto snapshot, this->snapshot());
-  if (!snapshot) {
-    return std::vector<std::shared_ptr<FileScanTask>>{};
-  }
-
-  std::shared_ptr<ScanMetrics> scan_metrics;
-  std::optional<Timer::Timed> planning_duration;
-  if (context_.metrics_reporter) {
-    auto metrics_context = MetricsContext::Default();
-    scan_metrics = ScanMetrics::Make(*metrics_context);
-    planning_duration.emplace(scan_metrics->total_planning_duration->Start());
-  }
-
-  TableMetadataCache metadata_cache(metadata_.get());
-  ICEBERG_ASSIGN_OR_RAISE(auto specs_by_id, metadata_cache.GetPartitionSpecsById());
-
-  SnapshotCache snapshot_cache(snapshot.get());
-  ICEBERG_ASSIGN_OR_RAISE(auto data_manifests, snapshot_cache.DataManifests(io_));
-  ICEBERG_ASSIGN_OR_RAISE(auto delete_manifests, snapshot_cache.DeleteManifests(io_));
-
-  if (scan_metrics) {
-    scan_metrics->total_data_manifests->Increment(
-        static_cast<int64_t>(data_manifests.size()));
-    scan_metrics->total_delete_manifests->Increment(
-        static_cast<int64_t>(delete_manifests.size()));
-  }
-
-  ICEBERG_ASSIGN_OR_RAISE(
-      auto manifest_group,
-      ManifestGroup::Make(io_, schema_, specs_by_id,
-                          {data_manifests.begin(), data_manifests.end()},
-                          {delete_manifests.begin(), delete_manifests.end()}));
-  manifest_group->CaseSensitive(context_.case_sensitive)
-      .Select(ScanColumns())
-      .FilterData(filter())
-      .IgnoreDeleted()
-      .ColumnsToKeepStats(context_.columns_to_keep_stats)
-      .PlanWith(context_.plan_executor)
-      .WithScanMetrics(scan_metrics);
-  if (context_.ignore_residuals) {
-    manifest_group->IgnoreResiduals();
-  }
-  ICEBERG_ASSIGN_OR_RAISE(auto tasks, manifest_group->PlanFiles());
-
-  if (planning_duration) {
-    planning_duration->Stop();
-    std::ignore = ReportScan(*snapshot, *scan_metrics);
-  }
-
-  return tasks;
+  ICEBERG_ASSIGN_OR_RAISE(auto stream, PlanFilesStream());
+  return stream->ToVector();
 }
 
 Result<FileScanTaskStreamPtr> DataTableScan::PlanFilesStream() const {
@@ -781,7 +722,7 @@ Result<FileScanTaskStreamPtr> DataTableScan::PlanFilesStream() const {
 
   auto report = MakeScanReport(*this, *snapshot, ScanMetricsResult{});
   if (!report.has_value()) {
-    // Scan reporting is best effort, matching PlanFiles().
+    // Scan reporting is best effort.
     return stream;
   }
 
@@ -893,7 +834,7 @@ Result<std::vector<std::shared_ptr<FileScanTask>>> IncrementalAppendScan::PlanFi
     manifest_group->IgnoreResiduals();
   }
 
-  return manifest_group->PlanFiles();
+  return std::move(*manifest_group).PlanFiles();
 }
 
 // IncrementalChangelogScan implementation

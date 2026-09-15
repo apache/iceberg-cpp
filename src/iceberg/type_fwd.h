@@ -197,7 +197,6 @@ class ManifestListReader;
 class ManifestListWriter;
 class ManifestReader;
 class ManifestWriter;
-class SupportsManifestEntryStreaming;
 class PartitionSummary;
 
 /// \brief File I/O.

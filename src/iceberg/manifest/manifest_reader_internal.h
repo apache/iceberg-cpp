@@ -43,7 +43,7 @@ namespace iceberg {
 /// This implementation supports lazy reader creation and filtering based on
 /// partition expressions, row expressions, and partition sets. Following the
 /// Java implementation pattern.
-class ManifestReaderImpl : public ManifestReader, public SupportsManifestEntryStreaming {
+class ManifestReaderImpl : public ManifestReader {
  public:
   /// \brief Construct a ManifestReaderImpl for lazy initialization.
   ///
@@ -61,10 +61,6 @@ class ManifestReaderImpl : public ManifestReader, public SupportsManifestEntrySt
                      std::shared_ptr<PartitionSpec> spec,
                      std::unique_ptr<InheritableMetadata> inheritable_metadata,
                      std::optional<int64_t> first_row_id, bool is_committed);
-
-  Result<std::vector<ManifestEntry>> Entries() override;
-
-  Result<std::vector<ManifestEntry>> LiveEntries() override;
 
   /// \brief Lazily read manifest entries.
   Result<ManifestEntryStreamPtr> EntriesStream() override;
@@ -104,9 +100,6 @@ class ManifestReaderImpl : public ManifestReader, public SupportsManifestEntrySt
 
   /// \brief Get or create and transfer ownership of the metrics evaluator.
   Result<std::unique_ptr<InclusiveMetricsEvaluator>> TakeMetricsEvaluator();
-
-  /// \brief Check if a partition is in the partition set.
-  Result<bool> InPartitionSet(const DataFile& file) const;
 
   // Fields set at construction
   const std::string manifest_path_;

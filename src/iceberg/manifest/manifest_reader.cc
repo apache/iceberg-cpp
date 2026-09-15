@@ -690,23 +690,6 @@ Result<std::shared_ptr<Schema>> ProjectSchema(std::shared_ptr<Schema> schema,
   return schema;
 }
 
-template <typename T>
-class VectorStream final : public Stream<T> {
- public:
-  explicit VectorStream(std::vector<T> values) : values_(std::move(values)) {}
-
-  Result<std::optional<T>> NextImpl() override {
-    if (next_ == values_.size()) {
-      return std::nullopt;
-    }
-    return std::optional<T>{std::move_if_noexcept(values_[next_++])};
-  }
-
- private:
-  std::vector<T> values_;
-  size_t next_ = 0;
-};
-
 class ManifestEntryStreamImpl final : public ManifestEntryStream {
  public:
   ManifestEntryStreamImpl(std::unique_ptr<Reader> reader,
@@ -814,22 +797,6 @@ class ManifestEntryStreamImpl final : public ManifestEntryStream {
 };
 
 }  // namespace
-
-Result<ManifestEntryStreamPtr> ManifestReader::EntriesStream() {
-  if (auto* streaming_reader = dynamic_cast<SupportsManifestEntryStreaming*>(this)) {
-    return streaming_reader->EntriesStream();
-  }
-  ICEBERG_ASSIGN_OR_RAISE(auto entries, Entries());
-  return std::make_unique<VectorStream<ManifestEntry>>(std::move(entries));
-}
-
-Result<ManifestEntryStreamPtr> ManifestReader::LiveEntriesStream() {
-  if (auto* streaming_reader = dynamic_cast<SupportsManifestEntryStreaming*>(this)) {
-    return streaming_reader->LiveEntriesStream();
-  }
-  ICEBERG_ASSIGN_OR_RAISE(auto entries, LiveEntries());
-  return std::make_unique<VectorStream<ManifestEntry>>(std::move(entries));
-}
 
 bool ManifestReader::ShouldDropStats(const std::vector<std::string>& columns) {
   // Make sure we only drop all stats if we had projected all stats.
@@ -954,15 +921,6 @@ ManifestReaderImpl::TakeMetricsEvaluator() {
   return std::move(metrics_evaluator_);
 }
 
-Result<bool> ManifestReaderImpl::InPartitionSet(const DataFile& file) const {
-  if (!partition_set_) {
-    return true;
-  }
-  ICEBERG_PRECHECK(file.partition_spec_id.has_value(),
-                   "Missing partition spec id from data file {}", file.file_path);
-  return partition_set_->contains(file.partition_spec_id.value(), file.partition);
-}
-
 Status ManifestReaderImpl::OpenReader(std::shared_ptr<Schema> projection) {
   ICEBERG_PRECHECK(projection != nullptr, "Projection schema cannot be null");
 
@@ -1001,12 +959,12 @@ Status ManifestReaderImpl::OpenReader(std::shared_ptr<Schema> projection) {
   return {};
 }
 
-Result<std::vector<ManifestEntry>> ManifestReaderImpl::Entries() {
+Result<std::vector<ManifestEntry>> ManifestReader::Entries() {
   ICEBERG_ASSIGN_OR_RAISE(auto entries, EntriesStream());
   return entries->ToVector();
 }
 
-Result<std::vector<ManifestEntry>> ManifestReaderImpl::LiveEntries() {
+Result<std::vector<ManifestEntry>> ManifestReader::LiveEntries() {
   ICEBERG_ASSIGN_OR_RAISE(auto entries, LiveEntriesStream());
   return entries->ToVector();
 }

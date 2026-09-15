@@ -24,6 +24,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include <gmock/gmock.h>
@@ -282,7 +283,7 @@ TEST_P(ManifestGroupTest, CreateAndGetEntries) {
       testing::UnorderedElementsAre("/path/to/data1.parquet", "/path/to/data2.parquet"));
 
   // Verify PlanFiles returns data files with associated delete files
-  ICEBERG_UNWRAP_OR_FAIL(auto tasks, group->PlanFiles());
+  ICEBERG_UNWRAP_OR_FAIL(auto tasks, std::move(*group).PlanFiles());
   ASSERT_EQ(tasks.size(), 2);
   EXPECT_THAT(GetPaths(tasks), testing::UnorderedElementsAre("/path/to/data1.parquet",
                                                              "/path/to/data2.parquet"));
@@ -339,7 +340,7 @@ TEST_P(ManifestGroupTest, PlanFilesStreamPreservesSelectAllWithEqualityDeletes) 
   EXPECT_FALSE(end.has_value());
 }
 
-TEST_P(ManifestGroupTest, PlanFilesKeepsStatsProjectionLocal) {
+TEST_P(ManifestGroupTest, PlanFilesDropsUnselectedStatsWithEqualityDeletes) {
   auto version = GetParam();
   if (version < 2) {
     GTEST_SKIP() << "Equality deletes only supported in V2+";
@@ -373,12 +374,13 @@ TEST_P(ManifestGroupTest, PlanFilesKeepsStatsProjectionLocal) {
                                       {delete_manifest}));
   group->Select({"file_path"});
 
-  for (int attempt = 0; attempt < 2; ++attempt) {
-    ICEBERG_UNWRAP_OR_FAIL(auto tasks, group->PlanFiles());
-    ASSERT_EQ(tasks.size(), 1);
-    EXPECT_TRUE(tasks.front()->data_file()->lower_bounds.empty());
-    EXPECT_TRUE(tasks.front()->data_file()->upper_bounds.empty());
-  }
+  ICEBERG_UNWRAP_OR_FAIL(auto tasks, std::move(*group).PlanFiles());
+  ASSERT_EQ(tasks.size(), 1);
+  ASSERT_EQ(tasks.front()->delete_files().size(), 1);
+  EXPECT_EQ(tasks.front()->delete_files().front()->file_path,
+            "/path/to/equality-delete.parquet");
+  EXPECT_TRUE(tasks.front()->data_file()->lower_bounds.empty());
+  EXPECT_TRUE(tasks.front()->data_file()->upper_bounds.empty());
 }
 
 TEST_P(ManifestGroupTest, IgnoreDeleted) {
@@ -412,7 +414,7 @@ TEST_P(ManifestGroupTest, IgnoreDeleted) {
   group->IgnoreDeleted();
 
   // Plan files - should only return ADDED and EXISTING
-  ICEBERG_UNWRAP_OR_FAIL(auto tasks, group->PlanFiles());
+  ICEBERG_UNWRAP_OR_FAIL(auto tasks, std::move(*group).PlanFiles());
   ASSERT_EQ(tasks.size(), 2);
   EXPECT_THAT(GetPaths(tasks),
               testing::UnorderedElementsAre("/path/to/added.parquet",
@@ -451,7 +453,7 @@ TEST_P(ManifestGroupTest, IgnoreExisting) {
   group->IgnoreExisting();
 
   // Plan files - should only return ADDED
-  ICEBERG_UNWRAP_OR_FAIL(auto tasks, group->PlanFiles());
+  ICEBERG_UNWRAP_OR_FAIL(auto tasks, std::move(*group).PlanFiles());
   ASSERT_EQ(tasks.size(), 2);
   EXPECT_THAT(GetPaths(tasks), testing::UnorderedElementsAre("/path/to/added.parquet",
                                                              "/path/to/deleted.parquet"));
@@ -489,7 +491,7 @@ TEST_P(ManifestGroupTest, CustomManifestEntriesFilter) {
   });
 
   // Plan files - should only return filtered entries
-  ICEBERG_UNWRAP_OR_FAIL(auto tasks, group->PlanFiles());
+  ICEBERG_UNWRAP_OR_FAIL(auto tasks, std::move(*group).PlanFiles());
   ASSERT_EQ(tasks.size(), 2);
   EXPECT_THAT(GetPaths(tasks), testing::UnorderedElementsAre("/path/to/data1.parquet",
                                                              "/path/to/data3.parquet"));
@@ -682,11 +684,11 @@ TEST_P(ManifestGroupTest, EmptyManifestGroup) {
       auto group,
       ManifestGroup::Make(file_io_, schema_, GetSpecsById(), std::move(manifests)));
 
-  ICEBERG_UNWRAP_OR_FAIL(auto tasks, group->PlanFiles());
-  EXPECT_TRUE(tasks.empty());
-
   ICEBERG_UNWRAP_OR_FAIL(auto entries, group->Entries());
   EXPECT_TRUE(entries.empty());
+
+  ICEBERG_UNWRAP_OR_FAIL(auto tasks, std::move(*group).PlanFiles());
+  EXPECT_TRUE(tasks.empty());
 }
 
 TEST_P(ManifestGroupTest, MultipleDataManifests) {
@@ -719,7 +721,7 @@ TEST_P(ManifestGroupTest, MultipleDataManifests) {
   group->PlanWith(std::ref(executor));
 
   // Plan files - should return files from both manifests
-  ICEBERG_UNWRAP_OR_FAIL(auto tasks, group->PlanFiles());
+  ICEBERG_UNWRAP_OR_FAIL(auto tasks, std::move(*group).PlanFiles());
   ASSERT_EQ(tasks.size(), 2);
   EXPECT_THAT(GetPaths(tasks), testing::UnorderedElementsAre("/path/to/data1.parquet",
                                                              "/path/to/data2.parquet"));
@@ -790,7 +792,7 @@ TEST_P(ManifestGroupTest, PartitionFilter) {
   group->FilterPartitions(std::move(partition_filter));
 
   // Plan files - should only return the file in bucket 0
-  ICEBERG_UNWRAP_OR_FAIL(auto tasks, group->PlanFiles());
+  ICEBERG_UNWRAP_OR_FAIL(auto tasks, std::move(*group).PlanFiles());
   ASSERT_EQ(tasks.size(), 1);
   EXPECT_THAT(GetPaths(tasks), testing::ElementsAre("/path/to/bucket0.parquet"));
 }

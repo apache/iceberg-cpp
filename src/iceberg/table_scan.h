@@ -470,20 +470,18 @@ class ICEBERG_EXPORT DataTableScan : public TableScan {
       std::shared_ptr<FileIO> io, internal::TableScanContext context);
 
   /// \brief Plans the scan tasks by resolving manifests and data files.
+  ///
+  /// Collects PlanFilesStream() into a vector.
   /// \return A Result containing scan tasks or an error.
   Result<std::vector<std::shared_ptr<FileScanTask>>> PlanFiles() const;
 
   /// \brief Lazily plans scan tasks by resolving manifests and data files on demand.
   ///
-  /// Unlike PlanFiles(), this method does not materialize all manifest entries and scan
-  /// tasks. The returned fallible, single-pass stream owns its planning resources and
+  /// The returned fallible, single-pass stream owns its planning resources and
   /// can outlive this scan. An executor configured through PlanWith() is borrowed and
   /// must remain alive until the stream is destroyed, as later Next() calls may submit
   /// work to it.
   Result<FileScanTaskStreamPtr> PlanFilesStream() const;
-
- private:
-  Status ReportScan(const Snapshot& snapshot, const ScanMetrics& scan_metrics) const;
 
  protected:
   using TableScan::TableScan;

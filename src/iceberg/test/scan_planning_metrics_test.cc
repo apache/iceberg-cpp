@@ -230,6 +230,8 @@ TEST_P(ScanPlanningMetricsTest, ReportsToTableAndScanReporters) {
   ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
   ASSERT_EQ(tasks.size(), 1u);
 
+  EXPECT_EQ(reporter_->report_count(), 1);
+  EXPECT_EQ(scan_reporter->report_count(), 1);
   ASSERT_TRUE(reporter_->last().has_value());
   const auto& report = *reporter_->last();
   EXPECT_EQ(report.table_name, "test.table");
@@ -281,7 +283,7 @@ TEST_P(ScanPlanningMetricsTest, StreamReportsWhenDestroyedEarly) {
   EXPECT_EQ(metrics.result_data_files->value, 1);
 }
 
-TEST_P(ScanPlanningMetricsTest, StreamDoesNotReportFailedPlanning) {
+TEST_P(ScanPlanningMetricsTest, DoesNotReportFailedPlanning) {
   auto version = GetParam();
   constexpr int64_t kSnapshotId = 2011L;
   const auto part = PartitionValues({Literal::Int(0)});
@@ -307,6 +309,10 @@ TEST_P(ScanPlanningMetricsTest, StreamDoesNotReportFailedPlanning) {
   EXPECT_EQ(reporter_->report_count(), 0);
 
   stream.reset();
+  EXPECT_EQ(reporter_->report_count(), 0);
+
+  auto tasks = scan->PlanFiles();
+  EXPECT_FALSE(tasks.has_value());
   EXPECT_EQ(reporter_->report_count(), 0);
 }
 
