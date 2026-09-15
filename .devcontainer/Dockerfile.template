@@ -38,7 +38,6 @@ RUN apt update && \
     libssl-dev \
     libxml2-dev \
     lsb-release \
-    meson \
     ninja-build \
     pkg-config \
     python3 \

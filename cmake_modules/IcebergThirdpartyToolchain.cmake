@@ -128,8 +128,8 @@ set(ICEBERG_UTF8PROC_BUILD_SHA256_CHECKSUM
 if(DEFINED ENV{ICEBERG_UTF8PROC_URL})
   set(UTF8PROC_SOURCE_URL "$ENV{ICEBERG_UTF8PROC_URL}")
 else()
-  # Use the release asset (stable bytes, matching subprojects/utf8proc.wrap) rather
-  # than the auto-generated tag archive, whose contents GitHub does not guarantee.
+  # Use the release asset (stable bytes) rather than the auto-generated tag archive,
+  # whose contents GitHub does not guarantee.
   set(UTF8PROC_SOURCE_URL
       "https://github.com/JuliaStrings/utf8proc/releases/download/v${ICEBERG_UTF8PROC_BUILD_VERSION}/utf8proc-${ICEBERG_UTF8PROC_BUILD_VERSION}.tar.gz"
   )

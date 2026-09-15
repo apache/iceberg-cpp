@@ -36,12 +36,6 @@ cmake-build-release/
 .devcontainer/*
 !.devcontainer/*.template
 
-# meson subprojects - wrap files need to be kept to let meson download
-# dependencies as needed, but dependencies themselves should not be versioned
-/subprojects/*
-!/subprojects/packagefiles
-!/subprojects/*.wrap
-
 # AI
 AGENTS.md
 CLAUDE.md

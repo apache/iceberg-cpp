@@ -24,7 +24,7 @@
 **Required:**
 
 - C++23 compliant compiler (GCC 14+, Clang 18+, MSVC 2022+)
-- CMake 3.25+ or Meson 1.5+
+- CMake 3.25+
 - [Ninja](https://ninja-build.org/) (recommended build backend)
 
 ## Quick Start
@@ -81,26 +81,6 @@ cmake --install build
 | `ICEBERG_SQL_MYSQL` | `OFF` | Build the MySQL connector for the SQL catalog |
 | `ICEBERG_ENABLE_ASAN` | `OFF` | Enable Address Sanitizer |
 | `ICEBERG_ENABLE_UBSAN` | `OFF` | Enable Undefined Behavior Sanitizer |
-
-## Build with Meson
-
-```bash
-meson setup builddir
-meson compile -C builddir
-meson test -C builddir --timeout-multiplier 0
-```
-
-Meson provides built-in equivalents for several CMake options:
-
-- `--default-library=<shared|static|both>` instead of `ICEBERG_BUILD_STATIC` / `ICEBERG_BUILD_SHARED`
-- `-Db_sanitize=address,undefined` instead of `ICEBERG_ENABLE_ASAN` / `ICEBERG_ENABLE_UBSAN`
-- `--libdir`, `--bindir`, `--includedir` for install directories
-
-| Option | Default | Description |
-|--------|---------|-------------|
-| `rest` | `enabled` | Build REST catalog client |
-| `rest_integration_test` | `disabled` | Build integration test for REST catalog |
-| `tests` | `enabled` | Build tests |
 
 ## Running Tests
 

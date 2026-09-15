@@ -64,8 +64,7 @@ interface, so downstream consumers only need the native client libraries.
 > The built-in sqlpp23 connectors require CMake >= 3.28 and C++23; sqlpp23 is
 > fetched automatically via `FetchContent` when at least one built-in connector
 > is enabled. A SQL catalog backed only by a user-supplied `CatalogStore` does not
-> need sqlpp23. The SQL catalog is currently wired into the CMake build only;
-> the Meson build does not build or install it yet.
+> need sqlpp23.
 
 ## Out-of-the-box usage
 

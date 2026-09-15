@@ -26,9 +26,6 @@ and stores catalog rows in `iceberg_tables` and
 
 ## Build
 
-The SQL catalog is currently available through the CMake build only. Meson does
-not build or install it yet.
-
 Enable the catalog at configure time:
 
 ```bash

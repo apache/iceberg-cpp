@@ -41,7 +41,6 @@ are supplied by the `iceberg_bundle` library.
 
 This library combines `iceberg_data` with the Arrow C++, Avro, Parquet, and
 Arrow filesystem integrations. It gives applications one link-time dependency.
-Please note that Meson build currently does not have this yet.
 
 ### `iceberg_rest`, `iceberg_hive`, `iceberg_sql_catalog`
 
