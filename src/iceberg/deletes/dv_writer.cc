@@ -19,7 +19,9 @@
 
 #include "iceberg/deletes/dv_writer.h"
 
+#include <cstddef>
 #include <cstdint>
+#include <limits>
 #include <map>
 #include <memory>
 #include <optional>
@@ -30,8 +32,8 @@
 #include <vector>
 
 #include "iceberg/deletes/dv_util_internal.h"
+#include "iceberg/deletes/dv_writer_internal.h"
 #include "iceberg/deletes/position_delete_index.h"
-#include "iceberg/deletes/roaring_position_bitmap.h"
 #include "iceberg/file_format.h"
 #include "iceberg/file_io.h"  // IWYU pragma: keep
 #include "iceberg/manifest/manifest_entry.h"
@@ -49,7 +51,8 @@ namespace iceberg {
 
 class DVWriter::Impl {
  public:
-  explicit Impl(DVWriterOptions options) : options_(std::move(options)) {}
+  Impl(DVWriterOptions options, size_t max_serialized_length)
+      : options_(std::move(options)), max_serialized_length_(max_serialized_length) {}
 
   // Accumulated positions and metadata for a single referenced data file.
   struct Deletes {
@@ -79,9 +82,7 @@ class DVWriter::Impl {
     ICEBERG_PRECHECK(!referenced_data_file.empty(),
                      "Deletion vector requires a non-empty referenced data file");
     ICEBERG_PRECHECK(spec != nullptr, "Deletion vector requires a partition spec");
-    ICEBERG_PRECHECK(pos >= 0 && pos <= RoaringPositionBitmap::kMaxPosition,
-                     "Deletion vector position out of range [0, {}]: {}",
-                     RoaringPositionBitmap::kMaxPosition, pos);
+    ICEBERG_PRECHECK(pos >= 0, "Deletion vector position must be non-negative: {}", pos);
     DeletesFor(referenced_data_file, spec, partition).positions.Delete(pos);
     return {};
   }
@@ -110,6 +111,11 @@ class DVWriter::Impl {
 
     for (auto& [path, deletes] : deletes_by_path_) {
       ICEBERG_RETURN_UNEXPECTED(LoadPreviousDeletes(path, deletes));
+    }
+
+    for (auto& [_, deletes] : deletes_by_path_) {
+      ICEBERG_RETURN_UNEXPECTED(
+          deletes.positions.ValidateSerializedSize(max_serialized_length_));
     }
 
     ICEBERG_ASSIGN_OR_RAISE(auto output_file, options_.io->NewOutputFile(options_.path));
@@ -198,6 +204,7 @@ class DVWriter::Impl {
   std::map<std::string, puffin::BlobMetadata, StringLess> blobs_by_path_;
   DeleteWriteResult result_;
   bool closed_ = false;
+  size_t max_serialized_length_;
 };
 
 DVWriter::DVWriter(std::unique_ptr<Impl> impl) : impl_(std::move(impl)) {}
@@ -205,12 +212,18 @@ DVWriter::DVWriter(std::unique_ptr<Impl> impl) : impl_(std::move(impl)) {}
 DVWriter::~DVWriter() = default;
 
 Result<std::unique_ptr<DVWriter>> DVWriter::Make(DVWriterOptions options) {
+  return internal::DVWriterFactory::Make(
+      std::move(options), static_cast<size_t>(std::numeric_limits<int32_t>::max()));
+}
+
+Result<std::unique_ptr<DVWriter>> internal::DVWriterFactory::Make(
+    DVWriterOptions options, size_t max_serialized_length) {
   ICEBERG_PRECHECK(!options.path.empty(), "DVWriter requires an output path");
   ICEBERG_PRECHECK(options.io != nullptr, "DVWriter requires a FileIO");
   ICEBERG_PRECHECK(options.load_previous_deletes != nullptr,
                    "DVWriter requires a load_previous_deletes callback");
-  return std::unique_ptr<DVWriter>(
-      new DVWriter(std::make_unique<Impl>(std::move(options))));
+  return std::unique_ptr<DVWriter>(new DVWriter(
+      std::make_unique<DVWriter::Impl>(std::move(options), max_serialized_length)));
 }
 
 Status DVWriter::Delete(std::string_view referenced_data_file, int64_t pos,

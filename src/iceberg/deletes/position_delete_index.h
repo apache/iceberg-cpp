@@ -22,6 +22,7 @@
 /// \file iceberg/deletes/position_delete_index.h
 /// Index of deleted row positions for a data file.
 
+#include <cstddef>
 #include <cstdint>
 #include <memory>
 #include <span>
@@ -33,6 +34,8 @@
 #include "iceberg/type_fwd.h"
 
 namespace iceberg {
+
+class DVWriter;
 
 /// \brief Tracks deleted row positions using a bitmap.
 ///
@@ -53,6 +56,8 @@ class ICEBERG_EXPORT PositionDeleteIndex {
   /// \brief Mark a range of positions as deleted [pos_start, pos_end).
   /// \param pos_start Start position (inclusive)
   /// \param pos_end End position (exclusive)
+  /// \note Because pos_end is an int64_t exclusive endpoint, this method cannot
+  ///       include INT64_MAX. Call Delete(INT64_MAX) separately.
   void Delete(int64_t pos_start, int64_t pos_end);
 
   /// \brief Check if a position is deleted.
@@ -97,6 +102,8 @@ class ICEBERG_EXPORT PositionDeleteIndex {
  private:
   explicit PositionDeleteIndex(RoaringPositionBitmap bitmap);
 
+  Status ValidateSerializedSize(size_t max_length);
+
   // Bulk-add positions sharing high-32-bit `key`. Private hook for
   // `ForEachPositionDelete`'s bulk path; keeps `Delete` the sole public
   // mutation surface.
@@ -105,6 +112,7 @@ class ICEBERG_EXPORT PositionDeleteIndex {
   friend void ICEBERG_EXPORT ForEachPositionDelete(std::span<const int64_t> positions,
                                                    PositionDeleteIndex& target,
                                                    std::vector<uint32_t>& scratch);
+  friend class DVWriter;
 
   RoaringPositionBitmap bitmap_;
   std::vector<std::shared_ptr<DataFile>> delete_files_;

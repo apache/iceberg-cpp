@@ -31,9 +31,7 @@ namespace iceberg {
 
 namespace {
 
-bool IsValidPosition(int64_t pos) {
-  return pos >= 0 && pos <= RoaringPositionBitmap::kMaxPosition;
-}
+bool IsValidPosition(int64_t pos) { return pos >= 0; }
 
 // Unsigned subtraction so negative or wrap-around input can't
 // false-positive via signed overflow.
@@ -45,11 +43,13 @@ bool IsAdjacent(int64_t prev, int64_t next) {
 // bulk path groups by this key before flushing via `BulkAddForKey`.
 int32_t HighKeyFromPosition(int64_t pos) { return static_cast<int32_t>(pos >> 32); }
 
-// Emit `[range_start, last_position]`, collapsing singletons. Callers
-// pre-filter via `IsValidPosition`, so `last_position + 1` cannot overflow.
+// Emit `[range_start, last_position]`, collapsing singletons.
 void EmitRange(PositionDeleteIndex& target, int64_t range_start, int64_t last_position) {
   if (range_start == last_position) {
     target.Delete(range_start);
+  } else if (last_position == RoaringPositionBitmap::kMaxPosition) {
+    target.Delete(range_start, last_position);
+    target.Delete(last_position);
   } else {
     target.Delete(range_start, last_position + 1);
   }
