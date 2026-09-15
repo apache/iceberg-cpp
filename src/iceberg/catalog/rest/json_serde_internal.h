@@ -71,6 +71,10 @@ template <>
 ICEBERG_REST_EXPORT Result<LoadTableResult> FromJson(const nlohmann::json& json);
 ICEBERG_REST_EXPORT Result<nlohmann::json> ToJson(const LoadTableResult& model);
 
+// Response-only model: a client never serializes it, so no ToJson.
+ICEBERG_REST_EXPORT Result<LoadCredentialsResponse> LoadCredentialsResponseFromJson(
+    const nlohmann::json& json);
+
 ICEBERG_REST_EXPORT Result<CreateTableRequest> CreateTableRequestFromJson(
     const nlohmann::json& json);
 template <>
