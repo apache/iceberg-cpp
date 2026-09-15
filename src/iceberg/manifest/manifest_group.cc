@@ -645,6 +645,13 @@ ManifestGroup::StatsProjection ManifestGroup::PrepareStatsProjection(
   // here ensures eager and stream planning use identical semantics.
   StatsProjection result{.columns = columns_,
                          .drop_stats = ManifestReader::ShouldDropStats(columns_)};
+  // Delete matching and residual evaluation require partition values even when the
+  // caller does not select them. Do not narrow an empty or select-all projection.
+  if (!result.columns.empty() &&
+      !std::ranges::contains(result.columns, Schema::kAllColumns) &&
+      !std::ranges::contains(result.columns, DataFile::kPartitionField)) {
+    result.columns.emplace_back(DataFile::kPartitionField);
+  }
   if (has_equality_deletes) {
     result.columns = ManifestReader::WithStatsColumns(result.columns);
   }

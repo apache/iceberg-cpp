@@ -369,18 +369,77 @@ TEST_P(ManifestGroupTest, PlanFilesDropsUnselectedStatsWithEqualityDeletes) {
                                      /*sequence_number=*/2, std::move(equality_delete))},
                           partitioned_spec_);
 
-  ICEBERG_UNWRAP_OR_FAIL(
-      auto group, ManifestGroup::Make(file_io_, schema_, GetSpecsById(), {data_manifest},
-                                      {delete_manifest}));
-  group->Select({"file_path"});
+  for (bool use_executor : {false, true}) {
+    SCOPED_TRACE(std::format("use_executor={}", use_executor));
+    for (bool use_stream : {false, true}) {
+      SCOPED_TRACE(std::format("use_stream={}", use_stream));
+      test::ThreadExecutor executor;
+      ICEBERG_UNWRAP_OR_FAIL(auto group,
+                             ManifestGroup::Make(file_io_, schema_, GetSpecsById(),
+                                                 {data_manifest}, {delete_manifest}));
+      group->Select({"file_path"});
+      if (use_executor) {
+        group->PlanWith(std::ref(executor));
+      }
 
-  ICEBERG_UNWRAP_OR_FAIL(auto tasks, std::move(*group).PlanFiles());
-  ASSERT_EQ(tasks.size(), 1);
-  ASSERT_EQ(tasks.front()->delete_files().size(), 1);
-  EXPECT_EQ(tasks.front()->delete_files().front()->file_path,
-            "/path/to/equality-delete.parquet");
-  EXPECT_TRUE(tasks.front()->data_file()->lower_bounds.empty());
-  EXPECT_TRUE(tasks.front()->data_file()->upper_bounds.empty());
+      std::vector<std::shared_ptr<FileScanTask>> tasks;
+      if (use_stream) {
+        ICEBERG_UNWRAP_OR_FAIL(auto stream, std::move(*group).PlanFilesStream());
+        ICEBERG_UNWRAP_OR_FAIL(tasks, stream->ToVector());
+      } else {
+        ICEBERG_UNWRAP_OR_FAIL(tasks, std::move(*group).PlanFiles());
+      }
+      ASSERT_EQ(tasks.size(), 1);
+      EXPECT_EQ(tasks.front()->data_file()->partition, part_value);
+      ASSERT_EQ(tasks.front()->delete_files().size(), 1);
+      EXPECT_EQ(tasks.front()->delete_files().front()->file_path,
+                "/path/to/equality-delete.parquet");
+      EXPECT_TRUE(tasks.front()->data_file()->lower_bounds.empty());
+      EXPECT_TRUE(tasks.front()->data_file()->upper_bounds.empty());
+    }
+  }
+}
+
+TEST_P(ManifestGroupTest, PlanFilesStreamPreservesPartitionWithPositionDeletes) {
+  auto version = GetParam();
+  if (version < 2) {
+    GTEST_SKIP() << "Position deletes only supported in V2+";
+  }
+
+  constexpr int64_t kSnapshotId = 1000L;
+  const auto part_value = PartitionValues({Literal::Int(0)});
+  auto data_manifest = WriteDataManifest(
+      version, kSnapshotId,
+      {MakeEntry(ManifestStatus::kAdded, kSnapshotId, /*sequence_number=*/1,
+                 MakeDataFile("/path/to/data.parquet", part_value,
+                              partitioned_spec_->spec_id()))},
+      partitioned_spec_);
+  auto delete_manifest = WriteDeleteManifest(
+      version, kSnapshotId,
+      {MakeEntry(ManifestStatus::kAdded, kSnapshotId, /*sequence_number=*/2,
+                 MakePositionDeleteFile("/path/to/position-delete.parquet", part_value,
+                                        partitioned_spec_->spec_id()))},
+      partitioned_spec_);
+
+  for (bool use_executor : {false, true}) {
+    SCOPED_TRACE(std::format("use_executor={}", use_executor));
+    test::ThreadExecutor executor;
+    ICEBERG_UNWRAP_OR_FAIL(auto group,
+                           ManifestGroup::Make(file_io_, schema_, GetSpecsById(),
+                                               {data_manifest}, {delete_manifest}));
+    group->Select({"file_path"});
+    if (use_executor) {
+      group->PlanWith(std::ref(executor));
+    }
+
+    ICEBERG_UNWRAP_OR_FAIL(auto stream, std::move(*group).PlanFilesStream());
+    ICEBERG_UNWRAP_OR_FAIL(auto tasks, stream->ToVector());
+    ASSERT_EQ(tasks.size(), 1);
+    EXPECT_EQ(tasks.front()->data_file()->partition, part_value);
+    ASSERT_EQ(tasks.front()->delete_files().size(), 1);
+    EXPECT_EQ(tasks.front()->delete_files().front()->file_path,
+              "/path/to/position-delete.parquet");
+  }
 }
 
 TEST_P(ManifestGroupTest, IgnoreDeleted) {

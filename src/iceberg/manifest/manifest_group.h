@@ -114,6 +114,9 @@ class ICEBERG_EXPORT ManifestGroup : public ErrorCollector {
 
   /// \brief Select specific columns from manifest entries.
   ///
+  /// Task planning also reads partition values for delete matching and residuals, and
+  /// may temporarily read statistics needed for equality-delete matching.
+  ///
   /// \param columns Column names to select from manifest entries.
   ManifestGroup& Select(std::vector<std::string> columns);
 
@@ -140,6 +143,9 @@ class ICEBERG_EXPORT ManifestGroup : public ErrorCollector {
   /// \brief Plan scan tasks for all matching data files.
   ///
   /// Consumes this group and collects PlanFilesStream() into a vector.
+  /// Callers must use std::move(group).PlanFiles(), or std::move(*group).PlanFiles()
+  /// for an owning pointer, instead of calling on an lvalue. Do not reuse the consumed
+  /// group; construct a new group to plan again.
   Result<std::vector<std::shared_ptr<FileScanTask>>> PlanFiles() &&;
 
   /// \brief Lazily plan scan tasks for matching data files.
@@ -154,7 +160,9 @@ class ICEBERG_EXPORT ManifestGroup : public ErrorCollector {
   /// manifest at a time. Delete manifests are still read eagerly when creating the
   /// stream because delete files must be indexed before data-file planning can begin.
   /// Creating the stream consumes this group's configuration, so this method may only
-  /// be called on an rvalue.
+  /// be called on an rvalue. Use std::move(group).PlanFilesStream(), or
+  /// std::move(*group).PlanFilesStream() for an owning pointer, and do not reuse the
+  /// group.
   Result<FileScanTaskStreamPtr> PlanFilesStream() &&;
 
   /// \brief Get all matching manifest entries.
