@@ -63,6 +63,10 @@ iceberg_tests = {
             'update_schema_test.cc',
         ),
     },
+    'position_deletes_table_test': {
+        'sources': files('position_deletes_table_test.cc'),
+        'use_data': true,
+    },
     'logging_test': {
         'sources': files(
             'cerr_logger_test.cc',

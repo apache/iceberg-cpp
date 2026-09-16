@@ -158,6 +158,8 @@ add_iceberg_test(util_test
 add_iceberg_test(puffin_test
                  USE_DATA
                  SOURCES
+                 dv_util_test.cc
+                 puffin_dv_interop_test.cc
                  puffin_format_test.cc
                  puffin_json_test.cc
                  puffin_reader_writer_test.cc)
@@ -187,6 +189,9 @@ if(ICEBERG_BUILD_BUNDLE)
   add_iceberg_test(catalog_test USE_BUNDLE SOURCES in_memory_catalog_test.cc)
 
   add_iceberg_test(metadata_table_test USE_BUNDLE SOURCES metadata_table_test.cc)
+
+  add_iceberg_test(position_deletes_table_test USE_BUNDLE SOURCES
+                   position_deletes_table_test.cc)
 
   add_iceberg_test(eval_expr_test
                    USE_BUNDLE

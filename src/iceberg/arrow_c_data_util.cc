@@ -220,6 +220,12 @@ Status AppendValue(const ArrowSchema& input_schema, const ArrowArray& input_arra
 
 }  // namespace
 
+Status AppendArrayValue(const ArrowSchema& input_schema, const ArrowArray& input_array,
+                        const ArrowArrayView& input_view, int64_t row_index,
+                        ArrowArray* output_array) {
+  return AppendValue(input_schema, input_array, input_view, row_index, output_array);
+}
+
 ProjectionContext::ProjectionContext(ProjectionContext&& other) noexcept
     : input_schema_(std::exchange(other.input_schema_, nullptr)),
       output_schema_(std::exchange(other.output_schema_, nullptr)),

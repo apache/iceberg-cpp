@@ -24,6 +24,7 @@
 
 #include <memory>
 
+#include "iceberg/arrow_c_data.h"
 #include "iceberg/iceberg_export.h"
 #include "iceberg/result.h"
 #include "iceberg/table_identifier.h"
@@ -37,6 +38,7 @@ class ICEBERG_EXPORT MetadataTable {
   enum class Kind {
     kSnapshots,
     kHistory,
+    kPositionDeletes,
   };
 
   static Result<std::unique_ptr<MetadataTable>> Make(std::shared_ptr<Table> table,
@@ -45,6 +47,14 @@ class ICEBERG_EXPORT MetadataTable {
   virtual ~MetadataTable();
 
   virtual Kind kind() const noexcept = 0;
+
+  /// \brief Scan all rows using the metadata table's full schema.
+  Result<ArrowArray> Scan() { return Scan(*schema_); }
+
+  /// \brief Scan all rows projected to the requested top-level fields.
+  ///
+  /// The default implementation returns NotSupported.
+  virtual Result<ArrowArray> Scan(const Schema& projected_schema);
 
   const TableIdentifier& name() const { return identifier_; }
 
