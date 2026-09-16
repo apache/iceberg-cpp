@@ -222,8 +222,9 @@ class ManifestGroup::FilePlanningStream final : public FileScanTaskStream {
   using TaggedEntry = std::pair<int32_t, ManifestEntry>;
   using TaggedStream = std::pair<int32_t, ManifestEntryStreamPtr>;
 
-  // FIXME: Perhaps refactor this concurrent/sequential stream state machine into a generic
-  // reusable ParallelStream<T> utility, similar to Iceberg Java's ParallelIterable.
+  // FIXME: Perhaps refactor this concurrent/sequential stream state machine into a
+  // generic reusable ParallelStream<T> utility, similar to Iceberg Java's
+  // ParallelIterable.
   Result<std::optional<TaggedEntry>> NextEntry() {
     if (!group_->executor_.has_value()) {
       while (true) {
