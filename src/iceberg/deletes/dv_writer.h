@@ -38,6 +38,10 @@
 
 namespace iceberg {
 
+namespace internal {
+class DVWriterFactory;
+}
+
 /// \brief File metadata for deletion vectors produced by DVWriter.
 struct ICEBERG_EXPORT DeleteWriteResult {
   /// Deletion vector files produced by the writer.
@@ -87,6 +91,8 @@ class ICEBERG_EXPORT DVWriter {
   std::unique_ptr<Impl> impl_;
 
   explicit DVWriter(std::unique_ptr<Impl> impl);
+
+  friend class internal::DVWriterFactory;
 };
 
 }  // namespace iceberg

@@ -49,6 +49,7 @@ constexpr std::array<uint8_t, 4> kMagic = {0xD1, 0xD3, 0x39, 0x64};
 constexpr int32_t kLengthPrefixBytes = 4;
 constexpr int32_t kMagicBytes = 4;
 constexpr int32_t kCrcBytes = 4;
+constexpr size_t kMaxSerializedLength = std::numeric_limits<int32_t>::max();
 
 uint32_t ComputeCrc32(std::span<const uint8_t> bytes) {
   uLong crc = crc32(0L, Z_NULL, 0);
@@ -142,16 +143,24 @@ void PositionDeleteIndex::Merge(const PositionDeleteIndex& other) {
                        other.delete_files_.end());
 }
 
-Result<std::vector<uint8_t>> PositionDeleteIndex::Serialize() {
+Status PositionDeleteIndex::ValidateSerializedSize(size_t max_length) {
   bitmap_.Optimize();  // run-length encode before serializing
-  std::vector<uint8_t> blob(kLengthPrefixBytes);
-  blob.insert(blob.end(), kMagic.begin(), kMagic.end());
-  ICEBERG_ASSIGN_OR_RAISE(const auto vector_size, bitmap_.SerializeTo(blob));
-
+  const size_t vector_size = bitmap_.SerializedSizeInBytes();
   const size_t magic_and_vector_size = kMagicBytes + vector_size;
-  ICEBERG_PRECHECK(magic_and_vector_size <= std::numeric_limits<int32_t>::max(),
+  ICEBERG_PRECHECK(magic_and_vector_size <= max_length,
                    "Deletion vector is too large to serialize: {} bytes",
                    magic_and_vector_size);
+  return {};
+}
+
+Result<std::vector<uint8_t>> PositionDeleteIndex::Serialize() {
+  ICEBERG_RETURN_UNEXPECTED(ValidateSerializedSize(kMaxSerializedLength));
+  const size_t vector_size = bitmap_.SerializedSizeInBytes();
+  const size_t magic_and_vector_size = kMagicBytes + vector_size;
+
+  std::vector<uint8_t> blob(kLengthPrefixBytes);
+  blob.insert(blob.end(), kMagic.begin(), kMagic.end());
+  ICEBERG_RETURN_UNEXPECTED(bitmap_.SerializeTo(blob));
 
   WriteBigEndian(static_cast<int32_t>(magic_and_vector_size), blob.data());
   const auto crc_offset = blob.size();

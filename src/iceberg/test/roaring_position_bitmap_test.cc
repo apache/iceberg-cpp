@@ -23,20 +23,25 @@
 #include <cstdint>
 #include <filesystem>
 #include <fstream>
+#include <limits>
 #include <random>
 #include <set>
 #include <string>
 #include <vector>
 
 #include <gtest/gtest.h>
+#include <roaring/roaring.hh>
 
 #include "iceberg/test/matchers.h"
 #include "iceberg/test/test_config.h"
+#include "iceberg/util/endian.h"
 
 namespace iceberg {
 
 namespace {
 
+constexpr size_t kBitmapCountSizeBytes = 8;
+constexpr size_t kBitmapKeySizeBytes = 4;
 constexpr int64_t kBitmapSize = 0xFFFFFFFFL;
 constexpr int64_t kBitmapOffset = kBitmapSize + 1L;
 constexpr int64_t kContainerSize = 0xFFFF;  // Character.MAX_VALUE
@@ -174,13 +179,12 @@ TEST(RoaringPositionBitmapTest, TestAddRangeClampNegativeStart) {
   ASSERT_FALSE(bitmap.Contains(-1));
 }
 
-TEST(RoaringPositionBitmapTest, TestAddRangeClampBeyondMaxPosition) {
+TEST(RoaringPositionBitmapTest, TestAddRangeWithMaximumExclusiveEnd) {
   RoaringPositionBitmap bitmap;
-  // Range entirely beyond kMaxPosition: after clamping both endpoints the range
-  // becomes empty, so no allocation or insertion happens.
-  bitmap.AddRange(RoaringPositionBitmap::kMaxPosition + 1,
-                  RoaringPositionBitmap::kMaxPosition + 10);
-  ASSERT_TRUE(bitmap.IsEmpty());
+  bitmap.AddRange(RoaringPositionBitmap::kMaxPosition - 1,
+                  RoaringPositionBitmap::kMaxPosition);
+  ASSERT_TRUE(bitmap.Contains(RoaringPositionBitmap::kMaxPosition - 1));
+  ASSERT_FALSE(bitmap.Contains(RoaringPositionBitmap::kMaxPosition));
 }
 
 struct AddRangeNoOpParams {
@@ -271,45 +275,21 @@ INSTANTIATE_TEST_SUITE_P(
         }),
     [](const ::testing::TestParamInfo<OrParams>& info) { return info.param.name; });
 
-enum class InteropBitmapShape {
-  kEmpty,
-  kOnly32BitPositions,
-  kSpreadAcrossKeys,
-};
-
 struct InteropCase {
   const char* file_name;
-  InteropBitmapShape expected_shape;
+  size_t expected_cardinality;
+  std::vector<int64_t> expected_positions;
+  std::vector<int64_t> absent_positions;
 };
 
-void AssertInteropBitmapShape(const RoaringPositionBitmap& bitmap,
-                              InteropBitmapShape expected_shape) {
-  bool saw_pos_lt_32_bit = false;
-  bool saw_pos_ge_32_bit = false;
-
-  bitmap.ForEach([&](int64_t pos) {
-    if (pos < (int64_t{1} << 32)) {
-      saw_pos_lt_32_bit = true;
-    } else {
-      saw_pos_ge_32_bit = true;
-    }
-  });
-
-  switch (expected_shape) {
-    case InteropBitmapShape::kEmpty:
-      ASSERT_TRUE(bitmap.IsEmpty());
-      ASSERT_EQ(bitmap.Cardinality(), 0u);
-      break;
-    case InteropBitmapShape::kOnly32BitPositions:
-      ASSERT_GT(bitmap.Cardinality(), 0u);
-      ASSERT_TRUE(saw_pos_lt_32_bit);
-      ASSERT_FALSE(saw_pos_ge_32_bit);
-      break;
-    case InteropBitmapShape::kSpreadAcrossKeys:
-      ASSERT_GT(bitmap.Cardinality(), 0u);
-      ASSERT_TRUE(saw_pos_lt_32_bit);
-      ASSERT_TRUE(saw_pos_ge_32_bit);
-      break;
+void AssertInteropCase(const RoaringPositionBitmap& bitmap,
+                       const InteropCase& test_case) {
+  ASSERT_EQ(bitmap.Cardinality(), test_case.expected_cardinality);
+  for (int64_t pos : test_case.expected_positions) {
+    ASSERT_TRUE(bitmap.Contains(pos)) << "Missing position: " << pos;
+  }
+  for (int64_t pos : test_case.absent_positions) {
+    ASSERT_FALSE(bitmap.Contains(pos)) << "Unexpected position: " << pos;
   }
 }
 
@@ -342,7 +322,7 @@ TEST(RoaringPositionBitmapTest, TestAddPositionsRequiringMultipleBitmaps) {
   bitmap.Add(pos4);
 
   AssertEqualContent(bitmap, {pos1, pos2, pos3, pos4});
-  ASSERT_EQ(bitmap.SerializedSizeInBytes(), 1260);
+  ASSERT_LT(bitmap.SerializedSizeInBytes(), 128);
 }
 
 TEST(RoaringPositionBitmapTest, TestAddEmptyRange) {
@@ -422,6 +402,59 @@ TEST(RoaringPositionBitmapTest, TestSerializeDeserializeEmpty) {
   auto copy = RoundTripSerialize(bitmap);
   ASSERT_TRUE(copy.IsEmpty());
   ASSERT_EQ(copy.Cardinality(), 0);
+}
+
+TEST(RoaringPositionBitmapTest, TestSerializeOmitsEmptyBuckets) {
+  roaring::Roaring empty_bucket;
+  std::string bytes(kBitmapCountSizeBytes + sizeof(int32_t) +
+                        empty_bucket.getSizeInBytes(/*portable=*/true),
+                    '\0');
+  WriteLittleEndian(int64_t{1}, bytes.data());
+  WriteLittleEndian(int32_t{7}, bytes.data() + kBitmapCountSizeBytes);
+  empty_bucket.write(bytes.data() + kBitmapCountSizeBytes + sizeof(int32_t),
+                     /*portable=*/true);
+
+  ICEBERG_UNWRAP_OR_FAIL(auto bitmap, RoaringPositionBitmap::Deserialize(bytes));
+  ICEBERG_UNWRAP_OR_FAIL(auto serialized, bitmap.Serialize());
+  ASSERT_EQ(serialized.size(), kBitmapCountSizeBytes);
+  ASSERT_EQ(ReadLittleEndian<int64_t>(serialized.data()), 0);
+}
+
+TEST(RoaringPositionBitmapTest, TestSerializeOrdersKeysAscending) {
+  RoaringPositionBitmap bitmap;
+  bitmap.Add(std::numeric_limits<int64_t>::max());
+  bitmap.Add((int64_t{100} << 32) | 9);
+  bitmap.Add(std::numeric_limits<int32_t>::max());
+  bitmap.Add((int64_t{1} << 32) | 7);
+  bitmap.Add(3);
+
+  ICEBERG_UNWRAP_OR_FAIL(auto serialized, bitmap.Serialize());
+  const char* cursor = serialized.data();
+  size_t remaining = serialized.size();
+  ASSERT_GE(remaining, kBitmapCountSizeBytes);
+  ASSERT_EQ(ReadLittleEndian<int64_t>(cursor), 4);
+  cursor += kBitmapCountSizeBytes;
+  remaining -= kBitmapCountSizeBytes;
+
+  std::vector<int32_t> keys;
+  const std::vector<uint64_t> expected_cardinalities = {2, 1, 1, 1};
+  while (keys.size() < 4) {
+    ASSERT_GE(remaining, kBitmapKeySizeBytes);
+    keys.push_back(ReadLittleEndian<int32_t>(cursor));
+    cursor += kBitmapKeySizeBytes;
+    remaining -= kBitmapKeySizeBytes;
+
+    auto bucket = roaring::Roaring::readSafe(cursor, remaining);
+    ASSERT_EQ(bucket.cardinality(), expected_cardinalities[keys.size() - 1]);
+    const size_t bucket_size = bucket.getSizeInBytes(/*portable=*/true);
+    ASSERT_LE(bucket_size, remaining);
+    cursor += bucket_size;
+    remaining -= bucket_size;
+  }
+
+  EXPECT_EQ(keys, (std::vector<int32_t>{0, 1, 100, std::numeric_limits<int32_t>::max()}));
+  EXPECT_EQ(keys.back(), std::numeric_limits<int32_t>::max());
+  EXPECT_EQ(remaining, 0u);
 }
 
 TEST(RoaringPositionBitmapTest, TestSerializeDeserializeAllContainerBitmap) {
@@ -509,21 +542,18 @@ TEST(RoaringPositionBitmapTest, TestOptimize) {
   AssertEqualContent(copy, expected_positions);
 }
 
-TEST(RoaringPositionBitmapTest, TestUnsupportedPositions) {
+TEST(RoaringPositionBitmapTest, TestPositionBounds) {
   RoaringPositionBitmap bitmap;
 
   // Negative position
   bitmap.Add(-1L);
   ASSERT_FALSE(bitmap.Contains(-1L));
 
-  // Contains with negative position
+  bitmap.Add(RoaringPositionBitmap::kMaxPosition);
+  ASSERT_TRUE(bitmap.Contains(RoaringPositionBitmap::kMaxPosition));
 
-  // Position exceeding MAX_POSITION - should be silently ignored
-  bitmap.Add(RoaringPositionBitmap::kMaxPosition + 1L);
-  ASSERT_FALSE(bitmap.Contains(RoaringPositionBitmap::kMaxPosition + 1L));
-
-  // Contains with position exceeding MAX_POSITION - should return false
-  ASSERT_FALSE(bitmap.Contains(RoaringPositionBitmap::kMaxPosition + 1L));
+  auto copy = RoundTripSerialize(bitmap);
+  ASSERT_TRUE(copy.Contains(RoaringPositionBitmap::kMaxPosition));
 }
 
 TEST(RoaringPositionBitmapTest, TestRandomSparseBitmap) {
@@ -612,10 +642,17 @@ TEST(RoaringPositionBitmapInteropTest, TestDeserializeSupportedRoaringExamples) 
   // roaring position bitmap interoperability test resources.
   static const std::vector<InteropCase> kCases = {
       {.file_name = "64map32bitvals.bin",
-       .expected_shape = InteropBitmapShape::kOnly32BitPositions},
-      {.file_name = "64mapempty.bin", .expected_shape = InteropBitmapShape::kEmpty},
+       .expected_cardinality = 10,
+       .expected_positions = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9},
+       .absent_positions = {10}},
+      {.file_name = "64mapempty.bin",
+       .expected_cardinality = 0,
+       .expected_positions = {},
+       .absent_positions = {0}},
       {.file_name = "64mapspreadvals.bin",
-       .expected_shape = InteropBitmapShape::kSpreadAcrossKeys},
+       .expected_cardinality = 100,
+       .expected_positions = {0, (int64_t{3} << 32) | 7, (int64_t{9} << 32) | 9},
+       .absent_positions = {int64_t{10} << 32}},
   };
 
   for (const auto& test_case : kCases) {
@@ -625,14 +662,10 @@ TEST(RoaringPositionBitmapInteropTest, TestDeserializeSupportedRoaringExamples) 
     ASSERT_THAT(result, IsOk());
 
     const auto& bitmap = result.value();
-    AssertInteropBitmapShape(bitmap, test_case.expected_shape);
-
-    std::set<int64_t> positions;
-    bitmap.ForEach([&](int64_t pos) { positions.insert(pos); });
-    AssertEqualContent(bitmap, positions);
+    AssertInteropCase(bitmap, test_case);
 
     auto copy = RoundTripSerialize(bitmap);
-    AssertEqualContent(copy, positions);
+    AssertInteropCase(copy, test_case);
   }
 }
 
