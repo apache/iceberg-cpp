@@ -138,7 +138,7 @@ class ICEBERG_EXPORT ErrorCollector {
   /// \param self Deduced reference to the derived class instance
   /// \param err The unexpected result containing the error to add
   /// \return Reference to the derived class for method chaining
-  auto& AddError(this auto& self, std::unexpected<Error> err) {
+  auto& AddError(this auto& self, unexpected<Error> err) {
     self.errors_.push_back(std::move(err.error()));
     return self;
   }
