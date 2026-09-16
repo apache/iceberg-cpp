@@ -305,14 +305,14 @@ TEST_P(ScanPlanningMetricsTest, DoesNotReportFailedPlanning) {
   ICEBERG_UNWRAP_OR_FAIL(auto stream, scan->PlanFilesStream());
 
   auto next = stream->Next();
-  EXPECT_FALSE(next.has_value());
+  EXPECT_THAT(next, IsError(ErrorKind::kIOError));
   EXPECT_EQ(reporter_->report_count(), 0);
 
   stream.reset();
   EXPECT_EQ(reporter_->report_count(), 0);
 
   auto tasks = scan->PlanFiles();
-  EXPECT_FALSE(tasks.has_value());
+  EXPECT_THAT(tasks, IsError(ErrorKind::kIOError));
   EXPECT_EQ(reporter_->report_count(), 0);
 }
 

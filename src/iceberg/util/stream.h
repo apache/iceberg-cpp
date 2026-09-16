@@ -40,10 +40,6 @@ namespace iceberg {
 /// Once Next() returns an error or std::nullopt, the stream is terminal. Subsequent
 /// calls return the same terminal result without invoking the implementation again.
 ///
-/// This interface replaces Iterator<T>. Include iceberg/util/stream.h instead of
-/// iceberg/util/iterator.h and derive from Stream<T>, retaining the NextImpl() override.
-/// The former header and type alias are not provided.
-///
 /// \tparam T Value returned by the stream.
 template <typename T>
 class Stream {

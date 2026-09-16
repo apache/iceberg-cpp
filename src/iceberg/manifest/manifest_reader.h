@@ -47,10 +47,8 @@ using ManifestEntryStreamPtr = std::unique_ptr<ManifestEntryStream>;
 /// \brief Read manifest entries from a manifest file.
 ///
 /// Implementations must override EntriesStream() and LiveEntriesStream(), returning
-/// self-contained streams that may outlive the reader. These are the extension points;
-/// Entries() and LiveEntries() are non-virtual eager collection helpers. Custom readers
-/// that previously overrode the eager methods must migrate to the stream methods;
-/// no eager-to-stream fallback is provided.
+/// self-contained streams that may outlive the reader. Entries() and LiveEntries()
+/// collect these streams into vectors.
 class ICEBERG_EXPORT ManifestReader {
  public:
   virtual ~ManifestReader() = default;
@@ -81,6 +79,8 @@ class ICEBERG_EXPORT ManifestReader {
   ///
   /// \note Column names should match the names in `DataFile` schema. Unmatched names
   /// will be ignored.
+  /// \note An empty list selects no user columns. A list containing `*` selects all
+  /// columns. If this method is not called, all columns are selected.
   virtual ManifestReader& Select(const std::vector<std::string>& columns) = 0;
 
   /// \brief Filter manifest entries by partition filter.

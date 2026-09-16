@@ -293,6 +293,36 @@ TEST_P(ManifestGroupTest, CreateAndGetEntries) {
   EXPECT_EQ(tasks[1]->delete_files()[0]->file_path, "/path/to/delete.parquet");
 }
 
+TEST_P(ManifestGroupTest, EntriesDistinguishesEmptyAndWildcardProjection) {
+  auto version = GetParam();
+  constexpr int64_t kSnapshotId = 1000L;
+  const auto part_value = PartitionValues({Literal::Int(0)});
+  auto data_manifest = WriteDataManifest(
+      version, kSnapshotId,
+      {MakeEntry(ManifestStatus::kAdded, kSnapshotId, /*sequence_number=*/1,
+                 MakeDataFile("/path/to/data.parquet", part_value,
+                              partitioned_spec_->spec_id()))},
+      partitioned_spec_);
+
+  auto read_with_projection =
+      [&](std::vector<std::string> columns) -> Result<std::vector<ManifestEntry>> {
+    ICEBERG_ASSIGN_OR_RAISE(
+        auto group,
+        ManifestGroup::Make(file_io_, schema_, GetSpecsById(), {data_manifest}));
+    group->Select(std::move(columns));
+    return group->Entries();
+  };
+
+  ICEBERG_UNWRAP_OR_FAIL(auto empty_entries, read_with_projection({}));
+  ASSERT_EQ(empty_entries.size(), 1);
+  EXPECT_TRUE(empty_entries.front().data_file->file_path.empty());
+
+  ICEBERG_UNWRAP_OR_FAIL(auto all_entries,
+                         read_with_projection({std::string(Schema::kAllColumns)}));
+  ASSERT_EQ(all_entries.size(), 1);
+  EXPECT_EQ(all_entries.front().data_file->file_path, "/path/to/data.parquet");
+}
+
 TEST_P(ManifestGroupTest, PlanFilesStreamPreservesSelectAllWithEqualityDeletes) {
   auto version = GetParam();
   if (version < 2) {
@@ -324,14 +354,17 @@ TEST_P(ManifestGroupTest, PlanFilesStreamPreservesSelectAllWithEqualityDeletes) 
   ICEBERG_UNWRAP_OR_FAIL(
       auto group, ManifestGroup::Make(file_io_, schema_, GetSpecsById(), {data_manifest},
                                       {delete_manifest}));
+  group->Select({std::string(Schema::kAllColumns)});
   ICEBERG_UNWRAP_OR_FAIL(auto stream, std::move(*group).PlanFilesStream());
   ICEBERG_UNWRAP_OR_FAIL(auto task, stream->Next());
 
   ASSERT_TRUE(task.has_value());
   EXPECT_EQ(task.value()->data_file()->file_path, "/path/to/data.parquet");
   EXPECT_EQ(task.value()->data_file()->record_count, 100);
-  EXPECT_TRUE(task.value()->data_file()->lower_bounds.contains(1));
-  EXPECT_TRUE(task.value()->data_file()->upper_bounds.contains(1));
+  EXPECT_EQ(task.value()->data_file()->lower_bounds.at(1),
+            Literal::Int(20).Serialize().value());
+  EXPECT_EQ(task.value()->data_file()->upper_bounds.at(1),
+            Literal::Int(30).Serialize().value());
   ASSERT_EQ(task.value()->delete_files().size(), 1);
   EXPECT_EQ(task.value()->delete_files().front()->file_path,
             "/path/to/equality-delete.parquet");
@@ -371,32 +404,24 @@ TEST_P(ManifestGroupTest, PlanFilesDropsUnselectedStatsWithEqualityDeletes) {
 
   for (bool use_executor : {false, true}) {
     SCOPED_TRACE(std::format("use_executor={}", use_executor));
-    for (bool use_stream : {false, true}) {
-      SCOPED_TRACE(std::format("use_stream={}", use_stream));
-      test::ThreadExecutor executor;
-      ICEBERG_UNWRAP_OR_FAIL(auto group,
-                             ManifestGroup::Make(file_io_, schema_, GetSpecsById(),
-                                                 {data_manifest}, {delete_manifest}));
-      group->Select({"file_path"});
-      if (use_executor) {
-        group->PlanWith(std::ref(executor));
-      }
-
-      std::vector<std::shared_ptr<FileScanTask>> tasks;
-      if (use_stream) {
-        ICEBERG_UNWRAP_OR_FAIL(auto stream, std::move(*group).PlanFilesStream());
-        ICEBERG_UNWRAP_OR_FAIL(tasks, stream->ToVector());
-      } else {
-        ICEBERG_UNWRAP_OR_FAIL(tasks, std::move(*group).PlanFiles());
-      }
-      ASSERT_EQ(tasks.size(), 1);
-      EXPECT_EQ(tasks.front()->data_file()->partition, part_value);
-      ASSERT_EQ(tasks.front()->delete_files().size(), 1);
-      EXPECT_EQ(tasks.front()->delete_files().front()->file_path,
-                "/path/to/equality-delete.parquet");
-      EXPECT_TRUE(tasks.front()->data_file()->lower_bounds.empty());
-      EXPECT_TRUE(tasks.front()->data_file()->upper_bounds.empty());
+    test::ThreadExecutor executor;
+    ICEBERG_UNWRAP_OR_FAIL(auto group,
+                           ManifestGroup::Make(file_io_, schema_, GetSpecsById(),
+                                               {data_manifest}, {delete_manifest}));
+    group->Select({"file_path"});
+    if (use_executor) {
+      group->PlanWith(std::ref(executor));
     }
+
+    std::vector<std::shared_ptr<FileScanTask>> tasks;
+    ICEBERG_UNWRAP_OR_FAIL(tasks, std::move(*group).PlanFiles());
+    ASSERT_EQ(tasks.size(), 1);
+    EXPECT_EQ(tasks.front()->data_file()->partition, part_value);
+    ASSERT_EQ(tasks.front()->delete_files().size(), 1);
+    EXPECT_EQ(tasks.front()->delete_files().front()->file_path,
+              "/path/to/equality-delete.parquet");
+    EXPECT_TRUE(tasks.front()->data_file()->lower_bounds.empty());
+    EXPECT_TRUE(tasks.front()->data_file()->upper_bounds.empty());
   }
 }
 
@@ -782,41 +807,6 @@ TEST_P(ManifestGroupTest, MultipleDataManifests) {
   // Plan files - should return files from both manifests
   ICEBERG_UNWRAP_OR_FAIL(auto tasks, std::move(*group).PlanFiles());
   ASSERT_EQ(tasks.size(), 2);
-  EXPECT_THAT(GetPaths(tasks), testing::UnorderedElementsAre("/path/to/data1.parquet",
-                                                             "/path/to/data2.parquet"));
-  EXPECT_EQ(executor.submit_count(), 2);
-}
-
-TEST_P(ManifestGroupTest, PlanFilesStreamUsesExecutor) {
-  auto version = GetParam();
-
-  const auto partition_a = PartitionValues({Literal::Int(0)});
-  const auto partition_b = PartitionValues({Literal::Int(1)});
-  auto data_manifest_1 =
-      WriteDataManifest(version, /*snapshot_id=*/1000L,
-                        {MakeEntry(ManifestStatus::kAdded, /*snapshot_id=*/1000L,
-                                   /*sequence_number=*/1,
-                                   MakeDataFile("/path/to/data1.parquet", partition_a,
-                                                partitioned_spec_->spec_id()))},
-                        partitioned_spec_);
-  auto data_manifest_2 =
-      WriteDataManifest(version, /*snapshot_id=*/1001L,
-                        {MakeEntry(ManifestStatus::kAdded, /*snapshot_id=*/1001L,
-                                   /*sequence_number=*/2,
-                                   MakeDataFile("/path/to/data2.parquet", partition_b,
-                                                partitioned_spec_->spec_id()))},
-                        partitioned_spec_);
-
-  ICEBERG_UNWRAP_OR_FAIL(
-      auto group,
-      ManifestGroup::Make(file_io_, schema_, GetSpecsById(),
-                          {std::move(data_manifest_1), std::move(data_manifest_2)}));
-  test::ThreadExecutor executor;
-  group->PlanWith(std::ref(executor));
-
-  ICEBERG_UNWRAP_OR_FAIL(auto stream, std::move(*group).PlanFilesStream());
-  ICEBERG_UNWRAP_OR_FAIL(auto tasks, stream->ToVector());
-
   EXPECT_THAT(GetPaths(tasks), testing::UnorderedElementsAre("/path/to/data1.parquet",
                                                              "/path/to/data2.parquet"));
   EXPECT_EQ(executor.submit_count(), 2);

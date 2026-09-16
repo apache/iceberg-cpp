@@ -123,7 +123,8 @@ ManifestGroup::ManifestGroup(
       data_filter_(True::Instance()),
       file_filter_(True::Instance()),
       partition_filter_(True::Instance()),
-      manifest_entry_predicate_([](const ManifestEntry&) { return true; }) {}
+      manifest_entry_predicate_([](const ManifestEntry&) { return true; }),
+      columns_{std::string(Schema::kAllColumns)} {}
 
 ManifestGroup::~ManifestGroup() = default;
 
@@ -221,6 +222,8 @@ class ManifestGroup::FilePlanningStream final : public FileScanTaskStream {
   using TaggedEntry = std::pair<int32_t, ManifestEntry>;
   using TaggedStream = std::pair<int32_t, ManifestEntryStreamPtr>;
 
+  // TODO: Perhaps refactor this concurrent/sequential stream state machine into a generic
+  // reusable ParallelStream<T> utility, similar to Iceberg Java's ParallelIterable.
   Result<std::optional<TaggedEntry>> NextEntry() {
     if (!group_->executor_.has_value()) {
       while (true) {
@@ -591,14 +594,12 @@ Result<std::vector<ManifestEntry>> ManifestGroup::Entries() {
 }
 
 Result<std::unique_ptr<ManifestReader>> ManifestGroup::MakeReader(
-    const ManifestFile& manifest, const std::vector<std::string>& columns) {
+    const ManifestFile& manifest, std::vector<std::string> columns) {
   ICEBERG_ASSIGN_OR_RAISE(auto reader,
                           ManifestReader::Make(manifest, io_, schema_, specs_by_id_));
 
-  auto reader_columns = columns;
   if (file_filter_ && file_filter_->op() != Expression::Operation::kTrue &&
-      !reader_columns.empty() &&
-      !std::ranges::contains(reader_columns, Schema::kAllColumns)) {
+      !std::ranges::contains(columns, Schema::kAllColumns)) {
     auto data_file_schema = DataFileFilterSchema();
     ICEBERG_ASSIGN_OR_RAISE(
         auto bound_file_filter,
@@ -606,8 +607,7 @@ Result<std::unique_ptr<ManifestReader>> ManifestGroup::MakeReader(
     ICEBERG_ASSIGN_OR_RAISE(auto referenced_field_ids,
                             ReferenceVisitor::GetReferencedFieldIds(bound_file_filter));
 
-    std::unordered_set<std::string> selected_columns(reader_columns.cbegin(),
-                                                     reader_columns.cend());
+    std::unordered_set<std::string> selected_columns(columns.cbegin(), columns.cend());
     for (const auto field_id : referenced_field_ids) {
       if (field_id == DataFile::kSpecIdFieldId) {
         continue;
@@ -619,8 +619,8 @@ Result<std::unique_ptr<ManifestReader>> ManifestGroup::MakeReader(
         if (selected_columns.contains(column_name_str)) {
           continue;
         }
-        reader_columns.push_back(std::move(column_name_str));
-        selected_columns.insert(reader_columns.back());
+        columns.push_back(std::move(column_name_str));
+        selected_columns.insert(columns.back());
       }
     }
   }
@@ -628,7 +628,7 @@ Result<std::unique_ptr<ManifestReader>> ManifestGroup::MakeReader(
   reader->FilterRows(data_filter_)
       .FilterPartitions(partition_filter_)
       .CaseSensitive(case_sensitive_)
-      .Select(std::move(reader_columns));
+      .Select(columns);
 
   if (scan_metrics_) {
     reader->SkipCounter(scan_metrics_->skipped_data_files);
@@ -646,9 +646,8 @@ ManifestGroup::StatsProjection ManifestGroup::PrepareStatsProjection(
   StatsProjection result{.columns = columns_,
                          .drop_stats = ManifestReader::ShouldDropStats(columns_)};
   // Delete matching and residual evaluation require partition values even when the
-  // caller does not select them. Do not narrow an empty or select-all projection.
-  if (!result.columns.empty() &&
-      !std::ranges::contains(result.columns, Schema::kAllColumns) &&
+  // caller selects no columns. A select-all projection already includes them.
+  if (!std::ranges::contains(result.columns, Schema::kAllColumns) &&
       !std::ranges::contains(result.columns, DataFile::kPartitionField)) {
     result.columns.emplace_back(DataFile::kPartitionField);
   }

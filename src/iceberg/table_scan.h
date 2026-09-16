@@ -226,7 +226,7 @@ struct TableScanContext {
   bool case_sensitive{true};
   bool return_column_stats{false};
   std::unordered_set<int32_t> columns_to_keep_stats;
-  std::vector<std::string> selected_columns;
+  std::optional<std::vector<std::string>> selected_columns;
   std::shared_ptr<Schema> projected_schema;
   std::unordered_map<std::string, std::string> options;
   bool from_snapshot_id_inclusive{false};
@@ -289,6 +289,9 @@ class ICEBERG_TEMPLATE_CLASS_EXPORT TableScanBuilder : public ErrorCollector {
   ///
   /// This produces an expected schema that includes all fields that are either selected
   /// or used by this scan's filter expression.
+  ///
+  /// An empty list selects no user columns. A list containing `*` selects all columns.
+  /// If this method is not called, all columns are selected.
   ///
   /// \param column_names column names from the table's schema
   TableScanBuilder& Select(const std::vector<std::string>& column_names);

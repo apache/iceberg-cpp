@@ -162,7 +162,7 @@ namespace internal {
 Status TableScanContext::Validate() const {
   ICEBERG_CHECK(columns_to_keep_stats.empty() || return_column_stats,
                 "Cannot select columns to keep stats when column stats are not returned");
-  ICEBERG_CHECK(projected_schema == nullptr || selected_columns.empty(),
+  ICEBERG_CHECK(projected_schema == nullptr || !selected_columns.has_value(),
                 "Cannot set projection schema and selected columns at the same time");
   ICEBERG_CHECK(!snapshot_id.has_value() ||
                     (!from_snapshot_id.has_value() && !to_snapshot_id.has_value()),
@@ -607,7 +607,8 @@ TableScan::ResolveProjectedSchema() const {
     return projected_schema_;
   }
 
-  if (!context_.selected_columns.empty()) {
+  if (context_.selected_columns.has_value() &&
+      !std::ranges::contains(context_.selected_columns.value(), Schema::kAllColumns)) {
     std::unordered_set<int32_t> required_field_ids;
 
     // Include columns referenced by filter
@@ -625,8 +626,9 @@ TableScan::ResolveProjectedSchema() const {
     }
 
     // Include columns selected by option
-    ICEBERG_ASSIGN_OR_RAISE(auto selected, schema_->Select(context_.selected_columns,
-                                                           context_.case_sensitive));
+    ICEBERG_ASSIGN_OR_RAISE(
+        auto selected,
+        schema_->Select(context_.selected_columns.value(), context_.case_sensitive));
     ICEBERG_ASSIGN_OR_RAISE(
         auto selected_field_ids,
         GetProjectedIdsVisitor::GetProjectedIds(*selected, /*include_struct_ids=*/true));
@@ -706,8 +708,10 @@ Result<FileScanTaskStreamPtr> DataTableScan::PlanFilesStream() const {
       .FilterData(filter())
       .IgnoreDeleted()
       .ColumnsToKeepStats(context_.columns_to_keep_stats)
-      .PlanWith(context_.plan_executor)
       .WithScanMetrics(scan_metrics);
+  if (data_manifests.size() > 1 || delete_manifests.size() > 1) {
+    manifest_group->PlanWith(context_.plan_executor);
+  }
   if (context_.ignore_residuals) {
     manifest_group->IgnoreResiduals();
   }

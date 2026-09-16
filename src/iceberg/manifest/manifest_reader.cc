@@ -668,9 +668,6 @@ bool RequireStatsProjection(const std::shared_ptr<Expression>& row_filter,
   if (!row_filter || row_filter->op() == Expression::Operation::kTrue) {
     return false;
   }
-  if (columns.empty()) {
-    return false;
-  }
   const std::unordered_set<std::string_view> selected(columns.cbegin(), columns.cend());
   if (selected.contains(Schema::kAllColumns)) {
     return false;
@@ -684,10 +681,10 @@ bool RequireStatsProjection(const std::shared_ptr<Expression>& row_filter,
 Result<std::shared_ptr<Schema>> ProjectSchema(std::shared_ptr<Schema> schema,
                                               const std::vector<std::string>& columns,
                                               bool case_sensitive) {
-  if (!columns.empty()) {
-    return schema->Select(columns, case_sensitive);
+  if (std::ranges::contains(columns, Schema::kAllColumns)) {
+    return schema;
   }
-  return schema;
+  return schema->Select(columns, case_sensitive);
 }
 
 class ManifestEntryStreamImpl final : public ManifestEntryStream {
@@ -804,26 +801,23 @@ bool ManifestReader::ShouldDropStats(const std::vector<std::string>& columns) {
   // record_count column.
   // Since we don't want to keep stats map which could be huge in size just because we
   // select record_count, which is a primitive type.
-  if (!columns.empty()) {
-    const std::unordered_set<std::string_view> selected(columns.cbegin(), columns.cend());
-    if (selected.contains(Schema::kAllColumns)) {
-      return false;
-    }
-    std::unordered_set<std::string_view> intersection;
-    for (const auto& col : kStatsColumns) {
-      if (selected.contains(col)) {
-        intersection.insert(col);
-      }
-    }
-    return intersection.empty() ||
-           (intersection.size() == 1 && intersection.contains("record_count"));
+  if (std::ranges::contains(columns, Schema::kAllColumns)) {
+    return false;
   }
-  return false;
+  const std::unordered_set<std::string_view> selected(columns.cbegin(), columns.cend());
+  std::unordered_set<std::string_view> intersection;
+  for (const auto& col : kStatsColumns) {
+    if (selected.contains(col)) {
+      intersection.insert(col);
+    }
+  }
+  return intersection.empty() ||
+         (intersection.size() == 1 && intersection.contains("record_count"));
 }
 
 std::vector<std::string> ManifestReader::WithStatsColumns(
     const std::vector<std::string>& columns) {
-  if (columns.empty() || std::ranges::contains(columns, Schema::kAllColumns)) {
+  if (std::ranges::contains(columns, Schema::kAllColumns)) {
     return columns;
   } else {
     std::vector<std::string> updated_columns{columns};
@@ -847,7 +841,8 @@ ManifestReaderImpl::ManifestReaderImpl(
       spec_(std::move(spec)),
       inheritable_metadata_(std::move(inheritable_metadata)),
       first_row_id_(first_row_id),
-      is_committed_(is_committed) {}
+      is_committed_(is_committed),
+      columns_{std::string(Schema::kAllColumns)} {}
 
 ManifestReader& ManifestReaderImpl::Select(const std::vector<std::string>& columns) {
   columns_ = columns;
