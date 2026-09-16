@@ -364,8 +364,7 @@ TEST_F(LocalFileIOTest, DeleteFile) {
   EXPECT_THAT(del_res, IsOk());
 
   del_res = file_io_->DeleteFile(temp_filepath_);
-  EXPECT_THAT(del_res, IsError(ErrorKind::kIOError));
-  EXPECT_THAT(del_res, HasErrorMessage("Cannot delete file"));
+  EXPECT_THAT(del_res, IsOk());
 }
 
 TEST_F(LocalFileIOTest, DeleteFiles) {
@@ -412,6 +411,13 @@ TEST_F(LocalFileIOTest, StdReadFullyReadsFromAbsolutePosition) {
   auto file_io = std::make_shared<test::StdFileIO>();
   ASSERT_NO_FATAL_FAILURE(
       VerifyReadFullyReadsFromAbsolutePosition(file_io, temp_filepath_));
+}
+
+TEST_F(LocalFileIOTest, StdDeleteFileIsIdempotent) {
+  auto file_io = std::make_shared<test::StdFileIO>();
+  ASSERT_THAT(file_io->WriteFile(temp_filepath_, "abc"), IsOk());
+  EXPECT_THAT(file_io->DeleteFile(temp_filepath_), IsOk());
+  EXPECT_THAT(file_io->DeleteFile(temp_filepath_), IsOk());
 }
 
 TEST_F(LocalFileIOTest, StdReadKeepsPositionAvailableAtEof) {
