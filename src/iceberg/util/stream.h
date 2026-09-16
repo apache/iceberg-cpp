@@ -68,7 +68,7 @@ class Stream {
   /// terminal result without invoking NextImpl().
   Result<std::optional<T>> Next() {
     if (error_.has_value()) {
-      return std::unexpected(*error_);
+      return unexpected(*error_);
     }
     if (finished_) {
       return std::nullopt;
@@ -90,7 +90,7 @@ class Stream {
       while (true) {
         auto result = Next();
         if (!result.has_value()) {
-          return std::unexpected(std::move(result.error()));
+          return unexpected(std::move(result.error()));
         }
         auto& value = result.value();
         if (!value.has_value()) {
