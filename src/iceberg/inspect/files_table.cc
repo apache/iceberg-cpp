@@ -58,7 +58,7 @@ Result<ArrowArrayStream> FilesTable::ScanSnapshot(
     const SnapshotSelection& snapshot_selection) {
   ICEBERG_ASSIGN_OR_RAISE(auto snapshot, internal::ResolveMetadataTableSnapshot(
                                              *source_table(), snapshot_selection));
-  ICEBERG_ASSIGN_OR_RAISE(auto files, internal::LoadLiveFiles(*source_table(), snapshot));
+  ICEBERG_ASSIGN_OR_RAISE(auto files, internal::LiveFiles(*source_table(), snapshot));
   auto schema = schema_;
   auto table_schema = table_schema_;
   auto partition_type = partition_type_;
