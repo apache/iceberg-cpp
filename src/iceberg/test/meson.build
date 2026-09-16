@@ -63,6 +63,7 @@ iceberg_tests = {
             'update_schema_test.cc',
         ),
     },
+    'compaction_planner_test': {'sources': files('compaction_planner_test.cc')},
     'logging_test': {
         'sources': files(
             'cerr_logger_test.cc',

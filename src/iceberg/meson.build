@@ -79,6 +79,7 @@ iceberg_sources = files(
     'catalog/memory/in_memory_catalog.cc',
     'catalog/session_catalog.cc',
     'catalog/session_context.cc',
+    'compaction_planner.cc',
     'delete_file_index.cc',
     'deletes/dv_util.cc',
     'deletes/dv_writer.cc',
@@ -319,6 +320,7 @@ install_headers(
     [
         'arrow_c_data.h',
         'catalog.h',
+        'compaction_planner.h',
         'constants.h',
         'delete_file_index.h',
         'exception.h',
