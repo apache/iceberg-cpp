@@ -34,19 +34,19 @@
 #include "iceberg/nanoarrow_status_internal.h"
 #include "iceberg/schema.h"
 #include "iceberg/schema_internal.h"
+#include "iceberg/util/iterator.h"
 #include "iceberg/util/macros.h"
 
 namespace iceberg::internal {
 
-/// \brief Arrow stream backed by a fixed set of metadata-table rows.
+/// \brief Arrow stream backed by a metadata-table row iterator.
 template <typename Row>
 class MetadataTableRowsStream {
  public:
   using AppendRow = std::function<Status(ArrowRowBuilder&, const Row&)>;
 
-  static Result<std::unique_ptr<MetadataTableRowsStream>> Make(const Schema& schema,
-                                                               std::vector<Row> rows,
-                                                               AppendRow append_row) {
+  static Result<std::unique_ptr<MetadataTableRowsStream>> Make(
+      const Schema& schema, std::unique_ptr<Iterator<Row>> rows, AppendRow append_row) {
     ArrowSchema arrow_schema{};
     ICEBERG_RETURN_UNEXPECTED(ToArrowSchema(schema, &arrow_schema));
     return std::unique_ptr<MetadataTableRowsStream>(new MetadataTableRowsStream(
@@ -59,7 +59,7 @@ class MetadataTableRowsStream {
   }
 
   Status Close() {
-    rows_.clear();
+    rows_.reset();
     append_row_ = nullptr;
     if (arrow_schema_.release != nullptr) {
       ArrowSchemaRelease(&arrow_schema_);
@@ -70,13 +70,16 @@ class MetadataTableRowsStream {
   Result<std::optional<ArrowArray>> Next() {
     ICEBERG_PRECHECK(arrow_schema_.release != nullptr,
                      "Cannot read from a closed metadata table stream");
-    if (next_row_ == rows_.size()) {
-      return std::nullopt;
-    }
-
     ICEBERG_ASSIGN_OR_RAISE(auto builder, ArrowRowBuilder::Make(&arrow_schema_));
-    while (next_row_ < rows_.size() && builder.num_rows() < MetadataTable::kBatchSize) {
-      ICEBERG_RETURN_UNEXPECTED(append_row_(builder, rows_[next_row_++]));
+    while (builder.num_rows() < MetadataTable::kBatchSize) {
+      ICEBERG_ASSIGN_OR_RAISE(auto row, rows_->Next());
+      if (!row.has_value()) {
+        break;
+      }
+      ICEBERG_RETURN_UNEXPECTED(append_row_(builder, *row));
+    }
+    if (builder.num_rows() == 0) {
+      return std::nullopt;
     }
 
     ICEBERG_ASSIGN_OR_RAISE(auto array, std::move(builder).Finish());
@@ -93,21 +96,20 @@ class MetadataTableRowsStream {
   }
 
  private:
-  MetadataTableRowsStream(std::vector<Row> rows, AppendRow append_row,
+  MetadataTableRowsStream(std::unique_ptr<Iterator<Row>> rows, AppendRow append_row,
                           ArrowSchema arrow_schema)
       : rows_(std::move(rows)),
         append_row_(std::move(append_row)),
         arrow_schema_(std::move(arrow_schema)) {}
 
-  std::vector<Row> rows_;
+  std::unique_ptr<Iterator<Row>> rows_;
   AppendRow append_row_;
   ArrowSchema arrow_schema_{};
-  size_t next_row_ = 0;
 };
 
 template <typename Row, typename AppendRow>
 Result<ArrowArrayStream> MakeMetadataTableStream(const Schema& schema,
-                                                 std::vector<Row> rows,
+                                                 std::unique_ptr<Iterator<Row>> rows,
                                                  AppendRow append_row) {
   ICEBERG_ASSIGN_OR_RAISE(
       auto stream,
@@ -115,6 +117,33 @@ Result<ArrowArrayStream> MakeMetadataTableStream(const Schema& schema,
           schema, std::move(rows),
           typename MetadataTableRowsStream<Row>::AppendRow(std::move(append_row))));
   return MakeArrowArrayStream(std::move(stream));
+}
+
+template <typename Row>
+class MetadataTableVectorIterator : public Iterator<Row> {
+ public:
+  explicit MetadataTableVectorIterator(std::vector<Row> rows) : rows_(std::move(rows)) {}
+
+ protected:
+  Result<std::optional<Row>> NextImpl() override {
+    if (next_row_ == rows_.size()) {
+      return std::nullopt;
+    }
+    return std::move(rows_[next_row_++]);
+  }
+
+ private:
+  std::vector<Row> rows_;
+  size_t next_row_ = 0;
+};
+
+template <typename Row, typename AppendRow>
+Result<ArrowArrayStream> MakeMetadataTableStream(const Schema& schema,
+                                                 std::vector<Row> rows,
+                                                 AppendRow append_row) {
+  std::unique_ptr<Iterator<Row>> iterator =
+      std::make_unique<MetadataTableVectorIterator<Row>>(std::move(rows));
+  return MakeMetadataTableStream(schema, std::move(iterator), std::move(append_row));
 }
 
 }  // namespace iceberg::internal

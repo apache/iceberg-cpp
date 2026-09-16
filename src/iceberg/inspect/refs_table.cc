@@ -17,7 +17,7 @@
  * under the License.
  */
 
-#include "iceberg/inspect/branches_table.h"
+#include "iceberg/inspect/refs_table.h"
 
 #include <algorithm>
 #include <memory>
@@ -39,8 +39,9 @@
 namespace iceberg {
 namespace {
 
-struct BranchRow {
+struct RefRow {
   std::string name;
+  std::string type;
   int64_t snapshot_id;
   std::optional<int64_t> max_ref_age_ms;
   std::optional<int32_t> min_snapshots_to_keep;
@@ -54,55 +55,55 @@ Status AppendOptional(ArrowArray* array, const auto& value) {
   return AppendInt(array, static_cast<int64_t>(*value));
 }
 
-Status AppendBranch(ArrowRowBuilder& builder, const BranchRow& branch) {
-  ICEBERG_RETURN_UNEXPECTED(AppendString(builder.column(0), branch.name));
-  ICEBERG_RETURN_UNEXPECTED(AppendInt(builder.column(1), branch.snapshot_id));
-  ICEBERG_RETURN_UNEXPECTED(AppendOptional(builder.column(2), branch.max_ref_age_ms));
-  ICEBERG_RETURN_UNEXPECTED(
-      AppendOptional(builder.column(3), branch.min_snapshots_to_keep));
-  ICEBERG_RETURN_UNEXPECTED(
-      AppendOptional(builder.column(4), branch.max_snapshot_age_ms));
+Status AppendRef(ArrowRowBuilder& builder, const RefRow& ref) {
+  ICEBERG_RETURN_UNEXPECTED(AppendString(builder.column(0), ref.name));
+  ICEBERG_RETURN_UNEXPECTED(AppendString(builder.column(1), ref.type));
+  ICEBERG_RETURN_UNEXPECTED(AppendInt(builder.column(2), ref.snapshot_id));
+  ICEBERG_RETURN_UNEXPECTED(AppendOptional(builder.column(3), ref.max_ref_age_ms));
+  ICEBERG_RETURN_UNEXPECTED(AppendOptional(builder.column(4), ref.min_snapshots_to_keep));
+  ICEBERG_RETURN_UNEXPECTED(AppendOptional(builder.column(5), ref.max_snapshot_age_ms));
   return builder.FinishRow();
 }
 
 }  // namespace
 
-BranchesTable::BranchesTable(std::shared_ptr<Table> table)
-    : MetadataTable(std::move(table)) {}
+RefsTable::RefsTable(std::shared_ptr<Table> table) : MetadataTable(std::move(table)) {}
 
-BranchesTable::~BranchesTable() = default;
+RefsTable::~RefsTable() = default;
 
-const std::shared_ptr<Schema>& BranchesTable::schema() const {
+const std::shared_ptr<Schema>& RefsTable::schema() const {
   static const auto schema = std::make_shared<Schema>(std::vector<SchemaField>{
       SchemaField::MakeRequired(1, "name", string()),
-      SchemaField::MakeRequired(2, "snapshot_id", int64()),
-      SchemaField::MakeOptional(3, "max_reference_age_in_ms", int64()),
-      SchemaField::MakeOptional(4, "min_snapshots_to_keep", int32()),
-      SchemaField::MakeOptional(5, "max_snapshot_age_in_ms", int64()),
+      SchemaField::MakeRequired(2, "type", string()),
+      SchemaField::MakeRequired(3, "snapshot_id", int64()),
+      SchemaField::MakeOptional(4, "max_reference_age_in_ms", int64()),
+      SchemaField::MakeOptional(5, "min_snapshots_to_keep", int32()),
+      SchemaField::MakeOptional(6, "max_snapshot_age_in_ms", int64()),
   });
   return schema;
 }
 
-Result<std::unique_ptr<BranchesTable>> BranchesTable::Make(std::shared_ptr<Table> table) {
+Result<std::unique_ptr<RefsTable>> RefsTable::Make(std::shared_ptr<Table> table) {
   ICEBERG_PRECHECK(table != nullptr, "Table cannot be null");
-  return std::unique_ptr<BranchesTable>(new BranchesTable(std::move(table)));
+  return std::unique_ptr<RefsTable>(new RefsTable(std::move(table)));
 }
 
-Result<ArrowArrayStream> BranchesTable::Scan() {
-  std::vector<BranchRow> rows;
+Result<ArrowArrayStream> RefsTable::Scan() {
+  std::vector<RefRow> rows;
   for (const auto& [name, ref] : source_table()->metadata()->refs) {
-    if (ref == nullptr || ref->type() != SnapshotRefType::kBranch) {
-      continue;
+    ICEBERG_PRECHECK(ref != nullptr, "Snapshot reference '{}' is null", name);
+    RefRow row{.name = name,
+               .type = ref->type() == SnapshotRefType::kBranch ? "BRANCH" : "TAG",
+               .snapshot_id = ref->snapshot_id,
+               .max_ref_age_ms = ref->max_ref_age_ms()};
+    if (const auto* branch = std::get_if<SnapshotRef::Branch>(&ref->retention)) {
+      row.min_snapshots_to_keep = branch->min_snapshots_to_keep;
+      row.max_snapshot_age_ms = branch->max_snapshot_age_ms;
     }
-    const auto& retention = std::get<SnapshotRef::Branch>(ref->retention);
-    rows.push_back(BranchRow{.name = name,
-                             .snapshot_id = ref->snapshot_id,
-                             .max_ref_age_ms = retention.max_ref_age_ms,
-                             .min_snapshots_to_keep = retention.min_snapshots_to_keep,
-                             .max_snapshot_age_ms = retention.max_snapshot_age_ms});
+    rows.push_back(std::move(row));
   }
-  std::ranges::sort(rows, {}, &BranchRow::name);
-  return internal::MakeMetadataTableStream(*schema(), std::move(rows), AppendBranch);
+  std::ranges::sort(rows, {}, &RefRow::name);
+  return internal::MakeMetadataTableStream(*schema(), std::move(rows), AppendRef);
 }
 
 }  // namespace iceberg
