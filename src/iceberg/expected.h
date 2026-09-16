@@ -28,6 +28,10 @@
 #include <functional>
 #include <type_traits>
 #include <utility>
+#include <version>
+#if defined(__cpp_lib_expected) && __cpp_lib_expected >= 202202L
+#  include <expected>
+#endif
 
 #include "iceberg/iceberg_export.h"
 
@@ -1164,6 +1168,19 @@ class ICEBERG_EXPORT [[nodiscard]] expected
       : impl_base(unexpect, std::move(e.error())),
         ctor_base(expected_detail::default_constructor_tag{}) {}
 
+#if defined(__cpp_lib_expected) && __cpp_lib_expected >= 202202L
+  // Library code built as C++23 still spells some errors std::unexpected.
+  template <class G, std::enable_if_t<std::is_constructible_v<E, const G&>>* = nullptr>
+  constexpr explicit(!std::is_convertible_v<const G&, E>) expected(
+      const std::unexpected<G>& e) noexcept(std::is_nothrow_constructible_v<E, const G&>)
+      : expected(unexpect, e.error()) {}
+
+  template <class G, std::enable_if_t<std::is_constructible_v<E, G>>* = nullptr>
+  constexpr explicit(!std::is_convertible_v<G, E>)
+      expected(std::unexpected<G>&& e) noexcept(std::is_nothrow_constructible_v<E, G>)
+      : expected(unexpect, std::move(e.error())) {}
+#endif
+
   // template<class... Args>
   //     expected(std::in_place_t, Args &&...)
 
@@ -1928,6 +1945,19 @@ expected<void, E> : private expected_detail::move_assign_base<void, E>,
   constexpr expected(unexpected<G>&& e) noexcept(std::is_nothrow_constructible_v<E, G>)
       : impl_base(unexpect, std::move(e.error())),
         ctor_base(expected_detail::default_constructor_tag{}) {}
+
+#if defined(__cpp_lib_expected) && __cpp_lib_expected >= 202202L
+  // Library code built as C++23 still spells some errors std::unexpected.
+  template <class G, std::enable_if_t<std::is_constructible_v<E, const G&>>* = nullptr>
+  constexpr explicit(!std::is_convertible_v<const G&, E>) expected(
+      const std::unexpected<G>& e) noexcept(std::is_nothrow_constructible_v<E, const G&>)
+      : expected(unexpect, e.error()) {}
+
+  template <class G, std::enable_if_t<std::is_constructible_v<E, G>>* = nullptr>
+  constexpr explicit(!std::is_convertible_v<G, E>)
+      expected(std::unexpected<G>&& e) noexcept(std::is_nothrow_constructible_v<E, G>)
+      : expected(unexpect, std::move(e.error())) {}
+#endif
 
   // expected(std::in_place_t)
   constexpr explicit expected(std::in_place_t) noexcept
