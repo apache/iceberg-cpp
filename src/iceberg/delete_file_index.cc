@@ -41,6 +41,7 @@
 #include "iceberg/util/content_file_util.h"
 #include "iceberg/util/executor_util_internal.h"
 #include "iceberg/util/macros.h"
+#include "iceberg/util/struct_like_set.h"
 
 namespace iceberg {
 
@@ -453,10 +454,20 @@ Result<std::shared_ptr<DataFile>> DeleteFileIndex::FindDV(
     return nullptr;
   }
 
-  ICEBERG_CHECK(it->second.sequence_number.value() >= seq,
-                "DV data sequence number {} must be greater than or equal to data file "
-                "sequence number {}",
-                it->second.sequence_number.value(), seq);
+  const auto& dv = *it->second.data_file;
+  ICEBERG_PRECHECK(data_file.partition_spec_id.has_value(),
+                   "Missing partition spec id from data file {}", data_file.file_path);
+  ICEBERG_PRECHECK(dv.partition_spec_id.has_value(),
+                   "Missing partition spec id from DV {}", dv.file_path);
+  if (dv.partition_spec_id != data_file.partition_spec_id) {
+    return nullptr;
+  }
+
+  ICEBERG_ASSIGN_OR_RAISE(auto partitions_match,
+                          StructLikeEqual(dv.partition, data_file.partition));
+  if (!partitions_match || it->second.sequence_number.value() < seq) {
+    return nullptr;
+  }
 
   return it->second.data_file;
 }

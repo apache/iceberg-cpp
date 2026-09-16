@@ -223,6 +223,7 @@ iceberg_data_sources = files(
     'data/delete_loader.cc',
     'data/equality_delete_writer.cc',
     'data/file_scan_task_reader.cc',
+    'data/position_delete_update.cc',
     'data/position_delete_writer.cc',
     'data/writer.cc',
 )
