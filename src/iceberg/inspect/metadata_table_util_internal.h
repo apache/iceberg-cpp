@@ -29,6 +29,7 @@
 #include "iceberg/result.h"
 #include "iceberg/row/partition_values.h"
 #include "iceberg/type_fwd.h"
+#include "iceberg/util/iterator.h"
 
 namespace iceberg {
 class ArrowRowBuilder;
@@ -67,8 +68,8 @@ Status AppendDataFile(ArrowRowBuilder& builder, const Schema& schema,
                       const Schema& table_schema, const StructType& partition_type,
                       const LiveFile& live_file);
 
-/// \brief Read all live files in the selected snapshot.
-Result<std::vector<LiveFile>> LoadLiveFiles(const Table& table,
-                                            const std::shared_ptr<Snapshot>& snapshot);
+/// \brief Iterate over live files, reading one manifest at a time.
+Result<std::unique_ptr<Iterator<LiveFile>>> LiveFiles(
+    const Table& table, const std::shared_ptr<Snapshot>& snapshot);
 
 }  // namespace iceberg::internal

@@ -17,8 +17,11 @@
  * under the License.
  */
 
+#include <bit>
 #include <chrono>
 #include <cstdint>
+#include <format>
+#include <limits>
 #include <memory>
 #include <string>
 #include <unordered_map>
@@ -31,12 +34,11 @@
 #include <gtest/gtest.h>
 
 #include "iceberg/constants.h"
-#include "iceberg/inspect/branches_table.h"
 #include "iceberg/inspect/files_table.h"
 #include "iceberg/inspect/manifests_table.h"
 #include "iceberg/inspect/metadata_table.h"
 #include "iceberg/inspect/partitions_table.h"
-#include "iceberg/inspect/tags_table.h"
+#include "iceberg/inspect/refs_table.h"
 #include "iceberg/partition_spec.h"
 #include "iceberg/row/partition_values.h"
 #include "iceberg/snapshot.h"
@@ -46,6 +48,7 @@
 #include "iceberg/test/mock_catalog.h"
 #include "iceberg/test/scan_test_base.h"
 #include "iceberg/transform.h"
+#include "iceberg/util/conversions.h"
 #include "iceberg/util/macros.h"
 
 namespace iceberg {
@@ -84,7 +87,7 @@ class SystemMetadataTablesTest : public ScanTestBase {
   std::shared_ptr<MockCatalog> catalog_;
 };
 
-TEST_P(SystemMetadataTablesTest, ScansBranchesAndTagsSeparately) {
+TEST_P(SystemMetadataTablesTest, ScansBranchesAndTagsAsRefs) {
   ICEBERG_UNWRAP_OR_FAIL(auto main_ref, SnapshotRef::MakeBranch(2));
   ICEBERG_UNWRAP_OR_FAIL(auto dev_ref, SnapshotRef::MakeBranch(1, 3, 2000, 1000));
   ICEBERG_UNWRAP_OR_FAIL(auto release_ref, SnapshotRef::MakeTag(1, 5000));
@@ -108,31 +111,48 @@ TEST_P(SystemMetadataTablesTest, ScansBranchesAndTagsSeparately) {
   });
   ICEBERG_UNWRAP_OR_FAIL(auto table, MakeTable({first, second}, 2, std::move(refs)));
 
-  ICEBERG_UNWRAP_OR_FAIL(auto branches, MetadataTable::Make<BranchesTable>(table));
-  ICEBERG_UNWRAP_OR_FAIL(auto branch_stream, branches->Scan());
-  ICEBERG_UNWRAP_OR_FAIL(auto branch_batches, ReadAllBatches(std::move(branch_stream)));
-  ASSERT_EQ(branch_batches.size(), 1);
-  ASSERT_EQ(branch_batches[0]->num_rows(), 2);
-  auto branch_names = std::static_pointer_cast<::arrow::StringArray>(
-      branch_batches[0]->GetColumnByName("name"));
-  auto branch_ids = std::static_pointer_cast<::arrow::Int64Array>(
-      branch_batches[0]->GetColumnByName("snapshot_id"));
-  EXPECT_EQ(branch_names->GetString(0), "dev");
-  EXPECT_EQ(branch_ids->Value(0), 1);
-  EXPECT_EQ(branch_names->GetString(1), "main");
-  EXPECT_EQ(branch_ids->Value(1), 2);
-
-  ICEBERG_UNWRAP_OR_FAIL(auto tags, MetadataTable::Make<TagsTable>(table));
-  ICEBERG_UNWRAP_OR_FAIL(auto tag_stream, tags->Scan());
-  ICEBERG_UNWRAP_OR_FAIL(auto tag_batches, ReadAllBatches(std::move(tag_stream)));
-  ASSERT_EQ(tag_batches.size(), 1);
-  ASSERT_EQ(tag_batches[0]->num_rows(), 1);
-  auto tag_names = std::static_pointer_cast<::arrow::StringArray>(
-      tag_batches[0]->GetColumnByName("name"));
-  auto max_ref_age = std::static_pointer_cast<::arrow::Int64Array>(
-      tag_batches[0]->GetColumnByName("max_reference_age_in_ms"));
-  EXPECT_EQ(tag_names->GetString(0), "release");
-  EXPECT_EQ(max_ref_age->Value(0), 5000);
+  ICEBERG_UNWRAP_OR_FAIL(auto refs_table, MetadataTable::Make<RefsTable>(table));
+  EXPECT_EQ(refs_table->kind(), MetadataTable::Kind::kRefs);
+  EXPECT_FALSE(refs_table->supports_time_travel());
+  Schema expected_schema({
+      SchemaField::MakeRequired(1, "name", string()),
+      SchemaField::MakeRequired(2, "type", string()),
+      SchemaField::MakeRequired(3, "snapshot_id", int64()),
+      SchemaField::MakeOptional(4, "max_reference_age_in_ms", int64()),
+      SchemaField::MakeOptional(5, "min_snapshots_to_keep", int32()),
+      SchemaField::MakeOptional(6, "max_snapshot_age_in_ms", int64()),
+  });
+  EXPECT_EQ(*refs_table->schema(), expected_schema);
+  ICEBERG_UNWRAP_OR_FAIL(auto stream, refs_table->Scan());
+  ICEBERG_UNWRAP_OR_FAIL(auto batches, ReadAllBatches(std::move(stream)));
+  ASSERT_EQ(batches.size(), 1);
+  ASSERT_EQ(batches[0]->num_rows(), 3);
+  auto names = std::static_pointer_cast<::arrow::StringArray>(batches[0]->column(0));
+  auto types = std::static_pointer_cast<::arrow::StringArray>(batches[0]->column(1));
+  auto ids = std::static_pointer_cast<::arrow::Int64Array>(batches[0]->column(2));
+  auto ref_age = std::static_pointer_cast<::arrow::Int64Array>(batches[0]->column(3));
+  auto min_snapshots =
+      std::static_pointer_cast<::arrow::Int32Array>(batches[0]->column(4));
+  auto snapshot_age =
+      std::static_pointer_cast<::arrow::Int64Array>(batches[0]->column(5));
+  EXPECT_EQ(names->GetString(0), "dev");
+  EXPECT_EQ(types->GetString(0), "BRANCH");
+  EXPECT_EQ(ids->Value(0), 1);
+  EXPECT_EQ(ref_age->Value(0), 1000);
+  EXPECT_EQ(min_snapshots->Value(0), 3);
+  EXPECT_EQ(snapshot_age->Value(0), 2000);
+  EXPECT_EQ(names->GetString(1), "main");
+  EXPECT_EQ(types->GetString(1), "BRANCH");
+  EXPECT_EQ(ids->Value(1), 2);
+  EXPECT_TRUE(ref_age->IsNull(1));
+  EXPECT_TRUE(min_snapshots->IsNull(1));
+  EXPECT_TRUE(snapshot_age->IsNull(1));
+  EXPECT_EQ(names->GetString(2), "release");
+  EXPECT_EQ(types->GetString(2), "TAG");
+  EXPECT_EQ(ids->Value(2), 1);
+  EXPECT_EQ(ref_age->Value(2), 5000);
+  EXPECT_TRUE(min_snapshots->IsNull(2));
+  EXPECT_TRUE(snapshot_age->IsNull(2));
 }
 
 TEST_P(SystemMetadataTablesTest, ScansFilesManifestsAndPartitions) {
@@ -209,21 +229,47 @@ TEST_P(SystemMetadataTablesTest, SupportsTimeTravelForSnapshotScopedTables) {
   EXPECT_EQ(paths->GetString(0), "s3://bucket/first.parquet");
 }
 
-TEST_P(SystemMetadataTablesTest, StopsTimestampTraversalAtExpiredParent) {
-  auto snapshot =
-      MakeAppendSnapshot(GetParam(), 2, 1, 2, {"s3://bucket/current.parquet"});
-  ICEBERG_UNWRAP_OR_FAIL(auto dev_ref, SnapshotRef::MakeBranch(2));
+TEST_P(SystemMetadataTablesTest, RejectsCombiningNamedRefsWithTimeTravel) {
+  auto first = MakeAppendSnapshot(GetParam(), 1, std::nullopt, 1, {"first.parquet"});
+  auto second = MakeAppendSnapshot(GetParam(), 2, 1, 2, {"second.parquet"});
+  ICEBERG_UNWRAP_OR_FAIL(auto branch, SnapshotRef::MakeBranch(1));
+  ICEBERG_UNWRAP_OR_FAIL(auto tag, SnapshotRef::MakeTag(1));
   std::unordered_map<std::string, std::shared_ptr<SnapshotRef>> refs;
-  refs.emplace("dev", std::move(dev_ref));
-  ICEBERG_UNWRAP_OR_FAIL(auto table, MakeTable({snapshot}, 2, std::move(refs)));
+  refs.emplace("dev", std::move(branch));
+  refs.emplace("release", std::move(tag));
+  ICEBERG_UNWRAP_OR_FAIL(auto table, MakeTable({first, second}, 2, std::move(refs)));
   ICEBERG_UNWRAP_OR_FAIL(auto files, MetadataTable::Make<FilesTable>(table));
+  ICEBERG_UNWRAP_OR_FAIL(auto manifests, MetadataTable::Make<ManifestsTable>(table));
+  ICEBERG_UNWRAP_OR_FAIL(auto partitions, MetadataTable::Make<PartitionsTable>(table));
+  for (TimeTravelMetadataTable* metadata_table :
+       {static_cast<TimeTravelMetadataTable*>(files.get()),
+        static_cast<TimeTravelMetadataTable*>(manifests.get()),
+        static_cast<TimeTravelMetadataTable*>(partitions.get())}) {
+    for (const std::string ref_name : {"dev", "release"}) {
+      for (const SnapshotSelection selection :
+           {SnapshotSelection{.snapshot = int64_t{1}, .ref_name = ref_name},
+            SnapshotSelection{.snapshot = first->timestamp_ms, .ref_name = ref_name}}) {
+        auto result = metadata_table->Scan(selection);
+        ASSERT_FALSE(result.has_value());
+        EXPECT_EQ(result.error().kind, ErrorKind::kInvalidArgument);
+      }
+    }
+  }
 
-  ICEBERG_UNWRAP_OR_FAIL(auto stream,
-                         files->Scan(SnapshotSelection{.snapshot = snapshot->timestamp_ms,
-                                                       .ref_name = "dev"}));
-  ICEBERG_UNWRAP_OR_FAIL(auto batches, ReadAllBatches(std::move(stream)));
-  ASSERT_EQ(batches.size(), 1);
-  ASSERT_EQ(batches[0]->num_rows(), 1);
+  // A named ref alone selects its head; main is a no-op in Java's useRef.
+  for (const std::string ref_name : {"dev", "release", "main"}) {
+    SnapshotSelection selection{.ref_name = ref_name};
+    if (ref_name == "main") {
+      selection.snapshot = int64_t{1};
+    }
+    ICEBERG_UNWRAP_OR_FAIL(auto stream, files->Scan(selection));
+    ICEBERG_UNWRAP_OR_FAIL(auto batches, ReadAllBatches(std::move(stream)));
+    ASSERT_EQ(batches.size(), 1);
+    ASSERT_EQ(batches[0]->num_rows(), 1);
+    auto paths = std::static_pointer_cast<::arrow::StringArray>(
+        batches[0]->GetColumnByName("file_path"));
+    EXPECT_EQ(paths->GetString(0), "first.parquet");
+  }
 }
 
 TEST_P(SystemMetadataTablesTest, MainTimestampSelectionUsesSnapshotLogAfterRollback) {
@@ -321,6 +367,235 @@ TEST_P(SystemMetadataTablesTest, GroupsNullPartitionValues) {
   auto file_counts = std::static_pointer_cast<::arrow::Int32Array>(
       batches[0]->GetColumnByName("file_count"));
   EXPECT_EQ(file_counts->Value(0), 2);
+}
+
+TEST_P(SystemMetadataTablesTest, ManifestNullBoundsUseJavaRendering) {
+  auto snapshot = MakeAppendSnapshotWithPartitionValues(
+      GetParam(), 10, std::nullopt, 1,
+      {{"null.parquet", PartitionValues(Literal::Null(int32()))}}, partitioned_spec_);
+  ICEBERG_UNWRAP_OR_FAIL(auto table, MakeTable({snapshot}, 10, {}, partitioned_spec_));
+  ICEBERG_UNWRAP_OR_FAIL(auto manifests, MetadataTable::Make<ManifestsTable>(table));
+  ICEBERG_UNWRAP_OR_FAIL(auto stream, manifests->Scan());
+  ICEBERG_UNWRAP_OR_FAIL(auto batches, ReadAllBatches(std::move(stream)));
+  ASSERT_EQ(batches.size(), 1);
+  auto summaries = std::static_pointer_cast<::arrow::ListArray>(
+      batches[0]->GetColumnByName("partition_summaries"));
+  auto values = std::static_pointer_cast<::arrow::StructArray>(summaries->values());
+  ASSERT_EQ(values->length(), 1);
+  for (int index : {2, 3}) {
+    auto bound = std::static_pointer_cast<::arrow::StringArray>(values->field(index));
+    ASSERT_FALSE(bound->IsNull(0));
+    EXPECT_EQ(bound->GetString(0), "null");
+  }
+}
+
+TEST_P(SystemMetadataTablesTest, ManifestBoundsSurviveDroppedBucketSource) {
+  auto snapshot = MakeAppendSnapshotWithPartitionValues(
+      GetParam(), 10, std::nullopt, 1,
+      {{"data.parquet", PartitionValues(Literal::Int(7))}}, partitioned_spec_);
+  auto metadata = MakeTableMetadata({snapshot}, 10);
+  metadata->schemas.push_back(std::make_shared<Schema>(
+      std::vector<SchemaField>{SchemaField::MakeRequired(1, "id", int32())}, 1));
+  metadata->current_schema_id = 1;
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto table, Table::Make(TableIdentifier{.name = "table"}, std::move(metadata),
+                              "s3://bucket/metadata.json", file_io_, catalog_));
+  ICEBERG_UNWRAP_OR_FAIL(auto manifests, MetadataTable::Make<ManifestsTable>(table));
+  ICEBERG_UNWRAP_OR_FAIL(auto stream, manifests->Scan());
+  ICEBERG_UNWRAP_OR_FAIL(auto batches, ReadAllBatches(std::move(stream)));
+  ASSERT_EQ(batches.size(), 1);
+  auto summaries = std::static_pointer_cast<::arrow::ListArray>(
+      batches[0]->GetColumnByName("partition_summaries"));
+  auto values = std::static_pointer_cast<::arrow::StructArray>(summaries->values());
+  ASSERT_EQ(values->length(), 1);
+  for (int index : {2, 3}) {
+    auto bound = std::static_pointer_cast<::arrow::StringArray>(values->field(index));
+    ASSERT_FALSE(bound->IsNull(0));
+    EXPECT_EQ(bound->GetString(0), "7");
+  }
+}
+
+TEST_P(SystemMetadataTablesTest, GroupsAllNaNsButDistinguishesSignedZeros) {
+  // Exercise both floating-point types, including NaNs with different payloads.
+  for (const bool use_float : {false, true}) {
+    schema_ = std::make_shared<Schema>(std::vector<SchemaField>{
+        SchemaField::MakeRequired(1, "id", int32()),
+        SchemaField::MakeRequired(
+            2, "data", use_float ? std::shared_ptr<Type>(float32()) : float64())});
+    ICEBERG_UNWRAP_OR_FAIL(
+        partitioned_spec_,
+        PartitionSpec::Make(1, {PartitionField(2, 1000, "data", Transform::Identity())}));
+    const double nan = std::numeric_limits<double>::quiet_NaN();
+    auto literal = [use_float](double value) {
+      return use_float ? Literal::Float(static_cast<float>(value))
+                       : Literal::Double(value);
+    };
+    auto payload_nan =
+        use_float ? Literal::Float(std::bit_cast<float>(uint32_t{0x7fc00001}))
+                  : Literal::Double(std::bit_cast<double>(uint64_t{0x7ff8000000000001}));
+    auto snapshot = MakeAppendSnapshotWithPartitionValues(
+        GetParam(), 10, std::nullopt, 1,
+        {{"positive_nan.parquet", PartitionValues(literal(nan))},
+         {"negative_nan.parquet", PartitionValues(literal(-nan))},
+         {"payload_nan.parquet", PartitionValues(payload_nan)},
+         {"positive_zero.parquet", PartitionValues(literal(0.0))},
+         {"negative_zero.parquet", PartitionValues(literal(-0.0))}},
+        partitioned_spec_);
+    ICEBERG_UNWRAP_OR_FAIL(auto table, MakeTable({snapshot}, 10, {}, partitioned_spec_));
+    ICEBERG_UNWRAP_OR_FAIL(auto partitions, MetadataTable::Make<PartitionsTable>(table));
+    ICEBERG_UNWRAP_OR_FAIL(auto stream, partitions->Scan());
+    ICEBERG_UNWRAP_OR_FAIL(auto batches, ReadAllBatches(std::move(stream)));
+    ASSERT_EQ(batches.size(), 1);
+    ASSERT_EQ(batches[0]->num_rows(), 3);
+    auto counts = std::static_pointer_cast<::arrow::Int32Array>(
+        batches[0]->GetColumnByName("file_count"));
+    EXPECT_THAT(
+        (std::vector<int32_t>{counts->Value(0), counts->Value(1), counts->Value(2)}),
+        ::testing::UnorderedElementsAre(3, 1, 1));
+  }
+}
+
+TEST_P(SystemMetadataTablesTest, ScansDecimalPartitionsAndReadableBounds) {
+  schema_ = std::make_shared<Schema>(
+      std::vector<SchemaField>{SchemaField::MakeRequired(1, "id", int32()),
+                               SchemaField::MakeRequired(2, "amount", decimal(38, 2))});
+  ICEBERG_UNWRAP_OR_FAIL(
+      partitioned_spec_,
+      PartitionSpec::Make(1, {PartitionField(2, 1000, "amount", Transform::Identity())}));
+  const int128_t large = (static_cast<int128_t>(1) << 80) + 123;
+  std::vector<ManifestEntry> entries;
+  const std::vector<int128_t> values{123, -456, large, -large, 0};
+  for (size_t index = 0; index < values.size(); ++index) {
+    auto literal = Literal::Decimal(values[index], 38, 2);
+    auto file = MakeDataFile(std::format("decimal-{}.parquet", index),
+                             PartitionValues(literal), partitioned_spec_);
+    ICEBERG_UNWRAP_OR_FAIL(auto bound, Conversions::ToBytes(literal));
+    file->lower_bounds.emplace(2, bound);
+    file->upper_bounds.emplace(2, bound);
+    entries.push_back(MakeEntry(ManifestStatus::kAdded, 10, 1, std::move(file)));
+  }
+  auto manifest =
+      WriteDataManifest(GetParam(), 10, std::move(entries), partitioned_spec_);
+  auto snapshot = std::make_shared<Snapshot>(Snapshot{
+      .snapshot_id = 10,
+      .sequence_number = 1,
+      .timestamp_ms = TimePointMsFromUnixMs(1000),
+      .manifest_list = WriteManifestList(GetParam(), 10, 0, 1, {manifest}),
+  });
+  ICEBERG_UNWRAP_OR_FAIL(auto table, MakeTable({snapshot}, 10, {}, partitioned_spec_));
+  ICEBERG_UNWRAP_OR_FAIL(auto files, MetadataTable::Make<FilesTable>(table));
+  ICEBERG_UNWRAP_OR_FAIL(auto stream, files->Scan());
+  ICEBERG_UNWRAP_OR_FAIL(auto batches, ReadAllBatches(std::move(stream)));
+  ASSERT_EQ(batches.size(), 1);
+  ASSERT_EQ(batches[0]->num_rows(), values.size());
+  auto partition = std::static_pointer_cast<::arrow::StructArray>(
+      batches[0]->GetColumnByName("partition"));
+  auto amounts = std::static_pointer_cast<::arrow::Decimal128Array>(partition->field(0));
+  auto metrics = std::static_pointer_cast<::arrow::StructArray>(
+      batches[0]->GetColumnByName("readable_metrics"));
+  auto amount_metrics =
+      std::static_pointer_cast<::arrow::StructArray>(metrics->GetFieldByName("amount"));
+  auto lower = std::static_pointer_cast<::arrow::Decimal128Array>(
+      amount_metrics->GetFieldByName("lower_bound"));
+  auto upper = std::static_pointer_cast<::arrow::Decimal128Array>(
+      amount_metrics->GetFieldByName("upper_bound"));
+  for (size_t index = 0; index < values.size(); ++index) {
+    ICEBERG_UNWRAP_OR_FAIL(auto expected, Decimal(values[index]).ToString(2));
+    EXPECT_EQ(amounts->FormatValue(index), expected);
+    EXPECT_EQ(lower->FormatValue(index), expected);
+    EXPECT_EQ(upper->FormatValue(index), expected);
+  }
+
+  ICEBERG_UNWRAP_OR_FAIL(auto partitions, MetadataTable::Make<PartitionsTable>(table));
+  ICEBERG_UNWRAP_OR_FAIL(auto partition_stream, partitions->Scan());
+  ICEBERG_UNWRAP_OR_FAIL(auto partition_batches,
+                         ReadAllBatches(std::move(partition_stream)));
+  ASSERT_EQ(partition_batches.size(), 1);
+  ASSERT_EQ(partition_batches[0]->num_rows(), values.size());
+  auto partition_values = std::static_pointer_cast<::arrow::StructArray>(
+      partition_batches[0]->GetColumnByName("partition"));
+  auto partition_amounts =
+      std::static_pointer_cast<::arrow::Decimal128Array>(partition_values->field(0));
+  for (size_t index = 0; index < values.size(); ++index) {
+    ICEBERG_UNWRAP_OR_FAIL(auto expected, Decimal(values[index]).ToString(2));
+    EXPECT_EQ(partition_amounts->FormatValue(index), expected);
+  }
+}
+
+TEST_P(SystemMetadataTablesTest, FilesScanReadsManifestsOnDemand) {
+  std::vector<ManifestEntry> entries;
+  for (int64_t index = 0; index < MetadataTable::kBatchSize; ++index) {
+    entries.push_back(MakeEntry(ManifestStatus::kAdded, 10, 1,
+                                MakeDataFile(std::format("data-{}.parquet", index))));
+  }
+  auto first_manifest = WriteDataManifest(GetParam(), 10, std::move(entries));
+  auto second_manifest = WriteDataManifest(
+      GetParam(), 10,
+      {MakeEntry(ManifestStatus::kAdded, 10, 1, MakeDataFile("last.parquet"))});
+  auto snapshot = std::make_shared<Snapshot>(Snapshot{
+      .snapshot_id = 10,
+      .sequence_number = 1,
+      .timestamp_ms = TimePointMsFromUnixMs(1000),
+      .manifest_list =
+          WriteManifestList(GetParam(), 10, 0, 1, {first_manifest, second_manifest}),
+  });
+  ASSERT_THAT(file_io_->DeleteFile(second_manifest.manifest_path), IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(auto table, MakeTable({snapshot}, 10));
+  ICEBERG_UNWRAP_OR_FAIL(auto files, MetadataTable::Make<FilesTable>(table));
+  ICEBERG_UNWRAP_OR_FAIL(auto stream, files->Scan());
+  auto imported = ::arrow::ImportRecordBatchReader(&stream);
+  ASSERT_TRUE(imported.ok()) << imported.status().ToString();
+  auto reader = *imported;
+  // The stream owns everything it needs, independent of the source table's lifetime.
+  files.reset();
+  table.reset();
+  auto first = reader->Next();
+  ASSERT_TRUE(first.ok()) << first.status().ToString();
+  ASSERT_NE(*first, nullptr);
+  EXPECT_EQ((*first)->num_rows(), MetadataTable::kBatchSize);
+  // Opening the absent second manifest is deferred until the next batch.
+  EXPECT_FALSE(reader->Next().ok());
+}
+
+TEST_P(SystemMetadataTablesTest, ScansEmptyMetadataTables) {
+  ICEBERG_UNWRAP_OR_FAIL(auto table, MakeTable({}, kInvalidSnapshotId));
+  ICEBERG_UNWRAP_OR_FAIL(auto refs, MetadataTable::Make<RefsTable>(table));
+  ICEBERG_UNWRAP_OR_FAIL(auto files, MetadataTable::Make<FilesTable>(table));
+  ICEBERG_UNWRAP_OR_FAIL(auto manifests, MetadataTable::Make<ManifestsTable>(table));
+  ICEBERG_UNWRAP_OR_FAIL(auto partitions, MetadataTable::Make<PartitionsTable>(table));
+  for (auto* metadata_table : std::vector<MetadataTable*>{
+           refs.get(), files.get(), manifests.get(), partitions.get()}) {
+    ICEBERG_UNWRAP_OR_FAIL(auto stream, metadata_table->Scan());
+    ICEBERG_UNWRAP_OR_FAIL(auto batches, ReadAllBatches(std::move(stream)));
+    EXPECT_TRUE(batches.empty());
+  }
+}
+
+TEST_P(SystemMetadataTablesTest, FilesScanSkipsEmptyAndDeletedEntries) {
+  auto first = WriteDataManifest(
+      GetParam(), 10,
+      {MakeEntry(ManifestStatus::kAdded, 10, 1, MakeDataFile("first.parquet"))});
+  auto empty = WriteDataManifest(GetParam(), 10, {});
+  auto last = WriteDataManifest(
+      GetParam(), 10,
+      {MakeEntry(ManifestStatus::kDeleted, 10, 1, MakeDataFile("deleted.parquet")),
+       MakeEntry(ManifestStatus::kExisting, 10, 1, MakeDataFile("last.parquet"))});
+  auto snapshot = std::make_shared<Snapshot>(Snapshot{
+      .snapshot_id = 10,
+      .sequence_number = 1,
+      .timestamp_ms = TimePointMsFromUnixMs(1000),
+      .manifest_list = WriteManifestList(GetParam(), 10, 0, 1, {first, empty, last}),
+  });
+  ICEBERG_UNWRAP_OR_FAIL(auto table, MakeTable({snapshot}, 10));
+  ICEBERG_UNWRAP_OR_FAIL(auto files, MetadataTable::Make<FilesTable>(table));
+  ICEBERG_UNWRAP_OR_FAIL(auto stream, files->Scan());
+  ICEBERG_UNWRAP_OR_FAIL(auto batches, ReadAllBatches(std::move(stream)));
+  ASSERT_EQ(batches.size(), 1);
+  ASSERT_EQ(batches[0]->num_rows(), 2);
+  auto paths = std::static_pointer_cast<::arrow::StringArray>(
+      batches[0]->GetColumnByName("file_path"));
+  EXPECT_EQ(paths->GetString(0), "first.parquet");
+  EXPECT_EQ(paths->GetString(1), "last.parquet");
 }
 
 INSTANTIATE_TEST_SUITE_P(FormatVersions, SystemMetadataTablesTest,

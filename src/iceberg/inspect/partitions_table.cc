@@ -21,7 +21,6 @@
 
 #include <algorithm>
 #include <chrono>
-#include <cmath>
 #include <cstddef>
 #include <cstdint>
 #include <memory>
@@ -29,7 +28,6 @@
 #include <ranges>
 #include <unordered_map>
 #include <utility>
-#include <variant>
 #include <vector>
 
 #include "iceberg/arrow_row_builder_internal.h"
@@ -77,6 +75,9 @@ struct PartitionKey {
         if (lhs.IsNull() != rhs.IsNull()) {
           return false;
         }
+      } else if (lhs.IsNaN() && rhs.IsNaN()) {
+        // Java partition equality canonicalizes all NaN signs and payloads.
+        continue;
       } else if (lhs != rhs) {
         return false;
       }
@@ -89,15 +90,8 @@ struct PartitionKeyHash {
   size_t operator()(const PartitionKey& key) const noexcept {
     size_t result = 17;
     for (const auto& value : key.values.values()) {
-      size_t value_hash;
-      if (value.IsNaN()) {
-        const bool negative = std::holds_alternative<float>(value.value())
-                                  ? std::signbit(std::get<float>(value.value()))
-                                  : std::signbit(std::get<double>(value.value()));
-        value_hash = negative ? 0x9e3779b97f4a7c15ULL : 0x7ff8000000000000ULL;
-      } else {
-        value_hash = LiteralHash{}(value);
-      }
+      const size_t value_hash =
+          value.IsNaN() ? 0x7ff8000000000000ULL : LiteralHash{}(value);
       result = result * 37 + value_hash;
     }
     return result * 37 + key.projected_fields;
@@ -262,12 +256,17 @@ Result<ArrowArrayStream> PartitionsTable::ScanSnapshot(
     const SnapshotSelection& snapshot_selection) {
   ICEBERG_ASSIGN_OR_RAISE(auto snapshot, internal::ResolveMetadataTableSnapshot(
                                              *source_table(), snapshot_selection));
-  ICEBERG_ASSIGN_OR_RAISE(auto files, internal::LoadLiveFiles(*source_table(), snapshot));
+  ICEBERG_ASSIGN_OR_RAISE(auto files, internal::LiveFiles(*source_table(), snapshot));
 
   std::vector<PartitionStats> partitions;
   std::unordered_map<PartitionKey, size_t, PartitionKeyHash> positions;
   std::unordered_map<int64_t, std::shared_ptr<Snapshot>> snapshots;
-  for (const auto& live_file : files) {
+  while (true) {
+    ICEBERG_ASSIGN_OR_RAISE(auto next_file, files->Next());
+    if (!next_file.has_value()) {
+      break;
+    }
+    const auto& live_file = *next_file;
     ICEBERG_ASSIGN_OR_RAISE(auto partition_values, internal::ProjectPartitionValues(
                                                        *partition_type_, *live_file.spec,
                                                        live_file.file->partition));

@@ -90,7 +90,7 @@ Status AppendPartitionSummaries(ArrowArray* array, const ManifestRow& row,
           HumanReadableBound(*row.spec, *partition_type, index, *summary.lower_bound));
       ICEBERG_RETURN_UNEXPECTED(AppendString(entries->children[2], lower));
     } else {
-      ICEBERG_RETURN_UNEXPECTED(AppendNull(entries->children[2]));
+      ICEBERG_RETURN_UNEXPECTED(AppendString(entries->children[2], "null"));
     }
     if (summary.upper_bound.has_value()) {
       ICEBERG_ASSIGN_OR_RAISE(
@@ -98,7 +98,7 @@ Status AppendPartitionSummaries(ArrowArray* array, const ManifestRow& row,
           HumanReadableBound(*row.spec, *partition_type, index, *summary.upper_bound));
       ICEBERG_RETURN_UNEXPECTED(AppendString(entries->children[3], upper));
     } else {
-      ICEBERG_RETURN_UNEXPECTED(AppendNull(entries->children[3]));
+      ICEBERG_RETURN_UNEXPECTED(AppendString(entries->children[3], "null"));
     }
     ICEBERG_NANOARROW_RETURN_UNEXPECTED(ArrowArrayFinishElement(entries));
   }

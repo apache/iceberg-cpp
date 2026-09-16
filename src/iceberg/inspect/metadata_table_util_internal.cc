@@ -77,32 +77,6 @@ Result<std::shared_ptr<Snapshot>> SnapshotAtRef(const Table& table,
   return metadata->SnapshotById(ref->second->snapshot_id);
 }
 
-Result<bool> IsAncestorOf(const Table& table, int64_t ancestor_id,
-                          const std::shared_ptr<Snapshot>& head) {
-  std::unordered_set<int64_t> visited;
-  auto current = head;
-  while (current != nullptr) {
-    if (!visited.insert(current->snapshot_id).second) {
-      return Invalid("Cycle detected in snapshot ancestry at {}", current->snapshot_id);
-    }
-    if (current->snapshot_id == ancestor_id) {
-      return true;
-    }
-    if (!current->parent_snapshot_id.has_value()) {
-      break;
-    }
-    auto parent = table.SnapshotById(*current->parent_snapshot_id);
-    if (!parent.has_value()) {
-      if (parent.error().kind == ErrorKind::kNotFound) {
-        break;
-      }
-      return std::unexpected<Error>(parent.error());
-    }
-    current = std::move(parent).value();
-  }
-  return false;
-}
-
 Status AppendLiteral(ArrowArray* array, const Literal& literal) {
   if (literal.IsNull()) {
     return AppendNull(array);
@@ -135,7 +109,7 @@ Status AppendLiteral(ArrowArray* array, const Literal& literal) {
     case TypeId::kFixed:
       return AppendBytes(array, std::get<std::vector<uint8_t>>(literal.value()));
     case TypeId::kDecimal:
-      return AppendBytes(array, std::get<Decimal>(literal.value()).ToBytes());
+      return AppendDecimal(array, std::get<Decimal>(literal.value()));
     case TypeId::kUuid:
       return AppendBytes(array, std::get<Uuid>(literal.value()).bytes());
     case TypeId::kUnknown:
@@ -288,54 +262,23 @@ Status AppendReadableMetrics(ArrowArray* array, const StructType& readable_type,
 
 Result<std::shared_ptr<Snapshot>> ResolveMetadataTableSnapshot(
     const Table& table, const SnapshotSelection& selection) {
-  ICEBERG_ASSIGN_OR_RAISE(auto head, SnapshotAtRef(table, selection.ref_name));
+  if (!selection.ref_name.empty() && selection.ref_name != SnapshotRef::kMainBranch) {
+    ICEBERG_PRECHECK(
+        std::holds_alternative<std::monostate>(selection.snapshot),
+        "Cannot combine a snapshot reference with a snapshot ID or timestamp");
+  }
 
   if (std::holds_alternative<std::monostate>(selection.snapshot)) {
-    return head;
+    return SnapshotAtRef(table, selection.ref_name);
   }
-
   if (const auto* snapshot_id = std::get_if<int64_t>(&selection.snapshot)) {
-    ICEBERG_ASSIGN_OR_RAISE(auto selected, table.SnapshotById(*snapshot_id));
-    if (!selection.ref_name.empty()) {
-      ICEBERG_ASSIGN_OR_RAISE(auto is_ancestor, IsAncestorOf(table, *snapshot_id, head));
-      ICEBERG_CHECK(is_ancestor, "Snapshot {} is not reachable from reference '{}'",
-                    *snapshot_id, selection.ref_name);
-    }
-    return selected;
+    return table.SnapshotById(*snapshot_id);
   }
 
-  const auto timestamp = std::get<TimePointMs>(selection.snapshot);
-  if (selection.ref_name.empty() || selection.ref_name == SnapshotRef::kMainBranch) {
-    ICEBERG_ASSIGN_OR_RAISE(auto snapshot_id,
-                            SnapshotUtil::SnapshotIdAsOfTime(table, timestamp));
-    return table.SnapshotById(snapshot_id);
-  }
-
-  std::shared_ptr<Snapshot> selected;
-  std::unordered_set<int64_t> visited;
-  auto current = head;
-  while (current != nullptr) {
-    if (!visited.insert(current->snapshot_id).second) {
-      return Invalid("Cycle detected in snapshot ancestry at {}", current->snapshot_id);
-    }
-    if (current->timestamp_ms <= timestamp &&
-        (selected == nullptr || current->timestamp_ms > selected->timestamp_ms)) {
-      selected = current;
-    }
-    if (!current->parent_snapshot_id.has_value()) {
-      break;
-    }
-    auto parent = table.SnapshotById(*current->parent_snapshot_id);
-    if (!parent.has_value()) {
-      if (parent.error().kind == ErrorKind::kNotFound) {
-        break;
-      }
-      return std::unexpected<Error>(parent.error());
-    }
-    current = std::move(parent).value();
-  }
-  ICEBERG_CHECK(selected != nullptr, "Cannot find a snapshot at or before the timestamp");
-  return selected;
+  ICEBERG_ASSIGN_OR_RAISE(
+      auto snapshot_id,
+      SnapshotUtil::SnapshotIdAsOfTime(table, std::get<TimePointMs>(selection.snapshot)));
+  return table.SnapshotById(snapshot_id);
 }
 
 Result<std::shared_ptr<StructType>> UnifiedPartitionType(const Table& table) {
@@ -603,40 +546,72 @@ Status AppendDataFile(ArrowRowBuilder& builder, const Schema& schema,
   return builder.FinishRow();
 }
 
-Result<std::vector<LiveFile>> LoadLiveFiles(const Table& table,
-                                            const std::shared_ptr<Snapshot>& snapshot) {
-  if (snapshot == nullptr) {
-    return std::vector<LiveFile>{};
+namespace {
+
+class LiveFilesIterator : public Iterator<LiveFile> {
+ public:
+  LiveFilesIterator(std::shared_ptr<FileIO> io, std::shared_ptr<Schema> schema,
+                    std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>> specs,
+                    std::vector<ManifestFile> manifests)
+      : io_(std::move(io)),
+        schema_(std::move(schema)),
+        specs_(std::move(specs)),
+        manifests_(std::move(manifests)) {}
+
+ protected:
+  Result<std::optional<LiveFile>> NextImpl() override {
+    while (entry_index_ == entries_.size()) {
+      entries_.clear();
+      entry_index_ = 0;
+      if (manifest_index_ == manifests_.size()) {
+        return std::nullopt;
+      }
+      const auto& manifest = manifests_[manifest_index_++];
+      auto spec = specs_.find(manifest.partition_spec_id);
+      ICEBERG_CHECK(spec != specs_.end(),
+                    "Cannot find partition spec {} for manifest '{}'",
+                    manifest.partition_spec_id, manifest.manifest_path);
+      ICEBERG_PRECHECK(spec->second != nullptr, "Partition spec {} is null",
+                       manifest.partition_spec_id);
+      current_spec_ = spec->second;
+      ICEBERG_ASSIGN_OR_RAISE(auto reader,
+                              ManifestReader::Make(manifest, io_, schema_, specs_));
+      ICEBERG_ASSIGN_OR_RAISE(entries_, reader->LiveEntries());
+    }
+    auto& entry = entries_[entry_index_++];
+    ICEBERG_PRECHECK(entry.data_file != nullptr,
+                     "Manifest contains an entry with no data file");
+    return LiveFile{.file = std::move(entry.data_file),
+                    .spec = current_spec_,
+                    .snapshot_id = entry.snapshot_id};
   }
 
+ private:
+  std::shared_ptr<FileIO> io_;
+  std::shared_ptr<Schema> schema_;
+  std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>> specs_;
+  std::vector<ManifestFile> manifests_;
+  std::vector<ManifestEntry> entries_;
+  std::shared_ptr<PartitionSpec> current_spec_;
+  size_t manifest_index_ = 0;
+  size_t entry_index_ = 0;
+};
+
+}  // namespace
+
+Result<std::unique_ptr<Iterator<LiveFile>>> LiveFiles(
+    const Table& table, const std::shared_ptr<Snapshot>& snapshot) {
   ICEBERG_ASSIGN_OR_RAISE(auto schema, table.schema());
   ICEBERG_ASSIGN_OR_RAISE(auto specs_ref, table.specs());
-  SnapshotCache snapshot_cache(snapshot.get());
-  ICEBERG_ASSIGN_OR_RAISE(auto manifests, snapshot_cache.Manifests(table.io()));
-
-  std::vector<LiveFile> files;
-  for (const auto& manifest : manifests) {
-    auto spec = specs_ref.get().find(manifest.partition_spec_id);
-    ICEBERG_CHECK(spec != specs_ref.get().end(),
-                  "Cannot find partition spec {} for manifest '{}'",
-                  manifest.partition_spec_id, manifest.manifest_path);
-    ICEBERG_PRECHECK(spec->second != nullptr, "Partition spec {} is null",
-                     manifest.partition_spec_id);
-
-    ICEBERG_ASSIGN_OR_RAISE(
-        auto reader, ManifestReader::Make(manifest, table.io(), schema, specs_ref.get()));
-    ICEBERG_ASSIGN_OR_RAISE(auto entries, reader->LiveEntries());
-    files.reserve(files.size() + entries.size());
-    for (auto& entry : entries) {
-      ICEBERG_PRECHECK(entry.data_file != nullptr,
-                       "Manifest '{}' contains an entry with no data file",
-                       manifest.manifest_path);
-      files.push_back(LiveFile{.file = std::move(entry.data_file),
-                               .spec = spec->second,
-                               .snapshot_id = entry.snapshot_id});
-    }
+  std::vector<ManifestFile> manifests;
+  if (snapshot != nullptr) {
+    SnapshotCache snapshot_cache(snapshot.get());
+    ICEBERG_ASSIGN_OR_RAISE(auto snapshot_manifests,
+                            snapshot_cache.Manifests(table.io()));
+    manifests.assign(snapshot_manifests.begin(), snapshot_manifests.end());
   }
-  return files;
+  return std::make_unique<LiveFilesIterator>(table.io(), std::move(schema),
+                                             specs_ref.get(), std::move(manifests));
 }
 
 }  // namespace iceberg::internal
