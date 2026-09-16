@@ -61,6 +61,13 @@ class ICEBERG_EXPORT SnapshotUpdate : public PendingUpdate {
   bool IsRetryable() const override { return true; }
   Status Commit() override;
 
+// C++23 uses deducing `this` so chaining keeps returning the derived update type.
+// C++20 exposes the same operations but returns SnapshotUpdate&, because preserving
+// the derived type would require making the update hierarchy CRTP. Keyed on the
+// language version rather than __cpp_explicit_this_parameter, which Apple clang does
+// not define, and compared with "> 202002L" because MSVC's /std:c++latest only
+// promises a value above 202002L.
+#if __cplusplus > 202002L || (defined(_MSVC_LANG) && _MSVC_LANG > 202002L)
   /// \brief Set the metrics reporter for this snapshot update.
   ///
   /// \param reporter The metrics reporter to use.
@@ -155,6 +162,99 @@ class ICEBERG_EXPORT SnapshotUpdate : public PendingUpdate {
     self.write_manifest_parallelism_ = parallelism;
     return self;
   }
+#else
+  /// \brief Set the metrics reporter for this snapshot update.
+  ///
+  /// \param reporter The metrics reporter to use.
+  /// \return This snapshot update for method chaining.
+  SnapshotUpdate& ReportWith(std::shared_ptr<MetricsReporter> reporter) {
+    reporter_ = std::move(reporter);
+    return *this;
+  }
+
+  /// \brief Set a callback to delete files instead of the table's default.
+  ///
+  /// \param delete_func A function used to delete file locations.
+  /// \return This snapshot update for method chaining.
+  /// \note Cannot be called more than once.
+  SnapshotUpdate& DeleteWith(std::function<Status(const std::string&)> delete_func) {
+    if (delete_func_) {
+      AddError(ErrorKind::kInvalidArgument, "Cannot set delete callback more than once");
+      return *this;
+    }
+    delete_func_ = std::move(delete_func);
+    return *this;
+  }
+
+  /// \brief Stage a snapshot in table metadata, but do not make it current.
+  ///
+  /// \return This snapshot update for method chaining.
+  SnapshotUpdate& StageOnly() {
+    stage_only_ = true;
+    return *this;
+  }
+
+  /// \brief Configure an executor for manifest planning work.
+  ///
+  /// \param executor Executor to use while planning manifests.
+  /// \return This snapshot update for method chaining.
+  SnapshotUpdate& ScanManifestsWith(Executor& executor) {
+    plan_executor_ = std::ref(executor);
+    return *this;
+  }
+
+  /// \brief Perform operations on a particular branch.
+  ///
+  /// \param branch The name of a SnapshotRef of type branch.
+  /// \return This snapshot update for method chaining.
+  SnapshotUpdate& ToBranch(const std::string& branch) {
+    if (branch.empty()) [[unlikely]] {
+      AddError(ErrorKind::kInvalidArgument, "Branch name cannot be empty");
+      return *this;
+    }
+
+    if (auto ref_it = base().refs.find(branch); ref_it != base().refs.end()) {
+      if (ref_it->second->type() != SnapshotRefType::kBranch) {
+        AddError(ErrorKind::kInvalidArgument,
+                 "{} is a tag, not a branch. Tags cannot be targets for "
+                 "producing snapshots",
+                 branch);
+        return *this;
+      }
+    }
+
+    target_branch_ = branch;
+    return *this;
+  }
+
+  /// \brief Set a summary property in the snapshot produced by this update.
+  ///
+  /// \param property A String property name.
+  /// \param value A String property value.
+  /// \return This snapshot update for method chaining.
+  SnapshotUpdate& Set(const std::string& property, const std::string& value) {
+    SetSummaryProperty(property, value);
+    return *this;
+  }
+
+  /// \brief Configure an executor and max writer count for writing new manifests.
+  ///
+  /// \param executor Executor to use while writing manifests.
+  /// \param parallelism Maximum number of concurrent manifest writers.
+  /// \return This snapshot update for method chaining.
+  SnapshotUpdate& WriteManifestsWith(Executor& executor, int32_t parallelism) {
+    if (parallelism <= 0) [[unlikely]] {
+      AddError(ErrorKind::kInvalidArgument,
+               "Manifest write parallelism must be greater than 0, but was: {}",
+               parallelism);
+      return *this;
+    }
+
+    write_manifest_executor_ = std::ref(executor);
+    write_manifest_parallelism_ = parallelism;
+    return *this;
+  }
+#endif  // C++23
 
   /// \brief Apply the update's changes to create a new snapshot.
   ///
