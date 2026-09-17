@@ -96,8 +96,8 @@ class ICEBERG_EXPORT ManifestGroup : public ErrorCollector {
 
   /// \brief Set a custom manifest entry filter predicate.
   ///
-  /// When an executor is configured with PlanWith(), this predicate may be called
-  /// concurrently. Callers must synchronize any captured mutable state.
+  /// The predicate always runs sequentially, even when an executor is configured with
+  /// PlanWith().
   ///
   /// \param predicate A function that returns true if the entry should be included.
   ManifestGroup& FilterManifestEntries(
