@@ -362,7 +362,8 @@ struct storage_base {
   storage_base& operator=(storage_base const&) = default;
   storage_base& operator=(storage_base&&) = default;
 
-  constexpr storage_base() noexcept(std::is_nothrow_default_constructible_v<T>)
+  template <class U = T, std::enable_if_t<std::is_default_constructible_v<U>, int> = 0>
+  constexpr storage_base() noexcept(std::is_nothrow_default_constructible_v<U>)
       : m_val(), m_has_val(true) {}
   constexpr storage_base(no_init_t) noexcept : m_no_init(), m_has_val(false) {}
 
@@ -429,7 +430,8 @@ struct storage_base<T, E, false> {
   storage_base& operator=(storage_base const&) = default;
   storage_base& operator=(storage_base&&) = default;
 
-  constexpr storage_base() noexcept(std::is_nothrow_default_constructible_v<T>)
+  template <class U = T, std::enable_if_t<std::is_default_constructible_v<U>, int> = 0>
+  constexpr storage_base() noexcept(std::is_nothrow_default_constructible_v<U>)
       : m_val(), m_has_val(true) {}
   constexpr storage_base(no_init_t) noexcept : m_no_init(), m_has_val(false) {}
 
