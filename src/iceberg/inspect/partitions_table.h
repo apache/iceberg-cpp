@@ -40,6 +40,9 @@ class ICEBERG_EXPORT PartitionsTable : public TimeTravelMetadataTable {
 
   Kind kind() const noexcept override { return Kind::kPartitions; }
 
+  /// \brief Schema from construction or the most recent scan.
+  /// A new scan rebuilds this schema from the source table's current metadata.
+  /// Previously returned streams retain their own schemas.
   const std::shared_ptr<Schema>& schema() const override;
 
  protected:
@@ -47,8 +50,9 @@ class ICEBERG_EXPORT PartitionsTable : public TimeTravelMetadataTable {
       const SnapshotSelection& snapshot_selection) override;
 
  private:
-  PartitionsTable(std::shared_ptr<Table> table, std::shared_ptr<Schema> schema,
-                  std::shared_ptr<StructType> partition_type);
+  explicit PartitionsTable(std::shared_ptr<Table> table);
+
+  Status RefreshSchema();
 
   std::shared_ptr<Schema> schema_;
   std::shared_ptr<StructType> partition_type_;

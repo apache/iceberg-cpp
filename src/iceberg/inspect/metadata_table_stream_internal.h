@@ -34,8 +34,8 @@
 #include "iceberg/nanoarrow_status_internal.h"
 #include "iceberg/schema.h"
 #include "iceberg/schema_internal.h"
-#include "iceberg/util/iterator.h"
 #include "iceberg/util/macros.h"
+#include "iceberg/util/stream.h"
 
 namespace iceberg::internal {
 
@@ -46,7 +46,7 @@ class MetadataTableRowsStream {
   using AppendRow = std::function<Status(ArrowRowBuilder&, const Row&)>;
 
   static Result<std::unique_ptr<MetadataTableRowsStream>> Make(
-      const Schema& schema, std::unique_ptr<Iterator<Row>> rows, AppendRow append_row) {
+      const Schema& schema, std::unique_ptr<Stream<Row>> rows, AppendRow append_row) {
     ArrowSchema arrow_schema{};
     ICEBERG_RETURN_UNEXPECTED(ToArrowSchema(schema, &arrow_schema));
     return std::unique_ptr<MetadataTableRowsStream>(new MetadataTableRowsStream(
@@ -96,20 +96,20 @@ class MetadataTableRowsStream {
   }
 
  private:
-  MetadataTableRowsStream(std::unique_ptr<Iterator<Row>> rows, AppendRow append_row,
+  MetadataTableRowsStream(std::unique_ptr<Stream<Row>> rows, AppendRow append_row,
                           ArrowSchema arrow_schema)
       : rows_(std::move(rows)),
         append_row_(std::move(append_row)),
         arrow_schema_(std::move(arrow_schema)) {}
 
-  std::unique_ptr<Iterator<Row>> rows_;
+  std::unique_ptr<Stream<Row>> rows_;
   AppendRow append_row_;
   ArrowSchema arrow_schema_{};
 };
 
 template <typename Row, typename AppendRow>
 Result<ArrowArrayStream> MakeMetadataTableStream(const Schema& schema,
-                                                 std::unique_ptr<Iterator<Row>> rows,
+                                                 std::unique_ptr<Stream<Row>> rows,
                                                  AppendRow append_row) {
   ICEBERG_ASSIGN_OR_RAISE(
       auto stream,
@@ -120,7 +120,7 @@ Result<ArrowArrayStream> MakeMetadataTableStream(const Schema& schema,
 }
 
 template <typename Row>
-class MetadataTableVectorIterator : public Iterator<Row> {
+class MetadataTableVectorIterator : public Stream<Row> {
  public:
   explicit MetadataTableVectorIterator(std::vector<Row> rows) : rows_(std::move(rows)) {}
 
@@ -141,7 +141,7 @@ template <typename Row, typename AppendRow>
 Result<ArrowArrayStream> MakeMetadataTableStream(const Schema& schema,
                                                  std::vector<Row> rows,
                                                  AppendRow append_row) {
-  std::unique_ptr<Iterator<Row>> iterator =
+  std::unique_ptr<Stream<Row>> iterator =
       std::make_unique<MetadataTableVectorIterator<Row>>(std::move(rows));
   return MakeMetadataTableStream(schema, std::move(iterator), std::move(append_row));
 }
