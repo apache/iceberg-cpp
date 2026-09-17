@@ -22,6 +22,7 @@
 #include <cstdint>
 #include <memory>
 #include <optional>
+#include <string>
 #include <vector>
 
 #include "iceberg/inspect/metadata_table.h"
@@ -69,7 +70,10 @@ Status AppendDataFile(ArrowRowBuilder& builder, const Schema& schema,
                       const LiveFile& live_file);
 
 /// \brief Iterate over live files, reading one manifest at a time.
+/// An empty column selection reads all data-file fields. Each manifest's entries
+/// are materialized by ManifestReader, independently of the Arrow batch size.
 Result<std::unique_ptr<Iterator<LiveFile>>> LiveFiles(
-    const Table& table, const std::shared_ptr<Snapshot>& snapshot);
+    const Table& table, const std::shared_ptr<Snapshot>& snapshot,
+    std::vector<std::string> columns = {});
 
 }  // namespace iceberg::internal

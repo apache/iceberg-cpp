@@ -71,8 +71,8 @@ Result<std::shared_ptr<Snapshot>> SnapshotAtRef(const Table& table,
   }
 
   auto ref = metadata->refs.find(std::string(ref_name));
-  ICEBERG_CHECK(ref != metadata->refs.end(), "Cannot find snapshot reference '{}'",
-                ref_name);
+  ICEBERG_PRECHECK(ref != metadata->refs.end(), "Cannot find snapshot reference '{}'",
+                   ref_name);
   ICEBERG_PRECHECK(ref->second != nullptr, "Snapshot reference '{}' is null", ref_name);
   return metadata->SnapshotById(ref->second->snapshot_id);
 }
@@ -552,11 +552,12 @@ class LiveFilesIterator : public Iterator<LiveFile> {
  public:
   LiveFilesIterator(std::shared_ptr<FileIO> io, std::shared_ptr<Schema> schema,
                     std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>> specs,
-                    std::vector<ManifestFile> manifests)
+                    std::vector<ManifestFile> manifests, std::vector<std::string> columns)
       : io_(std::move(io)),
         schema_(std::move(schema)),
         specs_(std::move(specs)),
-        manifests_(std::move(manifests)) {}
+        manifests_(std::move(manifests)),
+        columns_(std::move(columns)) {}
 
  protected:
   Result<std::optional<LiveFile>> NextImpl() override {
@@ -576,6 +577,9 @@ class LiveFilesIterator : public Iterator<LiveFile> {
       current_spec_ = spec->second;
       ICEBERG_ASSIGN_OR_RAISE(auto reader,
                               ManifestReader::Make(manifest, io_, schema_, specs_));
+      if (!columns_.empty()) {
+        reader->Select(columns_);
+      }
       ICEBERG_ASSIGN_OR_RAISE(entries_, reader->LiveEntries());
     }
     auto& entry = entries_[entry_index_++];
@@ -591,6 +595,7 @@ class LiveFilesIterator : public Iterator<LiveFile> {
   std::shared_ptr<Schema> schema_;
   std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>> specs_;
   std::vector<ManifestFile> manifests_;
+  std::vector<std::string> columns_;
   std::vector<ManifestEntry> entries_;
   std::shared_ptr<PartitionSpec> current_spec_;
   size_t manifest_index_ = 0;
@@ -600,7 +605,8 @@ class LiveFilesIterator : public Iterator<LiveFile> {
 }  // namespace
 
 Result<std::unique_ptr<Iterator<LiveFile>>> LiveFiles(
-    const Table& table, const std::shared_ptr<Snapshot>& snapshot) {
+    const Table& table, const std::shared_ptr<Snapshot>& snapshot,
+    std::vector<std::string> columns) {
   ICEBERG_ASSIGN_OR_RAISE(auto schema, table.schema());
   ICEBERG_ASSIGN_OR_RAISE(auto specs_ref, table.specs());
   std::vector<ManifestFile> manifests;
@@ -611,7 +617,8 @@ Result<std::unique_ptr<Iterator<LiveFile>>> LiveFiles(
     manifests.assign(snapshot_manifests.begin(), snapshot_manifests.end());
   }
   return std::make_unique<LiveFilesIterator>(table.io(), std::move(schema),
-                                             specs_ref.get(), std::move(manifests));
+                                             specs_ref.get(), std::move(manifests),
+                                             std::move(columns));
 }
 
 }  // namespace iceberg::internal

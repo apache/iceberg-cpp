@@ -37,6 +37,7 @@
 #include "iceberg/inspect/files_table.h"
 #include "iceberg/inspect/manifests_table.h"
 #include "iceberg/inspect/metadata_table.h"
+#include "iceberg/inspect/metadata_table_util_internal.h"
 #include "iceberg/inspect/partitions_table.h"
 #include "iceberg/inspect/refs_table.h"
 #include "iceberg/partition_spec.h"
@@ -269,6 +270,210 @@ TEST_P(SystemMetadataTablesTest, RejectsCombiningNamedRefsWithTimeTravel) {
     auto paths = std::static_pointer_cast<::arrow::StringArray>(
         batches[0]->GetColumnByName("file_path"));
     EXPECT_EQ(paths->GetString(0), "first.parquet");
+  }
+}
+
+TEST_P(SystemMetadataTablesTest, RejectsUnknownReference) {
+  ICEBERG_UNWRAP_OR_FAIL(auto table, MakeTable({}, kInvalidSnapshotId));
+  ICEBERG_UNWRAP_OR_FAIL(auto files, MetadataTable::Make<FilesTable>(table));
+  ICEBERG_UNWRAP_OR_FAIL(auto manifests, MetadataTable::Make<ManifestsTable>(table));
+  ICEBERG_UNWRAP_OR_FAIL(auto partitions, MetadataTable::Make<PartitionsTable>(table));
+  for (TimeTravelMetadataTable* metadata_table :
+       {static_cast<TimeTravelMetadataTable*>(files.get()),
+        static_cast<TimeTravelMetadataTable*>(manifests.get()),
+        static_cast<TimeTravelMetadataTable*>(partitions.get())}) {
+    EXPECT_THAT(metadata_table->Scan(SnapshotSelection{.ref_name = "missing"}),
+                IsError(ErrorKind::kInvalidArgument));
+  }
+}
+
+TEST_P(SystemMetadataTablesTest, ScansRefreshedSchemaAndPartitionSpec) {
+  auto first = MakeAppendSnapshotWithPartitionValues(
+      GetParam(), 10, std::nullopt, 1,
+      {{"old.parquet", PartitionValues(Literal::Int(7))}}, partitioned_spec_);
+  ICEBERG_UNWRAP_OR_FAIL(auto table, MakeTable({first}, 10, {}, partitioned_spec_));
+  ICEBERG_UNWRAP_OR_FAIL(auto files, MetadataTable::Make<FilesTable>(table));
+  ICEBERG_UNWRAP_OR_FAIL(auto partitions, MetadataTable::Make<PartitionsTable>(table));
+  auto old_files_schema = files->schema();
+  auto old_partitions_schema = partitions->schema();
+  ICEBERG_UNWRAP_OR_FAIL(auto old_files_stream, files->Scan());
+  ICEBERG_UNWRAP_OR_FAIL(auto old_partitions_stream, partitions->Scan());
+  auto old_files_reader = ::arrow::ImportRecordBatchReader(&old_files_stream);
+  ASSERT_TRUE(old_files_reader.ok()) << old_files_reader.status().ToString();
+  auto old_partitions_reader = ::arrow::ImportRecordBatchReader(&old_partitions_stream);
+  ASSERT_TRUE(old_partitions_reader.ok()) << old_partitions_reader.status().ToString();
+
+  auto old_schema = schema_;
+  schema_ = std::make_shared<Schema>(
+      std::vector<SchemaField>{SchemaField::MakeRequired(1, "id", int32()),
+                               SchemaField::MakeRequired(2, "data", string()),
+                               SchemaField::MakeOptional(3, "extra", int64())},
+      1);
+  std::shared_ptr<PartitionSpec> new_spec;
+  ICEBERG_UNWRAP_OR_FAIL(
+      new_spec,
+      PartitionSpec::Make(
+          2, {PartitionField(2, 1000, "data_bucket_16_2", Transform::Bucket(16)),
+              PartitionField(1, 1001, "id", Transform::Identity())}));
+  auto second = MakeAppendSnapshotWithPartitionValues(
+      GetParam(), 20, 10, 2,
+      {{"one.parquet", PartitionValues({Literal::Int(7), Literal::Int(1)})},
+       {"two.parquet", PartitionValues({Literal::Int(7), Literal::Int(2)})}},
+      new_spec);
+  auto metadata = MakeTableMetadata({first, second}, 20, {}, new_spec);
+  metadata->schemas.insert(metadata->schemas.begin(), old_schema);
+  metadata->partition_specs.push_back(new_spec);
+  metadata->last_column_id = 3;
+  metadata->last_partition_id = 1001;
+  ICEBERG_UNWRAP_OR_FAIL(auto refreshed,
+                         Table::Make(table->name(), std::move(metadata),
+                                     "s3://bucket/refreshed.json", file_io_, catalog_));
+  EXPECT_CALL(*catalog_, LoadTable(::testing::_)).WillOnce(::testing::Return(refreshed));
+  ASSERT_THAT(table->Refresh(), IsOk());
+
+  ICEBERG_UNWRAP_OR_FAIL(auto files_stream, files->Scan());
+  ICEBERG_UNWRAP_OR_FAIL(auto files_batches, ReadAllBatches(std::move(files_stream)));
+  ASSERT_EQ(files_batches.size(), 1);
+  ASSERT_EQ(files_batches[0]->num_rows(), 2);
+  auto file_partition = std::static_pointer_cast<::arrow::StructArray>(
+      files_batches[0]->GetColumnByName("partition"));
+  ASSERT_EQ(file_partition->num_fields(), 2);
+  auto ids = std::static_pointer_cast<::arrow::Int32Array>(file_partition->field(1));
+  EXPECT_EQ(ids->Value(0), 1);
+  EXPECT_EQ(ids->Value(1), 2);
+  auto metrics = std::static_pointer_cast<::arrow::StructArray>(
+      files_batches[0]->GetColumnByName("readable_metrics"));
+  EXPECT_NE(metrics->GetFieldByName("extra"), nullptr);
+  ICEBERG_UNWRAP_OR_FAIL(auto extra,
+                         files->schema()->FindFieldByName("readable_metrics.extra"));
+  ASSERT_TRUE(extra.has_value());
+  EXPECT_NE(files->schema(), old_files_schema);
+
+  ICEBERG_UNWRAP_OR_FAIL(auto partitions_stream, partitions->Scan());
+  ICEBERG_UNWRAP_OR_FAIL(auto partition_batches,
+                         ReadAllBatches(std::move(partitions_stream)));
+  ASSERT_EQ(partition_batches.size(), 1);
+  // Files that only differ in the newly added partition field must not merge.
+  ASSERT_EQ(partition_batches[0]->num_rows(), 2);
+  auto partition = std::static_pointer_cast<::arrow::StructArray>(
+      partition_batches[0]->GetColumnByName("partition"));
+  ASSERT_EQ(partition->num_fields(), 2);
+  auto partition_ids = std::static_pointer_cast<::arrow::Int32Array>(partition->field(1));
+  EXPECT_EQ(partition_ids->Value(0), 1);
+  EXPECT_EQ(partition_ids->Value(1), 2);
+  auto counts = std::static_pointer_cast<::arrow::Int32Array>(
+      partition_batches[0]->GetColumnByName("file_count"));
+  EXPECT_EQ(counts->Value(0), 1);
+  EXPECT_EQ(counts->Value(1), 1);
+  EXPECT_NE(partitions->schema(), old_partitions_schema);
+
+  // Streams created before refresh still use their original metadata and schema,
+  // even if their first batch is consumed after the new scans.
+  for (const auto& reader : {*old_files_reader, *old_partitions_reader}) {
+    auto batches = reader->ToRecordBatches();
+    ASSERT_TRUE(batches.ok()) << batches.status().ToString();
+    ASSERT_EQ(batches->size(), 1);
+    EXPECT_EQ((*batches)[0]->num_rows(), 1);
+    auto old_partition = std::static_pointer_cast<::arrow::StructArray>(
+        (*batches)[0]->GetColumnByName("partition"));
+    EXPECT_EQ(old_partition->num_fields(), 1);
+  }
+}
+
+TEST_P(SystemMetadataTablesTest, PreservesUnknownManifestCounts) {
+  // Upgraded tables can still reference v1 manifest lists, where counts are optional.
+  auto unknown = WriteDataManifest(
+      1, 10, {MakeEntry(ManifestStatus::kAdded, 10, 0, MakeDataFile("data.parquet"))});
+  unknown.added_files_count.reset();
+  unknown.existing_files_count.reset();
+  unknown.deleted_files_count.reset();
+  auto empty = WriteDataManifest(1, 10, {});
+  auto snapshot = std::make_shared<Snapshot>(Snapshot{
+      .snapshot_id = 10,
+      .sequence_number = 0,
+      .timestamp_ms = TimePointMsFromUnixMs(1000),
+      .manifest_list = WriteManifestList(1, 10, 0, 0, {unknown, empty}),
+  });
+  ICEBERG_UNWRAP_OR_FAIL(auto table, MakeTable({snapshot}, 10));
+  ICEBERG_UNWRAP_OR_FAIL(auto manifests, MetadataTable::Make<ManifestsTable>(table));
+  ICEBERG_UNWRAP_OR_FAIL(auto stream, manifests->Scan());
+  ICEBERG_UNWRAP_OR_FAIL(auto batches, ReadAllBatches(std::move(stream)));
+  ASSERT_EQ(batches.size(), 1);
+  ASSERT_EQ(batches[0]->num_rows(), 2);
+  for (int index = 5; index <= 10; ++index) {
+    auto counts =
+        std::static_pointer_cast<::arrow::Int32Array>(batches[0]->column(index));
+    if (index < 8) {
+      EXPECT_TRUE(counts->IsNull(0));
+    } else {
+      // Delete counts are definitively zero in a data manifest.
+      EXPECT_FALSE(counts->IsNull(0));
+      EXPECT_EQ(counts->Value(0), 0);
+    }
+    // A known zero must remain distinguishable from an unknown count.
+    EXPECT_FALSE(counts->IsNull(1));
+    EXPECT_EQ(counts->Value(1), 0);
+    EXPECT_TRUE(batches[0]->schema()->field(index)->nullable());
+    EXPECT_TRUE(manifests->schema()->fields()[index].optional());
+  }
+}
+
+TEST_P(SystemMetadataTablesTest, ProjectsLiveFilesForPartitionAggregation) {
+  auto data_file = MakeDataFile("data.parquet", PartitionValues(Literal::Int(7)),
+                                partitioned_spec_, 3);
+  data_file->column_sizes.emplace(1, 100);
+  data_file->value_counts.emplace(1, 3);
+  ICEBERG_UNWRAP_OR_FAIL(auto bound, Conversions::ToBytes(Literal::Int(42)));
+  data_file->lower_bounds.emplace(1, bound);
+  data_file->upper_bounds.emplace(1, bound);
+  auto data = WriteDataManifest(GetParam(), 10,
+                                {MakeEntry(ManifestStatus::kAdded, 10, 1, data_file)},
+                                partitioned_spec_);
+  auto delete_file = MakeDataFile("delete.parquet", PartitionValues(Literal::Int(7)),
+                                  partitioned_spec_, 2);
+  delete_file->content = DataFile::Content::kPositionDeletes;
+  auto deletes = WriteDeleteManifest(
+      GetParam(), 10, {MakeEntry(ManifestStatus::kAdded, 10, 1, delete_file)},
+      partitioned_spec_);
+  auto snapshot = std::make_shared<Snapshot>(Snapshot{
+      .snapshot_id = 10,
+      .sequence_number = 1,
+      .timestamp_ms = TimePointMsFromUnixMs(1000),
+      .manifest_list = WriteManifestList(GetParam(), 10, 0, 1, {data, deletes}),
+  });
+  ICEBERG_UNWRAP_OR_FAIL(auto table, MakeTable({snapshot}, 10, {}, partitioned_spec_));
+  ICEBERG_UNWRAP_OR_FAIL(auto all_files, internal::LiveFiles(*table, snapshot));
+  ICEBERG_UNWRAP_OR_FAIL(auto full_file, all_files->Next());
+  ASSERT_TRUE(full_file.has_value());
+  EXPECT_FALSE(full_file->file->column_sizes.empty());
+  EXPECT_FALSE(full_file->file->lower_bounds.empty());
+
+  ICEBERG_UNWRAP_OR_FAIL(auto projected_files,
+                         internal::LiveFiles(*table, snapshot,
+                                             {"content", "partition", "record_count",
+                                              "file_size_in_bytes"}));
+  ICEBERG_UNWRAP_OR_FAIL(auto projected_file, projected_files->Next());
+  ASSERT_TRUE(projected_file.has_value());
+  EXPECT_TRUE(projected_file->file->column_sizes.empty());
+  EXPECT_TRUE(projected_file->file->value_counts.empty());
+  EXPECT_TRUE(projected_file->file->lower_bounds.empty());
+  EXPECT_TRUE(projected_file->file->upper_bounds.empty());
+  EXPECT_EQ(projected_file->file->record_count, 3);
+  EXPECT_EQ(projected_file->snapshot_id, 10);
+
+  ICEBERG_UNWRAP_OR_FAIL(auto partitions, MetadataTable::Make<PartitionsTable>(table));
+  ICEBERG_UNWRAP_OR_FAIL(auto stream, partitions->Scan());
+  ICEBERG_UNWRAP_OR_FAIL(auto batches, ReadAllBatches(std::move(stream)));
+  ASSERT_EQ(batches.size(), 1);
+  ASSERT_EQ(batches[0]->num_rows(), 1);
+  for (const auto& [name, expected] :
+       std::vector<std::pair<std::string, int64_t>>{{"record_count", 3},
+                                                    {"total_data_file_size_in_bytes", 10},
+                                                    {"position_delete_record_count", 2},
+                                                    {"last_updated_snapshot_id", 10}}) {
+    auto values =
+        std::static_pointer_cast<::arrow::Int64Array>(batches[0]->GetColumnByName(name));
+    EXPECT_EQ(values->Value(0), expected) << name;
   }
 }
 
