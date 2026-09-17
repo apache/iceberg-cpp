@@ -104,13 +104,14 @@ TEST(ExpectedTest, ConversionConstructsValueOnce) {
   EXPECT_EQ(LiveCount::live, 0);
 }
 
-TEST(ExpectedTest, ExplictVoidE) {
+TEST(ExpectedTest, ExplicitVoidE) {
   iceberg::expected<void, int> e1 = {};
   iceberg::expected<void, int> e2 = iceberg::unexpected{42};
 
   EXPECT_TRUE(e1.has_value());
   EXPECT_TRUE((std::is_same_v<decltype(e1.value()), void>));
-  EXPECT_EQ(e1.error(), 0);
+  e1.value();
+  EXPECT_FALSE(e2.has_value());
   EXPECT_EQ(e2.error(), 42);
 }
 
