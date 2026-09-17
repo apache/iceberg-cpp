@@ -62,6 +62,15 @@ std::unordered_map<std::string, std::string> HttpResponse::headers() const {
   return impl_->headers();
 }
 
+HttpResponse HttpResponse::MakeForTesting(int32_t status_code, std::string body) {
+  cpr::Response cpr_response;
+  cpr_response.status_code = status_code;
+  cpr_response.text = std::move(body);
+  HttpResponse response;
+  response.impl_ = std::make_unique<HttpResponse::Impl>(std::move(cpr_response));
+  return response;
+}
+
 namespace {
 
 /// \brief Default error type for unparseable REST responses.

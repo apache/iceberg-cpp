@@ -531,6 +531,15 @@ Result<nlohmann::json> ScanTaskFieldsToJson(
     json[kFileScanTasks] = std::move(tasks_json);
   }
 
+  if (!response.storage_credentials.empty()) {
+    nlohmann::json creds_json = nlohmann::json::array();
+    for (const auto& cred : response.storage_credentials) {
+      ICEBERG_ASSIGN_OR_RAISE(auto entry, StorageCredentialToJson(cred));
+      creds_json.push_back(std::move(entry));
+    }
+    json[kStorageCredentials] = std::move(creds_json);
+  }
+
   return json;
 }
 
@@ -571,6 +580,21 @@ Status ScanTaskFieldsFromJson(
         FileScanTasksFromJson(file_scan_tasks_json, response.delete_files,
                               partition_specs_by_id, schema));
   }
+
+  // 4. storage_credentials
+  if (json.contains(kStorageCredentials)) {
+    ICEBERG_ASSIGN_OR_RAISE(auto creds_json,
+                            GetJsonValue<nlohmann::json>(json, kStorageCredentials));
+    if (!creds_json.is_array()) {
+      return JsonParseError("Cannot parse storage credentials from non-array: {}",
+                            SafeDumpJson(creds_json));
+    }
+    for (const auto& entry : creds_json) {
+      ICEBERG_ASSIGN_OR_RAISE(auto cred, StorageCredentialFromJson(entry));
+      response.storage_credentials.push_back(std::move(cred));
+    }
+  }
+
   return {};
 }
 

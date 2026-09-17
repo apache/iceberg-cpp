@@ -34,6 +34,8 @@ set(ICEBERG_REST_SOURCES
     rest_catalog.cc
     rest_file_io.cc
     rest_metrics_reporter.cc
+    rest_table.cc
+    rest_table_scan.cc
     rest_util.cc
     types.cc)
 

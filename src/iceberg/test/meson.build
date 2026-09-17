@@ -147,11 +147,13 @@ if get_option('rest').enabled()
         'rest_catalog_test': {
             'sources': files(
                 'auth_manager_test.cc',
+                'catalog_properties_test.cc',
                 'endpoint_test.cc',
                 'error_handlers_test.cc',
                 'rest_file_io_test.cc',
                 'rest_json_serde_test.cc',
                 'rest_metrics_reporter_test.cc',
+                'rest_table_scan_test.cc',
                 'rest_util_test.cc',
             ),
             'dependencies': [iceberg_rest_dep],
