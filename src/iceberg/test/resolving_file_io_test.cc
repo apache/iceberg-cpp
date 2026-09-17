@@ -60,9 +60,7 @@ class RecordingCredentialedFileIO : public RecordingFileIO,
     return {};
   }
 
-  const std::vector<StorageCredential>& credentials() const override {
-    return credentials_;
-  }
+  std::vector<StorageCredential> credentials() const override { return credentials_; }
 
   SupportsStorageCredentials* AsSupportsStorageCredentials() override { return this; }
 
