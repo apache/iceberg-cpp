@@ -17,6 +17,7 @@
  * under the License.
  */
 
+#include <array>
 #include <memory>
 #include <string>
 #include <string_view>
@@ -198,6 +199,66 @@ TEST(JsonInternalTest, SchemaFieldRejectsNonUtcTimestamptzDefault) {
   EXPECT_TRUE(FieldFromJson(utc).has_value());
 }
 
+TEST(JsonInternalTest, SchemaIdsRejectInvalidJsonIntegers) {
+  const nlohmann::json valid_schema = R"({
+    "type": "struct",
+    "schema-id": 10,
+    "identifier-field-ids": [20],
+    "fields": [
+      {"id": 20, "name": "id", "required": true, "type": "int"},
+      {
+        "id": 30,
+        "name": "items",
+        "required": false,
+        "type": {
+          "type": "list",
+          "element-id": 40,
+          "element-required": false,
+          "element": {
+            "type": "map",
+            "key-id": 50,
+            "key": "string",
+            "value-id": 60,
+            "value": "long",
+            "value-required": false
+          }
+        }
+      }
+    ]
+  })"_json;
+
+  struct IdPath {
+    nlohmann::json::json_pointer pointer;
+    std::string_view key;
+  };
+  const std::array<IdPath, 6> id_paths = {{
+      {nlohmann::json::json_pointer("/schema-id"), "schema-id"},
+      {nlohmann::json::json_pointer("/identifier-field-ids/0"), "identifier-field-ids"},
+      {nlohmann::json::json_pointer("/fields/0/id"), "id"},
+      {nlohmann::json::json_pointer("/fields/1/type/element-id"), "element-id"},
+      {nlohmann::json::json_pointer("/fields/1/type/element/key-id"), "key-id"},
+      {nlohmann::json::json_pointer("/fields/1/type/element/value-id"), "value-id"},
+  }};
+  const std::array<std::pair<nlohmann::json, std::string_view>, 3> invalid_ids = {{
+      {nlohmann::json(1.5), "must be an integer"},
+      {nlohmann::json(true), "must be an integer"},
+      {nlohmann::json(2147483648ULL), "out of range"},
+  }};
+
+  for (const auto& id_path : id_paths) {
+    for (const auto& [invalid_id, expected_error] : invalid_ids) {
+      SCOPED_TRACE(id_path.pointer.to_string() + "=" + invalid_id.dump());
+      auto invalid_schema = valid_schema;
+      invalid_schema[id_path.pointer] = invalid_id;
+
+      auto result = SchemaFromJson(invalid_schema);
+      EXPECT_THAT(result, IsError(ErrorKind::kJsonParseError));
+      EXPECT_THAT(result, HasErrorMessage(id_path.key));
+      EXPECT_THAT(result, HasErrorMessage(expected_error));
+    }
+  }
+}
+
 TEST(JsonInternalTest, SortField) {
   auto identity_transform = Transform::Identity();
 
@@ -309,6 +370,70 @@ TEST(JsonInternalTest, PartitionSpecFromJson) {
   auto json = ToJson(*spec);
   ICEBERG_UNWRAP_OR_FAIL(auto parsed, PartitionSpecFromJson(json));
   EXPECT_EQ(*spec, *parsed);
+}
+
+TEST(JsonInternalTest, PartitionIdsRejectInvalidJsonIntegers) {
+  const nlohmann::json valid_spec = R"({
+    "spec-id": 10,
+    "fields": [{
+      "source-id": 20,
+      "field-id": 1000,
+      "transform": "identity",
+      "name": "id"
+    }]
+  })"_json;
+  auto schema = std::make_shared<Schema>(
+      std::vector<SchemaField>{SchemaField(20, "id", int32(), false)},
+      /*schema_id=*/10);
+
+  struct IdPath {
+    nlohmann::json::json_pointer pointer;
+    std::string_view key;
+  };
+  const std::array<IdPath, 3> id_paths = {{
+      {nlohmann::json::json_pointer("/spec-id"), "spec-id"},
+      {nlohmann::json::json_pointer("/fields/0/source-id"), "source-id"},
+      {nlohmann::json::json_pointer("/fields/0/field-id"), "field-id"},
+  }};
+  const std::array<std::pair<nlohmann::json, std::string_view>, 3> invalid_ids = {{
+      {nlohmann::json(1.5), "must be an integer"},
+      {nlohmann::json(true), "must be an integer"},
+      {nlohmann::json(2147483648ULL), "out of range"},
+  }};
+
+  for (const auto& id_path : id_paths) {
+    for (const auto& [invalid_id, expected_error] : invalid_ids) {
+      SCOPED_TRACE(id_path.pointer.to_string() + "=" + invalid_id.dump());
+      auto invalid_spec = valid_spec;
+      invalid_spec[id_path.pointer] = invalid_id;
+
+      auto unbound_result = PartitionSpecFromJson(invalid_spec);
+      EXPECT_THAT(unbound_result, IsError(ErrorKind::kJsonParseError));
+      EXPECT_THAT(unbound_result, HasErrorMessage(id_path.key));
+      EXPECT_THAT(unbound_result, HasErrorMessage(expected_error));
+
+      auto bound_result = PartitionSpecFromJson(schema, invalid_spec, 10);
+      EXPECT_THAT(bound_result, IsError(ErrorKind::kJsonParseError));
+      EXPECT_THAT(bound_result, HasErrorMessage(id_path.key));
+      EXPECT_THAT(bound_result, HasErrorMessage(expected_error));
+    }
+  }
+
+  auto legacy_field = valid_spec["fields"][0];
+  legacy_field.erase("field-id");
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto parsed_legacy_field,
+      PartitionFieldFromJson(legacy_field, /*allow_field_id_missing=*/true));
+  EXPECT_EQ(parsed_legacy_field->field_id(), SchemaField::kInvalidFieldId);
+
+  for (const auto& [invalid_id, expected_error] : invalid_ids) {
+    SCOPED_TRACE("legacy field-id=" + invalid_id.dump());
+    legacy_field["field-id"] = invalid_id;
+    auto result = PartitionFieldFromJson(legacy_field, /*allow_field_id_missing=*/true);
+    EXPECT_THAT(result, IsError(ErrorKind::kJsonParseError));
+    EXPECT_THAT(result, HasErrorMessage("field-id"));
+    EXPECT_THAT(result, HasErrorMessage(expected_error));
+  }
 }
 
 TEST(JsonInternalTest, SnapshotRefBranch) {

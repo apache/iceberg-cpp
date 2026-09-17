@@ -23,6 +23,7 @@
 #include <format>
 #include <limits>
 #include <map>
+#include <optional>
 #include <regex>
 #include <string>
 #include <unordered_set>
@@ -311,6 +312,16 @@ template <std::signed_integral Integer>
 Result<Integer> GetJsonInteger(const nlohmann::json& json, std::string_view key) {
   ICEBERG_ASSIGN_OR_RAISE(auto value, GetJsonValue<nlohmann::json>(json, key));
   return IntegerFromJson<Integer>(value, std::format("'{}'", key));
+}
+
+template <std::signed_integral Integer>
+Result<std::optional<Integer>> GetJsonIntegerOptional(const nlohmann::json& json,
+                                                      std::string_view key) {
+  if (!json.contains(key) || json.at(key).is_null()) {
+    return std::nullopt;
+  }
+  ICEBERG_ASSIGN_OR_RAISE(auto value, GetJsonInteger<Integer>(json, key));
+  return value;
 }
 
 template <std::signed_integral Integer>
@@ -818,7 +829,7 @@ Result<std::unique_ptr<Type>> StructTypeFromJson(const nlohmann::json& json) {
 
 Result<std::unique_ptr<Type>> ListTypeFromJson(const nlohmann::json& json) {
   ICEBERG_ASSIGN_OR_RAISE(auto element_type, TypeFromJson(json[kElement]));
-  ICEBERG_ASSIGN_OR_RAISE(auto element_id, GetJsonValue<int32_t>(json, kElementId));
+  ICEBERG_ASSIGN_OR_RAISE(auto element_id, GetJsonInteger<int32_t>(json, kElementId));
   ICEBERG_ASSIGN_OR_RAISE(auto element_required,
                           GetJsonValue<bool>(json, kElementRequired));
 
@@ -834,8 +845,8 @@ Result<std::unique_ptr<Type>> MapTypeFromJson(const nlohmann::json& json) {
   ICEBERG_ASSIGN_OR_RAISE(
       auto value_type, GetJsonValue<nlohmann::json>(json, kValue).and_then(TypeFromJson));
 
-  ICEBERG_ASSIGN_OR_RAISE(auto key_id, GetJsonValue<int32_t>(json, kKeyId));
-  ICEBERG_ASSIGN_OR_RAISE(auto value_id, GetJsonValue<int32_t>(json, kValueId));
+  ICEBERG_ASSIGN_OR_RAISE(auto key_id, GetJsonInteger<int32_t>(json, kKeyId));
+  ICEBERG_ASSIGN_OR_RAISE(auto value_id, GetJsonInteger<int32_t>(json, kValueId));
   ICEBERG_ASSIGN_OR_RAISE(auto value_required, GetJsonValue<bool>(json, kValueRequired));
 
   SchemaField key_field(key_id, std::string(MapType::kKeyName), std::move(key_type),
@@ -996,7 +1007,7 @@ Status ValidateTimestamptzDefaultIsUtc(const Type& type, const nlohmann::json& v
 Result<std::unique_ptr<SchemaField>> FieldFromJson(const nlohmann::json& json) {
   ICEBERG_ASSIGN_OR_RAISE(
       auto type, GetJsonValue<nlohmann::json>(json, kType).and_then(TypeFromJson));
-  ICEBERG_ASSIGN_OR_RAISE(auto field_id, GetJsonValue<int32_t>(json, kId));
+  ICEBERG_ASSIGN_OR_RAISE(auto field_id, GetJsonInteger<int32_t>(json, kId));
   ICEBERG_ASSIGN_OR_RAISE(auto name, GetJsonValue<std::string>(json, kName));
   ICEBERG_ASSIGN_OR_RAISE(auto required, GetJsonValue<bool>(json, kRequired));
   ICEBERG_ASSIGN_OR_RAISE(auto doc, GetJsonValueOrDefault<std::string>(json, kDoc));
@@ -1029,7 +1040,7 @@ Result<std::unique_ptr<SchemaField>> FieldFromJson(const nlohmann::json& json) {
 
 Result<std::unique_ptr<Schema>> SchemaFromJson(const nlohmann::json& json) {
   ICEBERG_ASSIGN_OR_RAISE(auto schema_id_opt,
-                          GetJsonValueOptional<int32_t>(json, kSchemaId));
+                          GetJsonIntegerOptional<int32_t>(json, kSchemaId));
   ICEBERG_ASSIGN_OR_RAISE(auto type, TypeFromJson(json));
 
   if (type->type_id() != TypeId::kStruct) [[unlikely]] {
@@ -1043,9 +1054,11 @@ Result<std::unique_ptr<Schema>> SchemaFromJson(const nlohmann::json& json) {
     fields.emplace_back(std::move(field));
   }
 
-  ICEBERG_ASSIGN_OR_RAISE(
-      auto identifier_field_ids,
-      GetJsonValueOrDefault<std::vector<int32_t>>(json, kIdentifierFieldIds));
+  std::vector<int32_t> identifier_field_ids;
+  if (json.contains(kIdentifierFieldIds) && !json.at(kIdentifierFieldIds).is_null()) {
+    ICEBERG_ASSIGN_OR_RAISE(identifier_field_ids,
+                            IntegerVectorFromJson<int32_t>(json, kIdentifierFieldIds));
+  }
 
   return Schema::Make(std::move(fields), schema_id_opt.value_or(Schema::kInitialSchemaId),
                       std::move(identifier_field_ids));
@@ -1078,14 +1091,14 @@ Result<std::string> ToJsonString(const PartitionSpec& partition_spec) {
 
 Result<std::unique_ptr<PartitionField>> PartitionFieldFromJson(
     const nlohmann::json& json, bool allow_field_id_missing) {
-  ICEBERG_ASSIGN_OR_RAISE(auto source_id, GetJsonValue<int32_t>(json, kSourceId));
+  ICEBERG_ASSIGN_OR_RAISE(auto source_id, GetJsonInteger<int32_t>(json, kSourceId));
   int32_t field_id;
-  if (allow_field_id_missing) {
+  if (allow_field_id_missing &&
+      (!json.contains(kFieldId) || json.at(kFieldId).is_null())) {
     // Partition field id in v1 is not tracked, so we use -1 to indicate that.
-    ICEBERG_ASSIGN_OR_RAISE(field_id, GetJsonValueOrDefault<int32_t>(
-                                          json, kFieldId, SchemaField::kInvalidFieldId));
+    field_id = SchemaField::kInvalidFieldId;
   } else {
-    ICEBERG_ASSIGN_OR_RAISE(field_id, GetJsonValue<int32_t>(json, kFieldId));
+    ICEBERG_ASSIGN_OR_RAISE(field_id, GetJsonInteger<int32_t>(json, kFieldId));
   }
   ICEBERG_ASSIGN_OR_RAISE(
       auto transform,
@@ -1098,7 +1111,7 @@ Result<std::unique_ptr<PartitionField>> PartitionFieldFromJson(
 Result<std::unique_ptr<PartitionSpec>> PartitionSpecFromJson(
     const std::shared_ptr<Schema>& schema, const nlohmann::json& json,
     int32_t default_spec_id) {
-  ICEBERG_ASSIGN_OR_RAISE(auto spec_id, GetJsonValue<int32_t>(json, kSpecId));
+  ICEBERG_ASSIGN_OR_RAISE(auto spec_id, GetJsonInteger<int32_t>(json, kSpecId));
   ICEBERG_ASSIGN_OR_RAISE(auto fields, GetJsonValue<nlohmann::json>(json, kFields));
 
   std::vector<PartitionField> partition_fields;
@@ -1121,7 +1134,7 @@ Result<std::unique_ptr<PartitionSpec>> PartitionSpecFromJson(
 }
 
 Result<std::unique_ptr<PartitionSpec>> PartitionSpecFromJson(const nlohmann::json& json) {
-  ICEBERG_ASSIGN_OR_RAISE(auto spec_id, GetJsonValue<int32_t>(json, kSpecId));
+  ICEBERG_ASSIGN_OR_RAISE(auto spec_id, GetJsonInteger<int32_t>(json, kSpecId));
   ICEBERG_ASSIGN_OR_RAISE(auto fields, GetJsonValue<nlohmann::json>(json, kFields));
 
   std::vector<PartitionField> partition_fields;
