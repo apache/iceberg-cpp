@@ -19,7 +19,9 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <unordered_map>
+#include <utility>
 #include <vector>
 
 #include <gmock/gmock.h>
@@ -2119,7 +2121,7 @@ TEST(DataFileFromJsonTest, MissingSpecId) {
   EXPECT_THAT(result, HasErrorMessage("Missing 'spec-id'"));
 }
 
-TEST(DataFileFromJsonTest, MissingPartition) {
+TEST(DataFileFromJsonTest, MissingPartitionIsAccepted) {
   auto json = R"({
     "content": "data",
     "file-path": "s3://bucket/data/file.parquet",
@@ -2129,9 +2131,9 @@ TEST(DataFileFromJsonTest, MissingPartition) {
     "record-count": 10
   })"_json;
 
-  auto result = DataFileFromJson(json, UnpartitionedSpecs(), Schema({}, 0));
-  EXPECT_THAT(result, IsError(ErrorKind::kJsonParseError));
-  EXPECT_THAT(result, HasErrorMessage("Missing 'partition'"));
+  ICEBERG_UNWRAP_OR_FAIL(auto data_file,
+                         DataFileFromJson(json, UnpartitionedSpecs(), Schema({}, 0)));
+  EXPECT_EQ(data_file.partition.num_fields(), 0U);
 }
 
 TEST(DataFileFromJsonTest, NotAnObject) {
@@ -2303,7 +2305,7 @@ TEST(FileScanTasksFromJsonTest, AcceptsWholeFileStartAndLength) {
               IsOk());
 }
 
-TEST(FileScanTasksFromJsonTest, RejectsSplitTask) {
+TEST(FileScanTasksFromJsonTest, RejectsSplitTaskWhenEitherRangeFieldDiffers) {
   auto json = R"([{
     "data-file": {
       "content": "data",
@@ -2314,13 +2316,21 @@ TEST(FileScanTasksFromJsonTest, RejectsSplitTask) {
       "file-size-in-bytes": 12345,
       "record-count": 100
     },
-    "start": 100,
-    "length": 200
+    "start": 0,
+    "length": 12345
   }])"_json;
 
-  auto result = FileScanTasksFromJson(json, {}, UnpartitionedSpecs(), Schema({}, 0));
-  EXPECT_THAT(result, IsError(ErrorKind::kNotSupported));
-  EXPECT_THAT(result, HasErrorMessage("Split FileScanTask is not supported"));
+  for (const auto& [field, value] :
+       {std::pair<std::string_view, int64_t>{"start", 100},
+        std::pair<std::string_view, int64_t>{"length", 200}}) {
+    SCOPED_TRACE(field);
+    auto split_json = json;
+    split_json[0][field] = value;
+    auto result =
+        FileScanTasksFromJson(split_json, {}, UnpartitionedSpecs(), Schema({}, 0));
+    EXPECT_THAT(result, IsError(ErrorKind::kNotSupported));
+    EXPECT_THAT(result, HasErrorMessage("Split FileScanTask is not supported"));
+  }
 }
 
 TEST(FileScanTasksFromJsonTest, RowLineageSequence) {

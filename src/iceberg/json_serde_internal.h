@@ -451,8 +451,13 @@ ICEBERG_EXPORT Result<DataFile> DataFileFromJson(
 /// than encoded as `delete-file-references` into a sibling array.
 ///
 /// JSON fields:
+/// - `task-type`: `file-scan-task`
+/// - `schema` (required): schema used by this task
+/// - `spec` (required): partition spec used by this task
 /// - `data-file` (required): ContentFile JSON
-/// - `delete-files` (optional): array of ContentFile JSON
+/// - `start` (required): always 0 because split tasks are unsupported
+/// - `length` (required): always the data file size
+/// - `delete-files` (required): array of ContentFile JSON
 /// - `residual-filter` (optional): Expression JSON
 ICEBERG_EXPORT Result<nlohmann::json> ToJson(
     const FileScanTask& task,
@@ -462,16 +467,14 @@ ICEBERG_EXPORT Result<nlohmann::json> ToJson(
 
 /// \brief Deserializes a self-contained FileScanTask JSON object.
 ///
-/// Rejects REST `delete-file-references` and byte-range splits (`start`/`offset`
-/// != 0 or `length` != file size). Missing split fields default to the whole file.
+/// Reads the embedded schema and partition spec. Rejects REST
+/// `delete-file-references` and byte-range splits (`start` != 0 or `length` != file
+/// size). Both range fields are required, matching Java core.
 ICEBERG_EXPORT Result<std::shared_ptr<FileScanTask>> FileScanTaskFromJson(
-    const nlohmann::json& json,
-    const std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>>&
-        partition_spec_by_id,
-    const Schema& schema);
+    const nlohmann::json& json);
 
-/// Rejects `start`/`offset` != 0 or `length` != `file_size_in_bytes`.
-ICEBERG_EXPORT Status CheckFileScanTaskNotSplit(const nlohmann::json& task_json,
+/// Rejects `start != 0 || length != file_size_in_bytes`.
+ICEBERG_EXPORT Status CheckFileScanTaskNotSplit(int64_t start, int64_t length,
                                                 int64_t file_size_in_bytes);
 
 }  // namespace iceberg
