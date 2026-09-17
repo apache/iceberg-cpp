@@ -207,12 +207,8 @@ void UpdateCounts(PartitionStats& partition, const DataFile& file) {
 
 }  // namespace
 
-PartitionsTable::PartitionsTable(std::shared_ptr<Table> table,
-                                 std::shared_ptr<Schema> schema,
-                                 std::shared_ptr<StructType> partition_type)
-    : TimeTravelMetadataTable(std::move(table)),
-      schema_(std::move(schema)),
-      partition_type_(std::move(partition_type)) {}
+PartitionsTable::PartitionsTable(std::shared_ptr<Table> table)
+    : TimeTravelMetadataTable(std::move(table)) {}
 
 PartitionsTable::~PartitionsTable() = default;
 
@@ -221,7 +217,15 @@ const std::shared_ptr<Schema>& PartitionsTable::schema() const { return schema_;
 Result<std::unique_ptr<PartitionsTable>> PartitionsTable::Make(
     std::shared_ptr<Table> table) {
   ICEBERG_PRECHECK(table != nullptr, "Table cannot be null");
-  ICEBERG_ASSIGN_OR_RAISE(auto partition_type, internal::UnifiedPartitionType(*table));
+  auto partitions =
+      std::unique_ptr<PartitionsTable>(new PartitionsTable(std::move(table)));
+  ICEBERG_RETURN_UNEXPECTED(partitions->RefreshSchema());
+  return partitions;
+}
+
+Status PartitionsTable::RefreshSchema() {
+  ICEBERG_ASSIGN_OR_RAISE(auto partition_type,
+                          internal::UnifiedPartitionType(*source_table()));
 
   std::vector<SchemaField> fields;
   if (!partition_type->fields().empty()) {
@@ -247,16 +251,20 @@ Result<std::unique_ptr<PartitionsTable>> PartitionsTable::Make(
   fields.push_back(SchemaField::MakeOptional(kLastUpdatedSnapshotIdFieldId,
                                              "last_updated_snapshot_id", int64()));
 
-  auto schema = std::make_shared<Schema>(std::move(fields));
-  return std::unique_ptr<PartitionsTable>(new PartitionsTable(
-      std::move(table), std::move(schema), std::move(partition_type)));
+  schema_ = std::make_shared<Schema>(std::move(fields));
+  partition_type_ = std::move(partition_type);
+  return {};
 }
 
 Result<ArrowArrayStream> PartitionsTable::ScanSnapshot(
     const SnapshotSelection& snapshot_selection) {
   ICEBERG_ASSIGN_OR_RAISE(auto snapshot, internal::ResolveMetadataTableSnapshot(
                                              *source_table(), snapshot_selection));
-  ICEBERG_ASSIGN_OR_RAISE(auto files, internal::LiveFiles(*source_table(), snapshot));
+  ICEBERG_RETURN_UNEXPECTED(RefreshSchema());
+  ICEBERG_ASSIGN_OR_RAISE(
+      auto files, internal::LiveFiles(
+                      *source_table(), snapshot,
+                      {"content", "partition", "record_count", "file_size_in_bytes"}));
 
   std::vector<PartitionStats> partitions;
   std::unordered_map<PartitionKey, size_t, PartitionKeyHash> positions;

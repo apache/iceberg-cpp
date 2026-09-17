@@ -106,6 +106,14 @@ Status AppendPartitionSummaries(ArrowArray* array, const ManifestRow& row,
   return {};
 }
 
+Status AppendManifestCount(ArrowArray* array, const std::optional<int32_t>& count,
+                           bool applicable) {
+  if (!applicable) {
+    return AppendInt(array, 0);
+  }
+  return count.has_value() ? AppendInt(array, *count) : AppendNull(array);
+}
+
 Status AppendManifest(ArrowRowBuilder& builder, const ManifestRow& row,
                       const std::shared_ptr<Schema>& table_schema) {
   const auto& manifest = row.manifest;
@@ -114,21 +122,23 @@ Status AppendManifest(ArrowRowBuilder& builder, const ManifestRow& row,
   ICEBERG_RETURN_UNEXPECTED(AppendString(builder.column(1), manifest.manifest_path));
   ICEBERG_RETURN_UNEXPECTED(AppendInt(builder.column(2), manifest.manifest_length));
   ICEBERG_RETURN_UNEXPECTED(AppendInt(builder.column(3), manifest.partition_spec_id));
-  ICEBERG_RETURN_UNEXPECTED(AppendInt(builder.column(4), manifest.added_snapshot_id));
+  ICEBERG_PRECHECK(manifest.added_snapshot_id.has_value(),
+                   "Manifest '{}' has no added snapshot ID", manifest.manifest_path);
+  ICEBERG_RETURN_UNEXPECTED(AppendInt(builder.column(4), *manifest.added_snapshot_id));
 
   const bool data = manifest.content == ManifestContent::kData;
   ICEBERG_RETURN_UNEXPECTED(
-      AppendInt(builder.column(5), data ? manifest.added_files_count.value_or(0) : 0));
+      AppendManifestCount(builder.column(5), manifest.added_files_count, data));
   ICEBERG_RETURN_UNEXPECTED(
-      AppendInt(builder.column(6), data ? manifest.existing_files_count.value_or(0) : 0));
+      AppendManifestCount(builder.column(6), manifest.existing_files_count, data));
   ICEBERG_RETURN_UNEXPECTED(
-      AppendInt(builder.column(7), data ? manifest.deleted_files_count.value_or(0) : 0));
+      AppendManifestCount(builder.column(7), manifest.deleted_files_count, data));
   ICEBERG_RETURN_UNEXPECTED(
-      AppendInt(builder.column(8), data ? 0 : manifest.added_files_count.value_or(0)));
+      AppendManifestCount(builder.column(8), manifest.added_files_count, !data));
   ICEBERG_RETURN_UNEXPECTED(
-      AppendInt(builder.column(9), data ? 0 : manifest.existing_files_count.value_or(0)));
+      AppendManifestCount(builder.column(9), manifest.existing_files_count, !data));
   ICEBERG_RETURN_UNEXPECTED(
-      AppendInt(builder.column(10), data ? 0 : manifest.deleted_files_count.value_or(0)));
+      AppendManifestCount(builder.column(10), manifest.deleted_files_count, !data));
 
   ICEBERG_ASSIGN_OR_RAISE(auto partition_type, row.spec->PartitionType(*table_schema));
   ICEBERG_RETURN_UNEXPECTED(AppendPartitionSummaries(
@@ -150,12 +160,13 @@ const std::shared_ptr<Schema>& ManifestsTable::schema() const {
       SchemaField::MakeRequired(2, "length", int64()),
       SchemaField::MakeRequired(3, "partition_spec_id", int32()),
       SchemaField::MakeRequired(4, "added_snapshot_id", int64()),
-      SchemaField::MakeRequired(5, "added_data_files_count", int32()),
-      SchemaField::MakeRequired(6, "existing_data_files_count", int32()),
-      SchemaField::MakeRequired(7, "deleted_data_files_count", int32()),
-      SchemaField::MakeRequired(15, "added_delete_files_count", int32()),
-      SchemaField::MakeRequired(16, "existing_delete_files_count", int32()),
-      SchemaField::MakeRequired(17, "deleted_delete_files_count", int32()),
+      // Legacy manifests can omit counts; unknown counts must stay null.
+      SchemaField::MakeOptional(5, "added_data_files_count", int32()),
+      SchemaField::MakeOptional(6, "existing_data_files_count", int32()),
+      SchemaField::MakeOptional(7, "deleted_data_files_count", int32()),
+      SchemaField::MakeOptional(15, "added_delete_files_count", int32()),
+      SchemaField::MakeOptional(16, "existing_delete_files_count", int32()),
+      SchemaField::MakeOptional(17, "deleted_delete_files_count", int32()),
       SchemaField::MakeRequired(
           8, "partition_summaries",
           list(SchemaField::MakeRequired(
@@ -181,9 +192,9 @@ Result<ArrowArrayStream> ManifestsTable::ScanSnapshot(
   std::vector<ManifestRow> rows;
   if (snapshot != nullptr) {
     ICEBERG_ASSIGN_OR_RAISE(auto specs_ref, source_table()->specs());
-    SnapshotCache snapshot_cache(snapshot.get());
+    SnapshotReader snapshot_reader(snapshot.get());
     ICEBERG_ASSIGN_OR_RAISE(auto manifests,
-                            snapshot_cache.Manifests(source_table()->io()));
+                            snapshot_reader.Manifests(source_table()->io()));
     rows.reserve(manifests.size());
     for (const auto& manifest : manifests) {
       auto spec = specs_ref.get().find(manifest.partition_spec_id);

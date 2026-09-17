@@ -31,13 +31,8 @@
 
 namespace iceberg {
 
-FilesTable::FilesTable(std::shared_ptr<Table> table, std::shared_ptr<Schema> schema,
-                       std::shared_ptr<Schema> table_schema,
-                       std::shared_ptr<StructType> partition_type)
-    : TimeTravelMetadataTable(std::move(table)),
-      schema_(std::move(schema)),
-      table_schema_(std::move(table_schema)),
-      partition_type_(std::move(partition_type)) {}
+FilesTable::FilesTable(std::shared_ptr<Table> table)
+    : TimeTravelMetadataTable(std::move(table)) {}
 
 FilesTable::~FilesTable() = default;
 
@@ -45,19 +40,28 @@ const std::shared_ptr<Schema>& FilesTable::schema() const { return schema_; }
 
 Result<std::unique_ptr<FilesTable>> FilesTable::Make(std::shared_ptr<Table> table) {
   ICEBERG_PRECHECK(table != nullptr, "Table cannot be null");
-  ICEBERG_ASSIGN_OR_RAISE(auto table_schema, table->schema());
-  ICEBERG_ASSIGN_OR_RAISE(auto partition_type, internal::UnifiedPartitionType(*table));
+  auto files = std::unique_ptr<FilesTable>(new FilesTable(std::move(table)));
+  ICEBERG_RETURN_UNEXPECTED(files->RefreshSchema());
+  return files;
+}
+
+Status FilesTable::RefreshSchema() {
+  ICEBERG_ASSIGN_OR_RAISE(auto table_schema, source_table()->schema());
+  ICEBERG_ASSIGN_OR_RAISE(auto partition_type,
+                          internal::UnifiedPartitionType(*source_table()));
   ICEBERG_ASSIGN_OR_RAISE(auto schema,
                           internal::FilesTableSchema(*table_schema, partition_type));
-  return std::unique_ptr<FilesTable>(new FilesTable(std::move(table), std::move(schema),
-                                                    std::move(table_schema),
-                                                    std::move(partition_type)));
+  schema_ = std::move(schema);
+  table_schema_ = std::move(table_schema);
+  partition_type_ = std::move(partition_type);
+  return {};
 }
 
 Result<ArrowArrayStream> FilesTable::ScanSnapshot(
     const SnapshotSelection& snapshot_selection) {
   ICEBERG_ASSIGN_OR_RAISE(auto snapshot, internal::ResolveMetadataTableSnapshot(
                                              *source_table(), snapshot_selection));
+  ICEBERG_RETURN_UNEXPECTED(RefreshSchema());
   ICEBERG_ASSIGN_OR_RAISE(auto files, internal::LiveFiles(*source_table(), snapshot));
   auto schema = schema_;
   auto table_schema = table_schema_;
