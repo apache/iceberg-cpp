@@ -125,6 +125,9 @@ ICEBERG_EXPORT Status AppendUInt(ArrowArray* array, uint64_t value);
 /// \brief Append a double value to a nanoarrow array builder.
 ICEBERG_EXPORT Status AppendDouble(ArrowArray* array, double value);
 
+/// \brief Append an unscaled decimal value to a decimal128 array builder.
+ICEBERG_EXPORT Status AppendDecimal(ArrowArray* array, const Decimal& value);
+
 /// \brief Append a string value to a nanoarrow array builder.
 ICEBERG_EXPORT Status AppendString(ArrowArray* array, std::string_view value);
 

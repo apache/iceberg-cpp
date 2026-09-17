@@ -43,6 +43,10 @@ class ICEBERG_EXPORT MetadataTable {
   enum class Kind {
     kSnapshots,
     kHistory,
+    kRefs,
+    kFiles,
+    kPartitions,
+    kManifests,
   };
 
   /// \brief Maximum number of rows emitted in each Arrow batch.
@@ -93,9 +97,10 @@ struct SnapshotSelection {
   /// std::monostate selects the current snapshot.
   std::variant<std::monostate, int64_t, TimePointMs> snapshot;
 
-  /// \brief Resolve the snapshot relative to this branch or tag.
+  /// \brief Select the head of this branch or tag.
   ///
-  /// An empty string uses the main branch.
+  /// An empty string or "main" uses the main branch. A non-main reference cannot
+  /// be combined with a snapshot ID or timestamp.
   std::string ref_name;
 };
 

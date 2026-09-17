@@ -191,7 +191,8 @@ if(ICEBERG_BUILD_BUNDLE)
                    SOURCES
                    history_table_test.cc
                    metadata_table_test.cc
-                   snapshots_table_test.cc)
+                   snapshots_table_test.cc
+                   system_metadata_tables_test.cc)
 
   add_iceberg_test(eval_expr_test
                    USE_BUNDLE

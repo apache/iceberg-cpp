@@ -28,6 +28,7 @@
 #include "iceberg/nanoarrow_status_internal.h"
 #include "iceberg/schema.h"
 #include "iceberg/schema_internal.h"
+#include "iceberg/util/decimal.h"
 
 namespace iceberg {
 
@@ -120,6 +121,15 @@ Status AppendUInt(ArrowArray* array, uint64_t value) {
 
 Status AppendDouble(ArrowArray* array, double value) {
   ICEBERG_NANOARROW_RETURN_UNEXPECTED(ArrowArrayAppendDouble(array, value));
+  return {};
+}
+
+Status AppendDecimal(ArrowArray* array, const Decimal& value) {
+  // Append the unscaled integer; the array schema supplies precision and scale.
+  ArrowDecimal decimal;
+  ArrowDecimalInit(&decimal, Decimal::kBitWidth, Decimal::kMaxPrecision, 0);
+  ArrowDecimalSetBytes(&decimal, value.native_endian_bytes());
+  ICEBERG_NANOARROW_RETURN_UNEXPECTED(ArrowArrayAppendDecimal(array, &decimal));
   return {};
 }
 
