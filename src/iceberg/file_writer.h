@@ -75,8 +75,14 @@ class ICEBERG_EXPORT WriterProperties : public ConfigBase<WriterProperties> {
 struct ICEBERG_EXPORT WriterOptions {
   /// \brief The path to the file to write.
   std::string path;
-  /// \brief The schema of the data to write.
+  /// \brief The target schema to write to the file.
   std::shared_ptr<Schema> schema;
+  /// \brief The schema of Arrow batches passed to Writer::Write.
+  ///
+  /// When null, batches are assumed to match `schema`. Writers that support schema
+  /// alignment may use this schema to reorder fields and materialize missing fields
+  /// from their `write-default` values before writing `schema`.
+  std::shared_ptr<Schema> input_schema;
   /// \brief FileIO instance to create the file.
   std::shared_ptr<class FileIO> io;
   /// \brief Metadata to write to the file.
