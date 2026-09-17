@@ -681,4 +681,3 @@ TEST(ExpectedTest, VoidTErrorOrNoxcept) {
     EXPECT_FALSE(noexcept(e.error_or(FromType{})));
   }
 }
-
