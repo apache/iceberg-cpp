@@ -57,7 +57,9 @@ if(NOT ICEBERG_PUBLIC_INCLUDE_DIR)
   message(FATAL_ERROR "Could not locate iceberg's installed public headers")
 endif()
 
-file(GLOB_RECURSE ICEBERG_PUBLIC_HEADERS CONFIGURE_DEPENDS
+file(GLOB_RECURSE
+     ICEBERG_PUBLIC_HEADERS
+     CONFIGURE_DEPENDS
      "${ICEBERG_PUBLIC_INCLUDE_DIR}/iceberg/*.h"
      "${ICEBERG_PUBLIC_INCLUDE_DIR}/iceberg/*.hpp")
 list(SORT ICEBERG_PUBLIC_HEADERS)
@@ -65,20 +67,20 @@ list(SORT ICEBERG_PUBLIC_HEADERS)
 set(ICEBERG_PUBLIC_HEADER_CHECK_SOURCE
     "// Generated from iceberg's installed public headers.\n")
 foreach(ICEBERG_PUBLIC_HEADER IN LISTS ICEBERG_PUBLIC_HEADERS)
-  file(RELATIVE_PATH ICEBERG_PUBLIC_HEADER_RELATIVE_PATH
-       "${ICEBERG_PUBLIC_INCLUDE_DIR}" "${ICEBERG_PUBLIC_HEADER}")
+  file(RELATIVE_PATH ICEBERG_PUBLIC_HEADER_RELATIVE_PATH "${ICEBERG_PUBLIC_INCLUDE_DIR}"
+       "${ICEBERG_PUBLIC_HEADER}")
   string(APPEND ICEBERG_PUBLIC_HEADER_CHECK_SOURCE
          "#include <${ICEBERG_PUBLIC_HEADER_RELATIVE_PATH}>\n")
 endforeach()
 string(APPEND ICEBERG_PUBLIC_HEADER_CHECK_SOURCE "\nint main() { return 0; }\n")
 
-file(GENERATE OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/public_headers_cxx20.cc"
+file(GENERATE
+     OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/public_headers_cxx20.cc"
      CONTENT "${ICEBERG_PUBLIC_HEADER_CHECK_SOURCE}")
 
-add_executable(public_headers_cxx20
-               "${CMAKE_CURRENT_BINARY_DIR}/public_headers_cxx20.cc")
-set_target_properties(public_headers_cxx20 PROPERTIES CXX_STANDARD 20
-                                              CXX_STANDARD_REQUIRED ON
-                                              CXX_EXTENSIONS OFF)
-target_link_libraries(public_headers_cxx20
-                      PRIVATE ${ICEBERG_BUNDLE_TARGET} ${ICEBERG_REST_TARGET})
+add_executable(public_headers_cxx20 "${CMAKE_CURRENT_BINARY_DIR}/public_headers_cxx20.cc")
+set_target_properties(public_headers_cxx20
+                      PROPERTIES CXX_STANDARD 20 CXX_STANDARD_REQUIRED ON CXX_EXTENSIONS
+                                                                          OFF)
+target_link_libraries(public_headers_cxx20 PRIVATE ${ICEBERG_BUNDLE_TARGET}
+                                                   ${ICEBERG_REST_TARGET})
