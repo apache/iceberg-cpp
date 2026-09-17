@@ -145,6 +145,18 @@ Result<Integer> GetJsonInteger(const nlohmann::json& json, std::string_view key)
   return IntegerFromJson<Integer>(value, std::format("'{}'", key));
 }
 
+/// \brief Parses an optional JSON integer field with `IntegerFromJson` strictness,
+/// returning `std::nullopt` when the key is missing or null.
+template <std::signed_integral Integer>
+Result<std::optional<Integer>> GetJsonIntegerOptional(const nlohmann::json& json,
+                                                      std::string_view key) {
+  if (!json.contains(key) || json.at(key).is_null()) {
+    return std::nullopt;
+  }
+  ICEBERG_ASSIGN_OR_RAISE(auto value, GetJsonInteger<Integer>(json, key));
+  return value;
+}
+
 /// \brief Parses an optional `int64_t` field, returning `default_value` when the key is
 /// missing or null.
 inline Result<int64_t> GetJsonIntegerOrDefault(const nlohmann::json& json,
