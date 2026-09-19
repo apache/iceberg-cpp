@@ -29,6 +29,7 @@
 #include "iceberg/result.h"
 #include "iceberg/type.h"
 #include "iceberg/util/checked_cast.h"
+#include "iceberg/util/unreachable.h"
 #include "iceberg/util/visitor_generate.h"
 
 namespace iceberg {
@@ -94,7 +95,7 @@ inline auto VisitType(const Type& type, VISITOR&& visitor, ARGS&&... args)
   switch (type.type_id()) {
     ICEBERG_GENERATE_FOR_ALL_TYPES(TYPE_VISIT_INLINE);
     default:
-      std::unreachable();
+      Unreachable();
   }
 }
 

@@ -27,6 +27,7 @@
 
 #include "iceberg/result.h"
 #include "iceberg/util/string_util.h"
+#include "iceberg/util/unreachable.h"
 
 namespace iceberg {
 
@@ -66,7 +67,7 @@ constexpr std::string_view ToString(LogLevel level) noexcept {
     case LogLevel::kOff:
       return "off";
   }
-  std::unreachable();
+  Unreachable();
 }
 
 /// \brief Parse a LogLevel from a string (case-insensitive).

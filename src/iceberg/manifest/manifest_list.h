@@ -34,6 +34,7 @@
 #include "iceberg/schema_field.h"
 #include "iceberg/table_metadata.h"
 #include "iceberg/type.h"
+#include "iceberg/util/unreachable.h"
 
 namespace iceberg {
 
@@ -262,7 +263,7 @@ ICEBERG_EXPORT inline constexpr std::string_view ToString(ManifestContent type) 
     case ManifestContent::kDeletes:
       return "deletes";
   }
-  std::unreachable();
+  Unreachable();
 }
 
 /// \brief Get the relative manifest content type from name
