@@ -278,8 +278,8 @@ class MergeAppendTestBase : public MinimalUpdateTestBase {
 
   Result<std::vector<ManifestFile>> DataManifests(
       const std::shared_ptr<Snapshot>& snapshot) {
-    SnapshotCache snapshot_cache(snapshot.get());
-    ICEBERG_ASSIGN_OR_RAISE(auto manifests, snapshot_cache.DataManifests(file_io_));
+    SnapshotReader snapshot_reader(snapshot.get());
+    ICEBERG_ASSIGN_OR_RAISE(auto manifests, snapshot_reader.DataManifests(file_io_));
     return std::vector<ManifestFile>(manifests.begin(), manifests.end());
   }
 
@@ -555,8 +555,8 @@ TEST_P(MergeAppendTest, EmptyTableAppendFilesWithDifferentSpecs) {
 
   EXPECT_THAT(table_->Refresh(), IsOk());
   ICEBERG_UNWRAP_OR_FAIL(auto snapshot, CurrentSnapshot());
-  SnapshotCache snapshot_cache(snapshot.get());
-  ICEBERG_UNWRAP_OR_FAIL(auto data_manifests, snapshot_cache.DataManifests(file_io_));
+  SnapshotReader snapshot_reader(snapshot.get());
+  ICEBERG_UNWRAP_OR_FAIL(auto data_manifests, snapshot_reader.DataManifests(file_io_));
   std::vector<ManifestFile> manifest_files(data_manifests.begin(), data_manifests.end());
   ASSERT_EQ(manifest_files.size(), 2U);
 
@@ -648,8 +648,8 @@ TEST_P(MergeAppendTest, MergeWithAppendFilesAndManifest) {
 
   EXPECT_THAT(table_->Refresh(), IsOk());
   ICEBERG_UNWRAP_OR_FAIL(auto snapshot, CurrentSnapshot());
-  SnapshotCache snapshot_cache(snapshot.get());
-  ICEBERG_UNWRAP_OR_FAIL(auto data_manifests, snapshot_cache.DataManifests(file_io_));
+  SnapshotReader snapshot_reader(snapshot.get());
+  ICEBERG_UNWRAP_OR_FAIL(auto data_manifests, snapshot_reader.DataManifests(file_io_));
   ASSERT_EQ(data_manifests.size(), 1U);
   EXPECT_NE(data_manifests[0].manifest_path, path);
 
@@ -919,9 +919,9 @@ TEST_P(MergeAppendTest, MinMergeCount) {
   EXPECT_THAT(append_c->Commit(), IsOk());
   EXPECT_THAT(table_->Refresh(), IsOk());
   ICEBERG_UNWRAP_OR_FAIL(auto snapshot_before_merge, CurrentSnapshot());
-  SnapshotCache before_cache(snapshot_before_merge.get());
+  SnapshotReader before_reader(snapshot_before_merge.get());
   ICEBERG_UNWRAP_OR_FAIL(auto manifests_before_merge,
-                         before_cache.DataManifests(file_io_));
+                         before_reader.DataManifests(file_io_));
   EXPECT_EQ(manifests_before_merge.size(), 3U);
 
   ICEBERG_UNWRAP_OR_FAIL(auto append_d, NewBranchMergeAppend());

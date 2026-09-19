@@ -105,8 +105,8 @@ class TestMergeAppend : public MergingSnapshotUpdate {
   Result<std::vector<ManifestFile>> CommitManifests() {
     ICEBERG_RETURN_UNEXPECTED(Commit());
     ICEBERG_ASSIGN_OR_RAISE(auto snapshot, ctx_->table->current_snapshot());
-    SnapshotCache cache(snapshot.get());
-    ICEBERG_ASSIGN_OR_RAISE(auto manifests, cache.Manifests(ctx_->table->io()));
+    SnapshotReader snapshot_reader(snapshot.get());
+    ICEBERG_ASSIGN_OR_RAISE(auto manifests, snapshot_reader.Manifests(ctx_->table->io()));
     return std::vector<ManifestFile>(manifests.begin(), manifests.end());
   }
 
@@ -426,8 +426,8 @@ class MergingSnapshotUpdateTest : public MinimalUpdateTestBase {
 
   Result<std::unordered_map<std::string, std::optional<int64_t>>> DataFileFirstRowIds(
       const std::shared_ptr<Snapshot>& snapshot, const TableMetadata& metadata) {
-    SnapshotCache snapshot_cache(snapshot.get());
-    ICEBERG_ASSIGN_OR_RAISE(auto manifest_range, snapshot_cache.DataManifests(file_io_));
+    SnapshotReader snapshot_reader(snapshot.get());
+    ICEBERG_ASSIGN_OR_RAISE(auto manifest_range, snapshot_reader.DataManifests(file_io_));
     std::vector<ManifestFile> manifests(manifest_range.begin(), manifest_range.end());
     ICEBERG_ASSIGN_OR_RAISE(auto entries, ReadAllEntries(manifests, metadata));
 
@@ -736,9 +736,9 @@ TEST_F(MergingSnapshotUpdateTest, V3UpgradeLeavesExistingRowsUnassigned) {
   EXPECT_EQ(current->first_row_id, std::nullopt);
   EXPECT_EQ(current->added_rows, std::nullopt);
 
-  SnapshotCache snapshot_cache(current.get());
+  SnapshotReader snapshot_reader(current.get());
   ICEBERG_UNWRAP_OR_FAIL(auto data_manifest_range,
-                         snapshot_cache.DataManifests(file_io_));
+                         snapshot_reader.DataManifests(file_io_));
   std::vector<ManifestFile> data_manifests(data_manifest_range.begin(),
                                            data_manifest_range.end());
   ASSERT_FALSE(data_manifests.empty());
@@ -753,7 +753,7 @@ TEST_F(MergingSnapshotUpdateTest, V3UpgradeLeavesExistingRowsUnassigned) {
   EXPECT_EQ(first_row_ids.at(file_c_->file_path), std::nullopt);
 
   ICEBERG_UNWRAP_OR_FAIL(auto delete_manifest_range,
-                         snapshot_cache.DeleteManifests(file_io_));
+                         snapshot_reader.DeleteManifests(file_io_));
   ASSERT_FALSE(delete_manifest_range.empty());
   for (const auto& manifest : delete_manifest_range) {
     EXPECT_EQ(manifest.first_row_id, std::nullopt);
@@ -785,8 +785,9 @@ TEST_F(MergingSnapshotUpdateTest, V3FirstCommitAssignsExistingRowsAfterUpgrade) 
                                     *first_row_ids.at(file_c_->file_path)}),
               ::testing::UnorderedElementsAre(0, file_a_->record_count));
 
-  SnapshotCache snapshot_cache(assigned.get());
-  ICEBERG_UNWRAP_OR_FAIL(auto delete_manifests, snapshot_cache.DeleteManifests(file_io_));
+  SnapshotReader snapshot_reader(assigned.get());
+  ICEBERG_UNWRAP_OR_FAIL(auto delete_manifests,
+                         snapshot_reader.DeleteManifests(file_io_));
   ASSERT_FALSE(delete_manifests.empty());
   for (const auto& manifest : delete_manifests) {
     EXPECT_EQ(manifest.first_row_id, std::nullopt);
@@ -857,8 +858,9 @@ TEST_F(MergingSnapshotUpdateTest, SetNewDataFilesDataSequenceNumber) {
   ICEBERG_UNWRAP_OR_FAIL(auto snapshot, table_->current_snapshot());
   EXPECT_EQ(snapshot->summary.at(SnapshotSummaryFields::kAddedDataFiles), "1");
 
-  auto snapshot_cache = SnapshotCache(snapshot.get());
-  ICEBERG_UNWRAP_OR_FAIL(auto data_manifests, snapshot_cache.DataManifests(table_->io()));
+  auto snapshot_reader = SnapshotReader(snapshot.get());
+  ICEBERG_UNWRAP_OR_FAIL(auto data_manifests,
+                         snapshot_reader.DataManifests(table_->io()));
   std::vector<ManifestFile> manifests(data_manifests.begin(), data_manifests.end());
   ICEBERG_UNWRAP_OR_FAIL(auto entries, ReadAllEntries(manifests, *table_->metadata()));
   ASSERT_EQ(entries.size(), 1U);
@@ -915,8 +917,8 @@ TEST_F(MergingSnapshotUpdateTest, CommittedFilesSurviveRejectedCommitAndAbort) {
   ASSERT_THAT(op->Commit(), IsOk());
   ASSERT_THAT(txn->Commit(), IsOk());
   ICEBERG_UNWRAP_OR_FAIL(auto snapshot, txn->table()->current_snapshot());
-  SnapshotCache cache(snapshot.get());
-  ICEBERG_UNWRAP_OR_FAIL(auto manifests, cache.Manifests(file_io_));
+  SnapshotReader snapshot_reader(snapshot.get());
+  ICEBERG_UNWRAP_OR_FAIL(auto manifests, snapshot_reader.Manifests(file_io_));
   ASSERT_THAT(manifests, ::testing::SizeIs(1));
 
   EXPECT_TRUE(deleted_paths.empty());
@@ -937,8 +939,8 @@ TEST_F(MergingSnapshotUpdateTest,
   ASSERT_THAT(table_->Refresh(), IsOk());
 
   ICEBERG_UNWRAP_OR_FAIL(auto initial_snapshot, table_->current_snapshot());
-  SnapshotCache initial_cache(initial_snapshot.get());
-  ICEBERG_UNWRAP_OR_FAIL(auto initial_manifests, initial_cache.Manifests(file_io_));
+  SnapshotReader initial_reader(initial_snapshot.get());
+  ICEBERG_UNWRAP_OR_FAIL(auto initial_manifests, initial_reader.Manifests(file_io_));
   ASSERT_THAT(initial_manifests, ::testing::SizeIs(1));
 
   std::vector<std::string> deleted_paths;
@@ -952,8 +954,8 @@ TEST_F(MergingSnapshotUpdateTest,
   ASSERT_THAT(op->Commit(), IsOk());
 
   ICEBERG_UNWRAP_OR_FAIL(auto staged_snapshot, txn->current().Snapshot());
-  SnapshotCache staged_cache(staged_snapshot.get());
-  ICEBERG_UNWRAP_OR_FAIL(auto staged_manifests, staged_cache.Manifests(file_io_));
+  SnapshotReader staged_reader(staged_snapshot.get());
+  ICEBERG_UNWRAP_OR_FAIL(auto staged_manifests, staged_reader.Manifests(file_io_));
   ASSERT_THAT(staged_manifests, ::testing::SizeIs(1));
   ASSERT_NE(staged_manifests[0].manifest_path, initial_manifests[0].manifest_path);
   EXPECT_TRUE(deleted_paths.empty());
@@ -1050,8 +1052,8 @@ TEST_F(MergingSnapshotUpdateTest, RetryRebuildsDeleteSummary) {
     ICEBERG_UNWRAP_OR_FAIL(auto snapshot, op->StagedSnapshot());
     EXPECT_EQ(snapshot->summary.at(SnapshotSummaryFields::kAddedDeleteFiles), "1");
     EXPECT_EQ(snapshot->summary.at(SnapshotSummaryFields::kAddedPosDeleteFiles), "1");
-    SnapshotCache cache(snapshot.get());
-    ICEBERG_UNWRAP_OR_FAIL(auto manifests, cache.DeleteManifests(file_io_));
+    SnapshotReader snapshot_reader(snapshot.get());
+    ICEBERG_UNWRAP_OR_FAIL(auto manifests, snapshot_reader.DeleteManifests(file_io_));
     ASSERT_THAT(manifests, ::testing::SizeIs(1));
     ICEBERG_UNWRAP_OR_FAIL(
         auto entries,
@@ -1373,8 +1375,8 @@ TEST_F(MergingSnapshotUpdateTest, AddManifestCopiesManifestWithAssignedSnapshotI
 
   EXPECT_THAT(table_->Refresh(), IsOk());
   ICEBERG_UNWRAP_OR_FAIL(auto snapshot, table_->current_snapshot());
-  SnapshotCache snapshot_cache(snapshot.get());
-  ICEBERG_UNWRAP_OR_FAIL(auto data_manifests, snapshot_cache.DataManifests(file_io_));
+  SnapshotReader snapshot_reader(snapshot.get());
+  ICEBERG_UNWRAP_OR_FAIL(auto data_manifests, snapshot_reader.DataManifests(file_io_));
   ASSERT_EQ(data_manifests.size(), 1U);
   EXPECT_NE(data_manifests[0].manifest_path, path);
 }
@@ -1389,8 +1391,8 @@ TEST_F(MergingSnapshotUpdateTest, AddManifestRetryCopiesManifestAgain) {
   FailCommits(2, [&](int attempt) {
     SCOPED_TRACE(attempt);
     ICEBERG_UNWRAP_OR_FAIL(auto snapshot, op->StagedSnapshot());
-    SnapshotCache cache(snapshot.get());
-    ICEBERG_UNWRAP_OR_FAIL(auto manifests, cache.DataManifests(file_io_));
+    SnapshotReader snapshot_reader(snapshot.get());
+    ICEBERG_UNWRAP_OR_FAIL(auto manifests, snapshot_reader.DataManifests(file_io_));
     ASSERT_THAT(manifests, ::testing::SizeIs(1));
     const auto& manifest_path = manifests[0].manifest_path;
     EXPECT_NE(manifest_path, path);
@@ -1446,10 +1448,10 @@ TEST_F(MergingSnapshotUpdateTest, AppendManifestEmptyTable) {
 
   EXPECT_THAT(table_->Refresh(), IsOk());
   ICEBERG_UNWRAP_OR_FAIL(auto snapshot, table_->current_snapshot());
-  SnapshotCache snapshot_cache(snapshot.get());
+  SnapshotReader snapshot_reader(snapshot.get());
 
   // In v2 with snapshot ID inheritance, the manifest path is reused directly.
-  ICEBERG_UNWRAP_OR_FAIL(auto data_manifests, snapshot_cache.DataManifests(file_io_));
+  ICEBERG_UNWRAP_OR_FAIL(auto data_manifests, snapshot_reader.DataManifests(file_io_));
   ASSERT_EQ(data_manifests.size(), 1);
 
   EXPECT_EQ(snapshot->summary.at(SnapshotSummaryFields::kAddedDataFiles), "2");
@@ -1467,8 +1469,8 @@ TEST_F(MergingSnapshotUpdateTest, AppendManifestWithDataFiles) {
 
   EXPECT_THAT(table_->Refresh(), IsOk());
   ICEBERG_UNWRAP_OR_FAIL(auto snapshot, table_->current_snapshot());
-  SnapshotCache snapshot_cache(snapshot.get());
-  ICEBERG_UNWRAP_OR_FAIL(auto data_manifests, snapshot_cache.DataManifests(file_io_));
+  SnapshotReader snapshot_reader(snapshot.get());
+  ICEBERG_UNWRAP_OR_FAIL(auto data_manifests, snapshot_reader.DataManifests(file_io_));
   // Written manifest (file_b_) + appended manifest (file_a_, file_b_)
   EXPECT_EQ(data_manifests.size(), 2);
   EXPECT_EQ(snapshot->summary.at(SnapshotSummaryFields::kAddedDataFiles), "3");
@@ -1495,8 +1497,8 @@ TEST_F(MergingSnapshotUpdateTest, AppendManifestMergeWithMinCountOne) {
 
   EXPECT_THAT(table_->Refresh(), IsOk());
   ICEBERG_UNWRAP_OR_FAIL(auto snapshot, table_->current_snapshot());
-  SnapshotCache snapshot_cache(snapshot.get());
-  ICEBERG_UNWRAP_OR_FAIL(auto data_manifests, snapshot_cache.DataManifests(file_io_));
+  SnapshotReader snapshot_reader(snapshot.get());
+  ICEBERG_UNWRAP_OR_FAIL(auto data_manifests, snapshot_reader.DataManifests(file_io_));
   // Both manifests merged into one.
   EXPECT_EQ(data_manifests.size(), 1);
   EXPECT_EQ(snapshot->summary.at(SnapshotSummaryFields::kAddedDataFiles), "3");
@@ -1525,8 +1527,8 @@ TEST_F(MergingSnapshotUpdateTest, AppendManifestDoNotMergeMinCount) {
 
   EXPECT_THAT(table_->Refresh(), IsOk());
   ICEBERG_UNWRAP_OR_FAIL(auto snapshot, table_->current_snapshot());
-  SnapshotCache snapshot_cache(snapshot.get());
-  ICEBERG_UNWRAP_OR_FAIL(auto data_manifests, snapshot_cache.DataManifests(file_io_));
+  SnapshotReader snapshot_reader(snapshot.get());
+  ICEBERG_UNWRAP_OR_FAIL(auto data_manifests, snapshot_reader.DataManifests(file_io_));
   EXPECT_EQ(data_manifests.size(), 3);
   EXPECT_EQ(snapshot->summary.at(SnapshotSummaryFields::kAddedDataFiles), "3");
 }
@@ -1551,8 +1553,8 @@ TEST_F(MergingSnapshotUpdateTest, ManifestMergeMergesIntoOne) {
 
   EXPECT_THAT(table_->Refresh(), IsOk());
   ICEBERG_UNWRAP_OR_FAIL(auto snapshot, table_->current_snapshot());
-  SnapshotCache snapshot_cache(snapshot.get());
-  ICEBERG_UNWRAP_OR_FAIL(auto data_manifests, snapshot_cache.DataManifests(file_io_));
+  SnapshotReader snapshot_reader(snapshot.get());
+  ICEBERG_UNWRAP_OR_FAIL(auto data_manifests, snapshot_reader.DataManifests(file_io_));
   EXPECT_EQ(data_manifests.size(), 1);
   EXPECT_EQ(snapshot->summary.at(SnapshotSummaryFields::kTotalDataFiles), "2");
   EXPECT_EQ(snapshot->summary.at(SnapshotSummaryFields::kManifestsReplaced), "1");
@@ -1568,8 +1570,8 @@ TEST_F(MergingSnapshotUpdateTest, ManifestMergeDoesNotMergeWhenBelowMinCount) {
 
   EXPECT_THAT(table_->Refresh(), IsOk());
   ICEBERG_UNWRAP_OR_FAIL(auto snapshot, table_->current_snapshot());
-  SnapshotCache snapshot_cache(snapshot.get());
-  ICEBERG_UNWRAP_OR_FAIL(auto data_manifests, snapshot_cache.DataManifests(file_io_));
+  SnapshotReader snapshot_reader(snapshot.get());
+  ICEBERG_UNWRAP_OR_FAIL(auto data_manifests, snapshot_reader.DataManifests(file_io_));
   EXPECT_EQ(data_manifests.size(), 2);
   EXPECT_EQ(snapshot->summary.at(SnapshotSummaryFields::kTotalDataFiles), "2");
 }
@@ -1589,8 +1591,8 @@ TEST_F(MergingSnapshotUpdateTest, ManifestMergeDoesNotMergeWhenSizeTargetTooSmal
 
   EXPECT_THAT(table_->Refresh(), IsOk());
   ICEBERG_UNWRAP_OR_FAIL(auto snapshot, table_->current_snapshot());
-  SnapshotCache snapshot_cache(snapshot.get());
-  ICEBERG_UNWRAP_OR_FAIL(auto data_manifests, snapshot_cache.DataManifests(file_io_));
+  SnapshotReader snapshot_reader(snapshot.get());
+  ICEBERG_UNWRAP_OR_FAIL(auto data_manifests, snapshot_reader.DataManifests(file_io_));
   EXPECT_EQ(data_manifests.size(), 2);
 }
 

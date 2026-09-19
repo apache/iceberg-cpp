@@ -681,9 +681,9 @@ Result<FileScanTaskStreamPtr> DataTableScan::PlanFilesStream() const {
   TableMetadataCache metadata_cache(metadata_.get());
   ICEBERG_ASSIGN_OR_RAISE(auto specs_by_id, metadata_cache.GetPartitionSpecsById());
 
-  SnapshotCache snapshot_cache(snapshot.get());
-  ICEBERG_ASSIGN_OR_RAISE(auto data_manifests, snapshot_cache.DataManifests(io_));
-  ICEBERG_ASSIGN_OR_RAISE(auto delete_manifests, snapshot_cache.DeleteManifests(io_));
+  SnapshotReader snapshot_reader(snapshot.get());
+  ICEBERG_ASSIGN_OR_RAISE(auto data_manifests, snapshot_reader.DataManifests(io_));
+  ICEBERG_ASSIGN_OR_RAISE(auto delete_manifests, snapshot_reader.DeleteManifests(io_));
 
   if (scan_metrics) {
     scan_metrics->total_data_manifests->Increment(
@@ -802,8 +802,8 @@ Result<std::vector<std::shared_ptr<FileScanTask>>> IncrementalAppendScan::PlanFi
 
   std::unordered_set<ManifestFile> data_manifests;
   for (const auto& snapshot : append_snapshots) {
-    SnapshotCache snapshot_cache(snapshot.get());
-    ICEBERG_ASSIGN_OR_RAISE(auto manifests, snapshot_cache.DataManifests(io_));
+    SnapshotReader snapshot_reader(snapshot.get());
+    ICEBERG_ASSIGN_OR_RAISE(auto manifests, snapshot_reader.DataManifests(io_));
     std::ranges::copy_if(manifests, std::inserter(data_manifests, data_manifests.end()),
                          [&snapshot_ids](const ManifestFile& manifest) {
                            return snapshot_ids.contains(manifest.added_snapshot_id);
@@ -866,20 +866,20 @@ IncrementalChangelogScan::PlanFiles(std::optional<int64_t> from_snapshot_id_excl
       SnapshotUtil::AncestorsBetween(*metadata_, to_snapshot_id_inclusive,
                                      from_snapshot_id_exclusive));
 
-  std::vector<std::pair<std::shared_ptr<Snapshot>, std::unique_ptr<SnapshotCache>>>
+  std::vector<std::pair<std::shared_ptr<Snapshot>, std::unique_ptr<SnapshotReader>>>
       changelog_snapshots;
 
   for (const auto& snapshot : std::ranges::reverse_view(ancestors_snapshots)) {
     auto operation = snapshot->Operation();
     if (!operation.has_value() || operation.value() != DataOperation::kReplace) {
-      auto snapshot_cache = std::make_unique<SnapshotCache>(snapshot.get());
+      auto snapshot_reader = std::make_unique<SnapshotReader>(snapshot.get());
       ICEBERG_ASSIGN_OR_RAISE(auto delete_manifests,
-                              snapshot_cache->DeleteManifests(io_));
+                              snapshot_reader->DeleteManifests(io_));
       if (!delete_manifests.empty()) {
         return NotSupported(
             "Delete files are currently not supported in changelog scans");
       }
-      changelog_snapshots.emplace_back(snapshot, std::move(snapshot_cache));
+      changelog_snapshots.emplace_back(snapshot, std::move(snapshot_reader));
     }
   }
   if (changelog_snapshots.empty()) {

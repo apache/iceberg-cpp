@@ -386,8 +386,8 @@ Status SnapshotUpdate::Finalize([[maybe_unused]] const TableMetadata& metadata) 
 
   // Only files created by this update are tracked, and committed paths are kept below.
   internal::LogAndIgnoreFailure("Snapshot cleanup", [this]() -> Status {
-    auto cached_snapshot = SnapshotCache(staged_snapshot_.get());
-    ICEBERG_ASSIGN_OR_RAISE(auto manifests, cached_snapshot.Manifests(ctx_->table->io()));
+    auto snapshot_reader = SnapshotReader(staged_snapshot_.get());
+    ICEBERG_ASSIGN_OR_RAISE(auto manifests, snapshot_reader.Manifests(ctx_->table->io()));
     auto committed = manifests | std::views::transform([](const auto& manifest) {
                        return manifest.manifest_path;
                      }) |

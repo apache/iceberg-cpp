@@ -126,9 +126,9 @@ Result<std::vector<ManifestFile>> FastAppend::Apply(
 
   // Add all manifests from the snapshot
   if (snapshot != nullptr) {
-    auto cached_snapshot = SnapshotCache(snapshot.get());
+    auto snapshot_reader = SnapshotReader(snapshot.get());
     ICEBERG_ASSIGN_OR_RAISE(auto snapshot_manifests,
-                            cached_snapshot.Manifests(ctx_->table->io()));
+                            snapshot_reader.Manifests(ctx_->table->io()));
     manifests.insert(manifests.end(), snapshot_manifests.begin(),
                      snapshot_manifests.end());
   }
