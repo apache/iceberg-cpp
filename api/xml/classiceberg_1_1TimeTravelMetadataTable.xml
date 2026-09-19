@@ -1,0 +1,173 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1TimeTravelMetadataTable" kind="class" language="C++" prot="public" abstract="yes">
+    <compoundname>iceberg::TimeTravelMetadataTable</compoundname>
+    <basecompoundref refid="classiceberg_1_1MetadataTable" prot="public" virt="non-virtual">iceberg::MetadataTable</basecompoundref>
+    <includes refid="metadata__table_8h" local="no">metadata_table.h</includes>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1TimeTravelMetadataTable_1a0aa42b77b6caac400cdd6f4586afbfc0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::TimeTravelMetadataTable::~TimeTravelMetadataTable</definition>
+        <argsstring>() override</argsstring>
+        <name>~TimeTravelMetadataTable</name>
+        <qualifiedname>iceberg::TimeTravelMetadataTable::~TimeTravelMetadataTable</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/inspect/metadata_table.h" line="108" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TimeTravelMetadataTable_1adf6caba89876ad72cad76093a0622ea8" prot="public" static="no" const="yes" explicit="no" inline="no" final="yes" noexcept="yes" virt="virtual">
+        <type>bool</type>
+        <definition>bool iceberg::TimeTravelMetadataTable::supports_time_travel</definition>
+        <argsstring>() const noexcept final</argsstring>
+        <name>supports_time_travel</name>
+        <qualifiedname>iceberg::TimeTravelMetadataTable::supports_time_travel</qualifiedname>
+        <reimplements refid="classiceberg_1_1MetadataTable_1aaba1f815f62a65e4794a2da60154725c">supports_time_travel</reimplements>
+        <briefdescription>
+<para>Return true because this interface supports time travel. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/inspect/metadata_table.h" line="111" column="8"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TimeTravelMetadataTable_1a1f68c4be22de136ed04163aa0e9d14f7" prot="public" static="no" const="no" explicit="no" inline="no" final="yes" virt="virtual">
+        <type><ref refid="namespaceiceberg_1a9d5594e371beb516b0120e07e69d3af6" kindref="member">Result</ref>&lt; <ref refid="structArrowArrayStream" kindref="compound">ArrowArrayStream</ref> &gt;</type>
+        <definition>Result&lt; ArrowArrayStream &gt; iceberg::TimeTravelMetadataTable::Scan</definition>
+        <argsstring>() final</argsstring>
+        <name>Scan</name>
+        <qualifiedname>iceberg::TimeTravelMetadataTable::Scan</qualifiedname>
+        <reimplements refid="classiceberg_1_1MetadataTable_1ab7285a00cedfa638de980b54c04b1537">Scan</reimplements>
+        <briefdescription>
+<para>Scan using the current snapshot on the main branch. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/inspect/metadata_table.h" line="114" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TimeTravelMetadataTable_1a8b66703912154ffac6deb35bd20a0ec2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceiceberg_1a9d5594e371beb516b0120e07e69d3af6" kindref="member">Result</ref>&lt; <ref refid="structArrowArrayStream" kindref="compound">ArrowArrayStream</ref> &gt;</type>
+        <definition>Result&lt; ArrowArrayStream &gt; iceberg::TimeTravelMetadataTable::Scan</definition>
+        <argsstring>(const SnapshotSelection &amp;snapshot_selection)</argsstring>
+        <name>Scan</name>
+        <qualifiedname>iceberg::TimeTravelMetadataTable::Scan</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1SnapshotSelection" kindref="compound">SnapshotSelection</ref> &amp;</type>
+          <declname>snapshot_selection</declname>
+        </param>
+        <briefdescription>
+<para>Scan using the requested snapshot selection. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>snapshot_selection</parametername>
+</parameternamelist>
+<parameterdescription>
+<para><ref refid="structiceberg_1_1Snapshot" kindref="compound">Snapshot</ref> ID, timestamp, and optional ref selection. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>An Arrow stream containing the metadata table rows, or an error. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/inspect/metadata_table.h" line="120" column="10"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="protected-func">
+      <memberdef kind="function" id="classiceberg_1_1TimeTravelMetadataTable_1abac8cbab072ea380b01ada1860db573b" prot="protected" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::TimeTravelMetadataTable::TimeTravelMetadataTable</definition>
+        <argsstring>(std::shared_ptr&lt; Table &gt; source_table)</argsstring>
+        <name>TimeTravelMetadataTable</name>
+        <qualifiedname>iceberg::TimeTravelMetadataTable::TimeTravelMetadataTable</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Table" kindref="compound">Table</ref> &gt;</type>
+          <declname>source_table</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/inspect/metadata_table.h" line="123" column="12"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TimeTravelMetadataTable_1a0d5c618437d134314977b6b7785778c8" prot="protected" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type><ref refid="namespaceiceberg_1a9d5594e371beb516b0120e07e69d3af6" kindref="member">Result</ref>&lt; <ref refid="structArrowArrayStream" kindref="compound">ArrowArrayStream</ref> &gt;</type>
+        <definition>virtual Result&lt; ArrowArrayStream &gt; iceberg::TimeTravelMetadataTable::ScanSnapshot</definition>
+        <argsstring>(const SnapshotSelection &amp;snapshot_selection)=0</argsstring>
+        <name>ScanSnapshot</name>
+        <qualifiedname>iceberg::TimeTravelMetadataTable::ScanSnapshot</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1SnapshotSelection" kindref="compound">SnapshotSelection</ref> &amp;</type>
+          <declname>snapshot_selection</declname>
+        </param>
+        <briefdescription>
+<para>Implement a scan for the requested snapshot selection. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/inspect/metadata_table.h" line="126" column="18"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Base interface for metadata tables that support time travel. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>Keeping snapshot selection on this capability-specific interface prevents it from being exposed by metadata tables that do not support time travel. </para>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>iceberg::MetadataTable</label>
+        <link refid="classiceberg_1_1MetadataTable"/>
+      </node>
+      <node id="1">
+        <label>iceberg::TimeTravelMetadataTable</label>
+        <link refid="classiceberg_1_1TimeTravelMetadataTable"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="2">
+        <label>iceberg::MetadataTable</label>
+        <link refid="classiceberg_1_1MetadataTable"/>
+      </node>
+      <node id="1">
+        <label>iceberg::TimeTravelMetadataTable</label>
+        <link refid="classiceberg_1_1TimeTravelMetadataTable"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/inspect/metadata_table.h" line="106" column="1" bodyfile="iceberg/inspect/metadata_table.h" bodystart="106" bodyend="128"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1MetadataTable_1a0197cda69aadf1dd9fa8dff0e3e6b1bd" prot="public" virt="non-virtual"><scope>iceberg::TimeTravelMetadataTable</scope><name>kBatchSize</name></member>
+      <member refid="classiceberg_1_1MetadataTable_1ab415f49673094ebf56b168856fc912dc" prot="public" virt="non-virtual"><scope>iceberg::TimeTravelMetadataTable</scope><name>Kind</name></member>
+      <member refid="classiceberg_1_1MetadataTable_1a5aa9af92783c3dc041349d6391742146" prot="public" virt="pure-virtual"><scope>iceberg::TimeTravelMetadataTable</scope><name>kind</name></member>
+      <member refid="classiceberg_1_1MetadataTable_1a5c8d150fb117161fc9a2ca5300b380ae" prot="public" virt="non-virtual"><scope>iceberg::TimeTravelMetadataTable</scope><name>Make</name></member>
+      <member refid="classiceberg_1_1MetadataTable_1adb8cb898a3005665349c1a9a904313a8" prot="protected" virt="non-virtual"><scope>iceberg::TimeTravelMetadataTable</scope><name>MetadataTable</name></member>
+      <member refid="classiceberg_1_1TimeTravelMetadataTable_1a1f68c4be22de136ed04163aa0e9d14f7" prot="public" virt="virtual"><scope>iceberg::TimeTravelMetadataTable</scope><name>Scan</name></member>
+      <member refid="classiceberg_1_1TimeTravelMetadataTable_1a8b66703912154ffac6deb35bd20a0ec2" prot="public" virt="non-virtual"><scope>iceberg::TimeTravelMetadataTable</scope><name>Scan</name></member>
+      <member refid="classiceberg_1_1TimeTravelMetadataTable_1a0d5c618437d134314977b6b7785778c8" prot="protected" virt="pure-virtual"><scope>iceberg::TimeTravelMetadataTable</scope><name>ScanSnapshot</name></member>
+      <member refid="classiceberg_1_1MetadataTable_1a2e8ac2e5e673464d34800ec822dc9260" prot="public" virt="pure-virtual"><scope>iceberg::TimeTravelMetadataTable</scope><name>schema</name></member>
+      <member refid="classiceberg_1_1MetadataTable_1aa2a8830064cb79a84440e656c66d246e" prot="public" virt="non-virtual"><scope>iceberg::TimeTravelMetadataTable</scope><name>source_table</name></member>
+      <member refid="classiceberg_1_1TimeTravelMetadataTable_1adf6caba89876ad72cad76093a0622ea8" prot="public" virt="virtual"><scope>iceberg::TimeTravelMetadataTable</scope><name>supports_time_travel</name></member>
+      <member refid="classiceberg_1_1TimeTravelMetadataTable_1abac8cbab072ea380b01ada1860db573b" prot="protected" virt="non-virtual"><scope>iceberg::TimeTravelMetadataTable</scope><name>TimeTravelMetadataTable</name></member>
+      <member refid="classiceberg_1_1MetadataTable_1a25fa687655a43fd964860a941b572499" prot="public" virt="virtual"><scope>iceberg::TimeTravelMetadataTable</scope><name>~MetadataTable</name></member>
+      <member refid="classiceberg_1_1TimeTravelMetadataTable_1a0aa42b77b6caac400cdd6f4586afbfc0" prot="public" virt="non-virtual"><scope>iceberg::TimeTravelMetadataTable</scope><name>~TimeTravelMetadataTable</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

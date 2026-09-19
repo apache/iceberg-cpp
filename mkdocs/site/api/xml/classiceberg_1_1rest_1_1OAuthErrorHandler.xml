@@ -1,0 +1,155 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1rest_1_1OAuthErrorHandler" kind="class" language="C++" prot="public" final="yes">
+    <compoundname>iceberg::rest::OAuthErrorHandler</compoundname>
+    <basecompoundref refid="classiceberg_1_1rest_1_1ErrorHandler" prot="public" virt="non-virtual">iceberg::rest::ErrorHandler</basecompoundref>
+    <includes refid="error__handlers_8h" local="no">error_handlers.h</includes>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1OAuthErrorHandler_1a6f70f82ca3bb95394ed80c219b247066" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1rest_1_1OAuthErrorHandler" kindref="compound">OAuthErrorHandler</ref> &gt; &amp;</type>
+        <definition>static const std::shared_ptr&lt; OAuthErrorHandler &gt; &amp; iceberg::rest::OAuthErrorHandler::Instance</definition>
+        <argsstring>()</argsstring>
+        <name>Instance</name>
+        <qualifiedname>iceberg::rest::OAuthErrorHandler::Instance</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/error_handlers.h" line="191" column="32"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1OAuthErrorHandler_1a04347f9f3771ddfbde85a6407a78e96e" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>Status</type>
+        <definition>Status iceberg::rest::OAuthErrorHandler::Accept</definition>
+        <argsstring>(const ErrorResponse &amp;error) const override</argsstring>
+        <name>Accept</name>
+        <qualifiedname>iceberg::rest::OAuthErrorHandler::Accept</qualifiedname>
+        <reimplements refid="classiceberg_1_1rest_1_1ErrorHandler_1a067914297e11fab05071d5bef97950e6">Accept</reimplements>
+        <param>
+          <type>const <ref refid="structiceberg_1_1rest_1_1ErrorResponse" kindref="compound">ErrorResponse</ref> &amp;</type>
+          <declname>error</declname>
+        </param>
+        <briefdescription>
+<para>Process an error response and return an appropriate <ref refid="structiceberg_1_1Error" kindref="compound">Error</ref>. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>error</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The error response parsed from the HTTP response body </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>An <ref refid="structiceberg_1_1Error" kindref="compound">Error</ref> object with appropriate ErrorKind and message </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/error_handlers.h" line="193" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1OAuthErrorHandler_1a046fcb98b5cfd0c8552d81fd0af81529" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type><ref refid="namespaceiceberg_1a9d5594e371beb516b0120e07e69d3af6" kindref="member">Result</ref>&lt; <ref refid="structiceberg_1_1rest_1_1ErrorResponse" kindref="compound">ErrorResponse</ref> &gt;</type>
+        <definition>Result&lt; ErrorResponse &gt; iceberg::rest::OAuthErrorHandler::ParseResponse</definition>
+        <argsstring>(uint32_t code, const std::string &amp;text) const override</argsstring>
+        <name>ParseResponse</name>
+        <qualifiedname>iceberg::rest::OAuthErrorHandler::ParseResponse</qualifiedname>
+        <reimplements refid="classiceberg_1_1rest_1_1ErrorHandler_1a4413c2bee37710c4edd4ecf40c7e4235">ParseResponse</reimplements>
+        <param>
+          <type>uint32_t</type>
+          <declname>code</declname>
+        </param>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>text</declname>
+        </param>
+        <briefdescription>
+<para>Parse an HTTP error response body. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>code</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The HTTP status code from the failed response </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>text</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The HTTP response body </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The parsed error response </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/error_handlers.h" line="194" column="10"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1OAuthErrorHandler_1a093504c77cc77e26db9d6c90e24e75b3" prot="private" static="no" constexpr="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>constexpr</type>
+        <definition>constexpr iceberg::rest::OAuthErrorHandler::OAuthErrorHandler</definition>
+        <argsstring>()=default</argsstring>
+        <name>OAuthErrorHandler</name>
+        <qualifiedname>iceberg::rest::OAuthErrorHandler::OAuthErrorHandler</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/error_handlers.h" line="198" column="13"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>OAuth token endpoint error handler. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>iceberg::rest::ErrorHandler</label>
+        <link refid="classiceberg_1_1rest_1_1ErrorHandler"/>
+      </node>
+      <node id="1">
+        <label>iceberg::rest::OAuthErrorHandler</label>
+        <link refid="classiceberg_1_1rest_1_1OAuthErrorHandler"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="2">
+        <label>iceberg::rest::ErrorHandler</label>
+        <link refid="classiceberg_1_1rest_1_1ErrorHandler"/>
+      </node>
+      <node id="1">
+        <label>iceberg::rest::OAuthErrorHandler</label>
+        <link refid="classiceberg_1_1rest_1_1OAuthErrorHandler"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/rest/error_handlers.h" line="189" column="1" bodyfile="iceberg/catalog/rest/error_handlers.h" bodystart="189" bodyend="199"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1rest_1_1OAuthErrorHandler_1a04347f9f3771ddfbde85a6407a78e96e" prot="public" virt="virtual"><scope>iceberg::rest::OAuthErrorHandler</scope><name>Accept</name></member>
+      <member refid="classiceberg_1_1rest_1_1OAuthErrorHandler_1a6f70f82ca3bb95394ed80c219b247066" prot="public" virt="non-virtual"><scope>iceberg::rest::OAuthErrorHandler</scope><name>Instance</name></member>
+      <member refid="classiceberg_1_1rest_1_1OAuthErrorHandler_1a093504c77cc77e26db9d6c90e24e75b3" prot="private" virt="non-virtual"><scope>iceberg::rest::OAuthErrorHandler</scope><name>OAuthErrorHandler</name></member>
+      <member refid="classiceberg_1_1rest_1_1OAuthErrorHandler_1a046fcb98b5cfd0c8552d81fd0af81529" prot="public" virt="virtual"><scope>iceberg::rest::OAuthErrorHandler</scope><name>ParseResponse</name></member>
+      <member refid="classiceberg_1_1rest_1_1ErrorHandler_1a1e4b61afbcf63e4f937ba67063493823" prot="public" virt="virtual"><scope>iceberg::rest::OAuthErrorHandler</scope><name>~ErrorHandler</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

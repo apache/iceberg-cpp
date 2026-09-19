@@ -1,0 +1,116 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1DeleteFileSet_1_1DeleteFileKey" kind="struct" language="C++" prot="private">
+    <compoundname>iceberg::DeleteFileSet::DeleteFileKey</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1DeleteFileSet_1_1DeleteFileKey_1ac97c889b3cc65219f98eae89a3ed259d" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::DeleteFileSet::DeleteFileKey::path</definition>
+        <argsstring></argsstring>
+        <name>path</name>
+        <qualifiedname>iceberg::DeleteFileSet::DeleteFileKey::path</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/data_file_set.h" line="218" column="17" bodyfile="iceberg/util/data_file_set.h" bodystart="218" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1DeleteFileSet_1_1DeleteFileKey_1a2ffc2c04876262d2625642d866b22095" prot="public" static="no" mutable="no">
+        <type>std::optional&lt; int64_t &gt;</type>
+        <definition>std::optional&lt;int64_t&gt; iceberg::DeleteFileSet::DeleteFileKey::content_offset</definition>
+        <argsstring></argsstring>
+        <name>content_offset</name>
+        <qualifiedname>iceberg::DeleteFileSet::DeleteFileKey::content_offset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/data_file_set.h" line="219" column="19" bodyfile="iceberg/util/data_file_set.h" bodystart="219" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1DeleteFileSet_1_1DeleteFileKey_1a7293d2711712ef940c0ae1937c6e2f9e" prot="public" static="no" mutable="no">
+        <type>std::optional&lt; int64_t &gt;</type>
+        <definition>std::optional&lt;int64_t&gt; iceberg::DeleteFileSet::DeleteFileKey::content_size_in_bytes</definition>
+        <argsstring></argsstring>
+        <name>content_size_in_bytes</name>
+        <qualifiedname>iceberg::DeleteFileSet::DeleteFileKey::content_size_in_bytes</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/data_file_set.h" line="220" column="19" bodyfile="iceberg/util/data_file_set.h" bodystart="220" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structiceberg_1_1DeleteFileSet_1_1DeleteFileKey_1afad264a287b64c88d70aef5e405c2243" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::DeleteFileSet::DeleteFileKey::DeleteFileKey</definition>
+        <argsstring>(const DataFile &amp;file)</argsstring>
+        <name>DeleteFileKey</name>
+        <qualifiedname>iceberg::DeleteFileSet::DeleteFileKey::DeleteFileKey</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref> &amp;</type>
+          <declname>file</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/data_file_set.h" line="213" column="14" bodyfile="iceberg/util/data_file_set.h" bodystart="213" bodyend="216"/>
+      </memberdef>
+      <memberdef kind="function" id="structiceberg_1_1DeleteFileSet_1_1DeleteFileKey_1ada7ae4cb243e5f25f8f18e9694073381" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::DeleteFileSet::DeleteFileKey::operator==</definition>
+        <argsstring>(const DeleteFileKey &amp;other) const =default</argsstring>
+        <name>operator==</name>
+        <qualifiedname>iceberg::DeleteFileSet::DeleteFileKey::operator==</qualifiedname>
+        <param>
+          <type>const DeleteFileKey &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/data_file_set.h" line="222" column="10"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::DeleteFileSet::DeleteFileKey</label>
+        <childnode refid="2" relation="usage">
+          <edgelabel>path</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="2">
+        <label>std::string</label>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/util/data_file_set.h" line="212" column="3" bodyfile="iceberg/util/data_file_set.h" bodystart="212" bodyend="223"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1DeleteFileSet_1_1DeleteFileKey_1a2ffc2c04876262d2625642d866b22095" prot="public" virt="non-virtual"><scope>iceberg::DeleteFileSet::DeleteFileKey</scope><name>content_offset</name></member>
+      <member refid="structiceberg_1_1DeleteFileSet_1_1DeleteFileKey_1a7293d2711712ef940c0ae1937c6e2f9e" prot="public" virt="non-virtual"><scope>iceberg::DeleteFileSet::DeleteFileKey</scope><name>content_size_in_bytes</name></member>
+      <member refid="structiceberg_1_1DeleteFileSet_1_1DeleteFileKey_1afad264a287b64c88d70aef5e405c2243" prot="public" virt="non-virtual"><scope>iceberg::DeleteFileSet::DeleteFileKey</scope><name>DeleteFileKey</name></member>
+      <member refid="structiceberg_1_1DeleteFileSet_1_1DeleteFileKey_1ada7ae4cb243e5f25f8f18e9694073381" prot="public" virt="non-virtual"><scope>iceberg::DeleteFileSet::DeleteFileKey</scope><name>operator==</name></member>
+      <member refid="structiceberg_1_1DeleteFileSet_1_1DeleteFileKey_1ac97c889b3cc65219f98eae89a3ed259d" prot="public" virt="non-virtual"><scope>iceberg::DeleteFileSet::DeleteFileKey</scope><name>path</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>
