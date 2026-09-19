@@ -18,14 +18,11 @@
  */
 #include "iceberg/transaction.h"
 
-#include <algorithm>
 #include <format>
 #include <memory>
-#include <ranges>
 
 #include "iceberg/catalog.h"
 #include "iceberg/location_provider.h"
-#include "iceberg/logging/log_macros.h"
 #include "iceberg/schema.h"
 #include "iceberg/snapshot.h"
 #include "iceberg/statistics_file.h"
@@ -56,26 +53,12 @@
 #include "iceberg/update/update_sort_order.h"
 #include "iceberg/update/update_statistics.h"
 #include "iceberg/util/checked_cast.h"
+#include "iceberg/util/error_util_internal.h"
 #include "iceberg/util/location_util.h"
 #include "iceberg/util/macros.h"
 #include "iceberg/util/retry_util.h"
 
 namespace iceberg {
-namespace {
-
-class ScopedTrue {
- public:
-  explicit ScopedTrue(bool& value) : value_(value) { value_ = true; }
-  ~ScopedTrue() { value_ = false; }
-
-  ScopedTrue(const ScopedTrue&) = delete;
-  ScopedTrue& operator=(const ScopedTrue&) = delete;
-
- private:
-  bool& value_;
-};
-
-}  // namespace
 
 // ---------------------------------------------------------------------------
 // TransactionContext
@@ -90,7 +73,6 @@ Result<std::shared_ptr<TransactionContext>> TransactionContext::Make(
   auto ctx = std::make_shared<TransactionContext>();
   ctx->kind = kind;
   ctx->table = std::move(table);
-  ctx->base_metadata_ = ctx->table->metadata();
   if (kind == TransactionKind::kCreate) {
     ctx->metadata_builder = TableMetadataBuilder::BuildFromEmpty();
     std::ignore = ctx->metadata_builder->ApplyChangesForCreate(*ctx->table->metadata());
@@ -155,16 +137,7 @@ std::string Transaction::MetadataFileLocation(std::string_view filename) const {
   return ctx_->MetadataFileLocation(filename);
 }
 
-Status Transaction::CheckActive() const {
-  ICEBERG_CHECK(!ctx_->in_progress_, "Cannot reenter a transaction operation");
-  ICEBERG_CHECK(
-      state_ == TransactionState::kReady || state_ == TransactionState::kUpdatePending,
-      "Transaction is terminal");
-  return {};
-}
-
 Status Transaction::CheckReady() const {
-  ICEBERG_CHECK(!ctx_->in_progress_, "Cannot reenter a transaction operation");
   ICEBERG_CHECK(state_ == TransactionState::kReady, "Transaction is not ready (state {})",
                 static_cast<int>(state_));
   return {};
@@ -174,36 +147,29 @@ Status Transaction::AddUpdate(const std::shared_ptr<PendingUpdate>& update) {
   ICEBERG_RETURN_UNEXPECTED(CheckReady());
   ICEBERG_PRECHECK(update && update->ctx_.get() == ctx_.get(),
                    "Update must belong to this transaction context");
-  ICEBERG_CHECK(update->phase_ == PendingUpdate::Phase::kMutable,
-                "Update has already been used");
+  ICEBERG_CHECK(!update->commit_called_, "Update has already been committed");
   pending_updates_.push_back(update);
   state_ = TransactionState::kUpdatePending;
   return {};
 }
 
-Status Transaction::Apply(PendingUpdate& update) {
-  ICEBERG_CHECK(!ctx_->in_progress_, "Cannot reenter a transaction operation");
+Status Transaction::CommitUpdate(PendingUpdate& update) {
   ICEBERG_CHECK(state_ == TransactionState::kUpdatePending,
                 "Transaction has no pending operation (state {})",
                 static_cast<int>(state_));
   ICEBERG_CHECK(!pending_updates_.empty() && pending_updates_.back().get() == &update,
                 "Update is not the current pending operation");
-  ScopedTrue running(ctx_->in_progress_);
+  update.commit_called_ = true;
   Status status;
   try {
-    update.phase_ = PendingUpdate::Phase::kFrozen;
-    update.staged_ = true;
-    status = update.Freeze();
-    if (status) {
-      status = ApplyRegistered(update);
-    }
+    status = ApplyUpdate(update);
   } catch (const std::exception& e) {
     status = ValidationFailed("Update Apply threw: {}", e.what());
   } catch (...) {
     status = ValidationFailed("Update Apply threw an unknown exception");
   }
   if (!status) {
-    SetTerminalState(TransactionState::kFailed);
+    state_ = TransactionState::kFailed;
     CleanupUpdates();
     return status;
   }
@@ -211,21 +177,16 @@ Status Transaction::Apply(PendingUpdate& update) {
   return {};
 }
 
-Status Transaction::ReplayApply(PendingUpdate& update) {
-  ICEBERG_CHECK(state_ == TransactionState::kReady && ctx_->in_progress_,
-                "Replay requires an active transaction commit");
-  ICEBERG_CHECK(std::ranges::any_of(pending_updates_,
-                                    [&update](const auto& registered) {
-                                      return registered.get() == &update;
-                                    }),
-                "Cannot replay an unregistered update");
-  ICEBERG_CHECK(update.phase_ == PendingUpdate::Phase::kFrozen,
-                "Cannot replay this update");
-  update.staged_ = true;
-  return ApplyRegistered(update);
+Status Transaction::ReplayUpdates() {
+  ICEBERG_CHECK(state_ == TransactionState::kReady,
+                "Replay requires a ready transaction");
+  for (const auto& update : pending_updates_) {
+    ICEBERG_RETURN_UNEXPECTED(ApplyUpdate(*update));
+  }
+  return {};
 }
 
-Status Transaction::ApplyRegistered(PendingUpdate& update) {
+Status Transaction::ApplyUpdate(PendingUpdate& update) {
   switch (update.kind()) {
     case PendingUpdate::Kind::kExpireSnapshots:
       ICEBERG_RETURN_UNEXPECTED(
@@ -301,7 +262,7 @@ Status Transaction::ApplyExpireSnapshots(ExpireSnapshots& update) {
 }
 
 Status Transaction::ApplySetSnapshot(SetSnapshot& update) {
-  ICEBERG_ASSIGN_OR_RAISE(auto snapshot_id, update.Validate());
+  ICEBERG_ASSIGN_OR_RAISE(auto snapshot_id, update.Apply());
   ctx_->metadata_builder->SetBranchSnapshot(snapshot_id,
                                             std::string(SnapshotRef::kMainBranch));
   ICEBERG_RETURN_UNEXPECTED(ctx_->metadata_builder->CheckErrors());
@@ -309,13 +270,13 @@ Status Transaction::ApplySetSnapshot(SetSnapshot& update) {
 }
 
 Status Transaction::ApplyUpdateLocation(UpdateLocation& update) {
-  ICEBERG_ASSIGN_OR_RAISE(auto location, update.Validate());
+  ICEBERG_ASSIGN_OR_RAISE(auto location, update.Apply());
   ctx_->metadata_builder->SetLocation(location);
   return {};
 }
 
 Status Transaction::ApplyUpdatePartitionSpec(UpdatePartitionSpec& update) {
-  ICEBERG_ASSIGN_OR_RAISE(auto result, update.Validate());
+  ICEBERG_ASSIGN_OR_RAISE(auto result, update.Apply());
   if (result.set_as_default) {
     ctx_->metadata_builder->SetDefaultPartitionSpec(std::move(result.spec));
   } else {
@@ -326,7 +287,7 @@ Status Transaction::ApplyUpdatePartitionSpec(UpdatePartitionSpec& update) {
 }
 
 Status Transaction::ApplyUpdateProperties(UpdateProperties& update) {
-  ICEBERG_ASSIGN_OR_RAISE(auto result, update.Validate());
+  ICEBERG_ASSIGN_OR_RAISE(auto result, update.Apply());
   if (!result.updates.empty()) {
     ctx_->metadata_builder->SetProperties(std::move(result.updates));
   }
@@ -341,7 +302,7 @@ Status Transaction::ApplyUpdateProperties(UpdateProperties& update) {
 }
 
 Status Transaction::ApplyUpdateSchema(UpdateSchema& update) {
-  ICEBERG_ASSIGN_OR_RAISE(auto result, update.Validate());
+  ICEBERG_ASSIGN_OR_RAISE(auto result, update.Apply());
   ctx_->metadata_builder->SetCurrentSchema(std::move(result.schema),
                                            result.new_last_column_id);
   if (!result.updated_props.empty()) {
@@ -370,9 +331,10 @@ Status Transaction::ApplyUpdateSnapshot(SnapshotUpdate& update) {
   ICEBERG_RETURN_UNEXPECTED(temp_update->CheckErrors());
 
   if (temp_update->changes().empty()) {
-    // Apply may already have written files. Consume this generation immediately,
-    // while retaining its frozen intent for a possible replay against new metadata.
-    update.Cleanup();
+    // A no-op may still write temporary files. Clean them now; the update remains
+    // registered so it can be replayed after a refresh.
+    internal::LogAndIgnoreFailure("Update staging cleanup",
+                                  [&update] { return update.CleanStaged(); });
     return {};
   }
 
@@ -391,7 +353,7 @@ Status Transaction::ApplyUpdateSnapshot(SnapshotUpdate& update) {
 }
 
 Status Transaction::ApplyUpdateSnapshotReference(UpdateSnapshotReference& update) {
-  ICEBERG_ASSIGN_OR_RAISE(auto result, update.Validate());
+  ICEBERG_ASSIGN_OR_RAISE(auto result, update.Apply());
   for (const auto& name : result.to_remove) {
     ctx_->metadata_builder->RemoveRef(name);
   }
@@ -403,14 +365,14 @@ Status Transaction::ApplyUpdateSnapshotReference(UpdateSnapshotReference& update
 }
 
 Status Transaction::ApplyUpdateSortOrder(UpdateSortOrder& update) {
-  ICEBERG_ASSIGN_OR_RAISE(auto sort_order, update.Validate());
+  ICEBERG_ASSIGN_OR_RAISE(auto sort_order, update.Apply());
   ctx_->metadata_builder->SetDefaultSortOrder(std::move(sort_order));
   ICEBERG_RETURN_UNEXPECTED(ctx_->metadata_builder->CheckErrors());
   return {};
 }
 
 Status Transaction::ApplyUpdateStatistics(UpdateStatistics& update) {
-  ICEBERG_ASSIGN_OR_RAISE(auto result, update.Validate());
+  ICEBERG_ASSIGN_OR_RAISE(auto result, update.Apply());
   for (auto&& [_, stat_file] : result.to_set) {
     ctx_->metadata_builder->SetStatistics(std::move(stat_file));
   }
@@ -422,7 +384,7 @@ Status Transaction::ApplyUpdateStatistics(UpdateStatistics& update) {
 }
 
 Status Transaction::ApplyUpdatePartitionStatistics(UpdatePartitionStatistics& update) {
-  ICEBERG_ASSIGN_OR_RAISE(auto result, update.Validate());
+  ICEBERG_ASSIGN_OR_RAISE(auto result, update.Apply());
   for (auto&& [_, partition_stat_file] : result.to_set) {
     ctx_->metadata_builder->SetPartitionStatistics(std::move(partition_stat_file));
   }
@@ -435,11 +397,8 @@ Status Transaction::ApplyUpdatePartitionStatistics(UpdatePartitionStatistics& up
 
 Result<std::shared_ptr<Table>> Transaction::Commit() {
   ICEBERG_RETURN_UNEXPECTED(CheckReady());
-  ScopedTrue running(ctx_->in_progress_);
   Result<std::shared_ptr<Table>> commit_result = ctx_->table;
-  bool catalog_state_unknown = false;
   try {
-    ConfigureExpirationCleanup();
     auto builder_status = ctx_->metadata_builder->CheckErrors();
     if (!builder_status) {
       commit_result = std::unexpected(builder_status.error());
@@ -449,31 +408,19 @@ Result<std::shared_ptr<Table>> Transaction::Commit() {
           CanRetry() ? static_cast<int32_t>(props.Get(TableProperties::kCommitNumRetries))
                      : 0;
       bool is_first_attempt = true;
-      std::optional<Error> replay_error;
       commit_result =
           MakeCommitRetryRunner(num_retries,
                                 props.Get(TableProperties::kCommitMinRetryWaitMs),
                                 props.Get(TableProperties::kCommitMaxRetryWaitMs),
                                 props.Get(TableProperties::kCommitTotalRetryTimeMs))
-              .Run([this, &is_first_attempt, &replay_error,
-                    &catalog_state_unknown]() -> Result<std::shared_ptr<Table>> {
-                auto result =
-                    CommitOnce(is_first_attempt, replay_error, catalog_state_unknown);
+              .Run([this, &is_first_attempt]() -> Result<std::shared_ptr<Table>> {
+                auto result = CommitOnce(is_first_attempt);
                 is_first_attempt = false;
-                // A replay failure is not another catalog conflict. Stop the
-                // runner, then restore the original Apply error for the
-                // caller below.
-                if (replay_error) {
-                  return ValidationFailed("Transaction replay failed");
-                }
                 return result;
               });
-      if (replay_error) {
-        commit_result = std::unexpected(std::move(*replay_error));
-      }
     }
   } catch (const std::exception& e) {
-    // CommitOnce catches exceptions at the catalog boundary separately.
+    // CommitOnce handles catalog exceptions, so this failed before the commit.
     commit_result = ValidationFailed("Transaction preparation threw: {}", e.what());
   } catch (...) {
     commit_result =
@@ -481,23 +428,22 @@ Result<std::shared_ptr<Table>> Transaction::Commit() {
   }
 
   if (!commit_result) {
-    if (catalog_state_unknown) {
-      SetTerminalState(TransactionState::kCommitStateUnknown);
+    if (commit_result.error().kind == ErrorKind::kCommitStateUnknown) {
+      state_ = TransactionState::kCommitStateUnknown;
     } else {
-      SetTerminalState(TransactionState::kFailed);
+      state_ = TransactionState::kFailed;
       CleanupUpdates();
     }
     return commit_result;
   }
 
   ctx_->table = std::move(commit_result.value());
-  SetTerminalState(TransactionState::kCommitted);
+  state_ = TransactionState::kCommitted;
   FinalizeUpdates(*ctx_->table->metadata());
   return ctx_->table;
 }
 
 Status Transaction::Abort() {
-  ICEBERG_CHECK(!ctx_->in_progress_, "Cannot reenter a transaction operation");
   if (state_ == TransactionState::kAborted) {
     return {};
   }
@@ -505,67 +451,47 @@ Status Transaction::Abort() {
                     state_ == TransactionState::kUpdatePending ||
                     state_ == TransactionState::kFailed,
                 "Cannot abort a committed or unknown transaction");
-  ScopedTrue running(ctx_->in_progress_);
-  SetTerminalState(TransactionState::kAborted);
+  state_ = TransactionState::kAborted;
   CleanupUpdates();
   return {};
 }
 
-void Transaction::SetTerminalState(TransactionState state) {
-  state_ = state;
-  // Publish every marker before invoking even the first user callback.
-  for (const auto& update : pending_updates_) {
-    update->phase_ = PendingUpdate::Phase::kTerminal;
-  }
-}
-
 void Transaction::CleanupUpdates() noexcept {
   for (const auto& update : pending_updates_) {
-    update->Cleanup();
+    internal::LogAndIgnoreFailure("Update staging cleanup",
+                                  [&update] { return update->CleanStaged(); });
   }
 }
 
 void Transaction::FinalizeUpdates(const TableMetadata& committed) noexcept {
   for (const auto& update : pending_updates_) {
-    update->FinalizeOnce(committed);
+    internal::LogAndIgnoreFailure("Update finalization", [&update, &committed] {
+      return update->Finalize(committed);
+    });
   }
 }
 
-void Transaction::ConfigureExpirationCleanup() {
-  bool may_add_references = false;
-  for (const auto& update : pending_updates_ | std::views::reverse) {
-    if (update->kind() == PendingUpdate::Kind::kExpireSnapshots) {
-      internal::checked_cast<ExpireSnapshots&>(*update).skip_physical_cleanup_ =
-          may_add_references;
-    }
-    may_add_references |= update->MayAddFileReferences();
-  }
-}
-
-Result<std::shared_ptr<Table>> Transaction::CommitOnce(bool is_first_attempt,
-                                                       std::optional<Error>& replay_error,
-                                                       bool& catalog_state_unknown) {
+Result<std::shared_ptr<Table>> Transaction::CommitOnce(bool is_first_attempt) {
   std::vector<std::unique_ptr<TableRequirement>> requirements;
   if (ctx_->kind == TransactionKind::kUpdate) {
+    std::shared_ptr<TableMetadata> metadata_before_refresh;
     if (!is_first_attempt) {
+      // Keep the builder's base alive while Refresh replaces the table metadata.
+      metadata_before_refresh = ctx_->table->metadata();
       ICEBERG_RETURN_UNEXPECTED(ctx_->table->Refresh());
     }
-    if (!is_first_attempt ||
-        ctx_->metadata_builder->base() != ctx_->table->metadata().get()) {
+    const bool metadata_changed =
+        ctx_->metadata_builder->base() != ctx_->table->metadata().get();
+    const bool standalone_retry = !is_first_attempt && !ctx_->transaction.has_value();
+    if (metadata_changed || standalone_retry) {
       ICEBERG_CHECK(CanRetry(),
                     "Cannot rebase a transaction containing a non-retryable update");
       CleanupUpdates();
       ctx_->metadata_builder =
           TableMetadataBuilder::BuildFrom(ctx_->table->metadata().get());
-      ctx_->base_metadata_ = ctx_->table->metadata();
-      for (const auto& update : pending_updates_) {
-        // Thrown exceptions reach Commit's preparation handler. Returned errors
-        // need a marker so retryable Apply errors do not trigger catalog retries.
-        auto applied = ReplayApply(*update);
-        if (!applied) {
-          replay_error = applied.error();
-          return std::unexpected(applied.error());
-        }
+      auto applied = ReplayUpdates();
+      if (!applied) {
+        return ValidationFailed("Transaction replay failed: {}", applied.error().message);
       }
     }
     if (ctx_->metadata_builder->changes().empty()) {
@@ -579,18 +505,13 @@ Result<std::shared_ptr<Table>> Transaction::CommitOnce(bool is_first_attempt,
                                               ctx_->metadata_builder->changes()));
   }
 
-  // Only this boundary can turn an uncaught exception into an unknown commit.
+  // UpdateTable may throw after the catalog has committed the changes.
   try {
-    auto result = ctx_->table->catalog()->UpdateTable(ctx_->table->name(), requirements,
-                                                      ctx_->metadata_builder->changes());
-    catalog_state_unknown =
-        !result && result.error().kind == ErrorKind::kCommitStateUnknown;
-    return result;
+    return ctx_->table->catalog()->UpdateTable(ctx_->table->name(), requirements,
+                                               ctx_->metadata_builder->changes());
   } catch (const std::exception& e) {
-    catalog_state_unknown = true;
     return CommitStateUnknown("Catalog commit threw: {}", e.what());
   } catch (...) {
-    catalog_state_unknown = true;
     return CommitStateUnknown("Catalog commit threw an unknown exception");
   }
 }
@@ -608,7 +529,6 @@ bool Transaction::CanRetry() const {
 }
 
 Result<std::shared_ptr<UpdatePartitionSpec>> Transaction::NewUpdatePartitionSpec() {
-  ICEBERG_RETURN_UNEXPECTED(CheckReady());
   ICEBERG_ASSIGN_OR_RAISE(std::shared_ptr<UpdatePartitionSpec> update_spec,
                           UpdatePartitionSpec::Make(ctx_));
   ICEBERG_RETURN_UNEXPECTED(AddUpdate(update_spec));
@@ -616,7 +536,6 @@ Result<std::shared_ptr<UpdatePartitionSpec>> Transaction::NewUpdatePartitionSpec
 }
 
 Result<std::shared_ptr<UpdateProperties>> Transaction::NewUpdateProperties() {
-  ICEBERG_RETURN_UNEXPECTED(CheckReady());
   ICEBERG_ASSIGN_OR_RAISE(std::shared_ptr<UpdateProperties> update_properties,
                           UpdateProperties::Make(ctx_));
   ICEBERG_RETURN_UNEXPECTED(AddUpdate(update_properties));
@@ -624,7 +543,6 @@ Result<std::shared_ptr<UpdateProperties>> Transaction::NewUpdateProperties() {
 }
 
 Result<std::shared_ptr<UpdateSortOrder>> Transaction::NewUpdateSortOrder() {
-  ICEBERG_RETURN_UNEXPECTED(CheckReady());
   ICEBERG_ASSIGN_OR_RAISE(std::shared_ptr<UpdateSortOrder> update_sort_order,
                           UpdateSortOrder::Make(ctx_));
   ICEBERG_RETURN_UNEXPECTED(AddUpdate(update_sort_order));
@@ -632,7 +550,6 @@ Result<std::shared_ptr<UpdateSortOrder>> Transaction::NewUpdateSortOrder() {
 }
 
 Result<std::shared_ptr<UpdateSchema>> Transaction::NewUpdateSchema() {
-  ICEBERG_RETURN_UNEXPECTED(CheckReady());
   ICEBERG_ASSIGN_OR_RAISE(std::shared_ptr<UpdateSchema> update_schema,
                           UpdateSchema::Make(ctx_));
   ICEBERG_RETURN_UNEXPECTED(AddUpdate(update_schema));
@@ -640,7 +557,6 @@ Result<std::shared_ptr<UpdateSchema>> Transaction::NewUpdateSchema() {
 }
 
 Result<std::shared_ptr<ExpireSnapshots>> Transaction::NewExpireSnapshots() {
-  ICEBERG_RETURN_UNEXPECTED(CheckReady());
   ICEBERG_ASSIGN_OR_RAISE(std::shared_ptr<ExpireSnapshots> expire_snapshots,
                           ExpireSnapshots::Make(ctx_));
   ICEBERG_RETURN_UNEXPECTED(AddUpdate(expire_snapshots));
@@ -648,7 +564,6 @@ Result<std::shared_ptr<ExpireSnapshots>> Transaction::NewExpireSnapshots() {
 }
 
 Result<std::shared_ptr<UpdateLocation>> Transaction::NewUpdateLocation() {
-  ICEBERG_RETURN_UNEXPECTED(CheckReady());
   ICEBERG_ASSIGN_OR_RAISE(std::shared_ptr<UpdateLocation> update_location,
                           UpdateLocation::Make(ctx_));
   ICEBERG_RETURN_UNEXPECTED(AddUpdate(update_location));
@@ -656,7 +571,6 @@ Result<std::shared_ptr<UpdateLocation>> Transaction::NewUpdateLocation() {
 }
 
 Result<std::shared_ptr<SetSnapshot>> Transaction::NewSetSnapshot() {
-  ICEBERG_RETURN_UNEXPECTED(CheckReady());
   ICEBERG_ASSIGN_OR_RAISE(std::shared_ptr<SetSnapshot> set_snapshot,
                           SetSnapshot::Make(ctx_));
   ICEBERG_RETURN_UNEXPECTED(AddUpdate(set_snapshot));
@@ -664,7 +578,6 @@ Result<std::shared_ptr<SetSnapshot>> Transaction::NewSetSnapshot() {
 }
 
 Result<std::shared_ptr<FastAppend>> Transaction::NewFastAppend() {
-  ICEBERG_RETURN_UNEXPECTED(CheckReady());
   ICEBERG_ASSIGN_OR_RAISE(std::shared_ptr<FastAppend> fast_append,
                           FastAppend::Make(ctx_->table->name().name, ctx_));
   ICEBERG_RETURN_UNEXPECTED(AddUpdate(fast_append));
@@ -672,7 +585,6 @@ Result<std::shared_ptr<FastAppend>> Transaction::NewFastAppend() {
 }
 
 Result<std::shared_ptr<MergeAppend>> Transaction::NewMergeAppend() {
-  ICEBERG_RETURN_UNEXPECTED(CheckReady());
   ICEBERG_ASSIGN_OR_RAISE(std::shared_ptr<MergeAppend> merge_append,
                           MergeAppend::Make(ctx_->table->name().name, ctx_));
   ICEBERG_RETURN_UNEXPECTED(AddUpdate(merge_append));
@@ -680,7 +592,6 @@ Result<std::shared_ptr<MergeAppend>> Transaction::NewMergeAppend() {
 }
 
 Result<std::shared_ptr<DeleteFiles>> Transaction::NewDeleteFiles() {
-  ICEBERG_RETURN_UNEXPECTED(CheckReady());
   ICEBERG_ASSIGN_OR_RAISE(std::shared_ptr<DeleteFiles> delete_files,
                           DeleteFiles::Make(ctx_->table->name().name, ctx_));
   ICEBERG_RETURN_UNEXPECTED(AddUpdate(delete_files));
@@ -688,7 +599,6 @@ Result<std::shared_ptr<DeleteFiles>> Transaction::NewDeleteFiles() {
 }
 
 Result<std::shared_ptr<RowDelta>> Transaction::NewRowDelta() {
-  ICEBERG_RETURN_UNEXPECTED(CheckReady());
   ICEBERG_ASSIGN_OR_RAISE(std::shared_ptr<RowDelta> row_delta,
                           RowDelta::Make(ctx_->table->name().name, ctx_));
   ICEBERG_RETURN_UNEXPECTED(AddUpdate(row_delta));
@@ -696,7 +606,6 @@ Result<std::shared_ptr<RowDelta>> Transaction::NewRowDelta() {
 }
 
 Result<std::shared_ptr<OverwriteFiles>> Transaction::NewOverwrite() {
-  ICEBERG_RETURN_UNEXPECTED(CheckReady());
   ICEBERG_ASSIGN_OR_RAISE(std::shared_ptr<OverwriteFiles> overwrite,
                           OverwriteFiles::Make(ctx_->table->name().name, ctx_));
   ICEBERG_RETURN_UNEXPECTED(AddUpdate(overwrite));
@@ -704,7 +613,6 @@ Result<std::shared_ptr<OverwriteFiles>> Transaction::NewOverwrite() {
 }
 
 Result<std::shared_ptr<RewriteFiles>> Transaction::NewRewriteFiles() {
-  ICEBERG_RETURN_UNEXPECTED(CheckReady());
   ICEBERG_ASSIGN_OR_RAISE(std::shared_ptr<RewriteFiles> rewrite_files,
                           RewriteFiles::Make(ctx_->table->name().name, ctx_));
   ICEBERG_RETURN_UNEXPECTED(AddUpdate(rewrite_files));
@@ -712,7 +620,6 @@ Result<std::shared_ptr<RewriteFiles>> Transaction::NewRewriteFiles() {
 }
 
 Result<std::shared_ptr<ReplacePartitions>> Transaction::NewReplacePartitions() {
-  ICEBERG_RETURN_UNEXPECTED(CheckReady());
   ICEBERG_ASSIGN_OR_RAISE(std::shared_ptr<ReplacePartitions> replace_partitions,
                           ReplacePartitions::Make(ctx_->table->name().name, ctx_));
   ICEBERG_RETURN_UNEXPECTED(AddUpdate(replace_partitions));
@@ -720,7 +627,6 @@ Result<std::shared_ptr<ReplacePartitions>> Transaction::NewReplacePartitions() {
 }
 
 Result<std::shared_ptr<UpdateStatistics>> Transaction::NewUpdateStatistics() {
-  ICEBERG_RETURN_UNEXPECTED(CheckReady());
   ICEBERG_ASSIGN_OR_RAISE(std::shared_ptr<UpdateStatistics> update_statistics,
                           UpdateStatistics::Make(ctx_));
   ICEBERG_RETURN_UNEXPECTED(AddUpdate(update_statistics));
@@ -729,7 +635,6 @@ Result<std::shared_ptr<UpdateStatistics>> Transaction::NewUpdateStatistics() {
 
 Result<std::shared_ptr<UpdatePartitionStatistics>>
 Transaction::NewUpdatePartitionStatistics() {
-  ICEBERG_RETURN_UNEXPECTED(CheckReady());
   ICEBERG_ASSIGN_OR_RAISE(
       std::shared_ptr<UpdatePartitionStatistics> update_partition_statistics,
       UpdatePartitionStatistics::Make(ctx_));
@@ -739,7 +644,6 @@ Transaction::NewUpdatePartitionStatistics() {
 
 Result<std::shared_ptr<UpdateSnapshotReference>>
 Transaction::NewUpdateSnapshotReference() {
-  ICEBERG_RETURN_UNEXPECTED(CheckReady());
   ICEBERG_ASSIGN_OR_RAISE(std::shared_ptr<UpdateSnapshotReference> update_ref,
                           UpdateSnapshotReference::Make(ctx_));
   ICEBERG_RETURN_UNEXPECTED(AddUpdate(update_ref));
@@ -747,7 +651,6 @@ Transaction::NewUpdateSnapshotReference() {
 }
 
 Result<std::shared_ptr<SnapshotManager>> Transaction::NewSnapshotManager() {
-  ICEBERG_RETURN_UNEXPECTED(CheckReady());
   // SnapshotManager has its own commit logic, so it is not added to the pending updates.
   return SnapshotManager::Make(shared_from_this());
 }

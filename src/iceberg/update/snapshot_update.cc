@@ -38,7 +38,7 @@
 #include "iceberg/partition_summary_internal.h"
 #include "iceberg/table.h"  // IWYU pragma: keep
 #include "iceberg/transaction.h"
-#include "iceberg/util/best_effort_internal.h"
+#include "iceberg/util/error_util_internal.h"
 #include "iceberg/util/executor_util_internal.h"
 #include "iceberg/util/macros.h"
 #include "iceberg/util/snapshot_util_internal.h"
@@ -209,7 +209,7 @@ Status SnapshotUpdate::Commit() {
   return PendingUpdate::Commit();
 }
 
-Status SnapshotUpdate::ReportCommitted() {
+Status SnapshotUpdate::ReportCommit() const {
   ICEBERG_DCHECK(staged_snapshot_ != nullptr,
                  "Staged snapshot is null after a successful commit");
 
@@ -306,10 +306,6 @@ int64_t SnapshotUpdate::SnapshotId() {
 Result<SnapshotUpdate::ApplyResult> SnapshotUpdate::Apply() {
   commit_metrics_->attempts->Increment();
   ICEBERG_RETURN_UNEXPECTED(CheckErrors());
-  {
-    std::lock_guard lock(staging_mutex_);
-    attempted_deletes_.clear();
-  }
 
   ICEBERG_ASSIGN_OR_RAISE(auto parent_snapshot,
                           SnapshotUtil::OptionalLatestSnapshot(base(), target_branch_));
@@ -384,35 +380,45 @@ Result<SnapshotUpdate::ApplyResult> SnapshotUpdate::Apply() {
 }
 
 Status SnapshotUpdate::Finalize([[maybe_unused]] const TableMetadata& metadata) {
-  ICEBERG_CHECK(staged_snapshot_ != nullptr, "Missing staged snapshot after commit");
-  auto cached_snapshot = SnapshotCache(staged_snapshot_.get());
-  ICEBERG_ASSIGN_OR_RAISE(auto manifests, cached_snapshot.Manifests(ctx_->table->io()));
-  auto committed =
-      manifests |
-      std::views::transform([](const auto& manifest) { return manifest.manifest_path; }) |
-      std::ranges::to<std::unordered_set<std::string>>();
-  // Let derived updates release their caches and clean operation-specific files.
-  internal::BestEffort("Snapshot cleanup",
-                       [this, &committed] { return CleanUncommitted(committed); });
-  committed.insert(staged_snapshot_->manifest_list);
-  std::vector<std::string> unused;
-  {
-    std::lock_guard lock(staging_mutex_);
-    for (const auto& path : staged_files_) {
-      if (!committed.contains(path) && !staged_data_files_.contains(path)) {
-        unused.push_back(path);
+  if (staged_snapshot_ == nullptr) {
+    return {};
+  }
+
+  // Only files created by this update are tracked, and committed paths are kept below.
+  internal::LogAndIgnoreFailure("Snapshot cleanup", [this]() -> Status {
+    auto cached_snapshot = SnapshotCache(staged_snapshot_.get());
+    ICEBERG_ASSIGN_OR_RAISE(auto manifests, cached_snapshot.Manifests(ctx_->table->io()));
+    auto committed = manifests | std::views::transform([](const auto& manifest) {
+                       return manifest.manifest_path;
+                     }) |
+                     std::ranges::to<std::unordered_set<std::string>>();
+    internal::LogAndIgnoreFailure("Snapshot operation cleanup", [this, &committed] {
+      return CleanUncommitted(committed);
+    });
+    committed.insert(staged_snapshot_->manifest_list);
+    std::vector<std::string> unused;
+    {
+      std::lock_guard lock(staging_mutex_);
+      for (const auto& path : staged_files_) {
+        if (!committed.contains(path)) {
+          unused.push_back(path);
+        }
       }
     }
-  }
-  for (const auto& path : unused) {
-    std::ignore = DeleteFile(path);
-  }
+    for (const auto& path : unused) {
+      std::ignore = DeleteFile(path);
+    }
+    return {};
+  });
+
   {
     std::lock_guard lock(staging_mutex_);
     staged_files_.clear();
-    staged_data_files_.clear();
   }
-  return {};
+  auto report_status = ReportCommit();
+  staged_snapshot_.reset();
+  summary_.Clear();
+  return report_status;
 }
 
 Result<std::unordered_map<std::string, std::string>> SnapshotUpdate::ComputeSummary(
@@ -466,14 +472,13 @@ Result<std::unordered_map<std::string, std::string>> SnapshotUpdate::ComputeSumm
 }
 
 Status SnapshotUpdate::CleanStaged() {
-  internal::BestEffort("Snapshot staging cleanup",
-                       [this] { return CleanUncommitted({}); });
-  // Include paths whose writes failed before a derived cache recorded a manifest.
-  std::unordered_set<std::string> paths;
+  internal::LogAndIgnoreFailure("Snapshot staging cleanup",
+                                [this] { return CleanUncommitted({}); });
+  // Retry paths that operation-specific cleanup did not delete.
+  std::vector<std::string> paths;
   {
     std::lock_guard lock(staging_mutex_);
-    paths.swap(staged_files_);
-    staged_data_files_.clear();
+    paths.assign(staged_files_.begin(), staged_files_.end());
   }
   for (const auto& path : paths) {
     std::ignore = DeleteFile(path);
@@ -483,31 +488,31 @@ Status SnapshotUpdate::CleanStaged() {
   return {};
 }
 
-void SnapshotUpdate::RegisterStagedFile(const std::string& path, bool data_file) {
+void SnapshotUpdate::RegisterStagedFile(const std::string& path) {
   std::lock_guard lock(staging_mutex_);
   staged_files_.insert(path);
-  if (data_file) {
-    staged_data_files_.insert(path);
-  }
+}
+
+void SnapshotUpdate::UnregisterStagedFile(const std::string& path) {
+  std::lock_guard lock(staging_mutex_);
+  staged_files_.erase(path);
 }
 
 Status SnapshotUpdate::DeleteFile(const std::string& path) noexcept {
   try {
-    {
-      std::lock_guard lock(staging_mutex_);
-      if (!attempted_deletes_.insert(path).second) {
-        return {};
-      }
-      staged_files_.erase(path);
-      staged_data_files_.erase(path);
-    }
     auto result = delete_func_ ? delete_func_(path) : ctx_->table->io()->DeleteFile(path);
-    if (!result) {
+    if (!result && result.error().kind != ErrorKind::kNotFound) {
+      RegisterStagedFile(path);
       ICEBERG_LOG_WARN("Cannot clean staged file {}: {}", path, result.error().message);
+      return {};
     }
+    std::lock_guard lock(staging_mutex_);
+    staged_files_.erase(path);
   } catch (const std::exception& e) {
+    RegisterStagedFile(path);
     ICEBERG_LOG_WARN("Cannot clean staged file {}: {}", path, e.what());
   } catch (...) {
+    RegisterStagedFile(path);
     ICEBERG_LOG_WARN("Cannot clean staged file {}: unknown exception", path);
   }
   return {};

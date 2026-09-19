@@ -331,8 +331,7 @@ class ICEBERG_EXPORT MergingSnapshotUpdate : public SnapshotUpdate {
 
   /// \brief Copy a manifest with the current snapshot ID, for use when snapshot
   /// ID inheritance is not possible.
-  /// \param update_summary Whether to add copied entries to the append summary
-  Result<ManifestFile> CopyManifest(const ManifestFile& manifest, bool update_summary);
+  Result<ManifestFile> CopyManifest(const ManifestFile& manifest);
 
   Status AddDeleteFile(std::shared_ptr<DataFile> file,
                        std::optional<int64_t> data_sequence_number);

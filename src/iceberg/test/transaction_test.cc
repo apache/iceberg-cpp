@@ -299,7 +299,7 @@ TEST_F(TransactionTest, AppliedUpdateCannotCompleteAnotherPendingOperation) {
   ASSERT_THAT(first->Commit(), IsOk());
   EXPECT_EQ(txn->state(), TransactionState::kReady);
   ICEBERG_UNWRAP_OR_FAIL(auto second, txn->NewUpdateProperties());
-  EXPECT_THAT(first->Commit(), HasErrorMessage("not the current pending operation"));
+  EXPECT_THAT(first->Commit(), HasErrorMessage("Update has already been committed"));
   EXPECT_EQ(txn->state(), TransactionState::kUpdatePending);
   EXPECT_THAT(txn->Commit(), IsError(ErrorKind::kValidationFailed));
   EXPECT_THAT(txn->NewUpdateProperties(), IsError(ErrorKind::kValidationFailed));
@@ -321,8 +321,7 @@ TEST_F(TransactionTest, StandaloneCommitIsTerminal) {
   ASSERT_THAT(update->Commit(), IsOk());
   EXPECT_FALSE(ctx->transaction.has_value());
   EXPECT_EQ(ReloadMetadata()->properties.configs().at("once"), "value");
-  EXPECT_THAT(update->Commit(), HasErrorMessage("Update is terminal"));
-  EXPECT_THROW(update->Set("twice", "value"), IcebergError);
+  EXPECT_THAT(update->Commit(), HasErrorMessage("Update has already been committed"));
 }
 
 TEST_F(TransactionTest, AbortReadyAndPendingIsIdempotent) {
@@ -340,7 +339,6 @@ TEST_F(TransactionTest, AbortReadyAndPendingIsIdempotent) {
     EXPECT_THAT(txn->NewFastAppend(), IsError(ErrorKind::kValidationFailed));
     if (update) {
       EXPECT_THAT(update->Commit(), IsError(ErrorKind::kValidationFailed));
-      EXPECT_THROW(update->Set("reuse", "value"), IcebergError);
     }
   }
 }
@@ -351,7 +349,6 @@ TEST_F(TransactionTest, ApplyFailureCannotBeCorrected) {
   update->Set("format-version", "100");
   EXPECT_THAT(update->Commit(), IsError(ErrorKind::kInvalidArgument));
   EXPECT_EQ(txn->state(), TransactionState::kFailed);
-  EXPECT_THROW(update->Set("format-version", "2"), IcebergError);
   EXPECT_THAT(update->Commit(), IsError(ErrorKind::kValidationFailed));
   EXPECT_THAT(txn->Commit(),
               ::testing::AllOf(IsError(ErrorKind::kValidationFailed),
@@ -370,38 +367,6 @@ TEST_F(TransactionRetryTest, NonRetryableStandaloneUpdateStopsAtFirstConflict) {
   update->AddColumn("new_column", int64());
   EXPECT_THAT(update->Commit(), IsError(ErrorKind::kCommitFailed));
   EXPECT_THAT(update->Commit(), IsError(ErrorKind::kValidationFailed));
-}
-
-TEST_F(TransactionRetryTest, FrozenMutationDoesNotPoisonReplay) {
-  EXPECT_CALL(*mock_catalog_, UpdateTable(::testing::_, ::testing::_, ::testing::_))
-      .WillOnce(::testing::Return(CommitFailed("conflict")))
-      .WillOnce([this](const auto& name, const auto& requirements, const auto& updates) {
-        return catalog_->UpdateTable(name, requirements, updates);
-      });
-  ICEBERG_UNWRAP_OR_FAIL(auto txn, mock_table_->NewTransaction());
-  ICEBERG_UNWRAP_OR_FAIL(auto update, txn->NewUpdateProperties());
-  update->Set("frozen", "original");
-  ASSERT_THAT(update->Commit(), IsOk());
-  EXPECT_THROW(update->Set("frozen", "changed"), IcebergError);
-  ASSERT_THAT(txn->Commit(), IsOk());
-  EXPECT_EQ(ReloadMetadata()->properties.configs().at("frozen"), "original");
-}
-
-TEST_F(TransactionTest, FreezeCopiesSortTransformAliases) {
-  FailCommits(2);
-  ICEBERG_UNWRAP_OR_FAIL(auto txn, table_->NewTransaction());
-  ICEBERG_UNWRAP_OR_FAIL(auto update, txn->NewUpdateSortOrder());
-  auto transform = Transform::Bucket(16);
-  ICEBERG_UNWRAP_OR_FAIL(auto term,
-                         UnboundTransform::Make(Expressions::Ref("x"), transform));
-  update->AddSortField(std::move(term), SortDirection::kAscending, NullOrder::kFirst);
-  ASSERT_THAT(update->Commit(), IsOk());
-  *transform = *Transform::Bucket(32);
-  ICEBERG_UNWRAP_OR_FAIL(auto preview, update->Validate());
-  *preview->fields()[0].transform() = *Transform::Bucket(64);
-  ASSERT_THAT(txn->Commit(), IsOk());
-  ICEBERG_UNWRAP_OR_FAIL(auto order, ReloadMetadata()->SortOrder());
-  EXPECT_EQ(*order->fields()[0].transform(), *Transform::Bucket(16));
 }
 
 }  // namespace iceberg

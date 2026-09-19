@@ -148,12 +148,10 @@ class ICEBERG_EXPORT UpdateSnapshotReference : public PendingUpdate {
     std::vector<std::string> to_remove;
   };
 
-  /// \brief Validate and preview changes without staging or modifying this update.
-  Result<ApplyResult> Validate() const;
+  /// \brief Apply the pending changes and return the updated and removed references.
+  Result<ApplyResult> Apply();
 
  private:
-  Status Freeze() override;
-
   explicit UpdateSnapshotReference(std::shared_ptr<TransactionContext> ctx);
 
   UpdateSnapshotReference& ReplaceBranchInternal(const std::string& from,

@@ -92,6 +92,7 @@ class ICEBERG_EXPORT Transaction : public std::enable_shared_from_this<Transacti
   /// transactions cannot be aborted. Destructors never perform cleanup.
   Status Abort();
 
+  /// \brief Return the current state of the transaction.
   TransactionState state() const { return state_; }
 
   /// \brief Create a new UpdatePartitionSpec to update the partition spec of this table
@@ -164,13 +165,11 @@ class ICEBERG_EXPORT Transaction : public std::enable_shared_from_this<Transacti
   explicit Transaction(std::shared_ptr<TransactionContext> ctx);
 
   Status CheckReady() const;
-  Status CheckActive() const;
   Status AddUpdate(const std::shared_ptr<PendingUpdate>& update);
 
-  /// \brief Apply the pending changes to current table.
-  Status Apply(PendingUpdate& update);
-  Status ApplyRegistered(PendingUpdate& update);
-  Status ReplayApply(PendingUpdate& update);
+  Status CommitUpdate(PendingUpdate& update);
+  Status ApplyUpdate(PendingUpdate& update);
+  Status ReplayUpdates();
 
   // Helper methods for applying different types of updates
   Status ApplyExpireSnapshots(ExpireSnapshots& update);
@@ -185,22 +184,16 @@ class ICEBERG_EXPORT Transaction : public std::enable_shared_from_this<Transacti
   Status ApplyUpdateSortOrder(UpdateSortOrder& update);
   Status ApplyUpdateStatistics(UpdateStatistics& update);
 
-  /// \brief Perform a single commit attempt
-  Result<std::shared_ptr<Table>> CommitOnce(bool is_first_attempt,
-                                            std::optional<Error>& replay_error,
-                                            bool& catalog_state_unknown);
+  Result<std::shared_ptr<Table>> CommitOnce(bool is_first_attempt);
 
   /// \brief Whether this transaction can retry after a commit conflict.
   bool CanRetry() const;
 
-  void SetTerminalState(TransactionState state);
   void CleanupUpdates() noexcept;
   void FinalizeUpdates(const TableMetadata& committed) noexcept;
-  void ConfigureExpirationCleanup();
 
  private:
   friend class PendingUpdate;
-  friend class SnapshotManager;
 
   // Shared context owning the table, metadata builder, and kind.
   std::shared_ptr<TransactionContext> ctx_;
@@ -230,14 +223,6 @@ class ICEBERG_EXPORT TransactionContext {
   // If PendingUpdate is created directly from Table, this is nullopt;
   // otherwise, it holds a weak pointer to the Transaction that created it.
   std::optional<std::weak_ptr<Transaction>> transaction;
-
- private:
-  friend class Transaction;
-  friend class PendingUpdate;
-
-  // Keep the builder's base alive when Table::Refresh replaces table metadata.
-  std::shared_ptr<TableMetadata> base_metadata_;
-  bool in_progress_ = false;
 };
 
 }  // namespace iceberg

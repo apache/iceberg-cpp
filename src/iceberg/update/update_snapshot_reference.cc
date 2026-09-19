@@ -47,7 +47,6 @@ UpdateSnapshotReference::~UpdateSnapshotReference() = default;
 
 UpdateSnapshotReference& UpdateSnapshotReference::CreateBranch(const std::string& name,
                                                                int64_t snapshot_id) {
-  EnsureMutable();
   ICEBERG_BUILDER_CHECK(!name.empty(), "Branch name cannot be empty");
   ICEBERG_BUILDER_ASSIGN_OR_RETURN(auto branch, SnapshotRef::MakeBranch(snapshot_id));
   auto [_, inserted] = updated_refs_.emplace(name, std::move(branch));
@@ -57,7 +56,6 @@ UpdateSnapshotReference& UpdateSnapshotReference::CreateBranch(const std::string
 
 UpdateSnapshotReference& UpdateSnapshotReference::CreateTag(const std::string& name,
                                                             int64_t snapshot_id) {
-  EnsureMutable();
   ICEBERG_BUILDER_CHECK(!name.empty(), "Tag name cannot be empty");
   ICEBERG_BUILDER_ASSIGN_OR_RETURN(auto tag, SnapshotRef::MakeTag(snapshot_id));
   auto [_, inserted] = updated_refs_.emplace(name, std::move(tag));
@@ -66,7 +64,6 @@ UpdateSnapshotReference& UpdateSnapshotReference::CreateTag(const std::string& n
 }
 
 UpdateSnapshotReference& UpdateSnapshotReference::RemoveBranch(const std::string& name) {
-  EnsureMutable();
   ICEBERG_BUILDER_CHECK(!name.empty(), "Branch name cannot be empty");
   ICEBERG_BUILDER_CHECK(name != SnapshotRef::kMainBranch, "Cannot remove main branch");
   auto it = updated_refs_.find(name);
@@ -78,7 +75,6 @@ UpdateSnapshotReference& UpdateSnapshotReference::RemoveBranch(const std::string
 }
 
 UpdateSnapshotReference& UpdateSnapshotReference::RemoveTag(const std::string& name) {
-  EnsureMutable();
   ICEBERG_BUILDER_CHECK(!name.empty(), "Tag name cannot be empty");
   auto it = updated_refs_.find(name);
   ICEBERG_BUILDER_CHECK(it != updated_refs_.end(), "Tag does not exist: {}", name);
@@ -90,7 +86,6 @@ UpdateSnapshotReference& UpdateSnapshotReference::RemoveTag(const std::string& n
 
 UpdateSnapshotReference& UpdateSnapshotReference::RenameBranch(
     const std::string& name, const std::string& new_name) {
-  EnsureMutable();
   ICEBERG_BUILDER_CHECK(!name.empty(), "Branch to rename cannot be empty");
   ICEBERG_BUILDER_CHECK(!new_name.empty(), "New branch name cannot be empty");
   ICEBERG_BUILDER_CHECK(name != SnapshotRef::kMainBranch, "Cannot rename main branch");
@@ -106,7 +101,6 @@ UpdateSnapshotReference& UpdateSnapshotReference::RenameBranch(
 
 UpdateSnapshotReference& UpdateSnapshotReference::ReplaceBranch(const std::string& name,
                                                                 int64_t snapshot_id) {
-  EnsureMutable();
   ICEBERG_BUILDER_CHECK(!name.empty(), "Branch name cannot be empty");
   auto it = updated_refs_.find(name);
   ICEBERG_BUILDER_CHECK(it != updated_refs_.end(), "Branch does not exist: {}", name);
@@ -118,19 +112,16 @@ UpdateSnapshotReference& UpdateSnapshotReference::ReplaceBranch(const std::strin
 
 UpdateSnapshotReference& UpdateSnapshotReference::ReplaceBranch(const std::string& from,
                                                                 const std::string& to) {
-  EnsureMutable();
   return ReplaceBranchInternal(from, to, /*fast_forward=*/false);
 }
 
 UpdateSnapshotReference& UpdateSnapshotReference::FastForward(const std::string& from,
                                                               const std::string& to) {
-  EnsureMutable();
   return ReplaceBranchInternal(from, to, /*fast_forward=*/true);
 }
 
 UpdateSnapshotReference& UpdateSnapshotReference::ReplaceBranchInternal(
     const std::string& from, const std::string& to, bool fast_forward) {
-  EnsureMutable();
   ICEBERG_BUILDER_CHECK(!from.empty(), "Branch to update cannot be empty");
   ICEBERG_BUILDER_CHECK(!to.empty(), "Destination ref cannot be empty");
   auto to_it = updated_refs_.find(to);
@@ -169,7 +160,6 @@ UpdateSnapshotReference& UpdateSnapshotReference::ReplaceBranchInternal(
 
 UpdateSnapshotReference& UpdateSnapshotReference::ReplaceTag(const std::string& name,
                                                              int64_t snapshot_id) {
-  EnsureMutable();
   ICEBERG_BUILDER_CHECK(!name.empty(), "Tag name cannot be empty");
   auto it = updated_refs_.find(name);
   ICEBERG_BUILDER_CHECK(it != updated_refs_.end(), "Tag does not exist: {}", name);
@@ -181,7 +171,6 @@ UpdateSnapshotReference& UpdateSnapshotReference::ReplaceTag(const std::string& 
 
 UpdateSnapshotReference& UpdateSnapshotReference::SetMinSnapshotsToKeep(
     const std::string& name, int32_t min_snapshots_to_keep) {
-  EnsureMutable();
   ICEBERG_BUILDER_CHECK(!name.empty(), "Branch name cannot be empty");
   auto it = updated_refs_.find(name);
   ICEBERG_BUILDER_CHECK(it != updated_refs_.end(), "Branch does not exist: {}", name);
@@ -198,7 +187,6 @@ UpdateSnapshotReference& UpdateSnapshotReference::SetMinSnapshotsToKeep(
 
 UpdateSnapshotReference& UpdateSnapshotReference::SetMaxSnapshotAgeMs(
     const std::string& name, int64_t max_snapshot_age_ms) {
-  EnsureMutable();
   ICEBERG_BUILDER_CHECK(!name.empty(), "Branch name cannot be empty");
   auto it = updated_refs_.find(name);
   ICEBERG_BUILDER_CHECK(it != updated_refs_.end(), "Branch does not exist: {}", name);
@@ -215,7 +203,6 @@ UpdateSnapshotReference& UpdateSnapshotReference::SetMaxSnapshotAgeMs(
 
 UpdateSnapshotReference& UpdateSnapshotReference::SetMaxRefAgeMs(const std::string& name,
                                                                  int64_t max_ref_age_ms) {
-  EnsureMutable();
   ICEBERG_BUILDER_CHECK(!name.empty(), "Reference name cannot be empty");
   auto it = updated_refs_.find(name);
   ICEBERG_BUILDER_CHECK(it != updated_refs_.end(), "Ref does not exist: {}", name);
@@ -230,7 +217,7 @@ UpdateSnapshotReference& UpdateSnapshotReference::SetMaxRefAgeMs(const std::stri
   return *this;
 }
 
-Result<UpdateSnapshotReference::ApplyResult> UpdateSnapshotReference::Validate() const {
+Result<UpdateSnapshotReference::ApplyResult> UpdateSnapshotReference::Apply() {
   ICEBERG_RETURN_UNEXPECTED(CheckErrors());
 
   ApplyResult result;
@@ -247,20 +234,11 @@ Result<UpdateSnapshotReference::ApplyResult> UpdateSnapshotReference::Validate()
   for (const auto& [name, ref] : updated_refs_) {
     if (auto iter = current_refs.find(name);
         iter == current_refs.end() || *iter->second != *ref) {
-      result.to_set.emplace_back(name, std::make_shared<SnapshotRef>(*ref));
+      result.to_set.emplace_back(name, ref);
     }
   }
 
   return result;
-}
-
-Status UpdateSnapshotReference::Freeze() {
-  for (auto& [_, value] : updated_refs_) {
-    if (value) {
-      value = std::make_shared<SnapshotRef>(*value);
-    }
-  }
-  return {};
 }
 
 }  // namespace iceberg

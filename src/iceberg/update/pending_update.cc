@@ -19,11 +19,9 @@
 
 #include "iceberg/update/pending_update.h"
 
-#include "iceberg/exception.h"
 #include "iceberg/result.h"
 #include "iceberg/table.h"
 #include "iceberg/transaction.h"
-#include "iceberg/util/best_effort_internal.h"
 #include "iceberg/util/macros.h"
 
 namespace iceberg {
@@ -33,23 +31,8 @@ PendingUpdate::PendingUpdate(std::shared_ptr<TransactionContext> ctx)
 
 PendingUpdate::~PendingUpdate() = default;
 
-void PendingUpdate::EnsureMutable() const {
-  ICEBERG_CHECK_OR_DIE(phase_ == Phase::kMutable,
-                       "Update configuration is frozen or terminal");
-  ICEBERG_CHECK_OR_DIE(!ctx_->in_progress_,
-                       "Cannot mutate an update during an operation");
-  if (ctx_->transaction) {
-    auto txn = ctx_->transaction->lock();
-    ICEBERG_CHECK_OR_DIE(txn != nullptr, "Transaction has been destroyed");
-    ICEBERG_CHECK_OR_DIE(txn->state() == TransactionState::kReady ||
-                             txn->state() == TransactionState::kUpdatePending,
-                         "Transaction is terminal");
-  }
-}
-
 Status PendingUpdate::CheckCommitAllowed() const {
-  ICEBERG_CHECK(phase_ != Phase::kTerminal, "Update is terminal");
-  ICEBERG_CHECK(!ctx_->in_progress_, "Cannot reenter an update or transaction operation");
+  ICEBERG_CHECK(!commit_called_, "Update has already been committed");
   return {};
 }
 
@@ -58,41 +41,20 @@ Status PendingUpdate::Commit() {
   if (ctx_->transaction) {
     auto txn = ctx_->transaction->lock();
     ICEBERG_CHECK(txn != nullptr, "Transaction has been destroyed");
-    return txn->Apply(*this);
+    return txn->CommitUpdate(*this);
   }
 
   auto self = weak_from_this().lock();
   ICEBERG_PRECHECK(self != nullptr, "PendingUpdate must be owned by std::shared_ptr");
   ICEBERG_ASSIGN_OR_RAISE(auto txn, Transaction::Make(ctx_));
   ICEBERG_RETURN_UNEXPECTED(txn->AddUpdate(self));
-  ICEBERG_RETURN_UNEXPECTED(txn->Apply(*this));
+  ICEBERG_RETURN_UNEXPECTED(txn->CommitUpdate(*this));
   ICEBERG_RETURN_UNEXPECTED(txn->Commit());
   return {};
 }
 
 Status PendingUpdate::Finalize([[maybe_unused]] const TableMetadata& committed) {
   return {};
-}
-
-void PendingUpdate::Cleanup() noexcept {
-  if (!staged_) {
-    return;
-  }
-  // Consume the generation before any callback can throw or reenter.
-  staged_ = false;
-  internal::BestEffort("Update staging cleanup", [this] { return CleanStaged(); });
-}
-
-void PendingUpdate::FinalizeOnce(const TableMetadata& committed) noexcept {
-  // A generation already consumed by Cleanup (a staged snapshot that produced no
-  // metadata change) has nothing to finalize or report.
-  if (!staged_) {
-    return;
-  }
-  staged_ = false;
-  internal::BestEffort("Update finalization",
-                       [this, &committed] { return Finalize(committed); });
-  internal::BestEffort("Update reporting", [this] { return ReportCommitted(); });
 }
 
 const TableMetadata& PendingUpdate::base() const { return ctx_->current(); }

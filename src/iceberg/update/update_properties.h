@@ -53,7 +53,7 @@ class ICEBERG_EXPORT UpdateProperties : public PendingUpdate {
   ///
   /// The key must not have been previously marked for removal and must not be a
   /// reserved property key (except `format-version`). Setting a reserved property
-  /// will result in an error during validation.
+  /// will result in a validation error at Apply() time.
   ///
   /// \param key The property key to set
   /// \param value The property value to set
@@ -69,12 +69,10 @@ class ICEBERG_EXPORT UpdateProperties : public PendingUpdate {
   Kind kind() const final { return Kind::kUpdateProperties; }
   bool IsRetryable() const override { return true; }
 
-  /// \brief Validate and preview changes without staging or modifying this update.
-  Result<ApplyResult> Validate() const;
+  /// \brief Apply the pending changes and return the updates and removals.
+  Result<ApplyResult> Apply();
 
  private:
-  bool MayAddFileReferences() const override { return false; }
-
   explicit UpdateProperties(std::shared_ptr<TransactionContext> ctx);
 
   std::unordered_map<std::string, std::string> updates_;

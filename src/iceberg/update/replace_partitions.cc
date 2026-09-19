@@ -47,7 +47,6 @@ ReplacePartitions::ReplacePartitions(std::string table_name,
 }
 
 ReplacePartitions& ReplacePartitions::AddFile(const std::shared_ptr<DataFile>& file) {
-  EnsureMutable();
   ICEBERG_BUILDER_CHECK(file != nullptr, "Invalid data file: null");
   ICEBERG_BUILDER_CHECK(file->partition_spec_id.has_value(),
                         "Data file must have partition spec ID");
@@ -60,25 +59,21 @@ ReplacePartitions& ReplacePartitions::AddFile(const std::shared_ptr<DataFile>& f
 }
 
 ReplacePartitions& ReplacePartitions::ValidateAppendOnly() {
-  EnsureMutable();
   FailAnyDelete();
   return *this;
 }
 
 ReplacePartitions& ReplacePartitions::ValidateFromSnapshot(int64_t snapshot_id) {
-  EnsureMutable();
   starting_snapshot_id_ = snapshot_id;
   return *this;
 }
 
 ReplacePartitions& ReplacePartitions::ValidateNoConflictingData() {
-  EnsureMutable();
   validate_conflicting_data_ = true;
   return *this;
 }
 
 ReplacePartitions& ReplacePartitions::ValidateNoConflictingDeletes() {
-  EnsureMutable();
   validate_conflicting_deletes_ = true;
   return *this;
 }

@@ -226,7 +226,7 @@ class ExpireSnapshotsCleanupTest : public UpdateTestBase {
 
 TEST_F(ExpireSnapshotsTest, DefaultExpireByAge) {
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewExpireSnapshots());
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Validate());
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
   EXPECT_EQ(result.snapshot_ids_to_remove.size(), 1);
   EXPECT_EQ(result.snapshot_ids_to_remove.at(0), 3051729675574597004);
 }
@@ -234,7 +234,7 @@ TEST_F(ExpireSnapshotsTest, DefaultExpireByAge) {
 TEST_F(ExpireSnapshotsTest, KeepAll) {
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewExpireSnapshots());
   update->RetainLast(2);
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Validate());
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
   EXPECT_TRUE(result.snapshot_ids_to_remove.empty());
   EXPECT_TRUE(result.refs_to_remove.empty());
 }
@@ -242,7 +242,7 @@ TEST_F(ExpireSnapshotsTest, KeepAll) {
 TEST_F(ExpireSnapshotsTest, ExpireById) {
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewExpireSnapshots());
   update->ExpireSnapshotId(3051729675574597004);
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Validate());
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
   EXPECT_EQ(result.snapshot_ids_to_remove.size(), 1);
   EXPECT_EQ(result.snapshot_ids_to_remove.at(0), 3051729675574597004);
 }
@@ -252,7 +252,7 @@ TEST_F(ExpireSnapshotsTest, ExpireByIdOverridesRetainLast) {
   update->RetainLast(2);
   update->ExpireSnapshotId(3051729675574597004);
 
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Validate());
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
   EXPECT_THAT(result.snapshot_ids_to_remove, testing::ElementsAre(3051729675574597004));
 }
 
@@ -267,7 +267,7 @@ TEST_F(ExpireSnapshotsTest, ExpireOlderThan) {
   for (const auto& test_case : test_cases) {
     ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewExpireSnapshots());
     update->ExpireOlderThan(test_case.expire_older_than);
-    ICEBERG_UNWRAP_OR_FAIL(auto result, update->Validate());
+    ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
     EXPECT_EQ(result.snapshot_ids_to_remove.size(), test_case.expected_num_expired);
   }
 }
@@ -291,18 +291,18 @@ TEST_F(ExpireSnapshotsCleanupTest, RetainsUnreferencedSnapshotAtExpireThreshold)
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewExpireSnapshots());
   update->ExpireOlderThan(expire_at_ms);
 
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Validate());
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
   EXPECT_THAT(result.snapshot_ids_to_remove,
               testing::Not(testing::Contains(unreferenced_snapshot_id)));
 }
 
-TEST_F(ExpireSnapshotsTest, ValidateDoesNotScheduleCleanup) {
+TEST_F(ExpireSnapshotsTest, ApplyDoesNotDeleteBeforeCommit) {
   std::vector<std::string> deleted_files;
   ICEBERG_UNWRAP_OR_FAIL(auto txn, table_->NewTransaction());
   ICEBERG_UNWRAP_OR_FAIL(auto update, txn->NewExpireSnapshots());
   update->DeleteWith(
       [&deleted_files](const std::string& path) { deleted_files.push_back(path); });
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Validate());
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
   EXPECT_EQ(result.snapshot_ids_to_remove.size(), 1);
   EXPECT_THAT(txn->Abort(), IsOk());
   EXPECT_TRUE(deleted_files.empty());
@@ -315,7 +315,7 @@ TEST_F(ExpireSnapshotsTest, CleanupNoneSkipsDeletion) {
   update->DeleteWith(
       [&deleted_files](const std::string& path) { deleted_files.push_back(path); });
 
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Validate());
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
   EXPECT_EQ(result.snapshot_ids_to_remove.size(), 1);
 
   // With kNone cleanup level, Commit should skip all file deletion
@@ -375,6 +375,45 @@ TEST_F(ExpireSnapshotsCleanupTest, CommitFailureSkipsExpirationDeletion) {
   EXPECT_THAT(file_io_->ReadFile(current_list, std::nullopt), IsOk());
 }
 
+TEST_F(ExpireSnapshotsCleanupTest, CommitStateUnknownPreservesExpiredFiles) {
+  const auto data_path = table_location_ + "/data/unknown-expired.parquet";
+  const auto manifest_path = table_location_ + "/metadata/unknown-expired.avro";
+  const auto expired_list = table_location_ + "/metadata/unknown-expired-list.avro";
+  const auto current_list = table_location_ + "/metadata/unknown-current-list.avro";
+  ASSERT_THAT(file_io_->WriteFile(data_path, "data"), IsOk());
+  auto data_file = MakeDataFile(data_path);
+  data_file->partition_spec_id = DefaultSpec()->spec_id();
+  auto manifest = WriteDataManifest(manifest_path, kExpiredSnapshotId,
+                                    {MakeEntry(ManifestStatus::kAdded, kExpiredSnapshotId,
+                                               kExpiredSequenceNumber, data_file)});
+  WriteManifestList(expired_list, kExpiredSnapshotId, 0, kExpiredSequenceNumber,
+                    {manifest});
+  WriteManifestList(current_list, kCurrentSnapshotId, kExpiredSnapshotId,
+                    kCurrentSequenceNumber, {});
+  RewriteTableWithManifestLists(expired_list, current_list);
+
+  auto mock = std::make_shared<::testing::NiceMock<MockCatalog>>();
+  EXPECT_CALL(*mock, UpdateTable(::testing::_, ::testing::_, ::testing::_))
+      .WillOnce(::testing::Return(CommitStateUnknown("unknown commit state")));
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto table,
+      Table::Make(table_->name(), table_->metadata(),
+                  std::string(table_->metadata_file_location()), file_io_, mock));
+  ICEBERG_UNWRAP_OR_FAIL(auto update, table->NewExpireSnapshots());
+  std::vector<std::string> deleted_files;
+  update->ExpireSnapshotId(kExpiredSnapshotId).DeleteWith([&](const std::string& path) {
+    deleted_files.push_back(path);
+    return file_io_->DeleteFile(path);
+  });
+
+  EXPECT_THAT(update->Commit(), IsError(ErrorKind::kCommitStateUnknown));
+  EXPECT_TRUE(deleted_files.empty());
+  EXPECT_TRUE(ReloadMetadata()->SnapshotById(kExpiredSnapshotId).has_value());
+  for (const auto& path : {data_path, manifest_path, expired_list}) {
+    EXPECT_THAT(file_io_->ReadFile(path, std::nullopt), IsOk());
+  }
+}
+
 TEST_F(ExpireSnapshotsTest, CommitSkipsWhenNothingExpired) {
   std::vector<std::string> deleted_files;
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewExpireSnapshots());
@@ -382,7 +421,7 @@ TEST_F(ExpireSnapshotsTest, CommitSkipsWhenNothingExpired) {
   update->DeleteWith(
       [&deleted_files](const std::string& path) { deleted_files.push_back(path); });
 
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Validate());
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
   EXPECT_TRUE(result.snapshot_ids_to_remove.empty());
 
   // No snapshots expired, so Commit should not delete any files
@@ -1079,11 +1118,14 @@ TEST_P(ExpirationLifecycleTest, LaterReferencesSuppressPhysicalDeletion) {
   expire->ExpireSnapshotId(kExpiredSnapshotId).CleanupLevel(cleanup_level);
   int deletes = 0;
   if (custom_delete) {
-    expire->DeleteWith([&](const std::string&) { ++deletes; });
+    expire->DeleteWith([&](const std::string& path) {
+      ++deletes;
+      std::ignore = file_io_->DeleteFile(path);
+    });
   }
   ASSERT_THAT(expire->Commit(), IsOk());
   if (reattach) {
-    // FastAppend inherits the conservative default capability from PendingUpdate.
+    // A later update reuses the expired data file, so final cleanup must preserve it.
     ICEBERG_UNWRAP_OR_FAIL(auto append, txn->NewFastAppend());
     append->AppendFile(data_file);
     ASSERT_THAT(append->Commit(), IsOk());
@@ -1094,13 +1136,15 @@ TEST_P(ExpirationLifecycleTest, LaterReferencesSuppressPhysicalDeletion) {
   }
   ASSERT_THAT(txn->Commit(), IsOk());
   EXPECT_FALSE(ReloadMetadata()->SnapshotById(kExpiredSnapshotId).has_value());
-  EXPECT_EQ(deletes, 0);
-  for (const auto& path : {data_path, manifest_path, expired_list}) {
-    EXPECT_THAT(file_io_->ReadFile(path, std::nullopt), IsOk());
+  EXPECT_EQ(file_io_->ReadFile(data_path, std::nullopt).has_value(),
+            reattach || cleanup_level == CleanupLevel::kMetadataOnly);
+  EXPECT_FALSE(file_io_->ReadFile(manifest_path, std::nullopt).has_value());
+  EXPECT_FALSE(file_io_->ReadFile(expired_list, std::nullopt).has_value());
+  if (custom_delete) {
+    EXPECT_GT(deletes, 0);
   }
   EXPECT_THAT(txn->Commit(), IsError(ErrorKind::kValidationFailed));
   EXPECT_THAT(txn->Abort(), IsError(ErrorKind::kValidationFailed));
-  EXPECT_EQ(deletes, 0);
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -1132,7 +1176,7 @@ TEST_F(ExpireSnapshotsCleanupTest, RetryRecomputesExpirationAgainstRefreshedMeta
       .RetainLast(1);
   std::vector<std::string> deleted;
   expire->DeleteWith([&](const std::string& path) { deleted.push_back(path); });
-  ICEBERG_UNWRAP_OR_FAIL(auto preview, expire->Validate());
+  ICEBERG_UNWRAP_OR_FAIL(auto preview, expire->Apply());
   EXPECT_THAT(preview.snapshot_ids_to_remove, ::testing::ElementsAre(kExpiredSnapshotId));
   ASSERT_THAT(expire->Commit(), IsOk());
   auto metadata = ReloadMetadata();

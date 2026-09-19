@@ -75,12 +75,9 @@ class ICEBERG_EXPORT UpdatePartitionStatistics : public PendingUpdate {
     std::vector<int64_t> to_remove;
   };
 
-  /// \brief Validate and preview changes without staging or modifying this update.
-  Result<ApplyResult> Validate() const;
+  Result<ApplyResult> Apply();
 
  private:
-  Status Freeze() override;
-
   explicit UpdatePartitionStatistics(std::shared_ptr<TransactionContext> ctx);
 
   std::unordered_map<int64_t, std::shared_ptr<PartitionStatisticsFile>>

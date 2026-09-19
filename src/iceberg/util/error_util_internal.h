@@ -26,10 +26,8 @@
 
 namespace iceberg::internal {
 
-// Isolate a Status-returning cleanup or reporting action so failures cannot
-// change the transaction outcome or prevent subsequent actions from running.
 template <typename Action>
-void BestEffort(std::string_view name, Action&& action) noexcept {
+void LogAndIgnoreFailure(std::string_view name, Action&& action) noexcept {
   try {
     if (auto result = action(); !result) {
       ICEBERG_LOG_WARN("{} failed: {}", name, result.error().message);

@@ -387,6 +387,14 @@ TEST_F(SnapshotManagerTest, SnapshotManagerThroughTransaction) {
   ExpectCurrentSnapshot(oldest_snapshot_id_);
 }
 
+TEST_F(SnapshotManagerTest, ExternalManagerRejectsTerminalTransaction) {
+  ICEBERG_UNWRAP_OR_FAIL(auto txn, table_->NewTransaction());
+  ASSERT_THAT(txn->Commit(), IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(auto manager, txn->NewSnapshotManager());
+
+  EXPECT_THAT(manager->Commit(), HasErrorMessage("Transaction is terminal"));
+}
+
 TEST_F(SnapshotManagerTest, SnapshotManagerFromTableAllowsMultipleSnapshotOperations) {
   ICEBERG_UNWRAP_OR_FAIL(auto manager, table_->NewSnapshotManager());
   manager->SetCurrentSnapshot(oldest_snapshot_id_);

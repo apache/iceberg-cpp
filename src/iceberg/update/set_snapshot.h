@@ -53,8 +53,8 @@ class ICEBERG_EXPORT SetSnapshot : public PendingUpdate {
   Kind kind() const final { return Kind::kSetSnapshot; }
   bool IsRetryable() const override { return true; }
 
-  /// \brief Validate and preview changes without staging or modifying this update.
-  Result<int64_t> Validate() const;
+  /// \brief Apply the pending changes and return the target snapshot ID.
+  Result<int64_t> Apply();
 
  private:
   explicit SetSnapshot(std::shared_ptr<TransactionContext> ctx);

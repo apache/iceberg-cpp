@@ -51,7 +51,6 @@
 #include "iceberg/table_metadata.h"
 #include "iceberg/table_properties.h"
 #include "iceberg/transaction.h"
-#include "iceberg/update/update_util_internal.h"
 #include "iceberg/util/content_file_util.h"
 #include "iceberg/util/macros.h"
 #include "iceberg/util/snapshot_util_internal.h"
@@ -477,7 +476,7 @@ Status MergingSnapshotUpdate::AddDataFile(std::shared_ptr<DataFile> file) {
 
   // Suppress first_row_id in the staged copy. The commit assigns row IDs for newly
   // added files and must not mutate the caller-owned file object.
-  ICEBERG_ASSIGN_OR_RAISE(auto staged_file, internal::CopyUpdateDataFile(*file));
+  auto staged_file = std::make_shared<DataFile>(*file);
   staged_file->first_row_id = std::nullopt;
 
   auto& data_files = new_data_files_by_spec_[spec_id];
@@ -553,7 +552,7 @@ Status MergingSnapshotUpdate::AddDeleteFile(std::shared_ptr<DataFile> file,
   }
   ICEBERG_RETURN_UNEXPECTED(base().PartitionSpecById(file->partition_spec_id.value()));
 
-  ICEBERG_ASSIGN_OR_RAISE(auto staged_file, internal::CopyUpdateDataFile(*file));
+  auto staged_file = std::make_shared<DataFile>(*file);
   has_new_delete_files_ = true;
   PendingDeleteFile pending_file{.file = std::move(staged_file),
                                  .data_sequence_number = std::move(data_sequence_number)};
@@ -573,7 +572,7 @@ Status MergingSnapshotUpdate::DeleteDataFile(std::shared_ptr<DataFile> file) {
   if (!file) {
     return InvalidArgument("Cannot delete a null data file");
   }
-  ICEBERG_ASSIGN_OR_RAISE(auto staged_file, internal::CopyUpdateDataFile(*file));
+  auto staged_file = std::make_shared<DataFile>(*file);
   return data_filter_manager_->DeleteFile(std::move(staged_file));
 }
 
@@ -581,7 +580,7 @@ Status MergingSnapshotUpdate::DeleteDeleteFile(std::shared_ptr<DataFile> file) {
   if (!file) {
     return InvalidArgument("Cannot delete a null delete file");
   }
-  ICEBERG_ASSIGN_OR_RAISE(auto staged_file, internal::CopyUpdateDataFile(*file));
+  auto staged_file = std::make_shared<DataFile>(*file);
   return delete_filter_manager_->DeleteFile(std::move(staged_file));
 }
 
@@ -590,7 +589,6 @@ Status MergingSnapshotUpdate::DeleteByPath(std::string_view path) {
 }
 
 Status MergingSnapshotUpdate::DeleteByRowFilter(std::shared_ptr<Expression> expr) {
-  ICEBERG_ASSIGN_OR_RAISE(expr, internal::CopyUpdateExpression(expr));
   // If a delete file matches the row filter, it can also be removed because the rows
   // it references will also be deleted. Both filter managers receive the expression.
   delete_expression_ = expr;
@@ -664,7 +662,6 @@ Status MergingSnapshotUpdate::AddManifest(ManifestFile manifest) {
       return InvalidArgument("Cannot append manifest with assigned first row ID: {}",
                              manifest.manifest_path);
     }
-    appended_manifests_summary_.AddedManifest(manifest);
     append_manifests_.push_back(std::move(manifest));
   } else {
     append_manifests_to_copy_.push_back(std::move(manifest));
@@ -672,16 +669,14 @@ Status MergingSnapshotUpdate::AddManifest(ManifestFile manifest) {
   return {};
 }
 
-Result<ManifestFile> MergingSnapshotUpdate::CopyManifest(const ManifestFile& manifest,
-                                                         bool update_summary) {
+Result<ManifestFile> MergingSnapshotUpdate::CopyManifest(const ManifestFile& manifest) {
   const TableMetadata& current = base();
   ICEBERG_ASSIGN_OR_RAISE(auto schema, SnapshotUtil::SchemaFor(current, target_branch()));
   ICEBERG_ASSIGN_OR_RAISE(auto spec,
                           current.PartitionSpecById(manifest.partition_spec_id));
   std::string path = ManifestPath();
   return CopyAppendManifest(manifest, ctx_->table->io(), schema, spec, SnapshotId(), path,
-                            current.format_version,
-                            update_summary ? &appended_manifests_summary_ : nullptr);
+                            current.format_version, &appended_manifests_summary_);
 }
 
 // -------------------------------------------------------------------------
@@ -821,10 +816,10 @@ MergingSnapshotUpdate::MergeDVs() {
   }
 
   ICEBERG_ASSIGN_OR_RAISE(auto location_provider, ctx_->NewLocationProvider());
-  auto output_path = location_provider->NewDataLocation(std::format(
-      "merged-dvs-{}-{}-{}.puffin", SnapshotId(), commit_uuid(), ++dv_merge_attempt_));
+  auto output_path = location_provider->NewDataLocation(
+      std::format("merged-dvs-{}-{}.puffin", SnapshotId(), ++dv_merge_attempt_));
 
-  RegisterStagedFile(output_path, /*data_file=*/true);
+  RegisterStagedFile(output_path);
   auto merged_files = DVUtil::MergeAndWriteDVs(groups, output_path, ctx_->table->io());
   if (!merged_files) {
     std::ignore = DeleteFile(output_path);
@@ -854,6 +849,9 @@ MergingSnapshotUpdate::MergeDVs() {
     merged_dvs_.push_back(merged);
     result.push_back(std::move(merged));
   }
+
+  // The operation-specific merged DV cache now owns cleanup for this file.
+  UnregisterStagedFile(output_path);
 
   return result;
 }
@@ -994,8 +992,7 @@ Result<std::vector<ManifestFile>> MergingSnapshotUpdate::Apply(
   ICEBERG_ASSIGN_OR_RAISE(auto written_data_manifests, WriteNewDataManifests());
   if (rewritten_append_manifests_.empty() && !append_manifests_to_copy_.empty()) {
     for (const auto& manifest : append_manifests_to_copy_) {
-      ICEBERG_ASSIGN_OR_RAISE(auto copied, CopyManifest(manifest,
-                                                        /*update_summary=*/true));
+      ICEBERG_ASSIGN_OR_RAISE(auto copied, CopyManifest(manifest));
       rewritten_append_manifests_.push_back(std::move(copied));
     }
   }

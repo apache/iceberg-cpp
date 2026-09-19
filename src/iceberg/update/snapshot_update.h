@@ -67,7 +67,6 @@ class ICEBERG_EXPORT SnapshotUpdate : public PendingUpdate {
   /// \param reporter The metrics reporter to use.
   /// \return Reference to this for method chaining.
   auto& ReportWith(this auto& self, std::shared_ptr<MetricsReporter> reporter) {
-    self.EnsureMutable();
     static_cast<SnapshotUpdate&>(self).reporter_ = std::move(reporter);
     return self;
   }
@@ -79,7 +78,6 @@ class ICEBERG_EXPORT SnapshotUpdate : public PendingUpdate {
   /// \note Cannot be called more than once.
   auto& DeleteWith(this auto& self,
                    std::function<Status(const std::string&)> delete_func) {
-    self.EnsureMutable();
     if (self.delete_func_) {
       return self.AddError(ErrorKind::kInvalidArgument,
                            "Cannot set delete callback more than once");
@@ -95,7 +93,6 @@ class ICEBERG_EXPORT SnapshotUpdate : public PendingUpdate {
   ///
   /// \return This update for method chaining.
   auto& StageOnly(this auto& self) {
-    self.EnsureMutable();
     self.stage_only_ = true;
     return self;
   }
@@ -105,7 +102,6 @@ class ICEBERG_EXPORT SnapshotUpdate : public PendingUpdate {
   /// \param executor Executor to use while planning manifests.
   /// \return Reference to this for method chaining.
   auto& ScanManifestsWith(this auto& self, Executor& executor) {
-    self.EnsureMutable();
     self.plan_executor_ = std::ref(executor);
     return self;
   }
@@ -115,7 +111,6 @@ class ICEBERG_EXPORT SnapshotUpdate : public PendingUpdate {
   /// \param branch The name of a SnapshotRef of type branch.
   /// \return This update for method chaining.
   auto& ToBranch(this auto& self, const std::string& branch) {
-    self.EnsureMutable();
     if (branch.empty()) [[unlikely]] {
       return self.AddError(ErrorKind::kInvalidArgument, "Branch name cannot be empty");
     }
@@ -139,7 +134,6 @@ class ICEBERG_EXPORT SnapshotUpdate : public PendingUpdate {
   /// \param value A String property value.
   /// \return This update for method chaining.
   auto& Set(this auto& self, const std::string& property, const std::string& value) {
-    self.EnsureMutable();
     static_cast<SnapshotUpdate&>(self).SetSummaryProperty(property, value);
     return self;
   }
@@ -152,7 +146,6 @@ class ICEBERG_EXPORT SnapshotUpdate : public PendingUpdate {
   /// \note Custom FileIO implementations and registered writer factories used for
   /// manifest writes must support concurrent calls when an executor is configured.
   auto& WriteManifestsWith(this auto& self, Executor& executor, int32_t parallelism) {
-    self.EnsureMutable();
     if (parallelism <= 0) [[unlikely]] {
       return self.AddError(
           ErrorKind::kInvalidArgument,
@@ -167,10 +160,10 @@ class ICEBERG_EXPORT SnapshotUpdate : public PendingUpdate {
  protected:
   friend class Transaction;
 
+  /// Build snapshot state for the transaction's current metadata.
   Result<ApplyResult> Apply();
   Status Finalize(const TableMetadata& committed) override;
   Status CleanStaged() override;
-  Status ReportCommitted() override;
 
   struct ContentFileWithSequenceNumber {
     std::shared_ptr<DataFile> file;
@@ -254,12 +247,11 @@ class ICEBERG_EXPORT SnapshotUpdate : public PendingUpdate {
   /// \brief Get or generate the snapshot ID for the new snapshot.
   int64_t SnapshotId();
 
-  /// \brief Delete a file at the given path.
-  ///
-  /// \param path The path of the file to delete
-  /// \return A status indicating the result of the deletion
+  /// Best-effort delete. Failed paths remain registered for later cleanup.
   Status DeleteFile(const std::string& path) noexcept;
-  void RegisterStagedFile(const std::string& path, bool data_file = false);
+  void RegisterStagedFile(const std::string& path);
+  /// Transfer cleanup ownership to the derived update.
+  void UnregisterStagedFile(const std::string& path);
 
   std::string ManifestPath();
   std::string ManifestListPath();
@@ -271,6 +263,8 @@ class ICEBERG_EXPORT SnapshotUpdate : public PendingUpdate {
   /// \brief Returns the snapshot summary from the implementation and updates totals.
   Result<std::unordered_map<std::string, std::string>> ComputeSummary(
       const TableMetadata& previous);
+
+  Status ReportCommit() const;
 
  protected:
   SnapshotSummaryBuilder summary_;
@@ -285,8 +279,6 @@ class ICEBERG_EXPORT SnapshotUpdate : public PendingUpdate {
   // All paths are registered before writes, including partial/failed writes.
   std::mutex staging_mutex_;
   std::unordered_set<std::string> staged_files_;
-  std::unordered_set<std::string> staged_data_files_;
-  std::unordered_set<std::string> attempted_deletes_;
   const int64_t target_manifest_size_bytes_;
   std::optional<int64_t> snapshot_id_;
   OptionalExecutor plan_executor_;

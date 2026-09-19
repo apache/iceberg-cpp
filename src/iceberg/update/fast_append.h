@@ -74,7 +74,6 @@ class ICEBERG_EXPORT FastAppend : public SnapshotUpdate {
   FastAppend& AppendManifest(const ManifestFile& manifest);
 
  protected:
-  Status Freeze() override;
   std::string operation() override;
 
   Result<std::vector<ManifestFile>> Apply(
@@ -93,9 +92,8 @@ class ICEBERG_EXPORT FastAppend : public SnapshotUpdate {
   /// \brief Copy a manifest file with a new snapshot ID.
   ///
   /// \param manifest The manifest to copy
-  /// \param update_summary Whether to add copied entries to the append summary
   /// \return The copied manifest file
-  Result<ManifestFile> CopyManifest(const ManifestFile& manifest, bool update_summary);
+  Result<ManifestFile> CopyManifest(const ManifestFile& manifest);
 
   /// \brief Write new manifests for the accumulated data files.
   ///

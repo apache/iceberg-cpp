@@ -47,12 +47,10 @@ class ICEBERG_EXPORT UpdateLocation : public PendingUpdate {
   Kind kind() const final { return Kind::kUpdateLocation; }
   bool IsRetryable() const override { return true; }
 
-  /// \brief Validate and preview changes without staging or modifying this update.
-  Result<std::string> Validate() const;
+  /// \brief Apply the pending changes and return the new location.
+  Result<std::string> Apply();
 
  private:
-  bool MayAddFileReferences() const override { return false; }
-
   explicit UpdateLocation(std::shared_ptr<TransactionContext> ctx);
 
   std::string location_;

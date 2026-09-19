@@ -64,7 +64,7 @@ enum class CleanupLevel : uint8_t {
 /// that were deleted by snapshots that are expired will be deleted. DeleteWith() can be
 /// used to pass an alternative deletion method.
 ///
-/// Validate() previews the snapshots that will be removed without staging cleanup.
+/// Apply() returns the snapshots that will be removed.
 class ICEBERG_EXPORT ExpireSnapshots : public PendingUpdate {
  public:
   static Result<std::shared_ptr<ExpireSnapshots>> Make(
@@ -158,21 +158,16 @@ class ICEBERG_EXPORT ExpireSnapshots : public PendingUpdate {
   Kind kind() const final { return Kind::kExpireSnapshots; }
   bool IsRetryable() const override { return true; }
 
-  /// \brief Validate and preview changes without staging or modifying this update.
-  Result<ApplyResult> Validate() const;
+  Result<ApplyResult> Apply();
 
  private:
   friend class Transaction;
 
-  bool MayAddFileReferences() const override { return false; }
   Status Finalize(const TableMetadata& committed) override;
   Status CleanStaged() override {
     apply_result_.reset();
     return {};
   }
-  bool skip_physical_cleanup_ = false;
-  Result<ApplyResult> Apply();
-
   explicit ExpireSnapshots(std::shared_ptr<TransactionContext> ctx);
 
   using SnapshotToRef = std::unordered_map<std::string, std::shared_ptr<SnapshotRef>>;

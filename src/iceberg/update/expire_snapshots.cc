@@ -109,18 +109,26 @@ class FileCleanupStrategy {
       return;
     }
 
-    TaskGroup<retry::StopRetryOn<ErrorKind::kNotFound>> group(kDeleteRetryConfig);
-    if (delete_func_) {
-      group.SetExecutor(delete_executor_);
+    if (!delete_func_) {
+      std::vector<std::string> path_list(paths.begin(), paths.end());
+
+      TaskGroup<retry::StopRetryOn<ErrorKind::kNotFound>> group(kDeleteRetryConfig);
+      group.Submit([this, paths = std::move(path_list)]() -> Status {
+        return file_io_->DeleteFiles(paths);
+      });
+      if (auto status = std::move(group).Run(); !status) {
+        ICEBERG_LOG_WARN("Expiration deletion failed: {}", status.error().message);
+      }
+      return;
     }
+
+    TaskGroup<retry::StopRetryOn<ErrorKind::kNotFound>> group(kDeleteRetryConfig);
+    group.SetExecutor(delete_executor_);
     for (const auto& path : paths) {
       group.Submit([this, path]() -> Status {
         try {
-          if (delete_func_) {
-            delete_func_(path);
-            return {};
-          }
-          return file_io_->DeleteFile(path);
+          delete_func_(path);
+          return {};
         } catch (const std::exception& e) {
           return IOError("Delete callback failed for {}: {}", path, e.what());
         } catch (...) {
@@ -751,20 +759,17 @@ ExpireSnapshots::ExpireSnapshots(std::shared_ptr<TransactionContext> ctx)
 ExpireSnapshots::~ExpireSnapshots() = default;
 
 ExpireSnapshots& ExpireSnapshots::ExpireSnapshotId(int64_t snapshot_id) {
-  EnsureMutable();
   snapshot_ids_to_expire_.push_back(snapshot_id);
   specified_snapshot_id_ = true;
   return *this;
 }
 
 ExpireSnapshots& ExpireSnapshots::ExpireOlderThan(int64_t timestamp_millis) {
-  EnsureMutable();
   default_expire_older_than_ = TimePointMsFromUnixMs(timestamp_millis);
   return *this;
 }
 
 ExpireSnapshots& ExpireSnapshots::RetainLast(int num_snapshots) {
-  EnsureMutable();
   ICEBERG_BUILDER_CHECK(num_snapshots > 0,
                         "Number of snapshots to retain must be positive: {}",
                         num_snapshots);
@@ -774,31 +779,26 @@ ExpireSnapshots& ExpireSnapshots::RetainLast(int num_snapshots) {
 
 ExpireSnapshots& ExpireSnapshots::DeleteWith(
     std::function<void(const std::string&)> delete_func) {
-  EnsureMutable();
   delete_func_ = std::move(delete_func);
   return *this;
 }
 
 ExpireSnapshots& ExpireSnapshots::PlanWith(Executor& executor) {
-  EnsureMutable();
   plan_executor_ = std::ref(executor);
   return *this;
 }
 
 ExpireSnapshots& ExpireSnapshots::CleanupLevel(enum CleanupLevel level) {
-  EnsureMutable();
   cleanup_level_ = level;
   return *this;
 }
 
 ExpireSnapshots& ExpireSnapshots::CleanExpiredMetadata(bool clean) {
-  EnsureMutable();
   clean_expired_metadata_ = clean;
   return *this;
 }
 
 ExpireSnapshots& ExpireSnapshots::ExecuteDeleteWith(Executor& executor) {
-  EnsureMutable();
   delete_executor_ = std::ref(executor);
   return *this;
 }
@@ -913,7 +913,7 @@ Result<ExpireSnapshots::SnapshotToRef> ExpireSnapshots::ComputeRetainedRefs(
   return retained_refs;
 }
 
-Result<ExpireSnapshots::ApplyResult> ExpireSnapshots::Validate() const {
+Result<ExpireSnapshots::ApplyResult> ExpireSnapshots::Apply() {
   ICEBERG_RETURN_UNEXPECTED(CheckErrors());
 
   const TableMetadata& base = this->base();
@@ -1004,11 +1004,6 @@ Result<ExpireSnapshots::ApplyResult> ExpireSnapshots::Validate() const {
         std::ranges::to<std::unordered_set<int32_t>>();
   }
 
-  return result;
-}
-
-Result<ExpireSnapshots::ApplyResult> ExpireSnapshots::Apply() {
-  ICEBERG_ASSIGN_OR_RAISE(auto result, Validate());
   apply_result_ = result;
   return result;
 }
@@ -1022,13 +1017,6 @@ Status ExpireSnapshots::Finalize(const TableMetadata& metadata_after_expiration)
     return {};
   }
 
-  if (skip_physical_cleanup_) {
-    ICEBERG_LOG_WARN(
-        "Skipping expiration file deletion because a later update may add file "
-        "references");
-    return {};
-  }
-
   ICEBERG_PRECHECK(apply_result->metadata_before_expiration != nullptr,
                    "Missing pre-expiration table metadata for cleanup");
   const TableMetadata& metadata_before_expiration =
@@ -1037,8 +1025,10 @@ Status ExpireSnapshots::Finalize(const TableMetadata& metadata_after_expiration)
   // Pick incremental cleanup when the expiration is a simple linear-ancestry walk:
   // no explicit snapshot IDs, no removed snapshots outside main ancestry, and no
   // retained snapshots outside main ancestry.
+  // An explicit transaction may apply later updates that add file references.
+  // Reachable cleanup evaluates the final committed metadata and preserves those files.
   const bool can_use_incremental =
-      !specified_snapshot_id_ &&
+      !ctx_->transaction.has_value() && !specified_snapshot_id_ &&
       !HasRemovedNonMainAncestors(metadata_before_expiration,
                                   metadata_after_expiration) &&
       !HasNonMainSnapshots(metadata_after_expiration);

@@ -51,16 +51,9 @@ SnapshotManager::SnapshotManager(std::shared_ptr<Transaction> transaction,
     : transaction_(std::move(transaction)),
       is_external_transaction_(is_external_transaction) {}
 
-void SnapshotManager::EnsureMutable() const {
-  const auto status = transaction_->CheckActive();
-  ICEBERG_CHECK_OR_DIE(status.has_value(), "Cannot mutate snapshot manager: {}",
-                       status.error().message);
-}
-
 SnapshotManager::~SnapshotManager() = default;
 
 SnapshotManager& SnapshotManager::Cherrypick(int64_t snapshot_id) {
-  EnsureMutable();
   ICEBERG_BUILDER_RETURN_IF_ERROR(CommitIfRefUpdatesExist());
   // TODO(anyone): Implement cherrypick operation
   ICEBERG_BUILDER_CHECK(false, "Cherrypick operation not yet implemented");
@@ -68,7 +61,6 @@ SnapshotManager& SnapshotManager::Cherrypick(int64_t snapshot_id) {
 }
 
 SnapshotManager& SnapshotManager::SetCurrentSnapshot(int64_t snapshot_id) {
-  EnsureMutable();
   ICEBERG_BUILDER_RETURN_IF_ERROR(CommitIfRefUpdatesExist());
   ICEBERG_BUILDER_ASSIGN_OR_RETURN(auto set_snapshot, transaction_->NewSetSnapshot());
   set_snapshot->SetCurrentSnapshot(snapshot_id);
@@ -77,7 +69,6 @@ SnapshotManager& SnapshotManager::SetCurrentSnapshot(int64_t snapshot_id) {
 }
 
 SnapshotManager& SnapshotManager::RollbackToTime(int64_t timestamp_ms) {
-  EnsureMutable();
   ICEBERG_BUILDER_RETURN_IF_ERROR(CommitIfRefUpdatesExist());
   ICEBERG_BUILDER_ASSIGN_OR_RETURN(auto set_snapshot, transaction_->NewSetSnapshot());
   set_snapshot->RollbackToTime(timestamp_ms);
@@ -86,7 +77,6 @@ SnapshotManager& SnapshotManager::RollbackToTime(int64_t timestamp_ms) {
 }
 
 SnapshotManager& SnapshotManager::RollbackTo(int64_t snapshot_id) {
-  EnsureMutable();
   ICEBERG_BUILDER_RETURN_IF_ERROR(CommitIfRefUpdatesExist());
   ICEBERG_BUILDER_ASSIGN_OR_RETURN(auto set_snapshot, transaction_->NewSetSnapshot());
   set_snapshot->RollbackTo(snapshot_id);
@@ -95,7 +85,6 @@ SnapshotManager& SnapshotManager::RollbackTo(int64_t snapshot_id) {
 }
 
 SnapshotManager& SnapshotManager::CreateBranch(const std::string& name) {
-  EnsureMutable();
   const auto& base = transaction_->current();
   if (base.current_snapshot_id != kInvalidSnapshotId) {
     ICEBERG_BUILDER_ASSIGN_OR_RETURN(auto current_snapshot, base.Snapshot());
@@ -110,7 +99,6 @@ SnapshotManager& SnapshotManager::CreateBranch(const std::string& name) {
 
 SnapshotManager& SnapshotManager::CreateBranch(const std::string& name,
                                                int64_t snapshot_id) {
-  EnsureMutable();
   ICEBERG_BUILDER_ASSIGN_OR_RETURN(auto update_ref, UpdateSnapshotReferencesOperation());
   update_ref->CreateBranch(name, snapshot_id);
   return *this;
@@ -118,21 +106,18 @@ SnapshotManager& SnapshotManager::CreateBranch(const std::string& name,
 
 SnapshotManager& SnapshotManager::CreateTag(const std::string& name,
                                             int64_t snapshot_id) {
-  EnsureMutable();
   ICEBERG_BUILDER_ASSIGN_OR_RETURN(auto update_ref, UpdateSnapshotReferencesOperation());
   update_ref->CreateTag(name, snapshot_id);
   return *this;
 }
 
 SnapshotManager& SnapshotManager::RemoveBranch(const std::string& name) {
-  EnsureMutable();
   ICEBERG_BUILDER_ASSIGN_OR_RETURN(auto update_ref, UpdateSnapshotReferencesOperation());
   update_ref->RemoveBranch(name);
   return *this;
 }
 
 SnapshotManager& SnapshotManager::RemoveTag(const std::string& name) {
-  EnsureMutable();
   ICEBERG_BUILDER_ASSIGN_OR_RETURN(auto update_ref, UpdateSnapshotReferencesOperation());
   update_ref->RemoveTag(name);
   return *this;
@@ -140,7 +125,6 @@ SnapshotManager& SnapshotManager::RemoveTag(const std::string& name) {
 
 SnapshotManager& SnapshotManager::ReplaceTag(const std::string& name,
                                              int64_t snapshot_id) {
-  EnsureMutable();
   ICEBERG_BUILDER_ASSIGN_OR_RETURN(auto update_ref, UpdateSnapshotReferencesOperation());
   update_ref->ReplaceTag(name, snapshot_id);
   return *this;
@@ -148,7 +132,6 @@ SnapshotManager& SnapshotManager::ReplaceTag(const std::string& name,
 
 SnapshotManager& SnapshotManager::ReplaceBranch(const std::string& name,
                                                 int64_t snapshot_id) {
-  EnsureMutable();
   ICEBERG_BUILDER_ASSIGN_OR_RETURN(auto update_ref, UpdateSnapshotReferencesOperation());
   update_ref->ReplaceBranch(name, snapshot_id);
   return *this;
@@ -156,7 +139,6 @@ SnapshotManager& SnapshotManager::ReplaceBranch(const std::string& name,
 
 SnapshotManager& SnapshotManager::ReplaceBranch(const std::string& from,
                                                 const std::string& to) {
-  EnsureMutable();
   ICEBERG_BUILDER_ASSIGN_OR_RETURN(auto update_ref, UpdateSnapshotReferencesOperation());
   update_ref->ReplaceBranch(from, to);
   return *this;
@@ -164,7 +146,6 @@ SnapshotManager& SnapshotManager::ReplaceBranch(const std::string& from,
 
 SnapshotManager& SnapshotManager::FastForwardBranch(const std::string& from,
                                                     const std::string& to) {
-  EnsureMutable();
   ICEBERG_BUILDER_ASSIGN_OR_RETURN(auto update_ref, UpdateSnapshotReferencesOperation());
   update_ref->FastForward(from, to);
   return *this;
@@ -172,7 +153,6 @@ SnapshotManager& SnapshotManager::FastForwardBranch(const std::string& from,
 
 SnapshotManager& SnapshotManager::RenameBranch(const std::string& name,
                                                const std::string& new_name) {
-  EnsureMutable();
   ICEBERG_BUILDER_ASSIGN_OR_RETURN(auto update_ref, UpdateSnapshotReferencesOperation());
   update_ref->RenameBranch(name, new_name);
   return *this;
@@ -180,7 +160,6 @@ SnapshotManager& SnapshotManager::RenameBranch(const std::string& name,
 
 SnapshotManager& SnapshotManager::SetMinSnapshotsToKeep(const std::string& branch_name,
                                                         int32_t min_snapshots_to_keep) {
-  EnsureMutable();
   ICEBERG_BUILDER_ASSIGN_OR_RETURN(auto update_ref, UpdateSnapshotReferencesOperation());
   update_ref->SetMinSnapshotsToKeep(branch_name, min_snapshots_to_keep);
   return *this;
@@ -188,7 +167,6 @@ SnapshotManager& SnapshotManager::SetMinSnapshotsToKeep(const std::string& branc
 
 SnapshotManager& SnapshotManager::SetMaxSnapshotAgeMs(const std::string& branch_name,
                                                       int64_t max_snapshot_age_ms) {
-  EnsureMutable();
   ICEBERG_BUILDER_ASSIGN_OR_RETURN(auto update_ref, UpdateSnapshotReferencesOperation());
   update_ref->SetMaxSnapshotAgeMs(branch_name, max_snapshot_age_ms);
   return *this;
@@ -196,7 +174,6 @@ SnapshotManager& SnapshotManager::SetMaxSnapshotAgeMs(const std::string& branch_
 
 SnapshotManager& SnapshotManager::SetMaxRefAgeMs(const std::string& name,
                                                  int64_t max_ref_age_ms) {
-  EnsureMutable();
   ICEBERG_BUILDER_ASSIGN_OR_RETURN(auto update_ref, UpdateSnapshotReferencesOperation());
   update_ref->SetMaxRefAgeMs(name, max_ref_age_ms);
   return *this;
@@ -204,7 +181,10 @@ SnapshotManager& SnapshotManager::SetMaxRefAgeMs(const std::string& name,
 
 Status SnapshotManager::Commit() {
   ICEBERG_RETURN_UNEXPECTED(CheckErrors());
-  ICEBERG_RETURN_UNEXPECTED(transaction_->CheckActive());
+  const auto state = transaction_->state();
+  ICEBERG_CHECK(
+      state == TransactionState::kReady || state == TransactionState::kUpdatePending,
+      "Transaction is terminal");
   ICEBERG_RETURN_UNEXPECTED(CommitIfRefUpdatesExist());
   if (!is_external_transaction_) {
     ICEBERG_RETURN_UNEXPECTED(transaction_->Commit());

@@ -41,13 +41,12 @@ UpdateLocation::UpdateLocation(std::shared_ptr<TransactionContext> ctx)
 UpdateLocation::~UpdateLocation() = default;
 
 UpdateLocation& UpdateLocation::SetLocation(std::string_view location) {
-  EnsureMutable();
   ICEBERG_BUILDER_CHECK(!location.empty(), "Location cannot be empty");
   location_ = std::string(location);
   return *this;
 }
 
-Result<std::string> UpdateLocation::Validate() const {
+Result<std::string> UpdateLocation::Apply() {
   ICEBERG_RETURN_UNEXPECTED(CheckErrors());
   if (location_.empty()) {
     return InvalidArgument("Location must be set before applying");

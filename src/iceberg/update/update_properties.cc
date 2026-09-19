@@ -46,7 +46,6 @@ UpdateProperties::~UpdateProperties() = default;
 
 UpdateProperties& UpdateProperties::Set(const std::string& key,
                                         const std::string& value) {
-  EnsureMutable();
   ICEBERG_BUILDER_CHECK(!removals_.contains(key),
                         "Cannot set property '{}' that is already marked for removal",
                         key);
@@ -60,7 +59,6 @@ UpdateProperties& UpdateProperties::Set(const std::string& key,
 }
 
 UpdateProperties& UpdateProperties::Remove(const std::string& key) {
-  EnsureMutable();
   ICEBERG_BUILDER_CHECK(!updates_.contains(key),
                         "Cannot remove property '{}' that is already marked for update",
                         key);
@@ -68,7 +66,7 @@ UpdateProperties& UpdateProperties::Remove(const std::string& key) {
   return *this;
 }
 
-Result<UpdateProperties::ApplyResult> UpdateProperties::Validate() const {
+Result<UpdateProperties::ApplyResult> UpdateProperties::Apply() {
   ICEBERG_RETURN_UNEXPECTED(CheckErrors());
   auto updates = updates_;
   std::optional<int8_t> format_version;

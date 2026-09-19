@@ -41,13 +41,11 @@ MergeAppend::MergeAppend(std::string table_name, std::shared_ptr<TransactionCont
     : MergingSnapshotUpdate(std::move(table_name), std::move(ctx)) {}
 
 MergeAppend& MergeAppend::AppendFile(const std::shared_ptr<DataFile>& file) {
-  EnsureMutable();
   ICEBERG_BUILDER_RETURN_IF_ERROR(AddDataFile(file));
   return *this;
 }
 
 MergeAppend& MergeAppend::AppendManifest(const ManifestFile& manifest) {
-  EnsureMutable();
   ICEBERG_BUILDER_CHECK(!manifest.has_existing_files(),
                         "Cannot append manifest with existing files");
   ICEBERG_BUILDER_CHECK(!manifest.has_deleted_files(),
