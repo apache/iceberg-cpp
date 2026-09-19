@@ -18,23 +18,32 @@
  */
 
 #include <algorithm>
+#include <concepts>
 #include <cstdint>
 #include <format>
+#include <limits>
+#include <map>
 #include <regex>
+#include <string>
 #include <unordered_set>
 #include <utility>
 
 #include <nlohmann/json.hpp>
 
 #include "iceberg/constants.h"
+#include "iceberg/expression/expressions.h"
 #include "iceberg/expression/json_serde_internal.h"
 #include "iceberg/expression/literal.h"
+#include "iceberg/file_format.h"
 #include "iceberg/json_serde_internal.h"
+#include "iceberg/manifest/manifest_entry.h"
 #include "iceberg/name_mapping.h"
 #include "iceberg/partition_field.h"
 #include "iceberg/partition_spec.h"
 #include "iceberg/result.h"
+#include "iceberg/row/partition_values.h"
 #include "iceberg/schema.h"
+#include "iceberg/schema_field.h"
 #include "iceberg/snapshot.h"
 #include "iceberg/sort_order.h"
 #include "iceberg/statistics_file.h"
@@ -42,6 +51,7 @@
 #include "iceberg/table_metadata.h"
 #include "iceberg/table_properties.h"
 #include "iceberg/table_requirement.h"
+#include "iceberg/table_scan.h"
 #include "iceberg/table_update.h"
 #include "iceberg/transform.h"
 #include "iceberg/type.h"
@@ -239,6 +249,319 @@ constexpr std::string_view kRequirementAssertDefaultSortOrderID =
     "assert-default-sort-order-id";
 constexpr std::string_view kLastAssignedFieldId = "last-assigned-field-id";
 constexpr std::string_view kLastAssignedPartitionId = "last-assigned-partition-id";
+
+// DataFile / FileScanTask JSON (Iceberg REST ContentFile field names)
+constexpr std::string_view kContent = "content";
+constexpr std::string_view kContentData = "data";
+constexpr std::string_view kContentPositionDeletes = "position-deletes";
+constexpr std::string_view kContentEqualityDeletes = "equality-deletes";
+constexpr std::string_view kFilePath = "file-path";
+constexpr std::string_view kFileFormat = "file-format";
+constexpr std::string_view kPartition = "partition";
+constexpr std::string_view kRecordCount = "record-count";
+constexpr std::string_view kColumnSizes = "column-sizes";
+constexpr std::string_view kValueCounts = "value-counts";
+constexpr std::string_view kNullValueCounts = "null-value-counts";
+constexpr std::string_view kNanValueCounts = "nan-value-counts";
+constexpr std::string_view kLowerBounds = "lower-bounds";
+constexpr std::string_view kUpperBounds = "upper-bounds";
+constexpr std::string_view kKeyMetadata = "key-metadata";
+constexpr std::string_view kSplitOffsets = "split-offsets";
+constexpr std::string_view kEqualityIds = "equality-ids";
+constexpr std::string_view kReferencedDataFile = "referenced-data-file";
+constexpr std::string_view kContentOffset = "content-offset";
+constexpr std::string_view kContentSizeInBytes = "content-size-in-bytes";
+constexpr std::string_view kDataFile = "data-file";
+constexpr std::string_view kDeleteFiles = "delete-files";
+constexpr std::string_view kDeleteFileReferences = "delete-file-references";
+constexpr std::string_view kResidualFilter = "residual-filter";
+constexpr std::string_view kTaskType = "task-type";
+constexpr std::string_view kFileScanTaskType = "file-scan-task";
+constexpr std::string_view kStart = "start";
+constexpr std::string_view kLength = "length";
+constexpr std::string_view kMapKeys = "keys";
+constexpr std::string_view kMapValues = "values";
+
+template <std::signed_integral Integer>
+Result<Integer> IntegerFromJson(const nlohmann::json& json,
+                                std::string_view description) {
+  if (!json.is_number_integer()) {
+    return JsonParseError("{} must be an integer, but is {}", description,
+                          json.type_name());
+  }
+  if (json.is_number_unsigned()) {
+    const auto value = json.get<uint64_t>();
+    if (value > static_cast<uint64_t>(std::numeric_limits<Integer>::max())) {
+      return JsonParseError("{} integer is out of range: {}", description,
+                            SafeDumpJson(json));
+    }
+    return static_cast<Integer>(value);
+  }
+
+  const auto value = json.get<int64_t>();
+  if (value < static_cast<int64_t>(std::numeric_limits<Integer>::min()) ||
+      value > static_cast<int64_t>(std::numeric_limits<Integer>::max())) {
+    return JsonParseError("{} integer is out of range: {}", description,
+                          SafeDumpJson(json));
+  }
+  return static_cast<Integer>(value);
+}
+
+template <std::signed_integral Integer>
+Result<Integer> GetJsonInteger(const nlohmann::json& json, std::string_view key) {
+  ICEBERG_ASSIGN_OR_RAISE(auto value, GetJsonValue<nlohmann::json>(json, key));
+  return IntegerFromJson<Integer>(value, std::format("'{}'", key));
+}
+
+template <std::signed_integral Integer>
+Result<std::vector<Integer>> IntegerVectorFromJson(const nlohmann::json& json,
+                                                   std::string_view key) {
+  ICEBERG_ASSIGN_OR_RAISE(auto values_json, GetJsonValue<nlohmann::json>(json, key));
+  if (!values_json.is_array()) {
+    return JsonParseError("'{}' must be an array, but is {}", key,
+                          values_json.type_name());
+  }
+
+  std::vector<Integer> values;
+  values.reserve(values_json.size());
+  for (const auto& value_json : values_json) {
+    ICEBERG_ASSIGN_OR_RAISE(
+        auto value,
+        IntegerFromJson<Integer>(value_json, std::format("'{}' element", key)));
+    values.push_back(value);
+  }
+  return values;
+}
+
+template <std::signed_integral Value>
+Result<std::map<int32_t, Value>> KeyValueMapFromJson(const nlohmann::json& json,
+                                                     std::string_view key) {
+  std::map<int32_t, Value> result;
+  if (!json.contains(key) || json.at(key).is_null()) {
+    return result;
+  }
+
+  ICEBERG_ASSIGN_OR_RAISE(auto map_json, GetJsonValue<nlohmann::json>(json, key));
+  ICEBERG_ASSIGN_OR_RAISE(auto keys_json,
+                          GetJsonValue<nlohmann::json>(map_json, kMapKeys));
+  ICEBERG_ASSIGN_OR_RAISE(auto values_json,
+                          GetJsonValue<nlohmann::json>(map_json, kMapValues));
+  if (!keys_json.is_array() || !values_json.is_array()) {
+    return JsonParseError("'{}' map keys and values must be arrays", key);
+  }
+  if (keys_json.size() != values_json.size()) {
+    return JsonParseError("'{}' map keys and values have different lengths", key);
+  }
+
+  for (size_t i = 0; i < keys_json.size(); ++i) {
+    ICEBERG_ASSIGN_OR_RAISE(
+        auto field_id,
+        IntegerFromJson<int32_t>(keys_json[i], std::format("'{}' map key", key)));
+    ICEBERG_ASSIGN_OR_RAISE(
+        auto value,
+        IntegerFromJson<Value>(values_json[i], std::format("'{}' map value", key)));
+    if (!result.emplace(field_id, value).second) {
+      return JsonParseError("'{}' map contains duplicate key {}", key, field_id);
+    }
+  }
+  return result;
+}
+
+template <typename Value>
+void SetKeyValueMap(nlohmann::json& json, std::string_view key,
+                    const std::map<int32_t, Value>& map) {
+  if (map.empty()) {
+    return;
+  }
+
+  std::vector<int32_t> keys;
+  std::vector<Value> values;
+  keys.reserve(map.size());
+  values.reserve(map.size());
+  for (const auto& [field_id, value] : map) {
+    keys.push_back(field_id);
+    values.push_back(value);
+  }
+  json[key] = {{kMapKeys, std::move(keys)}, {kMapValues, std::move(values)}};
+}
+
+std::string BytesToHex(const std::vector<uint8_t>& bytes) {
+  std::string hex;
+  hex.reserve(bytes.size() * 2);
+  for (uint8_t byte : bytes) {
+    hex += std::format("{:02X}", byte);
+  }
+  return hex;
+}
+
+Result<std::map<int32_t, std::vector<uint8_t>>> BytesMapFromJson(
+    const nlohmann::json& json, std::string_view key) {
+  std::map<int32_t, std::vector<uint8_t>> result;
+  if (!json.contains(key) || json.at(key).is_null()) {
+    return result;
+  }
+
+  ICEBERG_ASSIGN_OR_RAISE(auto map_json, GetJsonValue<nlohmann::json>(json, key));
+  ICEBERG_ASSIGN_OR_RAISE(auto keys_json,
+                          GetJsonValue<nlohmann::json>(map_json, kMapKeys));
+  ICEBERG_ASSIGN_OR_RAISE(auto values_json,
+                          GetJsonValue<nlohmann::json>(map_json, kMapValues));
+  if (!keys_json.is_array() || !values_json.is_array()) {
+    return JsonParseError("'{}' map keys and values must be arrays", key);
+  }
+  if (keys_json.size() != values_json.size()) {
+    return JsonParseError("'{}' map keys and values have different lengths", key);
+  }
+
+  for (size_t i = 0; i < keys_json.size(); ++i) {
+    ICEBERG_ASSIGN_OR_RAISE(
+        auto field_id,
+        IntegerFromJson<int32_t>(keys_json[i], std::format("'{}' map key", key)));
+    if (!values_json[i].is_string()) {
+      return JsonParseError("'{}' map value must be a string, but is {}", key,
+                            values_json[i].type_name());
+    }
+    ICEBERG_ASSIGN_OR_RAISE(
+        auto bytes, StringUtils::HexStringToBytes(values_json[i].get<std::string>()));
+    if (!result.emplace(field_id, std::move(bytes)).second) {
+      return JsonParseError("'{}' map contains duplicate key {}", key, field_id);
+    }
+  }
+  return result;
+}
+
+void SetBytesMap(nlohmann::json& json, std::string_view key,
+                 const std::map<int32_t, std::vector<uint8_t>>& map) {
+  if (map.empty()) {
+    return;
+  }
+
+  std::vector<int32_t> keys;
+  std::vector<std::string> values;
+  keys.reserve(map.size());
+  values.reserve(map.size());
+  for (const auto& [field_id, value] : map) {
+    keys.push_back(field_id);
+    values.push_back(BytesToHex(value));
+  }
+  json[key] = {{kMapKeys, std::move(keys)}, {kMapValues, std::move(values)}};
+}
+
+Result<Literal> PartitionLiteralFromJson(const nlohmann::json* value,
+                                         const SchemaField& field) {
+  if (!field.type() || !field.type()->is_primitive()) {
+    return InvalidSchema("Partition field {} must have a primitive type",
+                         field.field_id());
+  }
+
+  auto primitive_type = internal::checked_pointer_cast<PrimitiveType>(field.type());
+  if (value == nullptr || value->is_null()) {
+    return Literal::Null(std::move(primitive_type));
+  }
+  return LiteralFromJson(*value, primitive_type.get());
+}
+
+Result<PartitionValues> PartitionValuesFromJson(const nlohmann::json& json,
+                                                const StructType& partition_type) {
+  const auto& fields = partition_type.fields();
+  std::vector<Literal> values;
+  values.reserve(fields.size());
+
+  if (json.is_array()) {
+    if (json.size() != fields.size()) {
+      return JsonParseError("Invalid partition data size: expected = {}, actual = {}",
+                            fields.size(), json.size());
+    }
+    for (size_t pos = 0; pos < fields.size(); ++pos) {
+      ICEBERG_ASSIGN_OR_RAISE(auto value,
+                              PartitionLiteralFromJson(&json[pos], fields[pos]));
+      values.push_back(std::move(value));
+    }
+  } else if (json.is_object()) {
+    if (json.size() > fields.size()) {
+      return JsonParseError("Invalid partition data size: expected <= {}, actual = {}",
+                            fields.size(), json.size());
+    }
+    for (const auto& field : fields) {
+      const auto it = json.find(std::to_string(field.field_id()));
+      const nlohmann::json* value = it == json.end() ? nullptr : &it.value();
+      ICEBERG_ASSIGN_OR_RAISE(auto literal, PartitionLiteralFromJson(value, field));
+      values.push_back(std::move(literal));
+    }
+  } else {
+    return JsonParseError(
+        "Invalid partition data for content file: expected array or object ({})",
+        SafeDumpJson(json));
+  }
+
+  return PartitionValues(std::move(values));
+}
+
+Result<nlohmann::json> DataFileToJsonUnchecked(const DataFile& data_file) {
+  nlohmann::json json;
+  switch (data_file.content) {
+    case DataFile::Content::kData:
+      json[kContent] = kContentData;
+      break;
+    case DataFile::Content::kPositionDeletes:
+      json[kContent] = kContentPositionDeletes;
+      break;
+    case DataFile::Content::kEqualityDeletes:
+      json[kContent] = kContentEqualityDeletes;
+      break;
+  }
+  json[kFilePath] = data_file.file_path;
+  json[kFileFormat] = ToString(data_file.file_format);
+
+  if (!data_file.partition_spec_id.has_value()) {
+    return ValidationFailed("Cannot serialize content file without 'spec-id'");
+  }
+  json[kSpecId] = data_file.partition_spec_id.value();
+
+  nlohmann::json partition_json = nlohmann::json::array();
+  for (const auto& literal : data_file.partition.values()) {
+    ICEBERG_ASSIGN_OR_RAISE(auto lit_json, ToJson(literal));
+    partition_json.push_back(std::move(lit_json));
+  }
+  json[kPartition] = std::move(partition_json);
+
+  json[kRecordCount] = data_file.record_count;
+  json[kFileSizeInBytes] = data_file.file_size_in_bytes;
+
+  SetKeyValueMap(json, kColumnSizes, data_file.column_sizes);
+  SetKeyValueMap(json, kValueCounts, data_file.value_counts);
+  SetKeyValueMap(json, kNullValueCounts, data_file.null_value_counts);
+  SetKeyValueMap(json, kNanValueCounts, data_file.nan_value_counts);
+  SetBytesMap(json, kLowerBounds, data_file.lower_bounds);
+  SetBytesMap(json, kUpperBounds, data_file.upper_bounds);
+
+  if (!data_file.key_metadata.empty()) {
+    json[kKeyMetadata] = BytesToHex(data_file.key_metadata);
+  }
+  if (!data_file.split_offsets.empty()) {
+    json[kSplitOffsets] = data_file.split_offsets;
+  }
+  if (!data_file.equality_ids.empty()) {
+    json[kEqualityIds] = data_file.equality_ids;
+  }
+  if (data_file.sort_order_id.has_value()) {
+    json[kSortOrderId] = data_file.sort_order_id.value();
+  }
+  if (data_file.first_row_id.has_value()) {
+    json[kFirstRowId] = data_file.first_row_id.value();
+  }
+  if (data_file.referenced_data_file.has_value()) {
+    json[kReferencedDataFile] = data_file.referenced_data_file.value();
+  }
+  if (data_file.content_offset.has_value()) {
+    json[kContentOffset] = data_file.content_offset.value();
+  }
+  if (data_file.content_size_in_bytes.has_value()) {
+    json[kContentSizeInBytes] = data_file.content_size_in_bytes.value();
+  }
+
+  return json;
+}
 
 }  // namespace
 
@@ -1983,6 +2306,279 @@ Result<std::unique_ptr<TableRequirement>> TableRequirementFromJson(
   }
 
   return JsonParseError("Unknown table requirement type: {}", type);
+}
+
+Result<DataFile> DataFileFromJson(
+    const nlohmann::json& json,
+    const std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>>&
+        partition_spec_by_id,
+    const Schema& schema) {
+  if (!json.is_object()) {
+    return JsonParseError("DataFile must be a JSON object: {}", SafeDumpJson(json));
+  }
+  DataFile data_file;
+
+  ICEBERG_ASSIGN_OR_RAISE(auto content_str, GetJsonValue<std::string>(json, kContent));
+  if (content_str == kContentData || content_str == "DATA") {
+    data_file.content = DataFile::Content::kData;
+  } else if (content_str == kContentPositionDeletes ||
+             content_str == "POSITION_DELETES") {
+    data_file.content = DataFile::Content::kPositionDeletes;
+  } else if (content_str == kContentEqualityDeletes ||
+             content_str == "EQUALITY_DELETES") {
+    data_file.content = DataFile::Content::kEqualityDeletes;
+  } else {
+    return JsonParseError("Unknown data file content: {}", content_str);
+  }
+
+  ICEBERG_ASSIGN_OR_RAISE(data_file.file_path,
+                          GetJsonValue<std::string>(json, kFilePath));
+  ICEBERG_ASSIGN_OR_RAISE(auto format_str, GetJsonValue<std::string>(json, kFileFormat));
+  ICEBERG_ASSIGN_OR_RAISE(data_file.file_format, FileFormatTypeFromString(format_str));
+
+  ICEBERG_ASSIGN_OR_RAISE(auto spec_id, GetJsonInteger<int32_t>(json, kSpecId));
+  data_file.partition_spec_id = spec_id;
+
+  auto it = partition_spec_by_id.find(spec_id);
+  if (it == partition_spec_by_id.end() || !it->second) {
+    return JsonParseError("Invalid partition spec id: {}", spec_id);
+  }
+  if (json.contains(kPartition)) {
+    ICEBERG_ASSIGN_OR_RAISE(auto partition_vals,
+                            GetJsonValue<nlohmann::json>(json, kPartition));
+    ICEBERG_ASSIGN_OR_RAISE(auto struct_type, it->second->PartitionType(schema));
+    ICEBERG_ASSIGN_OR_RAISE(data_file.partition,
+                            PartitionValuesFromJson(partition_vals, *struct_type));
+  }
+
+  ICEBERG_ASSIGN_OR_RAISE(data_file.record_count,
+                          GetJsonInteger<int64_t>(json, kRecordCount));
+  ICEBERG_ASSIGN_OR_RAISE(data_file.file_size_in_bytes,
+                          GetJsonInteger<int64_t>(json, kFileSizeInBytes));
+
+  ICEBERG_ASSIGN_OR_RAISE(data_file.column_sizes,
+                          KeyValueMapFromJson<int64_t>(json, kColumnSizes));
+  ICEBERG_ASSIGN_OR_RAISE(data_file.value_counts,
+                          KeyValueMapFromJson<int64_t>(json, kValueCounts));
+  ICEBERG_ASSIGN_OR_RAISE(data_file.null_value_counts,
+                          KeyValueMapFromJson<int64_t>(json, kNullValueCounts));
+  ICEBERG_ASSIGN_OR_RAISE(data_file.nan_value_counts,
+                          KeyValueMapFromJson<int64_t>(json, kNanValueCounts));
+  ICEBERG_ASSIGN_OR_RAISE(data_file.lower_bounds, BytesMapFromJson(json, kLowerBounds));
+  ICEBERG_ASSIGN_OR_RAISE(data_file.upper_bounds, BytesMapFromJson(json, kUpperBounds));
+
+  if (json.contains(kKeyMetadata) && !json.at(kKeyMetadata).is_null()) {
+    ICEBERG_ASSIGN_OR_RAISE(auto key_metadata,
+                            GetJsonValue<std::string>(json, kKeyMetadata));
+    ICEBERG_ASSIGN_OR_RAISE(data_file.key_metadata,
+                            StringUtils::HexStringToBytes(key_metadata));
+  }
+  if (json.contains(kSplitOffsets) && !json.at(kSplitOffsets).is_null()) {
+    ICEBERG_ASSIGN_OR_RAISE(data_file.split_offsets,
+                            IntegerVectorFromJson<int64_t>(json, kSplitOffsets));
+  }
+  if (json.contains(kEqualityIds) && !json.at(kEqualityIds).is_null()) {
+    ICEBERG_ASSIGN_OR_RAISE(data_file.equality_ids,
+                            IntegerVectorFromJson<int32_t>(json, kEqualityIds));
+  }
+  if (json.contains(kSortOrderId) && !json.at(kSortOrderId).is_null()) {
+    ICEBERG_ASSIGN_OR_RAISE(data_file.sort_order_id,
+                            GetJsonInteger<int32_t>(json, kSortOrderId));
+  }
+  if (json.contains(kFirstRowId) && !json.at(kFirstRowId).is_null()) {
+    ICEBERG_ASSIGN_OR_RAISE(data_file.first_row_id,
+                            GetJsonInteger<int64_t>(json, kFirstRowId));
+  }
+  if (json.contains(kReferencedDataFile) && !json.at(kReferencedDataFile).is_null()) {
+    ICEBERG_ASSIGN_OR_RAISE(data_file.referenced_data_file,
+                            GetJsonValue<std::string>(json, kReferencedDataFile));
+  }
+  if (json.contains(kContentOffset) && !json.at(kContentOffset).is_null()) {
+    ICEBERG_ASSIGN_OR_RAISE(data_file.content_offset,
+                            GetJsonInteger<int64_t>(json, kContentOffset));
+  }
+  if (json.contains(kContentSizeInBytes) && !json.at(kContentSizeInBytes).is_null()) {
+    ICEBERG_ASSIGN_OR_RAISE(data_file.content_size_in_bytes,
+                            GetJsonInteger<int64_t>(json, kContentSizeInBytes));
+  }
+
+  return data_file;
+}
+
+Result<nlohmann::json> ToJson(
+    const DataFile& data_file,
+    const std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>>&
+        partition_specs_by_id,
+    const Schema& schema) {
+  if (!data_file.partition_spec_id.has_value()) {
+    return ValidationFailed("Invalid partition spec id from content file: null");
+  }
+  auto it = partition_specs_by_id.find(data_file.partition_spec_id.value());
+  if (it == partition_specs_by_id.end() || !it->second) {
+    return ValidationFailed("Invalid partition spec: null");
+  }
+  if (data_file.partition_spec_id.value() != it->second->spec_id()) {
+    return ValidationFailed(
+        "Invalid partition spec id from content file: expected = {}, actual = {}",
+        it->second->spec_id(), data_file.partition_spec_id.value());
+  }
+  ICEBERG_ASSIGN_OR_RAISE(auto partition_type, it->second->PartitionType(schema));
+  if (data_file.partition.num_fields() != partition_type->fields().size()) {
+    return ValidationFailed(
+        "Invalid partition data from content file: expected = {}, actual = {}",
+        partition_type->fields().empty() ? "unpartitioned" : "partitioned",
+        data_file.partition.num_fields() == 0 ? "unpartitioned" : "partitioned");
+  }
+  for (size_t pos = 0; pos < partition_type->fields().size(); ++pos) {
+    const auto& literal = data_file.partition.values()[pos];
+    const auto& expected_type = partition_type->fields()[pos].type();
+    if (!literal.IsNull() && (!literal.type() || *literal.type() != *expected_type)) {
+      return ValidationFailed(
+          "Invalid partition value type at position {}: expected = {}, actual = {}", pos,
+          expected_type->ToString(),
+          literal.type() ? literal.type()->ToString() : "unknown");
+    }
+  }
+  return DataFileToJsonUnchecked(data_file);
+}
+
+Result<nlohmann::json> ToJson(
+    const FileScanTask& task,
+    const std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>>&
+        partition_specs_by_id,
+    const Schema& schema) {
+  if (!task.data_file()) {
+    return ValidationFailed("Cannot serialize FileScanTask without data-file");
+  }
+  if (task.data_file()->content != DataFile::Content::kData) {
+    return ValidationFailed("FileScanTask data-file must have data content");
+  }
+
+  nlohmann::json json;
+  json[kTaskType] = kFileScanTaskType;
+  ICEBERG_ASSIGN_OR_RAISE(auto schema_json, ToJson(schema));
+  json[kSchema] = std::move(schema_json);
+
+  ICEBERG_ASSIGN_OR_RAISE(auto data_file_json,
+                          ToJson(*task.data_file(), partition_specs_by_id, schema));
+  const auto spec_id = task.data_file()->partition_spec_id.value();
+  json[kSpec] = ToJson(*partition_specs_by_id.at(spec_id));
+  json[kDataFile] = std::move(data_file_json);
+  json[kStart] = 0;
+  json[kLength] = task.data_file()->file_size_in_bytes;
+
+  nlohmann::json delete_files_json = nlohmann::json::array();
+  for (const auto& delete_file : task.delete_files()) {
+    if (!delete_file) {
+      return ValidationFailed("FileScanTask delete-files must not contain null");
+    }
+    if (delete_file->content == DataFile::Content::kData) {
+      return ValidationFailed("FileScanTask delete-file must have delete content");
+    }
+    if (delete_file->partition_spec_id != task.data_file()->partition_spec_id) {
+      return ValidationFailed(
+          "Invalid partition spec id from content file: expected = {}, actual = {}",
+          spec_id,
+          delete_file->partition_spec_id.has_value()
+              ? std::to_string(delete_file->partition_spec_id.value())
+              : "null");
+    }
+    ICEBERG_ASSIGN_OR_RAISE(auto delete_file_json,
+                            ToJson(*delete_file, partition_specs_by_id, schema));
+    delete_files_json.push_back(std::move(delete_file_json));
+  }
+  json[kDeleteFiles] = std::move(delete_files_json);
+
+  if (task.residual_filter()) {
+    ICEBERG_ASSIGN_OR_RAISE(auto residual_json, ToJson(*task.residual_filter()));
+    json[kResidualFilter] = std::move(residual_json);
+  }
+  return json;
+}
+
+Status CheckFileScanTaskNotSplit(int64_t start, int64_t length,
+                                 int64_t file_size_in_bytes) {
+  if (start != 0 || length != file_size_in_bytes) {
+    return NotSupported(
+        "Split FileScanTask is not supported: start={}, length={}, "
+        "file-size-in-bytes={}",
+        start, length, file_size_in_bytes);
+  }
+  return {};
+}
+
+Result<std::shared_ptr<FileScanTask>> FileScanTaskFromJson(const nlohmann::json& json) {
+  if (!json.is_object()) {
+    return JsonParseError("Cannot parse file scan task from a non-object: {}",
+                          SafeDumpJson(json));
+  }
+  ICEBERG_ASSIGN_OR_RAISE(auto task_type,
+                          GetJsonValueOptional<std::string>(json, kTaskType));
+  if (task_type.has_value() &&
+      !StringUtils::EqualsIgnoreCase(*task_type, kFileScanTaskType)) {
+    return JsonParseError("Unsupported scan task type: {}", *task_type);
+  }
+  if (json.contains(kDeleteFileReferences) && !json.at(kDeleteFileReferences).is_null()) {
+    return JsonParseError(
+        "Cannot parse FileScanTask with 'delete-file-references'; use "
+        "rest::FileScanTasksFromJson for REST scan responses");
+  }
+
+  ICEBERG_ASSIGN_OR_RAISE(auto schema_json, GetJsonValue<nlohmann::json>(json, kSchema));
+  ICEBERG_ASSIGN_OR_RAISE(auto schema, SchemaFromJson(schema_json));
+  auto shared_schema = std::shared_ptr<Schema>(std::move(schema));
+
+  ICEBERG_ASSIGN_OR_RAISE(auto spec_json, GetJsonValue<nlohmann::json>(json, kSpec));
+  ICEBERG_ASSIGN_OR_RAISE(auto spec_id, GetJsonInteger<int32_t>(spec_json, kSpecId));
+  ICEBERG_ASSIGN_OR_RAISE(auto spec,
+                          PartitionSpecFromJson(shared_schema, spec_json, spec_id));
+  auto shared_spec = std::shared_ptr<PartitionSpec>(std::move(spec));
+  const std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>> partition_spec_by_id{
+      {shared_spec->spec_id(), shared_spec}};
+
+  ICEBERG_ASSIGN_OR_RAISE(auto data_file_json,
+                          GetJsonValue<nlohmann::json>(json, kDataFile));
+  ICEBERG_ASSIGN_OR_RAISE(
+      auto data_file,
+      DataFileFromJson(data_file_json, partition_spec_by_id, *shared_schema));
+  if (data_file.content != DataFile::Content::kData) {
+    return JsonParseError("FileScanTask data-file must have data content");
+  }
+
+  ICEBERG_ASSIGN_OR_RAISE(auto start, GetJsonInteger<int64_t>(json, kStart));
+  ICEBERG_ASSIGN_OR_RAISE(auto length, GetJsonInteger<int64_t>(json, kLength));
+  ICEBERG_RETURN_UNEXPECTED(
+      CheckFileScanTaskNotSplit(start, length, data_file.file_size_in_bytes));
+
+  std::vector<std::shared_ptr<DataFile>> delete_files;
+  if (json.contains(kDeleteFiles)) {
+    ICEBERG_ASSIGN_OR_RAISE(auto delete_files_json,
+                            GetJsonValue<nlohmann::json>(json, kDeleteFiles));
+    if (!delete_files_json.is_array()) {
+      return JsonParseError("Cannot parse delete files from non-array: {}",
+                            SafeDumpJson(delete_files_json));
+    }
+    for (const auto& delete_file_json : delete_files_json) {
+      ICEBERG_ASSIGN_OR_RAISE(
+          auto delete_file,
+          DataFileFromJson(delete_file_json, partition_spec_by_id, *shared_schema));
+      if (delete_file.content == DataFile::Content::kData) {
+        return JsonParseError("FileScanTask delete-file must have delete content");
+      }
+      delete_files.push_back(std::make_shared<DataFile>(std::move(delete_file)));
+    }
+  }
+
+  std::shared_ptr<Expression> residual_filter = Expressions::AlwaysTrue();
+  if (json.contains(kResidualFilter)) {
+    ICEBERG_ASSIGN_OR_RAISE(auto filter_json,
+                            GetJsonValue<nlohmann::json>(json, kResidualFilter));
+    ICEBERG_ASSIGN_OR_RAISE(residual_filter, ExpressionFromJson(filter_json));
+  }
+
+  return std::make_shared<FileScanTask>(std::make_shared<DataFile>(std::move(data_file)),
+                                        std::move(delete_files),
+                                        std::move(residual_filter));
 }
 
 }  // namespace iceberg
