@@ -28,3 +28,8 @@ When assessing potential vulnerabilities or calibrating automated security
 findings, use [`SECURITY-THREAT-MODEL.md`](SECURITY-THREAT-MODEL.md) as the
 authoritative detailed description of this repository's security boundaries,
 trust assumptions, and non-boundaries.
+
+## PR & Commit Conventions
+
+- Use Conventional Commits for commit messages.
+- Run `pre-commit` for every PR and fix any reported issues.
