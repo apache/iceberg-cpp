@@ -22,6 +22,7 @@
 #include <algorithm>
 #include <format>
 #include <memory>
+#include <mutex>
 #include <optional>
 #include <stdexcept>
 #include <string>
@@ -36,6 +37,7 @@
 #include "iceberg/constants.h"
 #include "iceberg/expression/expressions.h"
 #include "iceberg/file_io.h"
+#include "iceberg/file_reader.h"
 #include "iceberg/partition_spec.h"
 #include "iceberg/schema.h"
 #include "iceberg/table_metadata.h"
@@ -55,6 +57,104 @@
 namespace iceberg {
 
 namespace {
+
+struct ManifestReadState {
+  std::unordered_set<std::string> source_paths;
+  std::mutex mutex;
+  int open_readers = 0;
+  int max_open_readers = 0;
+  int opened_readers = 0;
+  int64_t unread_entries = 0;
+  int64_t max_unread_entries = 0;
+  int64_t processed_entries = 0;
+  bool fail_after_first_batch = false;
+};
+
+class TrackingManifestReader : public Reader {
+ public:
+  TrackingManifestReader(std::unique_ptr<Reader> delegate,
+                         std::shared_ptr<ManifestReadState> state)
+      : delegate_(std::move(delegate)), state_(std::move(state)) {}
+
+  ~TrackingManifestReader() override { Release(); }
+
+  Status Open(const ReaderOptions& options) override {
+    auto read_options = options;
+    const bool track = state_->source_paths.contains(options.path);
+    if (track) {
+      read_options.properties.Set(ReaderProperties::kBatchSize, int64_t{2});
+    }
+    ICEBERG_RETURN_UNEXPECTED(delegate_->Open(read_options));
+    if (track) {
+      std::lock_guard lock(state_->mutex);
+      tracked_ = true;
+      ++state_->opened_readers;
+      state_->max_open_readers =
+          std::max(state_->max_open_readers, ++state_->open_readers);
+    }
+    return {};
+  }
+
+  Status Close() override {
+    Release();
+    return delegate_->Close();
+  }
+
+  Result<std::optional<ArrowArray>> Next() override {
+    if (tracked_ && state_->fail_after_first_batch && read_batch_) {
+      return IOError("Injected streaming manifest read failure");
+    }
+    ICEBERG_ASSIGN_OR_RAISE(auto batch, delegate_->Next());
+    if (tracked_ && batch.has_value()) {
+      read_batch_ = true;
+      std::lock_guard lock(state_->mutex);
+      state_->unread_entries += batch->length;
+      state_->max_unread_entries =
+          std::max(state_->max_unread_entries, state_->unread_entries);
+    }
+    return batch;
+  }
+
+  Result<ArrowSchema> Schema() override { return delegate_->Schema(); }
+
+  Result<std::unordered_map<std::string, std::string>> Metadata() override {
+    return delegate_->Metadata();
+  }
+
+ private:
+  void Release() {
+    if (tracked_) {
+      std::lock_guard lock(state_->mutex);
+      --state_->open_readers;
+      tracked_ = false;
+    }
+  }
+
+  std::unique_ptr<Reader> delegate_;
+  std::shared_ptr<ManifestReadState> state_;
+  bool tracked_ = false;
+  bool read_batch_ = false;
+};
+
+class ScopedManifestReadTracking {
+ public:
+  explicit ScopedManifestReadTracking(std::shared_ptr<ManifestReadState> state)
+      : previous_(ReaderFactoryRegistry::GetFactory(FileFormatType::kAvro)) {
+    ReaderFactoryRegistry::GetFactory(FileFormatType::kAvro) =
+        [factory = previous_,
+         state = std::move(state)]() -> Result<std::unique_ptr<Reader>> {
+      ICEBERG_ASSIGN_OR_RAISE(auto reader, factory());
+      return std::make_unique<TrackingManifestReader>(std::move(reader), state);
+    };
+  }
+
+  ~ScopedManifestReadTracking() {
+    ReaderFactoryRegistry::GetFactory(FileFormatType::kAvro) = std::move(previous_);
+  }
+
+ private:
+  ReaderFactory previous_;
+};
 
 struct ManifestWriteFailureState {
   int manifest_output_count = 0;
@@ -644,6 +744,123 @@ TEST_P(RewriteManifestsTest, RewriteManifestsAppendedDirectly) {
   ASSERT_EQ(manifests.size(), 1U);
   ExpectManifestEntriesWithSnapshotIds(manifests[0], {file_a_->file_path},
                                        {ManifestStatus::kExisting}, {append_snapshot_id});
+}
+
+TEST_P(RewriteManifestsTest, FactoryResultCanCommitDirectly) {
+  ASSERT_THAT(AppendFiles({file_a_, file_b_}), IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(auto original, table_->current_snapshot());
+  ICEBERG_UNWRAP_OR_FAIL(auto ctx,
+                         TransactionContext::Make(table_, TransactionKind::kUpdate));
+  ICEBERG_UNWRAP_OR_FAIL(auto rewrite,
+                         RewriteManifests::Make(table_->name().name, std::move(ctx)));
+  rewrite->ClusterBy([](const DataFile&) { return ""; });
+  ASSERT_THAT(rewrite->Commit(), IsOk());
+
+  ICEBERG_UNWRAP_OR_FAIL(auto manifests, CurrentManifests());
+  ASSERT_EQ(manifests.size(), 1U);
+  ExpectManifestEntriesWithSnapshotIds(
+      manifests[0], {file_a_->file_path, file_b_->file_path},
+      {ManifestStatus::kExisting, ManifestStatus::kExisting},
+      {original->snapshot_id, original->snapshot_id});
+}
+
+TEST_P(RewriteManifestsTest, StreamsEntriesWithBoundedReaders) {
+  ICEBERG_UNWRAP_OR_FAIL(auto append, table_->NewFastAppend());
+  std::vector<std::string> expected_paths;
+  for (int i = 0; i < 40; ++i) {
+    std::vector<std::shared_ptr<DataFile>> files;
+    for (int j = 0; j < 3; ++j) {
+      auto file = MakeDataFile(std::format("stream-{}-{}", i, j), 1, 10, i);
+      files.push_back(file);
+      expected_paths.push_back(file->file_path);
+    }
+    ICEBERG_UNWRAP_OR_FAIL(auto manifest,
+                           WriteAddedManifest(std::format("stream-{}", i), files));
+    append->AppendManifest(manifest);
+  }
+  ASSERT_THAT(append->Commit(), IsOk());
+
+  for (bool use_executor : {false, true}) {
+    SCOPED_TRACE(use_executor);
+    ICEBERG_UNWRAP_OR_FAIL(auto before, CurrentManifests());
+    auto state = std::make_shared<ManifestReadState>();
+    for (const auto& manifest : before) {
+      state->source_paths.insert(manifest.manifest_path);
+    }
+    {
+      test::ThreadExecutor executor;
+      ScopedManifestReadTracking tracking(state);
+      ICEBERG_UNWRAP_OR_FAIL(auto rewrite, table_->NewRewriteManifests());
+      rewrite->ClusterBy([state](const DataFile& file) {
+        std::lock_guard lock(state->mutex);
+        --state->unread_entries;
+        ++state->processed_entries;
+        return file.file_path.substr(0, file.file_path.find_last_of('-'));
+      });
+      if (use_executor) {
+        rewrite->ScanManifestsWith(executor);
+      }
+      ASSERT_THAT(rewrite->Commit(), IsOk());
+      if (use_executor) {
+        EXPECT_GT(executor.submit_count(), 0);
+      }
+    }
+    EXPECT_EQ(state->processed_entries, expected_paths.size());
+    EXPECT_EQ(state->unread_entries, 0);
+    EXPECT_LE(state->max_unread_entries, 2);
+    EXPECT_EQ(state->opened_readers, before.size());
+    EXPECT_EQ(state->open_readers, 0);
+    EXPECT_LT(state->max_open_readers, before.size());
+    if (!use_executor) {
+      EXPECT_EQ(state->max_open_readers, 1);
+    }
+
+    ICEBERG_UNWRAP_OR_FAIL(auto manifests, CurrentManifests());
+    std::vector<std::string> actual_paths;
+    for (const auto& manifest : manifests) {
+      ICEBERG_UNWRAP_OR_FAIL(auto entries, ReadManifestEntries(manifest));
+      for (const auto& entry : entries) {
+        EXPECT_EQ(entry.status, ManifestStatus::kExisting);
+        actual_paths.push_back(entry.data_file->file_path);
+      }
+    }
+    EXPECT_THAT(actual_paths, ::testing::UnorderedElementsAreArray(expected_paths));
+  }
+}
+
+TEST_P(RewriteManifestsTest, CleansWritersAfterStreamingReadFailure) {
+  ASSERT_THAT(AppendFiles({file_a_, file_b_, file_c_}), IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(auto before, CurrentManifests());
+  for (bool use_executor : {false, true}) {
+    SCOPED_TRACE(use_executor);
+    auto reads = std::make_shared<ManifestReadState>();
+    reads->source_paths.insert(before[0].manifest_path);
+    reads->fail_after_first_batch = true;
+    auto writes = std::make_shared<ManifestWriteFailureState>();
+    BindTableWithFileIO(std::make_shared<ManifestWriteFailureFileIO>(
+        file_io_, table_location_ + "/metadata/", writes));
+    {
+      test::ThreadExecutor executor;
+      ScopedManifestReadTracking tracking(reads);
+      ICEBERG_UNWRAP_OR_FAIL(auto rewrite, table_->NewRewriteManifests());
+      rewrite->ClusterBy([](const DataFile&) { return ""; });
+      if (use_executor) {
+        rewrite->ScanManifestsWith(executor);
+      }
+      auto result = rewrite->Commit();
+      EXPECT_THAT(result, IsError(ErrorKind::kIOError));
+      EXPECT_THAT(result, HasErrorMessage("Injected streaming manifest read failure"));
+    }
+    EXPECT_EQ(reads->open_readers, 0);
+    ASSERT_EQ(writes->manifest_outputs.size(), 1U);
+    EXPECT_TRUE(writes->open_manifest_paths.empty());
+    EXPECT_TRUE(writes->deleted_open_files.empty());
+    EXPECT_THAT(writes->deleted_files,
+                ::testing::Contains(writes->manifest_outputs.front()));
+    EXPECT_FALSE(FileExists(writes->manifest_outputs.front()));
+    ICEBERG_UNWRAP_OR_FAIL(auto after, CurrentManifests());
+    EXPECT_EQ(after, before);
+  }
 }
 
 TEST_P(RewriteManifestsTest, RewriteManifestsWithScanExecutor) {

@@ -52,10 +52,10 @@ struct RewriteCandidate {
   std::shared_ptr<PartitionSpec> spec;
 };
 
-struct ManifestEntries {
+struct ManifestStream {
   ManifestFile manifest;
   std::shared_ptr<PartitionSpec> spec;
-  std::vector<ManifestEntry> entries;
+  ManifestEntryStreamPtr entries;
 };
 
 struct RewriteWriter {
@@ -65,11 +65,11 @@ struct RewriteWriter {
 
 }  // namespace
 
-Result<std::unique_ptr<RewriteManifests>> RewriteManifests::Make(
+Result<std::shared_ptr<RewriteManifests>> RewriteManifests::Make(
     std::string table_name, std::shared_ptr<TransactionContext> ctx) {
   ICEBERG_PRECHECK(!table_name.empty(), "Table name cannot be empty");
   ICEBERG_PRECHECK(ctx != nullptr, "Cannot create RewriteManifests without a context");
-  return std::unique_ptr<RewriteManifests>(
+  return std::shared_ptr<RewriteManifests>(
       new RewriteManifests(std::move(table_name), std::move(ctx)));
 }
 
@@ -318,23 +318,6 @@ Status RewriteManifests::Rewrite(std::span<const ManifestFile> current_manifests
         RewriteCandidate{.manifest = manifest, .spec = std::move(spec)});
   }
 
-  auto file_io = ctx_->table->io();
-  ICEBERG_ASSIGN_OR_RAISE(
-      auto manifest_entries,
-      ParallelCollect(
-          plan_executor(), rewrite_candidates,
-          [&](const RewriteCandidate& candidate) -> Result<std::vector<ManifestEntries>> {
-            ICEBERG_ASSIGN_OR_RAISE(
-                auto reader, ManifestReader::Make(candidate.manifest, file_io, schema,
-                                                  candidate.spec));
-            ICEBERG_ASSIGN_OR_RAISE(auto entries, reader->LiveEntries());
-            std::vector<ManifestEntries> result;
-            result.push_back(ManifestEntries{.manifest = candidate.manifest,
-                                             .spec = candidate.spec,
-                                             .entries = std::move(entries)});
-            return result;
-          }));
-
   std::unordered_map<WriterKey, RewriteWriter, WriterKeyHash> writers;
 
   auto close_writer =
@@ -354,39 +337,76 @@ Status RewriteManifests::Rewrite(std::span<const ManifestFile> current_manifests
                                       ManifestContent::kData);
   };
 
-  // Capture a write failure so all open writers can still be closed below
+  auto write_entry = [&](const ManifestEntry& entry,
+                         const ManifestStream& manifest_stream) -> Status {
+    ICEBERG_PRECHECK(entry.data_file != nullptr,
+                     "Manifest entry in {} is missing data_file",
+                     manifest_stream.manifest.manifest_path);
+    auto key = WriterKey{cluster_by_func_(*entry.data_file),
+                         manifest_stream.manifest.partition_spec_id};
+
+    auto writer_it = writers.find(key);
+    if (writer_it == writers.end()) {
+      auto [inserted_it, _] =
+          writers.emplace(key, RewriteWriter{.spec = manifest_stream.spec});
+      writer_it = inserted_it;
+    }
+
+    auto& rewrite_writer = writer_it->second;
+    if (rewrite_writer.writer == nullptr) {
+      ICEBERG_ASSIGN_OR_RAISE(rewrite_writer.writer, new_writer(rewrite_writer));
+    } else {
+      ICEBERG_ASSIGN_OR_RAISE(auto length, rewrite_writer.writer->length());
+      if (length >= target_manifest_size_bytes()) {
+        ICEBERG_ASSIGN_OR_RAISE(auto manifest_file, close_writer(rewrite_writer));
+        if (manifest_file.has_value()) {
+          new_manifests_.push_back(std::move(manifest_file).value());
+        }
+        ICEBERG_ASSIGN_OR_RAISE(rewrite_writer.writer, new_writer(rewrite_writer));
+      }
+    }
+
+    ICEBERG_RETURN_UNEXPECTED(rewrite_writer.writer->WriteExistingEntry(entry));
+    ++entry_count_;
+    return {};
+  };
+
+  // Capture read and write failures so all open writers can still be closed below.
   Status write_status = [&]() -> Status {
-    for (const auto& manifest_entry : manifest_entries) {
-      for (const auto& entry : manifest_entry.entries) {
-        ICEBERG_PRECHECK(entry.data_file != nullptr,
-                         "Manifest entry in {} is missing data_file",
-                         manifest_entry.manifest.manifest_path);
-        auto key = WriterKey{cluster_by_func_(*entry.data_file),
-                             manifest_entry.manifest.partition_spec_id};
-
-        auto writer_it = writers.find(key);
-        if (writer_it == writers.end()) {
-          auto [inserted_it, _] =
-              writers.emplace(key, RewriteWriter{.spec = manifest_entry.spec});
-          writer_it = inserted_it;
-        }
-
-        auto& rewrite_writer = writer_it->second;
-        if (rewrite_writer.writer == nullptr) {
-          ICEBERG_ASSIGN_OR_RAISE(rewrite_writer.writer, new_writer(rewrite_writer));
-        } else {
-          ICEBERG_ASSIGN_OR_RAISE(auto length, rewrite_writer.writer->length());
-          if (length >= target_manifest_size_bytes()) {
-            ICEBERG_ASSIGN_OR_RAISE(auto manifest_file, close_writer(rewrite_writer));
-            if (manifest_file.has_value()) {
-              new_manifests_.push_back(std::move(manifest_file).value());
-            }
-            ICEBERG_ASSIGN_OR_RAISE(rewrite_writer.writer, new_writer(rewrite_writer));
+    // Open a bounded batch of streams concurrently, then consume entries incrementally.
+    // Without an executor, keep only one reader open at a time.
+    constexpr size_t kManifestReadBatchSize = 32;
+    const size_t batch_size = plan_executor().has_value() ? kManifestReadBatchSize : 1;
+    auto file_io = ctx_->table->io();
+    for (size_t offset = 0; offset < rewrite_candidates.size(); offset += batch_size) {
+      auto candidates =
+          std::span(rewrite_candidates)
+              .subspan(offset, std::min(batch_size, rewrite_candidates.size() - offset));
+      ICEBERG_ASSIGN_OR_RAISE(
+          auto streams,
+          ParallelCollect(
+              plan_executor(), candidates,
+              [&](const RewriteCandidate& candidate)
+                  -> Result<std::vector<ManifestStream>> {
+                ICEBERG_ASSIGN_OR_RAISE(
+                    auto reader, ManifestReader::Make(candidate.manifest, file_io, schema,
+                                                      candidate.spec));
+                ICEBERG_ASSIGN_OR_RAISE(auto entries, reader->LiveEntriesStream());
+                std::vector<ManifestStream> result;
+                result.push_back(ManifestStream{.manifest = candidate.manifest,
+                                                .spec = candidate.spec,
+                                                .entries = std::move(entries)});
+                return result;
+              }));
+      for (auto& stream : streams) {
+        while (true) {
+          ICEBERG_ASSIGN_OR_RAISE(auto entry, stream.entries->Next());
+          if (!entry.has_value()) {
+            break;
           }
+          ICEBERG_RETURN_UNEXPECTED(write_entry(*entry, stream));
         }
-
-        ICEBERG_RETURN_UNEXPECTED(rewrite_writer.writer->WriteExistingEntry(entry));
-        ++entry_count_;
+        stream.entries.reset();
       }
     }
     return {};
@@ -414,10 +434,10 @@ Status RewriteManifests::Rewrite(std::span<const ManifestFile> current_manifests
       error.message += "; additionally failed to close manifest writer: ";
       error.message += first_close_error->message;
     }
-    return std::unexpected<Error>(std::move(error));
+    return ::iceberg::unexpected<Error>(std::move(error));
   }
   if (first_close_error.has_value()) {
-    return std::unexpected<Error>(std::move(first_close_error).value());
+    return ::iceberg::unexpected<Error>(std::move(first_close_error).value());
   }
   return {};
 }

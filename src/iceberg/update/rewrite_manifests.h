@@ -55,7 +55,7 @@ class ICEBERG_EXPORT RewriteManifests : public SnapshotUpdate {
   using ClusterByFunc = std::function<std::string(const DataFile&)>;
   using RewritePredicate = std::function<bool(const ManifestFile&)>;
 
-  static Result<std::unique_ptr<RewriteManifests>> Make(
+  static Result<std::shared_ptr<RewriteManifests>> Make(
       std::string table_name, std::shared_ptr<TransactionContext> ctx);
 
   /// \brief Group an existing data file by a cluster key.
