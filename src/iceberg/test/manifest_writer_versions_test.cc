@@ -17,6 +17,7 @@
  * under the License.
  */
 
+#include <algorithm>
 #include <cstdint>
 #include <memory>
 #include <optional>
@@ -33,13 +34,16 @@
 #include "iceberg/manifest/manifest_list.h"
 #include "iceberg/manifest/manifest_reader.h"
 #include "iceberg/manifest/manifest_writer.h"
+#include "iceberg/metadata_cache.h"
 #include "iceberg/metrics.h"
 #include "iceberg/partition_spec.h"
 #include "iceberg/row/partition_values.h"
 #include "iceberg/schema.h"
 #include "iceberg/schema_field.h"
+#include "iceberg/snapshot.h"
 #include "iceberg/table_metadata.h"
 #include "iceberg/test/matchers.h"
+#include "iceberg/test/mock_io.h"
 #include "iceberg/transform.h"
 #include "iceberg/type.h"
 
@@ -126,6 +130,36 @@ std::unique_ptr<DataFile> CreateDeleteFile() {
 
   return delete_file;
 }
+
+class CountingInputFile : public InputFile {
+ public:
+  CountingInputFile(std::unique_ptr<InputFile> input_file, int* open_count)
+      : input_file_(std::move(input_file)), open_count_(open_count) {}
+
+  std::string_view location() const override { return input_file_->location(); }
+
+  Result<int64_t> Size() const override { return input_file_->Size(); }
+
+  Result<std::unique_ptr<SeekableInputStream>> Open() override {
+    ++*open_count_;
+    return input_file_->Open();
+  }
+
+ private:
+  std::unique_ptr<InputFile> input_file_;
+  int* open_count_;
+};
+
+class CountingMockFileIO : public MockFileIO {
+ public:
+  Result<std::unique_ptr<InputFile>> NewInputFile(std::string file_location) override {
+    ICEBERG_ASSIGN_OR_RAISE(auto input_file,
+                            MockFileIO::NewInputFile(std::move(file_location)));
+    return std::make_unique<CountingInputFile>(std::move(input_file), &open_count);
+  }
+
+  int open_count = 0;
+};
 
 }  // namespace
 
@@ -409,6 +443,82 @@ class ManifestWriterVersionsTest : public ::testing::Test {
 
   std::shared_ptr<FileIO> file_io_{nullptr};
 };
+
+TEST_F(ManifestWriterVersionsTest, SnapshotEntriesFollowContentCacheEviction) {
+  auto file_io = std::make_shared<CountingMockFileIO>();
+  auto write_manifest_list = [&](const std::string& location, int64_t snapshot_id) {
+    auto writer_result = ManifestListWriter::MakeWriter(
+        /*format_version=*/2, snapshot_id, /*parent_snapshot_id=*/std::nullopt, location,
+        file_io, /*sequence_number=*/1);
+    ASSERT_THAT(writer_result, IsOk());
+    auto writer = std::move(writer_result).value();
+    ManifestFile manifest{
+        .manifest_path = location + ".manifest",
+        .manifest_length = 10,
+        .partition_spec_id = PartitionSpec::kInitialSpecId,
+        .content = ManifestContent::kData,
+        .sequence_number = 1,
+        .min_sequence_number = 1,
+        .added_snapshot_id = snapshot_id,
+        .added_files_count = 1,
+        .existing_files_count = 0,
+        .deleted_files_count = 0,
+        .added_rows_count = 1,
+        .existing_rows_count = 0,
+        .deleted_rows_count = 0,
+    };
+    ASSERT_THAT(writer->AddAll({manifest}), IsOk());
+    ASSERT_THAT(writer->Close(), IsOk());
+  };
+
+  const std::string first_location = "first-manifest-list.avro";
+  const std::string second_location = "second-manifest-list.avro";
+  write_manifest_list(first_location, /*snapshot_id=*/1);
+  write_manifest_list(second_location, /*snapshot_id=*/2);
+  const auto max_list_size = std::max(file_io->FileData(first_location).size(),
+                                      file_io->FileData(second_location).size());
+  ASSERT_THAT(file_io->ConfigureMetadataCache(
+                  {{std::string(MetadataCacheOptions::kEnabled), "true"},
+                   {std::string(MetadataCacheOptions::kMaxTotalBytes),
+                    std::to_string(max_list_size)},
+                   {std::string(MetadataCacheOptions::kMaxContentLength),
+                    std::to_string(max_list_size)}}),
+              IsOk());
+
+  Snapshot first_snapshot{
+      .snapshot_id = 1,
+      .parent_snapshot_id = std::nullopt,
+      .sequence_number = 1,
+      .timestamp_ms = TimePointMs{},
+      .manifest_list = first_location,
+  };
+  Snapshot second_snapshot{
+      .snapshot_id = 2,
+      .parent_snapshot_id = 1,
+      .sequence_number = 2,
+      .timestamp_ms = TimePointMs{},
+      .manifest_list = second_location,
+  };
+
+  SnapshotCache first_cache(&first_snapshot);
+  ICEBERG_UNWRAP_OR_FAIL(auto first_manifests, first_cache.Manifests(file_io));
+  ASSERT_EQ(first_manifests.size(), 1);
+  EXPECT_EQ(file_io->open_count, 1);
+
+  SnapshotCache shared_first_cache(&first_snapshot);
+  EXPECT_THAT(shared_first_cache.Manifests(file_io), IsOk());
+  EXPECT_EQ(file_io->open_count, 1);
+
+  SnapshotCache second_cache(&second_snapshot);
+  EXPECT_THAT(second_cache.Manifests(file_io), IsOk());
+  EXPECT_EQ(file_io->open_count, 2);
+  // Evicting the shared entry must not invalidate spans owned by an existing wrapper.
+  EXPECT_EQ(first_manifests.front().manifest_path, first_location + ".manifest");
+
+  SnapshotCache reloaded_first_cache(&first_snapshot);
+  EXPECT_THAT(reloaded_first_cache.Manifests(file_io), IsOk());
+  EXPECT_EQ(file_io->open_count, 3);
+}
 
 TEST_F(ManifestWriterVersionsTest, TestV1Write) {
   auto manifest = WriteManifest(/*format_version=*/1, {data_file_});
