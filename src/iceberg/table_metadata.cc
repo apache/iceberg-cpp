@@ -464,7 +464,7 @@ Result<std::unique_ptr<TableMetadata>> TableMetadataUtil::Read(
     FileIO& io, const std::string& location, std::optional<size_t> length) {
   ICEBERG_ASSIGN_OR_RAISE(auto codec_type, Codec::FromFileName(location));
 
-  ICEBERG_ASSIGN_OR_RAISE(auto content, io.ReadFile(location, length));
+  ICEBERG_ASSIGN_OR_RAISE(auto content, io.ReadFileCached(location, length));
   if (codec_type == MetadataFileCodecType::kGzip) {
     auto gzip_decompressor = std::make_unique<GZipDecompressor>();
     ICEBERG_RETURN_UNEXPECTED(gzip_decompressor->Init());

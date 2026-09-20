@@ -26,6 +26,7 @@
 #include <utility>
 #include <vector>
 
+#include "iceberg/metadata_cache.h"
 #include "iceberg/util/macros.h"
 #include "iceberg/util/string_util.h"
 
@@ -96,6 +97,9 @@ Result<std::unique_ptr<FileIO>> FileIORegistry::Load(std::string_view name,
   ICEBERG_ASSIGN_OR_RAISE(auto io, create(properties));
   if (!io) {
     return InvalidArgument("FileIO '{}' returned a null instance", name);
+  }
+  if (properties.contains(std::string(MetadataCacheOptions::kEnabled))) {
+    ICEBERG_RETURN_UNEXPECTED(io->ConfigureMetadataCache(properties));
   }
   return std::move(io);
 }
