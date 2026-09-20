@@ -25,6 +25,7 @@
 #include <utility>
 
 #include "iceberg/metadata_cache.h"
+#include "iceberg/snapshot.h"
 #include "iceberg/util/macros.h"
 
 namespace iceberg {
@@ -252,6 +253,8 @@ Status FileIO::ConfigureMetadataCache(
   std::lock_guard lock(metadata_cache_state_->mutex);
   if (metadata_cache_state_->cache == nullptr) {
     metadata_cache_state_->cache = std::move(cache);
+    metadata_cache_state_->snapshot_cache =
+        internal::MakeSnapshotCacheData(metadata_cache_state_->cache);
     return {};
   }
   if (metadata_cache_state_->cache->options() == options) {
@@ -282,6 +285,15 @@ void FileIO::ClearMetadataCache() {
 std::shared_ptr<MetadataCache> FileIO::GetMetadataCache() const {
   std::lock_guard lock(metadata_cache_state_->mutex);
   return metadata_cache_state_->cache;
+}
+
+std::shared_ptr<internal::SnapshotCacheData> FileIO::GetSnapshotCacheData() const {
+  std::lock_guard lock(metadata_cache_state_->mutex);
+  if (metadata_cache_state_->snapshot_cache == nullptr) {
+    metadata_cache_state_->snapshot_cache =
+        internal::MakeSnapshotCacheData(metadata_cache_state_->cache);
+  }
+  return metadata_cache_state_->snapshot_cache;
 }
 
 Status FileIO::WriteFile(const std::string& file_location, std::string_view content) {
