@@ -137,10 +137,10 @@ Result<ValidationHistoryResult> ValidationHistory(
     }
 
     result.snapshot_ids.insert(snapshot->snapshot_id);
-    auto cached = SnapshotCache(snapshot.get());
+    auto snapshot_reader = SnapshotReader(snapshot.get());
     ICEBERG_ASSIGN_OR_RAISE(auto manifests, content == ManifestContent::kData
-                                                ? cached.DataManifests(io)
-                                                : cached.DeleteManifests(io));
+                                                ? snapshot_reader.DataManifests(io)
+                                                : snapshot_reader.DeleteManifests(io));
     for (const auto& manifest : manifests) {
       if (manifest.added_snapshot_id == snapshot->snapshot_id) {
         result.manifests.push_back(manifest);

@@ -82,8 +82,8 @@ TEST_P(IncrementalChangelogScanTest, DataFilters) {
   auto snapshot_a = MakeAppendSnapshotWithPartitionValues(
       version, 1000L, std::nullopt, 1L, {{"/path/to/file_a.parquet", partition_a}},
       partitioned_spec_);
-  SnapshotCache cache_a(snapshot_a.get());
-  ICEBERG_UNWRAP_OR_FAIL(auto manifests_a, cache_a.DataManifests(file_io_));
+  SnapshotReader reader_a(snapshot_a.get());
+  ICEBERG_UNWRAP_OR_FAIL(auto manifests_a, reader_a.DataManifests(file_io_));
   ASSERT_EQ(manifests_a.size(), 1);
   const auto& manifest_a = manifests_a[0];
 
@@ -176,8 +176,8 @@ TEST_P(IncrementalChangelogScanTest, DuplicatedManifests) {
   // Create initial snapshot_a with file_a and extract its manifest
   auto snapshot_a =
       MakeAppendSnapshot(version, 1000L, std::nullopt, 1L, {"/path/to/file_a.parquet"});
-  SnapshotCache cache_a(snapshot_a.get());
-  ICEBERG_UNWRAP_OR_FAIL(auto manifests_a, cache_a.DataManifests(file_io_));
+  SnapshotReader reader_a(snapshot_a.get());
+  ICEBERG_UNWRAP_OR_FAIL(auto manifests_a, reader_a.DataManifests(file_io_));
   ASSERT_EQ(manifests_a.size(), 1);
   auto manifest_a = manifests_a[0];
 
