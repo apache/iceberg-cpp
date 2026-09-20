@@ -50,7 +50,8 @@ MergeAppend& MergeAppend::AppendManifest(const ManifestFile& manifest) {
                         "Cannot append manifest with existing files");
   ICEBERG_BUILDER_CHECK(!manifest.has_deleted_files(),
                         "Cannot append manifest with deleted files");
-  ICEBERG_BUILDER_CHECK(manifest.added_snapshot_id == kInvalidSnapshotId,
+  ICEBERG_BUILDER_CHECK(!manifest.added_snapshot_id.has_value() ||
+                            manifest.added_snapshot_id == kInvalidSnapshotId,
                         "Snapshot id must be assigned during commit");
   ICEBERG_BUILDER_CHECK(manifest.sequence_number == kInvalidSequenceNumber,
                         "Sequence number must be assigned during commit");

@@ -206,14 +206,16 @@ Status ManifestFileAdapterV3::Append(const ManifestFile& file) {
 }
 
 Result<int64_t> ManifestFileAdapterV3::GetSequenceNumber(const ManifestFile& file) const {
+  ICEBERG_DCHECK(file.added_snapshot_id.has_value(),
+                 "added_snapshot_id must be assigned before writing a manifest list");
   if (file.sequence_number == kUnassignedSequenceNumber) {
     // if the sequence number is being assigned here, then the manifest must be created by
     // the current operation. to validate this, check that the snapshot id matches the
     // current commit
-    if (snapshot_id_ != file.added_snapshot_id) {
+    if (snapshot_id_ != file.added_snapshot_id.value()) {
       return InvalidManifestList(
           "Found unassigned sequence number for a manifest from snapshot: {}",
-          file.added_snapshot_id);
+          file.added_snapshot_id.value());
     }
     return sequence_number_;
   }
@@ -222,12 +224,14 @@ Result<int64_t> ManifestFileAdapterV3::GetSequenceNumber(const ManifestFile& fil
 
 Result<int64_t> ManifestFileAdapterV3::GetMinSequenceNumber(
     const ManifestFile& file) const {
+  ICEBERG_DCHECK(file.added_snapshot_id.has_value(),
+                 "added_snapshot_id must be assigned before writing a manifest list");
   if (file.min_sequence_number == kUnassignedSequenceNumber) {
     // same sanity check as above
-    if (snapshot_id_ != file.added_snapshot_id) {
+    if (snapshot_id_ != file.added_snapshot_id.value()) {
       return InvalidManifestList(
           "Found unassigned sequence number for a manifest from snapshot: {}",
-          file.added_snapshot_id);
+          file.added_snapshot_id.value());
     }
     // if the min sequence number is not determined, then there was no assigned sequence
     // number for any file written to the wrapped manifest. replace the unassigned

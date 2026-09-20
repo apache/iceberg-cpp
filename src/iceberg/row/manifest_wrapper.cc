@@ -206,7 +206,7 @@ Result<Scalar> ManifestFileStructLike::GetField(size_t pos) const {
     case ManifestFileField::kMinSequenceNumber:
       return manifest_file.min_sequence_number;
     case ManifestFileField::kAddedSnapshotId:
-      return manifest_file.added_snapshot_id;
+      return FromOptional(manifest_file.added_snapshot_id);
     case ManifestFileField::kAddedFilesCount:
       return FromOptional(manifest_file.added_files_count);
     case ManifestFileField::kExistingFilesCount:

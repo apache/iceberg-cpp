@@ -26,6 +26,7 @@
 
 #include "iceberg/constants.h"
 #include "iceberg/file_io.h"
+#include "iceberg/inheritable_metadata.h"
 #include "iceberg/logging/log_macros.h"
 #include "iceberg/manifest/manifest_entry.h"
 #include "iceberg/manifest/manifest_list.h"
@@ -113,17 +114,21 @@ Result<std::vector<ManifestFile>> WriteManifestGroups(OptionalExecutor executor,
 // Add metadata to a manifest file by reading it and extracting statistics.
 Result<ManifestFile> AddMetadata(const ManifestFile& manifest, std::shared_ptr<FileIO> io,
                                  const TableMetadata& metadata) {
-  ICEBERG_PRECHECK(manifest.added_snapshot_id != kInvalidSnapshotId,
+  ICEBERG_PRECHECK(!manifest.added_snapshot_id.has_value(),
                    "Manifest {} already has assigned a snapshot id: {}",
-                   manifest.manifest_path, manifest.added_snapshot_id);
+                   manifest.manifest_path, manifest.added_snapshot_id.value());
 
   ICEBERG_ASSIGN_OR_RAISE(auto schema, metadata.Schema());
   ICEBERG_ASSIGN_OR_RAISE(auto spec,
                           metadata.PartitionSpecById(manifest.partition_spec_id));
   ICEBERG_ASSIGN_OR_RAISE(auto partition_type, spec->PartitionType(*schema));
 
-  ICEBERG_ASSIGN_OR_RAISE(auto reader,
-                          ManifestReader::Make(manifest, std::move(io), schema, spec));
+  ICEBERG_ASSIGN_OR_RAISE(auto inheritable_metadata, InheritableMetadataFactory::Empty());
+  ICEBERG_ASSIGN_OR_RAISE(
+      auto reader,
+      ManifestReader::Make(manifest.manifest_path, manifest.manifest_length,
+                           std::move(io), schema, spec, std::move(inheritable_metadata),
+                           manifest.first_row_id));
   ICEBERG_ASSIGN_OR_RAISE(auto entries, reader->Entries());
 
   PartitionSummary stats(*partition_type);
@@ -319,7 +324,7 @@ Result<SnapshotUpdate::ApplyResult> SnapshotUpdate::Apply() {
   ICEBERG_ASSIGN_OR_RAISE(auto manifests, Apply(base(), parent_snapshot));
   auto metadata_tasks = TaskGroup().SetExecutor(plan_executor_);
   for (auto& manifest : manifests) {
-    if (manifest.added_snapshot_id != kInvalidSnapshotId) {
+    if (manifest.added_snapshot_id.has_value()) {
       continue;
     }
     metadata_tasks.Submit([&manifest, this]() -> Status {
@@ -539,7 +544,7 @@ SnapshotSummaryBuilder SnapshotUpdate::BuildManifestCountSummary(
   for (const auto& manifest : manifests) {
     if (manifest.added_snapshot_id == snapshot_id) {
       ++manifests_created;
-    } else if (manifest.added_snapshot_id != kInvalidSnapshotId) {
+    } else if (manifest.added_snapshot_id.has_value()) {
       ++manifests_kept;
     }
   }

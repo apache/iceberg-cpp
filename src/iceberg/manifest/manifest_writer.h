@@ -121,7 +121,7 @@ class ICEBERG_EXPORT ManifestWriter {
   /// \brief Factory function to create a writer for a manifest file based on format
   /// version.
   /// \param format_version The format version (1, 2, 3, etc.).
-  /// \param snapshot_id ID of the snapshot.
+  /// \param snapshot_id ID written to new entries; null writes inheritable snapshot IDs.
   /// \param manifest_location Path to the manifest file.
   /// \param file_io File IO implementation to use.
   /// \param partition_spec Partition spec for the manifest.

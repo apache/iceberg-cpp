@@ -448,6 +448,10 @@ Result<std::optional<int64_t>> ManifestFileAdapter::GetFirstRowId(
 }
 
 Status ManifestFileAdapter::AppendInternal(const ManifestFile& file) {
+  if (!file.added_snapshot_id.has_value()) {
+    return InvalidManifestList("Cannot write manifest with unassigned snapshot ID: {}",
+                               file.manifest_path);
+  }
   const auto& fields = manifest_list_schema_->fields();
   for (size_t i = 0; i < fields.size(); i++) {
     const auto& field = fields[i];
@@ -478,7 +482,7 @@ Status ManifestFileAdapter::AppendInternal(const ManifestFile& file) {
         break;
       }
       case ManifestFile::kAddedSnapshotIdFieldId:
-        ICEBERG_RETURN_UNEXPECTED(AppendInt(array, file.added_snapshot_id));
+        ICEBERG_RETURN_UNEXPECTED(AppendInt(array, file.added_snapshot_id.value()));
         break;
       case ManifestFile::kAddedFilesCountFieldId:
         if (file.added_files_count.has_value()) {

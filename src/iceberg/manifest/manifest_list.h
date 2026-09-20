@@ -107,7 +107,9 @@ struct ICEBERG_EXPORT ManifestFile {
   int64_t min_sequence_number = TableMetadata::kInitialSequenceNumber;
   /// Field id: 503
   /// ID of the snapshot where the manifest file was added
-  int64_t added_snapshot_id = kInvalidSnapshotId;
+  /// May be null before commit so callers can distinguish inheritance from
+  /// kInvalidSnapshotId.
+  std::optional<int64_t> added_snapshot_id;
   /// Field id: 504
   /// Number of entries in the manifest that have status ADDED (1), when null this is
   /// assumed to be non-zero

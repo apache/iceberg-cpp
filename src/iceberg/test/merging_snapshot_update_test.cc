@@ -441,14 +441,13 @@ class MergingSnapshotUpdateTest : public MinimalUpdateTestBase {
   }
 
   // Write a manifest file containing the given data files.
-  // Returns a ManifestFile with added_snapshot_id = kInvalidSnapshotId so it
-  // is eligible for snapshot ID inheritance.
+  // Returns a manifest whose entries can inherit the snapshot ID assigned at commit.
   Result<ManifestFile> WriteManifest(
       const std::string& path, const std::vector<std::shared_ptr<DataFile>>& files) {
     ICEBERG_ASSIGN_OR_RAISE(
         auto writer,
-        ManifestWriter::MakeWriter(/*format_version=*/2, kInvalidSnapshotId, path,
-                                   file_io_, spec_, schema_, ManifestContent::kData));
+        ManifestWriter::MakeWriter(/*format_version=*/2, std::nullopt, path, file_io_,
+                                   spec_, schema_, ManifestContent::kData));
     for (const auto& f : files) {
       ManifestEntry entry;
       entry.status = ManifestStatus::kAdded;

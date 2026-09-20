@@ -657,7 +657,7 @@ Status MergingSnapshotUpdate::AddManifest(ManifestFile manifest) {
   if (manifest.content != ManifestContent::kData) {
     return InvalidArgument("Cannot append delete manifest: {}", manifest.manifest_path);
   }
-  if (can_inherit_snapshot_id() && manifest.added_snapshot_id == kInvalidSnapshotId) {
+  if (can_inherit_snapshot_id() && !manifest.added_snapshot_id.has_value()) {
     if (manifest.first_row_id.has_value()) {
       return InvalidArgument("Cannot append manifest with assigned first row ID: {}",
                              manifest.manifest_path);

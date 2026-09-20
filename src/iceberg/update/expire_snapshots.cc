@@ -478,7 +478,9 @@ class IncrementalFileCleanup : public FileCleanupStrategy {
               for (auto& manifest : manifests) {
                 valid_manifest_result.insert(manifest.manifest_path);
 
-                int64_t writer_id = manifest.added_snapshot_id;
+                ICEBERG_CHECK(manifest.added_snapshot_id.has_value(),
+                              "Manifest {} has no snapshot ID", manifest.manifest_path);
+                int64_t writer_id = manifest.added_snapshot_id.value();
                 bool from_valid_snapshots = valid_ids.contains(writer_id);
                 bool is_from_ancestor = ancestor_ids.contains(writer_id);
                 bool is_picked = picked_ancestor_snapshot_ids.contains(writer_id);
@@ -554,7 +556,9 @@ class IncrementalFileCleanup : public FileCleanupStrategy {
                 }
                 manifests_to_delete.insert(manifest.manifest_path);
 
-                int64_t writer_id = manifest.added_snapshot_id;
+                ICEBERG_CHECK(manifest.added_snapshot_id.has_value(),
+                              "Manifest {} has no snapshot ID", manifest.manifest_path);
+                int64_t writer_id = manifest.added_snapshot_id.value();
                 bool is_from_ancestor = ancestor_ids.contains(writer_id);
                 bool is_from_expiring_snapshot = expired_snapshot_ids.contains(writer_id);
 

@@ -177,7 +177,8 @@ Result<std::vector<ManifestFile>> ManifestMergeManager::MergeGroup(
         ICEBERG_ASSIGN_OR_RAISE(auto merged, FlushBin(bin, metadata, writer_factory));
         merged_manifests_.Add(bin, merged);
         for (const auto* manifest : bin) {
-          if (manifest->added_snapshot_id != snapshot_id) {
+          if (!manifest->added_snapshot_id.has_value() ||
+              manifest->added_snapshot_id.value() != snapshot_id) {
             ++replaced_manifests_count_;
           }
         }
@@ -202,8 +203,8 @@ Result<ManifestFile> ManifestMergeManager::FlushBin(
 
   const int64_t snapshot_id = snapshot_id_supplier_();
   for (const auto* manifest : bin) {
-    bool is_committed = manifest->added_snapshot_id != kInvalidSnapshotId &&
-                        manifest->added_snapshot_id != snapshot_id;
+    bool is_committed = manifest->added_snapshot_id.has_value() &&
+                        manifest->added_snapshot_id.value() != snapshot_id;
     ICEBERG_ASSIGN_OR_RAISE(auto reader, ManifestReader::Make(*manifest, file_io_, schema,
                                                               spec, is_committed));
     ICEBERG_ASSIGN_OR_RAISE(auto entries, reader->Entries());
@@ -276,7 +277,8 @@ Result<int32_t> ManifestMergeManager::MergedManifestCache::CleanUncommitted(
 
     std::ignore = delete_file(merged.manifest_path);
     for (const auto& manifest : bin.bin) {
-      if (manifest.added_snapshot_id != snapshot_id) {
+      if (!manifest.added_snapshot_id.has_value() ||
+          manifest.added_snapshot_id.value() != snapshot_id) {
         ++removed_replaced_manifests_count;
       }
     }

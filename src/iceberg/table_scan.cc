@@ -804,10 +804,12 @@ Result<std::vector<std::shared_ptr<FileScanTask>>> IncrementalAppendScan::PlanFi
   for (const auto& snapshot : append_snapshots) {
     SnapshotCache snapshot_cache(snapshot.get());
     ICEBERG_ASSIGN_OR_RAISE(auto manifests, snapshot_cache.DataManifests(io_));
-    std::ranges::copy_if(manifests, std::inserter(data_manifests, data_manifests.end()),
-                         [&snapshot_ids](const ManifestFile& manifest) {
-                           return snapshot_ids.contains(manifest.added_snapshot_id);
-                         });
+    std::ranges::copy_if(
+        manifests, std::inserter(data_manifests, data_manifests.end()),
+        [&snapshot_ids](const ManifestFile& manifest) {
+          return manifest.added_snapshot_id.has_value() &&
+                 snapshot_ids.contains(manifest.added_snapshot_id.value());
+        });
   }
   if (data_manifests.empty()) {
     return std::vector<std::shared_ptr<FileScanTask>>{};
@@ -902,7 +904,8 @@ IncrementalChangelogScan::PlanFiles(std::optional<int64_t> from_snapshot_id_excl
   for (const auto& snapshot : changelog_snapshots) {
     ICEBERG_ASSIGN_OR_RAISE(auto manifests, snapshot.second->DataManifests(io_));
     for (auto& manifest : manifests) {
-      if (snapshot_ids.contains(manifest.added_snapshot_id) &&
+      if (manifest.added_snapshot_id.has_value() &&
+          snapshot_ids.contains(manifest.added_snapshot_id.value()) &&
           seen_manifest_paths.insert(manifest.manifest_path).second) {
         data_manifests.push_back(manifest);
       }

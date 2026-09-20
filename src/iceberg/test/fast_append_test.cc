@@ -142,12 +142,13 @@ class FastAppendTest : public UpdateTestBase {
     return data_file;
   }
 
-  Result<ManifestFile> WriteManifest(
-      const std::string& path, const std::vector<std::shared_ptr<DataFile>>& files) {
+  Result<ManifestFile> WriteManifest(const std::string& path,
+                                     const std::vector<std::shared_ptr<DataFile>>& files,
+                                     std::optional<int64_t> snapshot_id = std::nullopt) {
     ICEBERG_ASSIGN_OR_RAISE(
-        auto writer, ManifestWriter::MakeWriter(table_->metadata()->format_version,
-                                                kInvalidSnapshotId, path, file_io_, spec_,
-                                                schema_, ManifestContent::kData));
+        auto writer,
+        ManifestWriter::MakeWriter(table_->metadata()->format_version, snapshot_id, path,
+                                   file_io_, spec_, schema_, ManifestContent::kData));
     for (const auto& file : files) {
       ManifestEntry entry;
       entry.status = ManifestStatus::kAdded;
@@ -493,6 +494,49 @@ TEST_F(FastAppendTest, RebaseCopiesAppendManifestAgain) {
               ::testing::Not(::testing::Contains(manifests[0].manifest_path)));
   EXPECT_THAT(file_io_->ReadFile(path, std::nullopt), IsOk());
   EXPECT_THAT(file_io_->ReadFile(attempt_lists[2], std::nullopt), IsOk());
+}
+
+TEST_F(FastAppendTest, AppendManifestWithSnapshotIdInheritance) {
+  const auto path = table_location_ + "/metadata/inherited.avro";
+  ICEBERG_UNWRAP_OR_FAIL(auto manifest, WriteManifest(path, {file_a_, file_b_}));
+  ASSERT_FALSE(manifest.added_snapshot_id.has_value());
+
+  ICEBERG_UNWRAP_OR_FAIL(auto append, table_->NewFastAppend());
+  append->AppendManifest(manifest);
+  EXPECT_THAT(append->Commit(), IsOk());
+
+  EXPECT_THAT(table_->Refresh(), IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(auto snapshot, table_->current_snapshot());
+  ICEBERG_UNWRAP_OR_FAIL(auto manifests, CurrentDataManifests());
+  ASSERT_THAT(manifests, ::testing::SizeIs(1));
+  EXPECT_EQ(manifests[0].manifest_path, path);
+  EXPECT_EQ(manifests[0].added_snapshot_id, snapshot->snapshot_id);
+  ICEBERG_UNWRAP_OR_FAIL(auto entries, ReadEntries(manifests[0]));
+  ASSERT_THAT(entries, ::testing::SizeIs(2));
+  EXPECT_EQ(entries[0].snapshot_id, snapshot->snapshot_id);
+  EXPECT_EQ(entries[1].snapshot_id, snapshot->snapshot_id);
+}
+
+TEST_F(FastAppendTest, AppendManifestWithExplicitInvalidSnapshotIdIsCopied) {
+  const auto path = table_location_ + "/metadata/invalid.avro";
+  ICEBERG_UNWRAP_OR_FAIL(auto manifest,
+                         WriteManifest(path, {file_a_, file_b_}, kInvalidSnapshotId));
+  ASSERT_EQ(manifest.added_snapshot_id, kInvalidSnapshotId);
+
+  ICEBERG_UNWRAP_OR_FAIL(auto append, table_->NewFastAppend());
+  append->AppendManifest(manifest);
+  EXPECT_THAT(append->Commit(), IsOk());
+
+  EXPECT_THAT(table_->Refresh(), IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(auto snapshot, table_->current_snapshot());
+  ICEBERG_UNWRAP_OR_FAIL(auto manifests, CurrentDataManifests());
+  ASSERT_THAT(manifests, ::testing::SizeIs(1));
+  EXPECT_NE(manifests[0].manifest_path, path);
+  EXPECT_EQ(manifests[0].added_snapshot_id, snapshot->snapshot_id);
+  ICEBERG_UNWRAP_OR_FAIL(auto entries, ReadEntries(manifests[0]));
+  ASSERT_THAT(entries, ::testing::SizeIs(2));
+  EXPECT_EQ(entries[0].snapshot_id, snapshot->snapshot_id);
+  EXPECT_EQ(entries[1].snapshot_id, snapshot->snapshot_id);
 }
 
 TEST_F(FastAppendTest, AppendDuplicateFile) {

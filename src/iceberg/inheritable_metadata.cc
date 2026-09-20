@@ -97,13 +97,13 @@ Result<std::unique_ptr<InheritableMetadata>> InheritableMetadataFactory::Empty()
 Result<std::unique_ptr<InheritableMetadata>> InheritableMetadataFactory::FromManifest(
     const ManifestFile& manifest) {
   // Validate that the manifest has a snapshot ID assigned
-  if (manifest.added_snapshot_id == kInvalidSnapshotId) {
+  if (!manifest.added_snapshot_id.has_value()) {
     return InvalidManifest("Manifest file {} has no snapshot ID", manifest.manifest_path);
   }
 
   return std::make_unique<BaseInheritableMetadata>(
-      manifest.partition_spec_id, manifest.added_snapshot_id, manifest.sequence_number,
-      manifest.manifest_path);
+      manifest.partition_spec_id, manifest.added_snapshot_id.value(),
+      manifest.sequence_number, manifest.manifest_path);
 }
 
 Result<std::unique_ptr<InheritableMetadata>> InheritableMetadataFactory::ForCopy(
