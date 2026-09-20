@@ -39,6 +39,14 @@
 
 namespace iceberg {
 
+class MetadataCache;
+
+namespace internal {
+class SnapshotCacheData;
+ICEBERG_EXPORT std::shared_ptr<SnapshotCacheData> MakeSnapshotCacheData(
+    std::shared_ptr<MetadataCache> metadata_cache);
+}  // namespace internal
+
 /// \brief The type of snapshot reference
 enum class SnapshotRefType {
   /// Branches are mutable named references that can be updated by committing a new
@@ -464,7 +472,9 @@ struct ICEBERG_EXPORT Snapshot {
 
 /// \brief A snapshot with cached manifest loading capabilities.
 ///
-/// This class wraps a Snapshot pointer and provides lazy-loading of manifests.
+/// This class wraps a Snapshot pointer and provides lazy-loading of manifests. Parsed
+/// manifest-list entries are stored in FileIO-owned internal state so separate wrappers
+/// and scans reuse them without changing Snapshot's public layout.
 class ICEBERG_EXPORT SnapshotCache {
  public:
   explicit SnapshotCache(const Snapshot* snapshot) : snapshot_(snapshot) {}
@@ -477,19 +487,21 @@ class ICEBERG_EXPORT SnapshotCache {
   ///
   /// \param file_io The FileIO instance to use for reading the manifest list
   /// \return A span of ManifestFile instances, or an error
-  Result<std::span<ManifestFile>> Manifests(std::shared_ptr<FileIO> file_io) const;
+  Result<std::span<const ManifestFile>> Manifests(std::shared_ptr<FileIO> file_io) const;
 
   /// \brief Returns a ManifestFile for each data manifest in this snapshot.
   ///
   /// \param file_io The FileIO instance to use for reading the manifest list
   /// \return A span of ManifestFile instances, or an error
-  Result<std::span<ManifestFile>> DataManifests(std::shared_ptr<FileIO> file_io) const;
+  Result<std::span<const ManifestFile>> DataManifests(
+      std::shared_ptr<FileIO> file_io) const;
 
   /// \brief Returns a ManifestFile for each delete manifest in this snapshot.
   ///
   /// \param file_io The FileIO instance to use for reading the manifest list
   /// \return A span of ManifestFile instances, or an error
-  Result<std::span<ManifestFile>> DeleteManifests(std::shared_ptr<FileIO> file_io) const;
+  Result<std::span<const ManifestFile>> DeleteManifests(
+      std::shared_ptr<FileIO> file_io) const;
 
  private:
   /// \brief Cache structure for storing loaded manifests
@@ -502,14 +514,19 @@ class ICEBERG_EXPORT SnapshotCache {
   /// \param snapshot The snapshot to initialize the manifests cache for
   /// \param file_io The FileIO instance to use for reading the manifest list
   /// \return A result containing the manifests cache
-  static Result<ManifestsCache> InitManifestsCache(const Snapshot* snapshot,
+  static Result<std::shared_ptr<const ManifestsCache>> InitManifestsCache(
+      const Snapshot* snapshot, std::shared_ptr<FileIO> file_io);
+
+  static Result<ManifestsCache> LoadManifestsCache(const Snapshot* snapshot,
                                                    std::shared_ptr<FileIO> file_io);
 
   /// The underlying snapshot data
   const Snapshot* snapshot_;
 
-  /// Lazy-loaded manifests cache
+  /// Keep the selected shared cache entry alive while spans from this object are used.
   Lazy<InitManifestsCache> manifests_cache_;
+
+  friend class internal::SnapshotCacheData;
 };
 
 }  // namespace iceberg
