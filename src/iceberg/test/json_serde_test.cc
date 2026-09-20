@@ -1200,7 +1200,9 @@ TEST_F(FileScanTaskJsonTest, RejectsSplitTasksUsingExactOrCondition) {
     bool supported;
   };
   for (const auto& test_case :
-       {Case{0, 10, true}, Case{1, 10, false}, Case{0, 9, false}}) {
+       {Case{.start = 0, .length = 10, .supported = true},
+        Case{.start = 1, .length = 10, .supported = false},
+        Case{.start = 0, .length = 9, .supported = false}}) {
     SCOPED_TRACE(testing::Message()
                  << "start=" << test_case.start << ", length=" << test_case.length);
     auto json = JavaGolden();
