@@ -1014,7 +1014,7 @@ struct default_ctor_base<T, E, false> {
 /// tracked by the expected object.
 
 template <class T, class E>
-class ICEBERG_EXPORT [[nodiscard]] expected
+class ICEBERG_TEMPLATE_CLASS_EXPORT [[nodiscard]] expected
     : private expected_detail::move_assign_base<T, E>,
       private expected_detail::default_ctor_base<T, E> {
   static_assert(expected_detail::is_value_type_valid_v<T>);
