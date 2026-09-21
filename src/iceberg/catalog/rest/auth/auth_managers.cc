@@ -23,6 +23,7 @@
 
 #include "iceberg/catalog/rest/auth/auth_manager_internal.h"
 #include "iceberg/catalog/rest/auth/auth_properties.h"
+#include "iceberg/util/property_util.h"
 #include "iceberg/util/string_util.h"
 
 namespace iceberg::rest::auth {
@@ -47,8 +48,8 @@ const std::unordered_set<std::string, StringHash, StringEqual>& KnownAuthTypes()
 std::string InferAuthType(
     const std::unordered_map<std::string, std::string>& properties) {
   // Deprecated alias: rest.sigv4-enabled=true forces SigV4.
-  if (auto it = properties.find(AuthProperties::kSigV4Enabled);
-      it != properties.end() && StringUtils::EqualsIgnoreCase(it->second, "true")) {
+  if (PropertyUtil::PropertyAsBoolean(properties, AuthProperties::kSigV4Enabled,
+                                      /*default_value=*/false)) {
     return AuthProperties::kAuthTypeSigV4;
   }
 

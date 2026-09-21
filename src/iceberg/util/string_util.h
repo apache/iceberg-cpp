@@ -168,6 +168,15 @@ class ICEBERG_EXPORT StringUtils {
     return value;
   }
 
+  /// \brief Parse a boolean from its string representation, ignoring case.
+  ///
+  /// Mirrors Iceberg Java's Boolean.parseBoolean, which every boolean property in the
+  /// Java implementation is read through: "true" in any case reads as true, and every
+  /// other value reads as false, including "yes", "1" and typos such as "ture". Parsing
+  /// therefore cannot fail, so a caller that wants to reject a malformed value has to
+  /// check for it separately.
+  static bool ParseBoolean(std::string_view str) { return EqualsIgnoreCase(str, "true"); }
+
  private:
   // ASCII-only case mappings. These avoid std::toupper/std::tolower, which are
   // locale-dependent and have undefined behavior for negative char values.

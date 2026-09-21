@@ -20,6 +20,7 @@
 #include "iceberg/util/property_util.h"
 
 #include <cstdint>
+#include <string>
 
 #include "iceberg/table_properties.h"
 #include "iceberg/util/string_util.h"
@@ -44,6 +45,22 @@ Status PropertyUtil::ValidateCommitProperties(
     }
   }
   return {};
+}
+
+bool PropertyUtil::PropertyAsBoolean(
+    const std::unordered_map<std::string, std::string>& properties, std::string_view key,
+    bool default_value) {
+  return PropertyAsOptionalBoolean(properties, key).value_or(default_value);
+}
+
+std::optional<bool> PropertyUtil::PropertyAsOptionalBoolean(
+    const std::unordered_map<std::string, std::string>& properties,
+    std::string_view key) {
+  auto it = properties.find(std::string(key));
+  if (it == properties.end()) {
+    return std::nullopt;
+  }
+  return StringUtils::ParseBoolean(it->second);
 }
 
 }  // namespace iceberg

@@ -37,6 +37,7 @@
 #include "iceberg/arrow/s3/s3_properties.h"
 #include "iceberg/logging/log_macros.h"
 #include "iceberg/util/macros.h"
+#include "iceberg/util/property_util.h"
 #include "iceberg/util/string_util.h"
 
 namespace iceberg::arrow {
@@ -50,22 +51,6 @@ const std::string* FindProperty(
     std::string_view key) {
   auto it = properties.find(std::string(key));
   return it == properties.end() ? nullptr : &it->second;
-}
-
-Result<std::optional<bool>> ParseOptionalBool(
-    const std::unordered_map<std::string, std::string>& properties,
-    std::string_view key) {
-  const auto* value = FindProperty(properties, key);
-  if (value == nullptr) {
-    return std::nullopt;
-  }
-  if (StringUtils::EqualsIgnoreCase(*value, "true")) {
-    return true;
-  }
-  if (StringUtils::EqualsIgnoreCase(*value, "false")) {
-    return false;
-  }
-  return InvalidArgument(R"("{}" must be "true" or "false")", key);
 }
 
 Status EnsureS3Initialized() {
@@ -136,15 +121,17 @@ Result<::arrow::fs::S3Options> ConfigureS3Options(
     options.endpoint_override = SplitEndpointScheme(endpoint_env, options);
   }
 
-  ICEBERG_ASSIGN_OR_RAISE(const auto path_style_access,
-                          ParseOptionalBool(properties, S3Properties::kPathStyleAccess));
+  // Both boolean properties below read through PropertyUtil, so a value that does not
+  // spell a boolean reads as false instead of failing the build, as in Java.
+  const auto path_style_access =
+      PropertyUtil::PropertyAsOptionalBoolean(properties, S3Properties::kPathStyleAccess);
   if (path_style_access.has_value()) {
     options.force_virtual_addressing = !*path_style_access;
   }
 
   // Explicit `s3.ssl.enabled` overrides any endpoint-derived scheme.
-  ICEBERG_ASSIGN_OR_RAISE(const auto ssl_enabled,
-                          ParseOptionalBool(properties, S3Properties::kSslEnabled));
+  const auto ssl_enabled =
+      PropertyUtil::PropertyAsOptionalBoolean(properties, S3Properties::kSslEnabled);
   if (ssl_enabled.has_value()) {
     options.scheme = *ssl_enabled ? "https" : "http";
   }

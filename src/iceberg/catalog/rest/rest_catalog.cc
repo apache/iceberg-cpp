@@ -523,7 +523,7 @@ Result<std::shared_ptr<MetricsReporter>> RestCatalog::MakeTableReporter(
     const TableIdentifier& identifier,
     const std::shared_ptr<auth::AuthSession>& table_session) const {
   auto metrics_enabled = config_.Get(RestCatalogProperties::kMetricsReportingEnabled);
-  if (StringUtils::ToLower(metrics_enabled) == "true" &&
+  if (StringUtils::ParseBoolean(metrics_enabled) &&
       supported_endpoints_.contains(Endpoint::ReportMetrics())) {
     ICEBERG_ASSIGN_OR_RAISE(auto path, paths_->Metrics(identifier));
     auto post = [client = client_](const std::string& endpoint, const std::string& body,

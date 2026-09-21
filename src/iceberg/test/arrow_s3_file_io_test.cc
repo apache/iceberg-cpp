@@ -245,12 +245,6 @@ TEST_F(ArrowS3FileIOTest, RejectsIncompleteStaticCredentials) {
                           "S3 client access key ID and secret access key must be set"));
 }
 
-TEST_F(ArrowS3FileIOTest, RejectsInvalidBooleanProperties) {
-  auto result =
-      MakeS3FileIO({{std::string(S3Properties::kPathStyleAccess), "not-a-bool"}});
-  EXPECT_THAT(result, IsError(ErrorKind::kInvalidArgument));
-}
-
 TEST_F(ArrowS3FileIOTest, ReadWrite) {
   if (!HasIntegrationEnv()) {
     GTEST_SKIP() << "Set ICEBERG_TEST_S3_URI to enable S3 IO test";
@@ -399,6 +393,13 @@ TEST_F(ArrowS3FileIOTest, PathStyleAccess) {
       ConfigureS3Options({{std::string(S3Properties::kPathStyleAccess), "TrUe"}});
   ASSERT_THAT(path_style, IsOk());
   EXPECT_FALSE(path_style->force_virtual_addressing);
+}
+
+TEST_F(ArrowS3FileIOTest, InvalidBooleanPropertyReadsAsFalse) {
+  auto options =
+      ConfigureS3Options({{std::string(S3Properties::kPathStyleAccess), "not-a-bool"}});
+  ASSERT_THAT(options, IsOk());
+  EXPECT_TRUE(options->force_virtual_addressing);
 }
 
 TEST_F(ArrowS3FileIOTest, Timeouts) {

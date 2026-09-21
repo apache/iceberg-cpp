@@ -32,6 +32,16 @@ TEST(StringUtilsTest, ToLower) {
   ASSERT_EQ(StringUtils::ToLower("123"), "123");
 }
 
+TEST(StringUtilsTest, ParseBoolean) {
+  for (const auto* value : {"true", "TRUE", "TrUe"}) {
+    EXPECT_TRUE(StringUtils::ParseBoolean(value)) << value;
+  }
+  for (const auto* value :
+       {"false", "FALSE", "FaLsE", "", " true", "true ", "yes", "1", "ture"}) {
+    EXPECT_FALSE(StringUtils::ParseBoolean(value)) << value;
+  }
+}
+
 TEST(StringUtilsTest, ToUpper) {
   ASSERT_EQ(StringUtils::ToUpper("abc"), "ABC");
   ASSERT_EQ(StringUtils::ToUpper("A-bC"), "A-BC");
