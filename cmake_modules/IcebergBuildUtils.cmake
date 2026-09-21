@@ -21,7 +21,7 @@
 include(CMakePackageConfigHelpers)
 
 function(iceberg_configure_version_header INPUT_FILE OUTPUT_FILE)
-  set(ICEBERG_VERSION_SUFFIX "-SNAPSHOT")
+  set(ICEBERG_VERSION_SUFFIX "")
   set(ICEBERG_VERSION_STRING "${PROJECT_VERSION}${ICEBERG_VERSION_SUFFIX}")
   set(ICEBERG_GIT_COMMIT_ID "unknown")
 
