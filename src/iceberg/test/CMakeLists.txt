@@ -216,6 +216,7 @@ if(ICEBERG_BUILD_BUNDLE)
                    SOURCES
                    metrics_test_base.cc
                    parquet_data_test.cc
+                   parquet_row_group_filter_test.cc
                    parquet_metrics_test.cc
                    parquet_schema_test.cc
                    parquet_test.cc)
