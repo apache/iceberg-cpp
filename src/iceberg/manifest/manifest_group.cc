@@ -386,6 +386,8 @@ class ManifestGroup::FilePlanningStream final : public FileScanTaskStream {
     const size_t batch_size = group_->executor_.has_value() ? kManifestReadBatchSize : 1;
     std::vector<const ManifestFile*> manifests;
     manifests.reserve(batch_size);
+    // Skipped manifests do not count toward the batch size. Keep scanning until enough
+    // readable manifests are collected or all input is exhausted.
     while (next_manifest_ < group_->data_manifests_.size() &&
            manifests.size() < batch_size) {
       const auto& manifest = group_->data_manifests_[next_manifest_++];
