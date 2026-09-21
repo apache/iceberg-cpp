@@ -43,6 +43,27 @@ Status FinishWithCloseStatus(Status operation_status, Status close_status) {
   return close_status;
 }
 
+bool IsCompatibleCacheConfiguration(
+    const MetadataCacheOptions& configured, const MetadataCacheOptions& requested,
+    const std::unordered_map<std::string, std::string>& properties) {
+  if (configured.enabled != requested.enabled) {
+    return false;
+  }
+  if (properties.contains(std::string(MetadataCacheOptions::kExpirationIntervalMs)) &&
+      configured.expiration_interval_ms != requested.expiration_interval_ms) {
+    return false;
+  }
+  if (properties.contains(std::string(MetadataCacheOptions::kMaxTotalBytes)) &&
+      configured.max_total_bytes != requested.max_total_bytes) {
+    return false;
+  }
+  if (properties.contains(std::string(MetadataCacheOptions::kMaxContentLength)) &&
+      configured.max_content_length != requested.max_content_length) {
+    return false;
+  }
+  return true;
+}
+
 Result<std::string> ReadInputFile(InputFile& input_file, int64_t read_size,
                                   std::string_view file_location) {
   if (read_size < 0) {
@@ -146,9 +167,20 @@ class CachedInputFile : public InputFile {
                       return std::make_shared<const std::string>(std::move(loaded));
                     });
     if (!content.has_value()) {
+      auto cache_error = std::move(content).error();
+      if (cache_error.kind != ErrorKind::kIOError) {
+        return std::unexpected<Error>(std::move(cache_error));
+      }
+
       // Cache loading is an optimization. Match Java's ContentCache by falling back to
-      // the underlying input when a read-ahead attempt fails.
-      return input_file_->Open();
+      // the underlying input when an I/O read-ahead attempt fails.
+      auto fallback = input_file_->Open();
+      if (!fallback.has_value()) {
+        cache_error.message += "; fallback open failed: ";
+        cache_error.message += fallback.error().message;
+        return std::unexpected<Error>(std::move(cache_error));
+      }
+      return fallback;
     }
     return std::make_unique<CachedSeekableInputStream>(std::move(content).value());
   }
@@ -229,22 +261,6 @@ Result<std::unique_ptr<InputFile>> FileIO::NewCachedInputFile(
   return std::make_unique<CachedInputFile>(std::move(input_file), std::move(cache), size);
 }
 
-Result<std::string> FileIO::ReadFileCached(const std::string& file_location,
-                                           std::optional<size_t> length) {
-  auto cache = GetMetadataCache();
-  if (cache == nullptr || !cache->options().enabled) {
-    return ReadFile(file_location, length);
-  }
-  ICEBERG_ASSIGN_OR_RAISE(
-      auto content,
-      cache->Get(file_location, length,
-                 [this, &file_location, length]() -> Result<MetadataCache::Content> {
-                   ICEBERG_ASSIGN_OR_RAISE(auto loaded, ReadFile(file_location, length));
-                   return std::make_shared<const std::string>(std::move(loaded));
-                 }));
-  return *content;
-}
-
 Status FileIO::ConfigureMetadataCache(
     const std::unordered_map<std::string, std::string>& properties) {
   ICEBERG_ASSIGN_OR_RAISE(auto options, MetadataCacheOptions::FromProperties(properties));
@@ -254,7 +270,8 @@ Status FileIO::ConfigureMetadataCache(
     metadata_cache_state_->cache = std::move(cache);
     return {};
   }
-  if (metadata_cache_state_->cache->options() == options) {
+  if (IsCompatibleCacheConfiguration(metadata_cache_state_->cache->options(), options,
+                                     properties)) {
     return {};
   }
   return InvalidArgument("Metadata cache is already configured with different options");

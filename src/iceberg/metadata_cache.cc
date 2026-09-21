@@ -69,10 +69,6 @@ Result<MetadataCacheOptions> MetadataCacheOptions::FromProperties(
     ICEBERG_ASSIGN_OR_RAISE(options.enabled, ParseBoolean(kEnabled, it->second));
   }
 
-  if (!options.enabled) {
-    return options;
-  }
-
   ICEBERG_ASSIGN_OR_RAISE(options.expiration_interval_ms,
                           ParseNumberProperty(properties, kExpirationIntervalMs,
                                               options.expiration_interval_ms));
@@ -232,50 +228,76 @@ Result<MetadataCache::Content> MetadataCache::Get(std::string location,
     }
   }
 
-  auto loaded = loader();
-  if (loaded.has_value() && loaded.value() == nullptr) {
-    loaded = Invalid("Metadata cache loader returned null content for {}", location);
-  }
-  std::unique_lock lock(impl_->mutex_);
-  auto it = impl_->entries_.find(location);
-  if (it == impl_->entries_.end() || it->second != entry) {
-    if (loaded.has_value()) {
-      entry->content = loaded.value();
-    } else {
-      entry->error = loaded.error();
+  bool added_to_lru = false;
+  bool added_to_total = false;
+  try {
+    auto loaded = loader();
+    if (loaded.has_value() && loaded.value() == nullptr) {
+      loaded = Invalid("Metadata cache loader returned null content for {}", location);
     }
-    entry->loading = false;
-    entry->loaded.notify_all();
-    return loaded;
-  }
+    std::unique_lock lock(impl_->mutex_);
+    auto it = impl_->entries_.find(location);
+    if (it == impl_->entries_.end() || it->second != entry) {
+      if (loaded.has_value()) {
+        entry->content = loaded.value();
+      } else {
+        entry->error = loaded.error();
+      }
+      entry->loading = false;
+      entry->loaded.notify_all();
+      return loaded;
+    }
 
-  if (!loaded.has_value()) {
-    impl_->entries_.erase(it);
-    entry->error = loaded.error();
-    entry->loading = false;
-    entry->loaded.notify_all();
-    return loaded;
-  }
+    if (!loaded.has_value()) {
+      impl_->entries_.erase(it);
+      entry->error = loaded.error();
+      entry->loading = false;
+      entry->loaded.notify_all();
+      return loaded;
+    }
 
-  if (loaded.value()->size() > impl_->options_.max_content_length ||
-      loaded.value()->size() > impl_->options_.max_total_bytes) {
-    impl_->entries_.erase(it);
+    if (loaded.value()->size() > impl_->options_.max_content_length ||
+        loaded.value()->size() > impl_->options_.max_total_bytes) {
+      impl_->entries_.erase(it);
+      entry->content = loaded.value();
+      entry->loading = false;
+      entry->loaded.notify_all();
+      return loaded;
+    }
+
+    impl_->PruneExpired(Impl::Clock::now());
+    impl_->EvictToFit(loaded.value()->size());
     entry->content = loaded.value();
+    entry->last_access = Impl::Clock::now();
+    impl_->lru_.push_front(location);
+    entry->lru_position = impl_->lru_.begin();
+    added_to_lru = true;
+    impl_->total_bytes_ += entry->content->size();
+    added_to_total = true;
     entry->loading = false;
     entry->loaded.notify_all();
-    return loaded;
+    return entry->content;
+  } catch (...) {
+    // Never leave an entry marked as loading when a loader or cache publication throws.
+    // Waiters will observe an empty entry, retry the lookup, and may start a new load.
+    std::unique_lock lock(impl_->mutex_);
+    auto it = impl_->entries_.find(location);
+    if (it != impl_->entries_.end() && it->second == entry) {
+      if (added_to_total) {
+        impl_->total_bytes_ -= entry->content->size();
+      }
+      if (added_to_lru) {
+        impl_->lru_.erase(entry->lru_position);
+      }
+      impl_->entries_.erase(it);
+    }
+    entry->content.reset();
+    entry->error.reset();
+    entry->loading = false;
+    lock.unlock();
+    entry->loaded.notify_all();
+    throw;
   }
-
-  impl_->PruneExpired(Impl::Clock::now());
-  impl_->EvictToFit(loaded.value()->size());
-  entry->content = loaded.value();
-  entry->last_access = Impl::Clock::now();
-  impl_->lru_.push_front(location);
-  entry->lru_position = impl_->lru_.begin();
-  entry->loading = false;
-  impl_->total_bytes_ += entry->content->size();
-  entry->loaded.notify_all();
-  return entry->content;
 }
 
 MetadataCache::Content MetadataCache::GetIfPresent(std::string_view location) {
@@ -316,18 +338,25 @@ void MetadataCache::Invalidate(std::string_view location) {
 void MetadataCache::Clear() {
   std::unique_lock lock(impl_->mutex_);
   impl_->clearing_ = true;
-  while (true) {
-    auto loading = std::ranges::find_if(
-        impl_->entries_, [](const auto& item) { return item.second->loading; });
-    if (loading == impl_->entries_.end()) {
-      break;
+  try {
+    while (true) {
+      auto loading = std::ranges::find_if(
+          impl_->entries_, [](const auto& item) { return item.second->loading; });
+      if (loading == impl_->entries_.end()) {
+        break;
+      }
+      auto entry = loading->second;
+      entry->loaded.wait(lock, [&entry] { return !entry->loading; });
     }
-    auto entry = loading->second;
-    entry->loaded.wait(lock, [&entry] { return !entry->loading; });
+    impl_->entries_.clear();
+    impl_->lru_.clear();
+    impl_->total_bytes_ = 0;
+  } catch (...) {
+    impl_->clearing_ = false;
+    lock.unlock();
+    impl_->clear_completed_.notify_all();
+    throw;
   }
-  impl_->entries_.clear();
-  impl_->lru_.clear();
-  impl_->total_bytes_ = 0;
   impl_->clearing_ = false;
   lock.unlock();
   impl_->clear_completed_.notify_all();
