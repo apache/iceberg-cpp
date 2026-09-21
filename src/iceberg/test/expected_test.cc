@@ -20,7 +20,9 @@
 #include "iceberg/expected.h"
 
 #include <functional>
+#include <memory>
 #include <type_traits>
+#include <vector>
 
 #include <gtest/gtest.h>
 
@@ -75,6 +77,13 @@ TEST(ExpectedTest, ConversionToValueWithoutDefaultConstructor) {
 
   EXPECT_FALSE((std::is_default_constructible_v<
                 iceberg::expected<std::reference_wrapper<int>, int>>));
+}
+
+TEST(ExpectedTest, SupportsMoveOnlyContainerValue) {
+  using MoveOnlyContainer = std::vector<std::unique_ptr<int>>;
+  iceberg::expected<MoveOnlyContainer, int> value{std::in_place};
+
+  EXPECT_TRUE(value.has_value());
 }
 
 namespace {
