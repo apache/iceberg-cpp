@@ -48,7 +48,7 @@ class ICEBERG_DATA_EXPORT FileScanTaskReader {
   struct Options {
     /// FileIO instance for reading data and delete files.
     std::shared_ptr<FileIO> io;
-    /// The table schema used to bind filters and resolve delete-file fields.
+    /// The table schema. Used as the primary field lookup for delete file resolution.
     std::shared_ptr<Schema> table_schema;
     /// Optional list of historical table schemas for field lookup.
     std::vector<std::shared_ptr<Schema>> schemas;

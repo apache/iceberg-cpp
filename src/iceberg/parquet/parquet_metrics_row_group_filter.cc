@@ -22,7 +22,6 @@
 
 #include <parquet/statistics.h>
 
-#include "iceberg/expression/binder.h"
 #include "iceberg/expression/expression_visitor.h"
 #include "iceberg/expression/rewrite_not.h"
 #include "iceberg/metadata_columns.h"
@@ -30,7 +29,6 @@
 #include "iceberg/parquet/parquet_metrics_internal.h"
 #include "iceberg/parquet/parquet_metrics_row_group_filter_internal.h"
 #include "iceberg/parquet/parquet_schema_util_internal.h"
-#include "iceberg/schema.h"
 #include "iceberg/type.h"
 #include "iceberg/util/macros.h"
 
@@ -39,69 +37,22 @@ namespace iceberg::parquet {
 namespace {
 
 constexpr size_t kInPredicateLimit = 200;
-
-class BindFilter : public Binder {
- public:
-  BindFilter(const Schema& schema, bool case_sensitive,
-             const ::parquet::arrow::SchemaManifest& manifest)
-      : Binder(schema, case_sensitive) {
-    for (const auto& [index, field] : manifest.column_index_to_field) {
-      const auto* column = manifest.descr->Column(index);
-      // Repeated-column counts and bounds do not describe individual rows.
-      if (column->max_repetition_level() == 0) {
-        fields_.emplace(column->schema_node()->field_id(), field);
-      }
-    }
-  }
-
-  Result<std::shared_ptr<Expression>> Predicate(
-      const std::shared_ptr<UnboundPredicate>& pred) override {
-    auto bound = Binder::Predicate(pred);
-    // Direct format readers may only supply a projection, not the complete schema.
-    if (!bound) {
-      return True::Instance();
-    }
-    return Visit<std::shared_ptr<Expression>>(*bound, *this);
-  }
-
-  Result<std::shared_ptr<Expression>> Predicate(
-      const std::shared_ptr<BoundPredicate>& pred) override {
-    auto ref = std::dynamic_pointer_cast<BoundReference>(pred->term());
-    if (!ref || !ref->type()->is_primitive() ||
-        MetadataColumns::IsMetadataColumn(ref->field_id()) ||
-        MetadataColumns::IsRowLineageColumn(ref->field_id())) {
-      return True::Instance();
-    }
-    auto field = fields_.find(ref->field_id());
-    if (field == fields_.end() ||
-        !ValidateParquetTypeCompatibility(*ref->type(), *field->second)) {
-      return True::Instance();
-    }
-    return pred;
-  }
-
- private:
-  std::unordered_map<int32_t, const ::parquet::arrow::SchemaField*> fields_;
-};
+// True means a matching row may exist; false means the group can be skipped.
+constexpr bool kRowsMightMatch = true;
+constexpr bool kRowsCannotMatch = false;
 
 class MetricsVisitor : public BoundVisitor<bool> {
  public:
-  MetricsVisitor(const ::parquet::SchemaDescriptor& schema,
-                 const ::parquet::RowGroupMetaData& row_group)
-      : schema_(schema), row_group_(row_group) {
-    for (int i = 0; i < schema.num_columns(); ++i) {
-      auto id = schema.Column(i)->schema_node()->field_id();
-      if (id >= 0) {
-        columns_.emplace(id, i);
-      }
-    }
-  }
+  MetricsVisitor(const ::parquet::arrow::SchemaManifest& manifest,
+                 const ::parquet::RowGroupMetaData& row_group,
+                 const std::unordered_map<int32_t, int>& column_indices)
+      : manifest_(manifest), row_group_(row_group), column_indices_(column_indices) {}
 
-  Result<bool> AlwaysTrue() override { return true; }
+  Result<bool> AlwaysTrue() override { return kRowsMightMatch; }
 
-  Result<bool> AlwaysFalse() override { return false; }
+  Result<bool> AlwaysFalse() override { return kRowsCannotMatch; }
 
-  Result<bool> Not(bool) override { return true; }
+  Result<bool> Not(bool) override { return kRowsMightMatch; }
 
   Result<bool> And(bool left, bool right) override { return left && right; }
 
@@ -119,15 +70,15 @@ class MetricsVisitor : public BoundVisitor<bool> {
     return !ContainsNullsOnly(GetMetrics(expr, false));
   }
 
-  Result<bool> NotNaN(const std::shared_ptr<Bound>&) override { return true; }
+  Result<bool> NotNaN(const std::shared_ptr<Bound>&) override { return kRowsMightMatch; }
 
   Result<bool> Lt(const std::shared_ptr<Bound>& expr, const Literal& value) override {
     const auto metrics = GetMetrics(expr);
     if (ContainsNullsOnly(metrics)) {
-      return false;
+      return kRowsCannotMatch;
     }
     if (!metrics.lower_bound || !ComparableLiteral(value)) {
-      return true;
+      return kRowsMightMatch;
     }
     return !(*metrics.lower_bound >= value);
   }
@@ -135,10 +86,10 @@ class MetricsVisitor : public BoundVisitor<bool> {
   Result<bool> LtEq(const std::shared_ptr<Bound>& expr, const Literal& value) override {
     const auto metrics = GetMetrics(expr);
     if (ContainsNullsOnly(metrics)) {
-      return false;
+      return kRowsCannotMatch;
     }
     if (!metrics.lower_bound || !ComparableLiteral(value)) {
-      return true;
+      return kRowsMightMatch;
     }
     return !(*metrics.lower_bound > value);
   }
@@ -146,10 +97,10 @@ class MetricsVisitor : public BoundVisitor<bool> {
   Result<bool> Gt(const std::shared_ptr<Bound>& expr, const Literal& value) override {
     const auto metrics = GetMetrics(expr);
     if (ContainsNullsOnly(metrics)) {
-      return false;
+      return kRowsCannotMatch;
     }
     if (!metrics.upper_bound || !ComparableLiteral(value)) {
-      return true;
+      return kRowsMightMatch;
     }
     return !(*metrics.upper_bound <= value);
   }
@@ -157,10 +108,10 @@ class MetricsVisitor : public BoundVisitor<bool> {
   Result<bool> GtEq(const std::shared_ptr<Bound>& expr, const Literal& value) override {
     const auto metrics = GetMetrics(expr);
     if (ContainsNullsOnly(metrics)) {
-      return false;
+      return kRowsCannotMatch;
     }
     if (!metrics.upper_bound || !ComparableLiteral(value)) {
-      return true;
+      return kRowsMightMatch;
     }
     return !(*metrics.upper_bound < value);
   }
@@ -168,52 +119,52 @@ class MetricsVisitor : public BoundVisitor<bool> {
   Result<bool> Eq(const std::shared_ptr<Bound>& expr, const Literal& value) override {
     const auto metrics = GetMetrics(expr);
     if (ContainsNullsOnly(metrics)) {
-      return false;
+      return kRowsCannotMatch;
     }
     if (!metrics.lower_bound || !metrics.upper_bound || !ComparableLiteral(value)) {
-      return true;
+      return kRowsMightMatch;
     }
     return !(*metrics.lower_bound > value || *metrics.upper_bound < value);
   }
 
   Result<bool> NotEq(const std::shared_ptr<Bound>&, const Literal&) override {
     // Like Java, keep negative membership predicates inclusive.
-    return true;
+    return kRowsMightMatch;
   }
 
   Result<bool> In(const std::shared_ptr<Bound>& expr,
                   const BoundSetPredicate::LiteralSet& values) override {
     const auto metrics = GetMetrics(expr);
     if (ContainsNullsOnly(metrics)) {
-      return false;
+      return kRowsCannotMatch;
     }
     if (!metrics.lower_bound || !metrics.upper_bound ||
         values.size() > kInPredicateLimit) {
-      return true;
+      return kRowsMightMatch;
     }
     for (const auto& value : values) {
       if (!ComparableLiteral(value) ||
           !(value < *metrics.lower_bound || value > *metrics.upper_bound)) {
-        return true;
+        return kRowsMightMatch;
       }
     }
-    return false;
+    return kRowsCannotMatch;
   }
 
   Result<bool> NotIn(const std::shared_ptr<Bound>&,
                      const BoundSetPredicate::LiteralSet&) override {
-    return true;
+    return kRowsMightMatch;
   }
 
   Result<bool> StartsWith(const std::shared_ptr<Bound>& expr,
                           const Literal& value) override {
     const auto metrics = GetMetrics(expr);
     if (ContainsNullsOnly(metrics)) {
-      return false;
+      return kRowsCannotMatch;
     }
     if (!metrics.lower_bound || !metrics.upper_bound || !ComparableLiteral(value) ||
         metrics.lower_bound->type()->type_id() != TypeId::kString) {
-      return true;
+      return kRowsMightMatch;
     }
     const auto& prefix = std::get<std::string>(value.value());
     const auto& lower = std::get<std::string>(metrics.lower_bound->value());
@@ -228,7 +179,7 @@ class MetricsVisitor : public BoundVisitor<bool> {
     if (MayContainNull(metrics) || !metrics.lower_bound || !metrics.upper_bound ||
         !ComparableLiteral(value) ||
         metrics.lower_bound->type()->type_id() != TypeId::kString) {
-      return true;
+      return kRowsMightMatch;
     }
     const auto& prefix = std::get<std::string>(value.value());
     const auto& lower = std::get<std::string>(metrics.lower_bound->value());
@@ -255,16 +206,25 @@ class MetricsVisitor : public BoundVisitor<bool> {
                           bool read_bounds = true) const {
     FieldMetrics metrics;
     auto ref = std::dynamic_pointer_cast<BoundReference>(expr);
-    if (!ref) {
+    if (!ref || !ref->type()->is_primitive() ||
+        MetadataColumns::IsMetadataColumn(ref->field_id()) ||
+        MetadataColumns::IsRowLineageColumn(ref->field_id())) {
       return metrics;
     }
     metrics.field_id = ref->field_id();
-    auto column = columns_.find(ref->field_id());
+    auto column = column_indices_.find(ref->field_id());
     // Missing columns can have initial defaults, so do not assume all nulls.
-    if (column == columns_.end()) {
+    if (column == column_indices_.end()) {
       return metrics;
     }
-    const auto& descriptor = *schema_.Column(column->second);
+    const auto& descriptor = *manifest_.descr->Column(column->second);
+    auto field = manifest_.column_index_to_field.find(column->second);
+    // Repeated-column statistics describe elements rather than rows.
+    if (descriptor.max_repetition_level() != 0 ||
+        field == manifest_.column_index_to_field.end() ||
+        !ValidateParquetTypeCompatibility(*ref->type(), *field->second)) {
+      return metrics;
+    }
     const auto& type = static_cast<const PrimitiveType&>(*ref->type());
     auto chunk = row_group_.ColumnChunk(column->second);
     auto stats = chunk->statistics();
@@ -313,42 +273,44 @@ class MetricsVisitor : public BoundVisitor<bool> {
     return metrics;
   }
 
-  const ::parquet::SchemaDescriptor& schema_;
+  const ::parquet::arrow::SchemaManifest& manifest_;
   const ::parquet::RowGroupMetaData& row_group_;
-  std::unordered_map<int32_t, int> columns_;
+  const std::unordered_map<int32_t, int>& column_indices_;
 };
 
 }  // namespace
 
 Result<std::unique_ptr<ParquetMetricsRowGroupFilter>> ParquetMetricsRowGroupFilter::Make(
-    const Schema& schema, const std::shared_ptr<Expression>& filter,
-    const ::parquet::arrow::SchemaManifest& manifest, bool case_sensitive) {
+    const std::shared_ptr<Expression>& filter,
+    const ::parquet::SchemaDescriptor& file_schema) {
   auto result =
       std::unique_ptr<ParquetMetricsRowGroupFilter>(new ParquetMetricsRowGroupFilter());
+  for (int i = 0; i < file_schema.num_columns(); ++i) {
+    auto id = file_schema.Column(i)->schema_node()->field_id();
+    if (id >= 0) {
+      result->column_indices_.emplace(id, i);
+    }
+  }
   result->bound_ = True::Instance();
   if (!filter) {
     return result;
   }
-  // Eliminate NOT before unsupported predicates are weakened to true.
-  ICEBERG_ASSIGN_OR_RAISE(auto rewritten, RewriteNot::Visit(filter));
-  BindFilter binder(schema, case_sensitive, manifest);
-  ICEBERG_ASSIGN_OR_RAISE(result->bound_,
-                          Visit<std::shared_ptr<Expression>>(rewritten, binder));
+  ICEBERG_ASSIGN_OR_RAISE(result->bound_, RewriteNot::Visit(filter));
   return result;
 }
 
 Result<bool> ParquetMetricsRowGroupFilter::ShouldRead(
-    const ::parquet::SchemaDescriptor& file_schema,
+    const ::parquet::arrow::SchemaManifest& manifest,
     const ::parquet::RowGroupMetaData& row_group) const {
   if (row_group.num_rows() <= 0) {
-    return false;
+    return kRowsCannotMatch;
   }
   try {
-    MetricsVisitor visitor(file_schema, row_group);
+    MetricsVisitor visitor(manifest, row_group, column_indices_);
     return Visit<bool>(bound_, visitor);
   } catch (const ::parquet::ParquetException&) {
     // Unusable optional statistics must never turn into false negatives.
-    return true;
+    return kRowsMightMatch;
   }
 }
 

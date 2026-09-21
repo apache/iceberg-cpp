@@ -237,16 +237,30 @@ TEST_F(ParquetRowGroupFilterTest, RenameBoundPredicateAndCaseSensitivity) {
   Check(options, {4, 5});
 }
 
+TEST_F(ParquetRowGroupFilterTest, OpenBindsUnboundProjectedReferences) {
+  ASSERT_THAT(Write(), IsOk());
+  auto options = Options(nullptr);
+  options.filter = Expressions::GreaterThanOrEqual("VALUE", Literal::Long(4));
+  EXPECT_THAT(ReaderFactoryRegistry::Open(FileFormatType::kParquet, options),
+              HasErrorMessage("Cannot find field 'VALUE'"));
+  options.properties.Set(ReaderProperties::kFilterCaseSensitive, false);
+  Check(options, {4, 5});
+}
+
 TEST_F(ParquetRowGroupFilterTest, MissingStatsUnknownFieldsAndTypePromotion) {
   ASSERT_THAT(Write(false), IsOk());
   Check(Options(Expressions::Equal("key", Literal::Int(100))), {0, 1, 2, 3, 4, 5});
   Check(Options(Expressions::IsNull("key")), {0, 1, 2, 3, 4, 5});
   Check(Options(Expressions::NotNull("key")), {0, 1, 2, 3, 4, 5});
   ASSERT_THAT(Write(), IsOk());
-  Check(Options(Expressions::Equal("missing", Literal::Int(0))), {0, 1, 2, 3, 4, 5});
+  EXPECT_THAT(ReaderFactoryRegistry::Open(
+                  FileFormatType::kParquet,
+                  Options(Expressions::Equal("missing", Literal::Int(0)))),
+              HasErrorMessage("Cannot find field 'missing'"));
   auto options = Options(Expressions::Equal("key", Literal::Int(0)));
   options.filter = Expressions::Equal("key", Literal::Int(0));
-  Check(options, {0, 1, 2, 3, 4, 5});
+  EXPECT_THAT(ReaderFactoryRegistry::Open(FileFormatType::kParquet, options),
+              HasErrorMessage("Cannot find field 'key'"));
   schema_ = std::make_shared<Schema>(std::vector<SchemaField>{
       SchemaField::MakeOptional(1, "key", int64()), schema_->fields()[1],
       SchemaField::MakeOptional(3, "defaulted", int32())
@@ -307,17 +321,16 @@ TEST_F(ParquetRowGroupFilterTest, NullNegativeAndUnsupportedBooleanBranches) {
   Check(Options(Expressions::IsNull("key")), {0, 1});
   Check(Options(Expressions::NotNull("key")), {2, 3, 4, 5});
   Check(Options(Expressions::NotEqual("key", Literal::Int(10))), {0, 1, 2, 3, 4, 5});
-  auto unsupported = Expressions::Equal("missing", Literal::Int(0));
-  ICEBERG_UNWRAP_OR_FAIL(
-      auto supported,
-      Binder::Bind(*schema_, Expressions::Equal("key", Literal::Int(20)), true));
+  auto unsupported =
+      Expressions::Equal<BoundTransform>(Expressions::Bucket("key", 16), Literal::Int(0));
+  auto supported = Expressions::Equal("key", Literal::Int(20));
   Check(Options(Expressions::And(supported, unsupported)), {4, 5});
   Check(Options(Expressions::Or(supported, unsupported)), {0, 1, 2, 3, 4, 5});
   Check(Options(Expressions::Not(unsupported)), {0, 1, 2, 3, 4, 5});
   Check(Options(Expressions::Not(supported)), {0, 1, 2, 3, 4, 5});
 }
 
-TEST_F(ParquetRowGroupFilterTest, RewriteNotBeforeBinding) {
+TEST_F(ParquetRowGroupFilterTest, RewriteNotForBoundPredicates) {
   ASSERT_THAT(Write(), IsOk());
   auto less_than = Expressions::LessThan("key", Literal::Int(10));
   auto greater_than = Expressions::GreaterThan("key", Literal::Int(11));
@@ -335,10 +348,12 @@ TEST_F(ParquetRowGroupFilterTest, RewriteNotBeforeBinding) {
   ICEBERG_UNWRAP_OR_FAIL(auto bound, Binder::Bind(*schema_, less_than, true));
   Check(Options(Expressions::Not(bound)), {2, 3, 4, 5});
 
-  // Rewrite first: weakening an unknown predicate before NOT could discard rows.
-  auto unknown = Expressions::Equal("missing", Literal::Int(0));
-  Check(Options(Expressions::Not(Expressions::Or(bound, unknown))), {2, 3, 4, 5});
-  Check(Options(Expressions::Not(Expressions::And(bound, unknown))), {0, 1, 2, 3, 4, 5});
+  // Unsupported transforms must remain conservative under rewritten NOTs.
+  auto unsupported =
+      Expressions::Equal<BoundTransform>(Expressions::Bucket("key", 16), Literal::Int(0));
+  Check(Options(Expressions::Not(Expressions::Or(less_than, unsupported))), {2, 3, 4, 5});
+  Check(Options(Expressions::Not(Expressions::And(less_than, unsupported))),
+        {0, 1, 2, 3, 4, 5});
 
   ASSERT_THAT(Write(true, "[[null,0],[null,1],[10,2],[11,3],[20,4],[21,5]]"), IsOk());
   Check(Options(Expressions::Not(Expressions::IsNull("key"))), {2, 3, 4, 5});
@@ -532,9 +547,9 @@ TEST_F(ParquetRowGroupFilterTest, FloatingPointNullNaNAndSignedZero) {
 TEST_F(ParquetRowGroupFilterTest, InvalidFilterFailsDuringOpen) {
   ASSERT_THAT(Write(), IsOk());
   auto options = Options(Expressions::Count("key"));
-  options.filter = Expressions::Count("key");
+  options.filter = Expressions::Count("value");
   EXPECT_THAT(ReaderFactoryRegistry::Open(FileFormatType::kParquet, options),
-              HasErrorMessage("does not support unbound aggregate"));
+              HasErrorMessage("does not support bound aggregate"));
 
   ICEBERG_UNWRAP_OR_FAIL(auto bound, Binder::Bind(*schema_, options.filter, true));
   auto bound_options = Options(bound);

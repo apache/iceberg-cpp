@@ -19,7 +19,9 @@
 
 #pragma once
 
+#include <cstdint>
 #include <memory>
+#include <unordered_map>
 
 #include <parquet/arrow/schema.h>
 
@@ -35,15 +37,16 @@ namespace iceberg::parquet {
 class ICEBERG_BUNDLE_EXPORT ParquetMetricsRowGroupFilter {
  public:
   static Result<std::unique_ptr<ParquetMetricsRowGroupFilter>> Make(
-      const Schema& schema, const std::shared_ptr<Expression>& filter,
-      const ::parquet::arrow::SchemaManifest& manifest, bool case_sensitive = true);
+      const std::shared_ptr<Expression>& filter,
+      const ::parquet::SchemaDescriptor& file_schema);
 
-  Result<bool> ShouldRead(const ::parquet::SchemaDescriptor& file_schema,
+  Result<bool> ShouldRead(const ::parquet::arrow::SchemaManifest& manifest,
                           const ::parquet::RowGroupMetaData& row_group) const;
 
  private:
   ParquetMetricsRowGroupFilter() = default;
   std::shared_ptr<Expression> bound_;
+  std::unordered_map<int32_t, int> column_indices_;
 };
 
 }  // namespace iceberg::parquet

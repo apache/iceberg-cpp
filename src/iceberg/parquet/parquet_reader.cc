@@ -37,6 +37,7 @@
 #include "iceberg/arrow/arrow_io_internal.h"
 #include "iceberg/arrow/arrow_status_internal.h"
 #include "iceberg/arrow/metadata_column_util_internal.h"
+#include "iceberg/expression/binder.h"
 #include "iceberg/parquet/parquet_data_util_internal.h"
 #include "iceberg/parquet/parquet_metrics_row_group_filter_internal.h"
 #include "iceberg/parquet/parquet_register.h"
@@ -310,11 +311,19 @@ class ParquetReader::Impl {
     ICEBERG_ASSIGN_OR_RAISE(projection_, BuildProjection(reader_.get(), *read_schema_));
     if (options.filter &&
         options.properties.Get(ReaderProperties::kParquetRowGroupFilter)) {
-      ICEBERG_ASSIGN_OR_RAISE(
-          stats_filter_,
-          ParquetMetricsRowGroupFilter::Make(
-              *options.projection, options.filter, reader_->manifest(),
-              options.properties.Get(ReaderProperties::kFilterCaseSensitive)));
+      auto filter = options.filter;
+      if (filter->op() != Expression::Operation::kTrue &&
+          filter->op() != Expression::Operation::kFalse) {
+        ICEBERG_ASSIGN_OR_RAISE(auto is_bound, IsBoundVisitor::IsBound(filter));
+        if (!is_bound) {
+          ICEBERG_ASSIGN_OR_RAISE(
+              filter, Binder::Bind(*options.projection, filter,
+                                   options.properties.Get(
+                                       ReaderProperties::kFilterCaseSensitive)));
+        }
+      }
+      ICEBERG_ASSIGN_OR_RAISE(stats_filter_, ParquetMetricsRowGroupFilter::Make(
+                                                 filter, *reader_->manifest().descr));
     }
 
     metadata_context_ = {.file_path = options.path,
@@ -409,7 +418,7 @@ class ParquetReader::Impl {
 
  private:
   Status InitReadContext() {
-    auto context = std::make_unique<ReadContext>();
+    context_ = std::make_unique<ReadContext>();
     auto metadata = reader_->parquet_reader()->metadata();
 
     int64_t next_row_start = 0;
@@ -427,7 +436,7 @@ class ParquetReader::Impl {
       }
       if (stats_filter_) {
         ICEBERG_ASSIGN_OR_RAISE(
-            auto should_read, stats_filter_->ShouldRead(*metadata->schema(), *row_group));
+            auto should_read, stats_filter_->ShouldRead(reader_->manifest(), *row_group));
         if (!should_read) {
           continue;
         }
@@ -435,14 +444,14 @@ class ParquetReader::Impl {
       if (row_group->num_rows() == 0) {
         continue;
       }
-      context->row_groups_.push_back({i, row_start});
+      context_->row_groups_.push_back({i, row_start});
     }
-    if (context->row_groups_.empty()) {
-      context->record_batch_reader_ = std::make_unique<EmptyRecordBatchReader>();
+    if (context_->row_groups_.empty()) {
+      context_->record_batch_reader_ = std::make_unique<EmptyRecordBatchReader>();
     } else {
       ICEBERG_ARROW_ASSIGN_OR_RETURN(
-          context->record_batch_reader_,
-          reader_->GetRecordBatchReader({context->row_groups_.front().index},
+          context_->record_batch_reader_,
+          reader_->GetRecordBatchReader({context_->row_groups_.front().index},
                                         SelectedColumnIndices(projection_)));
     }
 
@@ -451,7 +460,7 @@ class ParquetReader::Impl {
     // the schema of the file.
     ArrowSchema arrow_schema;
     ICEBERG_RETURN_UNEXPECTED(ToArrowSchema(*read_schema_, &arrow_schema));
-    ICEBERG_ARROW_ASSIGN_OR_RETURN(context->output_arrow_schema_,
+    ICEBERG_ARROW_ASSIGN_OR_RETURN(context_->output_arrow_schema_,
                                    ::arrow::ImportSchema(&arrow_schema));
 
     // Align the output schema with the arrays the reader actually produces. The reader's
@@ -462,15 +471,13 @@ class ParquetReader::Impl {
     //   3. Mixed list and large_list types in files with stored schemas
     // For each projected field, we use the reader's actual type. For missing fields
     // (columns not in the file), we apply the configured use_large_list preference.
-    context->output_arrow_schema_ = AlignOutputSchemaToReaderSchema(
-        context->output_arrow_schema_, context->record_batch_reader_->schema(),
+    context_->output_arrow_schema_ = AlignOutputSchemaToReaderSchema(
+        context_->output_arrow_schema_, context_->record_batch_reader_->schema(),
         projection_, use_large_list_);
 
-    // Publish the read state only after initialization succeeds.
-    if (!context->row_groups_.empty()) {
-      metadata_context_.next_file_pos = context->row_groups_.front().first_row;
+    if (!context_->row_groups_.empty()) {
+      metadata_context_.next_file_pos = context_->row_groups_.front().first_row;
     }
-    context_ = std::move(context);
     return {};
   }
 
