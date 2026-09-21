@@ -158,19 +158,16 @@ class ICEBERG_EXPORT FileIO {
 
   /// \brief Create an input handle backed by the metadata content cache when enabled.
   ///
-  /// This is intended for immutable Iceberg metadata files, including metadata JSON,
-  /// manifest lists, and manifests. Data files should use NewInputFile directly.
+  /// This is intended for immutable Iceberg manifest lists and manifests. Data files
+  /// and table metadata JSON should use NewInputFile or ReadFile directly.
   Result<std::unique_ptr<InputFile>> NewCachedInputFile(
       std::string file_location, std::optional<size_t> length = std::nullopt);
 
-  /// \brief Read an immutable Iceberg metadata file through the content cache.
-  Result<std::string> ReadFileCached(const std::string& file_location,
-                                     std::optional<size_t> length);
-
   /// \brief Configure metadata caching from catalog/FileIO properties.
   ///
-  /// Configuration is immutable after the first call. Repeating the same configuration
-  /// is allowed; attempting to replace it returns an error.
+  /// Configuration is immutable after the first call. A later configuration may omit
+  /// tuning properties, but any explicitly supplied option must match the configured
+  /// value. Attempting to replace an option returns an error.
   Status ConfigureMetadataCache(
       const std::unordered_map<std::string, std::string>& properties);
 

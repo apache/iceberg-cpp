@@ -24,6 +24,7 @@
 #include <chrono>
 #include <future>
 #include <memory>
+#include <stdexcept>
 #include <string>
 #include <string_view>
 #include <unordered_map>
@@ -81,6 +82,46 @@ class CountingMockFileIO : public MockFileIO {
   int open_count = 0;
 };
 
+struct FailingOpenState {
+  int open_count = 0;
+  Error first_error;
+  Error fallback_error;
+};
+
+class FailingOpenInputFile : public InputFile {
+ public:
+  explicit FailingOpenInputFile(std::shared_ptr<FailingOpenState> state)
+      : state_(std::move(state)) {}
+
+  std::string_view location() const override { return "manifest.avro"; }
+  Result<int64_t> Size() const override { return 8; }
+
+  Result<std::unique_ptr<SeekableInputStream>> Open() override {
+    ++state_->open_count;
+    if (state_->open_count == 1) {
+      return std::unexpected<Error>(state_->first_error);
+    }
+    return std::unexpected<Error>(state_->fallback_error);
+  }
+
+ private:
+  std::shared_ptr<FailingOpenState> state_;
+};
+
+class FailingOpenFileIO : public FileIO {
+ public:
+  explicit FailingOpenFileIO(std::shared_ptr<FailingOpenState> state)
+      : state_(std::move(state)) {}
+
+  Result<std::unique_ptr<InputFile>> NewInputFile(
+      std::string /*file_location*/) override {
+    return std::make_unique<FailingOpenInputFile>(state_);
+  }
+
+ private:
+  std::shared_ptr<FailingOpenState> state_;
+};
+
 TEST(MetadataCacheTest, ReusesContentAcrossLoads) {
   auto cache_result = MetadataCache::Make(EnabledOptions());
   ASSERT_THAT(cache_result, IsOk());
@@ -125,6 +166,39 @@ TEST(MetadataCacheTest, FileIOReusesCachedContentAcrossInputFiles) {
   EXPECT_EQ(file_io.open_count, 1);
 }
 
+TEST(MetadataCacheTest, CachedInputFileDoesNotRetryNonIOErrors) {
+  auto state = std::make_shared<FailingOpenState>(FailingOpenState{
+      .first_error = {.kind = ErrorKind::kNotFound, .message = "missing"},
+      .fallback_error = {.kind = ErrorKind::kIOError, .message = "unexpected retry"},
+  });
+  FailingOpenFileIO file_io(state);
+  ASSERT_THAT(file_io.ConfigureMetadataCache(
+                  {{std::string(MetadataCacheOptions::kEnabled), "true"}}),
+              IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(auto input_file, file_io.NewCachedInputFile("manifest.avro"));
+
+  EXPECT_THAT(input_file->Open(), IsError(ErrorKind::kNotFound));
+  EXPECT_EQ(state->open_count, 1);
+}
+
+TEST(MetadataCacheTest, CachedInputFilePreservesReadAheadAndFallbackErrors) {
+  auto state = std::make_shared<FailingOpenState>(FailingOpenState{
+      .first_error = {.kind = ErrorKind::kIOError, .message = "read-ahead failed"},
+      .fallback_error = {.kind = ErrorKind::kIOError, .message = "open failed"},
+  });
+  FailingOpenFileIO file_io(state);
+  ASSERT_THAT(file_io.ConfigureMetadataCache(
+                  {{std::string(MetadataCacheOptions::kEnabled), "true"}}),
+              IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(auto input_file, file_io.NewCachedInputFile("manifest.avro"));
+
+  auto result = input_file->Open();
+  EXPECT_THAT(result, IsError(ErrorKind::kIOError));
+  EXPECT_THAT(result, HasErrorMessage("read-ahead failed"));
+  EXPECT_THAT(result, HasErrorMessage("fallback open failed: open failed"));
+  EXPECT_EQ(state->open_count, 2);
+}
+
 TEST(MetadataCacheTest, FileIORejectsConflictingReconfiguration) {
   CountingMockFileIO file_io;
   std::unordered_map<std::string, std::string> properties = {
@@ -136,6 +210,18 @@ TEST(MetadataCacheTest, FileIORejectsConflictingReconfiguration) {
 
   EXPECT_THAT(file_io.ConfigureMetadataCache(properties),
               IsError(ErrorKind::kInvalidArgument));
+}
+
+TEST(MetadataCacheTest, FileIOAllowsCompatibleSubsetReconfiguration) {
+  CountingMockFileIO file_io;
+  ASSERT_THAT(file_io.ConfigureMetadataCache(
+                  {{std::string(MetadataCacheOptions::kEnabled), "true"},
+                   {std::string(MetadataCacheOptions::kMaxTotalBytes), "1024"}}),
+              IsOk());
+
+  EXPECT_THAT(file_io.ConfigureMetadataCache(
+                  {{std::string(MetadataCacheOptions::kEnabled), "true"}}),
+              IsOk());
 }
 
 TEST(MetadataCacheTest, RegistryWithoutCachePropertiesAllowsLaterConfiguration) {
@@ -247,6 +333,25 @@ TEST(MetadataCacheTest, CoalescesConcurrentLoadFailures) {
   EXPECT_THAT(first.get(), IsError(ErrorKind::kIOError));
   EXPECT_THAT(second.get(), IsError(ErrorKind::kIOError));
   EXPECT_EQ(loads.load(), 1);
+}
+
+TEST(MetadataCacheTest, RecoversWhenLoaderThrows) {
+  auto cache_result = MetadataCache::Make(EnabledOptions());
+  ASSERT_THAT(cache_result, IsOk());
+  auto cache = std::move(cache_result).value();
+
+  EXPECT_THROW(cache->Get("manifest.avro", 8,
+                          []() -> Result<MetadataCache::Content> {
+                            throw std::runtime_error("loader failed");
+                          }),
+               std::runtime_error);
+
+  auto loaded = cache->Get("manifest.avro", 8, []() -> Result<MetadataCache::Content> {
+    return std::make_shared<const std::string>("manifest");
+  });
+  ASSERT_THAT(loaded, IsOk());
+  EXPECT_EQ(**loaded, "manifest");
+  EXPECT_EQ(cache->size(), 1);
 }
 
 TEST(MetadataCacheTest, SkipsContentAboveMaximumLength) {
@@ -390,6 +495,25 @@ TEST(MetadataCacheTest, RejectsInvalidEnabledConfiguration) {
 TEST(MetadataCacheTest, InvalidNumericPropertyErrorIncludesPropertyName) {
   auto options = MetadataCacheOptions::FromProperties(
       {{std::string(MetadataCacheOptions::kEnabled), "true"},
+       {std::string(MetadataCacheOptions::kMaxTotalBytes), "invalid"}});
+
+  EXPECT_THAT(options,
+              HasErrorMessage(std::string(MetadataCacheOptions::kMaxTotalBytes)));
+}
+
+TEST(MetadataCacheTest, ParsesTuningPropertiesWhenDisabled) {
+  auto options = MetadataCacheOptions::FromProperties(
+      {{std::string(MetadataCacheOptions::kEnabled), "false"},
+       {std::string(MetadataCacheOptions::kMaxTotalBytes), "1024"}});
+
+  ASSERT_THAT(options, IsOk());
+  EXPECT_FALSE(options->enabled);
+  EXPECT_EQ(options->max_total_bytes, 1024);
+}
+
+TEST(MetadataCacheTest, RejectsInvalidNumericPropertyWhenDisabled) {
+  auto options = MetadataCacheOptions::FromProperties(
+      {{std::string(MetadataCacheOptions::kEnabled), "false"},
        {std::string(MetadataCacheOptions::kMaxTotalBytes), "invalid"}});
 
   EXPECT_THAT(options,
