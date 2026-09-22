@@ -283,27 +283,77 @@ TEST_F(ParquetRowGroupFilterTest, FileAndFilterTypeCompatibility) {
       R"([["0.00",0],["1.00",1],["10.00",2],["11.00",3],["20.00",4],["21.00",5]])";
   const std::string timestamps =
       R"([["1970-01-01 00:00:00",0],["1970-01-01 00:00:01",1],["1970-01-01 00:00:10",2],["1970-01-01 00:00:11",3],["1970-01-01 00:00:20",4],["1970-01-01 00:00:21",5]])";
-  for (const auto& test : std::vector<Case>{
-           {float32(), float64(), numbers, Literal::Double(10), true},
-           {float64(), float32(), numbers, Literal::Float(10), false},
-           {int64(), int32(), numbers, Literal::Int(10), false},
-           {int32(), date(), numbers, Literal::Date(10), false},
-           {date(), int32(), numbers, Literal::Int(10), false},
-           {decimal(9, 2), decimal(18, 2), decimals, Literal::Decimal(1000, 18, 2), true},
-           {decimal(9, 2), decimal(8, 2), decimals, Literal::Decimal(1000, 8, 2), false},
-           {decimal(9, 2), decimal(9, 3), decimals, Literal::Decimal(1000, 9, 3), false},
-           {timestamp(), timestamp_ns(), timestamps, Literal::TimestampNs(10000000),
-            false},
-           {timestamp(), timestamp_tz(), timestamps, Literal::TimestampTz(10000000),
-            false},
-           {timestamp_ns(), timestamp_ns(), timestamps, Literal::TimestampNs(10000000000),
-            true},
-           {timestamp_tz(), timestamp_tz(), timestamps, Literal::TimestampTz(10000000),
-            true},
-           {fixed(1), fixed(1), R"([["a",0],["b",1],["m",2],["n",3],["y",4],["z",5]])",
-            Literal::Fixed({'m'}), true},
-           {fixed(1), fixed(2), R"([["a",0],["b",1],["m",2],["n",3],["y",4],["z",5]])",
-            Literal::Fixed({'m', 'm'}), false}}) {
+  for (const auto& test :
+       std::vector<Case>{{.file_type = float32(),
+                          .filter_type = float64(),
+                          .json = numbers,
+                          .value = Literal::Double(10),
+                          .compatible = true},
+                         {.file_type = float64(),
+                          .filter_type = float32(),
+                          .json = numbers,
+                          .value = Literal::Float(10),
+                          .compatible = false},
+                         {.file_type = int64(),
+                          .filter_type = int32(),
+                          .json = numbers,
+                          .value = Literal::Int(10),
+                          .compatible = false},
+                         {.file_type = int32(),
+                          .filter_type = date(),
+                          .json = numbers,
+                          .value = Literal::Date(10),
+                          .compatible = false},
+                         {.file_type = date(),
+                          .filter_type = int32(),
+                          .json = numbers,
+                          .value = Literal::Int(10),
+                          .compatible = false},
+                         {.file_type = decimal(9, 2),
+                          .filter_type = decimal(18, 2),
+                          .json = decimals,
+                          .value = Literal::Decimal(1000, 18, 2),
+                          .compatible = true},
+                         {.file_type = decimal(9, 2),
+                          .filter_type = decimal(8, 2),
+                          .json = decimals,
+                          .value = Literal::Decimal(1000, 8, 2),
+                          .compatible = false},
+                         {.file_type = decimal(9, 2),
+                          .filter_type = decimal(9, 3),
+                          .json = decimals,
+                          .value = Literal::Decimal(1000, 9, 3),
+                          .compatible = false},
+                         {.file_type = timestamp(),
+                          .filter_type = timestamp_ns(),
+                          .json = timestamps,
+                          .value = Literal::TimestampNs(10000000),
+                          .compatible = false},
+                         {.file_type = timestamp(),
+                          .filter_type = timestamp_tz(),
+                          .json = timestamps,
+                          .value = Literal::TimestampTz(10000000),
+                          .compatible = false},
+                         {.file_type = timestamp_ns(),
+                          .filter_type = timestamp_ns(),
+                          .json = timestamps,
+                          .value = Literal::TimestampNs(10000000000),
+                          .compatible = true},
+                         {.file_type = timestamp_tz(),
+                          .filter_type = timestamp_tz(),
+                          .json = timestamps,
+                          .value = Literal::TimestampTz(10000000),
+                          .compatible = true},
+                         {.file_type = fixed(1),
+                          .filter_type = fixed(1),
+                          .json = R"([["a",0],["b",1],["m",2],["n",3],["y",4],["z",5]])",
+                          .value = Literal::Fixed({'m'}),
+                          .compatible = true},
+                         {.file_type = fixed(1),
+                          .filter_type = fixed(2),
+                          .json = R"([["a",0],["b",1],["m",2],["n",3],["y",4],["z",5]])",
+                          .value = Literal::Fixed({'m', 'm'}),
+                          .compatible = false}}) {
     SCOPED_TRACE(test.file_type->ToString() + " -> " + test.filter_type->ToString());
     schema_ = std::make_shared<Schema>(std::vector<SchemaField>{
         SchemaField::MakeOptional(1, "key", test.file_type), schema_->fields()[1]});
@@ -367,12 +417,15 @@ TEST_F(ParquetRowGroupFilterTest, BoundComparisonBoundariesAndAllNullGroups) {
     std::vector<int64_t> expected;
   };
   for (const auto& test : std::vector<Case>{
-           {Expressions::LessThan("key", Literal::Int(10)), {}},
-           {Expressions::LessThanOrEqual("key", Literal::Int(10)), {2, 3}},
-           {Expressions::GreaterThan("key", Literal::Int(21)), {}},
-           {Expressions::GreaterThanOrEqual("key", Literal::Int(21)), {4, 5}},
-           {Expressions::Equal("key", Literal::Int(11)), {2, 3}},
-           {Expressions::In("key", {Literal::Int(11), Literal::Int(20)}), {2, 3, 4, 5}},
+           {.filter = Expressions::LessThan("key", Literal::Int(10)), .expected = {}},
+           {.filter = Expressions::LessThanOrEqual("key", Literal::Int(10)),
+            .expected = {2, 3}},
+           {.filter = Expressions::GreaterThan("key", Literal::Int(21)), .expected = {}},
+           {.filter = Expressions::GreaterThanOrEqual("key", Literal::Int(21)),
+            .expected = {4, 5}},
+           {.filter = Expressions::Equal("key", Literal::Int(11)), .expected = {2, 3}},
+           {.filter = Expressions::In("key", {Literal::Int(11), Literal::Int(20)}),
+            .expected = {2, 3, 4, 5}},
        }) {
     ICEBERG_UNWRAP_OR_FAIL(auto bound, Binder::Bind(*schema_, test.filter, true));
     Check(Options(bound), test.expected);
@@ -425,14 +478,14 @@ TEST_F(ParquetRowGroupFilterTest, SplitIntersectionAndEmptySplit) {
   auto offset = metadata_->RowGroup(1)->file_offset();
   ASSERT_GT(offset, metadata_->RowGroup(0)->file_offset());
   auto options = Options(Expressions::GreaterThanOrEqual("key", Literal::Int(20)));
-  options.split = Split{static_cast<size_t>(offset), 100000};
+  options.split = Split{.offset = static_cast<size_t>(offset), .length = 100000};
   Check(options, {4, 5});
   ICEBERG_UNWRAP_OR_FAIL(
       options.filter,
       Binder::Bind(*schema_, Expressions::LessThan("key", Literal::Int(2)), true));
   Check(options, {});
   options.filter = nullptr;
-  options.split = Split{static_cast<size_t>(offset), 0};
+  options.split = Split{.offset = static_cast<size_t>(offset), .length = 0};
   Check(options, {});
 }
 
@@ -443,14 +496,21 @@ TEST_F(ParquetRowGroupFilterTest, PrimitiveComparisonTypes) {
     Literal literal;
   };
   for (const auto& test : std::vector<Case>{
-           {int64(), "[[0,0],[1,1],[10,2],[11,3],[20,4],[21,5]]", Literal::Long(10)},
-           {date(), "[[0,0],[1,1],[10,2],[11,3],[20,4],[21,5]]", Literal::Date(10)},
-           {string(), R"([["a",0],["b",1],["m",2],["n",3],["y",4],["z",5]])",
-            Literal::String("m")},
-           {boolean(), "[[false,0],[false,1],[true,2],[true,3],[false,4],[false,5]]",
-            Literal::Boolean(true)},
-           {binary(), R"([["a",0],["b",1],["m",2],["n",3],["y",4],["z",5]])",
-            Literal::Binary({'m'})}}) {
+           {.type = int64(),
+            .json = "[[0,0],[1,1],[10,2],[11,3],[20,4],[21,5]]",
+            .literal = Literal::Long(10)},
+           {.type = date(),
+            .json = "[[0,0],[1,1],[10,2],[11,3],[20,4],[21,5]]",
+            .literal = Literal::Date(10)},
+           {.type = string(),
+            .json = R"([["a",0],["b",1],["m",2],["n",3],["y",4],["z",5]])",
+            .literal = Literal::String("m")},
+           {.type = boolean(),
+            .json = "[[false,0],[false,1],[true,2],[true,3],[false,4],[false,5]]",
+            .literal = Literal::Boolean(true)},
+           {.type = binary(),
+            .json = R"([["a",0],["b",1],["m",2],["n",3],["y",4],["z",5]])",
+            .literal = Literal::Binary({'m'})}}) {
     schema_ = std::make_shared<Schema>(
         std::vector<SchemaField>{SchemaField::MakeOptional(1, "key", test.type),
                                  SchemaField::MakeRequired(2, "value", int64())});
@@ -510,13 +570,17 @@ TEST_F(ParquetRowGroupFilterTest, DecimalAndTemporalStatistics) {
   };
   for (
       const auto& test : std::vector<Case>{
-          {decimal(9, 2),
-           R"([["0.00",0],["1.00",1],["10.00",2],["11.00",3],["20.00",4],["21.00",5]])",
-           Literal::Decimal(1000, 9, 2)},
-          {time(), "[[0,0],[1,1],[10,2],[11,3],[20,4],[21,5]]", Literal::Time(10)},
-          {timestamp(),
-           R"([["1970-01-01 00:00:00",0],["1970-01-01 00:00:01",1],["1970-01-01 00:00:10",2],["1970-01-01 00:00:11",3],["1970-01-01 00:00:20",4],["1970-01-01 00:00:21",5]])",
-           Literal::Timestamp(10000000)}}) {
+          {.type = decimal(9, 2),
+           .json =
+               R"([["0.00",0],["1.00",1],["10.00",2],["11.00",3],["20.00",4],["21.00",5]])",
+           .value = Literal::Decimal(1000, 9, 2)},
+          {.type = time(),
+           .json = "[[0,0],[1,1],[10,2],[11,3],[20,4],[21,5]]",
+           .value = Literal::Time(10)},
+          {.type = timestamp(),
+           .json =
+               R"([["1970-01-01 00:00:00",0],["1970-01-01 00:00:01",1],["1970-01-01 00:00:10",2],["1970-01-01 00:00:11",3],["1970-01-01 00:00:20",4],["1970-01-01 00:00:21",5]])",
+           .value = Literal::Timestamp(10000000)}}) {
     schema_ = std::make_shared<Schema>(
         std::vector<SchemaField>{SchemaField::MakeOptional(1, "key", test.type),
                                  SchemaField::MakeRequired(2, "value", int64())});

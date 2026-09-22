@@ -20,6 +20,7 @@
 #include "iceberg/parquet/parquet_reader.h"
 
 #include <algorithm>
+#include <utility>
 #include <variant>
 #include <vector>
 
@@ -444,7 +445,7 @@ class ParquetReader::Impl {
       if (row_group->num_rows() == 0) {
         continue;
       }
-      context_->row_groups_.push_back({i, row_start});
+      context_->row_groups_.push_back({.index = i, .first_row = row_start});
     }
     if (context_->row_groups_.empty()) {
       context_->record_batch_reader_ = std::make_unique<EmptyRecordBatchReader>();
