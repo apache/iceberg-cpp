@@ -429,8 +429,8 @@ class ParquetReader::Impl {
       next_row_start += row_group->num_rows();
       if (split_.has_value()) {
         auto row_group_offset = row_group->file_offset();
-        bool in_split = row_group_offset >= split_->offset &&
-                        row_group_offset < split_->offset + split_->length;
+        bool in_split = std::cmp_greater_equal(row_group_offset, split_->offset) &&
+                        std::cmp_less(row_group_offset, split_->offset + split_->length);
         if (!in_split) {
           continue;
         }

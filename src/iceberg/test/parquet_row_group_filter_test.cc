@@ -47,12 +47,16 @@ class ParquetRowGroupFilterTest : public ::testing::Test {
   void SetUp() override {
     parquet::RegisterAll();
     io_ = std::make_shared<MockFileIO>();
-    schema_ = std::make_shared<Schema>(
-        std::vector<SchemaField>{SchemaField::MakeOptional(1, "key", int32()),
-                                 SchemaField::MakeRequired(2, "value", int64())});
+    SetKeyType(int32());
     projection_ = std::make_shared<Schema>(
         std::vector<SchemaField>{SchemaField::MakeRequired(2, "value", int64()),
                                  MetadataColumns::kRowPosition, MetadataColumns::kRowId});
+  }
+
+  void SetKeyType(std::shared_ptr<Type> type) {
+    schema_ = std::make_shared<Schema>(
+        std::vector<SchemaField>{SchemaField::MakeOptional(1, "key", std::move(type)),
+                                 SchemaField::MakeRequired(2, "value", int64())});
   }
 
   Status Write(bool statistics = true,
@@ -67,10 +71,7 @@ class ParquetRowGroupFilterTest : public ::testing::Test {
                                    ::arrow::RecordBatch::FromStructArray(array));
     ICEBERG_ARROW_ASSIGN_OR_RETURN(auto table,
                                    ::arrow::Table::FromRecordBatches({batch}));
-    return WriteTable(table, statistics);
-  }
 
-  Status WriteTable(const std::shared_ptr<::arrow::Table>& table, bool statistics) {
     ICEBERG_ASSIGN_OR_RAISE(auto out, arrow::OpenArrowOutputStream(io_, path_));
     ::parquet::WriterProperties::Builder properties;
     properties.disable_dictionary();
@@ -86,12 +87,18 @@ class ParquetRowGroupFilterTest : public ::testing::Test {
   }
 
   ReaderOptions Options(std::shared_ptr<Expression> filter, bool case_sensitive = true) {
-    // Direct readers need bound references for columns outside the projection.
-    // Leave invalid or already-bound expressions intact for their dedicated tests.
-    if (filter) {
-      auto bound = Binder::Bind(*schema_, filter, case_sensitive);
-      if (bound) {
-        filter = *bound;
+    // Bind against the table schema: key is intentionally outside the projection.
+    // Tests of Open's binding behavior set options.filter directly instead.
+    if (filter && filter->op() != Expression::Operation::kTrue &&
+        filter->op() != Expression::Operation::kFalse) {
+      auto is_bound = IsBoundVisitor::IsBound(filter);
+      EXPECT_THAT(is_bound, IsOk());
+      if (is_bound && !*is_bound) {
+        auto bound = Binder::Bind(*schema_, filter, case_sensitive);
+        EXPECT_THAT(bound, IsOk());
+        if (bound) {
+          filter = *bound;
+        }
       }
     }
     ReaderOptions options{.path = path_,
@@ -131,6 +138,7 @@ class ParquetRowGroupFilterTest : public ::testing::Test {
   }
 
   void Check(const ReaderOptions& options, const std::vector<int64_t>& expected) {
+    SCOPED_TRACE(options.filter ? options.filter->ToString() : "no filter");
     ICEBERG_UNWRAP_OR_FAIL(auto actual, Read(options));
     EXPECT_EQ(actual, expected);
   }
@@ -233,7 +241,6 @@ TEST_F(ParquetRowGroupFilterTest, RenameBoundPredicateAndCaseSensitivity) {
   auto options = Options(bound);
   Check(options, {4, 5});
   options = Options(Expressions::Equal("RENAMED", Literal::Int(20)), false);
-  options.properties.Set(ReaderProperties::kFilterCaseSensitive, false);
   Check(options, {4, 5});
 }
 
@@ -247,26 +254,37 @@ TEST_F(ParquetRowGroupFilterTest, OpenBindsUnboundProjectedReferences) {
   Check(options, {4, 5});
 }
 
-TEST_F(ParquetRowGroupFilterTest, MissingStatsUnknownFieldsAndTypePromotion) {
+TEST_F(ParquetRowGroupFilterTest, MissingStatisticsRetainGroups) {
   ASSERT_THAT(Write(false), IsOk());
   Check(Options(Expressions::Equal("key", Literal::Int(100))), {0, 1, 2, 3, 4, 5});
   Check(Options(Expressions::IsNull("key")), {0, 1, 2, 3, 4, 5});
   Check(Options(Expressions::NotNull("key")), {0, 1, 2, 3, 4, 5});
+}
+
+TEST_F(ParquetRowGroupFilterTest, OpenRejectsUnresolvableReferences) {
   ASSERT_THAT(Write(), IsOk());
-  EXPECT_THAT(ReaderFactoryRegistry::Open(
-                  FileFormatType::kParquet,
-                  Options(Expressions::Equal("missing", Literal::Int(0)))),
+  auto options = Options(nullptr);
+  options.filter = Expressions::Equal("missing", Literal::Int(0));
+  EXPECT_THAT(ReaderFactoryRegistry::Open(FileFormatType::kParquet, options),
               HasErrorMessage("Cannot find field 'missing'"));
-  auto options = Options(Expressions::Equal("key", Literal::Int(0)));
   options.filter = Expressions::Equal("key", Literal::Int(0));
   EXPECT_THAT(ReaderFactoryRegistry::Open(FileFormatType::kParquet, options),
               HasErrorMessage("Cannot find field 'key'"));
-  schema_ = std::make_shared<Schema>(std::vector<SchemaField>{
-      SchemaField::MakeOptional(1, "key", int64()), schema_->fields()[1],
-      SchemaField::MakeOptional(3, "defaulted", int32())
-          .WithInitialDefault(std::make_shared<Literal>(Literal::Int(7)))});
+}
+
+TEST_F(ParquetRowGroupFilterTest, PromotedIntegerStatistics) {
+  ASSERT_THAT(Write(), IsOk());
+  SetKeyType(int64());
   Check(Options(Expressions::Equal("key", Literal::Long(100))), {});
   Check(Options(Expressions::Equal("key", Literal::Long(10))), {2, 3});
+}
+
+TEST_F(ParquetRowGroupFilterTest, MissingColumnWithDefaultRetainsGroups) {
+  ASSERT_THAT(Write(), IsOk());
+  schema_ = std::make_shared<Schema>(std::vector<SchemaField>{
+      schema_->fields()[0], schema_->fields()[1],
+      SchemaField::MakeOptional(3, "defaulted", int32())
+          .WithInitialDefault(std::make_shared<Literal>(Literal::Int(7)))});
   Check(Options(Expressions::Equal("defaulted", Literal::Int(8))), {0, 1, 2, 3, 4, 5});
 }
 
@@ -355,11 +373,9 @@ TEST_F(ParquetRowGroupFilterTest, FileAndFilterTypeCompatibility) {
                           .value = Literal::Fixed({'m', 'm'}),
                           .compatible = false}}) {
     SCOPED_TRACE(test.file_type->ToString() + " -> " + test.filter_type->ToString());
-    schema_ = std::make_shared<Schema>(std::vector<SchemaField>{
-        SchemaField::MakeOptional(1, "key", test.file_type), schema_->fields()[1]});
+    SetKeyType(test.file_type);
     ASSERT_THAT(Write(true, test.json), IsOk());
-    schema_ = std::make_shared<Schema>(std::vector<SchemaField>{
-        SchemaField::MakeOptional(1, "key", test.filter_type), schema_->fields()[1]});
+    SetKeyType(test.filter_type);
     Check(Options(Expressions::Equal("key", test.value)),
           test.compatible ? std::vector<int64_t>{2, 3}
                           : std::vector<int64_t>{0, 1, 2, 3, 4, 5});
@@ -427,8 +443,7 @@ TEST_F(ParquetRowGroupFilterTest, BoundComparisonBoundariesAndAllNullGroups) {
            {.filter = Expressions::In("key", {Literal::Int(11), Literal::Int(20)}),
             .expected = {2, 3, 4, 5}},
        }) {
-    ICEBERG_UNWRAP_OR_FAIL(auto bound, Binder::Bind(*schema_, test.filter, true));
-    Check(Options(bound), test.expected);
+    Check(Options(test.filter), test.expected);
   }
 }
 
@@ -511,48 +526,47 @@ TEST_F(ParquetRowGroupFilterTest, PrimitiveComparisonTypes) {
            {.type = binary(),
             .json = R"([["a",0],["b",1],["m",2],["n",3],["y",4],["z",5]])",
             .literal = Literal::Binary({'m'})}}) {
-    schema_ = std::make_shared<Schema>(
-        std::vector<SchemaField>{SchemaField::MakeOptional(1, "key", test.type),
-                                 SchemaField::MakeRequired(2, "value", int64())});
+    SCOPED_TRACE(test.type->ToString());
+    SetKeyType(test.type);
     ASSERT_THAT(Write(true, test.json), IsOk());
     Check(Options(Expressions::Equal("key", test.literal)), {2, 3});
   }
 }
 
-TEST_F(ParquetRowGroupFilterTest, FloatAndNestedStatsWithTransformFallback) {
-  schema_ = std::make_shared<Schema>(
-      std::vector<SchemaField>{SchemaField::MakeOptional(1, "key", float64()),
-                               SchemaField::MakeRequired(2, "value", int64())});
+TEST_F(ParquetRowGroupFilterTest, FloatingPointStatistics) {
+  SetKeyType(float64());
   ASSERT_THAT(Write(), IsOk());
   Check(Options(Expressions::Equal("key", Literal::Double(100))), {});
   Check(Options(Expressions::Equal("key", Literal::Double(10))), {2, 3});
   Check(Options(Expressions::IsNaN("key")), {0, 1, 2, 3, 4, 5});
-  schema_ = std::make_shared<Schema>(std::vector<SchemaField>{
-      SchemaField::MakeOptional(1, "key",
-                                std::make_shared<StructType>(std::vector<SchemaField>{
-                                    SchemaField::MakeOptional(3, "nested", int32())})),
-      SchemaField::MakeRequired(2, "value", int64())});
+}
+
+TEST_F(ParquetRowGroupFilterTest, NestedPrimitiveStatistics) {
+  SetKeyType(std::make_shared<StructType>(
+      std::vector<SchemaField>{SchemaField::MakeOptional(3, "nested", int32())}));
   ASSERT_THAT(Write(true, "[[[0],0],[[1],1],[[10],2],[[11],3],[[20],4],[[21],5]]"),
               IsOk());
   Check(Options(Expressions::Equal("key.nested", Literal::Int(100))), {});
   Check(Options(Expressions::Equal("key.nested", Literal::Int(10))), {2, 3});
-  schema_ = std::make_shared<Schema>(
-      std::vector<SchemaField>{SchemaField::MakeOptional(1, "key", int32()),
-                               SchemaField::MakeRequired(2, "value", int64())});
+}
+
+TEST_F(ParquetRowGroupFilterTest, UnsupportedTransformRetainsGroups) {
   ASSERT_THAT(Write(), IsOk());
   Check(Options(Expressions::Equal<BoundTransform>(Expressions::Bucket("key", 16),
                                                    Literal::Int(15))),
         {0, 1, 2, 3, 4, 5});
 }
 
-TEST_F(ParquetRowGroupFilterTest, NegativeAndPrefixPredicates) {
+TEST_F(ParquetRowGroupFilterTest, NegativePredicates) {
   ASSERT_THAT(Write(true, "[[5,0],[5,1],[null,2],[5,3],[6,4],[6,5]]"), IsOk());
   Check(Options(Expressions::NotEqual("key", Literal::Int(5))), {0, 1, 2, 3, 4, 5});
   Check(Options(Expressions::NotIn("key", {Literal::Int(5), Literal::Int(6)})),
         {0, 1, 2, 3, 4, 5});
   Check(Options(Expressions::Not(Expressions::LessThan("key", Literal::Int(100)))), {});
-  schema_ = std::make_shared<Schema>(std::vector<SchemaField>{
-      SchemaField::MakeOptional(1, "key", string()), schema_->fields()[1]});
+}
+
+TEST_F(ParquetRowGroupFilterTest, PrefixPredicates) {
+  SetKeyType(string());
   ASSERT_THAT(
       Write(
           true,
@@ -581,18 +595,16 @@ TEST_F(ParquetRowGroupFilterTest, DecimalAndTemporalStatistics) {
            .json =
                R"([["1970-01-01 00:00:00",0],["1970-01-01 00:00:01",1],["1970-01-01 00:00:10",2],["1970-01-01 00:00:11",3],["1970-01-01 00:00:20",4],["1970-01-01 00:00:21",5]])",
            .value = Literal::Timestamp(10000000)}}) {
-    schema_ = std::make_shared<Schema>(
-        std::vector<SchemaField>{SchemaField::MakeOptional(1, "key", test.type),
-                                 SchemaField::MakeRequired(2, "value", int64())});
+    SCOPED_TRACE(test.type->ToString());
+    SetKeyType(test.type);
     ASSERT_THAT(Write(true, test.json), IsOk());
     Check(Options(Expressions::Equal("key", test.value)), {2, 3});
     Check(Options(Expressions::LessThan("key", test.value)), {0, 1});
   }
 }
 
-TEST_F(ParquetRowGroupFilterTest, FloatingPointNullNaNAndSignedZero) {
-  schema_ = std::make_shared<Schema>(std::vector<SchemaField>{
-      SchemaField::MakeOptional(1, "key", float64()), schema_->fields()[1]});
+TEST_F(ParquetRowGroupFilterTest, FloatingPointNullAndSignedZero) {
+  SetKeyType(float64());
   ASSERT_THAT(Write(true, "[[-0.0,0],[0.0,1],[null,2],[null,3],[10.0,4],[11.0,5]]"),
               IsOk());
   Check(Options(Expressions::Equal("key", Literal::Double(-0.0))), {0, 1});
@@ -601,6 +613,10 @@ TEST_F(ParquetRowGroupFilterTest, FloatingPointNullNaNAndSignedZero) {
   Check(Options(Expressions::NotNull("key")), {0, 1, 4, 5});
   Check(Options(Expressions::IsNaN("key")), {0, 1, 4, 5});
   Check(Options(Expressions::LessThan("key", Literal::Double(-100))), {});
+}
+
+TEST_F(ParquetRowGroupFilterTest, AllNaNGroupRetainedWithoutComparableBounds) {
+  SetKeyType(float64());
   ASSERT_THAT(Write(true, "[[NaN,0],[-NaN,1],[10.0,2],[11.0,3],[null,4],[null,5]]"),
               IsOk());
   Check(Options(Expressions::Equal("key", Literal::Double(100))), {0, 1});
@@ -610,7 +626,7 @@ TEST_F(ParquetRowGroupFilterTest, FloatingPointNullNaNAndSignedZero) {
 
 TEST_F(ParquetRowGroupFilterTest, InvalidFilterFailsDuringOpen) {
   ASSERT_THAT(Write(), IsOk());
-  auto options = Options(Expressions::Count("key"));
+  auto options = Options(nullptr);
   options.filter = Expressions::Count("value");
   EXPECT_THAT(ReaderFactoryRegistry::Open(FileFormatType::kParquet, options),
               HasErrorMessage("does not support bound aggregate"));
