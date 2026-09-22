@@ -224,6 +224,7 @@ TEST_F(ParquetRowGroupFilterTest, AllNoneAndResidualRows) {
   Check(Options(True::Instance()), {0, 1, 2, 3, 4, 5});
   Check(Options(False::Instance()), {});
   Check(Options(Expressions::Equal("key", Literal::Int(100))), {});
+  Check(Options(Expressions::Equal("key", Literal::Int(-1))), {});
   // RG-only: key=1 is retained with key=0. This is not an exact row filter.
   Check(Options(Expressions::Equal("key", Literal::Int(0))), {0, 1});
   Check(Options(Expressions::And(Expressions::GreaterThan("key", Literal::Int(9)),
@@ -451,6 +452,7 @@ TEST_F(ParquetRowGroupFilterTest, InPredicateLimit) {
   ASSERT_THAT(Write(), IsOk());
   Check(Options(Expressions::In("key", {Literal::Int(0), Literal::Int(20)})),
         {0, 1, 4, 5});
+  Check(Options(Expressions::In("key", {Literal::Int(5), Literal::Int(25)})), {});
   std::vector<Literal> values;
   for (int i = 100; i < 200; ++i) {
     values.push_back(Literal::Int(i));
@@ -574,6 +576,11 @@ TEST_F(ParquetRowGroupFilterTest, PrefixPredicates) {
       IsOk());
   Check(Options(Expressions::StartsWith("key", "ap")), {0, 1, 4, 5});
   Check(Options(Expressions::NotStartsWith("key", "ap")), {2, 3, 4, 5});
+  Check(Options(Expressions::StartsWith("key", "aa")), {});
+  Check(Options(Expressions::StartsWith("key", "z")), {});
+  Check(Options(Expressions::StartsWith("key", "apricots")), {});
+  Check(Options(Expressions::StartsWith("key", "")), {0, 1, 2, 3, 4, 5});
+  Check(Options(Expressions::NotStartsWith("key", "")), {4, 5});
 }
 
 TEST_F(ParquetRowGroupFilterTest, DecimalAndTemporalStatistics) {
@@ -611,7 +618,11 @@ TEST_F(ParquetRowGroupFilterTest, FloatingPointNullAndSignedZero) {
   Check(Options(Expressions::Equal("key", Literal::Double(0.0))), {0, 1});
   Check(Options(Expressions::IsNull("key")), {2, 3});
   Check(Options(Expressions::NotNull("key")), {0, 1, 4, 5});
+  // Like Java, IS NAN excludes all-null groups; NOT NAN retains them.
   Check(Options(Expressions::IsNaN("key")), {0, 1, 4, 5});
+  Check(Options(Expressions::NotNaN("key")), {0, 1, 2, 3, 4, 5});
+  Check(Options(Expressions::Not(Expressions::IsNaN("key"))), {0, 1, 2, 3, 4, 5});
+  Check(Options(Expressions::Not(Expressions::NotNaN("key"))), {0, 1, 4, 5});
   Check(Options(Expressions::LessThan("key", Literal::Double(-100))), {});
 }
 
@@ -621,6 +632,7 @@ TEST_F(ParquetRowGroupFilterTest, AllNaNGroupRetainedWithoutComparableBounds) {
               IsOk());
   Check(Options(Expressions::Equal("key", Literal::Double(100))), {0, 1});
   Check(Options(Expressions::IsNaN("key")), {0, 1, 2, 3});
+  Check(Options(Expressions::NotNaN("key")), {0, 1, 2, 3, 4, 5});
   Check(Options(Expressions::LessThan("key", Literal::Double(-100))), {0, 1});
 }
 

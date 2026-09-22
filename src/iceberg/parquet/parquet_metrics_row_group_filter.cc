@@ -18,6 +18,8 @@
  */
 
 #include <algorithm>
+#include <functional>
+#include <optional>
 #include <unordered_map>
 
 #include <parquet/statistics.h>
@@ -25,7 +27,6 @@
 #include "iceberg/expression/expression_visitor.h"
 #include "iceberg/expression/rewrite_not.h"
 #include "iceberg/metadata_columns.h"
-#include "iceberg/metrics.h"
 #include "iceberg/parquet/parquet_metrics_internal.h"
 #include "iceberg/parquet/parquet_metrics_row_group_filter_internal.h"
 #include "iceberg/parquet/parquet_schema_util_internal.h"
@@ -59,72 +60,62 @@ class MetricsVisitor : public BoundVisitor<bool> {
   Result<bool> Or(bool left, bool right) override { return left || right; }
 
   Result<bool> IsNull(const std::shared_ptr<Bound>& expr) override {
-    return MayContainNull(GetMetrics(expr, false));
+    return MayContainNull(std::dynamic_pointer_cast<BoundReference>(expr));
   }
 
   Result<bool> NotNull(const std::shared_ptr<Bound>& expr) override {
-    return !ContainsNullsOnly(GetMetrics(expr, false));
+    if (ContainsNullsOnly(std::dynamic_pointer_cast<BoundReference>(expr))) {
+      return kRowsCannotMatch;
+    }
+    return kRowsMightMatch;
   }
 
   Result<bool> IsNaN(const std::shared_ptr<Bound>& expr) override {
-    return !ContainsNullsOnly(GetMetrics(expr, false));
+    if (ContainsNullsOnly(std::dynamic_pointer_cast<BoundReference>(expr))) {
+      return kRowsCannotMatch;
+    }
+    return kRowsMightMatch;
   }
 
   Result<bool> NotNaN(const std::shared_ptr<Bound>&) override { return kRowsMightMatch; }
 
   Result<bool> Lt(const std::shared_ptr<Bound>& expr, const Literal& value) override {
-    const auto metrics = GetMetrics(expr);
-    if (ContainsNullsOnly(metrics)) {
-      return kRowsCannotMatch;
-    }
-    if (!metrics.lower_bound || !ComparableLiteral(value)) {
-      return kRowsMightMatch;
-    }
-    return !(*metrics.lower_bound >= value);
+    return VisitInequality(std::dynamic_pointer_cast<BoundReference>(expr), value,
+                           std::less<Literal>{}, /*use_lower_bound=*/true);
   }
 
   Result<bool> LtEq(const std::shared_ptr<Bound>& expr, const Literal& value) override {
-    const auto metrics = GetMetrics(expr);
-    if (ContainsNullsOnly(metrics)) {
-      return kRowsCannotMatch;
-    }
-    if (!metrics.lower_bound || !ComparableLiteral(value)) {
-      return kRowsMightMatch;
-    }
-    return !(*metrics.lower_bound > value);
+    return VisitInequality(std::dynamic_pointer_cast<BoundReference>(expr), value,
+                           std::less_equal<Literal>{}, /*use_lower_bound=*/true);
   }
 
   Result<bool> Gt(const std::shared_ptr<Bound>& expr, const Literal& value) override {
-    const auto metrics = GetMetrics(expr);
-    if (ContainsNullsOnly(metrics)) {
-      return kRowsCannotMatch;
-    }
-    if (!metrics.upper_bound || !ComparableLiteral(value)) {
-      return kRowsMightMatch;
-    }
-    return !(*metrics.upper_bound <= value);
+    return VisitInequality(std::dynamic_pointer_cast<BoundReference>(expr), value,
+                           std::greater<Literal>{}, /*use_lower_bound=*/false);
   }
 
   Result<bool> GtEq(const std::shared_ptr<Bound>& expr, const Literal& value) override {
-    const auto metrics = GetMetrics(expr);
-    if (ContainsNullsOnly(metrics)) {
-      return kRowsCannotMatch;
-    }
-    if (!metrics.upper_bound || !ComparableLiteral(value)) {
-      return kRowsMightMatch;
-    }
-    return !(*metrics.upper_bound < value);
+    return VisitInequality(std::dynamic_pointer_cast<BoundReference>(expr), value,
+                           std::greater_equal<Literal>{}, /*use_lower_bound=*/false);
   }
 
   Result<bool> Eq(const std::shared_ptr<Bound>& expr, const Literal& value) override {
-    const auto metrics = GetMetrics(expr);
-    if (ContainsNullsOnly(metrics)) {
+    const auto ref = std::dynamic_pointer_cast<BoundReference>(expr);
+    if (ContainsNullsOnly(ref)) {
       return kRowsCannotMatch;
     }
-    if (!metrics.lower_bound || !metrics.upper_bound || !ComparableLiteral(value)) {
+    const auto lower = MinValue(ref);
+    if (!lower) {
       return kRowsMightMatch;
     }
-    return !(*metrics.lower_bound > value || *metrics.upper_bound < value);
+    if (*lower > value) {
+      return kRowsCannotMatch;
+    }
+    const auto upper = MaxValue(ref);
+    if (!upper) {
+      return kRowsMightMatch;
+    }
+    return !(*upper < value);
   }
 
   Result<bool> NotEq(const std::shared_ptr<Bound>&, const Literal&) override {
@@ -134,17 +125,27 @@ class MetricsVisitor : public BoundVisitor<bool> {
 
   Result<bool> In(const std::shared_ptr<Bound>& expr,
                   const BoundSetPredicate::LiteralSet& values) override {
-    const auto metrics = GetMetrics(expr);
-    if (ContainsNullsOnly(metrics)) {
+    const auto ref = std::dynamic_pointer_cast<BoundReference>(expr);
+    if (ContainsNullsOnly(ref)) {
       return kRowsCannotMatch;
     }
-    if (!metrics.lower_bound || !metrics.upper_bound ||
-        values.size() > kInPredicateLimit) {
+    if (values.size() > kInPredicateLimit) {
       return kRowsMightMatch;
     }
+    const auto lower = MinValue(ref);
+    if (!lower) {
+      return kRowsMightMatch;
+    }
+    if (std::ranges::all_of(values, [&](const auto& value) { return value < *lower; })) {
+      return kRowsCannotMatch;
+    }
+    const auto upper = MaxValue(ref);
+    if (!upper) {
+      return kRowsMightMatch;
+    }
+    // Like Java, a single candidate must satisfy both bounds.
     for (const auto& value : values) {
-      if (!ComparableLiteral(value) ||
-          !(value < *metrics.lower_bound || value > *metrics.upper_bound)) {
+      if (!(value < *lower || value > *upper)) {
         return kRowsMightMatch;
       }
     }
@@ -158,64 +159,69 @@ class MetricsVisitor : public BoundVisitor<bool> {
 
   Result<bool> StartsWith(const std::shared_ptr<Bound>& expr,
                           const Literal& value) override {
-    const auto metrics = GetMetrics(expr);
-    if (ContainsNullsOnly(metrics)) {
+    const auto ref = std::dynamic_pointer_cast<BoundReference>(expr);
+    if (ContainsNullsOnly(ref)) {
       return kRowsCannotMatch;
     }
-    if (!metrics.lower_bound || !metrics.upper_bound || !ComparableLiteral(value) ||
-        metrics.lower_bound->type()->type_id() != TypeId::kString) {
+    const auto lower = MinValue(ref);
+    if (!lower || lower->type()->type_id() != TypeId::kString) {
       return kRowsMightMatch;
     }
     const auto& prefix = std::get<std::string>(value.value());
-    const auto& lower = std::get<std::string>(metrics.lower_bound->value());
-    const auto& upper = std::get<std::string>(metrics.upper_bound->value());
-    return !(lower.substr(0, prefix.size()) > prefix ||
-             upper.substr(0, prefix.size()) < prefix);
+    if (std::get<std::string>(lower->value()).compare(0, prefix.size(), prefix) > 0) {
+      return kRowsCannotMatch;
+    }
+    const auto upper = MaxValue(ref);
+    if (!upper || upper->type()->type_id() != TypeId::kString) {
+      return kRowsMightMatch;
+    }
+    return std::get<std::string>(upper->value()).compare(0, prefix.size(), prefix) >= 0;
   }
 
   Result<bool> NotStartsWith(const std::shared_ptr<Bound>& expr,
                              const Literal& value) override {
-    const auto metrics = GetMetrics(expr);
-    if (MayContainNull(metrics) || !metrics.lower_bound || !metrics.upper_bound ||
-        !ComparableLiteral(value) ||
-        metrics.lower_bound->type()->type_id() != TypeId::kString) {
+    const auto ref = std::dynamic_pointer_cast<BoundReference>(expr);
+    if (MayContainNull(ref)) {
+      return kRowsMightMatch;
+    }
+    const auto lower = MinValue(ref);
+    if (!lower || lower->type()->type_id() != TypeId::kString) {
       return kRowsMightMatch;
     }
     const auto& prefix = std::get<std::string>(value.value());
-    const auto& lower = std::get<std::string>(metrics.lower_bound->value());
-    const auto& upper = std::get<std::string>(metrics.upper_bound->value());
-    return !lower.starts_with(prefix) || !upper.starts_with(prefix);
+    if (!std::get<std::string>(lower->value()).starts_with(prefix)) {
+      return kRowsMightMatch;
+    }
+    const auto upper = MaxValue(ref);
+    if (!upper || upper->type()->type_id() != TypeId::kString) {
+      return kRowsMightMatch;
+    }
+    return !std::get<std::string>(upper->value()).starts_with(prefix);
   }
 
  private:
-  static bool ContainsNullsOnly(const FieldMetrics& metrics) {
-    return metrics.null_value_count >= 0 &&
-           metrics.null_value_count == metrics.value_count;
+  bool ContainsNullsOnly(const std::shared_ptr<BoundReference>& ref) const {
+    const auto stats = GetStatistics(ref);
+    // GetStatistics excludes repeated columns, so each row contributes one value.
+    return stats && stats->HasNullCount() && stats->null_count() == row_group_.num_rows();
   }
 
-  static bool MayContainNull(const FieldMetrics& metrics) {
-    return metrics.null_value_count != 0;
+  bool MayContainNull(const std::shared_ptr<BoundReference>& ref) const {
+    const auto stats = GetStatistics(ref);
+    return !stats || !stats->HasNullCount() || stats->null_count() != 0;
   }
 
-  static bool ComparableLiteral(const Literal& value) {
-    return !value.IsNaN() && !value.IsNull() && !value.IsAboveMax() &&
-           !value.IsBelowMin();
-  }
-
-  FieldMetrics GetMetrics(const std::shared_ptr<Bound>& expr,
-                          bool read_bounds = true) const {
-    FieldMetrics metrics;
-    auto ref = std::dynamic_pointer_cast<BoundReference>(expr);
+  std::shared_ptr<::parquet::Statistics> GetStatistics(
+      const std::shared_ptr<BoundReference>& ref) const {
     if (!ref || !ref->type()->is_primitive() ||
         MetadataColumns::IsMetadataColumn(ref->field_id()) ||
         MetadataColumns::IsRowLineageColumn(ref->field_id())) {
-      return metrics;
+      return nullptr;
     }
-    metrics.field_id = ref->field_id();
     auto column = column_indices_.find(ref->field_id());
     // Missing columns can have initial defaults, so do not assume all nulls.
     if (column == column_indices_.end()) {
-      return metrics;
+      return nullptr;
     }
     const auto& descriptor = *manifest_.descr->Column(column->second);
     auto field = manifest_.column_index_to_field.find(column->second);
@@ -223,54 +229,55 @@ class MetricsVisitor : public BoundVisitor<bool> {
     if (descriptor.max_repetition_level() != 0 ||
         field == manifest_.column_index_to_field.end() ||
         !ValidateParquetTypeCompatibility(*ref->type(), *field->second)) {
-      return metrics;
+      return nullptr;
+    }
+    return row_group_.ColumnChunk(column->second)->statistics();
+  }
+
+  std::optional<Literal> MinValue(const std::shared_ptr<BoundReference>& ref) const {
+    return GetBound(ref, /*is_min=*/true);
+  }
+
+  std::optional<Literal> MaxValue(const std::shared_ptr<BoundReference>& ref) const {
+    return GetBound(ref, /*is_min=*/false);
+  }
+
+  std::optional<Literal> GetBound(const std::shared_ptr<BoundReference>& ref,
+                                  bool is_min) const {
+    const auto stats = GetStatistics(ref);
+    if (!stats || !stats->HasMinMax()) {
+      return std::nullopt;
     }
     const auto& type = static_cast<const PrimitiveType&>(*ref->type());
-    auto chunk = row_group_.ColumnChunk(column->second);
-    auto stats = chunk->statistics();
-    if (!stats) {
-      return metrics;
+    auto result =
+        ParquetMetrics::StatsValueToLiteral(*stats->descr(), type, *stats, is_min);
+    if (!result || result->IsNaN()) {
+      return std::nullopt;
     }
-    metrics.value_count = chunk->num_values();
-    if (stats->HasNullCount()) {
-      metrics.null_value_count = stats->null_count();
+    auto bound = std::move(*result);
+    if (type.type_id() == TypeId::kFloat && std::get<float>(bound.value()) == 0) {
+      return Literal::Float(is_min ? -0.0F : 0.0F);
     }
-    if (!read_bounds || ContainsNullsOnly(metrics) || !stats->HasMinMax()) {
-      return metrics;
+    if (type.type_id() == TypeId::kDouble && std::get<double>(bound.value()) == 0) {
+      return Literal::Double(is_min ? -0.0 : 0.0);
     }
-    auto lower_result =
-        ParquetMetrics::StatsValueToLiteral(descriptor, type, *stats, true);
-    auto upper_result =
-        ParquetMetrics::StatsValueToLiteral(descriptor, type, *stats, false);
-    if (!lower_result || !upper_result) {
-      return metrics;
+    return bound;
+  }
+
+  template <typename Comparator>
+  bool VisitInequality(const std::shared_ptr<BoundReference>& ref, const Literal& value,
+                       Comparator compare, bool lower_bound) const {
+    if (ContainsNullsOnly(ref)) {
+      return kRowsCannotMatch;
     }
-    auto lower = std::move(*lower_result);
-    auto upper = std::move(*upper_result);
-    if (lower.IsNaN() || upper.IsNaN()) {
-      return metrics;
+    if (value.IsNaN()) {
+      return kRowsMightMatch;
     }
-    if (type.type_id() == TypeId::kFloat) {
-      if (std::get<float>(lower.value()) == 0) {
-        lower = Literal::Float(-0.0F);
-      }
-      if (std::get<float>(upper.value()) == 0) {
-        upper = Literal::Float(0.0F);
-      }
-    } else if (type.type_id() == TypeId::kDouble) {
-      if (std::get<double>(lower.value()) == 0) {
-        lower = Literal::Double(-0.0);
-      }
-      if (std::get<double>(upper.value()) == 0) {
-        upper = Literal::Double(0.0);
-      }
+    const auto bound = lower_bound ? MinValue(ref) : MaxValue(ref);
+    if (!bound) {
+      return kRowsMightMatch;
     }
-    if (lower > upper) {
-      return metrics;
-    }
-    metrics.lower_bound = std::move(lower);
-    metrics.upper_bound = std::move(upper);
-    return metrics;
+    return compare(*bound, value);
   }
 
   const ::parquet::arrow::SchemaManifest& manifest_;
