@@ -41,7 +41,8 @@ class ICEBERG_REST_EXPORT RestTable final : public Table {
       TableIdentifier identifier, std::shared_ptr<TableMetadata> metadata,
       std::string metadata_location, std::shared_ptr<FileIO> io,
       std::shared_ptr<Catalog> catalog, std::string full_name,
-      std::shared_ptr<MetricsReporter> reporter, RestScanContext rest_context);
+      std::shared_ptr<MetricsReporter> reporter, RestScanContext rest_context,
+      Labels labels = {});
 
   ~RestTable() override;
 
@@ -57,7 +58,8 @@ class ICEBERG_REST_EXPORT RestTable final : public Table {
   RestTable(TableIdentifier identifier, std::shared_ptr<TableMetadata> metadata,
             std::string metadata_location, std::shared_ptr<FileIO> io,
             std::shared_ptr<Catalog> catalog, std::string full_name,
-            std::shared_ptr<MetricsReporter> reporter, RestScanContext rest_context);
+            std::shared_ptr<MetricsReporter> reporter, RestScanContext rest_context,
+            Labels labels);
 
   std::shared_ptr<const RestScanContext> rest_context_;
 };

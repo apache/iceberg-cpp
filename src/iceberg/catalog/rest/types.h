@@ -29,6 +29,7 @@
 
 #include "iceberg/catalog/rest/endpoint.h"
 #include "iceberg/catalog/rest/iceberg_rest_export.h"
+#include "iceberg/labels.h"
 #include "iceberg/result.h"
 #include "iceberg/storage_credential.h"
 #include "iceberg/table_identifier.h"
@@ -188,6 +189,8 @@ struct ICEBERG_REST_EXPORT LoadTableResult {
   std::unordered_map<std::string, std::string> config;
   /// \brief Vended storage credentials, one per URI prefix; empty if none.
   std::vector<StorageCredential> storage_credentials;
+  /// \brief Catalog-provided labels; empty if none.
+  Labels labels;
 
   /// \brief Validates the LoadTableResult.
   Status Validate() const {

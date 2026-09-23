@@ -997,7 +997,7 @@ Result<std::shared_ptr<Table>> RestCatalog::MakeTableFromLoadResult(
   return MakeTable(identifier, std::move(result.metadata),
                    std::move(result.metadata_location), std::move(table_io),
                    std::move(table_catalog), std::move(reporter), table_config,
-                   std::move(table_session));
+                   std::move(table_session), std::move(result.labels));
 }
 
 Result<std::shared_ptr<Table>> RestCatalog::MakeTableFromCommitResponse(
@@ -1020,7 +1020,7 @@ Result<std::shared_ptr<Table>> RestCatalog::MakeTable(
     std::string metadata_location, std::shared_ptr<FileIO> table_io,
     std::shared_ptr<Catalog> table_catalog, std::shared_ptr<MetricsReporter> reporter,
     const std::unordered_map<std::string, std::string>& table_config,
-    std::shared_ptr<auth::AuthSession> table_session) {
+    std::shared_ptr<auth::AuthSession> table_session, Labels labels) {
   // Table config overrides client config.
   ICEBERG_ASSIGN_OR_RAISE(auto server_mode,
                           RestCatalogProperties::ScanPlanningModeFrom(table_config));
@@ -1068,12 +1068,13 @@ Result<std::shared_ptr<Table>> RestCatalog::MakeTable(
     return RestTable::Make(identifier, std::move(metadata), std::move(metadata_location),
                            std::move(table_io), std::move(table_catalog),
                            RestTableName(name_, identifier), std::move(reporter),
-                           std::move(rest_ctx));
+                           std::move(rest_ctx), std::move(labels));
   }
 
   return Table::Make(identifier, std::move(metadata), std::move(metadata_location),
                      std::move(table_io), std::move(table_catalog),
-                     RestTableName(name_, identifier), std::move(reporter));
+                     RestTableName(name_, identifier), std::move(reporter),
+                     std::move(labels));
 }
 
 }  // namespace iceberg::rest
