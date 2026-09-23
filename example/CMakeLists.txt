@@ -20,7 +20,21 @@ cmake_minimum_required(VERSION 3.25)
 
 project(example)
 
-set(CMAKE_CXX_STANDARD 20)
+# C++20 is the minimum standard iceberg-cpp's public headers support, so the
+# example builds as C++20 by default to keep that contract exercised. Set this to
+# 23 to also check the headers from a C++23 consumer.
+set(ICEBERG_EXAMPLE_CXX_STANDARD
+    20
+    CACHE STRING "C++ standard used to build the example (20 or 23)")
+set_property(CACHE ICEBERG_EXAMPLE_CXX_STANDARD PROPERTY STRINGS 20 23)
+if(NOT ICEBERG_EXAMPLE_CXX_STANDARD MATCHES "^(20|23)$")
+  message(FATAL_ERROR "ICEBERG_EXAMPLE_CXX_STANDARD must be 20 or 23, got "
+                      "'${ICEBERG_EXAMPLE_CXX_STANDARD}'")
+endif()
+
+set(CMAKE_CXX_STANDARD ${ICEBERG_EXAMPLE_CXX_STANDARD})
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
 
 find_package(iceberg CONFIG REQUIRED COMPONENTS bundle rest)
 
@@ -41,7 +55,8 @@ add_executable(demo_example demo_example.cc)
 target_link_libraries(demo_example PRIVATE ${ICEBERG_BUNDLE_TARGET}
                                            ${ICEBERG_REST_TARGET})
 
-# Compile every installed public header as a C++20 consumer. The installed include
+# Compile every installed public header as a consumer using
+# ICEBERG_EXAMPLE_CXX_STANDARD. The installed include
 # tree is the public API contract: iceberg_install_all_headers excludes internal
 # headers before packaging them.
 get_target_property(ICEBERG_BUNDLE_INCLUDE_DIRS ${ICEBERG_BUNDLE_TARGET}
@@ -75,12 +90,9 @@ endforeach()
 string(APPEND ICEBERG_PUBLIC_HEADER_CHECK_SOURCE "\nint main() { return 0; }\n")
 
 file(GENERATE
-     OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/public_headers_cxx20.cc"
+     OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/public_headers_check.cc"
      CONTENT "${ICEBERG_PUBLIC_HEADER_CHECK_SOURCE}")
 
-add_executable(public_headers_cxx20 "${CMAKE_CURRENT_BINARY_DIR}/public_headers_cxx20.cc")
-set_target_properties(public_headers_cxx20
-                      PROPERTIES CXX_STANDARD 20 CXX_STANDARD_REQUIRED ON CXX_EXTENSIONS
-                                                                          OFF)
-target_link_libraries(public_headers_cxx20 PRIVATE ${ICEBERG_BUNDLE_TARGET}
+add_executable(public_headers_check "${CMAKE_CURRENT_BINARY_DIR}/public_headers_check.cc")
+target_link_libraries(public_headers_check PRIVATE ${ICEBERG_BUNDLE_TARGET}
                                                    ${ICEBERG_REST_TARGET})

@@ -25,7 +25,7 @@ iceberg-cpp is a C++ implementation of [Apache Iceberg™](https://iceberg.apach
 
 ## Key Features
 
-- **Modern C++23** — Built with ranges, concepts, `std::expected`, and other modern idioms
+- **Modern C++** — Built as C++23 with ranges, concepts, and other modern idioms; public headers require only C++20
 - **Cross-Platform** — Builds and runs on Linux, macOS, and Windows
 - **Spec Compliance** — Full table spec support today; Puffin, View, and UDF specs are on the roadmap
 - **Arrow-Native** — Uses the Arrow C Data Interface as the primary data API
