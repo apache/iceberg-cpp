@@ -22,6 +22,7 @@ set -eux
 source_dir=${1}
 build_dir=${1}/build
 run_example=${ICEBERG_RUN_EXAMPLE:-OFF}
+cxx_standard=${ICEBERG_EXAMPLE_CXX_STANDARD:-20}
 
 # Clean up before configuring. If Windows still holds a just-built exe/dll
 # after the retries, let mkdir fail rather than reuse a half-deleted tree.
@@ -53,6 +54,7 @@ fi
 
 build_type="${ICEBERG_BUILD_TYPE:-Debug}"
 CMAKE_ARGS+=("-DCMAKE_BUILD_TYPE=${build_type}")
+CMAKE_ARGS+=("-DICEBERG_EXAMPLE_CXX_STANDARD=${cxx_standard}")
 
 cmake "${CMAKE_ARGS[@]}" ${source_dir}
 cmake --build .
