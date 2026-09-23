@@ -35,6 +35,15 @@
 namespace iceberg {
 
 /// \brief A scan that reads changelog entries between snapshots.
+///
+/// Delete files are supported only for format version 3 tables, where row-level deletes
+/// are deletion vectors. A deletion vector committed for a data file added by the same
+/// snapshot is attached to the file's AddedRowsScanTask; one committed for a data file
+/// that already existed produces a DeletedRowsScanTask; and one removed together with
+/// its data file becomes an existing delete of the file's DeletedDataFileScanTask.
+/// Position delete files and equality delete files are not supported: planning fails
+/// with NotSupported when any changelog snapshot carries one that is live or that a
+/// changelog snapshot removed.
 class ICEBERG_EXPORT IncrementalChangelogScan
     : public IncrementalScan<ChangelogScanTask> {
  public:

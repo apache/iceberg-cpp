@@ -290,6 +290,41 @@ int64_t ChangelogScanTask::estimated_row_count() const {
   return data_file_->record_count;
 }
 
+// DeletedRowsScanTask implementation
+
+DeletedRowsScanTask::DeletedRowsScanTask(
+    int32_t change_ordinal, int64_t commit_snapshot_id,
+    std::shared_ptr<DataFile> data_file,
+    std::vector<std::shared_ptr<DataFile>> added_deletes,
+    std::vector<std::shared_ptr<DataFile>> existing_deletes,
+    std::shared_ptr<Expression> residual_filter)
+    : ChangelogScanTask(change_ordinal, commit_snapshot_id, std::move(data_file),
+                        std::move(added_deletes), std::move(residual_filter)),
+      existing_deletes_(std::move(existing_deletes)) {}
+
+int64_t DeletedRowsScanTask::size_bytes() const {
+  int64_t total_size = ChangelogScanTask::size_bytes();
+  for (const auto& delete_file : existing_deletes_) {
+    total_size += ContentFileUtil::ContentSizeInBytes(*delete_file);
+  }
+  return total_size;
+}
+
+int32_t DeletedRowsScanTask::files_count() const {
+  return ChangelogScanTask::files_count() +
+         static_cast<int32_t>(existing_deletes_.size());
+}
+
+// The record count of a deletion vector is its cardinality, which bounds the number of
+// rows this task can produce.
+int64_t DeletedRowsScanTask::estimated_row_count() const {
+  int64_t deleted_rows = 0;
+  for (const auto& delete_file : delete_files_) {
+    deleted_rows += delete_file->record_count;
+  }
+  return std::min(deleted_rows, data_file_->record_count);
+}
+
 // Generic template implementation for Make
 template <typename ScanType>
 Result<std::unique_ptr<TableScanBuilder<ScanType>>> TableScanBuilder<ScanType>::Make(
