@@ -22,6 +22,42 @@
  * SOFTWARE.
  */
 
+/// \file iceberg/expected.h
+/// \brief A C++20 backport of C++23 `std::expected`, used as the storage type
+/// behind `iceberg::Result`.
+///
+/// Purpose: the library itself may be built as C++23, but its public headers
+/// must stay consumable from C++20 translation units. `std::expected` is a
+/// C++23 library feature, so `iceberg::Result<T>` (see iceberg/result.h) is
+/// defined in terms of `iceberg::expected` instead. The API mirrors
+/// `std::expected` (including the monadic `and_then`, `or_else`, `transform`
+/// and `transform_error`), so code can be written as if against the standard
+/// type.
+///
+/// History:
+/// - apache/iceberg-cpp#40 vendored this header, adapted from
+///   https://github.com/zeus-cpp/expected (MIT), while the project targeted
+///   C++20.
+/// - apache/iceberg-cpp#139 raised the project to C++23 and removed the header
+///   in favor of `std::expected`, which made C++23 a requirement for users of
+///   the public headers too.
+/// - apache/iceberg-cpp#936 restored it so the public headers work in C++20
+///   again, with these changes on top of the #40 version:
+///   * The default constructor no longer requires `T` to be default
+///     constructible, and the converting constructors start from `no_init`
+///     rather than default constructing `T` first. This lets
+///     `expected<T, E>` hold types with no (or a private) default constructor,
+///     which MSVC otherwise tried to instantiate.
+///   * `expected` is marked `ICEBERG_TEMPLATE_CLASS_EXPORT` rather than
+///     `ICEBERG_EXPORT`, so exporting a class template does not break the
+///     Windows build.
+///   * When `std::expected` is available, `iceberg::expected` can also be
+///     constructed from `std::unexpected<G>`, so library code compiled as C++23
+///     that still spells errors with `std::unexpected` keeps working.
+///
+/// Once C++23 can be required of all consumers, this header can be dropped and
+/// `iceberg::Result` aliased back to `std::expected`.
+
 #pragma once
 
 #include <exception>
@@ -362,6 +398,8 @@ struct storage_base {
   storage_base& operator=(storage_base const&) = default;
   storage_base& operator=(storage_base&&) = default;
 
+  // iceberg: constrained so T need not be default constructible; upstream
+  // unconditionally evaluated T{}.
   template <class U = T, std::enable_if_t<std::is_default_constructible_v<U>, int> = 0>
   constexpr storage_base() noexcept(std::is_nothrow_default_constructible_v<U>)
       : m_val(), m_has_val(true) {}
@@ -430,6 +468,8 @@ struct storage_base<T, E, false> {
   storage_base& operator=(storage_base const&) = default;
   storage_base& operator=(storage_base&&) = default;
 
+  // iceberg: constrained so T need not be default constructible; upstream
+  // unconditionally evaluated T{}.
   template <class U = T, std::enable_if_t<std::is_default_constructible_v<U>, int> = 0>
   constexpr storage_base() noexcept(std::is_nothrow_default_constructible_v<U>)
       : m_val(), m_has_val(true) {}
@@ -1014,6 +1054,8 @@ struct default_ctor_base<T, E, false> {
 /// tracked by the expected object.
 
 template <class T, class E>
+// iceberg: ICEBERG_TEMPLATE_CLASS_EXPORT instead of ICEBERG_EXPORT so that
+// exporting this class template does not break the Windows build.
 class ICEBERG_TEMPLATE_CLASS_EXPORT [[nodiscard]] expected
     : private expected_detail::move_assign_base<T, E>,
       private expected_detail::default_ctor_base<T, E> {
