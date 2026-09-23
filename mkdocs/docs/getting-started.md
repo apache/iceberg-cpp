@@ -23,9 +23,13 @@
 
 **Required:**
 
-- C++23 compliant compiler (GCC 14+, Clang 18+, MSVC 2022+)
+- C++23 compliant compiler (GCC 14+, Clang 18+, MSVC 2022+) to build iceberg-cpp itself
 - CMake 3.25+
 - [Ninja](https://ninja-build.org/) (recommended build backend)
+
+**Using iceberg-cpp from your project:** the installed public headers require
+C++20 at minimum, so applications that link against iceberg-cpp can be
+compiled as C++20 or later. The library itself is still built as C++23.
 
 ## Quick Start
 
@@ -110,6 +114,14 @@ If using provided Apache Arrow, include both paths:
 
 ```bash
 cmake -S . -B build -G Ninja -DCMAKE_PREFIX_PATH="/path/to/install;/path/to/arrow"
+```
+
+The examples build as C++20 by default, which is the minimum standard supported
+by the public headers. Set `ICEBERG_EXAMPLE_CXX_STANDARD` to `23` to build them
+as C++23 instead:
+
+```bash
+cmake -S . -B build -G Ninja -DCMAKE_PREFIX_PATH=/path/to/install -DICEBERG_EXAMPLE_CXX_STANDARD=23
 ```
 
 ## Customizing Dependency URLs
