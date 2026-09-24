@@ -20,9 +20,13 @@
 #include "iceberg/util/bucket_util.h"
 
 #include <chrono>
+#include <cstdint>
+#include <limits>
 
+#include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
+#include "iceberg/exception.h"
 #include "iceberg/expression/literal.h"
 #include "iceberg/test/temporal_test_helper.h"
 #include "iceberg/util/decimal.h"
@@ -106,6 +110,20 @@ TEST(BucketUtilsTest, HashHelper) {
   // fixed & binary
   std::vector<uint8_t> fixed = {0, 1, 2, 3};
   EXPECT_EQ(BucketUtils::HashBytes(fixed), -188683207);
+}
+
+TEST(BucketUtilsTest, HashBytesRejectsOversizedInput) {
+  // Lengths above INT32_MAX would wrap the 32-bit signed length parameter of
+  // MurmurHash3_x86_32 and read out of bounds. Fabricate an oversized span
+  // (never dereferenced: HashBytes must reject it before touching the data)
+  // to avoid allocating 2 GiB in the test.
+  const uint8_t byte = 0;
+  const auto oversized_length =
+      static_cast<size_t>(std::numeric_limits<int32_t>::max()) + 1;
+  std::span<const uint8_t> oversized(&byte, oversized_length);
+  ASSERT_THAT([&]() { BucketUtils::HashBytes(oversized); },
+              ::testing::ThrowsMessage<IcebergError>(
+                  ::testing::HasSubstr("exceeds the maximum supported length")));
 }
 
 TEST(BucketUtilsTest, BucketTimestampNanosMatchesMicros) {
