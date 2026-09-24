@@ -221,7 +221,7 @@ class ArrowS3FileIO final : public FileIO, public SupportsStorageCredentials {
 
   /// \brief Build a delegate for each credential this FileIO can serve.
   ///
-  /// Lock-free on purpose: building an S3 client can reach out to discover a
+  /// Runs without holding `mutex_`: building an S3 client can reach out to discover a
   /// bucket region, which would stall every concurrent operation. Reads no
   /// mutable member state.
   Result<DelegatesByPrefix> BuildDelegates(

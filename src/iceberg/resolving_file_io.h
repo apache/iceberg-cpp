@@ -22,6 +22,7 @@
 /// \file iceberg/resolving_file_io.h
 /// \brief FileIO that resolves the concrete implementation per file-path scheme.
 
+#include <cstdint>
 #include <memory>
 #include <shared_mutex>
 #include <string>
@@ -73,6 +74,9 @@ class ICEBERG_EXPORT ResolvingFileIO final : public FileIO,
   // Guards lazy resolution and credential state.
   mutable std::shared_mutex mutex_;
   std::vector<StorageCredential> storage_credentials_;
+  // Bumped by every credential install, so a delegate loaded from an older set
+  // never reaches the cache.
+  uint64_t credential_generation_ = 0;
   std::unordered_map<std::string, std::shared_ptr<FileIO>, StringHash, StringEqual>
       io_by_name_;
 };

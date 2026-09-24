@@ -23,6 +23,7 @@
 #include <iostream>
 #include <memory>
 #include <optional>
+#include <span>
 #include <string>
 #include <string_view>
 #include <thread>
@@ -239,28 +240,6 @@ TEST_F(ArrowS3FileIOTest, WarnsWhenNoCredentialApplies) {
   EXPECT_TRUE(HasWarning(*logger));
 }
 
-TEST_F(ArrowS3FileIOTest, DeleteFilesDispatchesAcrossCredentialPrefixes) {
-  auto result = MakeS3FileIO({});
-  ASSERT_THAT(result, IsOk());
-  auto* credentialed = result.value()->AsSupportsStorageCredentials();
-  ASSERT_NE(credentialed, nullptr);
-
-  auto credential = [](std::string_view prefix, std::string_view access_key) {
-    return StorageCredential{
-        .prefix = std::string(prefix),
-        .config = {{std::string(S3Properties::kAccessKeyId), std::string(access_key)},
-                   {std::string(S3Properties::kSecretAccessKey), "secret"}}};
-  };
-  ASSERT_THAT(credentialed->SetStorageCredentials({credential("s3://bucket-a", "key-a"),
-                                                   credential("s3://bucket-b", "key-b")}),
-              IsOk());
-
-  auto status = result.value()->DeleteFiles({"s3://bucket-a/%ZZ.parquet",
-                                             "s3://bucket-a/second.parquet",
-                                             "s3://bucket-b/other.parquet"});
-  EXPECT_THAT(status, HasErrorMessage("Cannot parse URI"));
-}
-
 TEST_F(ArrowS3FileIOTest, OperationsSurviveConcurrentCredentialInstalls) {
   auto result = MakeS3FileIO({});
   ASSERT_THAT(result, IsOk());
@@ -276,17 +255,27 @@ TEST_F(ArrowS3FileIOTest, OperationsSurviveConcurrentCredentialInstalls) {
   ASSERT_THAT(credentialed->SetStorageCredentials({credential("first")}), IsOk());
 
   std::atomic<bool> stop = false;
+  std::atomic<int> started = 0;
   std::atomic<int> failures = 0;
   std::vector<std::thread> operations;
   operations.reserve(4);
   for (int i = 0; i < 4; ++i) {
     operations.emplace_back([&] {
-      while (!stop.load()) {
+      auto open = [&] {
         if (!result.value()->NewInputFile("s3://bucket/key").has_value()) {
           ++failures;
         }
+      };
+      open();
+      ++started;
+      while (!stop.load()) {
+        open();
       }
     });
+  }
+  // Every worker has run and is still looping before the first install.
+  while (started.load() < 4) {
+    std::this_thread::yield();
   }
   // No assertions until the threads are joined: a fatal assertion here would
   // destroy joinable threads and terminate the binary, masking the failure.
@@ -404,6 +393,90 @@ TEST_F(ArrowS3FileIOTest, AppliesOssCredentialInRealRoundTrip) {
                   {{.prefix = oss_prefix, .config = std::move(properties)}}),
               IsOk());
   EXPECT_THAT(CheckReadWrite(*io, s3_uri, "hello oss with vended credentials"), IsOk());
+}
+
+TEST_F(ArrowS3FileIOTest, DeleteFilesReachesEveryCredentialPrefix) {
+  if (!HasIntegrationEnv()) {
+    GTEST_SKIP() << "Set ICEBERG_TEST_S3_URI to enable S3 IO test";
+  }
+
+  auto properties = PropertiesFromEnv();
+  if (!properties.contains(std::string(S3Properties::kAccessKeyId)) ||
+      !properties.contains(std::string(S3Properties::kSecretAccessKey))) {
+    GTEST_SKIP() << "Set AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY to enable "
+                    "credential routing test";
+  }
+
+  // Only the prefix delegates can authenticate, so a location that falls to
+  // the default one fails the batch instead of passing unnoticed.
+  auto bad_defaults = properties;
+  for (const auto& [key, value] : BadS3Credentials()) {
+    bad_defaults.insert_or_assign(key, value);
+  }
+  ICEBERG_UNWRAP_OR_FAIL(auto io, MakeS3FileIO(std::move(bad_defaults)));
+  auto* credentialed = io->AsSupportsStorageCredentials();
+  ASSERT_NE(credentialed, nullptr);
+
+  const auto a = ObjectUri("delete_files_a/");
+  const auto b = ObjectUri("delete_files_b/");
+  ASSERT_THAT(credentialed->SetStorageCredentials({{.prefix = a, .config = properties},
+                                                   {.prefix = b, .config = properties}}),
+              IsOk());
+
+  const std::vector<std::string> paths = {a + "first", b + "only", a + "second"};
+  for (const auto& path : paths) {
+    ASSERT_THAT(io->WriteFile(path, "payload"), IsOk());
+  }
+  ASSERT_THAT(io->DeleteFiles(paths), IsOk());
+  // Deleting a missing key succeeds on S3, so check the objects are gone. The
+  // writes above authenticated on these paths, so a failed read means absent.
+  for (const auto& path : paths) {
+    EXPECT_FALSE(io->ReadFile(path, std::nullopt).has_value()) << path;
+  }
+}
+
+TEST_F(ArrowS3FileIOTest, InputFileOutlivesCredentialInstall) {
+  if (!HasIntegrationEnv()) {
+    GTEST_SKIP() << "Set ICEBERG_TEST_S3_URI to enable S3 IO test";
+  }
+
+  auto properties = PropertiesFromEnv();
+  if (!properties.contains(std::string(S3Properties::kAccessKeyId)) ||
+      !properties.contains(std::string(S3Properties::kSecretAccessKey))) {
+    GTEST_SKIP() << "Set AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY to enable "
+                    "credential routing test";
+  }
+
+  auto bad_defaults = properties;
+  for (const auto& [key, value] : BadS3Credentials()) {
+    bad_defaults.insert_or_assign(key, value);
+  }
+  ICEBERG_UNWRAP_OR_FAIL(auto io, MakeS3FileIO(std::move(bad_defaults)));
+  auto* credentialed = io->AsSupportsStorageCredentials();
+  ASSERT_NE(credentialed, nullptr);
+
+  const auto prefix = ObjectUri("retained_input/");
+  const std::vector<StorageCredential> credentials = {
+      {.prefix = prefix, .config = properties}};
+  ASSERT_THAT(credentialed->SetStorageCredentials(credentials), IsOk());
+
+  const auto uri = prefix + "object";
+  constexpr std::string_view kContent = "written before the credential install";
+  ASSERT_THAT(io->WriteFile(uri, kContent), IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(auto file, io->NewInputFile(uri));
+  ICEBERG_UNWRAP_OR_FAIL(auto opened_before, file->Open());
+
+  // Retires the delegate `file` came from; both handles must still read.
+  ASSERT_THAT(credentialed->SetStorageCredentials(credentials), IsOk());
+
+  ICEBERG_UNWRAP_OR_FAIL(auto opened_after, file->Open());
+  for (auto* stream : {opened_before.get(), opened_after.get()}) {
+    std::string read(kContent.size(), '\0');
+    EXPECT_THAT(stream->ReadFully(0, std::as_writable_bytes(std::span(read))), IsOk());
+    EXPECT_EQ(read, kContent);
+    EXPECT_THAT(stream->Close(), IsOk());
+  }
+  EXPECT_THAT(io->DeleteFile(uri), IsOk());
 }
 
 #if ICEBERG_S3_ENABLED
