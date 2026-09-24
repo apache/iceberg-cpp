@@ -108,6 +108,8 @@ class ICEBERG_EXPORT StructLikeAccessor {
                               std::span<const size_t> position_path);
 
   /// \brief Get the scalar value at the given position.
+  /// A null parent (monostate or an empty StructLike pointer) returns monostate
+  /// without reading the rest of the path.
   Result<Scalar> Get(const StructLike& struct_like) const {
     return accessor_(struct_like);
   }

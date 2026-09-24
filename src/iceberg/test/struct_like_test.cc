@@ -20,7 +20,9 @@
 #include "iceberg/row/struct_like.h"
 
 #include <array>
+#include <memory>
 #include <utility>
+#include <vector>
 
 #include <arrow/c/bridge.h>
 #include <arrow/json/from_string.h>
@@ -71,6 +73,7 @@ namespace {
 class SingleFieldStructLike : public StructLike {
  public:
   explicit SingleFieldStructLike(Scalar value) : value_(std::move(value)) {}
+  explicit SingleFieldStructLike(Result<Scalar> value) : value_(std::move(value)) {}
 
   Result<Scalar> GetField(size_t pos) const override {
     if (pos != 0) {
@@ -82,8 +85,17 @@ class SingleFieldStructLike : public StructLike {
   size_t num_fields() const override { return 1; }
 
  private:
-  Scalar value_;
+  Result<Scalar> value_;
 };
+
+std::shared_ptr<StructLike> WrapSingleFieldRow(Result<Scalar> field, size_t depth) {
+  std::shared_ptr<StructLike> row =
+      std::make_shared<SingleFieldStructLike>(std::move(field));
+  for (size_t i = 1; i < depth; ++i) {
+    row = std::make_shared<SingleFieldStructLike>(Scalar{row});
+  }
+  return row;
+}
 
 }  // namespace
 
@@ -169,6 +181,63 @@ TEST(StructLikeAccessorTest, GetLiteralUuidRejectsWrongLength) {
   EXPECT_THAT(result, IsError(ErrorKind::kInvalidArgument));
   EXPECT_THAT(result, HasErrorMessage("UUID byte array must be exactly 16 bytes"));
 }
+
+class NestedStructLikeAccessorTest : public ::testing::TestWithParam<size_t> {};
+
+TEST_P(NestedStructLikeAccessorTest, NullParents) {
+  const std::vector<size_t> path(GetParam(), 0);
+  StructLikeAccessor accessor(int32(), path);
+  for (const Scalar null :
+       {Scalar{std::monostate{}}, Scalar{std::shared_ptr<StructLike>{}}}) {
+    for (size_t parent = 0; parent + 1 < path.size(); ++parent) {
+      SCOPED_TRACE(parent);
+      auto row = WrapSingleFieldRow(null, parent + 1);
+      ICEBERG_UNWRAP_OR_FAIL(auto scalar, accessor.Get(*row));
+      EXPECT_TRUE(std::holds_alternative<std::monostate>(scalar));
+      ICEBERG_UNWRAP_OR_FAIL(auto literal, accessor.GetLiteral(*row));
+      EXPECT_TRUE(literal.IsNull());
+      EXPECT_EQ(literal.type()->type_id(), TypeId::kInt);
+    }
+  }
+}
+
+TEST_P(NestedStructLikeAccessorTest, ValueAndNullLeaf) {
+  const std::vector<size_t> path(GetParam(), 0);
+  StructLikeAccessor accessor(int32(), path);
+  auto row = WrapSingleFieldRow(Scalar{int32_t{42}}, path.size());
+  ICEBERG_UNWRAP_OR_FAIL(auto value, accessor.GetLiteral(*row));
+  EXPECT_EQ(value, Literal::Int(42));
+
+  auto null_row = WrapSingleFieldRow(Scalar{std::monostate{}}, path.size());
+  ICEBERG_UNWRAP_OR_FAIL(auto null, accessor.GetLiteral(*null_row));
+  EXPECT_TRUE(null.IsNull());
+  EXPECT_EQ(null.type()->type_id(), TypeId::kInt);
+}
+
+TEST_P(NestedStructLikeAccessorTest, RejectsNonStructParents) {
+  const std::vector<size_t> path(GetParam(), 0);
+  StructLikeAccessor accessor(int32(), path);
+  for (size_t parent = 0; parent + 1 < path.size(); ++parent) {
+    SCOPED_TRACE(parent);
+    auto row = WrapSingleFieldRow(Scalar{int32_t{42}}, parent + 1);
+    EXPECT_THAT(accessor.Get(*row), IsError(ErrorKind::kInvalidSchema));
+  }
+}
+
+TEST_P(NestedStructLikeAccessorTest, PreservesFieldErrors) {
+  const std::vector<size_t> path(GetParam(), 0);
+  StructLikeAccessor accessor(int32(), path);
+  for (size_t level = 0; level < path.size(); ++level) {
+    SCOPED_TRACE(level);
+    auto row = WrapSingleFieldRow(IOError("Cannot read field"), level + 1);
+    auto result = accessor.GetLiteral(*row);
+    EXPECT_THAT(result, IsError(ErrorKind::kIOError));
+    EXPECT_THAT(result, HasErrorMessage("Cannot read field"));
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(NestedPaths, NestedStructLikeAccessorTest,
+                         ::testing::Values(size_t{2}, size_t{3}, size_t{4}));
 
 TEST(ManifestFileStructLike, OptionalFields) {
   ManifestFile manifest_file{.manifest_path = "/path/to/manifest2.avro",
