@@ -74,8 +74,8 @@ jobs:
             bundle_awssdk: "ON"
     env:
       ICEBERG_TEST_S3_URI: s3://iceberg-test
-      AWS_ACCESS_KEY_ID: minio
-      AWS_SECRET_ACCESS_KEY: minio123
+      AWS_ACCESS_KEY_ID: admin
+      AWS_SECRET_ACCESS_KEY: password
       AWS_DEFAULT_REGION: us-east-1
       AWS_ENDPOINT_URL: http://127.0.0.1:9000
       AWS_EC2_METADATA_DISABLED: "TRUE"
@@ -114,10 +114,10 @@ jobs:
         run: |
           echo "CC=${{ matrix.CC }}" >> $GITHUB_ENV
           echo "CXX=${{ matrix.CXX }}" >> $GITHUB_ENV
-      - name: Start MinIO
+      - name: Start RustFS
         if: ${{ matrix.s3 == 'ON' }}
         shell: bash
-        run: bash ci/scripts/start_minio.sh
+        run: bash ci/scripts/start_object_store.sh
       - name: Set up sccache
         uses: ./.github/actions/setup-sccache
         with:
