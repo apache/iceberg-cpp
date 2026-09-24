@@ -38,6 +38,7 @@
 @PACKAGE_INIT@
 
 set(ICEBERG_BUILD_STATIC "@ICEBERG_BUILD_STATIC@")
+set(ICEBERG_AWSSDK_BUNDLED "@ICEBERG_AWSSDK_BUNDLED@")
 set(ICEBERG_SYSTEM_DEPENDENCIES "@ICEBERG_SYSTEM_DEPENDENCIES@")
 
 # Extra args forwarded to find_dependency() for specific dependencies.
@@ -102,6 +103,31 @@ if(TARGET iceberg::arrow_static)
                                      "${arrow_lib_dir}/${CMAKE_STATIC_LIBRARY_PREFIX}arrow_bundled_dependencies${CMAKE_STATIC_LIBRARY_SUFFIX}"
     )
   endforeach()
+
+  # Arrow's bundled AWS libraries require platform-specific system libraries.
+  if(ICEBERG_AWSSDK_BUNDLED)
+    if(APPLE)
+      find_library(CORE_FOUNDATION CoreFoundation)
+      target_link_libraries(Arrow::arrow_bundled_dependencies
+                            INTERFACE ${CORE_FOUNDATION})
+      find_library(SECURITY Security)
+      target_link_libraries(Arrow::arrow_bundled_dependencies
+                            INTERFACE ${SECURITY})
+      find_library(NETWORK Network)
+      target_link_libraries(Arrow::arrow_bundled_dependencies
+                            INTERFACE ${NETWORK})
+    elseif(WIN32)
+      target_link_libraries(Arrow::arrow_bundled_dependencies
+                            INTERFACE "winhttp.lib"
+                                      "bcrypt.lib"
+                                      "wininet.lib"
+                                      "userenv.lib"
+                                      "version.lib"
+                                      "ncrypt.lib"
+                                      "Secur32.lib"
+                                      "Shlwapi.lib")
+    endif()
+  endif()
 endif()
 
 if(TARGET iceberg::parquet_static)
