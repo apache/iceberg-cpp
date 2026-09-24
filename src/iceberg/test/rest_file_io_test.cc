@@ -95,6 +95,18 @@ TEST(RestFileIOTest, DefaultResolverDelegatesThroughRegistry) {
   EXPECT_THAT(result.value()->DeleteFile("rest-test://file"), IsOk());
 }
 
+TEST(RestFileIOTest, DefaultResolverExposesMergedProperties) {
+  auto result = MakeTableFileIO({{"catalog-only", "catalog"}, {"shared", "catalog"}},
+                                {{"table-only", "table"}, {"shared", "table"}},
+                                /*storage_credentials=*/{});
+  ASSERT_THAT(result, IsOk());
+
+  EXPECT_THAT(result.value()->properties(),
+              ::testing::UnorderedElementsAre(::testing::Pair("catalog-only", "catalog"),
+                                              ::testing::Pair("table-only", "table"),
+                                              ::testing::Pair("shared", "table")));
+}
+
 TEST(RestFileIOTest, MakeCatalogFileIOPassesThroughCustomImpl) {
   const std::string custom_impl = "com.mycompany.CustomFileIO";
   FileIORegistry::Register(

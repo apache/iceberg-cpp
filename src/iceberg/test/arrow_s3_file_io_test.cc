@@ -175,6 +175,18 @@ TEST_F(ArrowS3FileIOTest, StoresCredentials) {
   EXPECT_EQ(credentialed->credentials(), credentials);
 }
 
+TEST_F(ArrowS3FileIOTest, PropertiesExposeFileIOConfiguration) {
+  auto result = MakeS3FileIO({{std::string(S3Properties::kClientRegion), "us-east-1"},
+                              {std::string(S3Properties::kAccessKeyId), "key"},
+                              {std::string(S3Properties::kSecretAccessKey), "secret"}});
+  ASSERT_THAT(result, IsOk());
+
+  const auto& properties = result.value()->properties();
+  EXPECT_EQ(properties.at(std::string(S3Properties::kClientRegion)), "us-east-1");
+  EXPECT_EQ(properties.at(std::string(S3Properties::kAccessKeyId)), "key");
+  EXPECT_EQ(properties.at(std::string(S3Properties::kSecretAccessKey)), "secret");
+}
+
 TEST_F(ArrowS3FileIOTest, SkipsNonS3CredentialPrefix) {
   auto result = MakeS3FileIO({});
   ASSERT_THAT(result, IsOk());
