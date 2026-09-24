@@ -25,6 +25,7 @@
 #include <cstdint>
 #include <optional>
 #include <string>
+#include <type_traits>
 #include <utility>
 
 #include "iceberg/iceberg_export.h"
@@ -82,12 +83,20 @@ class ICEBERG_EXPORT TruncateUtils {
 
   /// \brief Truncate an integer v, either int32_t or int64_t, to v - (v % W).
   ///
-  /// The remainder, v % W, must be positive. For languages where % can produce negative
-  /// values, the correct truncate function is: v - (((v % W) + W) % W)
+  /// W must be positive. Since C++ can produce a negative remainder, add W only
+  /// when v % W is negative to normalize it to [0, W). This addition cannot overflow.
+  /// The final subtraction uses unsigned arithmetic to avoid signed-overflow undefined
+  /// behavior when the truncated value is below T's minimum. Conversion back to T
+  /// preserves two's-complement wraparound (defined since C++20).
   template <typename T>
     requires std::is_same_v<T, int32_t> || std::is_same_v<T, int64_t>
   static inline T TruncateInteger(T v, int32_t W) {
-    return v - (((v % W) + W) % W);
+    using U = std::make_unsigned_t<T>;
+    T remainder = v % W;
+    if (remainder < 0) {
+      remainder += W;
+    }
+    return static_cast<T>(static_cast<U>(v) - static_cast<U>(remainder));
   }
 
   /// \brief Truncate a Decimal to a specified width.

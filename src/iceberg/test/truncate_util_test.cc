@@ -19,6 +19,9 @@
 
 #include "iceberg/util/truncate_util.h"
 
+#include <limits>
+#include <vector>
+
 #include <gtest/gtest.h>
 
 #include "iceberg/expression/literal.h"
@@ -49,6 +52,54 @@ TEST(TruncateUtilTest, TruncateLiteral) {
   EXPECT_EQ(TruncateUtils::TruncateLiteral(
                 Literal::Binary(std::vector<uint8_t>(data.begin(), data.end())), 3),
             Literal::Binary(std::vector<uint8_t>(expected.begin(), expected.end())));
+}
+
+TEST(TruncateUtilTest, TruncateIntegerBoundaryValues) {
+  auto check_boundaries = []<typename T>(auto make_literal) {
+    const T min = std::numeric_limits<T>::min();
+    const T max = std::numeric_limits<T>::max();
+    struct TestCase {
+      T value;
+      int32_t width;
+      T expected;
+    };
+    std::vector<TestCase> cases = {
+        {min, 1, min},
+        {-1, 1, -1},
+        {0, 1, 0},
+        {1, 1, 1},
+        {max, 1, max},
+        // The final subtraction wraps for the type minimum, matching Java.
+        {min, 10, max - 1},
+        {max, 10, max - max % 10},
+        // Values just above the type minimum truncate without wrapping.
+        {min + 8, 10, min + 8},
+        {min + 9, 10, min + 8},
+        // Java's truncateInt overflows (v % W) + W here; follow v - (v % W)
+        // instead, yielding 0 for both types, as Java's truncateLong also does.
+        {2147483645, 2147483646, 0},
+    };
+    for (int32_t width : {10, std::numeric_limits<int32_t>::max() - 1,
+                          std::numeric_limits<int32_t>::max()}) {
+      const T w = width;
+      cases.insert(cases.end(), {{0, width, 0},
+                                 {1, width, 0},
+                                 {w - 1, width, 0},
+                                 {-1, width, -w},
+                                 {1 - w, width, -w},
+                                 {w, width, w},
+                                 {-w, width, -w}});
+    }
+
+    for (const auto& [value, width, expected] : cases) {
+      SCOPED_TRACE(::testing::Message() << "value=" << value << ", width=" << width);
+      EXPECT_EQ(TruncateUtils::TruncateInteger(value, width), expected);
+      EXPECT_EQ(TruncateUtils::TruncateLiteral(make_literal(value), width),
+                make_literal(expected));
+    }
+  };
+  check_boundaries.operator()<int32_t>(Literal::Int);
+  check_boundaries.operator()<int64_t>(Literal::Long);
 }
 
 TEST(TruncateUtilTest, TruncateLiteralRejectsInvalidWidth) {
