@@ -78,11 +78,18 @@ jobs:
         with:
           key-prefix: sccache-test-ubuntu-${{ matrix.cmake_build_type }}
           job-status: ${{ job.status }}
-      - name: Build Example
+      - name: Build Example (C++20)
         shell: bash
         env:
           CC: gcc-14
           CXX: g++-14
+        run: ci/scripts/build_example.sh $(pwd)/example
+      - name: Build Example (C++23)
+        shell: bash
+        env:
+          CC: gcc-14
+          CXX: g++-14
+          ICEBERG_EXAMPLE_CXX_STANDARD: 23
         run: ci/scripts/build_example.sh $(pwd)/example
   hive:
     if: ${{ github.event_name != 'pull_request' || github.event.pull_request.draft == false }}
@@ -153,8 +160,13 @@ jobs:
         with:
           key-prefix: sccache-test-macos
           job-status: ${{ job.status }}
-      - name: Build Example
+      - name: Build Example (C++20)
         shell: bash
+        run: ci/scripts/build_example.sh $(pwd)/example
+      - name: Build Example (C++23)
+        shell: bash
+        env:
+          ICEBERG_EXAMPLE_CXX_STANDARD: 23
         run: ci/scripts/build_example.sh $(pwd)/example
   windows:
     if: ${{ github.event_name != 'pull_request' || github.event.pull_request.draft == false }}
@@ -199,8 +211,15 @@ jobs:
         with:
           key-prefix: sccache-test-windows
           job-status: ${{ job.status }}
-      - name: Build Example
+      - name: Build Example (C++20)
         shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          bash -lc 'ci/scripts/build_example.sh $(pwd)/example'
+      - name: Build Example (C++23)
+        shell: pwsh
+        env:
+          ICEBERG_EXAMPLE_CXX_STANDARD: 23
         run: |
           $ErrorActionPreference = "Stop"
           bash -lc 'ci/scripts/build_example.sh $(pwd)/example'

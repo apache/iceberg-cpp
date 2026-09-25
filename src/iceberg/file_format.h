@@ -28,6 +28,7 @@
 #include "iceberg/iceberg_export.h"
 #include "iceberg/result.h"
 #include "iceberg/util/string_util.h"
+#include "iceberg/util/unreachable.h"
 
 namespace iceberg {
 
@@ -51,7 +52,7 @@ ICEBERG_EXPORT inline std::string_view ToString(FileFormatType format_type) {
     case FileFormatType::kPuffin:
       return "puffin";
   }
-  std::unreachable();
+  Unreachable();
 }
 
 /// \brief Convert a string to a FileFormatType
