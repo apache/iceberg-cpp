@@ -191,47 +191,6 @@ bool NeedsBoundTruncation(const PrimitiveType& type) {
   return type.type_id() == TypeId::kString || type.type_id() == TypeId::kBinary;
 }
 
-Result<Literal> StatsValueToLiteral(const ::parquet::ColumnDescriptor& column,
-                                    const PrimitiveType& iceberg_type,
-                                    const ::parquet::Statistics& stats, bool is_min) {
-  switch (column.physical_type()) {
-    case ::parquet::Type::BOOLEAN:
-      return TypedStatsLiteral<::parquet::BoolStatistics>(
-          stats, is_min, [](bool value) { return Literal::Boolean(value); });
-    case ::parquet::Type::INT32:
-      return TypedStatsLiteral<::parquet::Int32Statistics>(
-          stats, is_min,
-          [&](int32_t value) { return Int32StatsLiteral(value, iceberg_type); });
-    case ::parquet::Type::INT64:
-      return TypedStatsLiteral<::parquet::Int64Statistics>(
-          stats, is_min,
-          [&](int64_t value) { return Int64StatsLiteral(value, iceberg_type); });
-    case ::parquet::Type::FLOAT:
-      return TypedStatsLiteral<::parquet::FloatStatistics>(
-          stats, is_min,
-          [&](float value) { return FloatStatsLiteral(value, iceberg_type); });
-    case ::parquet::Type::DOUBLE:
-      return TypedStatsLiteral<::parquet::DoubleStatistics>(
-          stats, is_min, [](double value) { return Literal::Double(value); });
-    case ::parquet::Type::BYTE_ARRAY:
-      return TypedStatsLiteral<::parquet::ByteArrayStatistics>(
-          stats, is_min, [&](const ::parquet::ByteArray& value) {
-            return BinaryStatsLiteral(BytesFromByteArray(value), iceberg_type);
-          });
-    case ::parquet::Type::FIXED_LEN_BYTE_ARRAY:
-      return TypedStatsLiteral<::parquet::FLBAStatistics>(
-          stats, is_min, [&](const ::parquet::FixedLenByteArray& value) {
-            return BinaryStatsLiteral(BytesFromFLBA(value, column.type_length()),
-                                      iceberg_type);
-          });
-    case ::parquet::Type::INT96:
-    case ::parquet::Type::UNDEFINED:
-      return NotSupported("Cannot convert Parquet statistics for physical type {}",
-                          static_cast<int>(column.physical_type()));
-  }
-  std::unreachable();
-}
-
 /// \brief Collect counts (value count and null count) from footer statistics.
 /// \param field_id The Iceberg field ID.
 /// \param metadata The Parquet file metadata.
@@ -288,15 +247,15 @@ Result<std::optional<FieldMetrics>> CollectBounds(
     value_count += column_chunk->num_values();
 
     if (stats->HasMinMax()) {
-      ICEBERG_ASSIGN_OR_RAISE(auto min_value,
-                              StatsValueToLiteral(*column_desc, *iceberg_type, *stats,
+      ICEBERG_ASSIGN_OR_RAISE(auto min_value, ParquetMetrics::StatsValueToLiteral(
+                                                  *column_desc, *iceberg_type, *stats,
                                                   /*is_min=*/true));
       if (!lower_bound.has_value() || min_value < lower_bound.value()) {
         lower_bound = std::move(min_value);
       }
 
-      ICEBERG_ASSIGN_OR_RAISE(auto max_value,
-                              StatsValueToLiteral(*column_desc, *iceberg_type, *stats,
+      ICEBERG_ASSIGN_OR_RAISE(auto max_value, ParquetMetrics::StatsValueToLiteral(
+                                                  *column_desc, *iceberg_type, *stats,
                                                   /*is_min=*/false));
       if (!upper_bound.has_value() || max_value > upper_bound.value()) {
         upper_bound = std::move(max_value);
@@ -503,6 +462,47 @@ class CollectMetricsVisitor {
 };
 
 }  // namespace
+
+Result<Literal> ParquetMetrics::StatsValueToLiteral(
+    const ::parquet::ColumnDescriptor& column, const PrimitiveType& iceberg_type,
+    const ::parquet::Statistics& stats, bool is_min) {
+  switch (column.physical_type()) {
+    case ::parquet::Type::BOOLEAN:
+      return TypedStatsLiteral<::parquet::BoolStatistics>(
+          stats, is_min, [](bool value) { return Literal::Boolean(value); });
+    case ::parquet::Type::INT32:
+      return TypedStatsLiteral<::parquet::Int32Statistics>(
+          stats, is_min,
+          [&](int32_t value) { return Int32StatsLiteral(value, iceberg_type); });
+    case ::parquet::Type::INT64:
+      return TypedStatsLiteral<::parquet::Int64Statistics>(
+          stats, is_min,
+          [&](int64_t value) { return Int64StatsLiteral(value, iceberg_type); });
+    case ::parquet::Type::FLOAT:
+      return TypedStatsLiteral<::parquet::FloatStatistics>(
+          stats, is_min,
+          [&](float value) { return FloatStatsLiteral(value, iceberg_type); });
+    case ::parquet::Type::DOUBLE:
+      return TypedStatsLiteral<::parquet::DoubleStatistics>(
+          stats, is_min, [](double value) { return Literal::Double(value); });
+    case ::parquet::Type::BYTE_ARRAY:
+      return TypedStatsLiteral<::parquet::ByteArrayStatistics>(
+          stats, is_min, [&](const ::parquet::ByteArray& value) {
+            return BinaryStatsLiteral(BytesFromByteArray(value), iceberg_type);
+          });
+    case ::parquet::Type::FIXED_LEN_BYTE_ARRAY:
+      return TypedStatsLiteral<::parquet::FLBAStatistics>(
+          stats, is_min, [&](const ::parquet::FixedLenByteArray& value) {
+            return BinaryStatsLiteral(BytesFromFLBA(value, column.type_length()),
+                                      iceberg_type);
+          });
+    case ::parquet::Type::INT96:
+    case ::parquet::Type::UNDEFINED:
+      return NotSupported("Cannot convert Parquet statistics for physical type {}",
+                          static_cast<int>(column.physical_type()));
+  }
+  std::unreachable();
+}
 
 Result<Metrics> ParquetMetrics::GetMetrics(
     const Schema& schema, const ::parquet::SchemaDescriptor& parquet_schema,

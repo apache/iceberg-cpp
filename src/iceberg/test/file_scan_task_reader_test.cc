@@ -43,6 +43,8 @@
 #include "iceberg/data/position_delete_writer.h"
 #include "iceberg/deletes/dv_writer.h"
 #include "iceberg/deletes/position_delete_index.h"
+#include "iceberg/expression/binder.h"
+#include "iceberg/expression/expressions.h"
 #include "iceberg/file_format.h"
 #include "iceberg/file_io.h"
 #include "iceberg/file_reader.h"
@@ -674,6 +676,78 @@ TEST_F(FileScanTaskReaderTest, OpenWithMixedDeletesSkipsFullyDeletedBatches) {
   auto stream = std::move(stream_result.value());
 
   ASSERT_NO_FATAL_FAILURE(VerifyStream(&stream, R"([[3, "Baz"]])"));
+}
+
+TEST_F(FileScanTaskReaderTest, RowGroupPruningPreservesDeletesAndLineage) {
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto data_file,
+      MakeDataFile(table_schema_,
+                   std::vector<std::string>{R"([[0,"a","keep"],[1,"b","keep"]])",
+                                            R"([[2,"c","skip"],[3,"d","skip"]])",
+                                            R"([[4,"e","keep"],[5,"f","keep"]])"},
+                   6, 2));
+  data_file->first_row_id = 100;
+  data_file->data_sequence_number = 5;
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto pos_delete, MakePositionDeleteFile(CreateNewTempFilePathWithSuffix(".parquet"),
+                                              {4}, data_file->file_path));
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto dv, MakeDeletionVectorFile(CreateNewTempFilePathWithSuffix(".puffin"), {4},
+                                      data_file->file_path));
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto eq_delete, MakeEqualityDeleteFile(CreateNewTempFilePathWithSuffix(".parquet"),
+                                             table_schema_, R"([[4,"e","keep"]])", {1}));
+  for (auto delete_file : {pos_delete, dv, eq_delete}) {
+    FileScanTask task(data_file, {delete_file},
+                      Expressions::Equal("category", Literal::String("keep")));
+    FileScanTaskReader::Options options{
+        .io = file_io_,
+        .table_schema = table_schema_,
+        .schemas = {table_schema_},
+        .projected_schema = RowLineageProjection(),
+    };
+    ICEBERG_UNWRAP_OR_FAIL(auto reader, FileScanTaskReader::Make(std::move(options)));
+    ICEBERG_UNWRAP_OR_FAIL(auto stream, reader->Open(task));
+    auto batches = ::arrow::ImportRecordBatchReader(&stream).ValueOrDie();
+    std::vector<int32_t> actual_ids;
+    std::vector<int64_t> lineage;
+    while (true) {
+      auto batch = batches->Next().ValueOrDie();
+      if (!batch) break;
+      auto ids = std::static_pointer_cast<::arrow::Int32Array>(batch->column(0));
+      auto row_ids = std::static_pointer_cast<::arrow::Int64Array>(batch->column(1));
+      for (int64_t i = 0; i < batch->num_rows(); ++i) {
+        actual_ids.push_back(ids->Value(i));
+        lineage.push_back(row_ids->Value(i));
+      }
+    }
+    EXPECT_EQ(actual_ids, (std::vector<int32_t>{0, 1, 5}));
+    EXPECT_EQ(lineage, (std::vector<int64_t>{100, 101, 105}));
+  }
+}
+
+TEST_F(FileScanTaskReaderTest, RowGroupPruningUsesUnprojectedFilterWithoutDeletes) {
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto data_file,
+      MakeDataFile(table_schema_,
+                   std::vector<std::string>{R"([[0,"a","skip"],[1,"b","skip"]])",
+                                            R"([[2,"c","keep"],[3,"d","keep"]])"},
+                   4, 2));
+  auto filter = Expressions::Equal("category", Literal::String("keep"));
+  ICEBERG_UNWRAP_OR_FAIL(auto bound, Binder::Bind(*table_schema_, filter, true));
+  for (const auto& predicate : std::vector<std::shared_ptr<Expression>>{
+           filter, bound, Expressions::Equal("CATEGORY", Literal::String("keep"))}) {
+    FileScanTask task(data_file, {}, predicate);
+    FileScanTaskReader::Options options{
+        .io = file_io_,
+        .table_schema = table_schema_,
+        .projected_schema = projected_schema_,
+    };
+    options.properties["read.filter.case-sensitive"] = "false";
+    ICEBERG_UNWRAP_OR_FAIL(auto reader, FileScanTaskReader::Make(std::move(options)));
+    ICEBERG_UNWRAP_OR_FAIL(auto stream, reader->Open(task));
+    VerifyStream(&stream, R"([[2,"c"],[3,"d"]])");
+  }
 }
 
 }  // namespace iceberg
