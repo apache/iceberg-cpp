@@ -22,6 +22,7 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
+#include "iceberg/labels.h"
 #include "iceberg/schema.h"
 #include "iceberg/schema_field.h"
 #include "iceberg/table_metadata.h"
@@ -146,6 +147,55 @@ TYPED_TEST(TypedTableTest, NewTransaction) {
   } else {
     EXPECT_THAT(table->NewTransaction(), IsError(ErrorKind::kNotSupported));
   }
+}
+
+TYPED_TEST(TypedTableTest, LabelsDefaultToEmpty) {
+  ICEBERG_UNWRAP_OR_FAIL(auto table, this->MakeTable("test_table"));
+
+  EXPECT_TRUE(table->labels().empty());
+}
+
+class TableLabelsTest : public ::testing::Test {
+ protected:
+  void SetUp() override {
+    io_ = std::make_shared<MockFileIO>();
+    catalog_ = std::make_shared<MockCatalog>();
+    auto schema = std::make_shared<Schema>(
+        std::vector<SchemaField>{SchemaField::MakeRequired(1, "id", int64())}, 1);
+    metadata_ = std::make_shared<TableMetadata>(
+        TableMetadata{.format_version = 2, .schemas = {schema}, .current_schema_id = 1});
+  }
+
+  const TableIdentifier ident_{.ns = Namespace{.levels = {"db"}}, .name = "t"};
+  const Labels labels_{
+      .object_labels = {{"owner", "team-a"}},
+      .fields = {{.field_id = 1, .labels = {{"classification", "pii"}}}}};
+  std::shared_ptr<MockFileIO> io_;
+  std::shared_ptr<MockCatalog> catalog_;
+  std::shared_ptr<TableMetadata> metadata_;
+};
+
+TEST_F(TableLabelsTest, ExposesProvidedLabels) {
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto table, Table::Make(ident_, metadata_, "s3://bucket/meta.json", io_, catalog_,
+                              /*full_name=*/"", /*reporter=*/nullptr, labels_));
+
+  EXPECT_EQ(table->labels(), labels_);
+}
+
+TEST_F(TableLabelsTest, RefreshKeepsLabels) {
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto table, Table::Make(ident_, metadata_, "s3://bucket/meta.json", io_, catalog_,
+                              /*full_name=*/"", /*reporter=*/nullptr, labels_));
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto refreshed,
+      Table::Make(ident_, metadata_, "s3://bucket/meta2.json", io_, catalog_));
+  EXPECT_CALL(*catalog_, LoadTable(::testing::_)).WillOnce(::testing::Return(refreshed));
+
+  ASSERT_THAT(table->Refresh(), IsOk());
+
+  EXPECT_EQ(table->metadata_file_location(), "s3://bucket/meta2.json");
+  EXPECT_EQ(table->labels(), labels_);
 }
 
 TEST(StaticTableTest, NewMutatingOperationsAreNotSupported) {

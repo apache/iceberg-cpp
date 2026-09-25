@@ -30,6 +30,7 @@
 #include "iceberg/catalog/rest/types.h"
 #include "iceberg/expression/expressions.h"
 #include "iceberg/file_format.h"
+#include "iceberg/labels.h"
 #include "iceberg/manifest/manifest_entry.h"
 #include "iceberg/partition_spec.h"
 #include "iceberg/result.h"
@@ -80,6 +81,11 @@ static std::shared_ptr<TableMetadata> MakeSimpleTableMetadata() {
       .partition_statistics = {},
       .next_row_id = 0,
   });
+}
+
+std::string LoadTableJsonWithLabels(std::string_view labels) {
+  return std::string(R"({"labels":)") + std::string(labels) +
+         R"(,"metadata":{"format-version":2,"table-uuid":"test-uuid-1234","location":"s3://bucket/test","last-sequence-number":0,"last-updated-ms":0,"last-column-id":1,"schemas":[{"type":"struct","schema-id":1,"fields":[{"id":1,"name":"id","type":"int","required":true}]}],"current-schema-id":1,"partition-specs":[{"spec-id":0,"fields":[]}],"default-spec-id":0,"last-partition-id":0,"sort-orders":[{"order-id":0,"fields":[]}],"default-sort-order-id":0,"properties":{}}})";
 }
 
 std::string LoadTableJsonWithCredentials(std::string_view storage_credentials) {
@@ -1133,7 +1139,15 @@ INSTANTIATE_TEST_SUITE_P(
                                           .config = {{"s3.access-key-id", "AKIAtest"},
                                                      {"s3.secret-access-key", "secret"},
                                                      {"s3.session-token", "token"},
-                                                     {"client.region", "us-east-1"}}}}}}),
+                                                     {"client.region", "us-east-1"}}}}}},
+        LoadTableResultParam{
+            .test_name = "WithLabels",
+            .expected_json_str =
+                R"({"labels":{"fields":[{"field-id":1,"labels":{"classification":"pii"}}],"object-labels":{"owner":"team-a"}},"metadata":{"current-schema-id":1,"current-snapshot-id":null,"default-sort-order-id":0,"default-spec-id":0,"format-version":2,"last-column-id":1,"last-partition-id":0,"last-sequence-number":0,"last-updated-ms":0,"location":"s3://bucket/test","metadata-log":[],"partition-specs":[{"fields":[],"spec-id":0}],"partition-statistics":[],"properties":{},"refs":{},"schemas":[{"fields":[{"id":1,"name":"id","required":true,"type":"int"}],"schema-id":1,"type":"struct"}],"snapshot-log":[],"snapshots":[],"sort-orders":[{"fields":[],"order-id":0}],"statistics":[],"table-uuid":"test-uuid-1234"}})",
+            .model = {.metadata = MakeSimpleTableMetadata(),
+                      .labels = {.object_labels = {{"owner", "team-a"}},
+                                 .fields = {{.field_id = 1,
+                                             .labels = {{"classification", "pii"}}}}}}}),
     [](const ::testing::TestParamInfo<LoadTableResultParam>& info) {
       return info.param.test_name;
     });
@@ -1162,7 +1176,33 @@ INSTANTIATE_TEST_SUITE_P(
             .json_str =
                 R"({"metadata":{"format-version":2,"table-uuid":"test-uuid-1234","location":"s3://bucket/test","last-sequence-number":0,"last-updated-ms":0,"last-column-id":1,"schemas":[{"type":"struct","schema-id":1,"fields":[{"id":1,"name":"id","type":"int","required":true}]}],"current-schema-id":1,"partition-specs":[{"spec-id":0,"fields":[]}],"default-spec-id":0,"last-partition-id":0,"sort-orders":[{"order-id":0,"fields":[]}],"default-sort-order-id":0,"properties":{}},"config":{"warehouse":"s3://bucket/warehouse"}})",
             .expected_model = {.metadata = MakeSimpleTableMetadata(),
-                               .config = {{"warehouse", "s3://bucket/warehouse"}}}}),
+                               .config = {{"warehouse", "s3://bucket/warehouse"}}}},
+        LoadTableResultDeserializeParam{
+            .test_name = "WithLabels",
+            .json_str = LoadTableJsonWithLabels(
+                R"({"object-labels":{"owner":"team-a"},"fields":[{"field-id":1,"labels":{"classification":"pii"}}]})"),
+            .expected_model = {.metadata = MakeSimpleTableMetadata(),
+                               .labels = {.object_labels = {{"owner", "team-a"}},
+                                          .fields = {{.field_id = 1,
+                                                      .labels = {{"classification",
+                                                                  "pii"}}}}}}},
+        LoadTableResultDeserializeParam{
+            .test_name = "NullLabels",
+            .json_str = LoadTableJsonWithLabels("null"),
+            .expected_model = {.metadata = MakeSimpleTableMetadata()}},
+        LoadTableResultDeserializeParam{
+            .test_name = "EmptyLabels",
+            .json_str = LoadTableJsonWithLabels("{}"),
+            .expected_model = {.metadata = MakeSimpleTableMetadata()}},
+        // Non-object labels are ignored rather than rejected
+        LoadTableResultDeserializeParam{
+            .test_name = "StringLabels",
+            .json_str = LoadTableJsonWithLabels(R"("oops")"),
+            .expected_model = {.metadata = MakeSimpleTableMetadata()}},
+        LoadTableResultDeserializeParam{
+            .test_name = "ArrayLabels",
+            .json_str = LoadTableJsonWithLabels(R"([{"object-labels":{"k":"v"}}])"),
+            .expected_model = {.metadata = MakeSimpleTableMetadata()}}),
     [](const ::testing::TestParamInfo<LoadTableResultDeserializeParam>& info) {
       return info.param.test_name;
     });
@@ -1202,6 +1242,10 @@ INSTANTIATE_TEST_SUITE_P(
             .test_name = "InvalidMetadataContent",
             .invalid_json_str = R"({"metadata":{"format-version":"invalid"}})",
             .expected_error_message = "type must be number, but is string"},
+        LoadTableResultInvalidParam{
+            .test_name = "LabelsFieldsNotArray",
+            .invalid_json_str = LoadTableJsonWithLabels(R"({"fields":"oops"})"),
+            .expected_error_message = "Cannot parse 'fields' from non-array"},
         LoadTableResultInvalidParam{
             .test_name = "CredentialsNotArray",
             .invalid_json_str = LoadTableJsonWithCredentials(R"("oops")"),
@@ -2631,5 +2675,169 @@ TEST(FetchPlanningResultResponseRoundtripTest, FailedWithError) {
   ASSERT_THAT(result2, IsOk());
   EXPECT_EQ(*result, *result2);
 }
+
+DECLARE_ROUNDTRIP_TEST(FieldLabel)
+
+INSTANTIATE_TEST_SUITE_P(
+    FieldLabelCases, FieldLabelTest,
+    ::testing::Values(
+        FieldLabelParam{
+            .test_name = "WithLabels",
+            .expected_json_str =
+                R"({"field-id":1,"labels":{"classification":"pii","owner":"team-a"}})",
+            .model = {.field_id = 1,
+                      .labels = {{"classification", "pii"}, {"owner", "team-a"}}}},
+        // A field label always writes "labels", even when empty
+        FieldLabelParam{.test_name = "EmptyLabels",
+                        .expected_json_str = R"({"field-id":1,"labels":{}})",
+                        .model = {.field_id = 1}},
+        FieldLabelParam{.test_name = "MaxInt32FieldId",
+                        .expected_json_str = R"({"field-id":2147483647,"labels":{}})",
+                        .model = {.field_id = 2147483647}},
+        FieldLabelParam{.test_name = "NegativeFieldId",
+                        .expected_json_str = R"({"field-id":-1,"labels":{"k":"v"}})",
+                        .model = {.field_id = -1, .labels = {{"k", "v"}}}}),
+    [](const ::testing::TestParamInfo<FieldLabelParam>& info) {
+      return info.param.test_name;
+    });
+
+DECLARE_INVALID_TEST(FieldLabel)
+
+INSTANTIATE_TEST_SUITE_P(
+    FieldLabelInvalidCases, FieldLabelInvalidTest,
+    ::testing::Values(
+        FieldLabelInvalidParam{
+            .test_name = "NotObject",
+            .invalid_json_str = R"([])",
+            .expected_error_message = "Cannot parse field label from non-object"},
+        FieldLabelInvalidParam{.test_name = "MissingFieldId",
+                               .invalid_json_str = R"({"labels":{}})",
+                               .expected_error_message = "Missing 'field-id'"},
+        FieldLabelInvalidParam{.test_name = "NullFieldId",
+                               .invalid_json_str = R"({"field-id":null,"labels":{}})",
+                               .expected_error_message = "Missing 'field-id'"},
+        FieldLabelInvalidParam{
+            .test_name = "FloatFieldId",
+            .invalid_json_str = R"({"field-id":1.5,"labels":{}})",
+            .expected_error_message = "Cannot parse 'field-id' to an int32 value"},
+        FieldLabelInvalidParam{
+            .test_name = "BoolFieldId",
+            .invalid_json_str = R"({"field-id":true,"labels":{}})",
+            .expected_error_message = "Cannot parse 'field-id' to an int32 value"},
+        FieldLabelInvalidParam{
+            .test_name = "StringFieldId",
+            .invalid_json_str = R"({"field-id":"1","labels":{}})",
+            .expected_error_message = "Cannot parse 'field-id' to an int32 value"},
+        FieldLabelInvalidParam{
+            .test_name = "FieldIdAboveInt32",
+            .invalid_json_str = R"({"field-id":2147483648,"labels":{}})",
+            .expected_error_message = "Cannot parse 'field-id' to an int32 value"},
+        FieldLabelInvalidParam{
+            .test_name = "FieldIdBelowInt32",
+            .invalid_json_str = R"({"field-id":-2147483649,"labels":{}})",
+            .expected_error_message = "Cannot parse 'field-id' to an int32 value"},
+        FieldLabelInvalidParam{.test_name = "MissingLabels",
+                               .invalid_json_str = R"({"field-id":1})",
+                               .expected_error_message = "Missing 'labels'"},
+        FieldLabelInvalidParam{.test_name = "NullLabels",
+                               .invalid_json_str = R"({"field-id":1,"labels":null})",
+                               .expected_error_message = "Missing 'labels'"},
+        FieldLabelInvalidParam{.test_name = "LabelsNotObject",
+                               .invalid_json_str = R"({"field-id":1,"labels":"x"})",
+                               .expected_error_message = "type must be object"},
+        FieldLabelInvalidParam{.test_name = "NonStringLabelValue",
+                               .invalid_json_str = R"({"field-id":1,"labels":{"k":1}})",
+                               .expected_error_message = "type must be string"}),
+    [](const ::testing::TestParamInfo<FieldLabelInvalidParam>& info) {
+      return info.param.test_name;
+    });
+
+DECLARE_ROUNDTRIP_TEST(Labels)
+
+INSTANTIATE_TEST_SUITE_P(
+    LabelsCases, LabelsTest,
+    ::testing::Values(
+        LabelsParam{.test_name = "Empty", .expected_json_str = R"({})", .model = {}},
+        LabelsParam{.test_name = "ObjectLabelsOnly",
+                    .expected_json_str = R"({"object-labels":{"owner":"team-a"}})",
+                    .model = {.object_labels = {{"owner", "team-a"}}}},
+        LabelsParam{
+            .test_name = "FieldsOnly",
+            .expected_json_str =
+                R"({"fields":[{"field-id":1,"labels":{"classification":"pii"}},{"field-id":2,"labels":{"unit":"usd"}}]})",
+            .model = {.fields = {{.field_id = 1, .labels = {{"classification", "pii"}}},
+                                 {.field_id = 2, .labels = {{"unit", "usd"}}}}}},
+        LabelsParam{
+            .test_name = "ObjectAndFields",
+            .expected_json_str =
+                R"({"object-labels":{"owner":"team-a"},"fields":[{"field-id":1,"labels":{"classification":"pii"}}]})",
+            .model = {.object_labels = {{"owner", "team-a"}},
+                      .fields = {{.field_id = 1,
+                                  .labels = {{"classification", "pii"}}}}}},
+        // Duplicate field IDs are kept verbatim and in order; no resolution
+        LabelsParam{
+            .test_name = "DuplicateFieldIds",
+            .expected_json_str =
+                R"({"fields":[{"field-id":1,"labels":{"a":"1"}},{"field-id":1,"labels":{"b":"2"}}]})",
+            .model = {.fields = {{.field_id = 1, .labels = {{"a", "1"}}},
+                                 {.field_id = 1, .labels = {{"b", "2"}}}}}}),
+    [](const ::testing::TestParamInfo<LabelsParam>& info) {
+      return info.param.test_name;
+    });
+
+DECLARE_DESERIALIZE_TEST(Labels)
+
+INSTANTIATE_TEST_SUITE_P(
+    LabelsDeserializeCases, LabelsDeserializeTest,
+    ::testing::Values(
+        LabelsDeserializeParam{.test_name = "NullObjectLabels",
+                               .json_str = R"({"object-labels":null})",
+                               .expected_model = {}},
+        LabelsDeserializeParam{.test_name = "NullFields",
+                               .json_str = R"({"fields":null})",
+                               .expected_model = {}},
+        LabelsDeserializeParam{
+            .test_name = "UnknownKeysIgnored",
+            .json_str =
+                R"({"object-labels":{"a":"b"},"future":1,"fields":[{"field-id":2,"labels":{},"extra":true}]})",
+            .expected_model = {.object_labels = {{"a", "b"}},
+                               .fields = {{.field_id = 2}}}}),
+    [](const ::testing::TestParamInfo<LabelsDeserializeParam>& info) {
+      return info.param.test_name;
+    });
+
+DECLARE_INVALID_TEST(Labels)
+
+INSTANTIATE_TEST_SUITE_P(
+    LabelsInvalidCases, LabelsInvalidTest,
+    ::testing::Values(
+        LabelsInvalidParam{.test_name = "ObjectLabelsNotObject",
+                           .invalid_json_str = R"({"object-labels":"x"})",
+                           .expected_error_message = "type must be object"},
+        LabelsInvalidParam{.test_name = "ObjectLabelsNonStringValue",
+                           .invalid_json_str = R"({"object-labels":{"k":1}})",
+                           .expected_error_message = "type must be string"},
+        LabelsInvalidParam{.test_name = "ObjectLabelsNullValue",
+                           .invalid_json_str = R"({"object-labels":{"k":null}})",
+                           .expected_error_message = "type must be string"},
+        LabelsInvalidParam{
+            .test_name = "FieldsNotArray",
+            .invalid_json_str = R"({"fields":{}})",
+            .expected_error_message = "Cannot parse 'fields' from non-array"},
+        LabelsInvalidParam{
+            .test_name = "FieldEntryNotObject",
+            .invalid_json_str = R"({"fields":[1]})",
+            .expected_error_message = "Cannot parse field label from non-object"},
+        LabelsInvalidParam{
+            .test_name = "FieldEntryNull",
+            .invalid_json_str = R"({"fields":[null]})",
+            .expected_error_message = "Cannot parse field label from non-object"},
+        LabelsInvalidParam{
+            .test_name = "FieldEntryInvalidFieldId",
+            .invalid_json_str = R"({"fields":[{"field-id":1.5,"labels":{}}]})",
+            .expected_error_message = "Cannot parse 'field-id' to an int32 value"}),
+    [](const ::testing::TestParamInfo<LabelsInvalidParam>& info) {
+      return info.param.test_name;
+    });
 
 }  // namespace iceberg::rest

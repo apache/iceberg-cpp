@@ -33,6 +33,7 @@
 #include "iceberg/expression/json_serde_internal.h"
 #include "iceberg/file_format.h"
 #include "iceberg/json_serde_internal.h"
+#include "iceberg/labels.h"
 #include "iceberg/manifest/manifest_entry.h"
 #include "iceberg/partition_spec.h"
 #include "iceberg/schema.h"
@@ -72,6 +73,10 @@ constexpr std::string_view kDestination = "destination";
 constexpr std::string_view kMetadata = "metadata";
 constexpr std::string_view kConfig = "config";
 constexpr std::string_view kStorageCredentials = "storage-credentials";
+constexpr std::string_view kLabels = "labels";
+constexpr std::string_view kObjectLabels = "object-labels";
+constexpr std::string_view kFields = "fields";
+constexpr std::string_view kFieldId = "field-id";
 constexpr std::string_view kPrefix = "prefix";
 constexpr std::string_view kIdentifiers = "identifiers";
 constexpr std::string_view kOverrides = "overrides";
@@ -712,6 +717,59 @@ Result<RenameTableRequest> RenameTableRequestFromJson(const nlohmann::json& json
   return request;
 }
 
+nlohmann::json ToJson(const FieldLabel& field_label) {
+  nlohmann::json json;
+  json[kFieldId] = field_label.field_id;
+  json[kLabels] = field_label.labels;
+  return json;
+}
+
+Result<FieldLabel> FieldLabelFromJson(const nlohmann::json& json) {
+  if (!json.is_object()) {
+    return JsonParseError("Cannot parse field label from non-object: {}",
+                          SafeDumpJson(json));
+  }
+  FieldLabel field_label;
+  ICEBERG_ASSIGN_OR_RAISE(field_label.field_id, GetJsonInt32Strict(json, kFieldId));
+  ICEBERG_ASSIGN_OR_RAISE(field_label.labels,
+                          GetJsonValue<decltype(field_label.labels)>(json, kLabels));
+  return field_label;
+}
+
+nlohmann::json ToJson(const Labels& labels) {
+  nlohmann::json json = nlohmann::json::object();
+  if (!labels.object_labels.empty()) {
+    json[kObjectLabels] = labels.object_labels;
+  }
+  if (!labels.fields.empty()) {
+    nlohmann::json fields = nlohmann::json::array();
+    for (const auto& field_label : labels.fields) {
+      fields.push_back(ToJson(field_label));
+    }
+    json[kFields] = std::move(fields);
+  }
+  return json;
+}
+
+// A non-object value is treated as absent labels rather than failing the load.
+Result<Labels> LabelsFromJson(const nlohmann::json& json) {
+  Labels labels;
+  ICEBERG_ASSIGN_OR_RAISE(
+      labels.object_labels,
+      GetJsonValueOrDefault<decltype(labels.object_labels)>(json, kObjectLabels));
+  if (auto it = json.find(kFields); it != json.end() && !it->is_null()) {
+    if (!it->is_array()) {
+      return JsonParseError("Cannot parse '{}' from non-array: {}", kFields,
+                            SafeDumpJson(*it));
+    }
+    for (const auto& entry : *it) {
+      ICEBERG_ASSIGN_OR_RAISE(auto field_label, FieldLabelFromJson(entry));
+      labels.fields.push_back(std::move(field_label));
+    }
+  }
+  return labels;
+}
+
 // LoadTableResult (used by CreateTableResponse, LoadTableResponse)
 Result<nlohmann::json> ToJson(const LoadTableResult& result) {
   nlohmann::json json;
@@ -725,6 +783,9 @@ Result<nlohmann::json> ToJson(const LoadTableResult& result) {
       creds.push_back(std::move(entry));
     }
     json[kStorageCredentials] = std::move(creds);
+  }
+  if (!result.labels.empty()) {
+    json[kLabels] = ToJson(result.labels);
   }
   return json;
 }
@@ -746,6 +807,9 @@ Result<LoadTableResult> LoadTableResultFromJson(const nlohmann::json& json) {
       ICEBERG_ASSIGN_OR_RAISE(auto cred, StorageCredentialFromJson(entry));
       result.storage_credentials.push_back(std::move(cred));
     }
+  }
+  if (auto it = json.find(kLabels); it != json.end() && !it->is_null()) {
+    ICEBERG_ASSIGN_OR_RAISE(result.labels, LabelsFromJson(*it));
   }
   ICEBERG_RETURN_UNEXPECTED(result.Validate());
   return result;
@@ -1216,5 +1280,7 @@ ICEBERG_DEFINE_FROM_JSON(CommitTableResponse)
 ICEBERG_DEFINE_FROM_JSON(OAuthTokenResponse)
 ICEBERG_DEFINE_FROM_JSON(PlanTableScanRequest)
 ICEBERG_DEFINE_FROM_JSON(FetchScanTasksRequest)
+ICEBERG_DEFINE_FROM_JSON(FieldLabel)
+ICEBERG_DEFINE_FROM_JSON(Labels)
 
 }  // namespace iceberg::rest
