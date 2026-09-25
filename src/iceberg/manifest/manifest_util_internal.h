@@ -53,4 +53,12 @@ ICEBERG_EXPORT Result<ManifestFile> CopyAppendManifest(
     int64_t snapshot_id, const std::string& output_path, int8_t format_version,
     SnapshotSummaryBuilder* summary_builder = nullptr);
 
+/// \brief Copy a manifest containing only EXISTING entries, preserving their
+/// snapshot IDs, sequence numbers, and row IDs. The caller owns output_path and
+/// must clean it up if copying or committing fails.
+ICEBERG_EXPORT Result<ManifestFile> CopyRewriteManifest(
+    const ManifestFile& manifest, const std::shared_ptr<FileIO>& file_io,
+    const std::shared_ptr<Schema>& schema, const std::shared_ptr<PartitionSpec>& spec,
+    int64_t snapshot_id, const std::string& output_path, int8_t format_version);
+
 }  // namespace iceberg

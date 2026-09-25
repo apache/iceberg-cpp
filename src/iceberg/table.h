@@ -209,6 +209,9 @@ class ICEBERG_EXPORT Table : public std::enable_shared_from_this<Table> {
   /// the changes.
   virtual Result<std::shared_ptr<ReplacePartitions>> NewReplacePartitions();
 
+  /// \brief Create a new RewriteManifests to rewrite manifest layout.
+  virtual Result<std::shared_ptr<RewriteManifests>> NewRewriteManifests();
+
   /// \brief Create a new SnapshotManager to manage snapshots and snapshot references.
   virtual Result<std::shared_ptr<SnapshotManager>> NewSnapshotManager();
 
@@ -292,6 +295,8 @@ class ICEBERG_EXPORT StaticTable : public Table {
   Result<std::shared_ptr<RewriteFiles>> NewRewriteFiles() override;
 
   Result<std::shared_ptr<ReplacePartitions>> NewReplacePartitions() override;
+
+  Result<std::shared_ptr<RewriteManifests>> NewRewriteManifests() override;
 
   Result<std::shared_ptr<SnapshotManager>> NewSnapshotManager() override;
 
