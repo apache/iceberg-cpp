@@ -114,7 +114,7 @@ jobs:
         run: |
           echo "CC=${{ matrix.CC }}" >> $GITHUB_ENV
           echo "CXX=${{ matrix.CXX }}" >> $GITHUB_ENV
-      - name: Start RustFS
+      - name: Start Object Store
         if: ${{ matrix.s3 == 'ON' }}
         shell: bash
         run: bash ci/scripts/start_object_store.sh

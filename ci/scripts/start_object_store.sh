@@ -17,7 +17,7 @@
 # specific language governing permissions and limitations
 # under the License.
 
-set -euo pipefail
+set -euxo pipefail
 
 OBJECT_STORE_VERSION="${OBJECT_STORE_VERSION:-1.0.0}"
 OBJECT_STORE_IMAGE="${OBJECT_STORE_IMAGE:-rustfs/rustfs:${OBJECT_STORE_VERSION}}"
@@ -28,6 +28,7 @@ OBJECT_STORE_PORT="${OBJECT_STORE_PORT:-9000}"
 OBJECT_STORE_BUCKET="${OBJECT_STORE_BUCKET:-iceberg-test}"
 OBJECT_STORE_ENDPOINT="${AWS_ENDPOINT_URL:-http://127.0.0.1:${OBJECT_STORE_PORT}}"
 OBJECT_STORE_DIR="${RUNNER_TEMP:-/tmp}/iceberg-object-store"
+OBJECT_STORE_LOG=""
 
 wait_for_object_store() {
   for ((attempt = 0; attempt < 60; attempt++)); do
@@ -36,9 +37,9 @@ wait_for_object_store() {
     fi
     sleep 1
   done
-  echo "RustFS did not become ready at ${OBJECT_STORE_ENDPOINT}." >&2
-  if [ -f "${OBJECT_STORE_DIR}/rustfs.log" ]; then
-    cat "${OBJECT_STORE_DIR}/rustfs.log" >&2
+  echo "Object store did not become ready at ${OBJECT_STORE_ENDPOINT}." >&2
+  if [ -n "${OBJECT_STORE_LOG}" ]; then
+    cat "${OBJECT_STORE_LOG}" >&2
   else
     docker logs "${OBJECT_STORE_CONTAINER_NAME}" >&2 || true
   fi
@@ -93,12 +94,13 @@ start_object_store_native() {
   )
   unzip -o "${OBJECT_STORE_DIR}/${archive}" -d "${OBJECT_STORE_DIR}"
   chmod +x "${OBJECT_STORE_DIR}/${binary}"
+  OBJECT_STORE_LOG="${OBJECT_STORE_DIR}/rustfs.log"
   RUSTFS_ACCESS_KEY="${OBJECT_STORE_ACCESS_KEY}" \
     RUSTFS_SECRET_KEY="${OBJECT_STORE_SECRET_KEY}" \
     RUSTFS_ADDRESS=":${OBJECT_STORE_PORT}" \
     RUSTFS_CONSOLE_ENABLE=false \
     "${OBJECT_STORE_DIR}/${binary}" "${OBJECT_STORE_DIR}/data" \
-    >"${OBJECT_STORE_DIR}/rustfs.log" 2>&1 &
+    >"${OBJECT_STORE_LOG}" 2>&1 &
 }
 
 create_bucket() {

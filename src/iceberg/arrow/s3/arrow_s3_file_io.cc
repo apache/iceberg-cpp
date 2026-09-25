@@ -109,7 +109,7 @@ Result<::arrow::fs::S3Options> ConfigureS3Options(
     options.region = *region;
   }
 
-  // Configure endpoint (for MinIO, LocalStack, etc.)
+  // Configure endpoint (for S3-compatible object stores)
   if (const auto* endpoint = FindProperty(properties, S3Properties::kEndpoint);
       endpoint != nullptr) {
     options.endpoint_override = SplitEndpointScheme(*endpoint, options);
