@@ -451,6 +451,51 @@ TEST_F(RestCatalogIntegrationTest, ConcurrentHttpClientRequests) {
   }
 }
 
+TEST_F(RestCatalogIntegrationTest, ConcurrentCatalogUse) {
+  constexpr int kThreads = 16;
+  constexpr int kAsCatalogCalls = 10000;
+  constexpr int kRequests = 50;
+
+  auto config = RestCatalogProperties::default_properties();
+  config.Set(RestCatalogProperties::kUri, CatalogUri())
+      .Set(RestCatalogProperties::kName, std::string(kCatalogName))
+      .Set(RestCatalogProperties::kWarehouse, std::string(kWarehouseName));
+  config.mutable_configs()[std::string(RestCatalogProperties::kIOImpl.key())] =
+      std::string(kStdFileIOImpl);
+  ICEBERG_UNWRAP_OR_FAIL(auto root, RestCatalog::Make(config));
+
+  Namespace ns{.levels = {"test_concurrent_catalog_use"}};
+  TableIdentifier table_id{.ns = ns, .name = "events"};
+  {
+    ICEBERG_UNWRAP_OR_FAIL(auto catalog, root->AsCatalog());
+    ASSERT_THAT(catalog->CreateNamespace(ns, {}), IsOk());
+    ASSERT_THAT(CreateDefaultTable(catalog, table_id), IsOk());
+  }
+
+  std::vector<std::thread> threads;
+  threads.reserve(kThreads);
+  for (int i = 0; i < kThreads; ++i) {
+    threads.emplace_back([&] {
+      // Nothing else holds the default catalog, so these calls keep recreating it.
+      for (int j = 0; j < kAsCatalogCalls; ++j) {
+        ASSERT_THAT(root->AsCatalog(), IsOk());
+      }
+      ICEBERG_UNWRAP_OR_FAIL(auto catalog, root->AsCatalog());
+      for (int j = 0; j < kRequests; ++j) {
+        ASSERT_THAT(catalog->LoadTable(table_id), IsOk());
+        ASSERT_THAT(catalog->ListNamespaces(ns), IsOk());
+      }
+    });
+  }
+  for (auto& thread : threads) {
+    thread.join();
+  }
+
+  ICEBERG_UNWRAP_OR_FAIL(auto catalog, root->AsCatalog());
+  ASSERT_THAT(catalog->DropTable(table_id, /*purge=*/false), IsOk());
+  ASSERT_THAT(catalog->DropNamespace(ns), IsOk());
+}
+
 // -- Namespace operations --
 
 TEST_F(RestCatalogIntegrationTest, ListNamespaces) {
