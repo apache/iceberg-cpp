@@ -37,6 +37,8 @@
 #include "iceberg/manifest/manifest_list.h"
 #include "iceberg/manifest/manifest_reader.h"
 #include "iceberg/manifest/manifest_writer.h"
+#include "iceberg/metrics/metrics_context.h"
+#include "iceberg/metrics/scan_report.h"
 #include "iceberg/partition_spec.h"
 #include "iceberg/schema.h"
 #include "iceberg/table_scan.h"
@@ -810,6 +812,140 @@ TEST_P(ManifestGroupTest, MultipleDataManifests) {
   EXPECT_THAT(GetPaths(tasks), testing::UnorderedElementsAre("/path/to/data1.parquet",
                                                              "/path/to/data2.parquet"));
   EXPECT_EQ(executor.submit_count(), 2);
+}
+
+TEST_P(ManifestGroupTest, StreamBatchBoundary) {
+  auto version = GetParam();
+
+  // Use one more manifest than the current executor batch size to exercise
+  // loading the next batch.
+  constexpr size_t kManifestCount = 33;
+  std::vector<ManifestFile> manifests;
+  std::vector<std::string> expected_paths;
+  manifests.reserve(kManifestCount);
+  expected_paths.reserve(kManifestCount);
+  const auto partition = PartitionValues(std::vector<Literal>{});
+  for (size_t i = 0; i < kManifestCount; ++i) {
+    auto path = std::format("/path/to/data-{}.parquet", i);
+    manifests.push_back(WriteDataManifest(
+        version, /*snapshot_id=*/1000L + static_cast<int64_t>(i),
+        {MakeEntry(ManifestStatus::kAdded,
+                   /*snapshot_id=*/1000L + static_cast<int64_t>(i),
+                   /*sequence_number=*/static_cast<int64_t>(i) + 1,
+                   MakeDataFile(path, partition, unpartitioned_spec_->spec_id()))},
+        unpartitioned_spec_));
+    expected_paths.emplace_back(std::move(path));
+  }
+
+  test::ThreadExecutor executor;
+  for (bool use_executor : {false, true}) {
+    SCOPED_TRACE(std::format("use_executor={}", use_executor));
+    ICEBERG_UNWRAP_OR_FAIL(
+        auto group, ManifestGroup::Make(file_io_, schema_, GetSpecsById(), manifests));
+
+    if (use_executor) {
+      group->PlanWith(std::ref(executor));
+    }
+
+    ICEBERG_UNWRAP_OR_FAIL(auto stream, std::move(*group).PlanFilesStream());
+    ICEBERG_UNWRAP_OR_FAIL(auto tasks, stream->ToVector());
+    EXPECT_EQ(GetPaths(tasks), expected_paths);
+  }
+}
+
+TEST_P(ManifestGroupTest, FilterMetricsParity) {
+  auto version = GetParam();
+
+  constexpr int64_t kSnapshotId = 1000L;
+  const auto partition_0 = PartitionValues({Literal::Int(0)});
+  const auto partition_1 = PartitionValues({Literal::Int(1)});
+  auto selected_manifest = WriteDataManifest(
+      version, kSnapshotId,
+      {MakeEntry(ManifestStatus::kAdded, kSnapshotId, /*sequence_number=*/1,
+                 MakeDataFile("/path/to/keep.parquet", partition_0,
+                              partitioned_spec_->spec_id(), /*record_count=*/20)),
+       MakeEntry(ManifestStatus::kExisting, kSnapshotId, /*sequence_number=*/1,
+                 MakeDataFile("/path/to/existing.parquet", partition_0,
+                              partitioned_spec_->spec_id(), /*record_count=*/20)),
+       MakeEntry(ManifestStatus::kAdded, kSnapshotId, /*sequence_number=*/1,
+                 MakeDataFile("/path/to/small.parquet", partition_0,
+                              partitioned_spec_->spec_id(), /*record_count=*/5)),
+       MakeEntry(ManifestStatus::kAdded, kSnapshotId, /*sequence_number=*/1,
+                 MakeDataFile("/path/to/predicate.parquet", partition_0,
+                              partitioned_spec_->spec_id(), /*record_count=*/20))},
+      partitioned_spec_);
+  auto skipped_manifest = WriteDataManifest(
+      version, kSnapshotId,
+      {MakeEntry(ManifestStatus::kAdded, kSnapshotId, /*sequence_number=*/1,
+                 MakeDataFile("/path/to/pruned.parquet", partition_1,
+                              partitioned_spec_->spec_id(), /*record_count=*/20))},
+      partitioned_spec_);
+  const std::vector<ManifestFile> manifests = {selected_manifest, skipped_manifest};
+
+  auto configure = [](ManifestGroup& group, const std::shared_ptr<ScanMetrics>& metrics) {
+    group.FilterPartitions(Expressions::Equal("data_bucket_16_2", Literal::Int(0)))
+        .IgnoreExisting()
+        .FilterFiles(Expressions::GreaterThanOrEqual("record_count", Literal::Long(10)))
+        .FilterManifestEntries([](const ManifestEntry& entry) {
+          return entry.data_file->file_path != "/path/to/predicate.parquet";
+        })
+        .WithScanMetrics(metrics);
+  };
+  auto make_metrics = [] {
+    auto context = MetricsContext::Default();
+    return std::shared_ptr<ScanMetrics>(ScanMetrics::Make(*context));
+  };
+
+  auto entries_metrics = make_metrics();
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto entries_group,
+      ManifestGroup::Make(file_io_, schema_, GetSpecsById(), manifests));
+  configure(*entries_group, entries_metrics);
+  ICEBERG_UNWRAP_OR_FAIL(auto entries, entries_group->Entries());
+  EXPECT_THAT(GetEntryPaths(entries), testing::ElementsAre("/path/to/keep.parquet"));
+
+  struct StreamResult {
+    std::vector<std::string> paths;
+    std::shared_ptr<ScanMetrics> metrics;
+  };
+  auto run_stream = [&](bool use_executor) -> Result<StreamResult> {
+    auto metrics = make_metrics();
+    ICEBERG_ASSIGN_OR_RAISE(
+        auto group, ManifestGroup::Make(file_io_, schema_, GetSpecsById(), manifests));
+    configure(*group, metrics);
+    test::ThreadExecutor executor;
+    if (use_executor) {
+      group->PlanWith(std::ref(executor));
+    }
+    ICEBERG_ASSIGN_OR_RAISE(auto stream, std::move(*group).PlanFilesStream());
+    ICEBERG_ASSIGN_OR_RAISE(auto tasks, stream->ToVector());
+    return StreamResult{.paths = GetPaths(tasks), .metrics = std::move(metrics)};
+  };
+
+  ICEBERG_UNWRAP_OR_FAIL(auto serial, run_stream(false));
+  ICEBERG_UNWRAP_OR_FAIL(auto parallel, run_stream(true));
+  EXPECT_THAT(serial.paths, testing::ElementsAre("/path/to/keep.parquet"));
+  EXPECT_EQ(parallel.paths, serial.paths);
+
+  auto check_filter_metrics = [](const std::shared_ptr<ScanMetrics>& metrics) {
+    EXPECT_EQ(metrics->skipped_data_manifests->value(), 1);
+    EXPECT_EQ(metrics->scanned_data_manifests->value(), 1);
+    EXPECT_EQ(metrics->skipped_data_files->value(), 3);
+  };
+  check_filter_metrics(entries_metrics);
+  check_filter_metrics(serial.metrics);
+  check_filter_metrics(parallel.metrics);
+
+  EXPECT_EQ(entries_metrics->result_data_files->value(), 0);
+  EXPECT_EQ(entries_metrics->result_delete_files->value(), 0);
+  EXPECT_EQ(entries_metrics->total_file_size_in_bytes->value(), 0);
+  EXPECT_EQ(entries_metrics->total_delete_file_size_in_bytes->value(), 0);
+
+  EXPECT_EQ(serial.metrics->result_data_files->value(), 1);
+  EXPECT_EQ(serial.metrics->result_delete_files->value(), 0);
+  EXPECT_EQ(serial.metrics->total_file_size_in_bytes->value(), 10);
+  EXPECT_EQ(serial.metrics->total_delete_file_size_in_bytes->value(), 0);
+  EXPECT_EQ(parallel.metrics->ToResult(), serial.metrics->ToResult());
 }
 
 TEST_P(ManifestGroupTest, PartitionFilter) {
