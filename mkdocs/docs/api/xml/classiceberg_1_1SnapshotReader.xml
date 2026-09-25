@@ -1,0 +1,249 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1SnapshotReader" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::SnapshotReader</compoundname>
+    <includes refid="snapshot_8h" local="no">snapshot.h</includes>
+    <sectiondef kind="private-type">
+      <memberdef kind="typedef" id="classiceberg_1_1SnapshotReader_1a5ceec9b64b1ff7016d1674ffd06afd1e" prot="private" static="no">
+        <type>std::pair&lt; std::vector&lt; <ref refid="structiceberg_1_1ManifestFile" kindref="compound">ManifestFile</ref> &gt;, size_t &gt;</type>
+        <definition>using iceberg::SnapshotReader::ManifestsCache =  std::pair&lt;std::vector&lt;ManifestFile&gt;, size_t&gt;</definition>
+        <argsstring></argsstring>
+        <name>ManifestsCache</name>
+        <qualifiedname>iceberg::SnapshotReader::ManifestsCache</qualifiedname>
+        <briefdescription>
+<para>Cache structure for storing loaded manifests. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="note"><para>Manifests are stored in a single vector with data manifests at the head and delete manifests at the tail, separated by the number of data manifests. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/snapshot.h" line="498" column="3" bodyfile="iceberg/snapshot.h" bodystart="498" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1SnapshotReader_1a8d3f0e8110cdb20ad122c55e9144fb16" prot="private" static="no" mutable="no">
+        <type>const <ref refid="structiceberg_1_1Snapshot" kindref="compound">Snapshot</ref> *</type>
+        <definition>const Snapshot* iceberg::SnapshotReader::snapshot_</definition>
+        <argsstring></argsstring>
+        <name>snapshot_</name>
+        <qualifiedname>iceberg::SnapshotReader::snapshot_</qualifiedname>
+        <briefdescription>
+<para>The underlying snapshot data. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/snapshot.h" line="508" column="18" bodyfile="iceberg/snapshot.h" bodystart="508" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1SnapshotReader_1acebbce0ae9f085737fd2e7efec7a8ab4" prot="private" static="no" mutable="no">
+        <type><ref refid="classiceberg_1_1Lazy" kindref="compound">Lazy</ref>&lt; InitManifestsCache &gt;</type>
+        <definition>Lazy&lt;InitManifestsCache&gt; iceberg::SnapshotReader::manifests_cache_</definition>
+        <argsstring></argsstring>
+        <name>manifests_cache_</name>
+        <qualifiedname>iceberg::SnapshotReader::manifests_cache_</qualifiedname>
+        <briefdescription>
+<para>Lazy-loaded manifests cache. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/snapshot.h" line="511" column="8" bodyfile="iceberg/snapshot.h" bodystart="511" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1SnapshotReader_1a92af1384a319dac63a27f2a1fad946b9" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::SnapshotReader::SnapshotReader</definition>
+        <argsstring>(const Snapshot *snapshot)</argsstring>
+        <name>SnapshotReader</name>
+        <qualifiedname>iceberg::SnapshotReader::SnapshotReader</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1Snapshot" kindref="compound">Snapshot</ref> *</type>
+          <declname>snapshot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/snapshot.h" line="469" column="12" bodyfile="iceberg/snapshot.h" bodystart="469" bodyend="469"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SnapshotReader_1a5003629b41c92cea2914d7c26cb892f1" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>const <ref refid="structiceberg_1_1Snapshot" kindref="compound">Snapshot</ref> &amp;</type>
+        <definition>const Snapshot &amp; iceberg::SnapshotReader::snapshot</definition>
+        <argsstring>() const</argsstring>
+        <name>snapshot</name>
+        <qualifiedname>iceberg::SnapshotReader::snapshot</qualifiedname>
+        <briefdescription>
+<para>Get the underlying <ref refid="structiceberg_1_1Snapshot" kindref="compound">Snapshot</ref> reference. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/snapshot.h" line="472" column="18" bodyfile="iceberg/snapshot.h" bodystart="472" bodyend="472"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SnapshotReader_1aca51efaf191c908b701bff8f2ba5f495" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceiceberg_1a9d5594e371beb516b0120e07e69d3af6" kindref="member">Result</ref>&lt; std::span&lt; <ref refid="structiceberg_1_1ManifestFile" kindref="compound">ManifestFile</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::span&lt; ManifestFile &gt; &gt; iceberg::SnapshotReader::Manifests</definition>
+        <argsstring>(std::shared_ptr&lt; FileIO &gt; file_io) const</argsstring>
+        <name>Manifests</name>
+        <qualifiedname>iceberg::SnapshotReader::Manifests</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref> &gt;</type>
+          <declname>file_io</declname>
+        </param>
+        <briefdescription>
+<para>Returns all <ref refid="structiceberg_1_1ManifestFile" kindref="compound">ManifestFile</ref> instances for either data or delete manifests in this snapshot. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>file_io</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The <ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref> instance to use for reading the manifest list </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A span of <ref refid="structiceberg_1_1ManifestFile" kindref="compound">ManifestFile</ref> instances, or an error </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/snapshot.h" line="479" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SnapshotReader_1a3197cab65b43fb85c8edd89b40a78f65" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceiceberg_1a9d5594e371beb516b0120e07e69d3af6" kindref="member">Result</ref>&lt; std::span&lt; <ref refid="structiceberg_1_1ManifestFile" kindref="compound">ManifestFile</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::span&lt; ManifestFile &gt; &gt; iceberg::SnapshotReader::DataManifests</definition>
+        <argsstring>(std::shared_ptr&lt; FileIO &gt; file_io) const</argsstring>
+        <name>DataManifests</name>
+        <qualifiedname>iceberg::SnapshotReader::DataManifests</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref> &gt;</type>
+          <declname>file_io</declname>
+        </param>
+        <briefdescription>
+<para>Returns a <ref refid="structiceberg_1_1ManifestFile" kindref="compound">ManifestFile</ref> for each data manifest in this snapshot. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>file_io</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The <ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref> instance to use for reading the manifest list </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A span of <ref refid="structiceberg_1_1ManifestFile" kindref="compound">ManifestFile</ref> instances, or an error </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/snapshot.h" line="485" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SnapshotReader_1a9d175a15aa2c600105e4a8bcce2fcf70" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceiceberg_1a9d5594e371beb516b0120e07e69d3af6" kindref="member">Result</ref>&lt; std::span&lt; <ref refid="structiceberg_1_1ManifestFile" kindref="compound">ManifestFile</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::span&lt; ManifestFile &gt; &gt; iceberg::SnapshotReader::DeleteManifests</definition>
+        <argsstring>(std::shared_ptr&lt; FileIO &gt; file_io) const</argsstring>
+        <name>DeleteManifests</name>
+        <qualifiedname>iceberg::SnapshotReader::DeleteManifests</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref> &gt;</type>
+          <declname>file_io</declname>
+        </param>
+        <briefdescription>
+<para>Returns a <ref refid="structiceberg_1_1ManifestFile" kindref="compound">ManifestFile</ref> for each delete manifest in this snapshot. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>file_io</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The <ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref> instance to use for reading the manifest list </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A span of <ref refid="structiceberg_1_1ManifestFile" kindref="compound">ManifestFile</ref> instances, or an error </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/snapshot.h" line="491" column="10"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-static-func">
+      <memberdef kind="function" id="classiceberg_1_1SnapshotReader_1a29c08d312a77ea44ec080ab55594a158" prot="private" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceiceberg_1a9d5594e371beb516b0120e07e69d3af6" kindref="member">Result</ref>&lt; ManifestsCache &gt;</type>
+        <definition>static Result&lt; ManifestsCache &gt; iceberg::SnapshotReader::InitManifestsCache</definition>
+        <argsstring>(const Snapshot *snapshot, std::shared_ptr&lt; FileIO &gt; file_io)</argsstring>
+        <name>InitManifestsCache</name>
+        <qualifiedname>iceberg::SnapshotReader::InitManifestsCache</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1Snapshot" kindref="compound">Snapshot</ref> *</type>
+          <declname>snapshot</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref> &gt;</type>
+          <declname>file_io</declname>
+        </param>
+        <briefdescription>
+<para>Initialize manifests cache by loading them from the manifest list file. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>snapshot</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The snapshot to initialize the manifests cache for </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>file_io</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The <ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref> instance to use for reading the manifest list </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A result containing the manifests cache </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/snapshot.h" line="504" column="17"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Reads a snapshot&apos;s manifests, loading and caching its manifest list on first access. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/snapshot.h" line="467" column="1" bodyfile="iceberg/snapshot.h" bodystart="467" bodyend="512"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1SnapshotReader_1a3197cab65b43fb85c8edd89b40a78f65" prot="public" virt="non-virtual"><scope>iceberg::SnapshotReader</scope><name>DataManifests</name></member>
+      <member refid="classiceberg_1_1SnapshotReader_1a9d175a15aa2c600105e4a8bcce2fcf70" prot="public" virt="non-virtual"><scope>iceberg::SnapshotReader</scope><name>DeleteManifests</name></member>
+      <member refid="classiceberg_1_1SnapshotReader_1a29c08d312a77ea44ec080ab55594a158" prot="private" virt="non-virtual"><scope>iceberg::SnapshotReader</scope><name>InitManifestsCache</name></member>
+      <member refid="classiceberg_1_1SnapshotReader_1aca51efaf191c908b701bff8f2ba5f495" prot="public" virt="non-virtual"><scope>iceberg::SnapshotReader</scope><name>Manifests</name></member>
+      <member refid="classiceberg_1_1SnapshotReader_1acebbce0ae9f085737fd2e7efec7a8ab4" prot="private" virt="non-virtual"><scope>iceberg::SnapshotReader</scope><name>manifests_cache_</name></member>
+      <member refid="classiceberg_1_1SnapshotReader_1a5ceec9b64b1ff7016d1674ffd06afd1e" prot="private" virt="non-virtual"><scope>iceberg::SnapshotReader</scope><name>ManifestsCache</name></member>
+      <member refid="classiceberg_1_1SnapshotReader_1a5003629b41c92cea2914d7c26cb892f1" prot="public" virt="non-virtual"><scope>iceberg::SnapshotReader</scope><name>snapshot</name></member>
+      <member refid="classiceberg_1_1SnapshotReader_1a8d3f0e8110cdb20ad122c55e9144fb16" prot="private" virt="non-virtual"><scope>iceberg::SnapshotReader</scope><name>snapshot_</name></member>
+      <member refid="classiceberg_1_1SnapshotReader_1a92af1384a319dac63a27f2a1fad946b9" prot="public" virt="non-virtual"><scope>iceberg::SnapshotReader</scope><name>SnapshotReader</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

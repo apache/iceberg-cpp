@@ -1,0 +1,55 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1LocationUtil" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::LocationUtil</compoundname>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classiceberg_1_1LocationUtil_1a547f886111038bdf691d48e781d1099f" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::string_view</type>
+        <definition>static std::string_view iceberg::LocationUtil::ParseScheme</definition>
+        <argsstring>(std::string_view location)</argsstring>
+        <name>ParseScheme</name>
+        <qualifiedname>iceberg::LocationUtil::ParseScheme</qualifiedname>
+        <param>
+          <type>std::string_view</type>
+          <declname>location</declname>
+        </param>
+        <briefdescription>
+<para>Extract the URI scheme from a location. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This follows Java&apos;s <ref refid="classiceberg_1_1ResolvingFileIO" kindref="compound">ResolvingFileIO</ref>: the text before the first colon is the scheme; an empty result means that no scheme was found. Text that is not syntactically a scheme (RFC 3986) yields no scheme, and on Windows a single letter is a drive rather than a scheme. The rest of the location is not validated. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/location_util.h" line="40" column="27"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1LocationUtil_1a40e671309458a36d622339fd7dd6a743" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::string_view</type>
+        <definition>static std::string_view iceberg::LocationUtil::StripTrailingSlash</definition>
+        <argsstring>(std::string_view path)</argsstring>
+        <name>StripTrailingSlash</name>
+        <qualifiedname>iceberg::LocationUtil::StripTrailingSlash</qualifiedname>
+        <param>
+          <type>std::string_view</type>
+          <declname>path</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/location_util.h" line="42" column="27" bodyfile="iceberg/util/location_util.h" bodystart="42" bodyend="51"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/util/location_util.h" line="31" column="1" bodyfile="iceberg/util/location_util.h" bodystart="31" bodyend="52"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1LocationUtil_1a547f886111038bdf691d48e781d1099f" prot="public" virt="non-virtual"><scope>iceberg::LocationUtil</scope><name>ParseScheme</name></member>
+      <member refid="classiceberg_1_1LocationUtil_1a40e671309458a36d622339fd7dd6a743" prot="public" virt="non-virtual"><scope>iceberg::LocationUtil</scope><name>StripTrailingSlash</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

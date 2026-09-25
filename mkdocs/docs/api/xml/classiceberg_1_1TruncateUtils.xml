@@ -1,0 +1,385 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1TruncateUtils" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::TruncateUtils</compoundname>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classiceberg_1_1TruncateUtils_1a6275d912510a0380d8fda9236d6b5b5f" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::string</type>
+        <definition>static std::string iceberg::TruncateUtils::TruncateUTF8</definition>
+        <argsstring>(std::string source, size_t L)</argsstring>
+        <name>TruncateUTF8</name>
+        <qualifiedname>iceberg::TruncateUtils::TruncateUTF8</qualifiedname>
+        <param>
+          <type>std::string</type>
+          <declname>source</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>L</declname>
+        </param>
+        <briefdescription>
+<para>Truncate a UTF-8 string to a specified number of code points. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>source</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The input string to truncate. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>L</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The maximum number of code points allowed in the output string. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A valid UTF-8 string truncated to L code points. If the input string is already valid and has fewer than L code points, it is returned unchanged. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/truncate_util.h" line="45" column="22" bodyfile="iceberg/util/truncate_util.h" bodystart="45" bodyend="66"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TruncateUtils_1a6cd588213a643b5e0bb38b14e2bba07b" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceiceberg_1a9d5594e371beb516b0120e07e69d3af6" kindref="member">Result</ref>&lt; std::optional&lt; std::string &gt; &gt;</type>
+        <definition>static Result&lt; std::optional&lt; std::string &gt; &gt; iceberg::TruncateUtils::TruncateUTF8Max</definition>
+        <argsstring>(const std::string &amp;source, size_t L)</argsstring>
+        <name>TruncateUTF8Max</name>
+        <qualifiedname>iceberg::TruncateUtils::TruncateUTF8Max</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>source</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>L</declname>
+        </param>
+        <briefdescription>
+<para>Truncate a UTF-8 string to a specified number of code points for use as an upper-bound value. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>When truncation is required, the returned value is the smallest UTF-8 string greater than the truncated prefix. When no truncation is needed for the given width, the original string may be returned unchanged.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>source</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The input string to truncate. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>L</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The maximum number of code points allowed in the output string. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A Result containing the original string (if no truncation is needed), the smallest string greater than the truncated prefix, or nullopt if no safe upper bound can be represented. Invalid UTF-8 is returned as an error. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/truncate_util.h" line="80" column="17"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TruncateUtils_1a3e8544c4d16054c21e422a083ae9ea47" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename T</type>
+          </param>
+        </templateparamlist>
+        <type>T</type>
+        <definition>static T iceberg::TruncateUtils::TruncateInteger</definition>
+        <argsstring>(T v, int32_t W)</argsstring>
+        <name>TruncateInteger</name>
+        <qualifiedname>iceberg::TruncateUtils::TruncateInteger</qualifiedname>
+        <param>
+          <type>T</type>
+          <declname>v</declname>
+        </param>
+        <param>
+          <type>int32_t</type>
+          <declname>W</declname>
+        </param>
+    <requiresclause>std::is_same_v&lt;T, int32_t&gt; || std::is_same_v&lt;T, int64_t&gt;    </requiresclause>
+        <briefdescription>
+<para>Truncate an integer v, either int32_t or int64_t, to v - (v % W). </para>
+        </briefdescription>
+        <detaileddescription>
+<para>The remainder, v % W, must be positive. For languages where % can produce negative values, the correct truncate function is: v - (((v % W) + W) % W) </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/truncate_util.h" line="89" column="19" bodyfile="iceberg/util/truncate_util.h" bodystart="89" bodyend="91"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TruncateUtils_1a3af821b4109d4dc2dfb9f438da0d540a" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1Decimal" kindref="compound">Decimal</ref></type>
+        <definition>static Decimal iceberg::TruncateUtils::TruncateDecimal</definition>
+        <argsstring>(const Decimal &amp;decimal, int32_t width)</argsstring>
+        <name>TruncateDecimal</name>
+        <qualifiedname>iceberg::TruncateUtils::TruncateDecimal</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Decimal" kindref="compound">Decimal</ref> &amp;</type>
+          <declname>decimal</declname>
+        </param>
+        <param>
+          <type>int32_t</type>
+          <declname>width</declname>
+        </param>
+        <briefdescription>
+<para>Truncate a <ref refid="classiceberg_1_1Decimal" kindref="compound">Decimal</ref> to a specified width. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>decimal</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The input <ref refid="classiceberg_1_1Decimal" kindref="compound">Decimal</ref> to truncate. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>width</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The width to truncate to. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A <ref refid="classiceberg_1_1Decimal" kindref="compound">Decimal</ref> truncated to the specified width. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/truncate_util.h" line="97" column="18"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TruncateUtils_1a268a64cdc7a7fd158b1c44bdf3a68140" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceiceberg_1a9d5594e371beb516b0120e07e69d3af6" kindref="member">Result</ref>&lt; <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &gt;</type>
+        <definition>static Result&lt; Literal &gt; iceberg::TruncateUtils::TruncateLiteral</definition>
+        <argsstring>(const Literal &amp;literal, int32_t width)</argsstring>
+        <name>TruncateLiteral</name>
+        <qualifiedname>iceberg::TruncateUtils::TruncateLiteral</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &amp;</type>
+          <declname>literal</declname>
+        </param>
+        <param>
+          <type>int32_t</type>
+          <declname>width</declname>
+        </param>
+        <briefdescription>
+<para>Truncate a <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> to a specified width. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>literal</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The input <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> to truncate. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>width</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The width to truncate to. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A Result containing the truncated <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> or an error. Supported types are: INT, LONG, DECIMAL, STRING, BINARY. <ref refid="classiceberg_1_1Reference" kindref="compound">Reference</ref>:<itemizedlist>
+<listitem><para><ulink url="https://iceberg.apache.org/spec/#truncate-transform-details">Truncate Transform Details</ulink> </para>
+</listitem></itemizedlist>
+</para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/truncate_util.h" line="107" column="17"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TruncateUtils_1ab8d2d105ad4528b8908509f09b8fedb8" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceiceberg_1a9d5594e371beb516b0120e07e69d3af6" kindref="member">Result</ref>&lt; std::optional&lt; <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &gt; &gt;</type>
+        <definition>static Result&lt; std::optional&lt; Literal &gt; &gt; iceberg::TruncateUtils::TruncateLiteralMax</definition>
+        <argsstring>(const Literal &amp;value, int32_t width)</argsstring>
+        <name>TruncateLiteralMax</name>
+        <qualifiedname>iceberg::TruncateUtils::TruncateLiteralMax</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &amp;</type>
+          <declname>value</declname>
+        </param>
+        <param>
+          <type>int32_t</type>
+          <declname>width</declname>
+        </param>
+        <briefdescription>
+<para>Truncate a <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> to a specified width for use as an upper-bound value. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>When truncation is required, the returned value is the smallest <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> greater than the truncated prefix. When no truncation is needed for the given width, the original <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> may be returned unchanged.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>value</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The input <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> maximum value to truncate. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>width</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The width to truncate to. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A Result containing either the original <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> (if no truncation is needed), the smallest <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> greater than the truncated prefix, or nullopt if no safe upper bound can be represented. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/truncate_util.h" line="120" column="17"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TruncateUtils_1a4dcf4b3c24df8e1bd6093f098897878c" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceiceberg_1a9d5594e371beb516b0120e07e69d3af6" kindref="member">Result</ref>&lt; <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &gt;</type>
+        <definition>static Result&lt; Literal &gt; iceberg::TruncateUtils::TruncateLowerBound</definition>
+        <argsstring>(const PrimitiveType &amp;type, const Literal &amp;value, int32_t width)</argsstring>
+        <name>TruncateLowerBound</name>
+        <qualifiedname>iceberg::TruncateUtils::TruncateLowerBound</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1PrimitiveType" kindref="compound">PrimitiveType</ref> &amp;</type>
+          <declname>type</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &amp;</type>
+          <declname>value</declname>
+        </param>
+        <param>
+          <type>int32_t</type>
+          <declname>width</declname>
+        </param>
+        <briefdescription>
+<para>Truncate the lower bound of a string or binary value. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>For string/binary types, truncates to the given length. For other types, returns the value unchanged.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>type</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The Iceberg primitive type. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>value</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The lower bound literal value. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>width</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The width to truncate to. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The truncated lower bound literal. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/truncate_util.h" line="132" column="17"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TruncateUtils_1a4078e455407ac56c9370536260f6e7e5" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceiceberg_1a9d5594e371beb516b0120e07e69d3af6" kindref="member">Result</ref>&lt; std::optional&lt; <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &gt; &gt;</type>
+        <definition>static Result&lt; std::optional&lt; Literal &gt; &gt; iceberg::TruncateUtils::TruncateUpperBound</definition>
+        <argsstring>(const PrimitiveType &amp;type, const Literal &amp;value, int32_t width)</argsstring>
+        <name>TruncateUpperBound</name>
+        <qualifiedname>iceberg::TruncateUtils::TruncateUpperBound</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1PrimitiveType" kindref="compound">PrimitiveType</ref> &amp;</type>
+          <declname>type</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &amp;</type>
+          <declname>value</declname>
+        </param>
+        <param>
+          <type>int32_t</type>
+          <declname>width</declname>
+        </param>
+        <briefdescription>
+<para>Truncate the upper bound of a string or binary value. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>For string/binary types, truncates to the smallest value greater than the truncated prefix. For other types, returns the value unchanged.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>type</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The Iceberg primitive type. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>value</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The upper bound literal value. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>width</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The width to truncate to. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The truncated upper bound literal, or nullopt if no safe upper bound can be represented. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/truncate_util.h" line="145" column="17"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/util/truncate_util.h" line="36" column="1" bodyfile="iceberg/util/truncate_util.h" bodystart="36" bodyend="148"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1TruncateUtils_1a3af821b4109d4dc2dfb9f438da0d540a" prot="public" virt="non-virtual"><scope>iceberg::TruncateUtils</scope><name>TruncateDecimal</name></member>
+      <member refid="classiceberg_1_1TruncateUtils_1a3e8544c4d16054c21e422a083ae9ea47" prot="public" virt="non-virtual"><scope>iceberg::TruncateUtils</scope><name>TruncateInteger</name></member>
+      <member refid="classiceberg_1_1TruncateUtils_1a268a64cdc7a7fd158b1c44bdf3a68140" prot="public" virt="non-virtual"><scope>iceberg::TruncateUtils</scope><name>TruncateLiteral</name></member>
+      <member refid="classiceberg_1_1TruncateUtils_1ab8d2d105ad4528b8908509f09b8fedb8" prot="public" virt="non-virtual"><scope>iceberg::TruncateUtils</scope><name>TruncateLiteralMax</name></member>
+      <member refid="classiceberg_1_1TruncateUtils_1a4dcf4b3c24df8e1bd6093f098897878c" prot="public" virt="non-virtual"><scope>iceberg::TruncateUtils</scope><name>TruncateLowerBound</name></member>
+      <member refid="classiceberg_1_1TruncateUtils_1a4078e455407ac56c9370536260f6e7e5" prot="public" virt="non-virtual"><scope>iceberg::TruncateUtils</scope><name>TruncateUpperBound</name></member>
+      <member refid="classiceberg_1_1TruncateUtils_1a6275d912510a0380d8fda9236d6b5b5f" prot="public" virt="non-virtual"><scope>iceberg::TruncateUtils</scope><name>TruncateUTF8</name></member>
+      <member refid="classiceberg_1_1TruncateUtils_1a6cd588213a643b5e0bb38b14e2bba07b" prot="public" virt="non-virtual"><scope>iceberg::TruncateUtils</scope><name>TruncateUTF8Max</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,136 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1PropertyUtil" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::PropertyUtil</compoundname>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classiceberg_1_1PropertyUtil_1a97404b248fbd2d8c103f02ef81367c99" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Status</type>
+        <definition>static Status iceberg::PropertyUtil::ValidateCommitProperties</definition>
+        <argsstring>(const std::unordered_map&lt; std::string, std::string &gt; &amp;properties)</argsstring>
+        <name>ValidateCommitProperties</name>
+        <qualifiedname>iceberg::PropertyUtil::ValidateCommitProperties</qualifiedname>
+        <param>
+          <type>const std::unordered_map&lt; std::string, std::string &gt; &amp;</type>
+          <declname>properties</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/property_util.h" line="37" column="17"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1PropertyUtil_1a7fa314b0bb683ee6eba68e0479e1dc41" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>static bool iceberg::PropertyUtil::PropertyAsBoolean</definition>
+        <argsstring>(const std::unordered_map&lt; std::string, std::string &gt; &amp;properties, std::string_view key, bool default_value)</argsstring>
+        <name>PropertyAsBoolean</name>
+        <qualifiedname>iceberg::PropertyUtil::PropertyAsBoolean</qualifiedname>
+        <param>
+          <type>const std::unordered_map&lt; std::string, std::string &gt; &amp;</type>
+          <declname>properties</declname>
+        </param>
+        <param>
+          <type>std::string_view</type>
+          <declname>key</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>default_value</declname>
+        </param>
+        <briefdescription>
+<para>Read a boolean property from a property map. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Mirrors Java&apos;s PropertyUtil.propertyAsBoolean: the value is parsed with <ref refid="classiceberg_1_1StringUtils_1a8cc77c151549f779c22e7aa94395d390" kindref="member">StringUtils::ParseBoolean</ref>, so anything that is not &quot;true&quot; ignoring case reads as false rather than being rejected.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>properties</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The property map to read from. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>key</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The property key. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>default_value</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Returned when the property is absent. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The parsed value, or default_value if the property is absent. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/property_util.h" line="50" column="15"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1PropertyUtil_1ab6a55aea467d6bf982590950254011dc" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::optional&lt; bool &gt;</type>
+        <definition>static std::optional&lt; bool &gt; iceberg::PropertyUtil::PropertyAsOptionalBoolean</definition>
+        <argsstring>(const std::unordered_map&lt; std::string, std::string &gt; &amp;properties, std::string_view key)</argsstring>
+        <name>PropertyAsOptionalBoolean</name>
+        <qualifiedname>iceberg::PropertyUtil::PropertyAsOptionalBoolean</qualifiedname>
+        <param>
+          <type>const std::unordered_map&lt; std::string, std::string &gt; &amp;</type>
+          <declname>properties</declname>
+        </param>
+        <param>
+          <type>std::string_view</type>
+          <declname>key</declname>
+        </param>
+        <briefdescription>
+<para>Read a boolean property that may be unset. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Like PropertyAsBoolean, but returns std::nullopt when the property is absent so callers can distinguish an unset property from an explicit &quot;false&quot;. Mirrors Java&apos;s PropertyUtil.propertyAsNullableBoolean.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>properties</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The property map to read from. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>key</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The property key. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The parsed value, or std::nullopt if the property is absent. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/property_util.h" line="63" column="24"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/util/property_util.h" line="35" column="1" bodyfile="iceberg/util/property_util.h" bodystart="35" bodyend="66"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1PropertyUtil_1a7fa314b0bb683ee6eba68e0479e1dc41" prot="public" virt="non-virtual"><scope>iceberg::PropertyUtil</scope><name>PropertyAsBoolean</name></member>
+      <member refid="classiceberg_1_1PropertyUtil_1ab6a55aea467d6bf982590950254011dc" prot="public" virt="non-virtual"><scope>iceberg::PropertyUtil</scope><name>PropertyAsOptionalBoolean</name></member>
+      <member refid="classiceberg_1_1PropertyUtil_1a97404b248fbd2d8c103f02ef81367c99" prot="public" virt="non-virtual"><scope>iceberg::PropertyUtil</scope><name>ValidateCommitProperties</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

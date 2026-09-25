@@ -1,0 +1,869 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1DeleteFilter" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::DeleteFilter</compoundname>
+    <includes refid="delete__filter_8h" local="no">delete_filter.h</includes>
+    <innerclass refid="structiceberg_1_1DeleteFilter_1_1FieldLookupResult" prot="public">iceberg::DeleteFilter::FieldLookupResult</innerclass>
+    <sectiondef kind="public-type">
+      <memberdef kind="typedef" id="classiceberg_1_1DeleteFilter_1ad80fcce828b8cd1a160cfe77c8ef9292" prot="public" static="no">
+        <type>std::function&lt; <ref refid="namespaceiceberg_1a9d5594e371beb516b0120e07e69d3af6" kindref="member">Result</ref>&lt; std::optional&lt; <ref refid="structiceberg_1_1DeleteFilter_1_1FieldLookupResult" kindref="compound">FieldLookupResult</ref> &gt; &gt;(int32_t)&gt;</type>
+        <definition>using iceberg::DeleteFilter::FieldLookup =  std::function&lt;Result&lt;std::optional&lt;FieldLookupResult&gt; &gt;(int32_t)&gt;</definition>
+        <argsstring></argsstring>
+        <name>FieldLookup</name>
+        <qualifiedname>iceberg::DeleteFilter::FieldLookup</qualifiedname>
+        <briefdescription>
+<para>Lookup a field by ID, including fields from table schema fallbacks. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/delete_filter.h" line="83" column="3" bodyfile="iceberg/data/delete_filter.h" bodystart="83" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1DeleteFilter_1af58c7a785946e69f6fe06f43ad60f55d" prot="private" static="no" mutable="no">
+        <type>const std::string</type>
+        <definition>const std::string iceberg::DeleteFilter::file_path_</definition>
+        <argsstring></argsstring>
+        <name>file_path_</name>
+        <qualifiedname>iceberg::DeleteFilter::file_path_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/delete_filter.h" line="201" column="21" bodyfile="iceberg/data/delete_filter.h" bodystart="201" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1DeleteFilter_1a5e5312ec03fb95256560f7566a60d4b2" prot="private" static="no" mutable="no">
+        <type>std::vector&lt; std::shared_ptr&lt; <ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref> &gt; &gt;</type>
+        <definition>std::vector&lt;std::shared_ptr&lt;DataFile&gt; &gt; iceberg::DeleteFilter::pos_deletes_</definition>
+        <argsstring></argsstring>
+        <name>pos_deletes_</name>
+        <qualifiedname>iceberg::DeleteFilter::pos_deletes_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/delete_filter.h" line="202" column="15" bodyfile="iceberg/data/delete_filter.h" bodystart="202" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1DeleteFilter_1a1ef0395f7ff59c9b5fc188082c4d8d69" prot="private" static="no" mutable="no">
+        <type>std::vector&lt; std::shared_ptr&lt; <ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref> &gt; &gt;</type>
+        <definition>std::vector&lt;std::shared_ptr&lt;DataFile&gt; &gt; iceberg::DeleteFilter::eq_deletes_</definition>
+        <argsstring></argsstring>
+        <name>eq_deletes_</name>
+        <qualifiedname>iceberg::DeleteFilter::eq_deletes_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/delete_filter.h" line="203" column="15" bodyfile="iceberg/data/delete_filter.h" bodystart="203" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1DeleteFilter_1a25866a2b313651e11de551d4d3f29758" prot="private" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;Schema&gt; iceberg::DeleteFilter::requested_schema_</definition>
+        <argsstring></argsstring>
+        <name>requested_schema_</name>
+        <qualifiedname>iceberg::DeleteFilter::requested_schema_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/delete_filter.h" line="205" column="19" bodyfile="iceberg/data/delete_filter.h" bodystart="205" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1DeleteFilter_1a01eeeda355ecb0003f7dd2b2c82c91aa" prot="private" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;Schema&gt; iceberg::DeleteFilter::required_schema_</definition>
+        <argsstring></argsstring>
+        <name>required_schema_</name>
+        <qualifiedname>iceberg::DeleteFilter::required_schema_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/delete_filter.h" line="206" column="19" bodyfile="iceberg/data/delete_filter.h" bodystart="206" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1DeleteFilter_1aab65774558d47846c868ddfecdc21f84" prot="private" static="no" mutable="no">
+        <type><ref refid="classiceberg_1_1DeleteFilter_1ad80fcce828b8cd1a160cfe77c8ef9292" kindref="member">FieldLookup</ref></type>
+        <definition>FieldLookup iceberg::DeleteFilter::field_lookup_</definition>
+        <argsstring></argsstring>
+        <name>field_lookup_</name>
+        <qualifiedname>iceberg::DeleteFilter::field_lookup_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/delete_filter.h" line="207" column="15" bodyfile="iceberg/data/delete_filter.h" bodystart="207" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1DeleteFilter_1a21d3412d429204dc73483762350eb0e5" prot="private" static="no" mutable="no">
+        <type>const bool</type>
+        <definition>const bool iceberg::DeleteFilter::need_row_pos_col_</definition>
+        <argsstring></argsstring>
+        <name>need_row_pos_col_</name>
+        <qualifiedname>iceberg::DeleteFilter::need_row_pos_col_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/delete_filter.h" line="209" column="14" bodyfile="iceberg/data/delete_filter.h" bodystart="209" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1DeleteFilter_1a6e1e35564bb2a6aa7b7194db4f01ee0f" prot="private" static="no" mutable="no">
+        <type>std::optional&lt; size_t &gt;</type>
+        <definition>std::optional&lt;size_t&gt; iceberg::DeleteFilter::pos_field_position_</definition>
+        <argsstring></argsstring>
+        <name>pos_field_position_</name>
+        <qualifiedname>iceberg::DeleteFilter::pos_field_position_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/delete_filter.h" line="211" column="17" bodyfile="iceberg/data/delete_filter.h" bodystart="211" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1DeleteFilter_1a5a5583a2a5fa7b88b33b9b0ba61a3c45" prot="private" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1DeleteCounter" kindref="compound">DeleteCounter</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;DeleteCounter&gt; iceberg::DeleteFilter::counter_</definition>
+        <argsstring></argsstring>
+        <name>counter_</name>
+        <qualifiedname>iceberg::DeleteFilter::counter_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/delete_filter.h" line="212" column="19" bodyfile="iceberg/data/delete_filter.h" bodystart="212" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1DeleteFilter_1a5ec910d1d62fcaea6da18105b02f45e8" prot="private" static="no" mutable="no">
+        <type><ref refid="classiceberg_1_1DeleteLoader" kindref="compound">DeleteLoader</ref></type>
+        <definition>DeleteLoader iceberg::DeleteFilter::delete_loader_</definition>
+        <argsstring></argsstring>
+        <name>delete_loader_</name>
+        <qualifiedname>iceberg::DeleteFilter::delete_loader_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/delete_filter.h" line="217" column="16" bodyfile="iceberg/data/delete_filter.h" bodystart="217" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1DeleteFilter_1a51b849849b4b17cb1f142f9dd8568f87" prot="private" static="no" mutable="yes">
+        <type>std::mutex</type>
+        <definition>std::mutex iceberg::DeleteFilter::pos_mutex_</definition>
+        <argsstring></argsstring>
+        <name>pos_mutex_</name>
+        <qualifiedname>iceberg::DeleteFilter::pos_mutex_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/delete_filter.h" line="219" column="22" bodyfile="iceberg/data/delete_filter.h" bodystart="219" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1DeleteFilter_1a3441b936826581b1af28ce3c292c69f4" prot="private" static="no" mutable="yes">
+        <type>bool</type>
+        <definition>bool iceberg::DeleteFilter::pos_loaded_</definition>
+        <argsstring></argsstring>
+        <name>pos_loaded_</name>
+        <qualifiedname>iceberg::DeleteFilter::pos_loaded_</qualifiedname>
+        <initializer>= false</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/delete_filter.h" line="220" column="16" bodyfile="iceberg/data/delete_filter.h" bodystart="220" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1DeleteFilter_1aeff961ec86b9d79030142be80c3918fa" prot="private" static="no" mutable="yes">
+        <type><ref refid="classiceberg_1_1PositionDeleteIndex" kindref="compound">PositionDeleteIndex</ref></type>
+        <definition>PositionDeleteIndex iceberg::DeleteFilter::pos_index_</definition>
+        <argsstring></argsstring>
+        <name>pos_index_</name>
+        <qualifiedname>iceberg::DeleteFilter::pos_index_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/delete_filter.h" line="221" column="31" bodyfile="iceberg/data/delete_filter.h" bodystart="221" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1DeleteFilter_1a3e2f85b76d8e9bac83e35e0354c2d361" prot="private" static="no" mutable="yes">
+        <type>std::mutex</type>
+        <definition>std::mutex iceberg::DeleteFilter::eq_mutex_</definition>
+        <argsstring></argsstring>
+        <name>eq_mutex_</name>
+        <qualifiedname>iceberg::DeleteFilter::eq_mutex_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/delete_filter.h" line="223" column="22" bodyfile="iceberg/data/delete_filter.h" bodystart="223" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1DeleteFilter_1a20c9e72c30c6959ef14104f66516d873" prot="private" static="no" mutable="yes">
+        <type>bool</type>
+        <definition>bool iceberg::DeleteFilter::eq_loaded_</definition>
+        <argsstring></argsstring>
+        <name>eq_loaded_</name>
+        <qualifiedname>iceberg::DeleteFilter::eq_loaded_</qualifiedname>
+        <initializer>= false</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/delete_filter.h" line="224" column="16" bodyfile="iceberg/data/delete_filter.h" bodystart="224" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1DeleteFilter_1a9a4fedfeae70df0de5b188e84bd19ba9" prot="private" static="no" mutable="yes">
+        <type>std::vector&lt; std::unique_ptr&lt; EqDeleteGroup &gt; &gt;</type>
+        <definition>std::vector&lt;std::unique_ptr&lt;EqDeleteGroup&gt; &gt; iceberg::DeleteFilter::eq_groups_</definition>
+        <argsstring></argsstring>
+        <name>eq_groups_</name>
+        <qualifiedname>iceberg::DeleteFilter::eq_groups_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/delete_filter.h" line="225" column="23" bodyfile="iceberg/data/delete_filter.h" bodystart="225" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1DeleteFilter_1a9b5ac511282c7c629b90f7fac0052dfa" prot="private" static="no" mutable="yes">
+        <type>std::function&lt; <ref refid="namespaceiceberg_1a9d5594e371beb516b0120e07e69d3af6" kindref="member">Result</ref>&lt; bool &gt;(const <ref refid="classiceberg_1_1StructLike" kindref="compound">StructLike</ref> &amp;)&gt;</type>
+        <definition>std::function&lt;Result&lt;bool&gt;(const StructLike&amp;)&gt; iceberg::DeleteFilter::eq_deleted_row_filter_cache_</definition>
+        <argsstring></argsstring>
+        <name>eq_deleted_row_filter_cache_</name>
+        <qualifiedname>iceberg::DeleteFilter::eq_deleted_row_filter_cache_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/delete_filter.h" line="226" column="27" bodyfile="iceberg/data/delete_filter.h" bodystart="226" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classiceberg_1_1DeleteFilter_1ade8688008060b3ab4d83e6aeec0875aa" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceiceberg_1a9d5594e371beb516b0120e07e69d3af6" kindref="member">Result</ref>&lt; <ref refid="classiceberg_1_1DeleteFilter_1ad80fcce828b8cd1a160cfe77c8ef9292" kindref="member">FieldLookup</ref> &gt;</type>
+        <definition>static Result&lt; FieldLookup &gt; iceberg::DeleteFilter::MakeFieldLookup</definition>
+        <argsstring>(std::shared_ptr&lt; Schema &gt; table_schema, std::span&lt; const std::shared_ptr&lt; Schema &gt; &gt; schemas={})</argsstring>
+        <name>MakeFieldLookup</name>
+        <qualifiedname>iceberg::DeleteFilter::MakeFieldLookup</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &gt;</type>
+          <declname>table_schema</declname>
+        </param>
+        <param>
+          <type>std::span&lt; const std::shared_ptr&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &gt; &gt;</type>
+          <declname>schemas</declname>
+          <defval>{}</defval>
+        </param>
+        <briefdescription>
+<para>Build a lookup from the current schema and optional table schemas. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>The current table schema is searched first. <computeroutput>schemas</computeroutput> is the table metadata schema list and may contain <computeroutput>table_schema</computeroutput>; current schema duplicates are ignored and fallback schemas are searched from latest schema id to oldest. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/delete_filter.h" line="90" column="17"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1DeleteFilter_1a651bd48638dfa5b7cc059b94015a71c3" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceiceberg_1a9d5594e371beb516b0120e07e69d3af6" kindref="member">Result</ref>&lt; <ref refid="classiceberg_1_1DeleteFilter_1ad80fcce828b8cd1a160cfe77c8ef9292" kindref="member">FieldLookup</ref> &gt;</type>
+        <definition>static Result&lt; FieldLookup &gt; iceberg::DeleteFilter::MakeFieldLookup</definition>
+        <argsstring>(std::shared_ptr&lt; TableMetadata &gt; table_metadata)</argsstring>
+        <name>MakeFieldLookup</name>
+        <qualifiedname>iceberg::DeleteFilter::MakeFieldLookup</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="structiceberg_1_1TableMetadata" kindref="compound">TableMetadata</ref> &gt;</type>
+          <declname>table_metadata</declname>
+        </param>
+        <briefdescription>
+<para>Build a lookup from table metadata which uses the current schema first, then table metadata schemas as fallback. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/delete_filter.h" line="96" column="17"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1DeleteFilter_1afbe7173f4e57c826362c6533cfc59ed7" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceiceberg_1a9d5594e371beb516b0120e07e69d3af6" kindref="member">Result</ref>&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1DeleteFilter" kindref="compound">DeleteFilter</ref> &gt; &gt;</type>
+        <definition>static Result&lt; std::unique_ptr&lt; DeleteFilter &gt; &gt; iceberg::DeleteFilter::Make</definition>
+        <argsstring>(std::string file_path, std::span&lt; const std::shared_ptr&lt; DataFile &gt; &gt; delete_files, std::shared_ptr&lt; Schema &gt; table_schema, std::shared_ptr&lt; Schema &gt; requested_schema, std::shared_ptr&lt; FileIO &gt; io, bool need_row_pos_col=true, std::shared_ptr&lt; DeleteCounter &gt; counter=nullptr)</argsstring>
+        <name>Make</name>
+        <qualifiedname>iceberg::DeleteFilter::Make</qualifiedname>
+        <param>
+          <type>std::string</type>
+          <declname>file_path</declname>
+        </param>
+        <param>
+          <type>std::span&lt; const std::shared_ptr&lt; <ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref> &gt; &gt;</type>
+          <declname>delete_files</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &gt;</type>
+          <declname>table_schema</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &gt;</type>
+          <declname>requested_schema</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref> &gt;</type>
+          <declname>io</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>need_row_pos_col</declname>
+          <defval>true</defval>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1DeleteCounter" kindref="compound">DeleteCounter</ref> &gt;</type>
+          <declname>counter</declname>
+          <defval>nullptr</defval>
+        </param>
+        <briefdescription>
+<para>Create a <ref refid="classiceberg_1_1DeleteFilter" kindref="compound">DeleteFilter</ref> with current schema only field lookup. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>need_row_pos_col</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>If true, <computeroutput>_pos</computeroutput> is added to <computeroutput>RequiredSchema</computeroutput> when position deletes are present so <computeroutput>ComputeAliveRows</computeroutput> can apply them. Pass false when the caller owns position filtering externally (e.g. a vectorised reader that applies the position delete index directly to Arrow column buffers). Note that when <computeroutput>need_row_pos_col</computeroutput> is false, <computeroutput>HasPositionDeletes()</computeroutput> may return true but <computeroutput>ComputeAliveRows</computeroutput> will not apply position deletes because <computeroutput>_pos</computeroutput> is absent from <computeroutput>RequiredSchema</computeroutput>. The caller is responsible for applying them. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>counter</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Optional counter incremented for each deleted row. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/delete_filter.h" line="109" column="17"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1DeleteFilter_1ae215ef6de046ff99376f8c7400cd34ef" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceiceberg_1a9d5594e371beb516b0120e07e69d3af6" kindref="member">Result</ref>&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1DeleteFilter" kindref="compound">DeleteFilter</ref> &gt; &gt;</type>
+        <definition>static Result&lt; std::unique_ptr&lt; DeleteFilter &gt; &gt; iceberg::DeleteFilter::Make</definition>
+        <argsstring>(std::string file_path, std::span&lt; const std::shared_ptr&lt; DataFile &gt; &gt; delete_files, std::shared_ptr&lt; TableMetadata &gt; table_metadata, std::shared_ptr&lt; Schema &gt; requested_schema, std::shared_ptr&lt; FileIO &gt; io, bool need_row_pos_col=true, std::shared_ptr&lt; DeleteCounter &gt; counter=nullptr)</argsstring>
+        <name>Make</name>
+        <qualifiedname>iceberg::DeleteFilter::Make</qualifiedname>
+        <param>
+          <type>std::string</type>
+          <declname>file_path</declname>
+        </param>
+        <param>
+          <type>std::span&lt; const std::shared_ptr&lt; <ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref> &gt; &gt;</type>
+          <declname>delete_files</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="structiceberg_1_1TableMetadata" kindref="compound">TableMetadata</ref> &gt;</type>
+          <declname>table_metadata</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &gt;</type>
+          <declname>requested_schema</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref> &gt;</type>
+          <declname>io</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>need_row_pos_col</declname>
+          <defval>true</defval>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1DeleteCounter" kindref="compound">DeleteCounter</ref> &gt;</type>
+          <declname>counter</declname>
+          <defval>nullptr</defval>
+        </param>
+        <briefdescription>
+<para>Create a <ref refid="classiceberg_1_1DeleteFilter" kindref="compound">DeleteFilter</ref> using table metadata for schema-aware field lookup. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/delete_filter.h" line="116" column="17"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1DeleteFilter_1a2028f754ecdfef9a7ad43384c980a24c" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceiceberg_1a9d5594e371beb516b0120e07e69d3af6" kindref="member">Result</ref>&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1DeleteFilter" kindref="compound">DeleteFilter</ref> &gt; &gt;</type>
+        <definition>static Result&lt; std::unique_ptr&lt; DeleteFilter &gt; &gt; iceberg::DeleteFilter::Make</definition>
+        <argsstring>(std::string file_path, std::span&lt; const std::shared_ptr&lt; DataFile &gt; &gt; delete_files, std::shared_ptr&lt; Schema &gt; table_schema, std::shared_ptr&lt; Schema &gt; requested_schema, std::shared_ptr&lt; FileIO &gt; io, std::span&lt; const std::shared_ptr&lt; Schema &gt; &gt; schemas, bool need_row_pos_col=true, std::shared_ptr&lt; DeleteCounter &gt; counter=nullptr)</argsstring>
+        <name>Make</name>
+        <qualifiedname>iceberg::DeleteFilter::Make</qualifiedname>
+        <param>
+          <type>std::string</type>
+          <declname>file_path</declname>
+        </param>
+        <param>
+          <type>std::span&lt; const std::shared_ptr&lt; <ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref> &gt; &gt;</type>
+          <declname>delete_files</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &gt;</type>
+          <declname>table_schema</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &gt;</type>
+          <declname>requested_schema</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref> &gt;</type>
+          <declname>io</declname>
+        </param>
+        <param>
+          <type>std::span&lt; const std::shared_ptr&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &gt; &gt;</type>
+          <declname>schemas</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>need_row_pos_col</declname>
+          <defval>true</defval>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1DeleteCounter" kindref="compound">DeleteCounter</ref> &gt;</type>
+          <declname>counter</declname>
+          <defval>nullptr</defval>
+        </param>
+        <briefdescription>
+<para>Create a <ref refid="classiceberg_1_1DeleteFilter" kindref="compound">DeleteFilter</ref> with table schemas for dropped equality fields. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/delete_filter.h" line="123" column="17"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1DeleteFilter_1aca805836f8f05461d15e72511dcd4666" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceiceberg_1a9d5594e371beb516b0120e07e69d3af6" kindref="member">Result</ref>&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1DeleteFilter" kindref="compound">DeleteFilter</ref> &gt; &gt;</type>
+        <definition>static Result&lt; std::unique_ptr&lt; DeleteFilter &gt; &gt; iceberg::DeleteFilter::Make</definition>
+        <argsstring>(std::string file_path, std::span&lt; const std::shared_ptr&lt; DataFile &gt; &gt; delete_files, std::shared_ptr&lt; Schema &gt; requested_schema, std::shared_ptr&lt; FileIO &gt; io, FieldLookup field_lookup, bool need_row_pos_col=true, std::shared_ptr&lt; DeleteCounter &gt; counter=nullptr)</argsstring>
+        <name>Make</name>
+        <qualifiedname>iceberg::DeleteFilter::Make</qualifiedname>
+        <param>
+          <type>std::string</type>
+          <declname>file_path</declname>
+        </param>
+        <param>
+          <type>std::span&lt; const std::shared_ptr&lt; <ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref> &gt; &gt;</type>
+          <declname>delete_files</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &gt;</type>
+          <declname>requested_schema</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref> &gt;</type>
+          <declname>io</declname>
+        </param>
+        <param>
+          <type><ref refid="classiceberg_1_1DeleteFilter_1ad80fcce828b8cd1a160cfe77c8ef9292" kindref="member">FieldLookup</ref></type>
+          <declname>field_lookup</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>need_row_pos_col</declname>
+          <defval>true</defval>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1DeleteCounter" kindref="compound">DeleteCounter</ref> &gt;</type>
+          <declname>counter</declname>
+          <defval>nullptr</defval>
+        </param>
+        <briefdescription>
+<para>Create a <ref refid="classiceberg_1_1DeleteFilter" kindref="compound">DeleteFilter</ref> with a custom field lookup. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/delete_filter.h" line="130" column="17"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1DeleteFilter_1a7f6cdf2f0cb7ee52747cf7f7cda72a26" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::DeleteFilter::~DeleteFilter</definition>
+        <argsstring>()</argsstring>
+        <name>~DeleteFilter</name>
+        <qualifiedname>iceberg::DeleteFilter::~DeleteFilter</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/delete_filter.h" line="136" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1DeleteFilter_1a1995b97527650c6ffc47d225f40982de" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &gt; &amp;</type>
+        <definition>const std::shared_ptr&lt; Schema &gt; &amp; iceberg::DeleteFilter::RequiredSchema</definition>
+        <argsstring>() const</argsstring>
+        <name>RequiredSchema</name>
+        <qualifiedname>iceberg::DeleteFilter::RequiredSchema</qualifiedname>
+        <briefdescription>
+<para><ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> required from the underlying data file reader. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/delete_filter.h" line="139" column="25"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1DeleteFilter_1a16173e6c620efdd8faf0f8cdb20aac81" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &gt; &amp;</type>
+        <definition>const std::shared_ptr&lt; Schema &gt; &amp; iceberg::DeleteFilter::ExpectedSchema</definition>
+        <argsstring>() const</argsstring>
+        <name>ExpectedSchema</name>
+        <qualifiedname>iceberg::DeleteFilter::ExpectedSchema</qualifiedname>
+        <briefdescription>
+<para>The original schema requested by the caller, before delete columns were added. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/delete_filter.h" line="143" column="25"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1DeleteFilter_1abc14afecf7d23045d3f225d64084e4e9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::DeleteFilter::IncrementDeleteCount</definition>
+        <argsstring>(int64_t count=1)</argsstring>
+        <name>IncrementDeleteCount</name>
+        <qualifiedname>iceberg::DeleteFilter::IncrementDeleteCount</qualifiedname>
+        <param>
+          <type>int64_t</type>
+          <declname>count</declname>
+          <defval>1</defval>
+        </param>
+        <briefdescription>
+<para>Increment the delete counter by the given count. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Allows callers to record deletes that occur outside <computeroutput>ComputeAliveRows</computeroutput> (e.g. when applying deletes in a vectorised path). </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/delete_filter.h" line="149" column="8"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1DeleteFilter_1adb9728647e0276cc29f7eae4c5fffea4" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceiceberg_1a9d5594e371beb516b0120e07e69d3af6" kindref="member">Result</ref>&lt; const <ref refid="classiceberg_1_1PositionDeleteIndex" kindref="compound">PositionDeleteIndex</ref> * &gt;</type>
+        <definition>Result&lt; const PositionDeleteIndex * &gt; iceberg::DeleteFilter::DeletedRowPositions</definition>
+        <argsstring>() const</argsstring>
+        <name>DeletedRowPositions</name>
+        <qualifiedname>iceberg::DeleteFilter::DeletedRowPositions</qualifiedname>
+        <briefdescription>
+<para>Expose the loaded position delete index for external use. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Triggers lazy loading of position delete files on first call. Returns nullptr when there are no position deletes. Returns an error if loading fails.</para>
+<para>The returned pointer is valid only for the lifetime of this <ref refid="classiceberg_1_1DeleteFilter" kindref="compound">DeleteFilter</ref>. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/delete_filter.h" line="157" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1DeleteFilter_1a0e21058e5afe3025ade87ee4633876b4" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceiceberg_1a9d5594e371beb516b0120e07e69d3af6" kindref="member">Result</ref>&lt; std::function&lt; <ref refid="namespaceiceberg_1a9d5594e371beb516b0120e07e69d3af6" kindref="member">Result</ref>&lt; bool &gt;(const <ref refid="classiceberg_1_1StructLike" kindref="compound">StructLike</ref> &amp;)&gt; &gt;</type>
+        <definition>Result&lt; std::function&lt; Result&lt; bool &gt;(const StructLike &amp;)&gt; &gt; iceberg::DeleteFilter::EqDeletedRowFilter</definition>
+        <argsstring>() const</argsstring>
+        <name>EqDeletedRowFilter</name>
+        <qualifiedname>iceberg::DeleteFilter::EqDeletedRowFilter</qualifiedname>
+        <briefdescription>
+<para>Returns a predicate that is true for rows NOT matched by any equality delete. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>The returned function is valid for the lifetime of this <ref refid="classiceberg_1_1DeleteFilter" kindref="compound">DeleteFilter</ref> and is cached after the first call. When there are no equality deletes, returns a predicate that always returns true (every row is alive).</para>
+<para><simplesect kind="note"><para>The returned predicate is NOT thread-safe: it mutates internal projection state on each call. Do not invoke it concurrently from multiple threads. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/delete_filter.h" line="167" column="12"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1DeleteFilter_1ad6abe0a346d5ff872f0be18cd159685c" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceiceberg_1a9d5594e371beb516b0120e07e69d3af6" kindref="member">Result</ref>&lt; std::function&lt; <ref refid="namespaceiceberg_1a9d5594e371beb516b0120e07e69d3af6" kindref="member">Result</ref>&lt; bool &gt;(const <ref refid="classiceberg_1_1StructLike" kindref="compound">StructLike</ref> &amp;)&gt; &gt;</type>
+        <definition>Result&lt; std::function&lt; Result&lt; bool &gt;(const StructLike &amp;)&gt; &gt; iceberg::DeleteFilter::FindEqualityDeleteRows</definition>
+        <argsstring>() const</argsstring>
+        <name>FindEqualityDeleteRows</name>
+        <qualifiedname>iceberg::DeleteFilter::FindEqualityDeleteRows</qualifiedname>
+        <briefdescription>
+<para>Returns a predicate that is true for rows matched by any equality delete. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Inverse of <computeroutput><ref refid="classiceberg_1_1DeleteFilter_1a0e21058e5afe3025ade87ee4633876b4" kindref="member">EqDeletedRowFilter()</ref></computeroutput>. When there are no equality deletes, returns a predicate that always returns false (no row is deleted). </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/delete_filter.h" line="173" column="12"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1DeleteFilter_1a53b0c54b1c87dd8a207b08af9aac1420" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceiceberg_1a9d5594e371beb516b0120e07e69d3af6" kindref="member">Result</ref>&lt; <ref refid="structiceberg_1_1AliveRowSelection" kindref="compound">AliveRowSelection</ref> &gt;</type>
+        <definition>Result&lt; AliveRowSelection &gt; iceberg::DeleteFilter::ComputeAliveRows</definition>
+        <argsstring>(const ArrowSchema &amp;batch_schema, const ArrowArray &amp;batch) const</argsstring>
+        <name>ComputeAliveRows</name>
+        <qualifiedname>iceberg::DeleteFilter::ComputeAliveRows</qualifiedname>
+        <param>
+          <type>const <ref refid="structArrowSchema" kindref="compound">ArrowSchema</ref> &amp;</type>
+          <declname>batch_schema</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structArrowArray" kindref="compound">ArrowArray</ref> &amp;</type>
+          <declname>batch</declname>
+        </param>
+        <briefdescription>
+<para>Compute alive rows relative to the supplied Arrow C Data batch. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Returns the indices (zero-based, relative to the batch) of rows not matched by any delete. Deleted-row counts are forwarded to the <ref refid="classiceberg_1_1DeleteCounter" kindref="compound">DeleteCounter</ref> supplied at construction. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/delete_filter.h" line="180" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1DeleteFilter_1a7a6c9172e2a87e7b9250951b3d5d3fcb" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::DeleteFilter::HasPositionDeletes</definition>
+        <argsstring>() const</argsstring>
+        <name>HasPositionDeletes</name>
+        <qualifiedname>iceberg::DeleteFilter::HasPositionDeletes</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/delete_filter.h" line="183" column="8"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1DeleteFilter_1a3a8b0703fda7b5ab55754991687e5fe4" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::DeleteFilter::HasEqualityDeletes</definition>
+        <argsstring>() const</argsstring>
+        <name>HasEqualityDeletes</name>
+        <qualifiedname>iceberg::DeleteFilter::HasEqualityDeletes</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/delete_filter.h" line="184" column="8"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1DeleteFilter_1a2862888af5f8a93a3a638c94fe3dc178" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::DeleteFilter::DeleteFilter</definition>
+        <argsstring>(const DeleteFilter &amp;)=delete</argsstring>
+        <name>DeleteFilter</name>
+        <qualifiedname>iceberg::DeleteFilter::DeleteFilter</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1DeleteFilter" kindref="compound">DeleteFilter</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/delete_filter.h" line="186" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1DeleteFilter_1a7526dacd34357fa5ff8fc77665d6bfe3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1DeleteFilter" kindref="compound">DeleteFilter</ref> &amp;</type>
+        <definition>DeleteFilter &amp; iceberg::DeleteFilter::operator=</definition>
+        <argsstring>(const DeleteFilter &amp;)=delete</argsstring>
+        <name>operator=</name>
+        <qualifiedname>iceberg::DeleteFilter::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1DeleteFilter" kindref="compound">DeleteFilter</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/delete_filter.h" line="187" column="16"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classiceberg_1_1DeleteFilter_1ad02ed178614cde79a8ea32524160311c" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::DeleteFilter::DeleteFilter</definition>
+        <argsstring>(std::string file_path, std::shared_ptr&lt; Schema &gt; requested_schema, std::shared_ptr&lt; FileIO &gt; io, FieldLookup field_lookup, bool need_row_pos_col, std::shared_ptr&lt; DeleteCounter &gt; counter)</argsstring>
+        <name>DeleteFilter</name>
+        <qualifiedname>iceberg::DeleteFilter::DeleteFilter</qualifiedname>
+        <param>
+          <type>std::string</type>
+          <declname>file_path</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &gt;</type>
+          <declname>requested_schema</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref> &gt;</type>
+          <declname>io</declname>
+        </param>
+        <param>
+          <type><ref refid="classiceberg_1_1DeleteFilter_1ad80fcce828b8cd1a160cfe77c8ef9292" kindref="member">FieldLookup</ref></type>
+          <declname>field_lookup</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>need_row_pos_col</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1DeleteCounter" kindref="compound">DeleteCounter</ref> &gt;</type>
+          <declname>counter</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/delete_filter.h" line="192" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1DeleteFilter_1a97edb67b9b8a2eaa436462e6093c5307" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::DeleteFilter::Init</definition>
+        <argsstring>(std::span&lt; const std::shared_ptr&lt; DataFile &gt; &gt; delete_files)</argsstring>
+        <name>Init</name>
+        <qualifiedname>iceberg::DeleteFilter::Init</qualifiedname>
+        <param>
+          <type>std::span&lt; const std::shared_ptr&lt; <ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref> &gt; &gt;</type>
+          <declname>delete_files</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/delete_filter.h" line="196" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1DeleteFilter_1a7a112c2418834f6845a4cf7e9b6d5190" prot="private" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceiceberg_1a9d5594e371beb516b0120e07e69d3af6" kindref="member">Result</ref>&lt; std::shared_ptr&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::shared_ptr&lt; Schema &gt; &gt; iceberg::DeleteFilter::ComputeRequiredSchema</definition>
+        <argsstring>() const</argsstring>
+        <name>ComputeRequiredSchema</name>
+        <qualifiedname>iceberg::DeleteFilter::ComputeRequiredSchema</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/delete_filter.h" line="197" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1DeleteFilter_1a2907cfdef364c08b10d03d1787354751" prot="private" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::DeleteFilter::EnsurePositionDeletesLoaded</definition>
+        <argsstring>() const</argsstring>
+        <name>EnsurePositionDeletesLoaded</name>
+        <qualifiedname>iceberg::DeleteFilter::EnsurePositionDeletesLoaded</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/delete_filter.h" line="198" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1DeleteFilter_1aea8c0921684667e20e78559a6b5ecd9e" prot="private" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::DeleteFilter::EnsureEqualityDeletesLoaded</definition>
+        <argsstring>() const</argsstring>
+        <name>EnsureEqualityDeletesLoaded</name>
+        <qualifiedname>iceberg::DeleteFilter::EnsureEqualityDeletesLoaded</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/delete_filter.h" line="199" column="10"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Concrete batch-oriented delete filter for merge-on-read data batches. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/data/delete_filter.h" line="69" column="1" bodyfile="iceberg/data/delete_filter.h" bodystart="69" bodyend="227"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1DeleteFilter_1a53b0c54b1c87dd8a207b08af9aac1420" prot="public" virt="non-virtual"><scope>iceberg::DeleteFilter</scope><name>ComputeAliveRows</name></member>
+      <member refid="classiceberg_1_1DeleteFilter_1a7a112c2418834f6845a4cf7e9b6d5190" prot="private" virt="non-virtual"><scope>iceberg::DeleteFilter</scope><name>ComputeRequiredSchema</name></member>
+      <member refid="classiceberg_1_1DeleteFilter_1a5a5583a2a5fa7b88b33b9b0ba61a3c45" prot="private" virt="non-virtual"><scope>iceberg::DeleteFilter</scope><name>counter_</name></member>
+      <member refid="classiceberg_1_1DeleteFilter_1a5ec910d1d62fcaea6da18105b02f45e8" prot="private" virt="non-virtual"><scope>iceberg::DeleteFilter</scope><name>delete_loader_</name></member>
+      <member refid="classiceberg_1_1DeleteFilter_1adb9728647e0276cc29f7eae4c5fffea4" prot="public" virt="non-virtual"><scope>iceberg::DeleteFilter</scope><name>DeletedRowPositions</name></member>
+      <member refid="classiceberg_1_1DeleteFilter_1a2862888af5f8a93a3a638c94fe3dc178" prot="public" virt="non-virtual"><scope>iceberg::DeleteFilter</scope><name>DeleteFilter</name></member>
+      <member refid="classiceberg_1_1DeleteFilter_1ad02ed178614cde79a8ea32524160311c" prot="private" virt="non-virtual"><scope>iceberg::DeleteFilter</scope><name>DeleteFilter</name></member>
+      <member refid="classiceberg_1_1DeleteFilter_1aea8c0921684667e20e78559a6b5ecd9e" prot="private" virt="non-virtual"><scope>iceberg::DeleteFilter</scope><name>EnsureEqualityDeletesLoaded</name></member>
+      <member refid="classiceberg_1_1DeleteFilter_1a2907cfdef364c08b10d03d1787354751" prot="private" virt="non-virtual"><scope>iceberg::DeleteFilter</scope><name>EnsurePositionDeletesLoaded</name></member>
+      <member refid="classiceberg_1_1DeleteFilter_1a9b5ac511282c7c629b90f7fac0052dfa" prot="private" virt="non-virtual"><scope>iceberg::DeleteFilter</scope><name>eq_deleted_row_filter_cache_</name></member>
+      <member refid="classiceberg_1_1DeleteFilter_1a1ef0395f7ff59c9b5fc188082c4d8d69" prot="private" virt="non-virtual"><scope>iceberg::DeleteFilter</scope><name>eq_deletes_</name></member>
+      <member refid="classiceberg_1_1DeleteFilter_1a9a4fedfeae70df0de5b188e84bd19ba9" prot="private" virt="non-virtual"><scope>iceberg::DeleteFilter</scope><name>eq_groups_</name></member>
+      <member refid="classiceberg_1_1DeleteFilter_1a20c9e72c30c6959ef14104f66516d873" prot="private" virt="non-virtual"><scope>iceberg::DeleteFilter</scope><name>eq_loaded_</name></member>
+      <member refid="classiceberg_1_1DeleteFilter_1a3e2f85b76d8e9bac83e35e0354c2d361" prot="private" virt="non-virtual"><scope>iceberg::DeleteFilter</scope><name>eq_mutex_</name></member>
+      <member refid="classiceberg_1_1DeleteFilter_1a0e21058e5afe3025ade87ee4633876b4" prot="public" virt="non-virtual"><scope>iceberg::DeleteFilter</scope><name>EqDeletedRowFilter</name></member>
+      <member refid="classiceberg_1_1DeleteFilter_1a16173e6c620efdd8faf0f8cdb20aac81" prot="public" virt="non-virtual"><scope>iceberg::DeleteFilter</scope><name>ExpectedSchema</name></member>
+      <member refid="classiceberg_1_1DeleteFilter_1aab65774558d47846c868ddfecdc21f84" prot="private" virt="non-virtual"><scope>iceberg::DeleteFilter</scope><name>field_lookup_</name></member>
+      <member refid="classiceberg_1_1DeleteFilter_1ad80fcce828b8cd1a160cfe77c8ef9292" prot="public" virt="non-virtual"><scope>iceberg::DeleteFilter</scope><name>FieldLookup</name></member>
+      <member refid="classiceberg_1_1DeleteFilter_1af58c7a785946e69f6fe06f43ad60f55d" prot="private" virt="non-virtual"><scope>iceberg::DeleteFilter</scope><name>file_path_</name></member>
+      <member refid="classiceberg_1_1DeleteFilter_1ad6abe0a346d5ff872f0be18cd159685c" prot="public" virt="non-virtual"><scope>iceberg::DeleteFilter</scope><name>FindEqualityDeleteRows</name></member>
+      <member refid="classiceberg_1_1DeleteFilter_1a3a8b0703fda7b5ab55754991687e5fe4" prot="public" virt="non-virtual"><scope>iceberg::DeleteFilter</scope><name>HasEqualityDeletes</name></member>
+      <member refid="classiceberg_1_1DeleteFilter_1a7a6c9172e2a87e7b9250951b3d5d3fcb" prot="public" virt="non-virtual"><scope>iceberg::DeleteFilter</scope><name>HasPositionDeletes</name></member>
+      <member refid="classiceberg_1_1DeleteFilter_1abc14afecf7d23045d3f225d64084e4e9" prot="public" virt="non-virtual"><scope>iceberg::DeleteFilter</scope><name>IncrementDeleteCount</name></member>
+      <member refid="classiceberg_1_1DeleteFilter_1a97edb67b9b8a2eaa436462e6093c5307" prot="private" virt="non-virtual"><scope>iceberg::DeleteFilter</scope><name>Init</name></member>
+      <member refid="classiceberg_1_1DeleteFilter_1afbe7173f4e57c826362c6533cfc59ed7" prot="public" virt="non-virtual"><scope>iceberg::DeleteFilter</scope><name>Make</name></member>
+      <member refid="classiceberg_1_1DeleteFilter_1ae215ef6de046ff99376f8c7400cd34ef" prot="public" virt="non-virtual"><scope>iceberg::DeleteFilter</scope><name>Make</name></member>
+      <member refid="classiceberg_1_1DeleteFilter_1a2028f754ecdfef9a7ad43384c980a24c" prot="public" virt="non-virtual"><scope>iceberg::DeleteFilter</scope><name>Make</name></member>
+      <member refid="classiceberg_1_1DeleteFilter_1aca805836f8f05461d15e72511dcd4666" prot="public" virt="non-virtual"><scope>iceberg::DeleteFilter</scope><name>Make</name></member>
+      <member refid="classiceberg_1_1DeleteFilter_1ade8688008060b3ab4d83e6aeec0875aa" prot="public" virt="non-virtual"><scope>iceberg::DeleteFilter</scope><name>MakeFieldLookup</name></member>
+      <member refid="classiceberg_1_1DeleteFilter_1a651bd48638dfa5b7cc059b94015a71c3" prot="public" virt="non-virtual"><scope>iceberg::DeleteFilter</scope><name>MakeFieldLookup</name></member>
+      <member refid="classiceberg_1_1DeleteFilter_1a21d3412d429204dc73483762350eb0e5" prot="private" virt="non-virtual"><scope>iceberg::DeleteFilter</scope><name>need_row_pos_col_</name></member>
+      <member refid="classiceberg_1_1DeleteFilter_1a7526dacd34357fa5ff8fc77665d6bfe3" prot="public" virt="non-virtual"><scope>iceberg::DeleteFilter</scope><name>operator=</name></member>
+      <member refid="classiceberg_1_1DeleteFilter_1a5e5312ec03fb95256560f7566a60d4b2" prot="private" virt="non-virtual"><scope>iceberg::DeleteFilter</scope><name>pos_deletes_</name></member>
+      <member refid="classiceberg_1_1DeleteFilter_1a6e1e35564bb2a6aa7b7194db4f01ee0f" prot="private" virt="non-virtual"><scope>iceberg::DeleteFilter</scope><name>pos_field_position_</name></member>
+      <member refid="classiceberg_1_1DeleteFilter_1aeff961ec86b9d79030142be80c3918fa" prot="private" virt="non-virtual"><scope>iceberg::DeleteFilter</scope><name>pos_index_</name></member>
+      <member refid="classiceberg_1_1DeleteFilter_1a3441b936826581b1af28ce3c292c69f4" prot="private" virt="non-virtual"><scope>iceberg::DeleteFilter</scope><name>pos_loaded_</name></member>
+      <member refid="classiceberg_1_1DeleteFilter_1a51b849849b4b17cb1f142f9dd8568f87" prot="private" virt="non-virtual"><scope>iceberg::DeleteFilter</scope><name>pos_mutex_</name></member>
+      <member refid="classiceberg_1_1DeleteFilter_1a25866a2b313651e11de551d4d3f29758" prot="private" virt="non-virtual"><scope>iceberg::DeleteFilter</scope><name>requested_schema_</name></member>
+      <member refid="classiceberg_1_1DeleteFilter_1a01eeeda355ecb0003f7dd2b2c82c91aa" prot="private" virt="non-virtual"><scope>iceberg::DeleteFilter</scope><name>required_schema_</name></member>
+      <member refid="classiceberg_1_1DeleteFilter_1a1995b97527650c6ffc47d225f40982de" prot="public" virt="non-virtual"><scope>iceberg::DeleteFilter</scope><name>RequiredSchema</name></member>
+      <member refid="classiceberg_1_1DeleteFilter_1a7f6cdf2f0cb7ee52747cf7f7cda72a26" prot="public" virt="non-virtual"><scope>iceberg::DeleteFilter</scope><name>~DeleteFilter</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

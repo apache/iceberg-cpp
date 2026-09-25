@@ -1,0 +1,323 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1TableRequirement" kind="class" language="C++" prot="public" abstract="yes">
+    <compoundname>iceberg::TableRequirement</compoundname>
+    <derivedcompoundref refid="classiceberg_1_1table_1_1AssertCurrentSchemaID" prot="public" virt="non-virtual">iceberg::table::AssertCurrentSchemaID</derivedcompoundref>
+    <derivedcompoundref refid="classiceberg_1_1table_1_1AssertDefaultSortOrderID" prot="public" virt="non-virtual">iceberg::table::AssertDefaultSortOrderID</derivedcompoundref>
+    <derivedcompoundref refid="classiceberg_1_1table_1_1AssertDefaultSpecID" prot="public" virt="non-virtual">iceberg::table::AssertDefaultSpecID</derivedcompoundref>
+    <derivedcompoundref refid="classiceberg_1_1table_1_1AssertDoesNotExist" prot="public" virt="non-virtual">iceberg::table::AssertDoesNotExist</derivedcompoundref>
+    <derivedcompoundref refid="classiceberg_1_1table_1_1AssertLastAssignedFieldId" prot="public" virt="non-virtual">iceberg::table::AssertLastAssignedFieldId</derivedcompoundref>
+    <derivedcompoundref refid="classiceberg_1_1table_1_1AssertLastAssignedPartitionId" prot="public" virt="non-virtual">iceberg::table::AssertLastAssignedPartitionId</derivedcompoundref>
+    <derivedcompoundref refid="classiceberg_1_1table_1_1AssertRefSnapshotID" prot="public" virt="non-virtual">iceberg::table::AssertRefSnapshotID</derivedcompoundref>
+    <derivedcompoundref refid="classiceberg_1_1table_1_1AssertUUID" prot="public" virt="non-virtual">iceberg::table::AssertUUID</derivedcompoundref>
+    <includes refid="table__requirement_8h" local="no">table_requirement.h</includes>
+    <sectiondef kind="public-type">
+      <memberdef kind="enum" id="classiceberg_1_1TableRequirement_1a6e4147c3e1ec7bc343634699f4cbec79" prot="public" static="no" strong="yes">
+        <type>uint8_t</type>
+        <name>Kind</name>
+        <qualifiedname>iceberg::TableRequirement::Kind</qualifiedname>
+        <enumvalue id="classiceberg_1_1TableRequirement_1a6e4147c3e1ec7bc343634699f4cbec79a2d6db6cacce60ca5bbbe135f35f976e9" prot="public">
+          <name>kAssertDoesNotExist</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="classiceberg_1_1TableRequirement_1a6e4147c3e1ec7bc343634699f4cbec79abdd77bcb672b803db864850b930126e9" prot="public">
+          <name>kAssertUUID</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="classiceberg_1_1TableRequirement_1a6e4147c3e1ec7bc343634699f4cbec79a16cb2583acefe3337d0cf20d37fa5747" prot="public">
+          <name>kAssertRefSnapshotID</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="classiceberg_1_1TableRequirement_1a6e4147c3e1ec7bc343634699f4cbec79ac0219775bda099ab4caa679d6177895e" prot="public">
+          <name>kAssertLastAssignedFieldId</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="classiceberg_1_1TableRequirement_1a6e4147c3e1ec7bc343634699f4cbec79a1f68d4b3c5f0da6cc9ed3f4165f5788f" prot="public">
+          <name>kAssertCurrentSchemaID</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="classiceberg_1_1TableRequirement_1a6e4147c3e1ec7bc343634699f4cbec79a8bdea3f178c2a63ca46a166bf03d958a" prot="public">
+          <name>kAssertLastAssignedPartitionId</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="classiceberg_1_1TableRequirement_1a6e4147c3e1ec7bc343634699f4cbec79a39bb1f979c99b58c5b663c37aa9d8db2" prot="public">
+          <name>kAssertDefaultSpecID</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="classiceberg_1_1TableRequirement_1a6e4147c3e1ec7bc343634699f4cbec79a52de06a82d9d28f1bcd5b1bcae170014" prot="public">
+          <name>kAssertDefaultSortOrderID</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_requirement.h" line="46" column="3" bodyfile="iceberg/table_requirement.h" bodystart="46" bodyend="55"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1TableRequirement_1a91a754d5e846ec2607aec5bf09896270" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type></type>
+        <definition>virtual iceberg::TableRequirement::~TableRequirement</definition>
+        <argsstring>()=default</argsstring>
+        <name>~TableRequirement</name>
+        <qualifiedname>iceberg::TableRequirement::~TableRequirement</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_requirement.h" line="57" column="11"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TableRequirement_1ae1792bd660df2370dffc5474b4e0a264" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
+        <type>Kind</type>
+        <definition>virtual Kind iceberg::TableRequirement::kind</definition>
+        <argsstring>() const =0</argsstring>
+        <name>kind</name>
+        <qualifiedname>iceberg::TableRequirement::kind</qualifiedname>
+        <reimplementedby refid="classiceberg_1_1table_1_1AssertDoesNotExist_1a08089dd64501dff1b719d3f85ab9301f">kind</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1table_1_1AssertUUID_1a71761cc1d765eee5f58610df23ad51cd">kind</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1table_1_1AssertRefSnapshotID_1ae82fe0cad009d912649472fe20339a26">kind</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1table_1_1AssertLastAssignedFieldId_1ad04553595685868da40dfdf7f2f325a1">kind</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1table_1_1AssertCurrentSchemaID_1ac6601384b7541ab4a85e638e27e773f8">kind</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1table_1_1AssertLastAssignedPartitionId_1a02cbc7be388d73a7b727fab48d6e3f91">kind</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1table_1_1AssertDefaultSpecID_1a38c00a713f91c90a3945931083fe730b">kind</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1table_1_1AssertDefaultSortOrderID_1a2db247d9bd0eb82c952fee85a7df0f19">kind</reimplementedby>
+        <briefdescription>
+<para>Return the kind of requirement. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_requirement.h" line="60" column="16"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TableRequirement_1ae122a03307e1dc67692d8e98b389fb15" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
+        <type>Status</type>
+        <definition>virtual Status iceberg::TableRequirement::Validate</definition>
+        <argsstring>(const TableMetadata *base) const =0</argsstring>
+        <name>Validate</name>
+        <qualifiedname>iceberg::TableRequirement::Validate</qualifiedname>
+        <reimplementedby refid="classiceberg_1_1table_1_1AssertDoesNotExist_1ad05eda57ccb7f7273834640779a73d40">Validate</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1table_1_1AssertUUID_1a40a0b6fda5e482c8c23d7807dc19f0a5">Validate</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1table_1_1AssertRefSnapshotID_1a55299e43bc5a41ca0af1dbcba9e2d090">Validate</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1table_1_1AssertLastAssignedFieldId_1af7fa8cf94c3ae72cfa9e2d842fea42c2">Validate</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1table_1_1AssertCurrentSchemaID_1aa7fd0eb9539d1e55ddc68c0f2b4ee3b8">Validate</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1table_1_1AssertLastAssignedPartitionId_1ad53e8b2b1b2f3add9c79eb08d6744e2a">Validate</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1table_1_1AssertDefaultSpecID_1a204aab5a48395e44877cacdb2f571bf7">Validate</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1table_1_1AssertDefaultSortOrderID_1a85024195b579589dae3240f493cfa6fb">Validate</reimplementedby>
+        <param>
+          <type>const <ref refid="structiceberg_1_1TableMetadata" kindref="compound">TableMetadata</ref> *</type>
+          <declname>base</declname>
+        </param>
+        <briefdescription>
+<para>Validate this requirement against table metadata. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>base</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The base table metadata to validate against (may be nullptr) </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Status indicating success or failure with error details </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_requirement.h" line="66" column="18"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TableRequirement_1a67955bc471d761a5a19c2e7ed6858e08" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
+        <type>bool</type>
+        <definition>virtual bool iceberg::TableRequirement::Equals</definition>
+        <argsstring>(const TableRequirement &amp;other) const =0</argsstring>
+        <name>Equals</name>
+        <qualifiedname>iceberg::TableRequirement::Equals</qualifiedname>
+        <reimplementedby refid="classiceberg_1_1table_1_1AssertDoesNotExist_1aee5f9a9ed9194746461c8ba8e18dc8c1">Equals</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1table_1_1AssertUUID_1a11766552aaf57d52404300e5ec45892b">Equals</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1table_1_1AssertRefSnapshotID_1ad22739ba88ea05d467f1105fb9b9e55b">Equals</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1table_1_1AssertLastAssignedFieldId_1ad580056e238db7c5629717e76d3d023b">Equals</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1table_1_1AssertCurrentSchemaID_1a45888a72ad08f6467d1668ad7a201b73">Equals</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1table_1_1AssertLastAssignedPartitionId_1a656dabe37b2a092a8363e2823b4f3bba">Equals</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1table_1_1AssertDefaultSpecID_1a7a08fc9e7b895702df5528cc03377373">Equals</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1table_1_1AssertDefaultSortOrderID_1af50939744fff79c6d03c993a5c813717">Equals</reimplementedby>
+        <param>
+          <type>const <ref refid="classiceberg_1_1TableRequirement" kindref="compound">TableRequirement</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+<para>Check equality with another <ref refid="classiceberg_1_1TableRequirement" kindref="compound">TableRequirement</ref>. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>other</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The requirement to compare with </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>true if the requirements are equal, false otherwise </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_requirement.h" line="72" column="16"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TableRequirement_1a2bbf72ce6649e04a8dc1bc2f7bcff353" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
+        <type>std::unique_ptr&lt; <ref refid="classiceberg_1_1TableRequirement" kindref="compound">TableRequirement</ref> &gt;</type>
+        <definition>virtual std::unique_ptr&lt; TableRequirement &gt; iceberg::TableRequirement::Clone</definition>
+        <argsstring>() const =0</argsstring>
+        <name>Clone</name>
+        <qualifiedname>iceberg::TableRequirement::Clone</qualifiedname>
+        <reimplementedby refid="classiceberg_1_1table_1_1AssertDoesNotExist_1ae532d37abd08aee583179a0b541f15bb">Clone</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1table_1_1AssertUUID_1ae88f244b6ba758d2466e4d2accd1405a">Clone</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1table_1_1AssertRefSnapshotID_1a199301cef5b50cffde62d8df4dbc795e">Clone</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1table_1_1AssertLastAssignedFieldId_1a2a8991a4d543738c35bcc8a5428d8d13">Clone</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1table_1_1AssertCurrentSchemaID_1a56c489b00e42218bd00a7c91e5992119">Clone</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1table_1_1AssertLastAssignedPartitionId_1a8280f7ec79356ccbdc3e9bb02b5b5c3e">Clone</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1table_1_1AssertDefaultSpecID_1aa07e5193d1f1c4f9e4c018e7f6796b64">Clone</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1table_1_1AssertDefaultSortOrderID_1a24bb4e71aed99b7b30b4764e20499bda">Clone</reimplementedby>
+        <briefdescription>
+<para>Create a deep copy of this requirement. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>A unique_ptr to a new <ref refid="classiceberg_1_1TableRequirement" kindref="compound">TableRequirement</ref> that is a copy of this one </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_requirement.h" line="77" column="27"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="friend">
+      <memberdef kind="friend" id="classiceberg_1_1TableRequirement_1ac213585c11e319f539feff8bcea80b55" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool operator==</definition>
+        <argsstring>(const TableRequirement &amp;lhs, const TableRequirement &amp;rhs)</argsstring>
+        <name>operator==</name>
+        <qualifiedname>iceberg::TableRequirement::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1TableRequirement" kindref="compound">TableRequirement</ref> &amp;</type>
+          <declname>lhs</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classiceberg_1_1TableRequirement" kindref="compound">TableRequirement</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+<para>Compare two <ref refid="classiceberg_1_1TableRequirement" kindref="compound">TableRequirement</ref> instances for equality. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_requirement.h" line="80" column="15" bodyfile="iceberg/table_requirement.h" bodystart="80" bodyend="82"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Base class for update requirement operations. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>Represents a requirement that must be validated before applying metadata updates to a table. Each concrete subclass represents a specific type of requirement check. </para>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>iceberg::TableRequirement</label>
+        <link refid="classiceberg_1_1TableRequirement"/>
+      </node>
+      <node id="2">
+        <label>iceberg::table::AssertCurrentSchemaID</label>
+        <link refid="classiceberg_1_1table_1_1AssertCurrentSchemaID"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>iceberg::table::AssertDefaultSortOrderID</label>
+        <link refid="classiceberg_1_1table_1_1AssertDefaultSortOrderID"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>iceberg::table::AssertDefaultSpecID</label>
+        <link refid="classiceberg_1_1table_1_1AssertDefaultSpecID"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>iceberg::table::AssertDoesNotExist</label>
+        <link refid="classiceberg_1_1table_1_1AssertDoesNotExist"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="6">
+        <label>iceberg::table::AssertLastAssignedFieldId</label>
+        <link refid="classiceberg_1_1table_1_1AssertLastAssignedFieldId"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="7">
+        <label>iceberg::table::AssertLastAssignedPartitionId</label>
+        <link refid="classiceberg_1_1table_1_1AssertLastAssignedPartitionId"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="8">
+        <label>iceberg::table::AssertRefSnapshotID</label>
+        <link refid="classiceberg_1_1table_1_1AssertRefSnapshotID"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="9">
+        <label>iceberg::table::AssertUUID</label>
+        <link refid="classiceberg_1_1table_1_1AssertUUID"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <location file="iceberg/table_requirement.h" line="44" column="1" bodyfile="iceberg/table_requirement.h" bodystart="44" bodyend="83"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1TableRequirement_1a2bbf72ce6649e04a8dc1bc2f7bcff353" prot="public" virt="pure-virtual"><scope>iceberg::TableRequirement</scope><name>Clone</name></member>
+      <member refid="classiceberg_1_1TableRequirement_1a67955bc471d761a5a19c2e7ed6858e08" prot="public" virt="pure-virtual"><scope>iceberg::TableRequirement</scope><name>Equals</name></member>
+      <member refid="classiceberg_1_1TableRequirement_1a6e4147c3e1ec7bc343634699f4cbec79" prot="public" virt="non-virtual"><scope>iceberg::TableRequirement</scope><name>Kind</name></member>
+      <member refid="classiceberg_1_1TableRequirement_1ae1792bd660df2370dffc5474b4e0a264" prot="public" virt="pure-virtual"><scope>iceberg::TableRequirement</scope><name>kind</name></member>
+      <member refid="classiceberg_1_1TableRequirement_1ac213585c11e319f539feff8bcea80b55" prot="public" virt="non-virtual"><scope>iceberg::TableRequirement</scope><name>operator==</name></member>
+      <member refid="classiceberg_1_1TableRequirement_1ae122a03307e1dc67692d8e98b389fb15" prot="public" virt="pure-virtual"><scope>iceberg::TableRequirement</scope><name>Validate</name></member>
+      <member refid="classiceberg_1_1TableRequirement_1a91a754d5e846ec2607aec5bf09896270" prot="public" virt="virtual"><scope>iceberg::TableRequirement</scope><name>~TableRequirement</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>
