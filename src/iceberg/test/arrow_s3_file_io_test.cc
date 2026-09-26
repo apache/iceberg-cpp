@@ -299,6 +299,45 @@ TEST_F(ArrowS3FileIOTest, LongestCredentialPrefix) {
               IsOk());
 }
 
+TEST_F(ArrowS3FileIOTest, DeleteFilesAttemptsEveryFile) {
+  if (!HasIntegrationEnv()) {
+    GTEST_SKIP() << "Set ICEBERG_TEST_S3_URI to enable S3 IO test";
+  }
+
+  auto properties = PropertiesFromEnv();
+  if (properties.empty()) {
+    GTEST_SKIP() << "Set S3 properties to enable credential routing test";
+  }
+
+  auto io_res = MakeS3FileIO(properties);
+  ASSERT_THAT(io_res, IsOk());
+  auto io = std::move(io_res).value();
+  auto* credentialed = io->AsSupportsStorageCredentials();
+  ASSERT_NE(credentialed, nullptr);
+
+  const auto denied = ObjectUri("delete_denied/");
+  const auto allowed = ObjectUri("delete_allowed/") + "only";
+  const std::vector<std::string> paths = {denied + "first", allowed, denied + "second"};
+  for (const auto& path : paths) {
+    ASSERT_THAT(io->WriteFile(path, "payload"), IsOk());
+  }
+
+  // Deletes under `denied` fail; the one between them must still run.
+  auto bad_properties = properties;
+  for (const auto& [key, value] : BadS3Credentials()) {
+    bad_properties.insert_or_assign(key, value);
+  }
+  ASSERT_THAT(credentialed->SetStorageCredentials(
+                  {{.prefix = denied, .config = std::move(bad_properties)}}),
+              IsOk());
+  EXPECT_THAT(io->DeleteFiles(paths), HasErrorMessage("Failed to delete 2 of 3 files"));
+  EXPECT_FALSE(io->ReadFile(allowed, std::nullopt).has_value());
+
+  // The denied files remain: Arrow fails to delete a missing object.
+  ASSERT_THAT(credentialed->SetStorageCredentials({}), IsOk());
+  EXPECT_THAT(io->DeleteFiles({paths[0], paths[2]}), IsOk());
+}
+
 // The credential is vended under the oss spelling and the object addressed as
 // `s3://`, so they only meet through canonicalization — and every other path
 // to authentication is broken. (rest_arrow_file_io_test covers the mirrored

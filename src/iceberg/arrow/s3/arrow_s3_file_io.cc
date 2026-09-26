@@ -284,12 +284,18 @@ Status ArrowS3FileIO::DeleteFile(const std::string& file_location) {
 }
 
 Status ArrowS3FileIO::DeleteFiles(const std::vector<std::string>& file_locations) {
-  std::unordered_map<ArrowFileSystemFileIO*, std::vector<std::string>> locations_by_io;
+  // Like Java's S3FileIO, keep going after a failure and report the count.
+  // Arrow's S3 DeleteFiles deletes one file at a time too.
+  size_t failed = 0;
   for (const auto& file_location : file_locations) {
-    locations_by_io[&FileIOForPath(file_location)].push_back(file_location);
+    if (auto status = FileIOForPath(file_location).DeleteFile(file_location);
+        !status.has_value()) {
+      ICEBERG_LOG_WARN("Failed to delete {}: {}", file_location, status.error().message);
+      ++failed;
+    }
   }
-  for (auto& [file_io, locations] : locations_by_io) {
-    ICEBERG_RETURN_UNEXPECTED(file_io->DeleteFiles(locations));
+  if (failed > 0) {
+    return IOError("Failed to delete {} of {} files", failed, file_locations.size());
   }
   return {};
 }
