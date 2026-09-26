@@ -21,11 +21,26 @@
 
 | Version | Date | Links |
 |---------|------|-------|
-| 0.3.0 | June 14, 2026 | [Release Notes](https://github.com/apache/iceberg-cpp/releases/tag/v0.3.0) · [Source](https://dist.apache.org/repos/dist/release/iceberg/apache-iceberg-cpp-0.3.0/) · [Blog Post](https://iceberg.apache.org/blog/apache-iceberg-cpp-0.3.0-release/) |
-| 0.2.0 | January 26, 2026 | [Release Notes](https://github.com/apache/iceberg-cpp/releases/tag/v0.2.0) · [Source](https://dist.apache.org/repos/dist/release/iceberg/apache-iceberg-cpp-0.2.0/) · [Blog Post](https://iceberg.apache.org/blog/apache-iceberg-cpp-0.2.0-release/) |
+| 0.4.0 | September 26, 2026 | [Release Notes](https://github.com/apache/iceberg-cpp/releases/tag/v0.4.0) · [Source](https://dist.apache.org/repos/dist/release/iceberg/apache-iceberg-cpp-0.4.0/) |
+| 0.3.0 | June 14, 2026 | [Release Notes](https://github.com/apache/iceberg-cpp/releases/tag/v0.3.0) · [Source](https://archive.apache.org/dist/iceberg/apache-iceberg-cpp-0.3.0/) · [Blog Post](https://iceberg.apache.org/blog/apache-iceberg-cpp-0.3.0-release/) |
+| 0.2.0 | January 26, 2026 | [Release Notes](https://github.com/apache/iceberg-cpp/releases/tag/v0.2.0) · [Source](https://archive.apache.org/dist/iceberg/apache-iceberg-cpp-0.2.0/) · [Blog Post](https://iceberg.apache.org/blog/apache-iceberg-cpp-0.2.0-release/) |
 | 0.1.0 | September 10, 2025 | [Release Notes](https://github.com/apache/iceberg-cpp/releases/tag/v0.1.0) · [Source](https://archive.apache.org/dist/iceberg/apache-iceberg-cpp-0.1.0/) |
 
 For the full changelog of each release, see the [GitHub Releases page](https://github.com/apache/iceberg-cpp/releases).
+
+## 0.4.0
+
+- New snapshot update operations including merge append, row delta, overwrite files, delete files, rewrite files, and replace partitions
+- Initial v3 support including column default values, row lineage, deletion vectors, and geometry and geography types
+- Parallel manifest reading and writing, parallel update and scan processing, and lazy streaming scan planning
+- REST catalog improvements including session-aware catalogs, OAuth2 token exchange, SigV4 authentication, and vended storage credentials
+- ResolvingFileIO to select a FileIO by location scheme, with S3-compatible and OSS schemes in the Arrow FileIO
+- Commit and scan metrics reporting integration
+- Pluggable logging framework with std::cerr and spdlog backends
+- Metadata table interface with a streaming snapshots table
+- Groundwork for a Hive Metastore catalog with vendored Thrift bindings and an HMS client
+- RenameTable for InMemoryCatalog and purge support in DropTable for InMemoryCatalog and SqlCatalog
+- Upgrade to Arrow 25.0.0 and removal of Meson build support
 
 ## 0.3.0
 
