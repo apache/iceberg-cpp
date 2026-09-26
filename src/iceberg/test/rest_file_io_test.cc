@@ -52,6 +52,7 @@ class MockFileIO : public FileIO {
 
 std::vector<StorageCredential> captured_storage_credentials;
 std::unordered_map<std::string, std::string> captured_file_io_properties;
+StorageCredentialRefresher captured_refresher;
 
 class MockCredentialedFileIO : public MockFileIO, public SupportsStorageCredentials {
  public:
@@ -61,8 +62,12 @@ class MockCredentialedFileIO : public MockFileIO, public SupportsStorageCredenti
     return {};
   }
 
-  const std::vector<StorageCredential>& credentials() const override {
+  std::vector<StorageCredential> credentials() const override {
     return captured_storage_credentials;
+  }
+
+  void SetCredentialRefresher(StorageCredentialRefresher refresher) override {
+    captured_refresher = std::move(refresher);
   }
 
   SupportsStorageCredentials* AsSupportsStorageCredentials() override { return this; }
@@ -153,6 +158,35 @@ TEST(RestFileIOTest, TableFileIOMergesConfigAndCredentials) {
               ::testing::UnorderedElementsAre(::testing::Pair("credential-only", "value"),
                                               ::testing::Pair("shared", "credential")));
   EXPECT_EQ(credentialed->credentials(), captured_storage_credentials);
+}
+
+TEST(RestFileIOTest, InstallsCredentialRefresherOnlyForVendedCredentials) {
+  const std::string custom_impl = "rest-file-io-test-refresher";
+  FileIORegistry::Register(
+      custom_impl,
+      {.create = [](const std::unordered_map<std::string, std::string>& /*properties*/)
+           -> Result<std::unique_ptr<FileIO>> {
+        return std::make_unique<MockCredentialedFileIO>();
+      }});
+  const std::unordered_map<std::string, std::string> table_config{
+      {"io-impl", custom_impl}};
+
+  captured_refresher = nullptr;
+  std::vector<StorageCredential> refreshed = {{.prefix = "s3", .config = {{"k", "v2"}}}};
+  auto result = MakeTableFileIO(
+      {}, table_config, {{.prefix = "s3", .config = {{"k", "v1"}}}},
+      [&]() -> Result<std::vector<StorageCredential>> { return refreshed; });
+  ASSERT_THAT(result, IsOk());
+  ASSERT_TRUE(captured_refresher);
+  EXPECT_THAT(captured_refresher(), IsOk());
+  EXPECT_EQ(captured_refresher().value(), refreshed);
+
+  captured_refresher = nullptr;
+  result = MakeTableFileIO(
+      {}, table_config, /*storage_credentials=*/{},
+      [&]() -> Result<std::vector<StorageCredential>> { return refreshed; });
+  ASSERT_THAT(result, IsOk());
+  EXPECT_FALSE(captured_refresher);
 }
 
 TEST(RestFileIOTest, TableImplOverridesWarehouseScheme) {
