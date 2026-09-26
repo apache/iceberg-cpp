@@ -318,7 +318,7 @@ Status ArrowS3FileIO::DeleteFiles(const std::vector<std::string>& file_locations
   }
   delete_remaining();
   for (auto& helper : helpers) {
-    helper.wait();
+    helper.get();  // Rethrows what a helper threw.
   }
   if (failed > 0) {
     return IOError("Failed to delete {} of {} files", failed.load(),
