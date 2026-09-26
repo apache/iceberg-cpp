@@ -20,6 +20,7 @@
 #include <algorithm>
 #include <atomic>
 #include <cstdlib>
+#include <future>
 #include <memory>
 #include <optional>
 #include <string>
@@ -39,6 +40,7 @@
 #include "iceberg/arrow/arrow_status_internal.h"
 #include "iceberg/arrow/s3/s3_properties.h"
 #include "iceberg/logging/log_macros.h"
+#include "iceberg/logging/logger.h"
 #include "iceberg/util/macros.h"
 #include "iceberg/util/property_util.h"
 #include "iceberg/util/string_util.h"
@@ -305,13 +307,18 @@ Status ArrowS3FileIO::DeleteFiles(const std::vector<std::string>& file_locations
       }
     }
   };
-  {
-    // Plus the calling thread.
-    std::vector<std::jthread> helpers;
-    for (size_t i = 1; i < std::min(delete_threads_, file_locations.size()); ++i) {
-      helpers.emplace_back(delete_remaining);
-    }
-    delete_remaining();
+  // Plus the calling thread. Helpers log where the caller does.
+  auto logger = GetCurrentLogger();
+  std::vector<std::future<void>> helpers;
+  for (size_t i = 1; i < std::min(delete_threads_, file_locations.size()); ++i) {
+    helpers.push_back(std::async(std::launch::async, [&] {
+      ScopedLogger bind(logger);
+      delete_remaining();
+    }));
+  }
+  delete_remaining();
+  for (auto& helper : helpers) {
+    helper.wait();
   }
   if (failed > 0) {
     return IOError("Failed to delete {} of {} files", failed.load(),

@@ -341,7 +341,16 @@ TEST_F(ArrowS3FileIOTest, DeleteFilesAttemptsEveryFile) {
   ASSERT_THAT(credentialed->SetStorageCredentials(
                   {{.prefix = denied, .config = std::move(bad_properties)}}),
               IsOk());
-  EXPECT_THAT(io->DeleteFiles(paths), HasErrorMessage("Failed to delete 2 of 3 files"));
+  // Each failure reaches the caller's logger, whichever thread hit it.
+  auto logger = std::make_shared<CapturingLogger>();
+  {
+    ScopedLogger bind(logger);
+    EXPECT_THAT(io->DeleteFiles(paths), HasErrorMessage("Failed to delete 2 of 3 files"));
+  }
+  EXPECT_EQ(std::ranges::count_if(
+                logger->records(),
+                [](const LogMessage& record) { return record.level == LogLevel::kWarn; }),
+            2);
   EXPECT_FALSE(io->ReadFile(allowed, std::nullopt).has_value());
 
   // The denied files remain: Arrow fails to delete a missing object.
