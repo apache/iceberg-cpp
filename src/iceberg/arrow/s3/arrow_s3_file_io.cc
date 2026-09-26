@@ -221,9 +221,9 @@ class ArrowS3FileIO final : public FileIO, public SupportsStorageCredentials {
 
   /// \brief Build a delegate for each credential this FileIO can serve.
   ///
-  /// Runs without holding `mutex_`: building an S3 client can reach out to discover a
-  /// bucket region, which would stall every concurrent operation. Reads no
-  /// mutable member state.
+  /// Runs without holding `mutex_`: building an S3 client can block (without
+  /// static keys the AWS SDK may wait on the EC2 metadata service), which would
+  /// stall every concurrent operation. Reads no mutable member state.
   Result<DelegatesByPrefix> BuildDelegates(
       const std::vector<StorageCredential>& storage_credentials) const;
 

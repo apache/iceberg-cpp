@@ -40,10 +40,10 @@ Result<std::shared_ptr<FileIO>> ResolvingFileIO::FileIOForPath(
   const auto scheme = StringUtils::ToLower(LocationUtil::ParseScheme(location));
   ICEBERG_ASSIGN_OR_RAISE(const auto name, FileIORegistry::Resolve(scheme));
 
-  // Loads without holding `mutex_`: building a client can reach the network (an
-  // S3 client may look up its bucket region), which would stall every other
-  // operation. Forwards all credentials; each implementation applies the
-  // prefixes it understands.
+  // Loads without holding `mutex_`: building a client can block (an S3 client
+  // without static keys may wait on the EC2 metadata service), which would
+  // stall every other operation. Forwards all credentials; each implementation
+  // applies the prefixes it understands.
   auto load = [&](const std::vector<StorageCredential>& credentials)
       -> Result<std::shared_ptr<FileIO>> {
     ICEBERG_ASSIGN_OR_RAISE(std::shared_ptr<FileIO> io,
