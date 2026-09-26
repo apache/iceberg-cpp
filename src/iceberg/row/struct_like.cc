@@ -76,39 +76,73 @@ Result<Scalar> LiteralToScalar(const Literal& literal) {
   }
 }
 
+namespace {
+
+Result<Scalar> GetCheckedField(const StructLike& row, size_t pos, bool optional) {
+  ICEBERG_ASSIGN_OR_RAISE(auto field, row.GetField(pos));
+  if (!optional && std::holds_alternative<std::monostate>(field)) {
+    return InvalidArgument("Required field at position {} is null", pos);
+  }
+  return field;
+}
+
+Result<std::shared_ptr<StructLike>> GetParentStruct(const StructLike& row, size_t pos,
+                                                    bool optional) {
+  ICEBERG_ASSIGN_OR_RAISE(auto field, GetCheckedField(row, pos, optional));
+  if (std::holds_alternative<std::monostate>(field)) return std::shared_ptr<StructLike>{};
+  if (!std::holds_alternative<std::shared_ptr<StructLike>>(field)) {
+    return InvalidSchema("Encountered non-struct at position {}", pos);
+  }
+  auto parent = std::get<std::shared_ptr<StructLike>>(std::move(field));
+  if (!parent && !optional) {
+    return InvalidArgument("Required field at position {} is null", pos);
+  }
+  return parent;
+}
+
+}  // namespace
+
 StructLikeAccessor::StructLikeAccessor(std::shared_ptr<Type> type,
-                                       std::span<const size_t> position_path)
-    : type_(std::move(type)), position_path_(position_path.begin(), position_path.end()) {
-  if (position_path.size() == 1) {
-    accessor_ = [pos =
-                     position_path[0]](const StructLike& struct_like) -> Result<Scalar> {
-      return struct_like.GetField(pos);
+                                       std::span<const size_t> position_path,
+                                       std::vector<bool> is_optional)
+    : type_(std::move(type)),
+      position_path_(position_path.begin(), position_path.end()),
+      is_optional_(std::move(is_optional)) {
+  if (position_path_.size() != is_optional_.size()) {
+    accessor_ = [](const StructLike&) -> Result<Scalar> {
+      return InvalidArgument("Optionality count does not match position path");
     };
-  } else if (position_path.size() == 2) {
-    accessor_ = [pos0 = position_path[0], pos1 = position_path[1]](
+    return;
+  }
+  if (position_path_.size() == 1) {
+    accessor_ = [pos = position_path_[0], optional = static_cast<bool>(is_optional_[0])](
                     const StructLike& struct_like) -> Result<Scalar> {
-      ICEBERG_ASSIGN_OR_RAISE(auto first_level_field, struct_like.GetField(pos0));
-      if (!std::holds_alternative<std::shared_ptr<StructLike>>(first_level_field)) {
-        return InvalidSchema("Encountered non-struct in the position path [{},{}]", pos0,
-                             pos1);
-      }
-      return std::get<std::shared_ptr<StructLike>>(first_level_field)->GetField(pos1);
+      return GetCheckedField(struct_like, pos, optional);
     };
-  } else if (!position_path.empty()) {
+  } else if (position_path_.size() == 2) {
+    accessor_ = [pos0 = position_path_[0], pos1 = position_path_[1],
+                 optional = static_cast<bool>(is_optional_[0]),
+                 leaf_optional = static_cast<bool>(is_optional_[1])](
+                    const StructLike& struct_like) -> Result<Scalar> {
+      ICEBERG_ASSIGN_OR_RAISE(auto nested, GetParentStruct(struct_like, pos0, optional));
+      if (!nested) return Scalar{std::monostate{}};
+      return GetCheckedField(*nested, pos1, leaf_optional);
+    };
+  } else if (!position_path_.empty()) {
     accessor_ = [this](const StructLike& struct_like) -> Result<Scalar> {
       std::vector<std::shared_ptr<StructLike>> backups;
+      backups.reserve(position_path_.size() - 1);
       const StructLike* current_struct_like = &struct_like;
       for (size_t i = 0; i < position_path_.size() - 1; ++i) {
-        ICEBERG_ASSIGN_OR_RAISE(auto field,
-                                current_struct_like->GetField(position_path_[i]));
-        if (!std::holds_alternative<std::shared_ptr<StructLike>>(field)) {
-          return InvalidSchema("Encountered non-struct in the position path [{}]",
-                               position_path_);
-        }
-        backups.push_back(std::get<std::shared_ptr<StructLike>>(field));
+        ICEBERG_ASSIGN_OR_RAISE(
+            auto parent,
+            GetParentStruct(*current_struct_like, position_path_[i], is_optional_[i]));
+        if (!parent) return Scalar{std::monostate{}};
+        backups.push_back(std::move(parent));
         current_struct_like = backups.back().get();
       }
-      return current_struct_like->GetField(position_path_.back());
+      return GetCheckedField(*current_struct_like, position_path_.back(),
+                             is_optional_.back());
     };
   } else {
     accessor_ = [](const StructLike&) -> Result<Scalar> {

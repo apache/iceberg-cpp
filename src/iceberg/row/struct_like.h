@@ -31,6 +31,7 @@
 #include <span>
 #include <string_view>
 #include <variant>
+#include <vector>
 
 #include "iceberg/expression/literal.h"
 #include "iceberg/result.h"
@@ -105,9 +106,11 @@ class ICEBERG_EXPORT MapLike {
 class ICEBERG_EXPORT StructLikeAccessor {
  public:
   explicit StructLikeAccessor(std::shared_ptr<Type> type,
-                              std::span<const size_t> position_path);
+                              std::span<const size_t> position_path,
+                              std::vector<bool> is_optional);
 
   /// \brief Get the scalar value at the given position.
+  /// A null optional parent returns monostate; a null required field is an error.
   Result<Scalar> Get(const StructLike& struct_like) const {
     return accessor_(struct_like);
   }
@@ -121,13 +124,15 @@ class ICEBERG_EXPORT StructLikeAccessor {
   /// \brief Get the type of the value that this accessor is bound to.
   const Type& type() const { return *type_; }
 
-  /// \brief Get the position path of the value that this accessor bounded to.
+  /// \brief Get the position path of the value that this accessor is bound to.
   const std::vector<size_t>& position_path() const { return position_path_; }
 
  private:
   std::shared_ptr<Type> type_;
   std::function<Result<Scalar>(const StructLike&)> accessor_;
   std::vector<size_t> position_path_;
+  // One entry per position, including the leaf field.
+  std::vector<bool> is_optional_;
 };
 
 }  // namespace iceberg
