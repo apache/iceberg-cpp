@@ -32,6 +32,7 @@
 
 #include "iceberg/arrow/arrow_io_internal.h"
 #include "iceberg/arrow/arrow_status_internal.h"
+#include "iceberg/arrow_c_data_util_internal.h"
 #include "iceberg/avro/avro_data_util_internal.h"
 #include "iceberg/avro/avro_direct_encoder_internal.h"
 #include "iceberg/avro/avro_metrics.h"
@@ -241,6 +242,14 @@ class AvroWriter::Impl {
     return {};
   }
 
+  Status Write(ArrowArray* data, const Schema& input_schema) {
+    ICEBERG_ASSIGN_OR_RAISE(
+        auto aligned_data,
+        arrow::AlignBatchForWrite(data, input_schema, *write_schema_,
+                                  ::arrow::default_memory_pool()));
+    return Write(&aligned_data);
+  }
+
   Status Close() {
     if (!backend_->Closed()) {
       backend_->Close();
@@ -289,6 +298,10 @@ class AvroWriter::Impl {
 AvroWriter::~AvroWriter() = default;
 
 Status AvroWriter::Write(ArrowArray* data) { return impl_->Write(data); }
+
+Status AvroWriter::Write(ArrowArray* data, const Schema& input_schema) {
+  return impl_->Write(data, input_schema);
+}
 
 Status AvroWriter::Open(const WriterOptions& options) {
   impl_ = std::make_unique<Impl>();
