@@ -23,6 +23,7 @@
 #include <cstring>
 #include <exception>
 #include <limits>
+#include <map>
 #include <string_view>
 #include <utility>
 #include <vector>
@@ -51,34 +52,20 @@ int64_t ToPosition(int32_t key, uint32_t pos32) {
   return (int64_t{key} << 32) | int64_t{pos32};
 }
 
-Status ValidatePosition(int64_t pos) {
-  if (pos < 0 || pos > RoaringPositionBitmap::kMaxPosition) {
-    return InvalidArgument("Bitmap supports positions that are >= 0 and <= {}: {}",
-                           RoaringPositionBitmap::kMaxPosition, pos);
-  }
-  return {};
-}
-
-void WriteBitmaps(const std::vector<roaring::Roaring>& bitmaps, uint8_t* buf) {
+void WriteBitmaps(const std::map<int32_t, roaring::Roaring>& bitmaps, uint8_t* buf) {
   WriteLittleEndian(static_cast<int64_t>(bitmaps.size()), buf);
   buf += kBitmapCountSizeBytes;
-  for (int32_t key = 0; std::cmp_less(key, bitmaps.size()); ++key) {
+  for (const auto& [key, bitmap] : bitmaps) {
     WriteLittleEndian(key, buf);
     buf += kBitmapKeySizeBytes;
-    buf += bitmaps[key].write(reinterpret_cast<char*>(buf), /*portable=*/true);
+    buf += bitmap.write(reinterpret_cast<char*>(buf), /*portable=*/true);
   }
 }
 
 }  // namespace
 
 struct RoaringPositionBitmap::Impl {
-  std::vector<roaring::Roaring> bitmaps;
-
-  void AllocateBitmapsIfNeeded(int32_t required_length) {
-    if (std::cmp_less(bitmaps.size(), required_length)) {
-      bitmaps.resize(static_cast<size_t>(required_length));
-    }
-  }
+  std::map<int32_t, roaring::Roaring> bitmaps;
 };
 
 RoaringPositionBitmap::RoaringPositionBitmap() : impl_(std::make_unique<Impl>()) {}
@@ -108,24 +95,24 @@ RoaringPositionBitmap::RoaringPositionBitmap(std::unique_ptr<Impl> impl)
     : impl_(std::move(impl)) {}
 
 void RoaringPositionBitmap::Add(int64_t pos) {
-  if (pos < 0 || pos > kMaxPosition) {
+  if (pos < 0) {
     return;  // Silently ignore invalid positions
   }
   int32_t key = Key(pos);
   uint32_t pos32 = Pos32Bits(pos);
-  impl_->AllocateBitmapsIfNeeded(key + 1);
   impl_->bitmaps[key].add(pos32);
 }
 
 void RoaringPositionBitmap::AddManyForKey(int32_t key,
                                           std::span<const uint32_t> positions) {
-  impl_->AllocateBitmapsIfNeeded(key + 1);
+  if (key < 0 || positions.empty()) {
+    return;
+  }
   impl_->bitmaps[key].addMany(positions.size(), positions.data());
 }
 
 void RoaringPositionBitmap::AddRange(int64_t pos_start, int64_t pos_end) {
   pos_start = std::max(pos_start, int64_t{0});
-  pos_end = std::min(pos_end, kMaxPosition + 1);
   if (pos_start >= pos_end) {
     return;
   }
@@ -133,61 +120,60 @@ void RoaringPositionBitmap::AddRange(int64_t pos_start, int64_t pos_end) {
   int64_t pos_last = pos_end - 1;
   int32_t start_key = Key(pos_start);
   int32_t end_key = Key(pos_last);
-  impl_->AllocateBitmapsIfNeeded(end_key + 1);
 
-  for (int32_t key = start_key; key <= end_key; ++key) {
+  for (int64_t key = start_key; key <= end_key; ++key) {
     uint64_t low_start = (key == start_key) ? Pos32Bits(pos_start) : uint64_t{0};
     uint64_t low_end = (key == end_key) ? static_cast<uint64_t>(Pos32Bits(pos_last)) + 1
                                         : (uint64_t{1} << 32);
-    impl_->bitmaps[key].addRange(low_start, low_end);
+    impl_->bitmaps[static_cast<int32_t>(key)].addRange(low_start, low_end);
   }
 }
 
 bool RoaringPositionBitmap::Contains(int64_t pos) const {
-  if (pos < 0 || pos > kMaxPosition) {
+  if (pos < 0) {
     return false;  // Invalid positions are not contained
   }
   int32_t key = Key(pos);
   uint32_t pos32 = Pos32Bits(pos);
-  return std::cmp_less(key, impl_->bitmaps.size()) && impl_->bitmaps[key].contains(pos32);
+  auto it = impl_->bitmaps.find(key);
+  return it != impl_->bitmaps.end() && it->second.contains(pos32);
 }
 
 bool RoaringPositionBitmap::IsEmpty() const { return Cardinality() == 0; }
 
 size_t RoaringPositionBitmap::Cardinality() const {
   size_t total = 0;
-  for (const auto& bitmap : impl_->bitmaps) {
+  for (const auto& [_, bitmap] : impl_->bitmaps) {
     total += bitmap.cardinality();
   }
   return total;
 }
 
 void RoaringPositionBitmap::Or(const RoaringPositionBitmap& other) {
-  impl_->AllocateBitmapsIfNeeded(static_cast<int32_t>(other.impl_->bitmaps.size()));
-  for (size_t key = 0; key < other.impl_->bitmaps.size(); ++key) {
-    impl_->bitmaps[key] |= other.impl_->bitmaps[key];
+  for (const auto& [key, bitmap] : other.impl_->bitmaps) {
+    impl_->bitmaps[key] |= bitmap;
   }
 }
 
 bool RoaringPositionBitmap::Optimize() {
   bool changed = false;
-  for (auto& bitmap : impl_->bitmaps) {
+  for (auto& [_, bitmap] : impl_->bitmaps) {
     changed |= bitmap.runOptimize();
   }
   return changed;
 }
 
 void RoaringPositionBitmap::ForEach(const std::function<void(int64_t)>& fn) const {
-  for (size_t key = 0; key < impl_->bitmaps.size(); ++key) {
-    for (uint32_t pos32 : impl_->bitmaps[key]) {
-      fn(ToPosition(static_cast<int32_t>(key), pos32));
+  for (const auto& [key, bitmap] : impl_->bitmaps) {
+    for (uint32_t pos32 : bitmap) {
+      fn(ToPosition(key, pos32));
     }
   }
 }
 
 size_t RoaringPositionBitmap::SerializedSizeInBytes() const {
   size_t size = kBitmapCountSizeBytes;
-  for (const auto& bitmap : impl_->bitmaps) {
+  for (const auto& [_, bitmap] : impl_->bitmaps) {
     size += kBitmapKeySizeBytes + bitmap.getSizeInBytes(/*portable=*/true);
   }
   return size;
@@ -238,17 +224,9 @@ Result<RoaringPositionBitmap> RoaringPositionBitmap::Deserialize(std::string_vie
     remaining -= kBitmapKeySizeBytes;
 
     ICEBERG_PRECHECK(key >= 0, "Invalid unsigned key: {}", key);
-    ICEBERG_PRECHECK(key < std::numeric_limits<int32_t>::max(), "Key is too large: {}",
-                     key);
     ICEBERG_PRECHECK(key > last_key,
                      "Keys must be sorted in ascending order, got key {} after {}", key,
                      last_key);
-
-    // Fill gaps with empty bitmaps
-    while (last_key < key - 1) {
-      impl->bitmaps.emplace_back();
-      ++last_key;
-    }
 
     // Read bitmap using portable safe deserialization.
     // CRoaring's readSafe may throw on corrupted data.
@@ -266,7 +244,9 @@ Result<RoaringPositionBitmap> RoaringPositionBitmap::Deserialize(std::string_vie
     buf += bitmap_size;
     remaining -= bitmap_size;
 
-    impl->bitmaps.emplace_back(std::move(bitmap));
+    if (!bitmap.isEmpty()) {
+      impl->bitmaps.emplace(key, std::move(bitmap));
+    }
     last_key = key;
     --remaining_count;
   }
