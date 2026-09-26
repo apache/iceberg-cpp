@@ -428,8 +428,8 @@ TEST_F(ArrowS3FileIOTest, DeleteFilesReachesEveryCredentialPrefix) {
     ASSERT_THAT(io->WriteFile(path, "payload"), IsOk());
   }
   ASSERT_THAT(io->DeleteFiles(paths), IsOk());
-  // Deleting a missing key succeeds on S3, so check the objects are gone. The
-  // writes above authenticated on these paths, so a failed read means absent.
+  // The writes above authenticated on these paths, so a failed read means the
+  // object is gone.
   for (const auto& path : paths) {
     EXPECT_FALSE(io->ReadFile(path, std::nullopt).has_value()) << path;
   }
