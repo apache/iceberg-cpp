@@ -25,10 +25,12 @@
 #include <cstddef>
 #include <cstdint>
 #include <memory>
+#include <mutex>
 #include <optional>
 #include <span>
 #include <string>
 #include <string_view>
+#include <unordered_map>
 #include <vector>
 
 #include "iceberg/iceberg_export.h"
@@ -38,6 +40,7 @@
 namespace iceberg {
 
 class SupportsStorageCredentials;
+class MetadataCache;
 
 /// \brief Seekable byte stream for reading file contents.
 class ICEBERG_EXPORT SeekableInputStream {
@@ -153,6 +156,30 @@ class ICEBERG_EXPORT FileIO {
   virtual Result<std::string> ReadFile(const std::string& file_location,
                                        std::optional<size_t> length);
 
+  /// \brief Create an input handle backed by the metadata content cache when enabled.
+  ///
+  /// This is intended for immutable Iceberg manifest lists and manifests. Data files
+  /// and table metadata JSON should use NewInputFile or ReadFile directly.
+  Result<std::unique_ptr<InputFile>> NewCachedInputFile(
+      std::string file_location, std::optional<size_t> length = std::nullopt);
+
+  /// \brief Configure metadata caching from catalog/FileIO properties.
+  ///
+  /// Configuration is immutable after the first call. A later configuration may omit
+  /// tuning properties, but any explicitly supplied option must match the configured
+  /// value. Attempting to replace an option returns an error.
+  Status ConfigureMetadataCache(
+      const std::unordered_map<std::string, std::string>& properties);
+
+  /// \brief Return whether metadata content caching is enabled.
+  bool MetadataCacheEnabled() const;
+
+  /// \brief Invalidate a cached metadata file location.
+  void InvalidateMetadataCache(std::string_view file_location);
+
+  /// \brief Clear cached metadata file content.
+  void ClearMetadataCache();
+
   /// \brief Write the given content to the file at the given location.
   ///
   /// \param file_location The location of the file to write.
@@ -180,6 +207,17 @@ class ICEBERG_EXPORT FileIO {
 
   /// \brief Return storage-credential support when implemented by this FileIO.
   virtual SupportsStorageCredentials* AsSupportsStorageCredentials() { return nullptr; }
+
+ private:
+  struct MetadataCacheState {
+    std::mutex mutex;
+    std::shared_ptr<MetadataCache> cache;
+  };
+
+  std::shared_ptr<MetadataCache> GetMetadataCache() const;
+
+  std::shared_ptr<MetadataCacheState> metadata_cache_state_ =
+      std::make_shared<MetadataCacheState>();
 };
 
 /// \brief Mix-in for FileIO implementations that route object paths to
