@@ -114,6 +114,19 @@ class CherryPickOperationTest : public UpdateTestBase {
     return snap.value()->snapshot_id;
   }
 
+  // Commit an append onto the given branch and return its snapshot ID. Main's
+  // current snapshot is unchanged.
+  int64_t CommitAppendToBranch(const std::string& branch,
+                               const std::shared_ptr<DataFile>& file) {
+    auto fa = table_->NewFastAppend();
+    EXPECT_TRUE(fa.has_value());
+    fa.value()->ToBranch(branch);
+    fa.value()->AppendFile(file);
+    EXPECT_THAT(fa.value()->Commit(), IsOk());
+    EXPECT_THAT(table_->Refresh(), IsOk());
+    return table_->metadata()->snapshots.back()->snapshot_id;
+  }
+
   // Commit a staged append and return the staged snapshot's ID. The table's
   // current snapshot is unchanged.
   int64_t StageAppend(const std::shared_ptr<DataFile>& file,
@@ -278,6 +291,26 @@ TEST_F(CherryPickOperationTest, CherryPickAppend) {
   EXPECT_THAT(live,
               ::testing::UnorderedElementsAre(file_a_->file_path, file_b_->file_path,
                                               replacement_a_->file_path));
+}
+
+// A snapshot picked from another branch of an otherwise empty table can be
+// applied to main even though main has no current snapshot yet. The pick's
+// parent (on the source branch) keeps it from qualifying as a fast-forward, so
+// it must go through the ordinary ancestor checks with no current snapshot to
+// compare against.
+TEST_F(CherryPickOperationTest, CherryPickAppendOntoEmptyMain) {
+  CommitAppendToBranch("b1", file_a_);
+  int64_t staged_id = CommitAppendToBranch("b1", file_b_);
+
+  EXPECT_THAT(Cherrypick(staged_id), IsOk());
+
+  ICEBERG_UNWRAP_OR_FAIL(auto snapshot, table_->current_snapshot());
+  EXPECT_NE(snapshot->snapshot_id, staged_id);
+  EXPECT_EQ(snapshot->summary.at(SnapshotSummaryFields::kSourceSnapshotId),
+            std::to_string(staged_id));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto live, LiveDataFilePaths());
+  EXPECT_THAT(live, ::testing::UnorderedElementsAre(file_b_->file_path));
 }
 
 // When the picked snapshot's parent is the current snapshot, the pick moves the
