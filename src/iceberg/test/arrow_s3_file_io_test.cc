@@ -245,6 +245,15 @@ TEST_F(ArrowS3FileIOTest, RejectsIncompleteStaticCredentials) {
                           "S3 client access key ID and secret access key must be set"));
 }
 
+TEST_F(ArrowS3FileIOTest, RejectsInvalidDeleteThreads) {
+  for (std::string_view threads : {"0", "-1", "many"}) {
+    SCOPED_TRACE(threads);
+    EXPECT_THAT(MakeS3FileIO({{std::string(S3Properties::kDeleteNumThreads),
+                               std::string(threads)}}),
+                IsError(ErrorKind::kInvalidArgument));
+  }
+}
+
 TEST_F(ArrowS3FileIOTest, ReadWrite) {
   if (!HasIntegrationEnv()) {
     GTEST_SKIP() << "Set ICEBERG_TEST_S3_URI to enable S3 IO test";
@@ -297,6 +306,56 @@ TEST_F(ArrowS3FileIOTest, LongestCredentialPrefix) {
               IsOk());
   EXPECT_THAT(CheckReadWrite(*io, object_uri, "hello s3 with vended credentials"),
               IsOk());
+}
+
+TEST_F(ArrowS3FileIOTest, DeleteFilesAttemptsEveryFile) {
+  if (!HasIntegrationEnv()) {
+    GTEST_SKIP() << "Set ICEBERG_TEST_S3_URI to enable S3 IO test";
+  }
+
+  auto properties = PropertiesFromEnv();
+  if (properties.empty()) {
+    GTEST_SKIP() << "Set S3 properties to enable credential routing test";
+  }
+  // A thread per file, so the deletes run concurrently.
+  properties[std::string(S3Properties::kDeleteNumThreads)] = "3";
+
+  auto io_res = MakeS3FileIO(properties);
+  ASSERT_THAT(io_res, IsOk());
+  auto io = std::move(io_res).value();
+  auto* credentialed = io->AsSupportsStorageCredentials();
+  ASSERT_NE(credentialed, nullptr);
+
+  const auto denied = ObjectUri("delete_denied/");
+  const auto allowed = ObjectUri("delete_allowed/") + "only";
+  const std::vector<std::string> paths = {denied + "first", allowed, denied + "second"};
+  for (const auto& path : paths) {
+    ASSERT_THAT(io->WriteFile(path, "payload"), IsOk());
+  }
+
+  // Deletes under `denied` fail; the one between them must still run.
+  auto bad_properties = properties;
+  for (const auto& [key, value] : BadS3Credentials()) {
+    bad_properties.insert_or_assign(key, value);
+  }
+  ASSERT_THAT(credentialed->SetStorageCredentials(
+                  {{.prefix = denied, .config = std::move(bad_properties)}}),
+              IsOk());
+  // Each failure reaches the caller's logger, whichever thread hit it.
+  auto logger = std::make_shared<CapturingLogger>();
+  {
+    ScopedLogger bind(logger);
+    EXPECT_THAT(io->DeleteFiles(paths), HasErrorMessage("Failed to delete 2 of 3 files"));
+  }
+  EXPECT_EQ(std::ranges::count_if(
+                logger->records(),
+                [](const LogMessage& record) { return record.level == LogLevel::kWarn; }),
+            2);
+  EXPECT_FALSE(io->ReadFile(allowed, std::nullopt).has_value());
+
+  // The denied files remain: Arrow fails to delete a missing object.
+  ASSERT_THAT(credentialed->SetStorageCredentials({}), IsOk());
+  EXPECT_THAT(io->DeleteFiles({paths[0], paths[2]}), IsOk());
 }
 
 // The credential is vended under the oss spelling and the object addressed as
