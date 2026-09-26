@@ -85,6 +85,11 @@ SetSnapshot& SetSnapshot::RollbackTo(int64_t snapshot_id) {
   return SetCurrentSnapshot(snapshot_id);
 }
 
+SetSnapshot& SetSnapshot::RequireFastForward() {
+  require_fast_forward_ = true;
+  return *this;
+}
+
 Result<int64_t> SetSnapshot::Apply() {
   ICEBERG_RETURN_UNEXPECTED(CheckErrors());
 
@@ -101,6 +106,12 @@ Result<int64_t> SetSnapshot::Apply() {
   ICEBERG_CHECK(snapshot_result.has_value(),
                 "Cannot roll back to unknown snapshot id: {}",
                 target_snapshot_id_.value());
+
+  if (require_fast_forward_) {
+    ICEBERG_CHECK(SnapshotUtil::CanFastForward(base_metadata, *snapshot_result.value()),
+                  "Cannot fast-forward to {}: not a child of the current table state",
+                  target_snapshot_id_.value());
+  }
 
   // If this is a rollback, validate that the target is still an ancestor
   if (is_rollback_) {
