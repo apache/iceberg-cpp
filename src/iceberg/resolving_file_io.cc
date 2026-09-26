@@ -40,28 +40,44 @@ Result<std::shared_ptr<FileIO>> ResolvingFileIO::FileIOForPath(
   const auto scheme = StringUtils::ToLower(LocationUtil::ParseScheme(location));
   ICEBERG_ASSIGN_OR_RAISE(const auto name, FileIORegistry::Resolve(scheme));
 
-  {
-    std::shared_lock lock(mutex_);
-    if (const auto cached = io_by_name_.find(name); cached != io_by_name_.end()) {
-      return cached->second;
-    }
-  }
-
-  std::unique_lock lock(mutex_);
-  auto it = io_by_name_.find(name);
-  if (it == io_by_name_.end()) {
-    ICEBERG_ASSIGN_OR_RAISE(auto io, FileIORegistry::Load(name, properties_));
-    // Forward all credentials; each implementation applies the prefixes it
-    // understands.
-    if (!storage_credentials_.empty()) {
+  // Loads without holding `mutex_`: building a client can block (an S3 client
+  // without static keys may wait on the EC2 metadata service), which would
+  // stall every other operation. Forwards all credentials; each implementation
+  // applies the prefixes it understands.
+  auto load = [&](const std::vector<StorageCredential>& credentials)
+      -> Result<std::shared_ptr<FileIO>> {
+    ICEBERG_ASSIGN_OR_RAISE(std::shared_ptr<FileIO> io,
+                            FileIORegistry::Load(name, properties_));
+    if (!credentials.empty()) {
       if (auto* credentialed = io->AsSupportsStorageCredentials()) {
-        ICEBERG_RETURN_UNEXPECTED(
-            credentialed->SetStorageCredentials(storage_credentials_));
+        ICEBERG_RETURN_UNEXPECTED(credentialed->SetStorageCredentials(credentials));
       }
     }
-    it = io_by_name_.emplace(std::string(name), std::move(io)).first;
+    return io;
+  };
+
+  while (true) {
+    uint64_t generation = 0;
+    std::vector<StorageCredential> credentials;
+    {
+      std::shared_lock lock(mutex_);
+      if (const auto cached = io_by_name_.find(name); cached != io_by_name_.end()) {
+        return cached->second;
+      }
+      generation = credential_generation_;
+      credentials = storage_credentials_;
+    }
+    // Declared before the lock, so a delegate that is not cached is torn down
+    // only after the lock is released.
+    auto loaded = load(credentials);
+    std::unique_lock lock(mutex_);
+    if (generation != credential_generation_) {
+      continue;  // Credentials were replaced mid-load; load again with them.
+    }
+    ICEBERG_RETURN_UNEXPECTED(loaded);
+    // A concurrent first access may have cached one already; that one wins.
+    return io_by_name_.try_emplace(name, *loaded).first->second;
   }
-  return it->second;
 }
 
 Result<std::unique_ptr<InputFile>> ResolvingFileIO::NewInputFile(
@@ -103,13 +119,19 @@ Status ResolvingFileIO::SetStorageCredentials(
     const std::vector<StorageCredential>& storage_credentials) {
   // Rebuild delegates lazily with the new credentials. Updating live delegates
   // instead would leave the resolver inconsistent if one of them rejected them.
-  std::unique_lock lock(mutex_);
-  storage_credentials_ = storage_credentials;
-  io_by_name_.clear();
+  // Retired outside the lock: tearing down a delegate can block.
+  decltype(io_by_name_) retired;
+  {
+    std::unique_lock lock(mutex_);
+    storage_credentials_ = storage_credentials;
+    ++credential_generation_;
+    retired.swap(io_by_name_);
+  }
   return {};
 }
 
-const std::vector<StorageCredential>& ResolvingFileIO::credentials() const {
+std::vector<StorageCredential> ResolvingFileIO::credentials() const {
+  std::shared_lock lock(mutex_);
   return storage_credentials_;
 }
 
