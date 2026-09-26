@@ -245,6 +245,15 @@ TEST_F(ArrowS3FileIOTest, RejectsIncompleteStaticCredentials) {
                           "S3 client access key ID and secret access key must be set"));
 }
 
+TEST_F(ArrowS3FileIOTest, RejectsInvalidDeleteThreads) {
+  for (std::string_view threads : {"0", "-1", "many"}) {
+    SCOPED_TRACE(threads);
+    EXPECT_THAT(MakeS3FileIO({{std::string(S3Properties::kDeleteNumThreads),
+                               std::string(threads)}}),
+                IsError(ErrorKind::kInvalidArgument));
+  }
+}
+
 TEST_F(ArrowS3FileIOTest, ReadWrite) {
   if (!HasIntegrationEnv()) {
     GTEST_SKIP() << "Set ICEBERG_TEST_S3_URI to enable S3 IO test";
@@ -308,6 +317,8 @@ TEST_F(ArrowS3FileIOTest, DeleteFilesAttemptsEveryFile) {
   if (properties.empty()) {
     GTEST_SKIP() << "Set S3 properties to enable credential routing test";
   }
+  // A thread per file, so the deletes run concurrently.
+  properties[std::string(S3Properties::kDeleteNumThreads)] = "3";
 
   auto io_res = MakeS3FileIO(properties);
   ASSERT_THAT(io_res, IsOk());
