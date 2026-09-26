@@ -78,19 +78,24 @@ Result<Scalar> LiteralToScalar(const Literal& literal) {
 
 namespace {
 
+Result<Scalar> GetCheckedField(const StructLike& row, size_t pos, bool optional) {
+  ICEBERG_ASSIGN_OR_RAISE(auto field, row.GetField(pos));
+  if (!optional && std::holds_alternative<std::monostate>(field)) {
+    return InvalidArgument("Required field at position {} is null", pos);
+  }
+  return field;
+}
+
 Result<std::shared_ptr<StructLike>> GetParentStruct(const StructLike& row, size_t pos,
                                                     bool optional) {
-  ICEBERG_ASSIGN_OR_RAISE(auto field, row.GetField(pos));
-  if (std::holds_alternative<std::monostate>(field)) {
-    if (optional) return std::shared_ptr<StructLike>{};
-    return InvalidArgument("Required struct field at position {} is null", pos);
-  }
+  ICEBERG_ASSIGN_OR_RAISE(auto field, GetCheckedField(row, pos, optional));
+  if (std::holds_alternative<std::monostate>(field)) return std::shared_ptr<StructLike>{};
   if (!std::holds_alternative<std::shared_ptr<StructLike>>(field)) {
     return InvalidSchema("Encountered non-struct at position {}", pos);
   }
   auto parent = std::get<std::shared_ptr<StructLike>>(std::move(field));
   if (!parent && !optional) {
-    return InvalidArgument("Required struct field at position {} is null", pos);
+    return InvalidArgument("Required field at position {} is null", pos);
   }
   return parent;
 }
@@ -110,17 +115,18 @@ StructLikeAccessor::StructLikeAccessor(std::shared_ptr<Type> type,
     return;
   }
   if (position_path_.size() == 1) {
-    accessor_ = [pos =
-                     position_path_[0]](const StructLike& struct_like) -> Result<Scalar> {
-      return struct_like.GetField(pos);
+    accessor_ = [pos = position_path_[0], optional = static_cast<bool>(is_optional_[0])](
+                    const StructLike& struct_like) -> Result<Scalar> {
+      return GetCheckedField(struct_like, pos, optional);
     };
   } else if (position_path_.size() == 2) {
     accessor_ = [pos0 = position_path_[0], pos1 = position_path_[1],
-                 optional = static_cast<bool>(is_optional_[0])](
+                 optional = static_cast<bool>(is_optional_[0]),
+                 leaf_optional = static_cast<bool>(is_optional_[1])](
                     const StructLike& struct_like) -> Result<Scalar> {
       ICEBERG_ASSIGN_OR_RAISE(auto nested, GetParentStruct(struct_like, pos0, optional));
       if (!nested) return Scalar{std::monostate{}};
-      return nested->GetField(pos1);
+      return GetCheckedField(*nested, pos1, leaf_optional);
     };
   } else if (!position_path_.empty()) {
     accessor_ = [this](const StructLike& struct_like) -> Result<Scalar> {
@@ -135,7 +141,8 @@ StructLikeAccessor::StructLikeAccessor(std::shared_ptr<Type> type,
         backups.push_back(std::move(parent));
         current_struct_like = backups.back().get();
       }
-      return current_struct_like->GetField(position_path_.back());
+      return GetCheckedField(*current_struct_like, position_path_.back(),
+                             is_optional_.back());
     };
   } else {
     accessor_ = [](const StructLike&) -> Result<Scalar> {

@@ -99,8 +99,12 @@ std::shared_ptr<StructLike> WrapSingleFieldRow(Result<Scalar> field, size_t dept
 }
 
 std::unique_ptr<Schema> MakeNestedSchema(
-    size_t depth, std::optional<size_t> optional_parent = std::nullopt) {
-  auto field = SchemaField::MakeRequired(static_cast<int32_t>(depth), "value", int32());
+    size_t depth, std::optional<size_t> optional_parent = std::nullopt,
+    bool optional_leaf = false) {
+  auto field =
+      optional_leaf
+          ? SchemaField::MakeOptional(static_cast<int32_t>(depth), "value", int32())
+          : SchemaField::MakeRequired(static_cast<int32_t>(depth), "value", int32());
   for (size_t level = depth - 1; level > 0; --level) {
     auto nested = struct_({field});
     field =
@@ -196,6 +200,22 @@ TEST(StructLikeAccessorTest, GetLiteralUuidRejectsWrongLength) {
   EXPECT_THAT(result, HasErrorMessage("UUID byte array must be exactly 16 bytes"));
 }
 
+TEST(StructLikeAccessorTest, RequiredAndOptionalLeaf) {
+  SingleFieldStructLike row(Scalar{std::monostate{}});
+  for (bool optional : {false, true}) {
+    auto schema = MakeNestedSchema(1, std::nullopt, optional);
+    ICEBERG_UNWRAP_OR_FAIL(auto accessor, schema->GetAccessorById(1));
+    if (optional) {
+      EXPECT_SCALAR_NULL(accessor->Get(row));
+      ICEBERG_UNWRAP_OR_FAIL(auto literal, accessor->GetLiteral(row));
+      EXPECT_TRUE(literal.IsNull());
+    } else {
+      EXPECT_THAT(accessor->Get(row), IsError(ErrorKind::kInvalidArgument));
+      EXPECT_THAT(accessor->GetLiteral(row), IsError(ErrorKind::kInvalidArgument));
+    }
+  }
+}
+
 class NestedStructLikeAccessorTest : public ::testing::TestWithParam<size_t> {};
 
 TEST_P(NestedStructLikeAccessorTest, NullParents) {
@@ -253,6 +273,31 @@ TEST_P(NestedStructLikeAccessorTest, ValueAndNullLeaf) {
   ICEBERG_UNWRAP_OR_FAIL(auto null, accessor.GetLiteral(*null_row));
   EXPECT_TRUE(null.IsNull());
   EXPECT_EQ(null.type()->type_id(), TypeId::kInt);
+}
+
+TEST_P(NestedStructLikeAccessorTest, RequiredAndOptionalLeaf) {
+  const auto depth = GetParam();
+  auto row = WrapSingleFieldRow(Scalar{std::monostate{}}, depth);
+  for (bool optional : {false, true}) {
+    auto schema = MakeNestedSchema(depth, std::nullopt, optional);
+    ICEBERG_UNWRAP_OR_FAIL(auto accessor,
+                           schema->GetAccessorById(static_cast<int32_t>(depth)));
+    if (optional) {
+      EXPECT_SCALAR_NULL(accessor->Get(*row));
+      ICEBERG_UNWRAP_OR_FAIL(auto literal, accessor->GetLiteral(*row));
+      EXPECT_TRUE(literal.IsNull());
+    } else {
+      EXPECT_THAT(accessor->Get(*row), IsError(ErrorKind::kInvalidArgument));
+      EXPECT_THAT(accessor->GetLiteral(*row), IsError(ErrorKind::kInvalidArgument));
+    }
+  }
+
+  auto schema = MakeNestedSchema(depth, 0);
+  ICEBERG_UNWRAP_OR_FAIL(auto accessor,
+                         schema->GetAccessorById(static_cast<int32_t>(depth)));
+  EXPECT_THAT(accessor->Get(*row), IsError(ErrorKind::kInvalidArgument));
+  auto absent_parent = WrapSingleFieldRow(Scalar{std::monostate{}}, 1);
+  EXPECT_SCALAR_NULL(accessor->Get(*absent_parent));
 }
 
 TEST_P(NestedStructLikeAccessorTest, RejectsNonStructParents) {

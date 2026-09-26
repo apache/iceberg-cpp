@@ -110,7 +110,7 @@ class ICEBERG_EXPORT StructLikeAccessor {
                               std::vector<bool> is_optional);
 
   /// \brief Get the scalar value at the given position.
-  /// A null optional parent returns monostate; a null required parent is an error.
+  /// A null optional parent returns monostate; a null required field is an error.
   Result<Scalar> Get(const StructLike& struct_like) const {
     return accessor_(struct_like);
   }
