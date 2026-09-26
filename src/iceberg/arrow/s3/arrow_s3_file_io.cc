@@ -338,8 +338,9 @@ Status ArrowS3FileIO::DeleteFile(const std::string& file_location) {
 }
 
 Status ArrowS3FileIO::DeleteFiles(const std::vector<std::string>& file_locations) {
-  // One snapshot so the whole batch matches the same delegate generation; only
-  // ever a handful of delegates, so a linear scan beats hashing.
+  // Like Java's S3FileIO, keep going after a failure and report the count.
+  // Arrow's S3 DeleteFiles deletes one file at a time too. One snapshot so the
+  // whole batch matches the same delegate generation.
   std::shared_ptr<ArrowFileSystemFileIO> fallback;
   DelegatesByPrefix by_prefix;
   {
@@ -347,21 +348,17 @@ Status ArrowS3FileIO::DeleteFiles(const std::vector<std::string>& file_locations
     fallback = default_file_io_;
     by_prefix = file_io_by_prefix_;
   }
-  std::vector<std::pair<std::shared_ptr<ArrowFileSystemFileIO>, std::vector<std::string>>>
-      locations_by_io;
+  size_t failed = 0;
   for (const auto& file_location : file_locations) {
-    auto file_io = MatchDelegate(fallback, by_prefix, file_location);
-    auto it = std::ranges::find_if(
-        locations_by_io, [&](const auto& entry) { return entry.first == file_io; });
-    if (it == locations_by_io.end()) {
-      locations_by_io.emplace_back(std::move(file_io),
-                                   std::vector<std::string>{file_location});
-    } else {
-      it->second.push_back(file_location);
+    if (auto status =
+            MatchDelegate(fallback, by_prefix, file_location)->DeleteFile(file_location);
+        !status.has_value()) {
+      ICEBERG_LOG_WARN("Failed to delete {}: {}", file_location, status.error().message);
+      ++failed;
     }
   }
-  for (auto& [file_io, locations] : locations_by_io) {
-    ICEBERG_RETURN_UNEXPECTED(file_io->DeleteFiles(locations));
+  if (failed > 0) {
+    return IOError("Failed to delete {} of {} files", failed, file_locations.size());
   }
   return {};
 }
