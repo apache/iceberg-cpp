@@ -19,8 +19,13 @@
 
 #include "iceberg/resolving_file_io.h"
 
+#include <chrono>
+#include <condition_variable>
+#include <future>
 #include <memory>
+#include <mutex>
 #include <string>
+#include <thread>
 #include <unordered_map>
 #include <vector>
 
@@ -60,14 +65,27 @@ class RecordingCredentialedFileIO : public RecordingFileIO,
     return {};
   }
 
-  const std::vector<StorageCredential>& credentials() const override {
-    return credentials_;
+  std::vector<StorageCredential> credentials() const override { return credentials_; }
+
+  void SetCredentialRefresher(StorageCredentialRefresher refresher) override {
+    refresher_ = std::move(refresher);
   }
 
   SupportsStorageCredentials* AsSupportsStorageCredentials() override { return this; }
 
+  Status Refresh() {
+    if (!refresher_) {
+      return NotFound("no refresher installed");
+    }
+    ICEBERG_ASSIGN_OR_RAISE(auto refreshed, refresher_());
+    return SetStorageCredentials(refreshed);
+  }
+
+  bool has_refresher() const { return static_cast<bool>(refresher_); }
+
  private:
   std::vector<StorageCredential> credentials_;
+  StorageCredentialRefresher refresher_;
 };
 
 // File-scope recording state: registry factories are process-global, so they
@@ -254,6 +272,102 @@ TEST(ResolvingFileIOTest, ForwardsAllCredentialsToResolvedImplementations) {
   // The local FileIO does not support credentials; resolving it still works.
   (void)io.NewInputFile("/tmp/local/file.parquet");
   ASSERT_NE(last_local_io, nullptr);
+}
+
+TEST(ResolvingFileIOTest, LoadsWithoutTheLockAndDropsStaleDelegates) {
+  // The first load parks until new credentials are installed. Loading outside
+  // the lock lets that install proceed; what the parked load built then carries
+  // stale credentials and must be redone rather than cached.
+  // Static because registry factories are process-global; reset for reruns.
+  static std::mutex gate;
+  static std::condition_variable cv;
+  static bool parked;
+  static bool resume;
+  static int calls;
+  static RecordingCredentialedFileIO* last;
+  parked = resume = false;
+  calls = 0;
+  last = nullptr;
+  FileIORegistry::Register(
+      "test.file-io.slow",
+      {.create =
+           [](const FileIORegistry::Properties&) -> Result<std::unique_ptr<FileIO>> {
+         if (++calls == 1) {
+           std::unique_lock lock(gate);
+           parked = true;
+           cv.notify_all();
+           cv.wait(lock, [] { return resume; });
+         }
+         auto io = std::make_unique<RecordingCredentialedFileIO>();
+         last = io.get();
+         return io;
+       },
+       .accepts = [](std::string_view scheme) { return scheme == "slow"; }});
+
+  ResolvingFileIO io({});
+  const std::vector<StorageCredential> stale = {
+      {.prefix = "slow", .config = {{"k", "1"}}}};
+  const std::vector<StorageCredential> fresh = {
+      {.prefix = "slow", .config = {{"k", "2"}}}};
+  ASSERT_THAT(io.SetStorageCredentials(stale), IsOk());
+
+  std::thread reader([&] { (void)io.NewInputFile("slow://bucket/file"); });
+  {
+    std::unique_lock lock(gate);
+    cv.wait(lock, [] { return parked; });
+  }
+  auto install =
+      std::async(std::launch::async, [&] { return io.SetStorageCredentials(fresh); });
+  const bool install_waited =
+      install.wait_for(std::chrono::seconds(10)) != std::future_status::ready;
+  {
+    std::lock_guard lock(gate);
+    resume = true;
+  }
+  cv.notify_all();
+  reader.join();
+
+  EXPECT_FALSE(install_waited) << "a credential install waited on an in-flight load";
+  EXPECT_THAT(install.get(), IsOk());
+  ASSERT_EQ(calls, 2);
+  EXPECT_EQ(last->credentials(), fresh);
+}
+
+TEST(ResolvingFileIOTest, ForwardsCredentialRefresherToResolvedImplementations) {
+  RegisterRecordingFileIOs();
+  ResolvingFileIO io({});
+
+  std::vector<StorageCredential> refreshed = {{.prefix = "s3", .config = {{"k2", "v2"}}}};
+  io.SetCredentialRefresher(
+      [&]() -> Result<std::vector<StorageCredential>> { return refreshed; });
+  EXPECT_THAT(io.SetStorageCredentials({{.prefix = "s3", .config = {{"k1", "v1"}}}}),
+              IsOk());
+
+  (void)io.NewInputFile("s3://bucket/db/table/data/file.parquet");
+  ASSERT_NE(last_s3_io, nullptr);
+  ASSERT_TRUE(last_s3_io->has_refresher());
+  EXPECT_THAT(last_s3_io->Refresh(), IsOk());
+  EXPECT_EQ(last_s3_io->credentials(), refreshed);
+}
+
+TEST(ResolvingFileIOTest, RebuildsResolvedImplementationsForALaterRefresher) {
+  RegisterRecordingFileIOs();
+  ResolvingFileIO io({});
+
+  EXPECT_THAT(io.SetStorageCredentials({{.prefix = "s3", .config = {{"k1", "v1"}}}}),
+              IsOk());
+  (void)io.NewInputFile("s3://bucket/db/table/data/file.parquet");
+  ASSERT_NE(last_s3_io, nullptr);
+  EXPECT_FALSE(last_s3_io->has_refresher());
+  EXPECT_EQ(s3_factory_calls, 1);
+
+  io.SetCredentialRefresher([]() -> Result<std::vector<StorageCredential>> {
+    return std::vector<StorageCredential>{};
+  });
+  (void)io.NewInputFile("s3://bucket/db/table/data/other.parquet");
+  EXPECT_EQ(s3_factory_calls, 2);
+  ASSERT_NE(last_s3_io, nullptr);
+  EXPECT_TRUE(last_s3_io->has_refresher());
 }
 
 }  // namespace iceberg
