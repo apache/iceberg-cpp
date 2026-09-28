@@ -204,7 +204,7 @@
 
 This product includes code from smhasher.
 
-* src/iceberg/murmur3_internal.h and src/iceberg/murmur3_internal.cc are adapted from MurmurHash3.
+* src/iceberg/util/murmurhash3_internal.h and src/iceberg/util/murmurhash3_internal.cc are adapted from MurmurHash3.
 
 Copyright: Austin Appleby (placed in the public domain).
 Home page: https://github.com/aappleby/smhasher
