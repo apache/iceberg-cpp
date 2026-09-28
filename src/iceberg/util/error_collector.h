@@ -104,55 +104,6 @@ class ICEBERG_EXPORT ErrorCollector {
   ErrorCollector(const ErrorCollector&) = default;
   ErrorCollector& operator=(const ErrorCollector&) = default;
 
-// C++23 uses deducing `this` so that `return AddError(...)` keeps returning the
-// derived builder type. C++20 exposes the same overloads returning ErrorCollector&,
-// because preserving the derived type would require making the builders CRTP. Keyed
-// on the language version rather than __cpp_explicit_this_parameter, which Apple
-// clang does not define, and compared with "> 202002L" because MSVC's
-// /std:c++latest only promises a value above 202002L.
-#if __cplusplus > 202002L || (defined(_MSVC_LANG) && _MSVC_LANG > 202002L)
-  /// \brief Add a specific error and return reference to derived class
-  ///
-  /// \param self Deduced reference to the derived class instance
-  /// \param kind The kind of error
-  /// \param fmt The format string
-  /// \param args The arguments to format the message
-  /// \return Reference to the derived class for method chaining
-  template <typename... Args>
-  auto& AddError(this auto& self, ErrorKind kind, const std::format_string<Args...> fmt,
-                 Args&&... args) {
-    self.errors_.emplace_back(kind, std::format(fmt, std::forward<Args>(args)...));
-    return self;
-  }
-
-  /// \brief Add an existing error object and return reference to derived class
-  ///
-  /// Useful when propagating errors from other components or reusing
-  /// error objects without deconstructing and reconstructing them.
-  ///
-  /// \param self Deduced reference to the derived class instance
-  /// \param err The error to add
-  /// \return Reference to the derived class for method chaining
-  auto& AddError(this auto& self, Error err) {
-    self.errors_.push_back(std::move(err));
-    return self;
-  }
-
-  /// \brief Add an unexpected result's error and return reference to derived class
-  ///
-  /// Useful for cases like below:
-  /// \code
-  ///   return AddError(InvalidArgument("Invalid value: {}", value));
-  /// \endcode
-  ///
-  /// \param self Deduced reference to the derived class instance
-  /// \param err The unexpected result containing the error to add
-  /// \return Reference to the derived class for method chaining
-  auto& AddError(this auto& self, unexpected<Error> err) {
-    self.errors_.push_back(std::move(err.error()));
-    return self;
-  }
-#else
   /// \brief Add a specific error
   ///
   /// \param kind The kind of error
@@ -168,6 +119,9 @@ class ICEBERG_EXPORT ErrorCollector {
 
   /// \brief Add an existing error object
   ///
+  /// Useful when propagating errors from other components or reusing
+  /// error objects without deconstructing and reconstructing them.
+  ///
   /// \param err The error to add
   /// \return This error collector for method chaining
   ErrorCollector& AddError(Error err) {
@@ -177,13 +131,18 @@ class ICEBERG_EXPORT ErrorCollector {
 
   /// \brief Add an unexpected result's error
   ///
+  /// Useful for cases like below:
+  /// \code
+  ///   AddError(InvalidArgument("Invalid value: {}", value));
+  ///   return *this;
+  /// \endcode
+  ///
   /// \param err The unexpected result containing the error to add
   /// \return This error collector for method chaining
   ErrorCollector& AddError(unexpected<Error> err) {
     errors_.push_back(std::move(err.error()));
     return *this;
   }
-#endif  // C++23
 
   /// \brief Check if any errors have been collected
   ///

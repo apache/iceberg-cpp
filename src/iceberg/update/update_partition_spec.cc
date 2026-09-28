@@ -123,8 +123,8 @@ UpdatePartitionSpec& UpdatePartitionSpec::AddField(const std::shared_ptr<Term>& 
     return AddFieldInternal(part_name, source_id, bound_transform->transform());
   }
 
-  return AddError(
-      InvalidArgument("Cannot add {} term to partition spec", term->ToString()));
+  AddError(InvalidArgument("Cannot add {} term to partition spec", term->ToString()));
+  return *this;
 }
 
 UpdatePartitionSpec& UpdatePartitionSpec::AddFieldInternal(
@@ -195,8 +195,9 @@ UpdatePartitionSpec& UpdatePartitionSpec::AddFieldInternal(
         // Rename the old deleted field
         RenameField(existing_field->name(), std::move(renamed));
       } else {
-        return AddError(
+        AddError(
             InvalidArgument("Cannot add duplicate partition field name: {}", field_name));
+        return *this;
       }
     } else {
       // Field is being deleted, rename it to avoid conflict
@@ -257,8 +258,9 @@ UpdatePartitionSpec& UpdatePartitionSpec::RemoveField(const std::shared_ptr<Term
     return RemoveFieldByTransform(key, term->ToString());
   }
 
-  return AddError(
+  AddError(
       InvalidArgument("Cannot remove {} term from partition spec", term->ToString()));
+  return *this;
 }
 
 UpdatePartitionSpec& UpdatePartitionSpec::RemoveFieldByTransform(
