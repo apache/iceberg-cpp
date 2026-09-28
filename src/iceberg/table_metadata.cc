@@ -425,7 +425,7 @@ Result<MetadataFileCodecType> TableMetadataUtil::Codec::FromString(
 
 Result<MetadataFileCodecType> TableMetadataUtil::Codec::FromFileName(
     std::string_view file_name) {
-  auto pos = file_name.find_last_of(kTableMetadataFileSuffix);
+  auto pos = file_name.rfind(kTableMetadataFileSuffix);
   if (pos == std::string::npos) {
     return InvalidArgument("{} is not a valid metadata file", file_name);
   }

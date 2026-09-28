@@ -138,6 +138,31 @@ TEST_F(MetadataIOTest, ReadWriteCompressedMetadata) {
   EXPECT_EQ(*metadata_read, metadata);
 }
 
+TEST_F(MetadataIOTest, CodecFromFileGzMetadataJson) {
+  // Java writers emit gzip-compressed metadata as "<name>.gz.metadata.json";
+  // the codec must be detected from the ".gz" before the metadata suffix.
+  auto result = TableMetadataUtil::Codec::FromFileName("00001-abc.gz.metadata.json");
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(*result, MetadataFileCodecType::kGzip);
+}
+
+TEST_F(MetadataIOTest, CodecFromFilePlainAndLegacyGz) {
+  auto plain = TableMetadataUtil::Codec::FromFileName("00001-abc.metadata.json");
+  ASSERT_TRUE(plain.has_value());
+  EXPECT_EQ(*plain, MetadataFileCodecType::kNone);
+
+  auto legacy_gz = TableMetadataUtil::Codec::FromFileName("00001-abc.metadata.json.gz");
+  ASSERT_TRUE(legacy_gz.has_value());
+  EXPECT_EQ(*legacy_gz, MetadataFileCodecType::kGzip);
+}
+
+TEST_F(MetadataIOTest, CodecFromFileInvalidName) {
+  // Matches Iceberg Java fromFileName: a name without the '.metadata.json'
+  // substring is rejected as not a valid metadata file.
+  EXPECT_THAT(TableMetadataUtil::Codec::FromFileName("foo.txt"),
+              IsError(ErrorKind::kInvalidArgument));
+}
+
 TEST_F(MetadataIOTest, WriteMetadataWithBase) {
   TableMetadata base = PrepareMetadata();
 
