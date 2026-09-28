@@ -853,6 +853,9 @@ Result<std::unique_ptr<Type>> TypeFromJson(const nlohmann::json& json) {
                                 StringUtils::ParseNumber<int32_t>(match[1].str()));
         ICEBERG_ASSIGN_OR_RAISE(auto scale,
                                 StringUtils::ParseNumber<int32_t>(match[2].str()));
+        if (precision > DecimalType::kMaxPrecision) {
+          return JsonParseError("Invalid decimal type: {}", type_name);
+        }
         return std::make_unique<DecimalType>(precision, scale);
       }
       return JsonParseError("Invalid decimal type: {}", type_name);

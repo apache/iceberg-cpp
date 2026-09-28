@@ -103,6 +103,13 @@ INSTANTIATE_TEST_SUITE_P(
                 SchemaField::MakeRequired(1, "id", iceberg::int32()),
                 SchemaField::MakeOptional(2, "name", iceberg::string())})}));
 
+TEST(TypeJsonTest, FromJsonOutOfRangeDecimalPrecisionIsParseError) {
+  // Precision beyond the supported maximum must surface as a parse error,
+  // not an uncaught IcebergError from the DecimalType constructor.
+  auto result = TypeFromJson(nlohmann::json::parse("\"decimal(39, 2)\""));
+  EXPECT_THAT(result, IsError(ErrorKind::kJsonParseError));
+}
+
 TEST(TypeJsonTest, FromJsonWithSpaces) {
   auto fixed_json = R"("fixed[ 8 ]")";
   auto fixed_result = TypeFromJson(nlohmann::json::parse(fixed_json));
