@@ -189,6 +189,16 @@ TEST(JsonInternalTest, SchemaFieldRejectsNonUtcTimestamptzDefault) {
   EXPECT_TRUE(FieldFromJson(utc).has_value());
 }
 
+TEST(JsonInternalTest, ListTypeFromJsonMissingElement) {
+  nlohmann::json invalid_json =
+      R"({"type":"list","element-id":1,"element-required":true})"_json;
+  // missing "element"
+
+  auto result = TypeFromJson(invalid_json);
+  EXPECT_THAT(result, IsError(ErrorKind::kJsonParseError));
+  EXPECT_THAT(result, HasErrorMessage("Missing 'element'"));
+}
+
 TEST(JsonInternalTest, SortField) {
   auto identity_transform = Transform::Identity();
 

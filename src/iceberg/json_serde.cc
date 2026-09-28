@@ -494,7 +494,9 @@ Result<std::unique_ptr<Type>> StructTypeFromJson(const nlohmann::json& json) {
 }
 
 Result<std::unique_ptr<Type>> ListTypeFromJson(const nlohmann::json& json) {
-  ICEBERG_ASSIGN_OR_RAISE(auto element_type, TypeFromJson(json[kElement]));
+  ICEBERG_ASSIGN_OR_RAISE(
+      auto element_type,
+      GetJsonValue<nlohmann::json>(json, kElement).and_then(TypeFromJson));
   ICEBERG_ASSIGN_OR_RAISE(auto element_id, GetJsonValue<int32_t>(json, kElementId));
   ICEBERG_ASSIGN_OR_RAISE(auto element_required,
                           GetJsonValue<bool>(json, kElementRequired));
