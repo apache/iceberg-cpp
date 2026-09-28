@@ -1006,6 +1006,9 @@ Status TableMetadataBuilder::Impl::RemoveSchemas(
                           return !schema_ids.contains(schema->schema_id());
                         }) |
                         std::ranges::to<std::vector<std::shared_ptr<Schema>>>();
+    for (const auto schema_id : schema_ids) {
+      schemas_by_id_.erase(schema_id);
+    }
     changes_.push_back(std::make_unique<table::RemoveSchemas>(schema_ids));
   }
 

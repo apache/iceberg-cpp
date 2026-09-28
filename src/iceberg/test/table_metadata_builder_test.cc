@@ -584,6 +584,51 @@ TEST(TableMetadataBuilderTest, SetDefaultSortOrderInvalid) {
   ASSERT_THAT(builder->Build(), HasErrorMessage("no sort order has been added"));
 }
 
+TEST(TableMetadataBuilderTest, RemoveSchemasDropsIndexEntry) {
+  auto base = CreateBaseMetadata();
+  auto builder = TableMetadataBuilder::BuildFrom(base.get());
+
+  auto field1 = SchemaField::MakeRequired(4, "field1", int64());
+  auto schema1 = std::make_shared<Schema>(std::vector<SchemaField>{field1}, 1);
+  builder->AddSchema(schema1);
+
+  ICEBERG_UNWRAP_OR_FAIL(auto metadata, builder->Build());
+  ASSERT_EQ(metadata->schemas.size(), 2);
+
+  builder = TableMetadataBuilder::BuildFrom(metadata.get());
+  builder->RemoveSchemas({1});
+
+  // The removed id is gone: setting it as current must fail at Build(),
+  // otherwise Build() would emit a current-schema-id dangling outside
+  // metadata.schemas.
+  builder->SetCurrentSchema(1);
+  auto result = builder->Build();
+  EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
+  EXPECT_THAT(result, HasErrorMessage("Cannot set current schema to unknown schema: 1"));
+}
+
+TEST(TableMetadataBuilderTest, AddSchemaAfterRemoveNotConfusedByStaleIndex) {
+  auto base = CreateBaseMetadata();
+  auto builder = TableMetadataBuilder::BuildFrom(base.get());
+
+  auto field1 = SchemaField::MakeRequired(4, "field1", int64());
+  auto schema1 = std::make_shared<Schema>(std::vector<SchemaField>{field1}, 1);
+  builder->AddSchema(schema1);
+  ICEBERG_UNWRAP_OR_FAIL(auto metadata, builder->Build());
+  ASSERT_EQ(metadata->schemas.size(), 2);
+
+  builder = TableMetadataBuilder::BuildFrom(metadata.get());
+  builder->RemoveSchemas({1});
+
+  // Re-adding the same schema shape must not be treated as a no-op reuse
+  // via a stale index entry: it has to land in metadata.schemas again.
+  auto schema_again = std::make_shared<Schema>(std::vector<SchemaField>{field1}, 1);
+  builder->AddSchema(schema_again);
+  ICEBERG_UNWRAP_OR_FAIL(auto rebuilt, builder->Build());
+  ASSERT_EQ(rebuilt->schemas.size(), 2);
+  EXPECT_EQ(rebuilt->schemas[1]->schema_id(), 1);
+}
+
 // Test AddSchema
 TEST(TableMetadataBuilderTest, AddSchemaBasic) {
   auto base = CreateBaseMetadata();
