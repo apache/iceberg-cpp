@@ -21,14 +21,13 @@ cmake_minimum_required(VERSION 3.25)
 project(example)
 
 # C++20 is the minimum standard iceberg-cpp's public headers support, so the
-# example builds as C++20 by default to keep that contract exercised. Set this to
-# 23 to also check the headers from a C++23 consumer.
+# example builds as C++20 by default to keep that contract exercised. Set this to a
+# newer standard (e.g. 23) to check the headers from a newer consumer as well.
 set(ICEBERG_EXAMPLE_CXX_STANDARD
     20
-    CACHE STRING "C++ standard used to build the example (20 or 23)")
-set_property(CACHE ICEBERG_EXAMPLE_CXX_STANDARD PROPERTY STRINGS 20 23)
-if(NOT ICEBERG_EXAMPLE_CXX_STANDARD MATCHES "^(20|23)$")
-  message(FATAL_ERROR "ICEBERG_EXAMPLE_CXX_STANDARD must be 20 or 23, got "
+    CACHE STRING "C++ standard used to build the example (20 or newer)")
+if(ICEBERG_EXAMPLE_CXX_STANDARD MATCHES "^(98|11|14|17)$")
+  message(FATAL_ERROR "ICEBERG_EXAMPLE_CXX_STANDARD must be 20 or newer, got "
                       "'${ICEBERG_EXAMPLE_CXX_STANDARD}'")
 endif()
 
@@ -72,11 +71,8 @@ if(NOT ICEBERG_PUBLIC_INCLUDE_DIR)
   message(FATAL_ERROR "Could not locate iceberg's installed public headers")
 endif()
 
-file(GLOB_RECURSE
-     ICEBERG_PUBLIC_HEADERS
-     CONFIGURE_DEPENDS
-     "${ICEBERG_PUBLIC_INCLUDE_DIR}/iceberg/*.h"
-     "${ICEBERG_PUBLIC_INCLUDE_DIR}/iceberg/*.hpp")
+file(GLOB_RECURSE ICEBERG_PUBLIC_HEADERS CONFIGURE_DEPENDS
+     "${ICEBERG_PUBLIC_INCLUDE_DIR}/iceberg/*.h")
 list(SORT ICEBERG_PUBLIC_HEADERS)
 
 set(ICEBERG_PUBLIC_HEADER_CHECK_SOURCE
