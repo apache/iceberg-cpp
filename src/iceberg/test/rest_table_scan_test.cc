@@ -384,7 +384,7 @@ TEST_F(RestTableScanTest, DefaultScanDoesNotSetUseSnapshotSchema) {
 }
 
 // --------------------------------------------------------------------------
-// Storage credentials in COMPLETED response: effective_io() returns a
+// Storage credentials in COMPLETED response: io() returns a
 // credential-scoped IO, not the original table IO.
 // --------------------------------------------------------------------------
 TEST_F(RestTableScanTest, StorageCredentialsInPlanResponseUpdatesEffectiveIO) {
@@ -401,14 +401,12 @@ TEST_F(RestTableScanTest, StorageCredentialsInPlanResponseUpdatesEffectiveIO) {
   ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
   EXPECT_TRUE(tasks.empty());
 
-  auto* rest_scan = dynamic_cast<RestTableScan*>(scan.get());
-  ASSERT_NE(rest_scan, nullptr);
-  // effective_io() must return a credential-scoped IO, not the original file_io_.
-  EXPECT_NE(rest_scan->effective_io().get(), file_io_.get());
+  // io() must return a credential-scoped IO without requiring a downcast.
+  EXPECT_NE(scan->io().get(), file_io_.get());
 }
 
 // --------------------------------------------------------------------------
-// No storage credentials: effective_io() falls back to the table's FileIO.
+// No storage credentials: io() falls back to the table's FileIO.
 // --------------------------------------------------------------------------
 TEST_F(RestTableScanTest, NoStorageCredentialsEffectiveIoFallsBackToTableIO) {
   constexpr std::string_view kResponseBody = R"({"status":"completed"})";
@@ -419,14 +417,11 @@ TEST_F(RestTableScanTest, NoStorageCredentialsEffectiveIoFallsBackToTableIO) {
   ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
   EXPECT_TRUE(tasks.empty());
 
-  auto* rest_scan = dynamic_cast<RestTableScan*>(scan.get());
-  ASSERT_NE(rest_scan, nullptr);
-  EXPECT_EQ(rest_scan->effective_io().get(), file_io_.get());
+  EXPECT_EQ(scan->io().get(), file_io_.get());
 }
 
 // --------------------------------------------------------------------------
-// Storage credentials returned in FetchScanTasksResponse also update
-// effective_io().
+// Storage credentials returned in FetchScanTasksResponse also update io().
 // --------------------------------------------------------------------------
 TEST_F(RestTableScanTest, StorageCredentialsInFetchScanTasksResponseUpdatesEffectiveIO) {
   constexpr std::string_view kPlanResponse =
@@ -446,9 +441,7 @@ TEST_F(RestTableScanTest, StorageCredentialsInFetchScanTasksResponseUpdatesEffec
   ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
   EXPECT_TRUE(tasks.empty());
 
-  auto* rest_scan = dynamic_cast<RestTableScan*>(scan.get());
-  ASSERT_NE(rest_scan, nullptr);
-  EXPECT_NE(rest_scan->effective_io().get(), file_io_.get());
+  EXPECT_NE(scan->io().get(), file_io_.get());
 }
 
 // --------------------------------------------------------------------------

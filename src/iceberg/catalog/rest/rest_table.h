@@ -50,6 +50,10 @@ class ICEBERG_REST_EXPORT RestTable final : public Table {
   /// REST catalog server.
   Result<std::unique_ptr<DataTableScanBuilder>> NewScan() const override;
 
+  /// \brief Returns a RestIncrementalAppendScanBuilder that delegates to the server.
+  Result<std::unique_ptr<IncrementalAppendScanBuilder>> NewIncrementalAppendScan()
+      const override;
+
  private:
   RestTable(TableIdentifier identifier, std::shared_ptr<TableMetadata> metadata,
             std::string metadata_location, std::shared_ptr<FileIO> io,

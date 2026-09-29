@@ -35,7 +35,7 @@
 #include "iceberg/type_fwd.h"
 
 /// \file iceberg/catalog/rest/rest_table_scan.h
-/// REST-specific table scan that delegates scan planning to the REST catalog server.
+/// REST-specific table scans that delegate scan planning to the REST catalog server.
 
 namespace iceberg::rest {
 
@@ -46,7 +46,7 @@ namespace auth {
 class AuthSession;
 }  // namespace auth
 
-/// \brief HTTP context shared between RestTable and RestTableScan.
+/// \brief HTTP context shared between RestTable and REST scan classes.
 struct ICEBERG_REST_EXPORT RestScanContext {
   std::shared_ptr<HttpClient> client;
   std::shared_ptr<ResourcePaths> paths;
@@ -60,7 +60,7 @@ struct ICEBERG_REST_EXPORT RestScanContext {
   std::unordered_map<std::string, std::string> table_config;
 };
 
-/// \brief A DataTableScan that delegates PlanFiles() to the REST catalog server
+/// \brief A DataTableScan that delegates PlanFilesStream() to the REST catalog server
 /// via the scan planning endpoints (planTableScan / fetchPlanningResult /
 /// cancelPlanning / fetchScanTasks).
 class ICEBERG_REST_EXPORT RestTableScan : public DataTableScan {
@@ -72,51 +72,24 @@ class ICEBERG_REST_EXPORT RestTableScan : public DataTableScan {
       std::shared_ptr<FileIO> io, internal::TableScanContext context,
       RestScanContext rest_context);
 
-  /// \brief Plans files via the REST scan planning endpoints.
-  Result<std::vector<std::shared_ptr<FileScanTask>>> PlanFiles() const override;
+  /// \brief Plans files lazily via the REST scan planning endpoints.
+  Result<FileScanTaskStreamPtr> PlanFilesStream() const override;
 
-  /// \brief Returns the FileIO to use when reading scan results.
+  /// \brief Returns the effective FileIO for reading scan results.
   ///
   /// If the server vended storage credentials during planning, returns a FileIO
   /// initialised with those credentials; otherwise returns the table's FileIO.
-  /// Must be called after PlanFiles().
-  const std::shared_ptr<FileIO>& effective_io() const;
+  const std::shared_ptr<FileIO>& io() const override;
 
  private:
   RestTableScan(std::shared_ptr<TableMetadata> metadata, std::shared_ptr<Schema> schema,
                 std::shared_ptr<FileIO> io, internal::TableScanContext context,
                 RestScanContext rest_context);
 
-  /// POST /plan → handle COMPLETED / SUBMITTED / FAILED / CANCELLED.
-  Result<std::vector<std::shared_ptr<FileScanTask>>> PlanTableScan(
-      std::string& plan_id,
-      const std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>>& specs) const;
-
-  /// GET /plan/{plan_id} with exponential backoff until COMPLETED.
-  Result<std::vector<std::shared_ptr<FileScanTask>>> FetchPlanningResult(
-      const std::string& plan_id,
-      const std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>>& specs) const;
-
-  /// POST /tasks/{plan_task_id} → fetch FileScanTasks for one opaque plan task token.
-  Result<std::vector<std::shared_ptr<FileScanTask>>> FetchScanTasks(
-      const std::string& plan_task,
-      const std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>>& specs) const;
-
-  /// Flatten plan_tasks (opaque tokens) + file_scan_tasks into a single list.
-  Result<std::vector<std::shared_ptr<FileScanTask>>> ResolveScanTasks(
-      const std::optional<std::vector<std::string>>& plan_tasks,
-      const std::optional<std::vector<std::shared_ptr<FileScanTask>>>& file_scan_tasks,
-      const std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>>& specs) const;
-
-  /// DELETE /plan/{plan_id}; best-effort, errors are silently ignored.
-  void CancelPlanning(const std::string& plan_id) const;
-
-  /// Builds a scan-scoped FileIO from vended credentials and caches it in scan_io_.
-  /// No-op if credentials is empty.
-  Status ApplyStorageCredentials(const std::vector<StorageCredential>& credentials) const;
-
   RestScanContext rest_context_;
-  mutable std::shared_ptr<FileIO> scan_io_;
+  /// Shared slot so credentials vended by any lazy FetchScanTasks response are
+  /// visible through io() even after the stream has been consumed.
+  mutable std::shared_ptr<std::shared_ptr<FileIO>> scan_io_slot_;
 };
 
 /// \brief Builder that produces a RestTableScan with the REST HTTP context injected.
@@ -129,6 +102,49 @@ class ICEBERG_REST_EXPORT RestTableScanBuilder : public DataTableScanBuilder {
 
   /// \brief Resolves schema/context via parent logic then creates a RestTableScan.
   Result<std::unique_ptr<DataTableScan>> Build() override;
+
+ private:
+  RestScanContext rest_context_;
+};
+
+/// \brief An IncrementalAppendScan that delegates PlanFiles() to the REST catalog server.
+///
+/// IncrementalChangelogScan is not delegated because the REST planTableScan response
+/// only carries FileScanTask objects; reconstructing ChangelogScanTask entries
+/// (AddedRowsScanTask vs DeletedDataFileScanTask) requires per-snapshot operation
+/// metadata that the server does not return. Changelog scans always plan locally.
+class ICEBERG_REST_EXPORT RestIncrementalAppendScan : public IncrementalAppendScan {
+ public:
+  ~RestIncrementalAppendScan() override = default;
+
+  static Result<std::unique_ptr<IncrementalAppendScan>> Make(
+      std::shared_ptr<TableMetadata> metadata, std::shared_ptr<Schema> schema,
+      std::shared_ptr<FileIO> io, internal::TableScanContext context,
+      RestScanContext rest_context);
+
+  /// \brief Plans files via the REST scan planning endpoints.
+  Result<std::vector<std::shared_ptr<FileScanTask>>> PlanFiles() const override;
+
+ private:
+  RestIncrementalAppendScan(std::shared_ptr<TableMetadata> metadata,
+                            std::shared_ptr<Schema> schema, std::shared_ptr<FileIO> io,
+                            internal::TableScanContext context,
+                            RestScanContext rest_context);
+
+  RestScanContext rest_context_;
+  mutable std::shared_ptr<FileIO> scan_io_;
+};
+
+/// \brief Builder that produces a RestIncrementalAppendScan.
+class ICEBERG_REST_EXPORT RestIncrementalAppendScanBuilder
+    : public IncrementalAppendScanBuilder {
+ public:
+  RestIncrementalAppendScanBuilder(std::shared_ptr<TableMetadata> metadata,
+                                   std::shared_ptr<FileIO> io, std::string table_name,
+                                   std::shared_ptr<MetricsReporter> metrics_reporter,
+                                   RestScanContext rest_context);
+
+  Result<std::unique_ptr<IncrementalAppendScan>> Build() override;
 
  private:
   RestScanContext rest_context_;

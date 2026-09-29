@@ -442,7 +442,7 @@ class ICEBERG_EXPORT TableScan {
   const internal::TableScanContext& context() const;
 
   /// \brief Returns the file I/O instance used for reading files.
-  const std::shared_ptr<FileIO>& io() const;
+  virtual const std::shared_ptr<FileIO>& io() const;
 
   /// \brief Returns this scan's filter expression.
   const std::shared_ptr<Expression>& filter() const;
@@ -488,7 +488,7 @@ class ICEBERG_EXPORT DataTableScan : public TableScan {
   /// can outlive this scan. An executor configured through PlanWith() is borrowed and
   /// must remain alive until the stream is destroyed, as later Next() calls may submit
   /// work to it.
-  Result<FileScanTaskStreamPtr> PlanFilesStream() const;
+  virtual Result<FileScanTaskStreamPtr> PlanFilesStream() const;
 
  protected:
   using TableScan::TableScan;
