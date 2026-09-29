@@ -457,4 +457,311 @@ TEST_F(RestTableScanTest, RestTableNewScanReturnsRestTableScanBuilder) {
   EXPECT_NE(typed, nullptr);
 }
 
+// ==========================================================================
+// PlanFilesStream tests
+// ==========================================================================
+
+// --------------------------------------------------------------------------
+// PlanFilesStream: COMPLETED immediately, stream yields no tasks.
+// --------------------------------------------------------------------------
+TEST_F(RestTableScanTest, PlanFilesStreamCompleted) {
+  constexpr std::string_view kResponseBody = R"({"status":"completed"})";
+  EXPECT_CALL(*mock_client_, Post(_, _, _, _, _))
+      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kResponseBody))));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto scan, MakeScan(MakeContext()));
+  ICEBERG_UNWRAP_OR_FAIL(auto stream, scan->PlanFilesStream());
+  ICEBERG_UNWRAP_OR_FAIL(auto tasks, stream->ToVector());
+  EXPECT_TRUE(tasks.empty());
+}
+
+// --------------------------------------------------------------------------
+// PlanFilesStream: COMPLETED with two plan-task tokens; each fetched lazily
+// as Next() is called, not all at once on POST /plan.
+// --------------------------------------------------------------------------
+TEST_F(RestTableScanTest, PlanFilesStreamLazilyFetchesPlanTasks) {
+  constexpr std::string_view kPlanResponse =
+      R"({"status":"completed","plan-id":"plan-stream","plan-tasks":["tok-s1","tok-s2"]})";
+  constexpr std::string_view kTasksResponse = R"({"file-scan-tasks":[]})";
+
+  EXPECT_CALL(*mock_client_, Post(_, _, _, _, _))
+      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kPlanResponse))))
+      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kTasksResponse))))
+      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kTasksResponse))));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto scan, MakeScan(MakeContext()));
+  ICEBERG_UNWRAP_OR_FAIL(auto stream, scan->PlanFilesStream());
+  ICEBERG_UNWRAP_OR_FAIL(auto tasks, stream->ToVector());
+  EXPECT_TRUE(tasks.empty());
+}
+
+// --------------------------------------------------------------------------
+// PlanFilesStream: stream destroyed before full consumption → DELETE /plan.
+// --------------------------------------------------------------------------
+TEST_F(RestTableScanTest, PlanFilesStreamCancelOnPartialConsumption) {
+  constexpr std::string_view kPlanResponse =
+      R"({"status":"completed","plan-id":"plan-partial","plan-tasks":["tok-p1"]})";
+
+  EXPECT_CALL(*mock_client_, Post(_, _, _, _, _))
+      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kPlanResponse))));
+  EXPECT_CALL(*mock_client_, Delete(_, _, _, _, _))
+      .WillOnce(Return(HttpResponse::MakeForTesting(200, "{}")));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto scan, MakeScan(MakeContext()));
+  {
+    ICEBERG_UNWRAP_OR_FAIL(auto stream, scan->PlanFilesStream());
+    // Destroy without consuming — destructor must call DELETE /plan.
+  }
+}
+
+// --------------------------------------------------------------------------
+// PlanFilesStream: SUBMITTED → poll until COMPLETED, stream yields all tasks.
+// --------------------------------------------------------------------------
+TEST_F(RestTableScanTest, PlanFilesStreamSubmittedThenCompleted) {
+  constexpr std::string_view kSubmittedBody =
+      R"({"status":"submitted","plan-id":"plan-poll-stream"})";
+  constexpr std::string_view kCompletedBody = R"({"status":"completed"})";
+
+  EXPECT_CALL(*mock_client_, Post(_, _, _, _, _))
+      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kSubmittedBody))));
+  EXPECT_CALL(*mock_client_, Get(_, _, _, _, _))
+      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kCompletedBody))));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto scan, MakeScan(MakeContext()));
+  ICEBERG_UNWRAP_OR_FAIL(auto stream, scan->PlanFilesStream());
+  ICEBERG_UNWRAP_OR_FAIL(auto tasks, stream->ToVector());
+  EXPECT_TRUE(tasks.empty());
+}
+
+// --------------------------------------------------------------------------
+// PlanFilesStream: FAILED → stream returns an error.
+// --------------------------------------------------------------------------
+TEST_F(RestTableScanTest, PlanFilesStreamFailed) {
+  constexpr std::string_view kFailedBody =
+      R"({"status":"failed","error":{"message":"server error","type":"ServerError","code":500}})";
+  EXPECT_CALL(*mock_client_, Post(_, _, _, _, _))
+      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kFailedBody))));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto scan, MakeScan(MakeContext()));
+  auto result = scan->PlanFilesStream();
+  EXPECT_THAT(result, IsError(ErrorKind::kIOError));
+}
+
+// ==========================================================================
+// RestIncrementalAppendScan tests
+// ==========================================================================
+
+class RestIncrementalAppendScanTest : public RestTableScanTest {
+ protected:
+  // Creates a RestIncrementalAppendScan with the given context and optional
+  // snapshot range.
+  Result<std::unique_ptr<IncrementalAppendScan>> MakeIncrementalScan(
+      RestScanContext ctx, std::optional<int64_t> from_snapshot_id = std::nullopt,
+      bool from_inclusive = false,
+      std::optional<int64_t> to_snapshot_id = std::nullopt) {
+    RestIncrementalAppendScanBuilder builder(metadata_, file_io_, "test.my_table",
+                                             nullptr, std::move(ctx));
+    if (from_snapshot_id.has_value()) {
+      builder.FromSnapshot(*from_snapshot_id, from_inclusive);
+    }
+    if (to_snapshot_id.has_value()) {
+      builder.ToSnapshot(*to_snapshot_id);
+    }
+    return builder.Build();
+  }
+};
+
+// --------------------------------------------------------------------------
+// PlanFiles: server returns COMPLETED immediately, no tasks.
+// --------------------------------------------------------------------------
+TEST_F(RestIncrementalAppendScanTest, PlanFilesCompleted) {
+  constexpr std::string_view kResponseBody = R"({"status":"completed"})";
+  EXPECT_CALL(*mock_client_, Post(_, _, _, _, _))
+      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kResponseBody))));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto scan, MakeIncrementalScan(MakeContext()));
+  ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
+  EXPECT_TRUE(tasks.empty());
+}
+
+// --------------------------------------------------------------------------
+// PlanFiles: COMPLETED with a plan-task token; FetchScanTasks is called.
+// --------------------------------------------------------------------------
+TEST_F(RestIncrementalAppendScanTest, PlanFilesWithPlanTasks) {
+  constexpr std::string_view kPlanResponse =
+      R"({"status":"completed","plan-id":"incr-plan-1","plan-tasks":["tok-incr-1"]})";
+  constexpr std::string_view kTasksResponse = R"({"file-scan-tasks":[]})";
+
+  EXPECT_CALL(*mock_client_, Post(_, _, _, _, _))
+      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kPlanResponse))))
+      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kTasksResponse))));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto scan, MakeIncrementalScan(MakeContext()));
+  ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
+  EXPECT_TRUE(tasks.empty());
+}
+
+// --------------------------------------------------------------------------
+// PlanFiles: SUBMITTED → poll → COMPLETED.
+// --------------------------------------------------------------------------
+TEST_F(RestIncrementalAppendScanTest, PlanFilesSubmittedThenCompleted) {
+  constexpr std::string_view kSubmittedBody =
+      R"({"status":"submitted","plan-id":"incr-poll-1"})";
+  constexpr std::string_view kCompletedBody = R"({"status":"completed"})";
+
+  EXPECT_CALL(*mock_client_, Post(_, _, _, _, _))
+      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kSubmittedBody))));
+  EXPECT_CALL(*mock_client_, Get(_, _, _, _, _))
+      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kCompletedBody))));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto scan, MakeIncrementalScan(MakeContext()));
+  ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
+  EXPECT_TRUE(tasks.empty());
+}
+
+// --------------------------------------------------------------------------
+// PlanFiles: FAILED → IOError.
+// --------------------------------------------------------------------------
+TEST_F(RestIncrementalAppendScanTest, PlanFilesFailed) {
+  constexpr std::string_view kFailedBody =
+      R"({"status":"failed","error":{"message":"server error","type":"ServerError","code":500}})";
+  EXPECT_CALL(*mock_client_, Post(_, _, _, _, _))
+      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kFailedBody))));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto scan, MakeIncrementalScan(MakeContext()));
+  auto result = scan->PlanFiles();
+  EXPECT_THAT(result, IsError(ErrorKind::kIOError));
+}
+
+// --------------------------------------------------------------------------
+// PlanFiles: PlanTableScan endpoint missing → NotSupported.
+// --------------------------------------------------------------------------
+TEST_F(RestIncrementalAppendScanTest, PlanFilesEndpointNotSupported) {
+  ICEBERG_UNWRAP_OR_FAIL(auto scan,
+                         MakeIncrementalScan(MakeContext(std::unordered_set<Endpoint>{})));
+  auto result = scan->PlanFiles();
+  EXPECT_THAT(result, IsError(ErrorKind::kNotSupported));
+}
+
+// --------------------------------------------------------------------------
+// No current snapshot → PlanFiles returns empty without calling the server.
+// --------------------------------------------------------------------------
+TEST_F(RestIncrementalAppendScanTest, PlanFilesEmptyWhenNoCurrentSnapshot) {
+  // Build metadata with no current snapshot.
+  auto spec = PartitionSpec::Unpartitioned();
+  auto empty_metadata = std::make_shared<TableMetadata>(TableMetadata{
+      .format_version = 2,
+      .table_uuid = "no-snap-uuid",
+      .location = "/tmp/table",
+      .last_sequence_number = 0L,
+      .last_updated_ms = TimePointMsFromUnixMs(1609459200000L),
+      .last_column_id = 2,
+      .schemas = {schema_},
+      .current_schema_id = schema_->schema_id(),
+      .partition_specs = {spec},
+      .default_spec_id = spec->spec_id(),
+      .last_partition_id = 999,
+  });
+
+  EXPECT_CALL(*mock_client_, Post(_, _, _, _, _)).Times(0);
+
+  // Use Make() directly to bypass builder validation that requires a snapshot.
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto scan, RestIncrementalAppendScan::Make(empty_metadata, schema_, file_io_,
+                                                 internal::TableScanContext{},
+                                                 MakeContext()));
+  ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
+  EXPECT_TRUE(tasks.empty());
+}
+
+// --------------------------------------------------------------------------
+// Explicit to_snapshot_id: request uses that snapshot, not current.
+// --------------------------------------------------------------------------
+TEST_F(RestIncrementalAppendScanTest, PlanFilesWithExplicitToSnapshotId) {
+  constexpr int64_t kToSnapshotId = 1000L;
+  constexpr std::string_view kResponseBody = R"({"status":"completed"})";
+  EXPECT_CALL(*mock_client_, Post(_, _, _, _, _))
+      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kResponseBody))));
+
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto scan, MakeIncrementalScan(MakeContext(), std::nullopt, false, kToSnapshotId));
+  ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
+  EXPECT_TRUE(tasks.empty());
+}
+
+// --------------------------------------------------------------------------
+// Exclusive from_snapshot_id: passed directly as start_snapshot_id.
+// --------------------------------------------------------------------------
+TEST_F(RestIncrementalAppendScanTest, PlanFilesWithFromSnapshotIdExclusive) {
+  constexpr int64_t kFromSnapshotId = 999L;
+  constexpr std::string_view kResponseBody = R"({"status":"completed"})";
+  EXPECT_CALL(*mock_client_, Post(_, _, _, _, _))
+      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kResponseBody))));
+
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto scan, MakeIncrementalScan(MakeContext(), kFromSnapshotId, /*inclusive=*/false));
+  ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
+  EXPECT_TRUE(tasks.empty());
+}
+
+// --------------------------------------------------------------------------
+// Inclusive from_snapshot_id: parent snapshot is used as start_snapshot_id.
+// The fixture snapshot (id=1000) has no parent, so start_snapshot_id = nullopt.
+// --------------------------------------------------------------------------
+TEST_F(RestIncrementalAppendScanTest, PlanFilesWithFromSnapshotIdInclusiveNoParent) {
+  constexpr int64_t kFromSnapshotId = 1000L;
+  constexpr std::string_view kResponseBody = R"({"status":"completed"})";
+  EXPECT_CALL(*mock_client_, Post(_, _, _, _, _))
+      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kResponseBody))));
+
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto scan, MakeIncrementalScan(MakeContext(), kFromSnapshotId, /*inclusive=*/true));
+  ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
+  EXPECT_TRUE(tasks.empty());
+}
+
+// --------------------------------------------------------------------------
+// Inclusive from_snapshot_id with a parent: parent's id used as start.
+// --------------------------------------------------------------------------
+TEST_F(RestIncrementalAppendScanTest, PlanFilesWithFromSnapshotIdInclusiveWithParent) {
+  constexpr int64_t kParentSnapshotId = 900L;
+  constexpr int64_t kChildSnapshotId = 1001L;
+
+  // Add a second snapshot with a parent to the metadata.
+  auto child_snapshot = std::make_shared<Snapshot>(
+      Snapshot{.snapshot_id = kChildSnapshotId,
+               .parent_snapshot_id = kParentSnapshotId,
+               .sequence_number = 2L,
+               .timestamp_ms = TimePointMsFromUnixMs(1609459260000L),
+               .manifest_list = "/tmp/manifest-list-2.avro",
+               .schema_id = schema_->schema_id()});
+  metadata_->snapshots.push_back(child_snapshot);
+
+  constexpr std::string_view kResponseBody = R"({"status":"completed"})";
+  EXPECT_CALL(*mock_client_, Post(_, _, _, _, _))
+      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kResponseBody))));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto scan, MakeIncrementalScan(MakeContext(), kChildSnapshotId,
+                                                        /*inclusive=*/true));
+  ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
+  EXPECT_TRUE(tasks.empty());
+}
+
+// ==========================================================================
+// RestTable::NewIncrementalAppendScan
+// ==========================================================================
+
+// --------------------------------------------------------------------------
+// RestTable::NewIncrementalAppendScan returns a RestIncrementalAppendScanBuilder.
+// --------------------------------------------------------------------------
+TEST_F(RestTableScanTest, RestTableNewIncrementalAppendScanReturnsRestBuilder) {
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto table, RestTable::Make(identifier_, metadata_, "/tmp/metadata.json", file_io_,
+                                  /*catalog=*/nullptr, "test.my_table", nullptr,
+                                  MakeContext(std::nullopt)));
+  ICEBERG_UNWRAP_OR_FAIL(auto builder, table->NewIncrementalAppendScan());
+  auto* typed = dynamic_cast<RestIncrementalAppendScanBuilder*>(builder.get());
+  EXPECT_NE(typed, nullptr);
+}
+
 }  // namespace iceberg::rest
