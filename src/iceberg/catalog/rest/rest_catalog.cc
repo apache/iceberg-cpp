@@ -28,6 +28,7 @@
 
 #include <nlohmann/json.hpp>
 
+#include "iceberg/catalog/rest/auth/auth_manager_internal.h"
 #include "iceberg/catalog/rest/auth/auth_managers.h"
 #include "iceberg/catalog/rest/auth/auth_session.h"
 #include "iceberg/catalog/rest/catalog_properties.h"
@@ -453,6 +454,23 @@ Result<std::shared_ptr<RestCatalog>> RestCatalog::Make(
       std::move(final_config), std::move(file_io), std::move(client), std::move(paths),
       std::move(endpoints), std::move(auth_manager), std::move(catalog_session),
       snapshot_mode, std::move(default_context), std::move(reporter), metrics_executor));
+}
+
+Result<std::shared_ptr<RestCatalog>> RestCatalog::MakeForTesting(
+    RestCatalogProperties config, std::shared_ptr<FileIO> file_io,
+    std::shared_ptr<HttpClient> client, std::shared_ptr<ResourcePaths> paths,
+    std::unordered_set<Endpoint> endpoints) {
+  std::string catalog_name = config.Get(RestCatalogProperties::kName);
+  ICEBERG_ASSIGN_OR_RAISE(
+      auto auth_manager,
+      auth::MakeNoopAuthManager(catalog_name, config.configs()));
+  auto session = auth::AuthSession::MakeDefault({});
+  ICEBERG_ASSIGN_OR_RAISE(auto snapshot_mode, config.SnapshotLoadingMode());
+  return std::shared_ptr<RestCatalog>(
+      new RestCatalog(std::move(config), std::move(file_io), std::move(client),
+                      std::move(paths), std::move(endpoints), std::move(auth_manager),
+                      std::move(session), snapshot_mode, SessionContext::Empty(),
+                      /*reporter=*/nullptr, /*metrics_executor=*/nullptr));
 }
 
 RestCatalog::RestCatalog(RestCatalogProperties config, std::shared_ptr<FileIO> file_io,
