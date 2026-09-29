@@ -24,11 +24,18 @@
 
 #if defined(_MSC_VER)
 #  include <__msvc_int128.hpp>
-using int128_t = std::_Signed128;
-using uint128_t = std::_Unsigned128;
-#elif defined(__GNUC__) || defined(__clang__)
-using int128_t = __int128;
-using uint128_t = unsigned __int128;
-#else
+#elif !defined(__GNUC__) && !defined(__clang__)
 #  error "128-bit integer type is not supported on this platform"
 #endif
+
+namespace iceberg {
+
+#if defined(_MSC_VER)
+using int128_t = std::_Signed128;
+using uint128_t = std::_Unsigned128;
+#else
+using int128_t = __int128;
+using uint128_t = unsigned __int128;
+#endif
+
+}  // namespace iceberg
