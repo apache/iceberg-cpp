@@ -143,23 +143,42 @@ Result<std::vector<std::shared_ptr<FileScanTask>>> FetchPlanningResult(
   auto start = std::chrono::steady_clock::now();
 
   for (int retry = 0; retry <= kMaxRetries; ++retry) {
-    ICEBERG_ASSIGN_OR_RAISE(
-        const auto response,
-        ctx.client->Get(path, /*params=*/{}, /*headers=*/{},
-                        *PlanErrorHandler::Instance(), *ctx.session));
-    ICEBERG_ASSIGN_OR_RAISE(auto json, FromJsonString(response.body()));
-    ICEBERG_ASSIGN_OR_RAISE(auto result,
-                            FetchPlanningResultResponseFromJson(json, specs, schema));
-    ICEBERG_RETURN_UNEXPECTED(result.Validate());
+    auto response_or = ctx.client->Get(path, /*params=*/{}, /*headers=*/{},
+                                       *PlanErrorHandler::Instance(), *ctx.session);
+    if (!response_or) {
+      CancelPlanning(ctx, plan_id);
+      return std::unexpected<Error>(response_or.error());
+    }
+
+    auto json_or = FromJsonString(response_or->body());
+    if (!json_or) {
+      CancelPlanning(ctx, plan_id);
+      return std::unexpected<Error>(json_or.error());
+    }
+
+    auto result_or = FetchPlanningResultResponseFromJson(*json_or, specs, schema);
+    if (!result_or) {
+      CancelPlanning(ctx, plan_id);
+      return std::unexpected<Error>(result_or.error());
+    }
+
+    if (auto s = result_or->Validate(); !s) {
+      CancelPlanning(ctx, plan_id);
+      return std::unexpected<Error>(s.error());
+    }
+
+    auto& result = *result_or;
 
     switch (result.plan_status) {
       case PlanStatus::kCompleted: {
-        ICEBERG_RETURN_UNEXPECTED(
-            ApplyStorageCredentials(ctx, result.storage_credentials, scan_io));
+        if (auto s = ApplyStorageCredentials(ctx, result.storage_credentials, scan_io); !s) {
+          CancelPlanning(ctx, plan_id);
+          return std::unexpected<Error>(s.error());
+        }
         auto tasks =
             ResolveScanTasks(ctx, schema, result.plan_tasks, result.file_scan_tasks, specs,
                              scan_io);
-        if (!tasks.has_value()) CancelPlanning(ctx, plan_id);
+        if (!tasks) CancelPlanning(ctx, plan_id);
         return tasks;
       }
       case PlanStatus::kSubmitted: {
@@ -282,6 +301,7 @@ Result<FileScanTaskStreamPtr> ExecuteScanPlanStream(const RestScanContext& ctx,
   }
 
   if (result.plan_status == PlanStatus::kFailed) {
+    CancelPlanning(ctx, plan_id);
     return IOError("Scan planning failed: {}",
                    result.error ? result.error->message : "unknown error");
   }
@@ -290,7 +310,10 @@ Result<FileScanTaskStreamPtr> ExecuteScanPlanStream(const RestScanContext& ctx,
   }
 
   // kCompleted: apply credentials from the initial response, then build the lazy stream.
-  ICEBERG_RETURN_UNEXPECTED(ApplyStorageCredentials(ctx, result.storage_credentials, *scan_io_slot));
+  if (auto s = ApplyStorageCredentials(ctx, result.storage_credentials, *scan_io_slot); !s) {
+    CancelPlanning(ctx, plan_id);
+    return std::unexpected<Error>(s.error());
+  }
 
   std::vector<std::shared_ptr<FileScanTask>> initial_tasks;
   if (result.file_scan_tasks.has_value()) {
@@ -327,17 +350,20 @@ Result<std::vector<std::shared_ptr<FileScanTask>>> ExecuteScanPlan(
 
   switch (result.plan_status) {
     case PlanStatus::kCompleted: {
-      ICEBERG_RETURN_UNEXPECTED(
-          ApplyStorageCredentials(ctx, result.storage_credentials, scan_io));
+      if (auto s = ApplyStorageCredentials(ctx, result.storage_credentials, scan_io); !s) {
+        CancelPlanning(ctx, plan_id);
+        return std::unexpected<Error>(s.error());
+      }
       auto tasks =
           ResolveScanTasks(ctx, schema, result.plan_tasks, result.file_scan_tasks, specs,
                            scan_io);
-      if (!tasks.has_value()) CancelPlanning(ctx, plan_id);
+      if (!tasks) CancelPlanning(ctx, plan_id);
       return tasks;
     }
     case PlanStatus::kSubmitted:
       return FetchPlanningResult(ctx, schema, plan_id, specs, scan_io);
     case PlanStatus::kFailed:
+      CancelPlanning(ctx, plan_id);
       return IOError("Scan planning failed: {}",
                      result.error ? result.error->message : "unknown error");
     case PlanStatus::kCancelled:
