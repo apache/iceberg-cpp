@@ -50,6 +50,42 @@ namespace iceberg::rest {
 using ::testing::_;
 using ::testing::Return;
 
+// Matches a JSON string body where `key` has exactly `expected_value`.
+MATCHER_P2(JsonBodyHas, key, expected_value, "") {
+  try {
+    auto json = nlohmann::json::parse(arg);
+    if (!json.contains(key)) {
+      *result_listener << "JSON body missing key \"" << key << "\"";
+      return false;
+    }
+    nlohmann::json expected = expected_value;
+    if (json.at(key) != expected) {
+      *result_listener << "JSON[\"" << key << "\"] = " << json.at(key)
+                       << ", expected " << expected;
+      return false;
+    }
+    return true;
+  } catch (...) {
+    *result_listener << "failed to parse JSON body";
+    return false;
+  }
+}
+
+// Matches a JSON string body that does NOT contain `key`.
+MATCHER_P(JsonBodyLacks, key, "") {
+  try {
+    auto json = nlohmann::json::parse(arg);
+    if (json.contains(key)) {
+      *result_listener << "JSON body unexpectedly contains key \"" << key << "\"";
+      return false;
+    }
+    return true;
+  } catch (...) {
+    *result_listener << "failed to parse JSON body";
+    return false;
+  }
+}
+
 // --------------------------------------------------------------------------
 // Mock HTTP client that overrides the virtual methods of HttpClient.
 // The base class constructor creates a cpr::ConnectionPool, which is a
@@ -361,26 +397,45 @@ TEST_F(RestTableScanTest, FetchScanTasksEndpointNotSupported) {
 }
 
 // --------------------------------------------------------------------------
-// use_snapshot_schema: UseSnapshot() sets it to true in the builder context.
-// RestTableScanBuilder propagates context from DataTableScanBuilder.
+// UseSnapshot(): the POST body sent to the server must contain both
+// "snapshot-id" and "use-snapshot-schema": true.
 // --------------------------------------------------------------------------
 TEST_F(RestTableScanTest, UseSnapshotPropagatesUseSnapshotSchemaInContext) {
   constexpr int64_t kSnapshotId = 1000L;
+  constexpr std::string_view kResponseBody = R"({"status":"completed"})";
+
+  EXPECT_CALL(*mock_client_,
+              Post(_, testing::AllOf(JsonBodyHas("snapshot-id", kSnapshotId),
+                                     JsonBodyHas("use-snapshot-schema", true)),
+                   _, _, _))
+      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kResponseBody))));
+
   RestTableScanBuilder builder(metadata_, file_io_, "test.my_table", nullptr,
                                MakeContext(std::nullopt));
   builder.UseSnapshot(kSnapshotId);
   ICEBERG_UNWRAP_OR_FAIL(auto scan, builder.Build());
-  EXPECT_TRUE(scan->context().use_snapshot_schema);
+  ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
+  EXPECT_TRUE(tasks.empty());
 }
 
 // --------------------------------------------------------------------------
-// use_snapshot_schema: default scan does not set use_snapshot_schema.
+// Default scan: POST body must have "use-snapshot-schema": false and no
+// "snapshot-id" field.
 // --------------------------------------------------------------------------
 TEST_F(RestTableScanTest, DefaultScanDoesNotSetUseSnapshotSchema) {
+  constexpr std::string_view kResponseBody = R"({"status":"completed"})";
+
+  EXPECT_CALL(*mock_client_,
+              Post(_, testing::AllOf(JsonBodyHas("use-snapshot-schema", false),
+                                     JsonBodyLacks("snapshot-id")),
+                   _, _, _))
+      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kResponseBody))));
+
   RestTableScanBuilder builder(metadata_, file_io_, "test.my_table", nullptr,
                                MakeContext(std::nullopt));
   ICEBERG_UNWRAP_OR_FAIL(auto scan, builder.Build());
-  EXPECT_FALSE(scan->context().use_snapshot_schema);
+  ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
+  EXPECT_TRUE(tasks.empty());
 }
 
 // --------------------------------------------------------------------------
@@ -547,6 +602,75 @@ TEST_F(RestTableScanTest, PlanFilesStreamFailed) {
   EXPECT_THAT(result, IsError(ErrorKind::kIOError));
 }
 
+// --------------------------------------------------------------------------
+// PlanFilesStream: FAILED with plan-id → DELETE /plan called before returning
+// the error (tests the ExecuteScanPlanStream kFailed cancel fix).
+// --------------------------------------------------------------------------
+TEST_F(RestTableScanTest, PlanFilesStreamFailedWithPlanIdCancels) {
+  constexpr std::string_view kFailedBody =
+      R"({"status":"failed","plan-id":"plan-fail-stream","error":{"message":"server error","type":"ServerError","code":500}})";
+
+  EXPECT_CALL(*mock_client_, Post(_, _, _, _, _))
+      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kFailedBody))));
+  EXPECT_CALL(*mock_client_, Delete(_, _, _, _, _))
+      .WillOnce(Return(HttpResponse::MakeForTesting(200, "{}")));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto scan, MakeScan(MakeContext()));
+  auto result = scan->PlanFilesStream();
+  EXPECT_THAT(result, IsError(ErrorKind::kIOError));
+}
+
+// --------------------------------------------------------------------------
+// FetchPlanningResult: GET fails after SUBMITTED → DELETE /plan called before
+// returning the error (tests the FetchPlanningResult error-path cancel fix).
+// --------------------------------------------------------------------------
+TEST_F(RestTableScanTest, CancelCalledOnFetchPlanningResultGetError) {
+  constexpr std::string_view kSubmittedBody =
+      R"({"status":"submitted","plan-id":"plan-fetch-err"})";
+
+  EXPECT_CALL(*mock_client_, Post(_, _, _, _, _))
+      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kSubmittedBody))));
+  EXPECT_CALL(*mock_client_, Get(_, _, _, _, _))
+      .WillOnce(Return(IOError("network failure")));
+  EXPECT_CALL(*mock_client_, Delete(_, _, _, _, _))
+      .WillOnce(Return(HttpResponse::MakeForTesting(200, "{}")));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto scan, MakeScan(MakeContext()));
+  auto result = scan->PlanFiles();
+  EXPECT_THAT(result, IsError(ErrorKind::kIOError));
+}
+
+// --------------------------------------------------------------------------
+// Stale credentials: second PlanFilesStream call resets scan_io_slot_ so that
+// credentials from the first plan response do not persist into the second.
+// --------------------------------------------------------------------------
+TEST_F(RestTableScanTest, SecondPlanFilesStreamCallClearsStaleCredentials) {
+  constexpr std::string_view kFirstResponse = R"({
+    "status": "completed",
+    "storage-credentials": [
+      {"prefix": "s3://bucket/prefix", "config": {"key": "value"}}
+    ]
+  })";
+  constexpr std::string_view kSecondResponse = R"({"status":"completed"})";
+
+  EXPECT_CALL(*mock_client_, Post(_, _, _, _, _))
+      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kFirstResponse))))
+      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kSecondResponse))));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto scan, MakeScan(MakeContext()));
+
+  // First call: server vends credentials → io() returns a credential-scoped IO.
+  ICEBERG_UNWRAP_OR_FAIL(auto tasks1, scan->PlanFiles());
+  EXPECT_TRUE(tasks1.empty());
+  EXPECT_NE(scan->io().get(), file_io_.get());
+
+  // Second call: no credentials returned → io() must revert to the table IO,
+  // not retain the credentials from the first plan.
+  ICEBERG_UNWRAP_OR_FAIL(auto tasks2, scan->PlanFiles());
+  EXPECT_TRUE(tasks2.empty());
+  EXPECT_EQ(scan->io().get(), file_io_.get());
+}
+
 // ==========================================================================
 // RestIncrementalAppendScan tests
 // ==========================================================================
@@ -675,12 +799,13 @@ TEST_F(RestIncrementalAppendScanTest, PlanFilesEmptyWhenNoCurrentSnapshot) {
 }
 
 // --------------------------------------------------------------------------
-// Explicit to_snapshot_id: request uses that snapshot, not current.
+// Explicit to_snapshot_id: POST body must contain "end-snapshot-id" set to
+// the given value, not the current table snapshot.
 // --------------------------------------------------------------------------
 TEST_F(RestIncrementalAppendScanTest, PlanFilesWithExplicitToSnapshotId) {
   constexpr int64_t kToSnapshotId = 1000L;
   constexpr std::string_view kResponseBody = R"({"status":"completed"})";
-  EXPECT_CALL(*mock_client_, Post(_, _, _, _, _))
+  EXPECT_CALL(*mock_client_, Post(_, JsonBodyHas("end-snapshot-id", kToSnapshotId), _, _, _))
       .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kResponseBody))));
 
   ICEBERG_UNWRAP_OR_FAIL(
@@ -690,12 +815,17 @@ TEST_F(RestIncrementalAppendScanTest, PlanFilesWithExplicitToSnapshotId) {
 }
 
 // --------------------------------------------------------------------------
-// Exclusive from_snapshot_id: passed directly as start_snapshot_id.
+// Exclusive from_snapshot_id: POST body must pass from_snapshot_id directly
+// as "start-snapshot-id" (exclusive), and current snapshot as "end-snapshot-id".
 // --------------------------------------------------------------------------
 TEST_F(RestIncrementalAppendScanTest, PlanFilesWithFromSnapshotIdExclusive) {
   constexpr int64_t kFromSnapshotId = 999L;
+  constexpr int64_t kCurrentSnapshotId = 1000L;
   constexpr std::string_view kResponseBody = R"({"status":"completed"})";
-  EXPECT_CALL(*mock_client_, Post(_, _, _, _, _))
+  EXPECT_CALL(*mock_client_,
+              Post(_, testing::AllOf(JsonBodyHas("start-snapshot-id", kFromSnapshotId),
+                                     JsonBodyHas("end-snapshot-id", kCurrentSnapshotId)),
+                   _, _, _))
       .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kResponseBody))));
 
   ICEBERG_UNWRAP_OR_FAIL(
@@ -706,12 +836,16 @@ TEST_F(RestIncrementalAppendScanTest, PlanFilesWithFromSnapshotIdExclusive) {
 
 // --------------------------------------------------------------------------
 // Inclusive from_snapshot_id: parent snapshot is used as start_snapshot_id.
-// The fixture snapshot (id=1000) has no parent, so start_snapshot_id = nullopt.
+// The fixture snapshot (id=1000) has no parent, so "start-snapshot-id" is
+// absent from the POST body.
 // --------------------------------------------------------------------------
 TEST_F(RestIncrementalAppendScanTest, PlanFilesWithFromSnapshotIdInclusiveNoParent) {
   constexpr int64_t kFromSnapshotId = 1000L;
   constexpr std::string_view kResponseBody = R"({"status":"completed"})";
-  EXPECT_CALL(*mock_client_, Post(_, _, _, _, _))
+  EXPECT_CALL(*mock_client_,
+              Post(_, testing::AllOf(JsonBodyLacks("start-snapshot-id"),
+                                     JsonBodyHas("end-snapshot-id", kFromSnapshotId)),
+                   _, _, _))
       .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kResponseBody))));
 
   ICEBERG_UNWRAP_OR_FAIL(
@@ -721,11 +855,60 @@ TEST_F(RestIncrementalAppendScanTest, PlanFilesWithFromSnapshotIdInclusiveNoPare
 }
 
 // --------------------------------------------------------------------------
-// Inclusive from_snapshot_id with a parent: parent's id used as start.
+// PlanFiles: FAILED with plan-id → DELETE /plan called before returning the
+// error (tests the ExecuteScanPlan kFailed cancel fix).
+// --------------------------------------------------------------------------
+TEST_F(RestIncrementalAppendScanTest, PlanFilesFailedWithPlanIdCancels) {
+  constexpr std::string_view kFailedBody =
+      R"({"status":"failed","plan-id":"plan-fail-incr","error":{"message":"server error","type":"ServerError","code":500}})";
+
+  EXPECT_CALL(*mock_client_, Post(_, _, _, _, _))
+      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kFailedBody))));
+  EXPECT_CALL(*mock_client_, Delete(_, _, _, _, _))
+      .WillOnce(Return(HttpResponse::MakeForTesting(200, "{}")));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto scan, MakeIncrementalScan(MakeContext()));
+  auto result = scan->PlanFiles();
+  EXPECT_THAT(result, IsError(ErrorKind::kIOError));
+}
+
+// --------------------------------------------------------------------------
+// Stale credentials: second PlanFiles call resets scan_io_ so that credentials
+// from the first plan response do not persist into the second.
+// --------------------------------------------------------------------------
+TEST_F(RestIncrementalAppendScanTest, SecondPlanFilesCallClearsStaleCredentials) {
+  constexpr std::string_view kFirstResponse = R"({
+    "status": "completed",
+    "storage-credentials": [
+      {"prefix": "s3://bucket/prefix", "config": {"key": "value"}}
+    ]
+  })";
+  constexpr std::string_view kSecondResponse = R"({"status":"completed"})";
+
+  EXPECT_CALL(*mock_client_, Post(_, _, _, _, _))
+      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kFirstResponse))))
+      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kSecondResponse))));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto scan, MakeIncrementalScan(MakeContext()));
+
+  // First call: server vends credentials.
+  ICEBERG_UNWRAP_OR_FAIL(auto tasks1, scan->PlanFiles());
+  EXPECT_TRUE(tasks1.empty());
+
+  // Second call: no credentials. Verifies scan_io_ was cleared so stale
+  // credentials from the first plan do not bleed into the second request.
+  ICEBERG_UNWRAP_OR_FAIL(auto tasks2, scan->PlanFiles());
+  EXPECT_TRUE(tasks2.empty());
+}
+
+// --------------------------------------------------------------------------
+// Inclusive from_snapshot_id with a parent: POST body must use the parent's id
+// as "start-snapshot-id" and the current snapshot as "end-snapshot-id".
 // --------------------------------------------------------------------------
 TEST_F(RestIncrementalAppendScanTest, PlanFilesWithFromSnapshotIdInclusiveWithParent) {
   constexpr int64_t kParentSnapshotId = 900L;
   constexpr int64_t kChildSnapshotId = 1001L;
+  constexpr int64_t kCurrentSnapshotId = 1000L;
 
   // Add a second snapshot with a parent to the metadata.
   auto child_snapshot = std::make_shared<Snapshot>(
@@ -738,7 +921,10 @@ TEST_F(RestIncrementalAppendScanTest, PlanFilesWithFromSnapshotIdInclusiveWithPa
   metadata_->snapshots.push_back(child_snapshot);
 
   constexpr std::string_view kResponseBody = R"({"status":"completed"})";
-  EXPECT_CALL(*mock_client_, Post(_, _, _, _, _))
+  EXPECT_CALL(*mock_client_,
+              Post(_, testing::AllOf(JsonBodyHas("start-snapshot-id", kParentSnapshotId),
+                                     JsonBodyHas("end-snapshot-id", kCurrentSnapshotId)),
+                   _, _, _))
       .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kResponseBody))));
 
   ICEBERG_UNWRAP_OR_FAIL(auto scan, MakeIncrementalScan(MakeContext(), kChildSnapshotId,
