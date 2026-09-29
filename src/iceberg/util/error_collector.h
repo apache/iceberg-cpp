@@ -48,7 +48,8 @@ namespace iceberg {
 #define ICEBERG_BUILDER_ASSIGN_OR_RETURN_WITH_ERROR_IMPL(result_name, lhs, rexpr, ...) \
   auto&& result_name = (rexpr);                                                        \
   if (!result_name) [[unlikely]] {                                                     \
-    return AddError(ErrorKind::kInvalidArgument, __VA_ARGS__);                         \
+    AddError(ErrorKind::kInvalidArgument, __VA_ARGS__);                                \
+    return *this;                                                                      \
   }                                                                                    \
   lhs = std::move(result_name.value());
 
@@ -56,11 +57,12 @@ namespace iceberg {
   ICEBERG_BUILDER_ASSIGN_OR_RETURN_WITH_ERROR_IMPL(                  \
       ICEBERG_ASSIGN_OR_RAISE_NAME(result_, __COUNTER__), lhs, rexpr, __VA_ARGS__)
 
-#define ICEBERG_BUILDER_CHECK(expr, ...)                         \
-  do {                                                           \
-    if (!(expr)) [[unlikely]] {                                  \
-      return AddError(ErrorKind::kInvalidArgument, __VA_ARGS__); \
-    }                                                            \
+#define ICEBERG_BUILDER_CHECK(expr, ...)                  \
+  do {                                                    \
+    if (!(expr)) [[unlikely]] {                           \
+      AddError(ErrorKind::kInvalidArgument, __VA_ARGS__); \
+      return *this;                                       \
+    }                                                     \
   } while (false)
 
 /// \brief Base class for collecting errors in the builder pattern.
@@ -75,7 +77,8 @@ namespace iceberg {
 ///    public:
 ///     MyBuilder& SetValue(int val) {
 ///       if (val < 0) {
-///         return AddError(ErrorKind::kInvalidArgument, "Value must be non-negative");
+///         AddError(ErrorKind::kInvalidArgument, "Value must be non-negative");
+///         return *this;
 ///       }
 ///       value_ = val;
 ///       return *this;
@@ -101,46 +104,44 @@ class ICEBERG_EXPORT ErrorCollector {
   ErrorCollector(const ErrorCollector&) = default;
   ErrorCollector& operator=(const ErrorCollector&) = default;
 
-  /// \brief Add a specific error and return reference to derived class
+  /// \brief Add a specific error
   ///
-  /// \param self Deduced reference to the derived class instance
   /// \param kind The kind of error
   /// \param fmt The format string
   /// \param args The arguments to format the message
-  /// \return Reference to the derived class for method chaining
+  /// \return This error collector for method chaining
   template <typename... Args>
-  auto& AddError(this auto& self, ErrorKind kind, const std::format_string<Args...> fmt,
-                 Args&&... args) {
-    self.errors_.emplace_back(kind, std::format(fmt, std::forward<Args>(args)...));
-    return self;
+  ErrorCollector& AddError(ErrorKind kind, const std::format_string<Args...> fmt,
+                           Args&&... args) {
+    errors_.emplace_back(kind, std::format(fmt, std::forward<Args>(args)...));
+    return *this;
   }
 
-  /// \brief Add an existing error object and return reference to derived class
+  /// \brief Add an existing error object
   ///
   /// Useful when propagating errors from other components or reusing
   /// error objects without deconstructing and reconstructing them.
   ///
-  /// \param self Deduced reference to the derived class instance
   /// \param err The error to add
-  /// \return Reference to the derived class for method chaining
-  auto& AddError(this auto& self, Error err) {
-    self.errors_.push_back(std::move(err));
-    return self;
+  /// \return This error collector for method chaining
+  ErrorCollector& AddError(Error err) {
+    errors_.push_back(std::move(err));
+    return *this;
   }
 
-  /// \brief Add an unexpected result's error and return reference to derived class
+  /// \brief Add an unexpected result's error
   ///
   /// Useful for cases like below:
   /// \code
-  ///   return AddError(InvalidArgument("Invalid value: {}", value));
+  ///   AddError(InvalidArgument("Invalid value: {}", value));
+  ///   return *this;
   /// \endcode
   ///
-  /// \param self Deduced reference to the derived class instance
   /// \param err The unexpected result containing the error to add
-  /// \return Reference to the derived class for method chaining
-  auto& AddError(this auto& self, std::unexpected<Error> err) {
-    self.errors_.push_back(std::move(err.error()));
-    return self;
+  /// \return This error collector for method chaining
+  ErrorCollector& AddError(unexpected<Error> err) {
+    errors_.push_back(std::move(err.error()));
+    return *this;
   }
 
   /// \brief Check if any errors have been collected

@@ -157,7 +157,7 @@ class ICEBERG_EXPORT Logger {
       const std::unordered_map<std::string, std::string>& properties) {
     if (auto it = properties.find(std::string(kLevelProperty)); it != properties.end()) {
       auto parsed = LogLevelFromString(it->second);
-      if (!parsed) return std::unexpected(parsed.error());
+      if (!parsed) return unexpected(parsed.error());
       SetLevel(*parsed);
     }
     return {};

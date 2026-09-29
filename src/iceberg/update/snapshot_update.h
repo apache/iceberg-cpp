@@ -66,9 +66,9 @@ class ICEBERG_EXPORT SnapshotUpdate : public PendingUpdate {
   ///
   /// \param reporter The metrics reporter to use.
   /// \return Reference to this for method chaining.
-  auto& ReportWith(this auto& self, std::shared_ptr<MetricsReporter> reporter) {
-    static_cast<SnapshotUpdate&>(self).reporter_ = std::move(reporter);
-    return self;
+  SnapshotUpdate& ReportWith(std::shared_ptr<MetricsReporter> reporter) {
+    reporter_ = std::move(reporter);
+    return *this;
   }
 
   /// \brief Set a callback to delete files instead of the table's default.
@@ -76,14 +76,13 @@ class ICEBERG_EXPORT SnapshotUpdate : public PendingUpdate {
   /// \param delete_func A function used to delete file locations.
   /// \return This update for method chaining.
   /// \note Cannot be called more than once.
-  auto& DeleteWith(this auto& self,
-                   std::function<Status(const std::string&)> delete_func) {
-    if (self.delete_func_) {
-      return self.AddError(ErrorKind::kInvalidArgument,
-                           "Cannot set delete callback more than once");
+  SnapshotUpdate& DeleteWith(std::function<Status(const std::string&)> delete_func) {
+    if (delete_func_) {
+      AddError(ErrorKind::kInvalidArgument, "Cannot set delete callback more than once");
+      return *this;
     }
-    self.delete_func_ = std::move(delete_func);
-    return self;
+    delete_func_ = std::move(delete_func);
+    return *this;
   }
 
   /// \brief Stage a snapshot in table metadata, but do not make it current.
@@ -92,40 +91,42 @@ class ICEBERG_EXPORT SnapshotUpdate : public PendingUpdate {
   /// current snapshot ID is not updated.
   ///
   /// \return This update for method chaining.
-  auto& StageOnly(this auto& self) {
-    self.stage_only_ = true;
-    return self;
+  SnapshotUpdate& StageOnly() {
+    stage_only_ = true;
+    return *this;
   }
 
   /// \brief Configure an executor for manifest planning work.
   ///
   /// \param executor Executor to use while planning manifests.
   /// \return Reference to this for method chaining.
-  auto& ScanManifestsWith(this auto& self, Executor& executor) {
-    self.plan_executor_ = std::ref(executor);
-    return self;
+  SnapshotUpdate& ScanManifestsWith(Executor& executor) {
+    plan_executor_ = std::ref(executor);
+    return *this;
   }
 
   /// \brief Perform operations on a particular branch.
   ///
   /// \param branch The name of a SnapshotRef of type branch.
   /// \return This update for method chaining.
-  auto& ToBranch(this auto& self, const std::string& branch) {
+  SnapshotUpdate& ToBranch(const std::string& branch) {
     if (branch.empty()) [[unlikely]] {
-      return self.AddError(ErrorKind::kInvalidArgument, "Branch name cannot be empty");
+      AddError(ErrorKind::kInvalidArgument, "Branch name cannot be empty");
+      return *this;
     }
 
-    if (auto ref_it = self.base().refs.find(branch); ref_it != self.base().refs.end()) {
+    if (auto ref_it = base().refs.find(branch); ref_it != base().refs.end()) {
       if (ref_it->second->type() != SnapshotRefType::kBranch) {
-        return self.AddError(ErrorKind::kInvalidArgument,
-                             "{} is a tag, not a branch. Tags cannot be targets for "
-                             "producing snapshots",
-                             branch);
+        AddError(ErrorKind::kInvalidArgument,
+                 "{} is a tag, not a branch. Tags cannot be targets for "
+                 "producing snapshots",
+                 branch);
+        return *this;
       }
     }
 
-    self.target_branch_ = branch;
-    return self;
+    target_branch_ = branch;
+    return *this;
   }
 
   /// \brief Set a summary property in the snapshot produced by this update.
@@ -133,9 +134,9 @@ class ICEBERG_EXPORT SnapshotUpdate : public PendingUpdate {
   /// \param property A String property name.
   /// \param value A String property value.
   /// \return This update for method chaining.
-  auto& Set(this auto& self, const std::string& property, const std::string& value) {
-    static_cast<SnapshotUpdate&>(self).SetSummaryProperty(property, value);
-    return self;
+  SnapshotUpdate& Set(const std::string& property, const std::string& value) {
+    SetSummaryProperty(property, value);
+    return *this;
   }
 
   /// \brief Configure an executor and max writer count for writing new manifests.
@@ -143,18 +144,22 @@ class ICEBERG_EXPORT SnapshotUpdate : public PendingUpdate {
   /// If this method is not called, manifest writes remain serial. When configured,
   /// files may be split into independent rolling-writer groups.
   ///
+  /// \param executor Executor to use while writing manifests.
+  /// \param parallelism Maximum number of concurrent manifest writers.
+  /// \return This update for method chaining.
   /// \note Custom FileIO implementations and registered writer factories used for
   /// manifest writes must support concurrent calls when an executor is configured.
-  auto& WriteManifestsWith(this auto& self, Executor& executor, int32_t parallelism) {
+  SnapshotUpdate& WriteManifestsWith(Executor& executor, int32_t parallelism) {
     if (parallelism <= 0) [[unlikely]] {
-      return self.AddError(
-          ErrorKind::kInvalidArgument,
-          "Manifest write parallelism must be greater than 0, but was: {}", parallelism);
+      AddError(ErrorKind::kInvalidArgument,
+               "Manifest write parallelism must be greater than 0, but was: {}",
+               parallelism);
+      return *this;
     }
 
-    self.write_manifest_executor_ = std::ref(executor);
-    self.write_manifest_parallelism_ = parallelism;
-    return self;
+    write_manifest_executor_ = std::ref(executor);
+    write_manifest_parallelism_ = parallelism;
+    return *this;
   }
 
  protected:
