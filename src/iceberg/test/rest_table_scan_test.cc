@@ -531,31 +531,160 @@ TEST_F(RestTableScanTest, PlanFilesStreamCompleted) {
 }
 
 // --------------------------------------------------------------------------
-// PlanFilesStream: COMPLETED with two plan-task tokens; each fetched lazily
-// as Next() is called, not all at once on POST /plan.
+// PlanFilesStream: two plan-task tokens each trigger a separate FetchScanTasks
+// POST, one per token, and the combined task set is returned.
 // --------------------------------------------------------------------------
-TEST_F(RestTableScanTest, PlanFilesStreamLazilyFetchesPlanTasks) {
+TEST_F(RestTableScanTest, PlanFilesStreamFetchesEachTokenSeparately) {
   constexpr std::string_view kPlanResponse =
       R"({"status":"completed","plan-id":"plan-stream","plan-tasks":["tok-s1","tok-s2"]})";
-  constexpr std::string_view kTasksResponse = R"({"file-scan-tasks":[]})";
+  constexpr std::string_view kTask1Response = R"({
+    "file-scan-tasks": [
+      {"data-file":{"content":"data","file-path":"s3://b/f1.parquet",
+       "file-format":"PARQUET","spec-id":0,"partition":[],"file-size-in-bytes":1,"record-count":1}}
+    ]
+  })";
+  constexpr std::string_view kTask2Response = R"({
+    "file-scan-tasks": [
+      {"data-file":{"content":"data","file-path":"s3://b/f2.parquet",
+       "file-format":"PARQUET","spec-id":0,"partition":[],"file-size-in-bytes":1,"record-count":1}}
+    ]
+  })";
 
   EXPECT_CALL(*mock_client_, Post(_, _, _, _, _))
       .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kPlanResponse))))
-      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kTasksResponse))))
-      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kTasksResponse))));
+      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kTask1Response))))
+      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kTask2Response))));
 
   ICEBERG_UNWRAP_OR_FAIL(auto scan, MakeScan(MakeContext()));
   ICEBERG_UNWRAP_OR_FAIL(auto stream, scan->PlanFilesStream());
   ICEBERG_UNWRAP_OR_FAIL(auto tasks, stream->ToVector());
-  EXPECT_TRUE(tasks.empty());
+  ASSERT_EQ(tasks.size(), 2u);
+  EXPECT_EQ(tasks[0]->data_file()->file_path, "s3://b/f1.parquet");
+  EXPECT_EQ(tasks[1]->data_file()->file_path, "s3://b/f2.parquet");
 }
 
 // --------------------------------------------------------------------------
-// PlanFilesStream: stream destroyed before full consumption → DELETE /plan.
+// PlanFilesStream: the second FetchScanTasks POST is not made until the first
+// token's buffer is exhausted. Verified by counting POST calls between Next()
+// invocations.
+// --------------------------------------------------------------------------
+TEST_F(RestTableScanTest, PlanFilesStreamFetchesTokenOnlyWhenBufferExhausted) {
+  constexpr std::string_view kPlanResponse =
+      R"({"status":"completed","plan-id":"plan-lazy","plan-tasks":["tok-1","tok-2"]})";
+  // tok-1 returns 2 tasks; tok-2 must not be fetched until both are consumed.
+  constexpr std::string_view kTwoTasksResponse = R"({
+    "file-scan-tasks": [
+      {"data-file":{"content":"data","file-path":"s3://b/f1.parquet",
+       "file-format":"PARQUET","spec-id":0,"partition":[],"file-size-in-bytes":1,"record-count":1}},
+      {"data-file":{"content":"data","file-path":"s3://b/f2.parquet",
+       "file-format":"PARQUET","spec-id":0,"partition":[],"file-size-in-bytes":1,"record-count":1}}
+    ]
+  })";
+  constexpr std::string_view kOneTaskResponse = R"({
+    "file-scan-tasks": [
+      {"data-file":{"content":"data","file-path":"s3://b/f3.parquet",
+       "file-format":"PARQUET","spec-id":0,"partition":[],"file-size-in-bytes":1,"record-count":1}}
+    ]
+  })";
+
+  int fetch_count = 0;
+  EXPECT_CALL(*mock_client_, Post(_, _, _, _, _))
+      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kPlanResponse))))
+      .WillOnce([&](auto&&...) -> Result<HttpResponse> {
+        ++fetch_count;
+        return HttpResponse::MakeForTesting(200, std::string(kTwoTasksResponse));
+      })
+      .WillOnce([&](auto&&...) -> Result<HttpResponse> {
+        ++fetch_count;
+        return HttpResponse::MakeForTesting(200, std::string(kOneTaskResponse));
+      });
+
+  ICEBERG_UNWRAP_OR_FAIL(auto scan, MakeScan(MakeContext()));
+  ICEBERG_UNWRAP_OR_FAIL(auto stream, scan->PlanFilesStream());
+
+  // No FetchScanTasks call yet — stream has not been driven.
+  EXPECT_EQ(fetch_count, 0);
+
+  // First Next(): fetches tok-1 (2 tasks buffered), returns f1.
+  ICEBERG_UNWRAP_OR_FAIL(auto t1, stream->Next());
+  ASSERT_TRUE(t1.has_value());
+  EXPECT_EQ(fetch_count, 1);
+  EXPECT_EQ((*t1)->data_file()->file_path, "s3://b/f1.parquet");
+
+  // Second Next(): served from buffer; tok-2 not fetched yet.
+  ICEBERG_UNWRAP_OR_FAIL(auto t2, stream->Next());
+  ASSERT_TRUE(t2.has_value());
+  EXPECT_EQ(fetch_count, 1);
+  EXPECT_EQ((*t2)->data_file()->file_path, "s3://b/f2.parquet");
+
+  // Third Next(): buffer exhausted, fetches tok-2, returns f3.
+  ICEBERG_UNWRAP_OR_FAIL(auto t3, stream->Next());
+  ASSERT_TRUE(t3.has_value());
+  EXPECT_EQ(fetch_count, 2);
+  EXPECT_EQ((*t3)->data_file()->file_path, "s3://b/f3.parquet");
+
+  // Fourth Next(): all tokens consumed, stream terminates.
+  ICEBERG_UNWRAP_OR_FAIL(auto end, stream->Next());
+  EXPECT_FALSE(end.has_value());
+}
+
+// --------------------------------------------------------------------------
+// PlanFilesStream: Next() propagates a FetchScanTasks error and DELETE /plan
+// is called via the stream destructor since consumed_ is never set.
+// --------------------------------------------------------------------------
+TEST_F(RestTableScanTest, PlanFilesStreamNextReturnsErrorOnFetchFailure) {
+  constexpr std::string_view kPlanResponse =
+      R"({"status":"completed","plan-id":"plan-next-err","plan-tasks":["tok-err"]})";
+
+  EXPECT_CALL(*mock_client_, Post(_, _, _, _, _))
+      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kPlanResponse))))
+      .WillOnce(Return(IOError("FetchScanTasks network error")));
+  EXPECT_CALL(*mock_client_, Delete(_, _, _, _, _))
+      .WillOnce(Return(HttpResponse::MakeForTesting(200, "{}")));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto scan, MakeScan(MakeContext()));
+  ICEBERG_UNWRAP_OR_FAIL(auto stream, scan->PlanFilesStream());
+  auto result = stream->Next();
+  EXPECT_THAT(result, IsError(ErrorKind::kIOError));
+}
+
+// --------------------------------------------------------------------------
+// PlanFilesStream: stream destroyed after consuming the first task but before
+// the second token is fetched → DELETE /plan called by the destructor.
+// --------------------------------------------------------------------------
+TEST_F(RestTableScanTest, PlanFilesStreamCancelAfterPartialConsumption) {
+  constexpr std::string_view kPlanResponse =
+      R"({"status":"completed","plan-id":"plan-partial","plan-tasks":["tok-p1","tok-p2"]})";
+  constexpr std::string_view kTaskResponse = R"({
+    "file-scan-tasks": [
+      {"data-file":{"content":"data","file-path":"s3://b/fp1.parquet",
+       "file-format":"PARQUET","spec-id":0,"partition":[],"file-size-in-bytes":1,"record-count":1}}
+    ]
+  })";
+
+  EXPECT_CALL(*mock_client_, Post(_, _, _, _, _))
+      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kPlanResponse))))
+      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kTaskResponse))));
+  EXPECT_CALL(*mock_client_, Delete(_, _, _, _, _))
+      .WillOnce(Return(HttpResponse::MakeForTesting(200, "{}")));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto scan, MakeScan(MakeContext()));
+  {
+    ICEBERG_UNWRAP_OR_FAIL(auto stream, scan->PlanFilesStream());
+    // Consume the first task from tok-p1; tok-p2 has never been fetched.
+    ICEBERG_UNWRAP_OR_FAIL(auto task, stream->Next());
+    ASSERT_TRUE(task.has_value());
+    // Destroy stream here — tok-p2 is still pending, so destructor calls DELETE.
+  }
+}
+
+// --------------------------------------------------------------------------
+// PlanFilesStream: stream destroyed with no Next() calls at all →
+// DELETE /plan called by the destructor.
 // --------------------------------------------------------------------------
 TEST_F(RestTableScanTest, PlanFilesStreamCancelOnPartialConsumption) {
   constexpr std::string_view kPlanResponse =
-      R"({"status":"completed","plan-id":"plan-partial","plan-tasks":["tok-p1"]})";
+      R"({"status":"completed","plan-id":"plan-never-consumed","plan-tasks":["tok-p1"]})";
 
   EXPECT_CALL(*mock_client_, Post(_, _, _, _, _))
       .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kPlanResponse))));
@@ -565,7 +694,7 @@ TEST_F(RestTableScanTest, PlanFilesStreamCancelOnPartialConsumption) {
   ICEBERG_UNWRAP_OR_FAIL(auto scan, MakeScan(MakeContext()));
   {
     ICEBERG_UNWRAP_OR_FAIL(auto stream, scan->PlanFilesStream());
-    // Destroy without consuming — destructor must call DELETE /plan.
+    // Destroy without any Next() call — destructor must call DELETE /plan.
   }
 }
 
